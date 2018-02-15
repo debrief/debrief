@@ -14,9 +14,11 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -50,6 +52,8 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -130,12 +134,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 12, 2, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -143,9 +145,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
 
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, theLayers, track,
-              getMyLogger(), true);
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, track, getMyLogger(), true);
 
       messages.clear();
 
@@ -175,12 +176,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -205,9 +204,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       messages.clear();
       first = (ActionContributionItem) newItems[2];
-      assertEquals("right name",
-          "Generate infill segment" + DELETE_SUFFIX, first
-              .getAction().getText());
+      assertEquals("right name", "Generate infill segment" + DELETE_SUFFIX,
+          first.getAction().getText());
       first.getAction().run();
 
       assertEquals("got no error message", 0, messages.size());
@@ -256,13 +254,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         cuts2[i] = contact;
       }
 
-      CoreTMASegment legOne =
-          new RelativeTMASegment(cuts1, _offset, new WorldSpeed(13,
-              WorldSpeed.Kts), 12, theLayers, null);
+      CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
 
-      CoreTMASegment legTwo =
-          new RelativeTMASegment(cuts2, _offset, new WorldSpeed(13,
-              WorldSpeed.Kts), 12, theLayers, null);
+      CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
 
       tmaTrack.add(legOne);
       tmaTrack.add(legTwo);
@@ -270,9 +266,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
 
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, theLayers, tmaTrack,
-              getMyLogger(), true);
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, tmaTrack, getMyLogger(), true);
 
       assertEquals("correct before len", 10, legTwo.getData().size());
       assertEquals("correct legs", 2, tmaTrack.getSegments().size());
@@ -332,13 +327,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         cuts2[i] = contact;
       }
 
-      CoreTMASegment legOne =
-          new RelativeTMASegment(cuts1, _offset, new WorldSpeed(13,
-              WorldSpeed.Kts), 12, theLayers, null);
+      CoreTMASegment legOne = new RelativeTMASegment(cuts1, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
 
-      CoreTMASegment legTwo =
-          new RelativeTMASegment(cuts2, _offset, new WorldSpeed(13,
-              WorldSpeed.Kts), 12, theLayers, null);
+      CoreTMASegment legTwo = new RelativeTMASegment(cuts2, _offset,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
 
       tmaTrack.add(legOne);
       tmaTrack.add(legTwo);
@@ -346,9 +339,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
 
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, theLayers, tmaTrack,
-              getMyLogger(), true);
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, tmaTrack, getMyLogger(), true);
 
       assertEquals("correct before len", 10, legTwo.getData().size());
       assertEquals("correct legs", 2, tmaTrack.getSegments().size());
@@ -381,12 +373,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -394,9 +384,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
 
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, theLayers, track,
-              getMyLogger(), true);
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, track, getMyLogger(), true);
 
       assertEquals("correct before len", 60, legTwo.getData().size());
       assertEquals("correct legs", 2, track.getSegments().size());
@@ -415,9 +404,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       {
         subjects[ctr++] = iter.next();
       }
-      operation =
-          new GenerateInfillOperation("title", subjects, theLayers, track,
-              getMyLogger(), true);
+      operation = new GenerateInfillOperation("title", subjects, theLayers,
+          track, getMyLogger(), true);
 
       assertEquals("correct before len", 57, legTwo.getData().size());
       assertEquals("correct legs", 3, track.getSegments().size());
@@ -443,12 +431,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -456,9 +442,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       Editable[] subjects = new Editable[]
       {legOne, legTwo};
 
-      GenerateInfillOperation operation =
-          new GenerateInfillOperation("title", subjects, theLayers, track,
-              getMyLogger(), true);
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, track, getMyLogger(), true);
 
       assertEquals("correct before len", 60, legTwo.getData().size());
       assertEquals("correct legs", 2, track.getSegments().size());
@@ -478,6 +463,183 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 2, track.getSegments().size());
     }
 
+    public void test_reconnect_infill_after_split() throws ExecutionException
+    {
+      // //////////////////////////////////
+      // start off building from a track
+      // //////////////////////////////////
+      final TrackWrapper tw = new TrackWrapper();
+
+      final Layers theLayers = new Layers();
+
+      tw.addFix(TrackWrapper_Test.createFix(100000, 1, 1, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(200000, 2, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(300000, 3, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(400000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(500000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(600000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix(700000, 4, 6, 4, 12));
+
+      final WorldVector offset = new WorldVector(12, 12, 0);
+      final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+      final double course = 33;
+
+      // ok, create the segment
+      CoreTMASegment seg = null;
+
+      // check the before
+      FixWrapper firstFix = null;
+
+      // ////////////////////////
+      // NOW FROM A SENSOR WRAPPER
+      // /////////////////////////
+      final SensorWrapper sw = new SensorWrapper("some sensor");
+      sw.setHost(tw);
+
+      // attach the sensor to the host
+      tw.add(sw);
+
+      final int senLen = 30;
+      final SensorContactWrapper[] items = new SensorContactWrapper[senLen];
+
+      for (int i = 0; i < senLen; i++)
+      {
+        items[i] = TrackWrapper_Test.createSensorItem(tw, sw, 100000 + i
+            * 10000);
+      }
+
+      // sort out the host
+      for (int i = 0; i < items.length; i++)
+      {
+        final SensorContactWrapper sensorContactWrapper = items[i];
+        sw.add(sensorContactWrapper);
+      }
+
+      // seg = new RelativeTMASegment(sw, offset, speed, course, null);
+      seg = new RelativeTMASegment(items, offset, speed, course, null,
+          Color.yellow);
+
+      // check the create worked
+      assertEquals("enough points created", 30, seg.size());
+
+      // check the before
+      firstFix = (FixWrapper) seg.getData().iterator().next();
+      assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+      assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
+          WorldSpeed.Kts), 0.001);
+      assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+          .Rads2Degs(firstFix.getCourse()), 0.001);
+      assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+
+      // ok, now do the split
+      final TrackWrapper segW = new TrackWrapper();
+      segW.setName("TMA");
+      segW.add(seg);
+
+      // get hold of an item in the segment
+      final Enumeration<Editable> enumer = seg.elements();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      enumer.nextElement();
+      final FixWrapper fw = (FixWrapper) enumer.nextElement();
+      assertNotNull("Found a fix", fw);
+
+      // do the split
+      final Vector<TrackSegment> segs = segW.splitTrack(fw, false);
+
+      // check we have enough segments
+      assertEquals("now two segments", 2, segs.size());
+      assertEquals("first is of correct length", 10, segs.firstElement()
+          .size());
+      assertEquals("second is of correct length", 20, segs.lastElement()
+          .size());
+
+      // check they're of the correct type
+      final TrackSegment seg1 = segs.firstElement();
+      final TrackSegment seg2 = segs.lastElement();
+      assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
+      assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
+
+      // ok, insert infill
+      Editable[] segments = new Editable[]
+      {seg1, seg2};
+      Layer parentTrack = segW;
+      GenerateInfillOperation oper = new GenerateInfillOperation("gen it",
+          segments, theLayers, parentTrack, null, true);
+      oper.execute(null, null);
+
+      // how many legs?
+      assertEquals("has infill", 3, segW.getSegments().size());
+
+      long midPoint = seg1.endDTG().getDate().getTime() + (seg2.startDTG()
+          .getDate().getTime() - seg1.endDTG().getDate().getTime()) / 2;
+      TrackSegment possInfill = segW.getSegments().getSegmentFor(midPoint);
+      assertTrue("found infill", possInfill instanceof DynamicInfillSegment);
+
+      // ok, check the ends
+      DynamicInfillSegment infill = (DynamicInfillSegment) possInfill;
+      assertEquals("correct before", seg1, infill.getBeforeSegment());
+      assertEquals("correct after", seg2, infill.getAfterSegment());
+
+      // ok, slice the first one
+      final Enumeration<Editable> enumer2 = seg1.elements();
+      enumer2.nextElement();
+      enumer2.nextElement();
+      enumer2.nextElement();
+      final FixWrapper fw2 = (FixWrapper) enumer2.nextElement();
+      assertNotNull("Found a fix", fw2);
+
+      // do the split
+      final Vector<TrackSegment> segs2 = segW.splitTrack(fw2, false);
+      assertEquals(2, segs2.size());
+      
+      TrackSegment newSeg2 = segs2.get(1);
+      
+      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
+      assertEquals("correct after", seg2, infill.getAfterSegment());
+     
+      // ok, split the second leg
+      final Enumeration<Editable> enumer3 = seg2.elements();
+      enumer3.nextElement();
+      enumer3.nextElement();
+      enumer3.nextElement();
+      final FixWrapper fw3 = (FixWrapper) enumer3.nextElement();
+      assertNotNull("Found a fix", fw3);
+      
+//      listLegs(segW);
+
+      // do the split
+      final Vector<TrackSegment> segs3 = segW.splitTrack(fw3, false);
+      assertEquals(2, segs2.size());
+
+//      listLegs(segW);
+      
+      TrackSegment newSeg3 = segs3.get(0);
+      
+      assertEquals("correct before", newSeg2, infill.getBeforeSegment());
+      assertEquals("correct after", newSeg3, infill.getAfterSegment());
+
+    }
+    
+    @SuppressWarnings("unused")
+    private static void listLegs(TrackWrapper track)
+    {
+      System.out.println("=========");
+      Enumeration<Editable> segs = track.getSegments().elements();
+      while(segs.hasMoreElements())
+      {
+        TrackSegment seg = (TrackSegment) segs.nextElement();
+        System.out.println(seg.getName() + " " + seg.getClass());
+      }
+    }
+    
+
     @SuppressWarnings("deprecation")
     public void testOverlap()
     {
@@ -494,12 +656,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -517,8 +677,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       first.getAction().run();
 
       assertEquals("got error message", 1, messages.size());
-      assertEquals("correct error message",
-          GenerateInfillOperation.OVERLAPPING, messages.get(0));
+      assertEquals("correct error message", GenerateInfillOperation.OVERLAPPING,
+          messages.get(0));
     }
 
     @SuppressWarnings("deprecation")
@@ -537,12 +697,10 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       HiResDate l2_end = new HiResDate(new Date(2012, 1, 1, 13, 0, 0));
 
       WorldLocation origin = new WorldLocation(44, 44, 44);
-      AbsoluteTMASegment legOne =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l1_start, l1_end);
-      AbsoluteTMASegment legTwo =
-          new AbsoluteTMASegment(12, new WorldSpeed(13, WorldSpeed.Kts),
-              origin, l2_start, l2_end);
+      AbsoluteTMASegment legOne = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l1_start, l1_end);
+      AbsoluteTMASegment legTwo = new AbsoluteTMASegment(12, new WorldSpeed(13,
+          WorldSpeed.Kts), origin, l2_start, l2_end);
 
       track.add(legOne);
       track.add(legTwo);
@@ -655,9 +813,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       IStatus res = null;
 
@@ -695,8 +852,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 // can we restore deleted fixes?
                 if (_deletedFixes != null)
                 {
-                  ArrayList<FixWrapper> thesefixes =
-                      _deletedFixes.get(trackTwo);
+                  ArrayList<FixWrapper> thesefixes = _deletedFixes.get(
+                      trackTwo);
                   if (thesefixes != null)
                   {
                     for (FixWrapper t : thesefixes)
@@ -710,9 +867,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 }
 
                 // ok, sort out failure state
-                res =
-                    new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                        CANT_DELETE, null);
+                res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+                    CANT_DELETE, null);
 
                 // output the message
                 _logger.logError(res.getSeverity(), res.getMessage(), null);
@@ -721,8 +877,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               else
               {
                 // ok, delete a point from the second leg
-                FixWrapper firstPoint =
-                    (FixWrapper) trackTwo.getData().iterator().next();
+                FixWrapper firstPoint = (FixWrapper) trackTwo.getData()
+                    .iterator().next();
 
                 if (_deletedFixes == null)
                 {
@@ -762,9 +918,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       if (res == null)
       {
-        res =
-            new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
-                "generate infill successful", null);
+        res = new Status(IStatus.OK, DebriefPlugin.PLUGIN_NAME,
+            "generate infill successful", null);
       }
       return res;
     }
@@ -784,16 +939,15 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       if (trackOne.endDTG().greaterThan(trackTwo.startDTG()))
       {
         // fail, they overlap
-        res =
-            new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, OVERLAPPING,
-                null);
+        res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, OVERLAPPING,
+            null);
       }
       else
       {
         // cool, go for it
         // generate the new track segment
-        final TrackSegment newSeg =
-            new DynamicInfillSegment(trackOne, trackTwo);
+        final TrackSegment newSeg = new DynamicInfillSegment(trackOne,
+            trackTwo);
 
         // aah, but, no but, are there points in the segment
         if (!newSeg.getData().isEmpty())
@@ -802,9 +956,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         }
         else
         {
-          res =
-              new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
-                  INSUFFICIENT_TIME, null);
+          res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME,
+              INSUFFICIENT_TIME, null);
 
         }
       }
@@ -923,14 +1076,14 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               public void run()
               {
                 final IUndoableOperation theAction =
-                    new GenerateInfillOperation(finalTitle, subjects,
-                        theLayers, parentTrack, logger, false);
+                    new GenerateInfillOperation(finalTitle, subjects, theLayers,
+                        parentTrack, logger, false);
 
                 CorePlugin.run(theAction);
               }
             };
-            doMerge.setImageDescriptor(CorePlugin
-                .getImageDescriptor("icons\\16\\generate_infill.png"));
+            doMerge.setImageDescriptor(CorePlugin.getImageDescriptor(
+                "icons\\16\\generate_infill.png"));
             final String secondTitle = finalTitle + DELETE_SUFFIX;
             final Action doMergeAllowDelete = new Action(secondTitle)
             {
@@ -944,8 +1097,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                 CorePlugin.run(theAction);
               }
             };
-            doMergeAllowDelete.setImageDescriptor(CorePlugin
-                .getImageDescriptor("icons\\16\\generate_infill_delete.png"));
+            doMergeAllowDelete.setImageDescriptor(CorePlugin.getImageDescriptor(
+                "icons\\16\\generate_infill_delete.png"));
             parent.add(new Separator());
             parent.add(doMerge);
             parent.add(doMergeAllowDelete);
