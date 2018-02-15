@@ -52,7 +52,6 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -463,7 +462,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 2, track.getSegments().size());
     }
 
-    public void test_reconnect_infill_after_split() throws ExecutionException
+    public void testReconnectInfillAfterSplit() throws ExecutionException
     {
       // //////////////////////////////////
       // start off building from a track
@@ -862,7 +861,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
                     }
 
                     // ok, remove this from the undo operation
-                    _deletedFixes.remove(thesefixes);
+                    _deletedFixes.remove(trackTwo);
                   }
                 }
 
