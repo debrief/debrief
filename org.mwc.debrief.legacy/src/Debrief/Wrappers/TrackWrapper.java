@@ -4935,10 +4935,6 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
   private void reconnectInfills(TrackSegment toBeDeleted,
       TrackSegment newBefore, TrackSegment newAfter)
   {
-	System.out.println("deleted:" + toBeDeleted);
-	System.out.println("before:" + newBefore);
-	System.out.println("after:" + newAfter);
-	  
     // ok, loop through our legs
     final Enumeration<Editable> lIter = getSegments().elements();
     while (lIter.hasMoreElements())
@@ -4955,7 +4951,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         else if (toBeDeleted.equals(infill.getAfterSegment()))
         {
           // connect to new before
-          infill.configure(infill.getBeforeSegment(), newAfter);
+          infill.configure(infill.getBeforeSegment(), newBefore);
         }
       }
     }
