@@ -14,8 +14,10 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -53,7 +55,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 	{
 		boolean goForIt = false;
 
-		final Vector<TrackWrapper> tracks = new Vector<TrackWrapper>();
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 		
 		// we're only going to work with two or more items, and we only put them into a track wrapper
 		if (subjects.length > 1)
@@ -86,32 +88,33 @@ public class GroupTracks implements RightClickContextItemGenerator
 		// check we got some
 		if(tracks.size() == 0)
 			goForIt = false;
-		
-		if(tracks.size() > 10)
-		{
-			goForIt = false;
-			CorePlugin.logError(Status.WARNING, "Not offering group tracks,  too many seleted", null);
-		}
-		
+				
 		// ok, is it worth going for?
 		if (goForIt)
 		{
 			// right,stick in a separator
 			parent.add(new Separator());
 
-			for (final Iterator<TrackWrapper> iterator = tracks.iterator(); iterator.hasNext();)
-			{
-				final TrackWrapper editable = iterator.next();
-				final String title = "Group tracks into " + editable.getName();
-				// create this operation
-				final Action doMerge = new Action(title){
-					public void run()
-					{
-						final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);							
-						CorePlugin.run(theAction );
-					}};
-				parent.add(doMerge);
-			}
+			// put the tracks into chronological order
+			Collections.sort(tracks, new Comparator<TrackWrapper>() {
+
+        @Override
+        public int compare(TrackWrapper o1, TrackWrapper o2)
+        {
+          return o1.getStartDTG().compareTo(o2.getStartDTG());
+        }});
+
+      // find the first track
+      final TrackWrapper editable = tracks.get(0);
+      final String title = "Group tracks into " + editable.getName();
+      // create this operation
+      final Action doMerge = new Action(title){
+        public void run()
+        {
+          final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);              
+          CorePlugin.run(theAction );
+        }};
+      parent.add(doMerge);
 		}
 	}
 
