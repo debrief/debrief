@@ -289,6 +289,11 @@ public class AmbiguityResolver
           return b;
         }
 
+		public void remove() {
+			// placeholder, to allow JAva8 compile
+			
+		}
+
       };
     }
 

@@ -4951,7 +4951,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         else if (toBeDeleted.equals(infill.getAfterSegment()))
         {
           // connect to new before
-          infill.configure(infill.getBeforeSegment(), newAfter);
+          infill.configure(infill.getBeforeSegment(), newBefore);
         }
       }
     }

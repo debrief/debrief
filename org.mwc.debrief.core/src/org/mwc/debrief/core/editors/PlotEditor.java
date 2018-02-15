@@ -37,6 +37,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.commands.Command;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -196,6 +198,74 @@ import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 {"deprecation", "restriction"})
 public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 {
+  public static class TestMe extends TestCase
+  {
+
+    public void testAmbig()
+    {
+      final SensorWrapper sensor = new SensorWrapper("Some name");
+
+      assertFalse("Should not find ambig data", isAmbiguousData(sensor));
+
+      // give it some none freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
+          null, 100d, null, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
+
+      // and another cut
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000),
+          null, 100d, null, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find ambig data", isAmbiguousData(sensor));
+
+      // clear the cuts
+      sensor.removeElement(sensor.elements().nextElement());
+      sensor.removeElement(sensor.elements().nextElement());
+
+      assertEquals("now empty", 0, sensor.size());
+      ;
+
+      // give it some freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
+          null, 122d, 222d, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertTrue("Should find ambig data", isAmbiguousData(sensor));
+    }
+
+    public void testFreq()
+    {
+      final SensorWrapper sensor = new SensorWrapper("Some name");
+
+      assertFalse("Should not find freq data", hasFrequencyData(sensor));
+
+      // give it some none freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
+          null, 100d, 200d, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find freq data", hasFrequencyData(sensor));
+
+      // and another cut
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1003000),
+          null, 100d, 200d, null, null, Color.RED, "label", 1, "Some name"));
+
+      assertFalse("Should still not find freq data", hasFrequencyData(sensor));
+
+      // clear the cuts
+      sensor.removeElement(sensor.elements().nextElement());
+      sensor.removeElement(sensor.elements().nextElement());
+
+      assertEquals("now empty", 0, sensor.size());
+      ;
+
+      // give it some freq data
+      sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
+          null, null, null, 22d, null, Color.RED, "label", 1, "Some name"));
+
+      assertTrue("Should find freq data", hasFrequencyData(sensor));
+    }
+  }
+
   // Extension point tag and attributes in plugin.xml
   private static final String EXTENSION_POINT_ID = "DebriefPlotLoader";
 
@@ -207,12 +277,46 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private static final String EXTENSION_TAG_FIRST_LINE_ATTRIB = "first_line";
 
-  private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
-
   // private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
+
+  private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
 
   // Plug-in ID from <plugin> tag in plugin.xml
   private static final String PLUGIN_ID = "org.mwc.debrief.core";
+
+  private static boolean hasFrequencyData(final SensorWrapper thisS)
+  {
+
+    final boolean hasFreq;
+    if (thisS.size() > 0)
+    {
+      final SensorContactWrapper firstCut =
+          (SensorContactWrapper) thisS.elements().nextElement();
+      hasFreq = firstCut.getHasFrequency();
+    }
+    else
+    {
+      hasFreq = false;
+    }
+    return hasFreq;
+
+  }
+
+  private static boolean isAmbiguousData(final SensorWrapper thisS)
+  {
+    final boolean isTowed;
+    if (thisS.size() > 0)
+    {
+      final SensorContactWrapper firstCut =
+          (SensorContactWrapper) thisS.elements().nextElement();
+      isTowed = firstCut.getHasAmbiguousBearing();
+    }
+    else
+    {
+      isTowed = false;
+    }
+    return isTowed;
+  }
 
   /**
    * helper object which loads plugin file-loaders
@@ -1699,7 +1803,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private SensorImportHelper getSensorImportHelperFor(final String sensorName,
       final Color sensorColor, final String introString,
-      final boolean needsRange, boolean isTowedArray)
+      final boolean needsRange, final boolean isTowedArray,
+      final boolean hasFrequency)
   {
     // ok, check the property
     final String showImportWizard =
@@ -1712,7 +1817,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       helper =
           new SensorImportHelper.SensorImportHelperUI(sensorName, sensorColor,
-              introString, needsRange, isTowedArray);
+              introString, needsRange, isTowedArray, hasFrequency);
     }
     else
     {
@@ -2087,9 +2192,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // because
     // if it doesn't we'll let the user set a default
     final boolean needsRange = areWeWaitingForRange(thisS);
-    
+
     // see if the data is for a towed array
     final boolean isTowedArray = isAmbiguousData(thisS);
+
+    // see if we have freq data
+    final boolean hasFrequency = hasFrequencyData(thisS);
 
     // next, just see if this track already contains sensor
     // data with this name
@@ -2122,7 +2230,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     final SensorImportHelper importHelper =
         getSensorImportHelperFor(theName, thisS.getColor(), introString,
-            needsRange, isTowedArray);
+            needsRange, isTowedArray, hasFrequency);
 
     // did it work?
     if (importHelper.success())
@@ -2149,28 +2257,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
         }
       }
-      
+
       // is it towed array?
-      if(isTowedArray)
+      if (isTowedArray)
       {
-        WorldDistance offset = importHelper.getSensorOffset();
-        ArrayLength arrayLength = new ArrayLength(offset);
+        final WorldDistance offset = importHelper.getSensorOffset();
+        final ArrayLength arrayLength = new ArrayLength(offset);
         thisS.setSensorOffset(arrayLength);
-        
+      }
+
+      if (hasFrequency)
+      {
         // and the base frequency
-        String freqStr = importHelper.getBaseFrequency();
+        final String freqStr = importHelper.getBaseFrequency();
         try
         {
-          double freq = Double.parseDouble(freqStr);
+          final double freq = Double.parseDouble(freqStr);
           thisS.setBaseFrequency(freq);
         }
-        catch (NumberFormatException e)
+        catch (final NumberFormatException e)
         {
-          CorePlugin.logError(Status.ERROR, "Couldn't parse base frequency:" + freqStr, e);
+          CorePlugin.logError(IStatus.ERROR, "Couldn't parse base frequency:"
+              + freqStr, e);
           e.printStackTrace();
         }
       }
-      
+
       if (importHelper.applyRainbow())
       {
         applyRainbowShadingTo(thisS);
@@ -2178,21 +2290,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
 
     return importHelper.success();
-  }
-
-  private boolean isAmbiguousData(SensorWrapper thisS)
-  {
-    final boolean isTowed;
-    if(thisS.size() > 0)
-    {
-      SensorContactWrapper firstCut = (SensorContactWrapper) thisS.elements().nextElement();
-      isTowed = firstCut.getHasAmbiguousBearing();
-    }
-    else
-    {
-      isTowed = false;
-    }
-    return isTowed;
   }
 
   public void outlinePageClosed()

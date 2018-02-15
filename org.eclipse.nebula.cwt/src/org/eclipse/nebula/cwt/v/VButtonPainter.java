@@ -12,55 +12,63 @@
 package org.eclipse.nebula.cwt.v;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.internal.theme.ButtonDrawData;
-import org.eclipse.swt.internal.theme.DrawData;
-import org.eclipse.swt.internal.theme.Theme;
 import org.eclipse.swt.widgets.Event;
 
-@SuppressWarnings("restriction")
+/**
+ * Class to paint a button.
+ *
+ */
 public class VButtonPainter extends VControlPainter {
 
 	@Override
 	public void paintBackground(VControl control, Event e) {
 		VButton button = (VButton) control;
-		if(button.paintNative) {
-			if(button.paintInactive || button.hasState(VButton.STATE_ACTIVE | VButton.STATE_SELECTED)
-					|| (button == VTracker.getFocusControl())) {
-				ButtonDrawData data = new ButtonDrawData();
-				data.style = SWT.PUSH;
-				if(button.hasState(VButton.STATE_SELECTED)) {
-					data.state[0] |= DrawData.HOT;
-					data.state[0] |= DrawData.PRESSED;
-				} else if(button.hasState(VButton.STATE_ACTIVE)) {
-					data.state[0] |= DrawData.HOT;
-				}
-				if(button == VTracker.getFocusControl()) {
-					data.state[0] |= DrawData.FOCUSED;
-				}
-				if(e.gc.getAlpha() == 255) {
-					Theme theme = new Theme(e.display);
-					theme.drawBackground(e.gc, button.bounds, data);
-					theme.dispose();
-				} else {
-					// Bug 260624 - ButtonDrawData#draw does not respect alpha setting
-					Image img = new Image(e.display, new Rectangle(0, 0, button.bounds.width, button.bounds.height));
-					GC gc = new GC(img);
-					Theme theme = new Theme(e.display);
-					theme.drawBackground(gc, img.getBounds(), data);
-					e.gc.drawImage(img, button.bounds.x, button.bounds.y);
-					theme.dispose();
-					gc.dispose();
-					img.dispose();
-				}
+		if (button.hasState(VControl.STATE_ACTIVE | VControl.STATE_SELECTED)) {
+			if (e.gc.getAlpha() == 255) {
+				doPaintBackground(e.gc, button.bounds, button.getState());
 			} else {
-				super.paintBackground(control, e);
+				Image img = new Image(e.display, new Rectangle(0, 0,
+						button.bounds.width, button.bounds.height));
+				GC gc = new GC(img);
+				doPaintBackground(gc, img.getBounds(), button.getState());
+				e.gc.drawImage(img, button.bounds.x, button.bounds.y);
+				gc.dispose();
+				img.dispose();
 			}
 		} else {
 			super.paintBackground(control, e);
 		}
 	}
 
+	/**
+	 * @param gc
+	 * @param bounds
+	 * @param state
+	 */
+	private void doPaintBackground(GC gc, Rectangle bounds, int state) {
+		Color outline = null, bkBlue = null;
+
+		if ((state & VControl.STATE_SELECTED) == VControl.STATE_SELECTED) {
+			outline = new Color(gc.getDevice(), 1, 85, 153);
+			bkBlue = new Color(gc.getDevice(), 204, 228, 247);
+		} else if ((state & VControl.STATE_ACTIVE) == VControl.STATE_ACTIVE) {
+			outline = new Color(gc.getDevice(), 1, 121, 215);
+			bkBlue = new Color(gc.getDevice(), 229, 241, 251);
+		}
+
+		if (outline != null && bkBlue != null) {
+			gc.setBackground(bkBlue);
+			gc.setForeground(outline);
+
+			gc.fillRectangle(0, 0, bounds.width - 1, bounds.height - 1);
+			gc.drawRectangle(0, 0, bounds.width - 1, bounds.height - 1);
+
+			outline.dispose();
+			bkBlue.dispose();
+		}
+	}
 }
