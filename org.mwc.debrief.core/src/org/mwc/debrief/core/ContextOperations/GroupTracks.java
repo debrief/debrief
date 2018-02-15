@@ -86,32 +86,23 @@ public class GroupTracks implements RightClickContextItemGenerator
 		// check we got some
 		if(tracks.size() == 0)
 			goForIt = false;
-		
-		if(tracks.size() > 10)
-		{
-			goForIt = false;
-			CorePlugin.logError(Status.WARNING, "Not offering group tracks,  too many seleted", null);
-		}
-		
+				
 		// ok, is it worth going for?
 		if (goForIt)
 		{
 			// right,stick in a separator
 			parent.add(new Separator());
 
-			for (final Iterator<TrackWrapper> iterator = tracks.iterator(); iterator.hasNext();)
-			{
-				final TrackWrapper editable = iterator.next();
-				final String title = "Group tracks into " + editable.getName();
-				// create this operation
-				final Action doMerge = new Action(title){
-					public void run()
-					{
-						final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);							
-						CorePlugin.run(theAction );
-					}};
-				parent.add(doMerge);
-			}
+      final TrackWrapper editable = tracks.firstElement();
+      final String title = "Group tracks into " + editable.getName();
+      // create this operation
+      final Action doMerge = new Action(title){
+        public void run()
+        {
+          final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);              
+          CorePlugin.run(theAction );
+        }};
+      parent.add(doMerge);
 		}
 	}
 
