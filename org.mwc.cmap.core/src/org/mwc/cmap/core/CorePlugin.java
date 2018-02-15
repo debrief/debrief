@@ -671,8 +671,17 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
    */
   public static ImageDescriptor getImageDescriptor(final String path)
   {
-    return AbstractUIPlugin
-        .imageDescriptorFromPlugin("org.mwc.cmap.core", path);
+    // check if we're running the full app. If we're not, we may be doing headless
+    // testing
+    if (Platform.isRunning())
+    {
+      return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.core",
+          path);
+    }
+    else
+    {
+      return null;
+    }
   }
 
   /**
