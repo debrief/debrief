@@ -666,7 +666,7 @@ public class TrackWrapper_Test extends TestCase
     return ctr;
   }
 
-  private SensorContactWrapper createSensorItem(final TrackWrapper tw,
+  public static SensorContactWrapper createSensorItem(final TrackWrapper tw,
       final SensorWrapper sw, final int sensorDTG)
   {
     return new SensorContactWrapper(tw.getName(), new HiResDate(sensorDTG),
@@ -1968,15 +1968,22 @@ public class TrackWrapper_Test extends TestCase
     // attach the sensor to the host
     tw.add(sw);
 
-    final SensorContactWrapper[] items = new SensorContactWrapper[7];
+    final int senLen = 30;
+    final SensorContactWrapper[] items = new SensorContactWrapper[senLen];
 
-    items[0] = createSensorItem(tw, sw, 110000);
-    items[1] = createSensorItem(tw, sw, 120000);
-    items[2] = createSensorItem(tw, sw, 130000);
-    items[3] = createSensorItem(tw, sw, 140000);
-    items[4] = createSensorItem(tw, sw, 150000);
-    items[5] = createSensorItem(tw, sw, 160000);
-    items[6] = createSensorItem(tw, sw, 170000);
+    for(int i=0;i<senLen;i++)
+    {
+      items[i] = createSensorItem(tw, sw, 100000 + i * 10000);
+      
+    }
+    
+//    items[0] = createSensorItem(tw, sw, 110000);
+//    items[1] = createSensorItem(tw, sw, 120000);
+//    items[2] = createSensorItem(tw, sw, 130000);
+//    items[3] = createSensorItem(tw, sw, 140000);
+//    items[4] = createSensorItem(tw, sw, 150000);
+//    items[5] = createSensorItem(tw, sw, 160000);
+//    items[6] = createSensorItem(tw, sw, 170000);
 
     // sort out the host
     for (int i = 0; i < items.length; i++)
@@ -1990,7 +1997,7 @@ public class TrackWrapper_Test extends TestCase
         new RelativeTMASegment(items, offset, speed, course, null, Color.yellow);
 
     // check the create worked
-    assertEquals("enough points created", 7, seg.size());
+    assertEquals("enough points created", 30, seg.size());
 
     // check the before
     firstFix = (FixWrapper) seg.getData().iterator().next();
@@ -2010,6 +2017,13 @@ public class TrackWrapper_Test extends TestCase
     final Enumeration<Editable> enumer = seg.elements();
     enumer.nextElement();
     enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
+    enumer.nextElement();
     final FixWrapper fw = (FixWrapper) enumer.nextElement();
     assertNotNull("Found a fix", fw);
 
@@ -2018,15 +2032,14 @@ public class TrackWrapper_Test extends TestCase
 
     // check we have enough segments
     assertEquals("now two segments", 2, segs.size());
-    assertEquals("first is of correct length", 3, segs.firstElement().size());
-    assertEquals("first is of correct length", 4, segs.lastElement().size());
+    assertEquals("first is of correct length", 10, segs.firstElement().size());
+    assertEquals("second is of correct length", 20, segs.lastElement().size());
 
     // check they're of the correct type
     final TrackSegment seg1 = segs.firstElement();
     final TrackSegment seg2 = segs.lastElement();
     assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
-    assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
-
+    assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);  
   }
 
   /**
