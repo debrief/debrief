@@ -708,7 +708,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       if (editor instanceof PlotEditor)
       {
-        final TrackManager trackManager = editor.getAdapter(TrackManager.class);
+        final TrackManager trackManager = (TrackManager)editor.getAdapter(TrackManager.class);
         if (trackManager != null)
         {
           host = (TrackWrapper) trackManager.getPrimaryTrack();
