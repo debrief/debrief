@@ -151,7 +151,6 @@ import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
-import junit.framework.Assert;
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
@@ -435,20 +434,20 @@ public final class SensorContactWrapper extends
 
     public final void testRelBearingCalc()
     {
-      Assert.assertEquals("test  1", 120d, relBearing(0, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(0, -120));
-      Assert.assertEquals("test  1", 20d, relBearing(100, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(100, -20));
-      Assert.assertEquals("test  1", 20d, relBearing(100, -240));
-      Assert.assertEquals("test  1", -120d, relBearing(-260, 340));
-      Assert.assertEquals("test  1", 20d, relBearing(-260, 120));
-      Assert.assertEquals("test  1", -120d, relBearing(100, 340));
-      Assert.assertEquals("test  1", -10d, relBearing(350, -20));
-      Assert.assertEquals("test  1", 5d, relBearing(350, -5));
-      Assert.assertEquals("test  1", 170d, relBearing(170, -20));
-      Assert.assertEquals("test  1", -175d, relBearing(170, -5));
-      Assert.assertEquals("test  1", -20d, relBearing(170, 150));
-      Assert.assertEquals("test  1", 20d, relBearing(170, 190));
+      assertEquals("test  1", 120d, relBearing(0, 120));
+      assertEquals("test  1", -120d, relBearing(0, -120));
+      assertEquals("test  1", 20d, relBearing(100, 120));
+      assertEquals("test  1", -120d, relBearing(100, -20));
+      assertEquals("test  1", 20d, relBearing(100, -240));
+      assertEquals("test  1", -120d, relBearing(-260, 340));
+      assertEquals("test  1", 20d, relBearing(-260, 120));
+      assertEquals("test  1", -120d, relBearing(100, 340));
+      assertEquals("test  1", -10d, relBearing(350, -20));
+      assertEquals("test  1", 5d, relBearing(350, -5));
+      assertEquals("test  1", 170d, relBearing(170, -20));
+      assertEquals("test  1", -175d, relBearing(170, -5));
+      assertEquals("test  1", -20d, relBearing(170, 150));
+      assertEquals("test  1", 20d, relBearing(170, 190));
     }
 
     public void testSensorOffset()
@@ -618,7 +617,8 @@ public final class SensorContactWrapper extends
   /**
    * the parent object (which supplies our colour, should we need it)
    */
-  private transient SensorWrapper _mySensor;
+  private SensorWrapper _mySensor;
+  
   /**
    * the label describing this contact
    */
