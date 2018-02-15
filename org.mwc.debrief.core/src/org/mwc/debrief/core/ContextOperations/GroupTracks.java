@@ -14,8 +14,10 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -53,7 +55,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 	{
 		boolean goForIt = false;
 
-		final Vector<TrackWrapper> tracks = new Vector<TrackWrapper>();
+		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 		
 		// we're only going to work with two or more items, and we only put them into a track wrapper
 		if (subjects.length > 1)
@@ -93,7 +95,17 @@ public class GroupTracks implements RightClickContextItemGenerator
 			// right,stick in a separator
 			parent.add(new Separator());
 
-      final TrackWrapper editable = tracks.firstElement();
+			// put the tracks into chronological order
+			Collections.sort(tracks, new Comparator<TrackWrapper>() {
+
+        @Override
+        public int compare(TrackWrapper o1, TrackWrapper o2)
+        {
+          return o1.getStartDTG().compareTo(o2.getStartDTG());
+        }});
+
+      // find the first track
+      final TrackWrapper editable = tracks.get(0);
       final String title = "Group tracks into " + editable.getName();
       // create this operation
       final Action doMerge = new Action(title){
