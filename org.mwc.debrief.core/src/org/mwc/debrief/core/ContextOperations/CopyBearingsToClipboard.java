@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -72,25 +72,16 @@ import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
 public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 {
-
-  private static class BearingListList extends ArrayList<BearingList>
-  {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-  }
 
   private static class BearingList extends HashMap<HiResDate, WorldVector>
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -116,6 +107,15 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
   }
 
+  private static class BearingListList extends ArrayList<BearingList>
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+  }
+
   private static class CopyBearingData extends CMAPOperation
   {
 
@@ -123,9 +123,9 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         final List<TrackWrapper> tracks, final TrackWrapper refTrack)
     {
 
-      BearingListList res = new BearingListList();
+      final BearingListList res = new BearingListList();
 
-      for (TrackWrapper track : tracks)
+      for (final TrackWrapper track : tracks)
       {
         final BearingList bearings = new BearingList(track.getName(), track
             .getColor());
@@ -287,7 +287,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     /**
      * the new track we're creating
-     * 
+     *
      */
     private TrackWrapper _newTrack;
 
@@ -304,7 +304,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     public IStatus execute(final IProgressMonitor monitor,
         final IAdaptable info) throws ExecutionException
     {
-      for (BearingList track : _offsets)
+      for (final BearingList track : _offsets)
       {
         // ok, create the track
         _newTrack = new TrackWrapper();
@@ -493,7 +493,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       while (iter.hasMoreElements())
       {
         ctr++;
-        FixWrapper thisF = (FixWrapper) iter.nextElement();
+        final FixWrapper thisF = (FixWrapper) iter.nextElement();
         assertNotNull("has a name", thisF.getName());
         assertTrue("name is non-null", thisF.getName().length() > 0);
       }
@@ -612,11 +612,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     {
       // ok, good start
 
-      List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+      final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 
       for (int i = 0; i < subjects.length; i++)
       {
-        Editable item = subjects[i];
+        final Editable item = subjects[i];
         if (item instanceof TrackWrapper)
         {
           tracks.add((TrackWrapper) item);
@@ -630,7 +630,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       // ok, first see if it's a relative track - so we can
       // offer to copy it to the clipboard
-      boolean copyAdded = generateCopyAction(parent, tracks);
+      final boolean copyAdded = generateCopyAction(parent, tracks);
 
       // and now the paste action (if we have a single track
       boolean pasteAdded = false;
@@ -654,7 +654,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     boolean canDo = true;
     TrackWrapper host = null;
 
-    for (TrackWrapper track : tracks)
+    for (final TrackWrapper track : tracks)
     {
       final SegmentList segments = track.getSegments();
       final Enumeration<Editable> ele = segments.elements();
@@ -708,8 +708,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       if (editor instanceof PlotEditor)
       {
-        final TrackManager trackManager = (TrackManager) editor.getAdapter(
-            TrackManager.class);
+        final TrackManager trackManager = editor.getAdapter(TrackManager.class);
         if (trackManager != null)
         {
           host = (TrackWrapper) trackManager.getPrimaryTrack();
@@ -717,11 +716,12 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       }
     }
 
-    /** check we're not trying to copy the primary track
-     * 
+    /**
+     * check we're not trying to copy the primary track
+     *
      */
     boolean hostSelected = false;
-    for (TrackWrapper track : tracks)
+    for (final TrackWrapper track : tracks)
     {
       if (track == host)
       {
@@ -734,10 +734,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     if (host != null && !hostSelected && canDo)
     {
       final String subject = tracks.size() > 1 ? "tracks" : "track";
-      
+
       // yes, create the action
-      final String title= "Copy " + subject + " to clipboard as offsets from " + host.getName();
-      
+      final String title = "Copy " + subject + " to clipboard as offsets from "
+          + host.getName();
+
       final TrackWrapper theHost = host;
 
       final Action convertToTrack = new Action(title)
@@ -774,7 +775,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   }
 
   private boolean generatePasteAction(final IMenuManager parent,
-      final Layers theLayers, final TrackWrapper track, boolean copyAdded)
+      final Layers theLayers, final TrackWrapper track, final boolean copyAdded)
   {
     final boolean added;
 
@@ -798,7 +799,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
           if (bearingList != null)
           {
-            for (BearingList bearings : bearingList)
+            for (final BearingList bearings : bearingList)
             {
               // ok, now check this track matches the bearings
               final Object[] dates = bearings.keySet().toArray();
@@ -870,7 +871,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   /**
    * put the operation firer onto the undo history. We've refactored this into a separate method so
    * testing classes don't have to simulate the CorePlugin
-   * 
+   *
    * @param operation
    */
   protected void runIt(final IUndoableOperation operation)
