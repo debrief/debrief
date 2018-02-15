@@ -93,6 +93,7 @@ public interface SensorImportHelper
         final boolean hasFrequency)
     {
       final String imagePath = "images/NameSensor.jpg";
+      final String imagePath2 = "images/DopplerEffect.png";
       final String explain =
           "\nNote: you can prevent this wizard from opening using"
               + "\nthe Debrief preference titled:\n"
@@ -122,11 +123,11 @@ public interface SensorImportHelper
       getSensorOffset =
           new EnterRangePage(null, "Import Sensor data",
               "Please provide the length of the array offset", "Sensor offset",
-              defLen, imagePath, null, null, "SENSOR_OFFSET");
+              defLen, imagePath2, null, null, "SENSOR_OFFSET");
       getBaseFreq =
           new EnterStringPage(null, " 220.00", "Import Sensor data",
               "Please provide the base frequency for this sensor", "Hz",
-              imagePath, null, true, null, "BASE_FREQ");
+              imagePath2, null, true, null, "BASE_FREQ");
       applyRainbowInRainbowColors =
           new EnterBooleanPage(null, false, "Import Sensor data",
               "Should Debrief apply Rainbow Shades to these sensor cuts?",
@@ -140,13 +141,13 @@ public interface SensorImportHelper
       {
         wizard.addWizard(getRange);
       }
-      if (isTowedArray)
-      {
-        wizard.addWizard(getSensorOffset);
-      }
       if (hasFrequency)
       {
         wizard.addWizard(getBaseFreq);
+      }
+      if (isTowedArray)
+      {
+        wizard.addWizard(getSensorOffset);
       }
       wizard.addWizard(getVis);
       wizard.addWizard(applyRainbowInRainbowColors);
