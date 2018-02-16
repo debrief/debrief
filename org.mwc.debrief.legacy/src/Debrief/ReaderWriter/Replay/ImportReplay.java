@@ -1705,12 +1705,12 @@ public class ImportReplay extends PlainImporterBase
       trkWrapper.add(initialLayer);
 
       // if this was relative, make it plot as italic
-      if (initialLayer.getPlotRelative())
-      {
-        // ok, retrieve the original font, and make it italic
-        trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(
-            Font.ITALIC));
-      }
+//      if (initialLayer.getPlotRelative())
+//      {
+//        // ok, retrieve the original font, and make it italic
+//        trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(
+//            Font.ITALIC));
+//      }
 
       // get the colour for this track
       trkWrapper.setColor(thisColor);
