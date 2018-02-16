@@ -299,54 +299,6 @@ public class DateAxisEditor extends AbstractPropertyEditor
     // days
     units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1, "d-MMM"));
 
-    // /////////////////////////////////////////////////////
-
-    // // milliseconds
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MILLISECOND,
-    // 500, "HH:mm:ss.SSS"));
-    //
-    // // seconds
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1,
-    // "HH:mm:ss"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5,
-    // "HH:mm:ss"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10,
-    // "HH:mm:ss"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30,
-    // "HH:mm:ss"));
-    //
-    // // minutes
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 1,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 2,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 5,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 10,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 15,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 20,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 30,
-    // "HH:mm"));
-    //
-    // // hours
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 1,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 2,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 4,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 6,
-    // "HH:mm"));
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 12,
-    // "d-MMM, HH:mm"));
-    //
-    // // days
-    // units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1,
-    // "d-MMM"));
-
     // absolute seconds
     units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1,
         RELATIVE_DTG_FORMAT));
