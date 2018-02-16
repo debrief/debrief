@@ -17,6 +17,10 @@ package org.mwc.debrief.track_shift.views;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
+import java.text.NumberFormat;
+import java.text.ParsePosition;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -45,6 +49,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
@@ -100,8 +105,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final Zone lastZone = existingZones.get(existingZones.size() - 1);
         final HiResDate lastZoneStart = new HiResDate(lastZone.getStart());
         final HiResDate lastZoneEnd = new HiResDate(lastZone.getEnd());
-        final TimePeriod sensorDataCoverage =
-            timePeriodFor(_myHelper.getPrimaryTrack());
+        final TimePeriod sensorDataCoverage = timePeriodFor(_myHelper
+            .getPrimaryTrack());
 
         // have we reached the end of the data?
         if (lastZoneEnd.equals(sensorDataCoverage.getEndDTG()))
@@ -112,9 +117,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         else
         {
           // we're not at the end - let the algorithm run to the end
-          final TimePeriod visiblePeriod =
-              new TimePeriod.BaseTimePeriod(lastZoneStart, sensorDataCoverage
-                  .getEndDTG());
+          final TimePeriod visiblePeriod = new TimePeriod.BaseTimePeriod(
+              lastZoneStart, sensorDataCoverage.getEndDTG());
           interPeriod = visiblePeriod.intersects(trackPeriod);
         }
       }
@@ -191,20 +195,17 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       if (hasAmbiguous)
       {
         // ok, we'll use our fancy slicer that relies on ambiguity
-        final double MIN_ZIG =
-            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                PreferenceConstants.MIN_ZIG);
-        final double MIN_BOTH =
-            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                PreferenceConstants.MIN_TURN_RATE);
-        final double MIN_LEG_LENGTH =
-            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
-                PreferenceConstants.MIN_LEG_LENGTH);
-        final double OS_TURN_MIN_COURSE_CHANGE =
-            TrackShiftActivator.getDefault().getPreferenceStore().getDouble(
+        final double MIN_ZIG = TrackShiftActivator.getDefault()
+            .getPreferenceStore().getDouble(PreferenceConstants.MIN_ZIG);
+        final double MIN_BOTH = TrackShiftActivator.getDefault()
+            .getPreferenceStore().getDouble(PreferenceConstants.MIN_TURN_RATE);
+        final double MIN_LEG_LENGTH = TrackShiftActivator.getDefault()
+            .getPreferenceStore().getDouble(PreferenceConstants.MIN_LEG_LENGTH);
+        final double OS_TURN_MIN_COURSE_CHANGE = TrackShiftActivator
+            .getDefault().getPreferenceStore().getDouble(
                 PreferenceConstants.OS_TURN_MIN_COURSE_CHANGE);
-        final long OS_TURN_MIN_TIME_INTERVAL =
-            TrackShiftActivator.getDefault().getPreferenceStore().getLong(
+        final long OS_TURN_MIN_TIME_INTERVAL = TrackShiftActivator.getDefault()
+            .getPreferenceStore().getLong(
                 PreferenceConstants.OS_TURN_MIN_TIME_INTERVAL);
         final Integer MAX_LEGS;
         if (wholePeriod)
@@ -213,35 +214,32 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         }
         else
         {
-          MAX_LEGS =
-              TrackShiftActivator.getDefault().getPreferenceStore().getInt(
-                  PreferenceConstants.OS_TURN_MAX_LEGS);
+          MAX_LEGS = TrackShiftActivator.getDefault().getPreferenceStore()
+              .getInt(PreferenceConstants.OS_TURN_MAX_LEGS);
         }
         final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
 
         // sort out what time period we're using
-        final TimePeriod trackPeriod =
-            _myHelper.getPrimaryTrack().getVisiblePeriod();
+        final TimePeriod trackPeriod = _myHelper.getPrimaryTrack()
+            .getVisiblePeriod();
 
         // ok, we may be walking along. see if we have some zones assigned
-        final TimePeriod analysisPeriod =
-            getAnalysisPeriod(wholePeriod, trackPeriod, ownshipZoneChart
-                .getZones());
+        final TimePeriod analysisPeriod = getAnalysisPeriod(wholePeriod,
+            trackPeriod, ownshipZoneChart.getZones());
 
-        final LegsAndZigs legsAndCuts =
-            resolver.sliceTrackIntoLegsUsingAmbiguity(_myHelper
-                .getPrimaryTrack(), MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger,
-                ambigScores, OS_TURN_MIN_COURSE_CHANGE,
-                OS_TURN_MIN_TIME_INTERVAL, analysisPeriod, MAX_LEGS);
+        final LegsAndZigs legsAndCuts = resolver
+            .sliceTrackIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
+                MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger, ambigScores,
+                OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+                analysisPeriod, MAX_LEGS);
 
         slicedZones = new ArrayList<Zone>();
         for (final LegOfCuts leg : legsAndCuts.getLegs())
         {
-          final Zone thisZone =
-              new Zone(leg.get(0).getDTG().getDate().getTime(), leg.get(
-                  leg.size() - 1).getDTG().getDate().getTime(), _blueProv
-                  .getZoneColor());
+          final Zone thisZone = new Zone(leg.get(0).getDTG().getDate()
+              .getTime(), leg.get(leg.size() - 1).getDTG().getDate().getTime(),
+              _blueProv.getZoneColor());
           slicedZones.add(thisZone);
 
           // if we have a limit, have we reached it?
@@ -254,9 +252,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         // ok, now we have to trim the visible period to these legs
         if (!slicedZones.isEmpty())
         {
-          final TimePeriod period =
-              new TimePeriod.BaseTimePeriod(new HiResDate(slicedZones.get(0)
-                  .getStart()), new HiResDate(slicedZones.get(
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(
+              slicedZones.get(0).getStart()), new HiResDate(slicedZones.get(
                   slicedZones.size() - 1).getEnd()));
 
           // what about the zigs? Extend the time period to include any trailing cuts
@@ -277,8 +274,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       else
       {
         // ok, not ambiguous. Just use the old one.
-        slicedZones =
-            StackedDotHelper.sliceOwnship(ownshipCourseSeries, _blueProv);
+        slicedZones = StackedDotHelper.sliceOwnship(ownshipCourseSeries,
+            _blueProv);
       }
 
       return slicedZones;
@@ -302,8 +299,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           final Enumeration<Editable> elements = sensor.elements();
           while (elements.hasMoreElements())
           {
-            final SensorContactWrapper contact =
-                (SensorContactWrapper) elements.nextElement();
+            final SensorContactWrapper contact = (SensorContactWrapper) elements
+                .nextElement();
 
             // ok, are both bearings present?
             hasAmbiguous = !Double.isNaN(contact.getAmbiguousBearing());
@@ -367,8 +364,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           final Enumeration<Editable> ele = sensor.elements();
           while (ele.hasMoreElements())
           {
-            final SensorContactWrapper scw =
-                (SensorContactWrapper) ele.nextElement();
+            final SensorContactWrapper scw = (SensorContactWrapper) ele
+                .nextElement();
             if (scw.getVisible())
             {
               final HiResDate thisT = scw.getDTG();
@@ -451,9 +448,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       if (_deletedCuts != null)
       {
@@ -471,9 +467,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       // and the ownship zone chart
 
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Delete cuts in O/S turn successful", null);
+      final IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Delete cuts in O/S turn successful", null);
       return res;
     }
 
@@ -531,9 +526,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // and refresh
       _fireUpdateData.run();
 
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Restore cuts in O/S turn successful", null);
+      final IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Restore cuts in O/S turn successful", null);
       return res;
     }
   }
@@ -558,9 +552,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       final Runnable toResolve = new Runnable()
       {
@@ -581,15 +574,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       if (_resolved != null)
       {
 
-        res =
-            new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-                "Resolve legs successful", null);
+        res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+            "Resolve legs successful", null);
       }
       else
       {
-        res =
-            new Status(IStatus.ERROR, TrackShiftActivator.PLUGIN_ID,
-                "Tried to slice too many legs", null);
+        res = new Status(IStatus.ERROR, TrackShiftActivator.PLUGIN_ID,
+            "Tried to slice too many legs", null);
 
       }
 
@@ -616,9 +607,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       fireModified();
 
-      final IStatus res =
-          new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
-              "Un-resolve legs successful", null);
+      final IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Un-resolve legs successful", null);
       return res;
     }
 
@@ -626,8 +616,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   public static class TestResiduals extends TestCase
   {
-    private TrackWrapper getData(final String name)
-        throws FileNotFoundException
+    private TrackWrapper getData(final String name) throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -658,21 +647,19 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       assertEquals("has sensor", 1, track.getSensors().size());
 
       // make the sensor visible
-      final SensorWrapper sensor =
-          (SensorWrapper) track.getSensors().elements().nextElement();
+      final SensorWrapper sensor = (SensorWrapper) track.getSensors().elements()
+          .nextElement();
       sensor.setVisible(true);
 
       // ok, get resolving
       final AmbiguityResolver solver = new AmbiguityResolver();
 
-      final TimePeriod timePeriod =
-          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
-              .getEndDTG());
+      final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor
+          .getStartDTG(), sensor.getEndDTG());
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res =
-          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null,
-              null, null, null, timePeriod, null);
+      final LegsAndZigs res = solver.sliceTrackIntoLegsUsingAmbiguity(track,
+          0.2, 0.2, 240, null, null, null, null, timePeriod, null);
       final List<LegOfCuts> legs = res.getLegs();
       final LegOfCuts zigs = res.getZigs();
 
@@ -684,8 +671,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
       // ok, ditch those cuts
       final int fullSensorLen = sensor.size();
-      Map<SensorWrapper, LegOfCuts> deleted =
-          DeleteCutsOperation.deleteTheseCuts(zigs);
+      Map<SensorWrapper, LegOfCuts> deleted = DeleteCutsOperation
+          .deleteTheseCuts(zigs);
       assertEquals("fewer cuts", 99, sensor.size());
 
       // ok, and undo them
@@ -726,8 +713,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
      */
     public void testPanCalculation()
     {
-      TimePeriod period =
-          ZoneChart.calculatePanData(false, 1000, 2000, 1100, 1300);
+      TimePeriod period = ZoneChart.calculatePanData(false, 1000, 2000, 1100,
+          1300);
       assertEquals("corrent new times", 1300, period.getStartDTG().getDate()
           .getTime());
       assertEquals("corrent new times", 1500, period.getEndDTG().getDate()
@@ -771,12 +758,12 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final TimePeriod outerPeriod = ownshipZoneChart.getVisiblePeriod();
 
       // ok, produce the list of cuts to cull
-      final LegOfCuts cutsToDelete =
-          findCutsNotInZones(ownshipZones, outerPeriod, primaryTrack);
+      final LegOfCuts cutsToDelete = findCutsNotInZones(ownshipZones,
+          outerPeriod, primaryTrack);
 
       // delete this list of cuts
-      final IUndoableOperation deleteOperation =
-          new DeleteCutsOperation(cutsToDelete, updateData, ownshipZoneChart);
+      final IUndoableOperation deleteOperation = new DeleteCutsOperation(
+          cutsToDelete, updateData, ownshipZoneChart);
 
       // wrap the operation
       undoRedoProvider.execute(deleteOperation);
@@ -800,8 +787,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final Enumeration<Editable> cuts = sensor.elements();
         while (cuts.hasMoreElements())
         {
-          final SensorContactWrapper cut =
-              (SensorContactWrapper) cuts.nextElement();
+          final SensorContactWrapper cut = (SensorContactWrapper) cuts
+              .nextElement();
           if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
           {
             final long thisT = cut.getDTG().getDate().getTime();
@@ -880,6 +867,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   private Action scaleError;
 
+  private BearingFormatter _crossHairFormatter;
+
   public BearingResidualsView()
   {
     super(true, false);
@@ -956,9 +945,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private Logger getLogger()
   {
     final Logger logger;
-    final boolean doLogging =
-        TrackShiftActivator.getDefault().getPreferenceStore().getBoolean(
-            PreferenceConstants.DIAGNOSTICS);
+    final boolean doLogging = TrackShiftActivator.getDefault()
+        .getPreferenceStore().getBoolean(PreferenceConstants.DIAGNOSTICS);
     if (doLogging)
     {
       logger = Logger.getLogger("Residuals.Logger", null);
@@ -970,9 +958,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         public void publish(final LogRecord record)
         {
           // and to the system log
-          TrackShiftActivator.getDefault().getLog().log(
-              new Status(IStatus.INFO, TrackShiftActivator.PLUGIN_ID, record
-                  .getMessage()));
+          TrackShiftActivator.getDefault().getLog().log(new Status(IStatus.INFO,
+              TrackShiftActivator.PLUGIN_ID, record.getMessage()));
         }
       };
       logger.addHandler(handler);
@@ -1020,12 +1007,12 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   public long getValueAt(final HiResDate dtg)
   {
     // get the time
-    final RegularTimePeriod myTime =
-        new FixedMillisecond(dtg.getMicros() / 1000);
+    final RegularTimePeriod myTime = new FixedMillisecond(dtg.getMicros()
+        / 1000);
 
     // get the set of calculated error values that we have stored in the graph
-    final TimeSeriesCollection dataset =
-        (TimeSeriesCollection) _dotPlot.getDataset();
+    final TimeSeriesCollection dataset = (TimeSeriesCollection) _dotPlot
+        .getDataset();
 
     if (dataset != null)
     {
@@ -1072,39 +1059,39 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     super.makeActions();
 
     // now the course action
-    scaleError =
-        new Action("Show the error when dragging", IAction.AS_CHECK_BOX)
-        {
-          @Override
-          public void run()
-          {
-            super.run();
-          }
-        };
+    scaleError = new Action("Show the error when dragging",
+        IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+      }
+    };
     scaleError.setChecked(false);
-    scaleError
-        .setToolTipText("Show symbol scaled to per-cut error when dragging");
-    scaleError.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/scale.png"));
+    scaleError.setToolTipText(
+        "Show symbol scaled to per-cut error when dragging");
+    scaleError.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/scale.png"));
 
     // see if there's an existing setting for this.
 
     // now the course action
-    relativeAxes =
-        new Action("Use +/- 180 scale for absolute data", IAction.AS_CHECK_BOX)
-        {
-          @Override
-          public void run()
-          {
-            super.run();
+    relativeAxes = new Action("Centre Bearing axis on North",
+        IAction.AS_CHECK_BOX)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
 
-            processRelativeAxes();
-          }
-        };
+        processRelativeAxes();
+      }
+    };
     relativeAxes.setChecked(false);
-    relativeAxes.setToolTipText("Use +/- 180 scale for absolute data");
-    relativeAxes.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/swap_axis.png"));
+    relativeAxes.setToolTipText("Centre Bearing axis on North");
+    relativeAxes.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/swap_axis.png"));
 
     // now the course action
     showCourse = new Action("Show ownship course", IAction.AS_CHECK_BOX)
@@ -1119,8 +1106,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
     showCourse.setChecked(true);
     showCourse.setToolTipText("Show ownship course in overview chart");
-    showCourse.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/ShowCourse.png"));
+    showCourse.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/ShowCourse.png"));
 
     _autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
     {
@@ -1133,8 +1120,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
     _autoResize.setChecked(true);
     _autoResize.setToolTipText("Keep plot sized to show all data");
-    _autoResize.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/fit_to_win.png"));
+    _autoResize.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/fit_to_win.png"));
   }
 
   private void processAutoResize()
@@ -1156,22 +1143,77 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
+  private static class BearingFormatter extends DecimalFormat
+  {
+    public BearingFormatter(final String baseFormat)
+    {
+      super(baseFormat);
+    }
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public StringBuffer format(double number, StringBuffer toAppendTo,
+        FieldPosition pos)
+    {
+      if (number < 0)
+      {
+        number += 360;
+      }
+      return super.format(number, toAppendTo, pos);
+    }
+
+    @Override
+    public StringBuffer format(long number, StringBuffer toAppendTo,
+        FieldPosition pos)
+    {
+      if (number < 0)
+      {
+        number += 360;
+      }
+      return super.format(number, toAppendTo, pos);
+    }
+
+    @Override
+    public Number parse(String source, ParsePosition parsePosition)
+    {
+      throw new IllegalArgumentException("Parse not implemented");
+    }
+
+  }
+
   private void processRelativeAxes()
   {
     final double minVal;
     final double maxVal;
+    final NumberFormat numFormat;
+
     if (relativeAxes.isChecked())
     {
       minVal = -180d;
       maxVal = 180d;
+
+      numFormat = new BearingFormatter("0");
+      _crossHairFormatter = new BearingFormatter("0.0");
     }
     else
     {
       minVal = 0d;
       maxVal = 360d;
+
+      numFormat = null;
+      _crossHairFormatter = null;
     }
 
     _overviewCourseRenderer.setRange(minVal, maxVal);
+
+    // try to format the labels appropriately
+    NumberAxis numA = (NumberAxis) _linePlot.getRangeAxis();
+
+    numA.setNumberFormatOverride(numFormat);
 
     processShowCourse();
 
@@ -1203,11 +1245,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       final List<LegOfCuts> legs = new ArrayList<LegOfCuts>();
       for (final Zone zone : zones)
       {
-        final TimePeriod period =
-            new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()),
-                new HiResDate(zone.getEnd()));
-        final List<SensorContactWrapper> cuts =
-            _myHelper.getBearings(_myHelper.getPrimaryTrack(), true, period);
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(
+            zone.getStart()), new HiResDate(zone.getEnd()));
+        final List<SensorContactWrapper> cuts = _myHelper.getBearings(_myHelper
+            .getPrimaryTrack(), true, period);
         final LegOfCuts leg = new LegOfCuts();
         leg.addAll(cuts);
 
@@ -1215,8 +1256,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
 
       final AmbiguityResolver resolver = new AmbiguityResolver();
-      final IUndoableOperation resolveCuts =
-          new ResolveCutsOperationAmbig(resolver, legs);
+      final IUndoableOperation resolveCuts = new ResolveCutsOperationAmbig(
+          resolver, legs);
       undoRedoProvider.execute(resolveCuts);
 
       // and refresh
@@ -1254,10 +1295,19 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected String formatValue(double value)
   {
-    return MWC.Utilities.TextFormatting.GeneralFormat
-        .formatOneDecimalPlace(value);
+    final String res;
+    if (_crossHairFormatter != null)
+    {
+      res = _crossHairFormatter.format(value);
+    }
+    else
+    {
+      res = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(
+          value);
+    }
+
+    return res;
   }
-  
 
   @Override
   protected boolean allowDisplayOfTargetOverview()
