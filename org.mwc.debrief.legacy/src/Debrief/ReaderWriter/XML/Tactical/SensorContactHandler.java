@@ -69,8 +69,7 @@ abstract public class SensorContactHandler extends
   /**
    * class which contains list of textual representations of label locations
    */
-  private static final LocationPropertyEditor lp =
-      new LocationPropertyEditor();
+  private static final LocationPropertyEditor lp = new LocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
@@ -343,8 +342,12 @@ abstract public class SensorContactHandler extends
     // WorldDistance.YARDS)));
 
     // do we have ambiguous data?
-    eFix.setAttribute(AMBIGUOUS_BEARING, writeThis(contact
-        .getAmbiguousBearing()));
+    final double ambig = contact.getAmbiguousBearing();
+    if (!Double.isNaN(ambig))
+    {
+      eFix.setAttribute(AMBIGUOUS_BEARING, writeThis(contact
+          .getAmbiguousBearing()));
+    }
     eFix.setAttribute(HAS_AMBIGUOUS_BEARING, writeThis(contact
         .getHasAmbiguousBearing()));
 
@@ -379,14 +382,14 @@ abstract public class SensorContactHandler extends
     // normal getColor method which may return the track colour
     final java.awt.Color fCol = contact.getActualColor();
     if (fCol != null)
-      MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol,
-          eFix, doc);
+      MWC.Utilities.ReaderWriter.XML.Util.ColourHandler.exportColour(fCol, eFix,
+          doc);
 
     // and now the centre item,
     final MWC.GenericData.WorldLocation origin = contact.getOrigin();
     if (origin != null)
-      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
-          origin, CENTRE, eFix, doc);
+      MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(origin,
+          CENTRE, eFix, doc);
 
     parent.appendChild(eFix);
 
