@@ -486,6 +486,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 			case (Calendar.DAY_OF_MONTH):
 				return "Day";
 			case (Calendar.HOUR):
+			case (Calendar.HOUR_OF_DAY):
 				return "Hour";
 			case (Calendar.MINUTE):
 				return "Min";
