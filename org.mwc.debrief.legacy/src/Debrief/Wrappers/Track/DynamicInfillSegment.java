@@ -737,6 +737,8 @@ public class DynamicInfillSegment extends TrackSegment implements
     }
     return res;
   }
+  
+  final static private Color DEFAULT_GREEN = new Color(0, 128, 0);
 
   private static Color getColorStrategy(Color trackColor)
   {
@@ -753,7 +755,7 @@ public class DynamicInfillSegment extends TrackSegment implements
         res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
         break;
       case GREEN_INFILL:
-        res = Color.GREEN;
+        res = DEFAULT_GREEN;
         break;
       case DARKER_INFILL:
       default:
