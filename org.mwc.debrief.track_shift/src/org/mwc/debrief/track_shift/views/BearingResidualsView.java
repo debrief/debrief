@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
@@ -31,8 +31,6 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -79,10 +77,47 @@ import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import junit.framework.TestCase;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
     ITimeVariableProvider
 {
+
+  private static class BearingFormatter extends DecimalFormat
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    public BearingFormatter(final String baseFormat)
+    {
+      super(baseFormat);
+    }
+
+    @Override
+    public StringBuffer format(final double number,
+        final StringBuffer toAppendTo, final FieldPosition pos)
+    {
+      final double adjusted = number < 0 ? number + 360 : number;
+      return super.format(adjusted, toAppendTo, pos);
+    }
+
+    @Override
+    public StringBuffer format(long number, final StringBuffer toAppendTo,
+        final FieldPosition pos)
+    {
+      final long adjusted = number < 0 ? number + 360 : number;
+      return super.format(adjusted, toAppendTo, pos);
+    }
+
+    @Override
+    public Number parse(final String source, final ParsePosition parsePosition)
+    {
+      throw new IllegalArgumentException("Parse not implemented");
+    }
+
+  }
 
   private class BearingZoneSlicer implements ZoneSlicer
   {
@@ -93,6 +128,14 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     public BearingZoneSlicer(final ColorProvider blueProv)
     {
       _blueProv = blueProv;
+    }
+
+    @Override
+    public boolean ambigDataPresent()
+    {
+      // hmm, see if we have ambiguous data
+      final TrackWrapper primary = _myHelper.getPrimaryTrack();
+      return hasAmbiguousCuts(primary);
     }
 
     private TimePeriod getAnalysisPeriod(final boolean wholePeriod,
@@ -383,14 +426,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
       return res;
     }
-
-    @Override
-    public boolean ambigDataPresent()
-    {
-      // hmm, see if we have ambiguous data
-      final TrackWrapper primary = _myHelper.getPrimaryTrack();
-      return hasAmbiguousCuts(primary);
-    }
   }
 
   private static class DeleteCutsOperation extends CMAPOperation
@@ -422,13 +457,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     /**
      * the cuts to be deleted
-     * 
+     *
      */
     final private List<SensorContactWrapper> _cutsToDelete;
 
     /**
      * cuts that have been deleted (with the sensor that they were removed from)
-     * 
+     *
      */
     private Map<SensorWrapper, LegOfCuts> _deletedCuts;
 
@@ -537,7 +572,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     /**
      * the cuts to be deleted
-     * 
+     *
      */
     final private AmbiguityResolver _resolver;
     final private List<LegOfCuts> _legs;
@@ -882,6 +917,18 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
+  protected boolean allowDisplayOfTargetOverview()
+  {
+    return true;
+  }
+
+  @Override
+  protected boolean allowDisplayOfZoneChart()
+  {
+    return true;
+  }
+
+  @Override
   public boolean applyStyling()
   {
     return scaleError.isChecked();
@@ -908,6 +955,23 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     manager.add(scaleError);
     super.fillLocalToolBar(manager);
 
+  }
+
+  @Override
+  protected String formatValue(final double value)
+  {
+    final String res;
+    if (_crossHairFormatter != null)
+    {
+      res = _crossHairFormatter.format(value);
+    }
+    else
+    {
+      res = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(
+          value);
+    }
+
+    return res;
   }
 
   @Override
@@ -1143,48 +1207,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
   }
 
-  private static class BearingFormatter extends DecimalFormat
-  {
-    public BearingFormatter(final String baseFormat)
-    {
-      super(baseFormat);
-    }
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public StringBuffer format(double number, StringBuffer toAppendTo,
-        FieldPosition pos)
-    {
-      if (number < 0)
-      {
-        number += 360;
-      }
-      return super.format(number, toAppendTo, pos);
-    }
-
-    @Override
-    public StringBuffer format(long number, StringBuffer toAppendTo,
-        FieldPosition pos)
-    {
-      if (number < 0)
-      {
-        number += 360;
-      }
-      return super.format(number, toAppendTo, pos);
-    }
-
-    @Override
-    public Number parse(String source, ParsePosition parsePosition)
-    {
-      throw new IllegalArgumentException("Parse not implemented");
-    }
-
-  }
-
   private void processRelativeAxes()
   {
     final double minVal;
@@ -1211,7 +1233,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     _overviewCourseRenderer.setRange(minVal, maxVal);
 
     // try to format the labels appropriately
-    NumberAxis numA = (NumberAxis) _linePlot.getRangeAxis();
+    final NumberAxis numA = (NumberAxis) _linePlot.getRangeAxis();
 
     numA.setNumberFormatOverride(numFormat);
 
@@ -1290,35 +1312,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     {
       ownshipZoneChart.updateControls();
     }
-  }
-
-  @Override
-  protected String formatValue(double value)
-  {
-    final String res;
-    if (_crossHairFormatter != null)
-    {
-      res = _crossHairFormatter.format(value);
-    }
-    else
-    {
-      res = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(
-          value);
-    }
-
-    return res;
-  }
-
-  @Override
-  protected boolean allowDisplayOfTargetOverview()
-  {
-    return true;
-  }
-
-  @Override
-  protected boolean allowDisplayOfZoneChart()
-  {
-    return true;
   }
 
 }
