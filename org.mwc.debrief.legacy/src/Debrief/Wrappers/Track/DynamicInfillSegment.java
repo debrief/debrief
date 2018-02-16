@@ -6,8 +6,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Date;
 import java.util.Enumeration;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.math3.analysis.UnivariateFunction;
 import org.apache.commons.math3.analysis.interpolation.SplineInterpolator;
 import org.apache.commons.math3.analysis.interpolation.UnivariateInterpolator;
@@ -31,10 +29,44 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import junit.framework.TestCase;
 
 public class DynamicInfillSegment extends TrackSegment implements
     ColoredWatchable
 {
+
+  public static class TestInterp extends TestCase
+  {
+    public void testRound()
+    {
+      assertEquals(6000, roundToInterval(6100));
+      assertEquals(100, roundToInterval(100));
+      assertEquals(1000, roundToInterval(1100));
+      assertEquals(59000, roundToInterval(59900));
+      assertEquals(60000, roundToInterval(69900));
+      assertEquals(2220000, roundToInterval(2269900));
+    }
+
+    public void testSimple()
+    {
+      // generate the location spline
+      final double[] times = new double[]
+      {500, 2000, 4000, 5000};
+      final double[] longs = new double[]
+      {1d, 1d, 3d, 4d};
+      final double[] lats = new double[]
+      {1d, 2d, 4d, 5d};
+
+      final UnivariateInterpolator interpolator = new SplineInterpolator();
+      final UnivariateFunction latInterp = interpolator.interpolate(times,
+          lats);
+      final UnivariateFunction longInterp = interpolator.interpolate(times,
+          longs);
+
+      assertEquals(2.447, latInterp.value(2500), 0.01);
+      assertEquals(1.3421, longInterp.value(2500), 0.001);
+    }
+  }
 
   public static final String RANDOM_INFILL = "RANDOM_INFILL";
 
@@ -45,13 +77,42 @@ public class DynamicInfillSegment extends TrackSegment implements
   public static final String INFILL_COLOR_STRATEGY = "INFILL_COLOR_STRATEGY";
 
   /**
-	 * 
-	 */
+   *
+   */
   private static final long serialVersionUID = 1L;
+
+  final static private Color DEFAULT_GREEN = new Color(0, 128, 0);
+
+  private static Color getColorStrategy(final Color trackColor)
+  {
+    String colorStrategy = Application.getThisProperty(INFILL_COLOR_STRATEGY);
+    if (colorStrategy == null)
+    {
+      colorStrategy = RANDOM_INFILL;
+    }
+
+    final Color res;
+    switch (colorStrategy)
+    {
+      case RANDOM_INFILL:
+        res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
+        break;
+      case GREEN_INFILL:
+        res = DEFAULT_GREEN;
+        break;
+      case DARKER_INFILL:
+      default:
+        res = trackColor;
+    }
+
+    // see what the
+    return res;
+
+  }
 
   /**
    * get the first 'n' elements from this segment
-   * 
+   *
    * @param trackOne
    *          the segment to get the data from
    * @param oneUse
@@ -93,7 +154,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * get the last 'n' elements from this segment
-   * 
+   *
    * @param trackOne
    *          the segment to get the data from
    * @param num
@@ -138,33 +199,92 @@ public class DynamicInfillSegment extends TrackSegment implements
     return res;
   }
 
+  private static long meanIntervalFor(final TrackSegment segment)
+  {
+    long sum = 0;
+    int ctr = 0;
+    long lastTime = -1;
+    final Enumeration<Editable> iter = segment.elements();
+    while (iter.hasMoreElements())
+    {
+      final FixWrapper thisF = (FixWrapper) iter.nextElement();
+      final long thisTime = thisF.getDTG().getDate().getTime();
+      if (lastTime != -1)
+      {
+        // ok, we've got a previous value we can compare to
+        sum += thisTime - lastTime;
+        ctr++;
+      }
+
+      lastTime = thisTime;
+    }
+
+    // what's the average?
+    final double mean;
+    if (ctr > 0)
+    {
+      mean = sum / ctr;
+    }
+    else
+    {
+      // oops, we haven't found any fixes. Just give a safe answer.
+      mean = 10000;
+    }
+
+    // trim it to a whole second, if it's large enough
+    final long res;
+    res = roundToInterval(mean);
+
+    return res;
+  }
+
+  private static long roundToInterval(final double mean)
+  {
+    final long res;
+    final long MINUTE = 60000;
+    final long SECOND = 1000;
+    if (mean > MINUTE)
+    {
+      res = (long) (MINUTE * (Math.floor(mean / MINUTE)));
+    }
+    else if (mean > SECOND)
+    {
+      res = (long) (SECOND * (Math.floor(mean / SECOND)));
+    }
+    else
+    {
+      res = (long) mean;
+    }
+    return res;
+  }
+
   /**
    * the segment that appears immediately before us
-   * 
+   *
    */
   private TrackSegment _before;
 
   /**
    * the segment that appears immediately after us
-   * 
+   *
    */
   private TrackSegment _after;
 
   /**
    * our internal class that listens to tracks moving
-   * 
+   *
    */
   private transient PropertyChangeListener _moveListener;
 
   /**
    * our internal class that listens to tracks moving
-   * 
+   *
    */
   private transient PropertyChangeListener _wrapperListener;
 
   /**
    * a utility logger
-   * 
+   *
    */
   private transient ErrorLogger _myParent;
 
@@ -182,7 +302,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * restore from file, where we only know the names of the legs
-   * 
+   *
    * @param beforeName
    * @param afterName
    */
@@ -199,6 +319,22 @@ public class DynamicInfillSegment extends TrackSegment implements
     checkListeners();
 
     _myParent = Trace.getParent();
+  }
+
+  /**
+   * create an infill track segment between the two supplied tracks
+   *
+   * @param before
+   * @param after
+   */
+  public DynamicInfillSegment(final TrackSegment before,
+      final TrackSegment after)
+  {
+    this(before.getName(), after.getName(), getColorStrategy(
+        ((FixWrapper) before.last()).getColor().darker().darker()));
+
+    // ok, and start listening
+    configure(before, after);
   }
 
   private void checkListeners()
@@ -234,23 +370,6 @@ public class DynamicInfillSegment extends TrackSegment implements
     ;
   }
 
-  /**
-   * create an infill track segment between the two supplied tracks
-   * 
-   * @param before
-   * @param after
-   */
-  public DynamicInfillSegment(final TrackSegment before,
-      final TrackSegment after)
-  {
-    this(before.getName(), after.getName(),
-        getColorStrategy(((FixWrapper) before.last()).getColor().darker()
-            .darker()));
-
-    // ok, and start listening
-    configure(before, after);
-  }
-
   public void clear()
   {
     stopWatching(_before);
@@ -262,22 +381,22 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * listen to the specified tracks
-   * 
+   *
    * @param before
    * @param after
    */
   public void configure(final TrackSegment before, final TrackSegment after)
   {
     // clear existing legs, if we have to
-    if(_before != null)
+    if (_before != null)
     {
       stopWatching(_before);
     }
-    if(_after != null)
+    if (_after != null)
     {
       stopWatching(_after);
     }
-    
+
     // ok, remember the tracks
     _before = before;
     _after = after;
@@ -302,7 +421,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * find the named segment
-   * 
+   *
    * @param name
    *          name of the segment to find
    * @return the matching segment
@@ -333,7 +452,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * accessor, used for file storage
-   * 
+   *
    * @return
    */
   public String getAfterName()
@@ -343,10 +462,10 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     return res;
   }
-  
+
   /**
    * accessor, used for file storage
-   * 
+   *
    * @return
    */
   public TrackSegment getAfterSegment()
@@ -359,7 +478,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * accessor, used for file storage
-   * 
+   *
    * @return
    */
   public String getBeforeName()
@@ -372,7 +491,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * accessor, used for file storage
-   * 
+   *
    * @return
    */
   public TrackSegment getBeforeSegment()
@@ -381,6 +500,12 @@ public class DynamicInfillSegment extends TrackSegment implements
     final TrackSegment res = _before != null ? _before : null;
 
     return res;
+  }
+
+  @Override
+  public Color getColor()
+  {
+    return _myColor;
   }
 
   @Override
@@ -454,25 +579,22 @@ public class DynamicInfillSegment extends TrackSegment implements
     return super.getVisible();
   }
 
-  public void sortOutDateLabel(final HiResDate startDTG)
-  {
-    // skip - we'll use the infill name
-  }
-
   /**
    * recalculate our set of positions
-   * 
+   *
    */
   public void reconstruct()
   {
     // check we know our data
     if (_before == null || _after == null)
       return;
-    
+
     // check we have data
-    if(_before.isEmpty() || _after.isEmpty())
+    if (_before.isEmpty() || _after.isEmpty())
     {
-      Application.logError2(Application.ERROR, "Can't reconstruct infill, before/after segment is missing data", null);
+      Application.logError2(ToolParent.ERROR,
+          "Can't reconstruct infill, before/after segment is missing data",
+          null);
       return;
     }
 
@@ -516,10 +638,10 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     final UnivariateInterpolator interpolator = new SplineInterpolator();
     final UnivariateFunction latInterp = interpolator.interpolate(times, lats);
-    final UnivariateFunction longInterp =
-        interpolator.interpolate(times, longs);
-    final UnivariateFunction depthInterp =
-        interpolator.interpolate(times, depths);
+    final UnivariateFunction longInterp = interpolator.interpolate(times,
+        longs);
+    final UnivariateFunction depthInterp = interpolator.interpolate(times,
+        depths);
 
     // what's the interval?
     long tDelta = meanIntervalFor(_before);
@@ -554,8 +676,8 @@ public class DynamicInfillSegment extends TrackSegment implements
     if (_myParent != null)
     {
       if (origin.getLocation() == null)
-        _myParent.logError(ToolParent.INFO,
-            "origin element has empty location", null);
+        _myParent.logError(ToolParent.INFO, "origin element has empty location",
+            null);
     }
 
     // get going then! Note, we go past the end of the required data,
@@ -591,23 +713,22 @@ public class DynamicInfillSegment extends TrackSegment implements
       }
 
       // create the new location
-      final WorldLocation newLocation =
-          new WorldLocation(thisLat, thisLong, thisDepth);
+      final WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
+          thisDepth);
 
       // how far have we travelled since the last location?
       final WorldVector offset = newLocation.subtract(origin.getLocation());
 
       // how long since the last position?
-      final double timeSecs =
-          (nextTime - origin.getTime().getDate().getTime()) / 1000;
+      final double timeSecs = (nextTime - origin.getTime().getDate().getTime())
+          / 1000;
 
       // start off with the course
       double thisCourseRads = offset.getBearing();
 
       // and now the speed
-      final double distYds =
-          new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-              .getValueIn(WorldDistance.YARDS);
+      final double distYds = new WorldDistance(offset.getRange(),
+          WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
       final double spdYps = distYds / timeSecs;
       final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
@@ -619,8 +740,8 @@ public class DynamicInfillSegment extends TrackSegment implements
       final WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
       final double speedYps = theSpeed.getValueIn(WorldSpeed.ft_sec) / 3;
       // create the fix
-      final Fix newFix =
-          new Fix(new HiResDate(tNow), newLocation, thisCourseRads, speedYps);
+      final Fix newFix = new Fix(new HiResDate(tNow), newLocation,
+          thisCourseRads, speedYps);
 
       final FixWrapper fw = new FixWrapper(newFix);
       fw.setSymbolShowing(true);
@@ -654,14 +775,14 @@ public class DynamicInfillSegment extends TrackSegment implements
     // sort out our name
     if (getName() == null)
     {
-      final String name =
-          "infill_" + FormatRNDateTime.toShortString(new Date().getTime());
+      final String name = "infill_" + FormatRNDateTime.toShortString(new Date()
+          .getTime());
       this.setName(name);
     }
-    
+
     // hmm, if we only have one point - don't bother. This
     // effectively forces the infill to have at least two points
-    if(this.size() == 1)
+    if (this.size() == 1)
     {
       this.getData().clear();
     }
@@ -679,92 +800,10 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   }
 
-  private static long meanIntervalFor(TrackSegment segment)
+  @Override
+  public void sortOutDateLabel(final HiResDate startDTG)
   {
-    long sum = 0;
-    int ctr = 0;
-    long lastTime = -1;
-    Enumeration<Editable> iter = segment.elements();
-    while (iter.hasMoreElements())
-    {
-      FixWrapper thisF = (FixWrapper) iter.nextElement();
-      final long thisTime = thisF.getDTG().getDate().getTime();
-      if (lastTime != -1)
-      {
-        // ok, we've got a previous value we can compare to
-        sum += thisTime - lastTime;
-        ctr++;
-      }
-
-      lastTime = thisTime;
-    }
-
-    // what's the average?
-    final double mean;
-    if (ctr > 0)
-    {
-      mean = sum / ctr;
-    }
-    else
-    {
-      // oops, we haven't found any fixes. Just give a safe answer.
-      mean = 10000;
-    }
-
-    // trim it to a whole second, if it's large enough
-    final long res;
-    res = roundToInterval(mean);
-
-    return res;
-  }
-
-  private static long roundToInterval(final double mean)
-  {
-    final long res;
-    final long MINUTE = 60000;
-    final long SECOND = 1000;
-    if (mean > MINUTE)
-    {
-      res = (long) (MINUTE * (Math.floor(mean / MINUTE)));
-    }
-    else if (mean > SECOND)
-    {
-      res = (long) (SECOND * (Math.floor(mean / SECOND)));
-    }
-    else
-    {
-      res = (long) mean;
-    }
-    return res;
-  }
-  
-  final static private Color DEFAULT_GREEN = new Color(0, 128, 0);
-
-  private static Color getColorStrategy(Color trackColor)
-  {
-    String colorStrategy = Application.getThisProperty(INFILL_COLOR_STRATEGY);
-    if (colorStrategy == null)
-    {
-      colorStrategy = RANDOM_INFILL;
-    }
-
-    final Color res;
-    switch (colorStrategy)
-    {
-      case RANDOM_INFILL:
-        res = Color.getHSBColor((float) (Math.random() * 360f), 0.8f, 0.8f);
-        break;
-      case GREEN_INFILL:
-        res = DEFAULT_GREEN;
-        break;
-      case DARKER_INFILL:
-      default:
-        res = trackColor;
-    }
-
-    // see what the
-    return res;
-
+    // skip - we'll use the infill name
   }
 
   private void startWatching(final TrackSegment segment)
@@ -778,11 +817,11 @@ public class DynamicInfillSegment extends TrackSegment implements
     // hmm, is it a relative segment?
     if (segment instanceof RelativeTMASegment)
     {
-      RelativeTMASegment rel = (RelativeTMASegment) segment;
-      SensorWrapper sensor = rel.getReferenceSensor();
+      final RelativeTMASegment rel = (RelativeTMASegment) segment;
+      final SensorWrapper sensor = rel.getReferenceSensor();
       if (sensor != null)
       {
-        sensor.addPropertyChangeListener(SensorWrapper.LOCATION_CHANGED,
+        sensor.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
             _moveListener);
       }
     }
@@ -802,11 +841,11 @@ public class DynamicInfillSegment extends TrackSegment implements
       // hmm, is it a relative segment?
       if (segment instanceof RelativeTMASegment)
       {
-        RelativeTMASegment rel = (RelativeTMASegment) segment;
-        SensorWrapper sensor = rel.getReferenceSensor();
+        final RelativeTMASegment rel = (RelativeTMASegment) segment;
+        final SensorWrapper sensor = rel.getReferenceSensor();
         if (sensor != null)
         {
-          sensor.removePropertyChangeListener(SensorWrapper.LOCATION_CHANGED,
+          sensor.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
               _moveListener);
         }
       }
@@ -816,7 +855,7 @@ public class DynamicInfillSegment extends TrackSegment implements
 
   /**
    * one of our tracks has had it's wrapper change. handle this
-   * 
+   *
    */
   private final void wrapperChange()
   {
@@ -849,45 +888,6 @@ public class DynamicInfillSegment extends TrackSegment implements
         // and remove ourselves from our parent
         getWrapper().removeElement(this);
       }
-    }
-  }
-
-  @Override
-  public Color getColor()
-  {
-    return _myColor;
-  }
-
-  public static class TestInterp extends TestCase
-  {
-    public void testSimple()
-    {
-      // generate the location spline
-      final double[] times = new double[]
-      {500, 2000, 4000, 5000};
-      final double[] longs = new double[]
-      {1d, 1d, 3d, 4d};
-      final double[] lats = new double[]
-      {1d, 2d, 4d, 5d};
-
-      final UnivariateInterpolator interpolator = new SplineInterpolator();
-      final UnivariateFunction latInterp =
-          interpolator.interpolate(times, lats);
-      final UnivariateFunction longInterp =
-          interpolator.interpolate(times, longs);
-
-      assertEquals(2.447, latInterp.value(2500), 0.01);
-      assertEquals(1.3421, longInterp.value(2500), 0.001);
-    }
-
-    public void testRound()
-    {
-      assertEquals(6000, roundToInterval(6100));
-      assertEquals(100, roundToInterval(100));
-      assertEquals(1000, roundToInterval(1100));
-      assertEquals(59000, roundToInterval(59900));
-      assertEquals(60000, roundToInterval(69900));
-      assertEquals(2220000, roundToInterval(2269900));
     }
   }
 
