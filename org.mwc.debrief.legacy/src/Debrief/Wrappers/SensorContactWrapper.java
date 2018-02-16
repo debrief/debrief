@@ -627,7 +627,7 @@ public final class SensorContactWrapper extends
    * the (optional) ambiguous bearing (degs)
    *
    */
-  private double _bearingAmbig;
+  private double _bearingAmbig = Double.NaN;
 
   /**
    * the (optional) frequency

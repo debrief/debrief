@@ -1340,6 +1340,17 @@ public class ImportReplay extends PlainImporterBase
       // show the message dialog
       super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+    finally
+    {
+      try
+      {
+        br.close();
+      }
+      catch (IOException e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+      }
+    }
   }
 
   private void proccessShapeWrapper(final PlainLineImporter thisOne,
