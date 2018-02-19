@@ -53,7 +53,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   /**
    * the color for this item
    */
-  private final Color _myColor;
+  private Color _myColor;
 
   /**
    * whether to connect this data item to the previous one
