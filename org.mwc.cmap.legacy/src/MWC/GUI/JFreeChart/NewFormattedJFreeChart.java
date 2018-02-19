@@ -22,11 +22,10 @@ import java.awt.Font;
 import java.awt.Stroke;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Calendar;
+import java.text.DateFormat;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.Plot;
@@ -37,7 +36,10 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.StepperListener;
+import MWC.GUI.ToolParent;
+import MWC.GUI.JFreeChart.DateAxisEditor.RNFormatter;
 import MWC.GUI.Properties.GraphicSizePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
@@ -52,10 +54,47 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     MWC.GUI.Editable
 {
 
-  /**
-   * ******************************************************************* class containing editable
-   * details of this plot *******************************************************************
-   */
+  public static class ChartDateFormatPropertyEditor extends
+      MWC.GUI.Properties.DateFormatPropertyEditor
+  {
+    static public final String AUTO_VALUE = "Auto";
+
+    static private final String[] stringTags =
+    {AUTO_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm",
+        "ddHHmm.ss", "yy/MM/dd HH:mm",};
+
+    private int getMyIndexOf(final String val)
+    {
+      int res = INVALID_INDEX;
+
+      // cycle through the tags until we get a matching one
+      for (int i = 0; i < getTags().length; i++)
+      {
+        final String thisTag = getTags()[i];
+        if (thisTag.equals(val))
+        {
+          res = i;
+          break;
+        }
+
+      }
+      return res;
+    }
+
+    @Override
+    public final String[] getTags()
+    {
+      return stringTags;
+    }
+
+    @Override
+    public void setAsText(final String val)
+    {
+      _myFormat = getMyIndexOf(val);
+    }
+
+  }
+
   public final class PlotInfo extends Editable.EditorType
   {
 
@@ -76,51 +115,51 @@ public class NewFormattedJFreeChart extends JFreeChart implements
       try
       {
         final PropertyDescriptor[] res =
-            {
-                displayExpertLongProp("DataLineWidth", "Data line width",
-                    "the width to draw the data lines", EditorType.FORMAT,
-                    LineWidthPropertyEditor.class),
-                displayProp("TitleText", "Title text", "the title of this plot"),
-                displayProp("FixedDuration", "Fixed duration",
+        {displayExpertLongProp("DataLineWidth", "Data line width",
+            "the width to draw the data lines", EditorType.FORMAT,
+            LineWidthPropertyEditor.class), displayProp("TitleText",
+                "Title text", "the title of this plot"), displayProp(
+                    "FixedDuration", "Fixed duration",
                     "How long a time-span to display", EditorType.TEMPORAL),
-                displayProp("DisplayFixedDuration", "Display fixed duration",
-                    "Whether to show a limited time period (in Grow mode)",
-                    EditorType.TEMPORAL),
-                displayProp("X_AxisTitle", "X axis title",
-                    "the x axis title of this plot"),
-                displayProp("Y_AxisTitle", "Y axis title",
-                    "the y axis title of this plot"),
-                displayProp(
-                    "RelativeTimes",
-                    "Relative times",
-                    "whether to plot times relative to an anchor value (tZero)",
-                    EditorType.TEMPORAL),
-                displayLongProp("DateTickUnits", "Date tick units",
-                    "the minutes separation to the axis", DateAxisEditor.class,
-                    EditorType.TEMPORAL),
-                displayProp("ShowSymbols", "Show symbols",
-                    "whether to show symbols at the data points",
-                    EditorType.VISIBILITY),
-                displayExpertLongProp("SymbolSize", "Symbol size",
-                    "whether to show S/M/L symbols", EditorType.FORMAT,
-                    GraphicSizePropertyEditor.class),
-                displayProp("TitleFont", "Title font",
-                    "font to use for the plot title", EditorType.FORMAT),
-                displayProp("AxisFont", "Axis font",
-                    "font to use for the plot axis titles", EditorType.FORMAT),
-                displayProp("TickFont", "Tick font",
-                    "font to use for the plot axis tick mark labels",
-                    EditorType.FORMAT),
-                displayProp("LegendFont", "Legend font",
+            displayProp("DisplayFixedDuration", "Display fixed duration",
+                "Whether to show a limited time period (in Grow mode)",
+                EditorType.TEMPORAL), displayProp("X_AxisTitle", "X axis title",
+                    "the x axis title of this plot"), displayProp("Y_AxisTitle",
+                        "Y axis title", "the y axis title of this plot"),
+            displayProp("RelativeTimes", "Relative times",
+                "whether to plot times relative to an anchor value (tZero)",
+                EditorType.TEMPORAL),
+
+            displayProp("ShowSymbols", "Show symbols",
+                "whether to show symbols at the data points",
+                EditorType.VISIBILITY), displayExpertLongProp("SymbolSize",
+                    "Symbol size", "whether to show S/M/L symbols",
+                    EditorType.FORMAT, GraphicSizePropertyEditor.class),
+            displayProp("TitleFont", "Title font",
+                "font to use for the plot title", EditorType.FORMAT),
+            displayProp("AxisFont", "Axis font",
+                "font to use for the plot axis titles", EditorType.FORMAT),
+            displayProp("TickFont", "Tick font",
+                "font to use for the plot axis tick mark labels",
+                EditorType.FORMAT), displayProp("LegendFont", "Legend font",
                     "font to use for the legend", EditorType.FORMAT),
-                displayProp("ShowLegend", "Show legend",
-                    "whether to show legend", EditorType.VISIBILITY),};
+            displayProp("ShowLegend", "Show legend", "whether to show legend",
+                EditorType.VISIBILITY), displayLongProp("LabelFormat",
+                    "Label format",
+                    "the time format of the label, or N/A to leave as-is",
+                    ChartDateFormatPropertyEditor.class, FORMAT)};
         return res;
       }
       catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
+
+      // NOTE: we deprecated the tick units, since auto-tick units
+      // works well
+      // displayLongProp("DateTickUnits", "Date tick units",
+      // "the minutes separation to the axis", DateAxisEditor.class,
+      // EditorType.TEMPORAL),
     }
 
   }
@@ -210,6 +249,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements
    */
   private static final long serialVersionUID = 1L;
 
+  public static final String CHART_LABEL_FORMAT = "ChartLabelFormat";
+
+  private static ToolParent _toolParent;
+
   // ////////////////////////////////////////////////
   // member variables
   // ////////////////////////////////////////////////
@@ -223,13 +266,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
    */
   transient private Editable.EditorType _myEditor = null;
 
-  /**
-   * the interval & format of the date axis
-   */
-  private DateAxisEditor.MWCDateTickUnitWrapper _theDateTick =
-      new DateAxisEditor.MWCDateTickUnitWrapper(DateTickUnitType.MINUTE,
-          Calendar.MINUTE, "HH:mm");
-
   // ////////////////////////////////////////////////
   // constructor
   // ////////////////////////////////////////////////
@@ -240,6 +276,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   private SwitchableTimeOffsetProvider _provider = null;
 
   private Duration _fixedDuration;
+
+  private String _labelFormat;
 
   // ////////////////////////////////////////////////
   // member methods
@@ -271,6 +309,19 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     // let's not show symbols by default, eh?
     this.setShowSymbols(false);
+
+    // initialise the time format - do we know the previous one?
+    final String prefFormat = _toolParent.getProperty(CHART_LABEL_FORMAT);
+    final String theFormat;
+    if (prefFormat != null && prefFormat.length() > 0)
+    {
+      theFormat = prefFormat;
+    }
+    else
+    {
+      theFormat = "HHmm.ss";
+    }
+    setLabelFormat(theFormat);
   }
 
   /**
@@ -314,11 +365,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     return _dataLineWidth;
   }
 
-  public DateAxisEditor.MWCDateTickUnitWrapper getDateTickUnits()
-  {
-    return _theDateTick;
-  }
-
   public boolean getDisplayFixedDuration()
   {
     boolean res = false;
@@ -353,11 +399,16 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     return _myEditor;
   }
 
+  public final String getLabelFormat()
+  {
+    return _labelFormat;
+  }
+
   public Font getLegendFont()
   {
     final LegendTitle legend = this.getLegend();
     final Font res;
-    if(legend != null)
+    if (legend != null)
     {
       res = legend.getItemFont();
     }
@@ -486,8 +537,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   public boolean isShowSymbols()
   {
-    final DefaultXYItemRenderer sx =
-        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+        .getRenderer();
     return sx.getBaseShapesVisible();
   }
 
@@ -515,33 +566,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     {
       final Stroke stroke = theStrokes[i];
       thePlot.getRenderer().setSeriesStroke(i, stroke);
-    }
-  }
-
-  public void setDateTickUnits(
-      final DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
-  {
-    final ValueAxis hd = this.getXYPlot().getDomainAxis();
-
-    // store the current tick
-    _theDateTick = theDateTick;
-
-    if (theDateTick.isAutoScale())
-    {
-      hd.setAutoTickUnitSelection(true);
-    }
-    else
-    {
-      // cancel auto calc
-      hd.setAutoTickUnitSelection(false);
-
-      // get the date axis
-      final ValueAxis va = this.getXYPlot().getDomainAxis();
-      final DateAxis da = (DateAxis) va;
-
-      // and set the tick
-      da.setTickUnit(_theDateTick.getUnit());
-
     }
   }
 
@@ -577,6 +601,33 @@ public class NewFormattedJFreeChart extends JFreeChart implements
       // everybody what's happening
       setDisplayFixedDuration(true);
     }
+  }
+
+  @FireReformatted
+  public final void setLabelFormat(final String format)
+  {
+    _labelFormat = format;
+
+    // get the date axis
+    final ValueAxis va = this.getXYPlot().getDomainAxis();
+    final DateAxis da = (DateAxis) va;
+    
+    // special case, if it's AUTO format
+    final DateFormat target;
+    if(ChartDateFormatPropertyEditor.AUTO_VALUE.equals(format))
+    {
+      target = null;
+    }
+    else
+    {
+      target = new RNFormatter(format);
+    }
+
+    // and set the tick
+    da.setDateFormatOverride(target);
+
+    // also store it as a pref, for the next format
+    _toolParent.setProperty(CHART_LABEL_FORMAT, format);
   }
 
   public void setLegendFont(final Font legendFont)
@@ -651,8 +702,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   public void setShowSymbols(final boolean showSymbols)
   {
-    final DefaultXYItemRenderer sx =
-        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+        .getRenderer();
     sx.setBaseShapesVisible(showSymbols);
 
     this.fireChartChanged();
@@ -698,6 +749,11 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   public void setY_AxisTitle(final String yTitle)
   {
     this.getXYPlot().getRangeAxis().setLabel(yTitle);
+  }
+
+  public static void initialise(ToolParent toolParent)
+  {
+    _toolParent = toolParent;
   }
 
 }
