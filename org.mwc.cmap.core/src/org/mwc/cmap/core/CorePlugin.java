@@ -136,7 +136,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   public static final String LIVE_DATA_MONITOR = "org.mwc.cmap.LiveDataMonitor";
   private static final String EARTH_MODEL_PROVIDER =
       "org.mwc.cmap.core.EarthModelProvider";
-
+  
+  /** preference for detault font size
+   * 
+   */
+  public static final String DEFAULT_FONT = "DefaultFont";
+  
   /**
    * support for lat/long editor in grid editor
    * 
