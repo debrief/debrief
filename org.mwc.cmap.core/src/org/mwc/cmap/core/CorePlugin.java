@@ -83,6 +83,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.EarthModel;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldLocation;
@@ -270,6 +271,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
     // and the old error logger
     Trace.initialise(_toolParent);
+    
+    NewFormattedJFreeChart.initialise(_toolParent);
 
     // the VPF database may wish to announce some kind of warning
     // if it can't find it's data

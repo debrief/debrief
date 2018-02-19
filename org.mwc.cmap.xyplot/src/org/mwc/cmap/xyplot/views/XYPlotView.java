@@ -101,6 +101,10 @@ import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.RTFWriter;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
 
+import com.pietjonas.wmfwriter2d.ClipboardCopy;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layer;
@@ -110,7 +114,6 @@ import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
-import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.JFreeChart.RelativeDateAxis;
@@ -120,10 +123,6 @@ import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
-
-import com.pietjonas.wmfwriter2d.ClipboardCopy;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class XYPlotView extends ViewPart
 {
@@ -194,7 +193,7 @@ public class XYPlotView extends ViewPart
 
     final String Y_Title = "Y_Title";
 
-    final String DateUnits = "DateUnits";
+    final String LabelFormat = NewFormattedJFreeChart.CHART_LABEL_FORMAT;
 
     final String RelativeTimes = "RelativeTimes";
 
@@ -549,9 +548,9 @@ public class XYPlotView extends ViewPart
       str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
       if (str != null)
         _thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
-      str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
+      str = _myMemento.getString(PLOT_ATTRIBUTES.LabelFormat);
       if (str != null)
-        _thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
+        _thePlotArea.setLabelFormat((String) xs.fromXML(str));
       str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
       if (str != null)
         _thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str))
@@ -1539,8 +1538,8 @@ public class XYPlotView extends ViewPart
     memento.putString(PLOT_ATTRIBUTES.X_Title, str);
     str = xs.toXML(_thePlotArea.getY_AxisTitle());
     memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
-    str = xs.toXML(_thePlotArea.getDateTickUnits());
-    memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
+    str = xs.toXML(_thePlotArea.getLabelFormat());
+    memento.putString(PLOT_ATTRIBUTES.LabelFormat, str);
     str = xs.toXML(new Boolean(_thePlotArea.getRelativeTimes()));
     memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
     str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));
