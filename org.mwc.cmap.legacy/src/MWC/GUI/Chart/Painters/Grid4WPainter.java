@@ -163,12 +163,10 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import junit.framework.Assert;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
@@ -840,17 +838,17 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		{
 			final WorldLocation origin = new WorldLocation(2, 3, 2);
 			final Grid4WPainter pt = new Grid4WPainter(origin);
-			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
-			Assert.assertEquals("wrong x def",
+			assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
+			assertEquals("wrong x def",
 					new WorldDistance(10, WorldDistance.NM), pt.getXDelta());
-			Assert.assertEquals("wrong y def",
+			assertEquals("wrong y def",
 					new WorldDistance(10, WorldDistance.NM), pt.getYDelta());
-			Assert.assertEquals("wrong init index", 1, pt.getYMin().intValue());
-			Assert.assertEquals("wrong init index", 24, pt.getYMax().intValue());
-			Assert.assertEquals("wrong init index", "A", pt.getXMin());
-			Assert.assertEquals("wrong init index", "Z", pt.getXMax());
-			Assert.assertEquals("wrong origin lat", 2d, pt._origin.getLat());
-			Assert.assertEquals("wrong origin lat", 3d, pt._origin.getLong());
+			assertEquals("wrong init index", 1, pt.getYMin().intValue());
+			assertEquals("wrong init index", 24, pt.getYMax().intValue());
+			assertEquals("wrong init index", "A", pt.getXMin());
+			assertEquals("wrong init index", "Z", pt.getXMax());
+			assertEquals("wrong origin lat", 2d, pt._origin.getLat());
+			assertEquals("wrong origin lat", 3d, pt._origin.getLong());
 		}
 
 		public void testProperties()
@@ -865,16 +863,16 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			pt.setYMax(12);
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
 			pt.setOrigin(origin);
-			Assert.assertEquals("wrong name", "new grid", pt.getName());
-			Assert.assertEquals("wrong x val", new WorldDistance(12,
+			assertEquals("wrong name", "new grid", pt.getName());
+			assertEquals("wrong x val", new WorldDistance(12,
 					WorldDistance.DEGS), pt.getXDelta());
-			Assert.assertEquals("wrong y val", new WorldDistance(5,
+			assertEquals("wrong y val", new WorldDistance(5,
 					WorldDistance.DEGS), pt.getYDelta());
-			Assert.assertEquals("wrong x index", "C", pt.getXMin());
-			Assert.assertEquals("wrong x index", "E", pt.getXMax());
-			Assert.assertEquals("wrong y index", 7, pt.getYMin().intValue());
-			Assert.assertEquals("wrong y index", 12, pt.getYMax().intValue());
-			Assert.assertEquals("wrong origin", origin, pt.getOrigin());
+			assertEquals("wrong x index", "C", pt.getXMin());
+			assertEquals("wrong x index", "E", pt.getXMax());
+			assertEquals("wrong y index", 7, pt.getYMin().intValue());
+			assertEquals("wrong y index", 12, pt.getYMax().intValue());
+			assertEquals("wrong origin", origin, pt.getOrigin());
 		}
 
 		public void testPosCalc()
@@ -891,30 +889,30 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			pt.setYDelta(yDelta);
 			pt.setOrientation(orientation);
 			WorldLocation newLoc = pt.calcLocationFor(1, 1);
-			Assert.assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
+			assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
+			assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
 			newLoc = pt.calcLocationFor(2, 2);
-			Assert.assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 2d, newLoc.getLong(), 0.001);
+			assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
+			assertEquals("easy Long wrong", 2d, newLoc.getLong(), 0.001);
 
 			// turn, baby
 			pt.setOrientation(90d);
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", -1d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
+			assertEquals("easy Lat wrong", -1d, newLoc.getLat(), 0.001);
+			assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
 
 			// have another go
 			pt.setXDelta(new WorldDistance(2, WorldDistance.DEGS));
 			pt.setYDelta(new WorldDistance(3, WorldDistance.DEGS));
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", -2d, newLoc.getLat(), 0.001);
-			Assert.assertEquals("easy Long wrong", 3d, newLoc.getLong(), 0.001);
+			assertEquals("easy Lat wrong", -2d, newLoc.getLat(), 0.001);
+			assertEquals("easy Long wrong", 3d, newLoc.getLong(), 0.001);
 
 			// and turn back
 			pt.setOrientation(0d);
 			newLoc = pt.calcLocationFor(x, y);
-			Assert.assertEquals("easy Lat wrong", 3d, newLoc.getLat());
-			Assert.assertEquals("easy Long wrong", 2d, newLoc.getLong());
+			assertEquals("easy Lat wrong", 3d, newLoc.getLat());
+			assertEquals("easy Long wrong", 2d, newLoc.getLong());
 
 			// now try more complex orientations
 
