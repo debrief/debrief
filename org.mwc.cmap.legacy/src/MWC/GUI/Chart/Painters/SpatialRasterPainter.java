@@ -36,6 +36,7 @@ import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.ETOPO.BathyProvider;
 import MWC.GUI.ETOPO.Conrec;
+import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -268,7 +269,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   public int getColor(final int elevation, 
   		final double lowerLimit, 
   		final double upperLimit,
-  		final ColorConverter converter)
+  		final ColorConverter converter,
+  		final boolean useNE)
   {
     int res;
 
@@ -408,9 +410,10 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 		 * @param min_height
 		 * @param max_height
 		 * @param dest where we're painting to
+		 * @param useNE 
 		 */
 		protected  void updatePixelColors(final SpatialRasterPainter parent, final int width,
-				final int height, final int min_height, final int max_height, final CanvasType dest)
+				final int height, final int min_height, final int max_height, final CanvasType dest, final boolean useNE)
 		{
 			// do a second pass to set the actual colours
       for (int i = 0; i < width * height; i++)
@@ -419,7 +422,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         final int thisCol = parent.getColor(thisHeight,
                                      min_height,
                                      max_height,
-                                     this);
+                                     this, useNE);
         _myImageBuffer[i] = thisCol;
       }
 		}
@@ -498,6 +501,16 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         to metafile more quickly.  The rectangles should be either sized to suit the
         resolution of the data, or the resolution requested by the user */
 
+      String pref = Defaults.getPreference(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH);
+      final boolean useNE;
+      if(pref != null && pref.length() > 0)
+      {
+        useNE = Boolean.parseBoolean(pref);
+      }
+      else
+      {
+        useNE = false;
+      }
 
       // reset the min and max depths
       min_depth = max_depth = 0;
@@ -505,7 +518,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       // create the raster image
       if (parent.isBathyVisible())
       {
-        final double[] min_max = createRasterImage(dest, parent);
+        final double[] min_max = createRasterImage(dest, parent, useNE);
         min_depth = min_max[0];
         max_depth = min_max[1];
       }
@@ -525,16 +538,17 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       }
 
       // finally draw in the scale
-      drawKey(dest, min_depth, max_depth, parent._keyLocation, parent);
+      drawKey(dest, min_depth, max_depth, parent._keyLocation, parent, useNE);
     }
 
     /**
      * create a raster image using our data, and placing it into the canvas type
      *
      * @param dest where we're painting to
+     * @param useNE 
      * @return the min and max depths for this waterspace
      */
-    private double[] createRasterImage(final CanvasType dest, final SpatialRasterPainter parent)
+    private double[] createRasterImage(final CanvasType dest, final SpatialRasterPainter parent, boolean useNE)
     {
 
       final double[] res = {0d, 0d};
@@ -604,7 +618,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
       // now do a pass through to switch from actual height to our
       // color-coded value
-      updatePixelColors(parent, width, height, min_height, max_height, dest);
+      updatePixelColors(parent, width, height, min_height, max_height, dest, useNE);
 
       if (parent._showBathy)
       {
@@ -625,7 +639,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 		 * @param max_height
 		 * @param dest where we're painting to
 		 */
-		abstract protected  void updatePixelColors(SpatialRasterPainter parent, final int width, final int height, int min_height, int max_height, CanvasType dest);
+		abstract protected  void updatePixelColors(SpatialRasterPainter parent, final int width, final int height, 
+		    int min_height, int max_height, CanvasType dest,final boolean useNE);
 
 		/** set this pixel to the correct color
 		 * @param width
@@ -655,7 +670,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
                        final double min_height,
                        final double max_height,
                        final Integer keyLocation,
-                       final SpatialRasterPainter parent)
+                       final SpatialRasterPainter parent,
+                       final boolean useNE)
     {
 
       // how big is the screen?
@@ -755,7 +771,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
           thisPoint.move(TL.x + (int) (i * stepWidth), TL.y + (int) (i * stepHeight));
 
           // produce this new colour
-          final int thisCol = parent.getColor(thisDepth, min_height, max_h, SWING_COLOR_CONVERTER);
+          final int thisCol = parent.getColor(thisDepth, min_height, max_h, SWING_COLOR_CONVERTER, useNE);
           
           final Color thisColor = new Color(thisCol);
             
