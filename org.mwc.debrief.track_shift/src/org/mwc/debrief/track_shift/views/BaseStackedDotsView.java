@@ -974,7 +974,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final DateAxis xAxis = new CachedTickDateAxis("");
     xAxis.setDateFormatOverride(_df);
-    final Font tickLabelFont = Defaults.getFont();
+    final Font tickLabelFont = Defaults.getScaledFont(0.8f);
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
     xAxis.setStandardTickUnits(DateAxisEditor
@@ -1101,7 +1101,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     crossHairAnnotation = new XYTextAnnotation("-----", 2, 2);
     crossHairAnnotation.setTextAnchor(TextAnchor.TOP_LEFT);
 
-    final Font annotationFont = Defaults.getFont();
+    final Font annotationFont = Defaults.getScaledFont(0.8f);
     crossHairAnnotation.setFont(annotationFont);
     crossHairAnnotation.setPaint(Color.DARK_GRAY);
     crossHairAnnotation.setBackgroundPaint(Color.white);
