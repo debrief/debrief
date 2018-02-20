@@ -14,6 +14,7 @@
  */
 package org.mwc.cmap.gridharness;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -26,7 +27,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 
-public class LocationFormatPreferencePage extends FieldEditorPreferencePage
+import MWC.GUI.ETOPO.ETOPO_2_Minute;
+
+public class DebriefFormattingOptionsPreferencesPage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage
 {
 
@@ -40,7 +43,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
   public static final String PREFS_PAGE_ID =
       "org.mwc.cmap.core.preferences.LocationFormatPreferencePage";
 
-  public LocationFormatPreferencePage()
+  public DebriefFormattingOptionsPreferencesPage()
   {
     super(GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
@@ -80,7 +83,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
     lbl.setText("Location format:");
 
     lbl = new Label(locationFormatGroup, SWT.NONE);
-    lbl.setText("bbb cccc   dddd");
+    lbl.setText("      ");
 
     final RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//
         CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, //
@@ -90,7 +93,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
     addField(formarEditor);
 
     lbl = new Label(locationFormatGroup, SWT.NONE);
-    lbl.setText("aaa");
+    lbl.setText("   ");
 
     final FontFieldEditor fontEditor = new FontFieldEditor(
         CorePlugin.DEFAULT_FONT, "Default font:", "0133:44",
@@ -112,6 +115,11 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
 
     addField(fontEditor);
 
+    BooleanFieldEditor shadeNE = new BooleanFieldEditor(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH , 
+        "Use Natural Earth shades for ETOPO", BooleanFieldEditor.SEPARATE_LABEL, locationFormatGroup);
+    
+    addField(shadeNE);
+    
     // the field editors mangle the layout, so we do it last.
 
     locationFormatGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,

@@ -86,7 +86,7 @@
    <extension point="org.eclipse.ui.preferencePages">
       <page
             name="Formatting"
-            class="org.mwc.cmap.gridharness.LocationFormatPreferencePage"
+            class="org.mwc.cmap.gridharness.DebriefFormattingOptionsPreferencesPage"
            category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
             id="org.mwc.cmap.core.preferences.LocationFormatPreferencePage">
       </page>

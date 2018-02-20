@@ -71,7 +71,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.help.IWorkbenchHelpSystem;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.operations.IUndoable;
-import org.mwc.cmap.gridharness.LocationFormatPreferencePage;
+import org.mwc.cmap.gridharness.DebriefFormattingOptionsPreferencesPage;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
@@ -1037,13 +1037,13 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
     final SexagesimalFormat res;
     switch (format)
     {
-      case LocationFormatPreferencePage.LABEL_DD_DDD:
+      case DebriefFormattingOptionsPreferencesPage.LABEL_DD_DDD:
         res = SexagesimalSupport._DD_DDD;
         break;
-      case LocationFormatPreferencePage.LABEL_DD_MM_MMM:
+      case DebriefFormattingOptionsPreferencesPage.LABEL_DD_MM_MMM:
         res = SexagesimalSupport._DD_MM_MMM;
         break;
-      case LocationFormatPreferencePage.LABEL_DD_MM_SS_SSS:
+      case DebriefFormattingOptionsPreferencesPage.LABEL_DD_MM_SS_SSS:
       default:
         res = SexagesimalSupport._DD_MM_SS_SSS;
         break;
@@ -1160,6 +1160,12 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
     PlatformUI.getWorkbench().removeWorkbenchListener(workbenchListener);
     plugin = null;
     resourceBundle = null;
+  }
+
+  @Override
+  public String getPreference(String name)
+  {
+    return getPreferenceStore().getString(name);
   }
 
 }

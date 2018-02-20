@@ -134,7 +134,7 @@ public class NoiseSourceExcessPainter extends SpatialRasterPainter implements No
         res = Color.red.getRGB();
     }
     else
-      res = super.getColor(elevation, lowerLimit, upperLimit, _myConverter);
+      res = super.getColor(elevation, lowerLimit, upperLimit, _myConverter, false);
 
 
     return res;
