@@ -781,7 +781,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       };
 
       convertToTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
-          "icons\\16\\copy.png"));
+          "icons/16/copy.png"));
 
       // stick in the "before" separator
       parent.add(new Separator());
@@ -884,9 +884,9 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
               }
 
               createNewTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
-                  "icons\\16\\paste.png"));
+                  "icons/16/paste.png"));
               createNewTrackWithColor.setImageDescriptor(CorePlugin.getImageDescriptor(
-                  "icons\\16\\paste.png"));
+                  "icons/16/paste.png"));
 
               // ok - flash up the menu item
               parent.add(createNewTrack);
