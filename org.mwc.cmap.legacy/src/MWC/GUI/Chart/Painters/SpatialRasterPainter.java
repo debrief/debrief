@@ -32,6 +32,7 @@ import javax.swing.JButton;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.ETOPO.BathyProvider;
 import MWC.GUI.ETOPO.Conrec;
@@ -474,7 +475,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
     private WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
-    final Font _myFont = new Font("Arial", Font.PLAIN, 10);
+    final Font _myFont = Defaults.getFont();
 
     protected double min_depth = 0;
     protected double max_depth = 0;

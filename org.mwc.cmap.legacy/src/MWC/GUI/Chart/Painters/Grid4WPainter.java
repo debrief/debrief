@@ -164,6 +164,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -299,7 +300,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * the font to use
 	 */
-	private Font _theFont = new Font("Sans Serif", Font.PLAIN, 8);
+	private Font _theFont = Defaults.getScaledFont(0.8f);
 
 	// ///////////////////////////////////////////////////////////
 	// constructor

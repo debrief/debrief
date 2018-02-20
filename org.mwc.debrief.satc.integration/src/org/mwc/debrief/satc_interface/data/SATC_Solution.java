@@ -59,6 +59,7 @@ import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireReformatted;
@@ -440,7 +441,7 @@ public class SATC_Solution extends BaseLayer implements
   /**
    * the plain font we use as a base
    */
-  static final Font LEG_NAME_FONT = new Font("Sans Serif", Font.BOLD, 12);
+  static final Font LEG_NAME_FONT = Defaults.getFont();
 
   private Layers _myLayers = null;
 

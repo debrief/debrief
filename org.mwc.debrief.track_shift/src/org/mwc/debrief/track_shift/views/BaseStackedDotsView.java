@@ -136,6 +136,7 @@ import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.HasEditables;
@@ -961,7 +962,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final DateAxis xAxis = new CachedTickDateAxis("");
     xAxis.setDateFormatOverride(_df);
-    final Font tickLabelFont = new Font("Courier", Font.PLAIN, 13);
+    final Font tickLabelFont = Defaults.getFont();
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
     xAxis.setStandardTickUnits(DateAxisEditor
@@ -971,7 +972,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // create the special stepper plot
     _dotPlot = new XYPlot();
     final NumberAxis errorAxis = new NumberAxis("Error (" + getUnits() + ")");
-    final Font axisLabelFont = new Font("Courier", Font.PLAIN, 16);
+    final Font axisLabelFont = Defaults.getFont();
     errorAxis.setLabelFont(axisLabelFont);
     errorAxis.setTickLabelFont(tickLabelFont);
     _dotPlot.setRangeAxis(errorAxis);
@@ -1088,7 +1089,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     crossHairAnnotation = new XYTextAnnotation("-----", 2, 2);
     crossHairAnnotation.setTextAnchor(TextAnchor.TOP_LEFT);
 
-    final Font annotationFont = new Font("Courier", Font.BOLD, 16);
+    final Font annotationFont = Defaults.getFont();
     crossHairAnnotation.setFont(annotationFont);
     crossHairAnnotation.setPaint(Color.DARK_GRAY);
     crossHairAnnotation.setBackgroundPaint(Color.white);

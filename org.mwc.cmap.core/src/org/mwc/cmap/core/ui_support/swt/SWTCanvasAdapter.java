@@ -142,6 +142,7 @@ import org.mwc.cmap.core.property_support.FontHelper;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
@@ -1045,7 +1046,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     _theDest = (GC) theVal;
 
     if (!_theDest.isDisposed())
+    {
       _sg2d = new SWTGraphics2D(_theDest);
+      _sg2d.setFont(Defaults.getFont());
+    }
 
     // initialise the background color
     if (!_theDest.isDisposed())
