@@ -16,6 +16,11 @@ public class Defaults
     _provider = provider;
   }
 
+  public static Font getScaledFont(final float scale)
+  {
+    return getFont().deriveFont(getFont().getSize() * scale);
+  }
+  
   public static Font getFont()
   {
     final Font pref = _provider != null ? _provider.getDefaultFont() : null;
