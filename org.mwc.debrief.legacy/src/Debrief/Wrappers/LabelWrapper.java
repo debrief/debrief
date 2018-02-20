@@ -208,6 +208,7 @@ import javax.swing.JFrame;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
@@ -318,7 +319,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		_theLabel.setColor(theColor);
 		_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
 		_theShape.setColor(theColor);
-		_theLabel.setFont(new Font("Sans Serif", Font.PLAIN, 9));
+		_theLabel.setFont(Defaults.getFont());
 
 		// and the dates
 		_theTimePeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);

@@ -57,6 +57,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Test;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
@@ -3770,7 +3771,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           final WorldLocation firstLoc = seg.first().getBounds().getCentre();
           final WorldLocation lastLoc = seg.last().getBounds().getCentre();
-          final Font f = new Font("Sans Serif", Font.PLAIN, 11);
+          final Font f = Defaults.getFont();
           final Color c = _theLabel.getColor();
 
           // tell the segment it's being stretched

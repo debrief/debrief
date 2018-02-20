@@ -22,6 +22,7 @@ import java.util.Iterator;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GenericData.HiResDate;
@@ -253,7 +254,7 @@ abstract public class CoreTMASegment extends TrackSegment implements
         .sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
 
     // try to make it bold
-    final Font newFont = new Font("Arial", Font.BOLD, 12);
+    final Font newFont = Defaults.getFont().deriveFont(Font.BOLD);
 
     // put the text in a solid backdrop
     boolean xorMode = false;
