@@ -57,20 +57,15 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
-public class LofarSym extends PlainSymbol {
+public class LofarSym extends BuoySym {
 
   /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	/** the font we use for the D DifarSymbols */
-  private static java.awt.Font _myFont = new java.awt.Font("Arial",
-                                                            java.awt.Font.PLAIN,
-                                                            12);
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor

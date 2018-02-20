@@ -68,6 +68,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
@@ -85,9 +86,7 @@ public class ReferenceSym extends PlainSymbol
 	private static final long serialVersionUID = 1L;
 
 
-	private static java.awt.Font _myFont = new java.awt.Font("Arial",
-                                                           java.awt.Font.PLAIN,
-                                                           12);
+	private static java.awt.Font _myFont = Defaults.getFont();
 
 
   private String _leftLabel = "A";
