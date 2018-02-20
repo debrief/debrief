@@ -100,7 +100,18 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
 
     final FontFieldEditor fontEditor = new FontFieldEditor(
         CorePlugin.DEFAULT_FONT, "Default font:", "0133:44",
-        locationFormatGroup);
+        locationFormatGroup)
+    {
+      @Override
+      protected void doStore()
+      {
+        // let the parent store it
+        super.doStore();
+
+        // clear the cached value
+        CorePlugin.getDefault().clearDefaultFont();
+      }
+    };
     fontEditor.setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
     fontEditor.load();
     fontEditor.setPage(this);
