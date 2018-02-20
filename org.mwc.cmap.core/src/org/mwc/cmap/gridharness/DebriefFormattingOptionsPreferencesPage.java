@@ -29,7 +29,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 
-public class LocationFormatPreferencePage extends FieldEditorPreferencePage
+public class DebriefFormattingOptionsPreferencesPage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage
 {
 
@@ -43,7 +43,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
   public static final String PREFS_PAGE_ID =
       "org.mwc.cmap.core.preferences.LocationFormatPreferencePage";
 
-  public LocationFormatPreferencePage()
+  public DebriefFormattingOptionsPreferencesPage()
   {
     super(GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
