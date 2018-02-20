@@ -169,6 +169,7 @@ import java.util.Vector;
 import javax.swing.JLabel;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
@@ -176,442 +177,419 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 /**
- * This class represents a line of text located in geographic coordinates. The
- * user is able to edit the Color of the label through the inherited PlainShape
- * functionality, and is able to edit the font, the text itself, and the
- * relative location through this property The label may be positioned relative
- * to a precise coordinate, or may be positioned relative to a shape -->
- * consequently when the label is drawn in a relative position, it is drawn
- * relative to that part of the shape (you get it really).
+ * This class represents a line of text located in geographic coordinates. The user is able to edit
+ * the Color of the label through the inherited PlainShape functionality, and is able to edit the
+ * font, the text itself, and the relative location through this property The label may be
+ * positioned relative to a precise coordinate, or may be positioned relative to a shape -->
+ * consequently when the label is drawn in a relative position, it is drawn relative to that part of
+ * the shape (you get it really).
  */
 public class TextLabel extends PlainShape implements Editable
 {
 
-	// ////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////
-
-	/**
-	 * keep track of versions
-	 */
-	static final long serialVersionUID = 1;
-
-	/**
-	 * the fond to use
-	 */
-	private Font _theFont;
-
-	/**
-	 * the string to display
-	 */
-	private String _theString;
-
-	/**
-	 * the origin of this label
-	 */
-	private WorldLocation _theLocation;
-
-	/**
-	 * the location of the label, in relation to some fixed point.
-	 * 
-	 * @see MWC.GUI.Properties.LocationPropertyEditor for more details
-	 */
-	private int _theRelativeLocation;
-
-	/**
-	 * a fixed offset to apply to the text - this allows a "no go" area around the
-	 * text anchor, such as when we use a symbol
-	 */
-	private java.awt.Dimension _theFixedOffset = null;
-
-	/**
-	 * the shape which provides us with it's dynamic anchor point
-	 */
-	private PlainShape _theShape;
-
-	/**
-	 * the plain font we use as a base
-	 */
-	static private final Font _plainFont = new Font("Sans Serif", Font.PLAIN, 9);
-
-	/**
-	 * the newline character combination to use
-	 */
-	public static final String NEWLINE_MARKER = "\n";
-
-	/**
-	 * the width of the string, the last time it was calculated
-	 */
-	private int _myWidth = UNKNOWN_WIDTH;
-
-	/**
-	 * keep an invalid value - so we know when it's unset
-	 */
-	static private final int UNKNOWN_WIDTH = -1;
-
-	// ////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////
-
-	/**
-	 * constructor which is used when we have a single, fixed centre
-	 */
-	public TextLabel(final WorldLocation theLocation, final String theString)
-	{
-		super(0, "Text");
-
-		_theString = theString;
-		_theLocation = theLocation;
-		_theRelativeLocation = LocationPropertyEditor.LEFT;
-		_theFont = _plainFont;
-		_theFixedOffset = new java.awt.Dimension(0, 0);
-	}
-
-	/**
-	 * constructor which is used when we the shape may want to update it's anchor
-	 * point
-	 */
-	public TextLabel(final PlainShape theShape, final String theString)
-	{
-		super(0, "Text");
-
-		_theString =  replaceNewLines(theString);
-		_theShape = theShape;
-		_theRelativeLocation = LocationPropertyEditor.LEFT;
-		_theFont = new Font("Sans Serif", 12, 12);
-		_theFixedOffset = new java.awt.Dimension(0, 0);
-	}
-	
-	
-	protected String replaceNewLines(final String inStr)
-	{
-		return inStr == null ? inStr : inStr.replace("\\n", "\n");
-	}
-
-	// public TextLabel()
-	// {
-	// super(0, Color.red, 1);
-	//
-	// _theRelativeLocation = LocationPropertyEditor.LEFT;
-	// _theFont = new Font("Sans Serif", 12, 12);
-	// _theFixedOffset = new java.awt.Dimension(0,0);
-	// }
-
-	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
-
-	public void setRelativeLocation(final Integer val)
-	{
-		_theRelativeLocation = val.intValue();
-	}
-
-	public Integer getRelativeLocation()
-	{
-		return new Integer(_theRelativeLocation);
-	}
-
-	public void setString(final String theString)
-	{
-		_theString = theString;
-
-		resetWidth();
-	}
-
-	public String getString()
-	{
-		if (_theString == null)
-			return "";
-		return _theString;
-	}
-
-	public Font getFont()
-	{
-		return _theFont;
-	}
-
-	public void setFont(final Font theFont)
-	{
-		_theFont = theFont;
-
-		resetWidth();
-	}
-
-	private void resetWidth()
-	{
-		// ok, reset the width
-		_myWidth = UNKNOWN_WIDTH;
-	}
-
-	private static int getNumberOfLinesIn(final String baseLine)
-	{
-		int _numLines = 1;
-		int start = 0;
-		int newlineAt;
-
-		// break it up into a Vector of substrings,
-		// one substring for each line.
-
-		while ((newlineAt = baseLine.indexOf(NEWLINE_MARKER, start)) > 0)
-		{
-			_numLines++;
-			start = newlineAt + 2;
-		}
-
-		return _numLines;
-	}
-
-	private static String getLongestLineIn(final String baseLine)
-	{
-		String longestLine = null;
-
-		String sub;
-
-		// break it up into a Vector of substrings,
-		// one substring for each line.
-		final StringTokenizer t = new StringTokenizer(baseLine, "\n");
-		final int num_lines = t.countTokens();
-		for (int i = 0; i < num_lines; i++)
-		{
-			sub = t.nextToken().trim();
-			if (longestLine == null)
-			{
-				longestLine = sub;
-			}
-			else
-			{
-				if (sub.length() > longestLine.length())
-				{
-					longestLine = sub;
-				}
-			}
-		}
-
-		return longestLine;
-
-	}
-
-	/**
-	 * support class which handles plotting a multi-line label
-	 * 
-	 * @param dest
-	 * @param theStr
-	 * @param theFont
-	 */
-	private void paintMultiLine(final CanvasType dest, final String theStr, final Font theFont,
-			final Point thePoint)
-	{
-		int _numLines = 0;
-		final Vector<String> _subStrings = new Vector<String>();
-
-		// break it up into a Vector of substrings,
-		// one substring for each line.
-
-		// break it up into a Vector of substrings,
-		// one substring for each line.
-		final StringTokenizer t = new StringTokenizer(theStr, "\n");
-		_numLines = t.countTokens();
-		for (int i = 0; i < _numLines; i++)
-		{
-			// _subStrings.add(t.nextToken());
-			// Note: we used to do a 'trim' of the text to ditch any
-			// stray chars. We don't do it now, so users can use padding spaces
-			// Note: and we've reinstated it
-			_subStrings.add(t.nextToken().trim());
-		}
-
-		int lineHeight = dest.getStringHeight(getFont());
-
-		// SWT - increase the gap between the lines
-		// add 10% line spacing
-		if (_numLines > 1)
-			lineHeight = (int) (lineHeight * 1.3d);
-
-		int ypos = thePoint.y;
-		int xpos = thePoint.x;
-
-		final int HorizonalAlignment = JLabel.CENTER;
-
-		switch (HorizonalAlignment)
-		{
-		case JLabel.CENTER:
-		{
-			// Using the size of the component (based on the size
-			// of the largest line), figure out how to adjust each
-			// line so that the text looks centered
-			if (_numLines > 1)
-			{
-				for (int i = 0; i < _numLines; i++)
-				{
-					final String subString = (String) _subStrings.elementAt(i);
-
-					// Calculate the width of this portion of the string
-					// and use it to figure out the left-right centering.
-					final int lineWidth = dest.getStringWidth(getFont(), subString);
-					// System.out.println("wid of|" + subString + "| is:" + lineWidth);
-
-					xpos = thePoint.x;// - (lineWidth) / 2;
-					xpos += (_myWidth - lineWidth) / 2;
-
-					dest.drawText(theFont, subString, xpos, ypos);
-					ypos += lineHeight;
-				}
-			}
-			else
-			// single line of text
-			{
-				xpos = thePoint.x;// - (lineWidth) / 2;
-
-				// move to the right, by this 1/2 of the distance between
-				// this widht and the longest width
-
-				dest.drawText(theFont, theStr, xpos, ypos);
-			}
-			break;
-		}
-
-		case JLabel.RIGHT:
-		{
-			// Just set xpos = 0 for each line
-			if (_numLines > 1)
-			{
-				for (int i = 0; i < _numLines; i++)
-				{
-					final String subString = (String) _subStrings.elementAt(i);
-					dest.drawText(subString, 0, ypos);
-					ypos += lineHeight;
-				}
-			}
-			else
-			{
-				dest.drawText(theStr, 0, ypos);
-			}
-			break;
-		}
-
-		case JLabel.LEFT:
-		{
-			// Using the size of the component, adjust each line
-			// to the right so that the ends of them all line up
-
-			if (_numLines > 1)
-			{
-				for (int i = 0; i < _numLines; i++)
-				{
-					String subString = (String) _subStrings.elementAt(i);
-
-					// trim off the white-space
-					subString = subString.trim();
-
-					// Calculate the width of this portion of the string
-					// and adjust its X position accordingly.
-					// int lineWidth = dest.getStringWidth(getFont(), subString);
-					// xpos = labelWidth - insets.right - lineWidth;
-
-					dest.drawText(subString, xpos, ypos);
-					ypos += lineHeight;
-				}
-			}
-			else
-			{
-				// xpos = labelWidth - insets.right - _maxLineWidth;
-				dest.drawText(theStr, xpos, ypos);
-			}
-			break;
-		} // case RIGHT:
-		}
-
-	}
-
-	public void paint(final CanvasType dest)
-	{
-		// check if we're visible
-		if (!getVisible())
-			return;
-
-		if (getString().trim().length() == 0)
-			return;
-
-		// get an updated centre, if we want to!
-		if (_theShape != null)
-		{
-			_theLocation = _theShape.getAnchor(_theRelativeLocation);
-		}
-
-		// convert the location
-		final java.awt.Point theOrigin = dest.toScreen(_theLocation);
-		
-		if(theOrigin==null)
-			return;
-
-		// sort out the color
-		final Color myColor = getColor();
-		dest.setColor(myColor);
-
-		// determine the height of the font in screen coordinates
-		final int lineHeight = dest.getStringHeight(getFont());
-		final int numLines = getNumberOfLinesIn(getString());
-		int blockHeight = lineHeight * numLines;
-		blockHeight += (int) (((double) lineHeight * 0.2d) * (numLines - 1));
-		final String longestLine = getLongestLineIn(getString().trim());
-
-		// note, we cache the string width, to reduce computation
-		if (_myWidth == UNKNOWN_WIDTH)
-			_myWidth = dest.getStringWidth(getFont(), longestLine);
-
-		final Point offset = getOffset(_myWidth, lineHeight, blockHeight);
-
-		// offset the central location
-		final Point newP = new Point(theOrigin);
-		newP.translate(offset.x, offset.y);
-
-		if (_theFont != null)
-		{
-			this.paintMultiLine(dest, _theString, _theFont, newP);
-		}
-		else
-		{
-			MWC.Utilities.Errors.Trace
-					.trace("Problem with painting label - font not found.");
-		}
-
-	}
-
-	// allow an external class to set a border around the anchor
-	public void setFixedOffset(final java.awt.Dimension offset)
-	{
-		_theFixedOffset = offset;
-	}
-
-	/**
-	 * calculate the offset to use to put us the indicated height and width away
-	 * from the anchor point
-	 */
-	public Point getOffset(final int wid, final int lineHeight, final int blockHeight)
-	{
-		final Point res;
-
-		// System.out.println("for text:" + getString() + " width is:" + wid +
-		// " line ht is:" + lineHeight + " block ht is:" + blockHeight +
-		// " offset ht:" + _theFixedOffset.height);
-
-		final int verticalBalance = lineHeight - 5;
-		final int horizBalance = 2;
+  // ////////////////////////////////////////////////
+  // member variables
+  // ////////////////////////////////////////////////
+
+  /**
+   * keep track of versions
+   */
+  static final long serialVersionUID = 1;
+
+  /**
+   * the string to display
+   */
+  private String _theString;
+
+  /**
+   * the origin of this label
+   */
+  private WorldLocation _theLocation;
+
+  /**
+   * the location of the label, in relation to some fixed point.
+   * 
+   * @see MWC.GUI.Properties.LocationPropertyEditor for more details
+   */
+  private int _theRelativeLocation;
+
+  /**
+   * a fixed offset to apply to the text - this allows a "no go" area around the text anchor, such
+   * as when we use a symbol
+   */
+  private java.awt.Dimension _theFixedOffset = null;
+
+  /**
+   * the shape which provides us with it's dynamic anchor point
+   */
+  private PlainShape _theShape;
+
+  /**
+   * the newline character combination to use
+   */
+  public static final String NEWLINE_MARKER = "\n";
+
+  /**
+   * the width of the string, the last time it was calculated
+   */
+  private int _myWidth = UNKNOWN_WIDTH;
+
+  /**
+   * keep an invalid value - so we know when it's unset
+   */
+  static private final int UNKNOWN_WIDTH = -1;
+
+  // ////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////
+
+  /**
+   * constructor which is used when we have a single, fixed centre
+   */
+  public TextLabel(final WorldLocation theLocation, final String theString)
+  {
+    this();
+
+    _theString = theString;
+    _theLocation = theLocation;
+  }
+
+  /**
+   * constructor which is used when we the shape may want to update it's anchor point
+   */
+  public TextLabel(final PlainShape theShape, final String theString)
+  {
+    this();
+
+    _theString = replaceNewLines(theString);
+    _theShape = theShape;
+  }
+
+  private TextLabel()
+  {
+    super(0, "Text");
+
+    _theRelativeLocation = LocationPropertyEditor.LEFT;
+    setFont(Defaults.getFont());
+    _theFixedOffset = new java.awt.Dimension(0, 0);
+  }
+
+  protected String replaceNewLines(final String inStr)
+  {
+    return inStr == null ? inStr : inStr.replace("\\n", "\n");
+  }
+
+  // ////////////////////////////////////////////////
+  // member functions
+  // ////////////////////////////////////////////////
+
+  public void setRelativeLocation(final Integer val)
+  {
+    _theRelativeLocation = val.intValue();
+  }
+
+  public Integer getRelativeLocation()
+  {
+    return new Integer(_theRelativeLocation);
+  }
+
+  public void setString(final String theString)
+  {
+    _theString = theString;
+
+    resetWidth();
+  }
+
+  public String getString()
+  {
+    if (_theString == null)
+      return "";
+    return _theString;
+  }
+
+
+  public void setFont(final Font theFont)
+  {
+    super.setFont(theFont);
+
+    resetWidth();
+  }
+
+  private void resetWidth()
+  {
+    // ok, reset the width
+    _myWidth = UNKNOWN_WIDTH;
+  }
+
+  private static int getNumberOfLinesIn(final String baseLine)
+  {
+    int _numLines = 1;
+    int start = 0;
+    int newlineAt;
+
+    // break it up into a Vector of substrings,
+    // one substring for each line.
+
+    while ((newlineAt = baseLine.indexOf(NEWLINE_MARKER, start)) > 0)
+    {
+      _numLines++;
+      start = newlineAt + 2;
+    }
+
+    return _numLines;
+  }
+
+  private static String getLongestLineIn(final String baseLine)
+  {
+    String longestLine = null;
+
+    String sub;
+
+    // break it up into a Vector of substrings,
+    // one substring for each line.
+    final StringTokenizer t = new StringTokenizer(baseLine, "\n");
+    final int num_lines = t.countTokens();
+    for (int i = 0; i < num_lines; i++)
+    {
+      sub = t.nextToken().trim();
+      if (longestLine == null)
+      {
+        longestLine = sub;
+      }
+      else
+      {
+        if (sub.length() > longestLine.length())
+        {
+          longestLine = sub;
+        }
+      }
+    }
+
+    return longestLine;
+
+  }
+
+  /**
+   * support class which handles plotting a multi-line label
+   * 
+   * @param dest
+   * @param theStr
+   * @param theFont
+   */
+  private void paintMultiLine(final CanvasType dest, final String theStr,
+      final Font theFont, final Point thePoint)
+  {
+    int _numLines = 0;
+    final Vector<String> _subStrings = new Vector<String>();
+
+    // break it up into a Vector of substrings,
+    // one substring for each line.
+
+    // break it up into a Vector of substrings,
+    // one substring for each line.
+    final StringTokenizer t = new StringTokenizer(theStr, "\n");
+    _numLines = t.countTokens();
+    for (int i = 0; i < _numLines; i++)
+    {
+      // _subStrings.add(t.nextToken());
+      // Note: we used to do a 'trim' of the text to ditch any
+      // stray chars. We don't do it now, so users can use padding spaces
+      // Note: and we've reinstated it
+      _subStrings.add(t.nextToken().trim());
+    }
+
+    int lineHeight = dest.getStringHeight(getFont());
+
+    // SWT - increase the gap between the lines
+    // add 10% line spacing
+    if (_numLines > 1)
+      lineHeight = (int) (lineHeight * 1.3d);
+
+    int ypos = thePoint.y;
+    int xpos = thePoint.x;
+
+    final int HorizonalAlignment = JLabel.CENTER;
+
+    switch (HorizonalAlignment)
+    {
+      case JLabel.CENTER:
+      {
+        // Using the size of the component (based on the size
+        // of the largest line), figure out how to adjust each
+        // line so that the text looks centered
+        if (_numLines > 1)
+        {
+          for (int i = 0; i < _numLines; i++)
+          {
+            final String subString = (String) _subStrings.elementAt(i);
+
+            // Calculate the width of this portion of the string
+            // and use it to figure out the left-right centering.
+            final int lineWidth = dest.getStringWidth(getFont(), subString);
+            // System.out.println("wid of|" + subString + "| is:" + lineWidth);
+
+            xpos = thePoint.x;// - (lineWidth) / 2;
+            xpos += (_myWidth - lineWidth) / 2;
+
+            dest.drawText(theFont, subString, xpos, ypos);
+            ypos += lineHeight;
+          }
+        }
+        else
+        // single line of text
+        {
+          xpos = thePoint.x;// - (lineWidth) / 2;
+
+          // move to the right, by this 1/2 of the distance between
+          // this widht and the longest width
+
+          dest.drawText(theFont, theStr, xpos, ypos);
+        }
+        break;
+      }
+
+      case JLabel.RIGHT:
+      {
+        // Just set xpos = 0 for each line
+        if (_numLines > 1)
+        {
+          for (int i = 0; i < _numLines; i++)
+          {
+            final String subString = (String) _subStrings.elementAt(i);
+            dest.drawText(subString, 0, ypos);
+            ypos += lineHeight;
+          }
+        }
+        else
+        {
+          dest.drawText(theStr, 0, ypos);
+        }
+        break;
+      }
+
+      case JLabel.LEFT:
+      {
+        // Using the size of the component, adjust each line
+        // to the right so that the ends of them all line up
+
+        if (_numLines > 1)
+        {
+          for (int i = 0; i < _numLines; i++)
+          {
+            String subString = (String) _subStrings.elementAt(i);
+
+            // trim off the white-space
+            subString = subString.trim();
+
+            // Calculate the width of this portion of the string
+            // and adjust its X position accordingly.
+            // int lineWidth = dest.getStringWidth(getFont(), subString);
+            // xpos = labelWidth - insets.right - lineWidth;
+
+            dest.drawText(subString, xpos, ypos);
+            ypos += lineHeight;
+          }
+        }
+        else
+        {
+          // xpos = labelWidth - insets.right - _maxLineWidth;
+          dest.drawText(theStr, xpos, ypos);
+        }
+        break;
+      } // case RIGHT:
+    }
+
+  }
+
+  public void paint(final CanvasType dest)
+  {
+    // check if we're visible
+    if (!getVisible())
+      return;
+
+    if (getString().trim().length() == 0)
+      return;
+
+    // get an updated centre, if we want to!
+    if (_theShape != null)
+    {
+      _theLocation = _theShape.getAnchor(_theRelativeLocation);
+    }
+
+    // convert the location
+    final java.awt.Point theOrigin = dest.toScreen(_theLocation);
+
+    if (theOrigin == null)
+      return;
+
+    // sort out the color
+    final Color myColor = getColor();
+    dest.setColor(myColor);
+
+    // determine the height of the font in screen coordinates
+    final int lineHeight = dest.getStringHeight(getFont());
+    final int numLines = getNumberOfLinesIn(getString());
+    int blockHeight = lineHeight * numLines;
+    blockHeight += (int) (((double) lineHeight * 0.2d) * (numLines - 1));
+    final String longestLine = getLongestLineIn(getString().trim());
+
+    // note, we cache the string width, to reduce computation
+    if (_myWidth == UNKNOWN_WIDTH)
+      _myWidth = dest.getStringWidth(getFont(), longestLine);
+
+    final Point offset = getOffset(_myWidth, lineHeight, blockHeight);
+
+    // offset the central location
+    final Point newP = new Point(theOrigin);
+    newP.translate(offset.x, offset.y);
+
+    if (getFont() != null)
+    {
+      this.paintMultiLine(dest, _theString, getFont(), newP);
+    }
+    else
+    {
+      MWC.Utilities.Errors.Trace.trace(
+          "Problem with painting label - font not found.");
+    }
+
+  }
+
+  // allow an external class to set a border around the anchor
+  public void setFixedOffset(final java.awt.Dimension offset)
+  {
+    _theFixedOffset = offset;
+  }
+
+  /**
+   * calculate the offset to use to put us the indicated height and width away from the anchor point
+   */
+  public Point getOffset(final int wid, final int lineHeight,
+      final int blockHeight)
+  {
+    final Point res;
+
+    // System.out.println("for text:" + getString() + " width is:" + wid +
+    // " line ht is:" + lineHeight + " block ht is:" + blockHeight +
+    // " offset ht:" + _theFixedOffset.height);
+
+    final int verticalBalance = lineHeight - 5;
+    final int horizBalance = 4;
 
     // where are we to be positioned
     switch (_theRelativeLocation)
     {
       case LocationPropertyEditor.LEFT:
-        res = new Point(-(wid + horizBalance) - 2, -(blockHeight / 2) + 1);
+        res = new Point(-(wid + horizBalance) - 2, -(blockHeight / 2) + 3);
         res.translate(-_theFixedOffset.width / 2, verticalBalance);
         break;
       case LocationPropertyEditor.RIGHT:
-        res = new Point(horizBalance + 4, -(blockHeight / 2) + 2);
+        res = new Point(horizBalance + 6, -(blockHeight / 2) + 4);
         res.translate(_theFixedOffset.width / 2, verticalBalance);
         break;
       case LocationPropertyEditor.TOP:
-        res =
-            new Point(-wid / 2 - horizBalance / 2, -(blockHeight - lineHeight));
+        res = new Point(-wid / 2 - horizBalance / 2, -(blockHeight
+            - lineHeight));
         res.translate(0, -_theFixedOffset.height - verticalBalance);
         break;
       case LocationPropertyEditor.BOTTOM:
@@ -628,59 +606,59 @@ public class TextLabel extends PlainShape implements Editable
 
     // System.out.println("res is:" + res);
 
-		return res;
-	}
+    return res;
+  }
 
-	public void setLocation(final MWC.GenericData.WorldLocation loc)
-	{
-		_theLocation = loc;
-	}
+  public void setLocation(final MWC.GenericData.WorldLocation loc)
+  {
+    _theLocation = loc;
+  }
 
-	public WorldLocation getLocation()
-	{
-		return _theLocation;
-	}
+  public WorldLocation getLocation()
+  {
+    return _theLocation;
+  }
 
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return new MWC.GenericData.WorldArea(_theLocation, _theLocation);
-	}
+  public MWC.GenericData.WorldArea getBounds()
+  {
+    return new MWC.GenericData.WorldArea(_theLocation, _theLocation);
+  }
 
-	/**
-	 * get the range from the indicated world location - making this abstract
-	 * allows for individual shapes to have 'hit-spots' in various locations.
-	 */
-	public double rangeFrom(final WorldLocation point)
-	{
-		return _theLocation.rangeFrom(point);
-	}
+  /**
+   * get the range from the indicated world location - making this abstract allows for individual
+   * shapes to have 'hit-spots' in various locations.
+   */
+  public double rangeFrom(final WorldLocation point)
+  {
+    return _theLocation.rangeFrom(point);
+  }
 
-	public boolean hasEditor()
-	{
-		return false;
-	}
+  public boolean hasEditor()
+  {
+    return false;
+  }
 
-	public Editable.EditorType getInfo()
-	{
-		return null;
-	}
+  public Editable.EditorType getInfo()
+  {
+    return null;
+  }
 
-	/**
-	 * get the 'anchor point' for any labels attached to this shape
-	 */
-	public MWC.GenericData.WorldLocation getAnchor()
-	{
-		return _theLocation;
-	}
+  /**
+   * get the 'anchor point' for any labels attached to this shape
+   */
+  public MWC.GenericData.WorldLocation getAnchor()
+  {
+    return _theLocation;
+  }
 
-	/**
-	 * ok, shift this shape
-	 * 
-	 * @param vector
-	 */
-	public void shift(final WorldVector vector)
-	{
-		setLocation(getLocation().add(vector));
-	}
+  /**
+   * ok, shift this shape
+   * 
+   * @param vector
+   */
+  public void shift(final WorldVector vector)
+  {
+    setLocation(getLocation().add(vector));
+  }
 
 }
