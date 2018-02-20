@@ -749,6 +749,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               c.setNotify(true); // force redraw
             }
           }
+
+          @Override
+          public void restoreAutoBounds()
+          {
+            // we also need to clear the cached date labels
+            final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
+                .getDomainAxis();
+            axis.clearTicks();
+
+            // let the parent refresh
+            super.restoreAutoBounds();
+          }
         };
 
     // hey - now create the stacked plot!
