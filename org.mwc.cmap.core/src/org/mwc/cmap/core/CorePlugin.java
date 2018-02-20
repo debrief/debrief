@@ -14,9 +14,8 @@
  */
 package org.mwc.cmap.core;
 
-import interfaces.IEarthModelProvider;
-
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
@@ -53,6 +52,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -81,6 +81,8 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.EarthModel;
+import MWC.GUI.Defaults;
+import MWC.GUI.Defaults.FontProvider;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
@@ -90,11 +92,13 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
+import interfaces.IEarthModelProvider;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
+public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
+    FontProvider
 {
 
   /**
@@ -136,12 +140,13 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   public static final String LIVE_DATA_MONITOR = "org.mwc.cmap.LiveDataMonitor";
   private static final String EARTH_MODEL_PROVIDER =
       "org.mwc.cmap.core.EarthModelProvider";
-  
-  /** preference for detault font size
+
+  /**
+   * preference for detault font size
    * 
    */
   public static final String DEFAULT_FONT = "DefaultFont";
-  
+
   /**
    * support for lat/long editor in grid editor
    * 
@@ -185,8 +190,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     @Override
     public boolean preShutdown(IWorkbench workbench, boolean forced)
     {
-      IWorkbenchWindow[] windows =
-          PlatformUI.getWorkbench().getWorkbenchWindows();
+      IWorkbenchWindow[] windows = PlatformUI.getWorkbench()
+          .getWorkbenchWindows();
       for (IWorkbenchWindow window : windows)
       {
         IWorkbenchPage page = window.getActivePage();
@@ -208,6 +213,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     {
     }
   };
+
+  private Font _defaultFont;
 
   /**
    * The constructor.
@@ -276,8 +283,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
 
     // and the old error logger
     Trace.initialise(_toolParent);
-    
+
     NewFormattedJFreeChart.initialise(_toolParent);
+
+    /**
+     * accessor for cmap legacy classes
+     * 
+     */
+    Defaults.setProvider(this);
 
     // the VPF database may wish to announce some kind of warning
     // if it can't find it's data
@@ -290,7 +303,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   }
 
   /**
-   * This method is called when the plug-in is stopped
+   * This m§ethod is called when the plug-in is stopped
    */
   public void stop(final BundleContext context) throws Exception
   {
@@ -336,8 +349,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   {
 
     // create the clipboard buffer
-    final java.awt.datatransfer.Clipboard clip =
-        java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+    final java.awt.datatransfer.Clipboard clip = java.awt.Toolkit
+        .getDefaultToolkit().getSystemClipboard();
 
     // put the string in a holder
     final StringSelection sel = new java.awt.datatransfer.StringSelection(txt);
@@ -387,8 +400,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
       @Override
       public void run()
       {
-        IWorkbenchWindow window =
-            PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+        IWorkbenchWindow window = PlatformUI.getWorkbench()
+            .getActiveWorkbenchWindow();
         if (window != null)
         {
           IWorkbenchPage page = getActivePage();
@@ -437,8 +450,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     try
     {
       if (resourceBundle == null)
-        resourceBundle =
-            ResourceBundle.getBundle("org.mwc.cmap.core.CorePluginResources");
+        resourceBundle = ResourceBundle.getBundle(
+            "org.mwc.cmap.core.CorePluginResources");
     }
     catch (final MissingResourceException x)
     {
@@ -490,8 +503,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
           // now update the selection
           if (selectionListeners != null)
           {
-            final SelectionChangedEvent sEvent =
-                new SelectionChangedEvent(selectionProvider, asSelection);
+            final SelectionChangedEvent sEvent = new SelectionChangedEvent(
+                selectionProvider, asSelection);
             for (final Iterator<ISelectionChangedListener> stepper =
                 selectionListeners.iterator(); stepper.hasNext();)
             {
@@ -510,7 +523,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
         catch (final PartInitException e)
         {
           logError(Status.ERROR,
-              "Failed to open properties view when showing timer properties", e);
+              "Failed to open properties view when showing timer properties",
+              e);
         }
       }
     });
@@ -530,8 +544,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     {
 
       // get rid of the title
-      final String dataPart =
-          txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt.length());
+      final String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(),
+          txt.length());
       final StringTokenizer st = new StringTokenizer(dataPart);
       final String latP = st.nextToken(",");
       final String longP = st.nextToken(",");
@@ -539,9 +553,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
       final Double _lat = new Double(latP);
       final Double _long = new Double(longP);
       final Double _depth = new Double(depthP);
-      res =
-          new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
-              .doubleValue());
+      res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
+          .doubleValue());
     }
     else
     {
@@ -585,15 +598,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
           try
           {
             // For some reason it is now represented as a " rather than \u2032"
-            final Sexagesimal latVal =
-                SexagesimalSupport._DD_MM_SS_SSS.parse(latString.replaceAll(
-                    "\"", "\u2033").replaceAll("'", "\u2032"), false);
-            final Sexagesimal longVal =
-                SexagesimalSupport._DD_MM_SS_SSS.parse(longString.replaceAll(
-                    "\"", "\u2033").replaceAll("'", "\u2032"), true);
-            res =
-                new WorldLocation(latVal.getCombinedDegrees(), longVal
-                    .getCombinedDegrees(), 0d);
+            final Sexagesimal latVal = SexagesimalSupport._DD_MM_SS_SSS.parse(
+                latString.replaceAll("\"", "\u2033").replaceAll("'", "\u2032"),
+                false);
+            final Sexagesimal longVal = SexagesimalSupport._DD_MM_SS_SSS.parse(
+                longString.replaceAll("\"", "\u2033").replaceAll("'", "\u2032"),
+                true);
+            res = new WorldLocation(latVal.getCombinedDegrees(), longVal
+                .getCombinedDegrees(), 0d);
           }
           catch (final Exception e)
           {
@@ -615,17 +627,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
           final Double longMin = MWCXMLReader.readThisDouble(st.nextToken());
           final Double longSec = MWCXMLReader.readThisDouble(st.nextToken());
           final char longHem = st.nextToken().charAt(0);
-          res =
-              new WorldLocation(latDegs, latMin, latSec, latHem, longDegs,
-                  longMin, longSec, longHem, 0);
+          res = new WorldLocation(latDegs, latMin, latSec, latHem, longDegs,
+              longMin, longSec, longHem, 0);
         }
         catch (final Exception e)
         {
-          CorePlugin
-              .logError(
-                  Status.ERROR,
-                  "whilst trying to get (dd mm ss.ss H dd mm ss.ss h) location off clipboard",
-                  e);
+          CorePlugin.logError(Status.ERROR,
+              "whilst trying to get (dd mm ss.ss H dd mm ss.ss h) location off clipboard",
+              e);
         }
       }
       else if (numTokens == 6)
@@ -638,17 +647,14 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
           final Double longDegs = MWCXMLReader.readThisDouble(st.nextToken());
           final Double longMin = MWCXMLReader.readThisDouble(st.nextToken());
           final char longHem = st.nextToken().charAt(0);
-          res =
-              new WorldLocation(latDegs, latMin, 0, latHem, longDegs, longMin,
-                  0, longHem, 0);
+          res = new WorldLocation(latDegs, latMin, 0, latHem, longDegs, longMin,
+              0, longHem, 0);
         }
         catch (final Exception e)
         {
-          CorePlugin
-              .logError(
-                  Status.ERROR,
-                  "whilst trying to get (dd mm.mmm H dd mm.mmm h) location off clipboard",
-                  e);
+          CorePlugin.logError(Status.ERROR,
+              "whilst trying to get (dd mm.mmm H dd mm.mmm h) location off clipboard",
+              e);
         }
       }
     }
@@ -664,9 +670,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
    */
   public static String toClipboard(final WorldLocation loc)
   {
-    final String res =
-        LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc.getLong() + ","
-            + loc.getDepth();
+    final String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc
+        .getLong() + "," + loc.getDepth();
     return res;
   }
 
@@ -728,9 +733,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     {
       if (exception == null)
       {
-        exception =
-            new RuntimeException(
-                "Artificially generated, to get diagnostics stack");
+        exception = new RuntimeException(
+            "Artificially generated, to get diagnostics stack");
         fullMessage = message;
       }
       else
@@ -753,9 +757,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     final CorePlugin singleton = getDefault();
     if (singleton != null)
     {
-      final Status stat =
-          new Status(severity, "org.mwc.cmap.core", Status.OK, fullMessage,
-              exception);
+      final Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK,
+          fullMessage, exception);
       singleton.getLog().log(stat);
     }
 
@@ -771,7 +774,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     {
       plugin._imageRegistry = new ImageRegistry();
     }
-    
+
     // ok, done
     return plugin._imageRegistry;
   }
@@ -785,7 +788,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     {
       // nope, add it
       getRegistry().put(name.toString(), name);
-      
+
       // and retrieve it
       res = getRegistry().get(name.toString());
     }
@@ -794,15 +797,13 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     return res;
   }
 
-
   public static Image extendedGetImageFromRegistry(final String name)
-  { 
+  {
     ImageDescriptor desc = getImageDescriptor(name);
     if (desc == null)
     {
-      final Status status =
-          new Status(IStatus.ERROR, "org.mwc.cmap.core", "Missing image "
-              + name);
+      final Status status = new Status(IStatus.ERROR, "org.mwc.cmap.core",
+          "Missing image " + name);
       getDefault().getLog().log(status);
       return null;
     }
@@ -810,7 +811,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     return getImageFromRegistry(desc);
   }
 
-  
   public static Image getImageFromRegistry(final String name)
   {
     return extendedGetImageFromRegistry("icons/16/" + name);
@@ -958,7 +958,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
         .getWorkbenchWindow().getWorkbench().getHelpSystem());
   }
 
-
   /**
    * make it easy to declare context sensitive help
    * 
@@ -985,7 +984,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
     }
     catch (final PartInitException e)
     {
-      logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
+      logError(Status.ERROR, "Failed to open secondary " + viewName + "view",
+          e);
     }
     return res;
   }
@@ -993,9 +993,10 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   public SexagesimalFormat getLocationFormat()
   {
     final IPreferenceStore preferenceStore = getPreferenceStore();
-    final String format = preferenceStore.getString(PREF_BASE60_FORMAT_NO_SECONDS);
+    final String format = preferenceStore.getString(
+        PREF_BASE60_FORMAT_NO_SECONDS);
     final SexagesimalFormat res;
-    switch(format)
+    switch (format)
     {
       case LocationFormatPreferencePage.LABEL_DD_DDD:
         res = SexagesimalSupport._DD_DDD;
@@ -1088,8 +1089,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
   private void evaluateEarthModelProviderExtension(
       final IExtensionRegistry registry) throws CoreException
   {
-    final IConfigurationElement[] config =
-        registry.getConfigurationElementsFor(EARTH_MODEL_PROVIDER);
+    final IConfigurationElement[] config = registry.getConfigurationElementsFor(
+        EARTH_MODEL_PROVIDER);
     int extension_count = 0;
     Object extension = null;
     for (final IConfigurationElement e : config)
@@ -1127,6 +1128,31 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner
       }
     };
     SafeRunner.run(runnable);
+  }
+
+  public void clearDefaultFont()
+  {
+    _defaultFont = null;
+  }
+
+  @Override
+  public Font getDefaultFont()
+  {
+    if (_defaultFont == null)
+    {
+      String pref = getToolParent().getProperty(DEFAULT_FONT);
+      if (pref != null && pref.length() > 0)
+      {
+        FontData font = new FontData(pref);
+        _defaultFont = new Font(font.getName(), font.getStyle(), font
+            .getHeight());
+      }
+      else
+      {
+        _defaultFont = new Font("Arial", Font.PLAIN, 10);
+      }
+    }
+    return _defaultFont;
   }
 
 }
