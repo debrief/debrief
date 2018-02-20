@@ -20,6 +20,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -76,8 +77,23 @@ import MWC.TacticalData.Fix;
  */
 public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 {
+  private static class Doublet implements Serializable
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private final WorldVector _vector;
+    private final Color _color;
 
-  private static class BearingList extends HashMap<HiResDate, WorldVector>
+    public Doublet(WorldVector vector, Color color)
+    {
+      _vector = vector;
+      _color = color;
+    }
+  }
+  
+  private static class BearingList extends HashMap<HiResDate, Doublet>
   {
 
     /**
@@ -145,7 +161,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
             final FixWrapper near = (FixWrapper) nearest[0];
             final WorldVector offset = nextF.getLocation().subtract(near
                 .getLocation());
-            bearings.put(tNow, offset);
+            bearings.put(tNow, new Doublet(offset, nextF.getColor()));
           }
         }
 
@@ -238,7 +254,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
   {
 
     private static void createPointsFor(final TrackWrapper newTrack,
-        final BearingList offsets, final TrackWrapper refTrack)
+        final BearingList offsets, final TrackWrapper refTrack, final boolean retainColor)
     {
       // remember if the reference track is interpolated
       final boolean wasInterpolated = refTrack.getInterpolatePoints();
@@ -248,7 +264,8 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
       for (final HiResDate dtg : offsets.keySet())
       {
-        final WorldVector vector = offsets.get(dtg);
+        Doublet doublet = offsets.get(dtg);
+        final WorldVector vector = doublet._vector;
 
         // find nearest in the host
         final Watchable[] nearest = refTrack.getNearestTo(dtg);
@@ -266,6 +283,11 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
           // generate the fix
           final Fix newFix = new Fix(dtg, newLoc, 0d, 0d);
           final FixWrapper newFW = new FixWrapper(newFix);
+          
+          if(retainColor)
+          {
+            newFW.setColor(doublet._color);
+          }
 
           newFW.resetName();
 
@@ -290,14 +312,16 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
      *
      */
     private TrackWrapper _newTrack;
+    private final boolean _retainColor;
 
     public PasteBearingData(final String title, final Layers layers,
-        final BearingListList bearingList, final TrackWrapper referenceTrack)
+        final BearingListList bearingList, final TrackWrapper referenceTrack, final boolean retainColor)
     {
       super(title);
       _layers = layers;
       _referenceTrack = referenceTrack;
       _offsets = bearingList;
+      _retainColor = retainColor;
     }
 
     @Override
@@ -312,7 +336,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
         _newTrack.setColor(track.getColor());
 
         // now write the points
-        createPointsFor(_newTrack, track, _referenceTrack);
+        createPointsFor(_newTrack, track, _referenceTrack, _retainColor);
 
         // and store the track
         _layers.addThisLayer(_newTrack);
@@ -757,7 +781,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
       };
 
       convertToTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
-          "icons\\16\\copy.png"));
+          "icons/16/copy.png"));
 
       // stick in the "before" separator
       parent.add(new Separator());
@@ -831,7 +855,21 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
                   // ok, go for it.
                   // sort it out as an operation
                   final IUndoableOperation copyBearings = new PasteBearingData(
-                      title, theLayers, bearingList, track);
+                      title, theLayers, bearingList, track, false);
+
+                  // ok, stick it on the buffer
+                  runIt(copyBearings);
+                }
+              };
+              final Action createNewTrackWithColor = new Action(title + " (retain colours)")
+              {
+                @Override
+                public void run()
+                {
+                  // ok, go for it.
+                  // sort it out as an operation
+                  final IUndoableOperation copyBearings = new PasteBearingData(
+                      title + " (retain colours)", theLayers, bearingList, track, true);
 
                   // ok, stick it on the buffer
                   runIt(copyBearings);
@@ -846,10 +884,13 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
               }
 
               createNewTrack.setImageDescriptor(CorePlugin.getImageDescriptor(
-                  "icons\\16\\paste.png"));
+                  "icons/16/paste.png"));
+              createNewTrackWithColor.setImageDescriptor(CorePlugin.getImageDescriptor(
+                  "icons/16/paste.png"));
 
               // ok - flash up the menu item
               parent.add(createNewTrack);
+              parent.add(createNewTrackWithColor);
             }
           }
         }

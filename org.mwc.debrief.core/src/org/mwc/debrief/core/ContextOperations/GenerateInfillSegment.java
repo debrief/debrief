@@ -1082,7 +1082,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               }
             };
             doMerge.setImageDescriptor(CorePlugin.getImageDescriptor(
-                "icons\\16\\generate_infill.png"));
+                "icons/16/generate_infill.png"));
             final String secondTitle = finalTitle + DELETE_SUFFIX;
             final Action doMergeAllowDelete = new Action(secondTitle)
             {
@@ -1097,7 +1097,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
               }
             };
             doMergeAllowDelete.setImageDescriptor(CorePlugin.getImageDescriptor(
-                "icons\\16\\generate_infill_delete.png"));
+                "icons/16/generate_infill_delete.png"));
             parent.add(new Separator());
             parent.add(doMerge);
             parent.add(doMergeAllowDelete);
