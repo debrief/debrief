@@ -16,8 +16,6 @@ package MWC.GenericData;
 
 import java.io.Serializable;
 
-import junit.framework.Assert;
-
 
 /**
  * class which represents a distance as a value plus a set of units
@@ -297,9 +295,9 @@ public boolean equals(final Object obj) {
 
     public final void testEquals()
     {
-    	final WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
-    	final WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
-    	Assert.assertEquals("distances should be equal", da, db);
+      final WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
+      final WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
+      assertEquals("distances should be equal", da, db);
     }
     
     public final void testStrings()

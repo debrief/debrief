@@ -264,6 +264,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -775,12 +776,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   transient private Editable.EditorType _myEditor = null;
 
   /**
-   * the plain font we use as a basis
-   * 
-   */
-  static public final Font PLAIN_FONT = new Font("Sans Serif", Font.PLAIN, 9);
-
-  /**
    * the current format we're using
    * 
    */
@@ -1003,7 +998,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // declare a duff track
     _trackWrapper = null;
     // start us off with a nice font
-    setFont(PLAIN_FONT);
+    setFont(Defaults.getFont());
     // whether to show symbol
     _showSymbol = false;
 

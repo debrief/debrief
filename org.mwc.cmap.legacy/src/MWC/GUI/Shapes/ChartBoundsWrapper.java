@@ -246,6 +246,7 @@ import java.beans.PropertyDescriptor;
 import java.io.File;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.FireReformatted;
@@ -390,7 +391,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 		// store the name of the shape
 		_theShape.setName(getName());
 
-		_theLabel.setFont(new Font("Sans Serif", Font.PLAIN, 9));
+		_theLabel.setFont(Defaults.getScaledFont(0.8f));
 		_theLabel.setColor(theColor);
 
 		// override the shape, just to be sure...

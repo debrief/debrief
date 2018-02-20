@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
@@ -239,8 +240,7 @@ public class TimeDisplayPainter implements Plottable, DynamicPlottable,
   /**
    * the font
    */
-  private java.awt.Font _myFont = new java.awt.Font("Arial",
-      java.awt.Font.PLAIN, 12);
+  private java.awt.Font _myFont = Defaults.getFont();
 
   private String _format = ABSOLUTE_DEFAULT_FORMAT;
 

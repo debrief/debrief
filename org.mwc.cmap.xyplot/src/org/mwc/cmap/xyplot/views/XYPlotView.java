@@ -97,6 +97,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.FontHelper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.RTFWriter;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
@@ -107,6 +108,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -404,7 +406,6 @@ public class XYPlotView extends ViewPart
         new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200, 1800,
             1800, true, false, true, true, true, true)
         {
-
           @Override
           public void mouseUp(MouseEvent event)
           {
@@ -415,8 +416,8 @@ public class XYPlotView extends ViewPart
               c.setNotify(true); // force redraw
             }
           }
-
         };
+    _plotControl.setFont(FontHelper.convertFontFromAWT(Defaults.getFont()));
 
     // and lastly do the remaining bits...
     makeActions();
@@ -590,8 +591,8 @@ public class XYPlotView extends ViewPart
 
     // the y axis is common to hi & lo res. Format it here
     final NumberAxis yAxis = new NumberAxis(units);
-    final Font tickFont = new Font("SansSerif", Font.PLAIN, 14);
-    Font labelFont = new Font("SansSerif", Font.PLAIN, 16);
+    final Font tickFont = Defaults.getFont();
+    Font labelFont = Defaults.getFont();
     yAxis.setLabelFont(labelFont);
     yAxis.setTickLabelFont(tickFont);
 
@@ -720,7 +721,7 @@ public class XYPlotView extends ViewPart
     // and the plot object to display the cross hair value
     _crosshairValueText = new XYTextAnnotation(" ", 0, 0);
     _crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
-    _crosshairValueText.setFont(new Font("SansSerif", Font.BOLD, 15));
+    _crosshairValueText.setFont(Defaults.getFont());
     _crosshairValueText.setPaint(Color.black);
     _crosshairValueText.setBackgroundPaint(Color.white);
     _thePlot.addAnnotation(_crosshairValueText);

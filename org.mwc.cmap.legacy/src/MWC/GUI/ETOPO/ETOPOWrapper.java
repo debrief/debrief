@@ -24,6 +24,7 @@ import java.awt.geom.Dimension2D;
 import java.awt.image.MemoryImageSource;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
@@ -79,7 +80,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
   private Color _myColor;
 
   /** the font we use for the key */
-  private static Font _myFont = new Font("Arial", Font.PLAIN, 12);
+  private static Font _myFont = Defaults.getScaledFont(0.8f);
 
 
   /** the image we plot

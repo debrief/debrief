@@ -28,6 +28,7 @@ import java.awt.Font;
 
 import org.w3c.dom.Element;
 
+import MWC.GUI.Defaults;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -54,8 +55,7 @@ abstract public class ScaleHandler extends MWCXMLReader  implements PlottableExp
   boolean _AutoMode;
   String _LabelLocation;
   String _displayUnits;
-	private java.awt.Font _myFont = new java.awt.Font("Arial",
-			java.awt.Font.PLAIN, 12);
+	private java.awt.Font _myFont = Defaults.getFont();
 
 	private boolean _fillBackground = false;
 

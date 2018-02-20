@@ -28,6 +28,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.FixWrapper;
+import MWC.GUI.Defaults;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -89,7 +90,7 @@ abstract public class FixHandler extends MWCXMLReader
 
     // and the font
     final java.awt.Font theFont = fix.getFont();
-    if (theFont != null && !theFont.equals(FixWrapper.PLAIN_FONT))
+    if (theFont != null && !theFont.equals(Defaults.getFont()))
     {
       // ok, it's non-standard export it.
       FontHandler.exportFont(theFont, eFix, doc);

@@ -133,6 +133,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.ExtendedCanvasType;
@@ -207,9 +208,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
   /**
    * the font we use for the D DifarSymbols
    */
-  private java.awt.Font _myFont = new java.awt.Font("Arial",
-                                                           java.awt.Font.PLAIN,
-                                                           12);
+  private java.awt.Font _myFont = Defaults.getFont();
   
   private boolean _fillBackground = false;
   

@@ -167,6 +167,7 @@ import java.text.DecimalFormat;
 
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
@@ -188,7 +189,7 @@ public class GridPainter implements Plottable, Serializable
 	/**
 	 * the font to use
 	 */
-	private Font _theFont = new Font("Sans Serif", Font.PLAIN, 8);
+  private Font _theFont = Defaults.getScaledFont(0.8f);
 
 	/**
 	 * the colour for this grid

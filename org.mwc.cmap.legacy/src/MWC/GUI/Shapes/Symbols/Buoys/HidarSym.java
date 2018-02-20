@@ -53,28 +53,25 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
-public class HidarSym extends PlainSymbol {
+public class HidarSym extends BuoySym
+{
 
   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	/** the font we use for the D DifarSymbols */
-  private static java.awt.Font _myFont = new java.awt.Font("Arial",
-                                                            java.awt.Font.PLAIN,
-                                                            12);
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-  public java.awt.Dimension getBounds(){
+  public java.awt.Dimension getBounds()
+  {
     // sort out the size of the symbol at the current scale factor
-    final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
+    final java.awt.Dimension res = new java.awt.Dimension((int) (2 * 4
+        * getScaleVal()), (int) (2 * 4 * getScaleVal()));
     return res;
   }
 
@@ -83,8 +80,8 @@ public class HidarSym extends PlainSymbol {
     paint(dest, centre, 0.0);
   }
 
-
-  public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
+  public void paint(final CanvasType dest, final WorldLocation theLocation,
+      final double direction)
   {
     // set the colour
     dest.setColor(getColor());
@@ -92,27 +89,29 @@ public class HidarSym extends PlainSymbol {
     // create our centre point
     final java.awt.Point centre = dest.toScreen(theLocation);
 
-    final int wid = (int)(4 * getScaleVal());
+    final int wid = (int) (4 * getScaleVal());
 
     // draw our box, line by line
-    final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y - wid);
-    final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y + wid);
+    final java.awt.Point tl = new java.awt.Point(centre.x - wid, centre.y
+        - wid);
+    final java.awt.Point br = new java.awt.Point(centre.x + wid, centre.y
+        + wid);
 
-    if(!showSimplifiedSymbol())
+    if (!showSimplifiedSymbol())
     {
       // do the central character
       // what's the width?
       final String str = "H";
-      final int strW = dest.getStringWidth(_myFont,str);
+      final int strW = dest.getStringWidth(_myFont, str);
       final int strH = dest.getStringHeight(_myFont);
-      dest.drawText(_myFont, str, centre.x - strW/2, centre.y + strH/4);
+      dest.drawText(_myFont, str, centre.x - strW / 2, centre.y + strH / 4);
     }
 
     dest.drawLine(br.x, br.y, br.x, tl.y);
     dest.drawLine(br.x, tl.y, tl.x, tl.y);
-    dest.drawLine(tl.x, tl.y, tl.x, br.y - wid/2);
-    dest.drawLine(tl.x, br.y - wid/2, tl.x + wid / 2,br.y);
-    dest.drawLine(tl.x + wid / 2,br.y, br.x, br.y);
+    dest.drawLine(tl.x, tl.y, tl.x, br.y - wid / 2);
+    dest.drawLine(tl.x, br.y - wid / 2, tl.x + wid / 2, br.y);
+    dest.drawLine(tl.x + wid / 2, br.y, br.x, br.y);
   }
 
   public String getType()
@@ -121,7 +120,3 @@ public class HidarSym extends PlainSymbol {
   }
 
 }
-
-
-
-
