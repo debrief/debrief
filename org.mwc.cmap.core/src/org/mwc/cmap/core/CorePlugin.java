@@ -1162,4 +1162,10 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
     resourceBundle = null;
   }
 
+  @Override
+  public String getPreference(String name)
+  {
+    return getPreferenceStore().getString(name);
+  }
+
 }
