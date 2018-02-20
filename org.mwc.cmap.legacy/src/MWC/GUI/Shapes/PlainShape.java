@@ -132,6 +132,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
@@ -243,6 +244,9 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		sb.append(System.currentTimeMillis());
 
 		setName(sb.toString());
+		
+		// sort the default font
+		setFont(Defaults.getFont());
 
 		// declare the property support
 		_pSupport = new PropertyChangeSupport(this);
@@ -512,7 +516,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		_myFont = theFont;
 	}
 	
-	protected Font getFont()
+	public Font getFont()
 	{
 		return _myFont;
 	}
