@@ -7,6 +7,8 @@ public class Defaults
   public static interface FontProvider
   {
     public Font getDefaultFont();
+    
+    public String getPreference(final String name);
   }
 
   private static FontProvider _provider;
@@ -27,6 +29,12 @@ public class Defaults
     final Font res = pref != null ? pref : new Font("Arial",
         Font.PLAIN, 10);
       
+    return res;
+  }
+  
+  public static String getPreference(String prefName)
+  {
+    final String res = _provider != null ? _provider.getPreference(prefName) : null;
     return res;
   }
 }
