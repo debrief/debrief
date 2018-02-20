@@ -10,20 +10,14 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.gridharness;
 
-import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -31,8 +25,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
-
-import sun.awt.SunHints.LCDContrastKey;
 
 public class LocationFormatPreferencePage extends FieldEditorPreferencePage
     implements IWorkbenchPreferencePage
@@ -54,9 +46,11 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
   }
 
-  public void init(final IWorkbench workbench)
+  @Override
+  protected void adjustGridLayout()
   {
-    //
+    // DON'T BOTHER - WE HAVE OUR GRID. The parent call to this method
+    // mangles the layout of our form
   }
 
   @Override
@@ -129,9 +123,8 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage
 
   }
 
-  protected void adjustGridLayout()
+  @Override
+  public void init(IWorkbench workbench)
   {
-    // DON'T BOTHER - WE HAVE OUR GRID
   }
-
 }
