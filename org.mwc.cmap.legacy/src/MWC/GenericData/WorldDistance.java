@@ -16,8 +16,6 @@ package MWC.GenericData;
 
 import java.io.Serializable;
 
-import junit.framework.Assert;
-
 
 /**
  * class which represents a distance as a value plus a set of units
