@@ -15,6 +15,8 @@
 package MWC.GUI.JFreeChart;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -29,6 +31,59 @@ import MWC.GUI.Properties.AbstractPropertyEditor;
 
 public class DateAxisEditor extends AbstractPropertyEditor
 {
+
+  public static class DatedRNFormatter extends SimpleDateFormat
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * pattern for the on-the-day values. Note: we currently ignore this, since we just prepend the
+     * date value as a 2-digit value
+     */
+    @SuppressWarnings("unused")
+    private final String _datePattern;
+
+    /**
+     * Construct a SimpleDateFormat using the given pattern in the default locale. <b>Note:</b> Not
+     * all locales support SimpleDateFormat; for full generality, use the factory methods in the
+     * DateFormat class.
+     */
+    public DatedRNFormatter(final String pattern, final String datePattern)
+    {
+      super(pattern);
+
+      _datePattern = datePattern;
+
+      this.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public StringBuffer format(final Date arg0, final StringBuffer arg1,
+        final FieldPosition arg2)
+    {
+      StringBuffer timeBit = super.format(arg0, arg1, arg2);
+
+      // see if we're on the exact day
+      if ((arg0.getHours() == 0) && (arg0.getMinutes() == 0) && (arg0
+          .getSeconds() == 0))
+      {
+        // ok, use the suffix
+        final DecimalFormat df = new DecimalFormat("00");
+        final String prefix = df.format(arg0.getDate());
+        final StringBuffer res = new StringBuffer();
+        res.append(prefix);
+        res.append(timeBit);
+        timeBit = res;
+      }
+
+      return timeBit;
+    }
+
+  }
 
   /*****************************************************************************
    * class to store components of tick unit in accessible form
@@ -153,10 +208,6 @@ public class DateAxisEditor extends AbstractPropertyEditor
     }
   }
 
-  // ////////////////////////////////////////////////
-  // member variables
-  // ////////////////////////////////////////////////
-
   public static class OptimisedDateTickUnit extends DateTickUnit
   {
 
@@ -225,6 +276,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
     public RNFormatter(final String pattern)
     {
       super(pattern);
+
       this.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
   }
