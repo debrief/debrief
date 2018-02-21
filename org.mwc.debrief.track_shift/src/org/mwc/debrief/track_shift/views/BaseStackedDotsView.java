@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
@@ -47,7 +47,6 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -180,6 +179,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
+  final public static String AMBIG_NAME = "Measured (Ambiguous)";
+
   /*
    * Undo and redo actions
    */
@@ -187,12 +188,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private HandlerAction redoAction;
 
-  private IUndoContext undoContext;
-
   // private enum SliceMode
   // {
   // ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE, ARTIFICIAL_LEG;
   // }
+
+  private IUndoContext undoContext;
 
   private final IOperationHistory operationHistory =
       new DefaultOperationHistory();
@@ -239,30 +240,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * and the actual values
-   * 
+   *
    */
   protected XYPlot _linePlot;
 
   /**
    * and the actual values
-   * 
+   *
    */
   protected XYPlot _targetOverviewPlot;
 
   /**
    * declare the tgt course dataset, we need to give it to the renderer
-   * 
+   *
    */
   final protected TimeSeriesCollection _targetCourseSeries =
       new TimeSeriesCollection();
 
   /**
    * declare the tgt speed dataset, we need to give it to the renderer
-   * 
+   *
    */
   final protected TimeSeriesCollection _targetSpeedSeries =
       new TimeSeriesCollection();
-
   /**
    * legacy helper class
    */
@@ -273,9 +273,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TrackShiftListener _myShiftListener;
   /**
    * buttons for which plots to show
-   * 
+   *
    */
   protected Action _showLinePlot;
+
   protected Action _showDotPlot;
 
   protected Action _showTargetOverview;
@@ -284,7 +285,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * flag indicating whether we should show cross-hairs
-   * 
+   *
    */
   private Action _showCrossHairs;
 
@@ -320,40 +321,38 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private CombinedDomainXYPlot _combined;
 
-  final protected TrackDataListener _myTrackDataListener;
-
   // private Action _magicBtn;
+
+  final protected TrackDataListener _myTrackDataListener;
 
   /**
    * does our output need bearing in the data?
-   * 
+   *
    */
   private final boolean _needBrg;
 
   /**
    * does our output need frequency in the data?
-   * 
+   *
    */
   private final boolean _needFreq;
 
   protected Vector<ISelectionProvider> _selProviders;
-
   protected ISelectionChangedListener _mySelListener;
   protected Vector<DraggableItem> _draggableSelection;
   protected ZoneChart ownshipZoneChart;
   protected ZoneChart targetZoneChart;
+
   final protected TimeSeries ownshipCourseSeries = new TimeSeries(
       "Ownship course");
-
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
   final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
   final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
+
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
-
-  final public static String AMBIG_NAME = "Measured (Ambiguous)";
 
   private Precision _slicePrecision = Precision.MEDIUM;
   private Action _precisionOne;
@@ -365,7 +364,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private final PropertyChangeListener _infillListener;
   /**
    * text label associated with the cross-hair marker
-   * 
+   *
    */
   private XYTextAnnotation crossHairAnnotation;
 
@@ -374,7 +373,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected WrappingResidualRenderer _overviewCourseRenderer;
 
   /**
-   * 
+   *
    * @param needBrg
    *          if the algorithm needs bearing data
    * @param needFreq
@@ -412,14 +411,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
 
         // has the primary changed?
-        final boolean primarySame =
-            (_myHelper.getPrimaryTrack() != null)
-                && (_myHelper.getPrimaryTrack().equals(primary));
-        final boolean secSame =
-            ((_myHelper.getSecondaryTrack() != null) && secondaries != null
-                && secondaries.length == 1
-                && (_myHelper.getSecondaryTrack().equals(secondaries[0])) || _myHelper
-                .getSecondaryTrack() == null);
+        final boolean primarySame = (_myHelper.getPrimaryTrack() != null)
+            && (_myHelper.getPrimaryTrack().equals(primary));
+        final boolean secSame = ((_myHelper.getSecondaryTrack() != null)
+            && secondaries != null && secondaries.length == 1 && (_myHelper
+                .getSecondaryTrack().equals(secondaries[0])) || _myHelper
+                    .getSecondaryTrack() == null);
 
         // ok, have things changed?
         _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
@@ -461,7 +458,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * additional method, to allow extra items to be added before the segment modes
-   * 
+   *
    * @param toolBarManager
    */
   protected void addExtras(final IToolBarManager toolBarManager)
@@ -470,14 +467,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * whether it's possible to display the target overview plot
-   * 
+   *
    * @return
    */
   protected abstract boolean allowDisplayOfTargetOverview();
 
   /**
    * whether it's possible to display the zone chart
-   * 
+   *
    * @return
    */
   protected abstract boolean allowDisplayOfZoneChart();
@@ -587,9 +584,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         setEnabled(operationHistory.canUndo(undoContext));
         if (isEnabled())
         {
-          final String toolTipText =
-              "Undo "
-                  + operationHistory.getUndoOperation(undoContext).getLabel();
+          final String toolTipText = "Undo " + operationHistory
+              .getUndoOperation(undoContext).getLabel();
           setText(toolTipText);
           setToolTipText(toolTipText);
         }
@@ -602,10 +598,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     // todo:change to debrief version of icons
     undoAction.setText("Undo");
-    undoAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/undo.png"));
-    undoAction.setDisabledImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/undo.png"));
+    undoAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/undo.png"));
+    undoAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/undo.png"));
     undoAction.setActionDefinitionId(ActionFactory.UNDO.getCommandId());
     redoAction = new HandlerAction()
     {
@@ -629,9 +625,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         setEnabled(operationHistory.canRedo(undoContext));
         if (isEnabled())
         {
-          final String toolTipText =
-              "Redo "
-                  + operationHistory.getRedoOperation(undoContext).getLabel();
+          final String toolTipText = "Redo " + operationHistory
+              .getRedoOperation(undoContext).getLabel();
           setText(toolTipText);
           setToolTipText(toolTipText);
         }
@@ -645,10 +640,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // todo:change to debrief version of icons
     redoAction.setText("Redo");
-    redoAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/redo.png"));
-    redoAction.setDisabledImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/redo.png"));
+    redoAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/redo.png"));
+    redoAction.setDisabledImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/redo.png"));
     redoAction.setActionDefinitionId(ActionFactory.REDO.getCommandId());
 
     getViewSite().getPage().addPartListener(new IPartListener()
@@ -708,21 +703,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     });
 
-    operationHistory
-        .addOperationHistoryListener(new IOperationHistoryListener()
+    operationHistory.addOperationHistoryListener(new IOperationHistoryListener()
+    {
+      @Override
+      public void historyNotification(final OperationHistoryEvent event)
+      {
+        if (event.getEventType() == OperationHistoryEvent.REDONE || event
+            .getEventType() == OperationHistoryEvent.UNDONE)
         {
-          @Override
-          public void historyNotification(final OperationHistoryEvent event)
-          {
-            if (event.getEventType() == OperationHistoryEvent.REDONE
-                || event.getEventType() == OperationHistoryEvent.UNDONE)
-            {
-              undoAction.refreah();
-              redoAction.refreah();
-              actionBars.updateActionBars();
-            }
-          }
-        });
+          undoAction.refreah();
+          redoAction.refreah();
+          actionBars.updateActionBars();
+        }
+      }
+    });
   }
 
   /**
@@ -735,33 +729,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     createGlobalActionHandlers();
     parent.setLayout(new FillLayout(SWT.VERTICAL));
     final SashForm sashForm = new SashForm(parent, SWT.VERTICAL);
-    _holder =
-        new ChartComposite(sashForm, SWT.NONE, null, 400, 600, 300, 200, 1800,
-            1800, true, true, true, true, true, true)
+    _holder = new ChartComposite(sashForm, SWT.NONE, null, 400, 600, 300, 200,
+        1800, 1800, true, true, true, true, true, true)
+    {
+      @Override
+      public void mouseUp(final org.eclipse.swt.events.MouseEvent event)
+      {
+        super.mouseUp(event);
+        final JFreeChart c = getChart();
+        if (c != null)
         {
-          @Override
-          public void mouseUp(final org.eclipse.swt.events.MouseEvent event)
-          {
-            super.mouseUp(event);
-            final JFreeChart c = getChart();
-            if (c != null)
-            {
-              c.setNotify(true); // force redraw
-            }
-          }
+          c.setNotify(true); // force redraw
+        }
+      }
 
-          @Override
-          public void restoreAutoBounds()
-          {
-            // we also need to clear the cached date labels
-            final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
-                .getDomainAxis();
-            axis.clearTicks();
+      @Override
+      public void restoreAutoBounds()
+      {
+        // we also need to clear the cached date labels
+        final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
+            .getDomainAxis();
+        axis.clearTicks();
 
-            // let the parent refresh
-            super.restoreAutoBounds();
-          }
-        };
+        // let the parent refresh
+        super.restoreAutoBounds();
+      }
+    };
 
     // hey - now create the stacked plot!
     createStackedPlot();
@@ -807,8 +800,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // sort out the part monitor
-    _myPartMonitor =
-        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+    _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+        .getPartService());
 
     // now start listening out for people's parts
     watchMyParts();
@@ -833,9 +826,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // put the courses into a TimeSeries
     final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
 
-    final ZoneChartConfig oZoneConfig =
-        new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
-            DebriefColors.BLUE);
+    final ZoneChartConfig oZoneConfig = new ZoneChart.ZoneChartConfig(
+        "Ownship Legs", "Course", DebriefColors.BLUE);
 
     final Runnable deleteCutsInTurn = getDeleteCutsOperation();
     final Runnable resolveAmbiguity = getResolveAmbiguityOperation();
@@ -850,10 +842,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // {ambigScores};
     final TimeSeries[] scoreSeries = null;
 
-    ownshipZoneChart =
-        ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm, osZones,
-            ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
-            ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
+    ownshipZoneChart = ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm,
+        osZones, ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
+        ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
     ownshipZoneChart.updateControls();
 
     final Zone[] tgtZones = getTargetZones().toArray(new Zone[]
@@ -881,8 +872,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public boolean ambigDataPresent()
       {
         // don't worry. we shouldn't be doing this for this zone
-        System.err
-            .println("Should not be trying to check ambig cuts on target track");
+        System.err.println(
+            "Should not be trying to check ambig cuts on target track");
 
         return false;
       }
@@ -902,20 +893,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (secondary != null)
         {
           // now find data in the primary track
-          final TimePeriod period =
-              new TimePeriod.BaseTimePeriod(secondary.getStartDTG(), secondary
-                  .getEndDTG());
-          final List<SensorContactWrapper> bearings =
-              _myHelper.getBearings(_myHelper.getPrimaryTrack(), _onlyVisible
-                  .isChecked(), period);
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+              .getStartDTG(), secondary.getEndDTG());
+          final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+              _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
 
           // note: the slicer depends upon bearing. check we have bearing
-          if (bearings.size() > 0
-              && !Double.isNaN(bearings.get(0).getBearing()))
+          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0)
+              .getBearing()))
           {
-            res =
-                sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-                    secondary, _slicePrecision);
+            res = sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
+                secondary, _slicePrecision);
           }
           else
           {
@@ -933,28 +921,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void switchAmbiguousCuts(final Zone zone)
       {
         // don't worry. we shouldn't be doing this for this zone
-        System.err
-            .println("Should not be trying to switch cuts on a target track");
+        System.err.println(
+            "Should not be trying to switch cuts on a target track");
       }
     };
 
-    final ZoneChartConfig tZoneConfig =
-        new ZoneChart.ZoneChartConfig("Target Legs", "Bearing",
-            DebriefColors.RED);
+    final ZoneChartConfig tZoneConfig = new ZoneChart.ZoneChartConfig(
+        "Target Legs", "Bearing", DebriefColors.RED);
     final TimeSeries[] otherSeries = new TimeSeries[]
     {targetCalculatedSeries};
-    targetZoneChart =
-        ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm, tgtZones,
-            targetBearingSeries, otherSeries, null, randomProv,
-            targetLegSlicer, null, null);
+    targetZoneChart = ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm,
+        tgtZones, targetBearingSeries, otherSeries, null, randomProv,
+        targetLegSlicer, null, null);
 
     targetZoneChart.addZoneListener(targetListener);
 
     // and set the proportions of space allowed
     sashForm.setWeights(new int[]
     {4, 1, 1});
-    sashForm
-        .setBackground(sashForm.getDisplay().getSystemColor(SWT.COLOR_GRAY));
+    sashForm.setBackground(sashForm.getDisplay().getSystemColor(
+        SWT.COLOR_GRAY));
 
     // sort out zone chart visibility
     setZoneChartsVisible(_showZones.isChecked());
@@ -962,7 +948,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * method to create a working plot (to contain our data)
-   * 
+   *
    * @return the chart, in it's own panel
    */
   @SuppressWarnings("deprecation")
@@ -989,8 +975,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     errorAxis.setTickLabelFont(tickLabelFont);
     _dotPlot.setRangeAxis(errorAxis);
     _dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-    _dotPlot
-        .setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
+    _dotPlot.setRenderer(new ColourStandardXYItemRenderer(null, null,
+        _dotPlot));
 
     _dotPlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
     _dotPlot.setRangeGridlineStroke(new BasicStroke(2));
@@ -1004,15 +990,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _dotPlot.addRangeMarker(zeroMarker);
 
     _linePlot = new XYPlot();
-    final NumberAxis absBrgAxis =
-        new NumberAxis("Absolute (" + getUnits() + ")");
+    final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits()
+        + ")");
     absBrgAxis.setLabelFont(axisLabelFont);
     absBrgAxis.setTickLabelFont(tickLabelFont);
     _linePlot.setRangeAxis(absBrgAxis);
     absBrgAxis.setAutoRangeIncludesZero(false);
     _linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-    final DefaultXYItemRenderer lineRend =
-        new ColourStandardXYItemRenderer(null, null, _linePlot);
+    final DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
+        null, null, _linePlot);
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
 
@@ -1031,7 +1017,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
     {
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
@@ -1071,8 +1057,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.setRangeAxis(1, overviewSpeed);
     absBrgAxis.setAutoRangeIncludesZero(false);
     _targetOverviewPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-    _overviewCourseRenderer =
-        new WrappingResidualRenderer(null, null, _targetCourseSeries, 0, 360);
+    _overviewCourseRenderer = new WrappingResidualRenderer(null, null,
+        _targetCourseSeries, 0, 360);
     _overviewCourseRenderer.setSeriesPaint(0, DebriefColors.RED.brighter());
     _overviewCourseRenderer.setSeriesPaint(1, DebriefColors.BLUE);
     _overviewCourseRenderer.setSeriesShape(0, new Ellipse2D.Double(-4.0, -4.0,
@@ -1080,8 +1066,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _overviewCourseRenderer.setSeriesShapesVisible(1, false);
     _overviewCourseRenderer.setSeriesStroke(0, new BasicStroke(2f));
     _overviewCourseRenderer.setSeriesStroke(1, new BasicStroke(2f));
-    _overviewSpeedRenderer =
-        new ResidualXYItemRenderer(null, null, _targetSpeedSeries);
+    _overviewSpeedRenderer = new ResidualXYItemRenderer(null, null,
+        _targetSpeedSeries);
     _overviewSpeedRenderer.setPaint(DebriefColors.RED.darker());
     _overviewSpeedRenderer.setSeriesShape(0, new Rectangle2D.Double(-4.0, -4.0,
         8.0, 8.0));
@@ -1195,8 +1181,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // clear the flag
           _rangeValueToLookup = null;
 
-          final TimeSeriesCollection tsc =
-              (TimeSeriesCollection) _linePlot.getDataset();
+          final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
+              .getDataset();
 
           // do we have data on the line plot?
           if (tsc != null)
@@ -1205,8 +1191,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final List<TimeSeries> sets = tsc.getSeries();
             for (final TimeSeries t : sets)
             {
-              final TimeSeriesDataItem nearest =
-                  t.getDataItem(new FixedMillisecond(newDate.getTime()));
+              final TimeSeriesDataItem nearest = t.getDataItem(
+                  new FixedMillisecond(newDate.getTime()));
 
               if (nearest != null)
               {
@@ -1220,8 +1206,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
                   final IWorkbenchPage page = win.getActivePage();
                   final IEditorPart editor = page.getActiveEditor();
-                  final Layers layers =
-                      (Layers) editor.getAdapter(Layers.class);
+                  final Layers layers = editor.getAdapter(Layers.class);
                   if (layers != null)
                   {
                     final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -1256,32 +1241,36 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
       {
-        final String seriesName =
-            getSeriesToSelect(arg0.getChart(), arg0.getTrigger(), arg0
-                .getEntity());
+        final String seriesName = getSeriesToSelect(arg0.getChart(), arg0
+            .getTrigger(), arg0.getEntity());
 
         if (seriesName != null)
         {
           // ok, try to select the sensor cut at this time
-          final Point2D p =
-              _holder.translateScreenToJava2D(arg0.getTrigger().getPoint());
+          final Point2D p = _holder.translateScreenToJava2D(arg0.getTrigger()
+              .getPoint());
 
           // what's the y value at this time?
-          final CombinedDomainXYPlot dPlot =
-              (CombinedDomainXYPlot) arg0.getChart().getPlot();
+          final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) arg0
+              .getChart().getPlot();
           final ValueAxis range = dPlot.getDomainAxis();
 
-          final org.eclipse.swt.graphics.Rectangle area =
-              _holder.getScreenDataArea();
+          final org.eclipse.swt.graphics.Rectangle area = _holder
+              .getScreenDataArea();
           final Rectangle jRect = new Rectangle(area.width, area.height);
           jRect.setLocation(area.x, area.y);
-          final double dataVal =
-              range.java2DToValue(p.getY(), jRect, RectangleEdge.LEFT);
+          final double dataVal = range.java2DToValue(p.getY(), jRect,
+              RectangleEdge.LEFT);
           final long dateMillis = (long) dataVal;
 
           // and try to put cross-hairs on sensor
           highlightDataItemNearest(dateMillis, seriesName);
         }
+      }
+
+      @Override
+      public void chartMouseMoved(final ChartMouseEvent arg0)
+      {
       }
 
       private String getSeriesToSelect(final JFreeChart chart,
@@ -1299,7 +1288,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           if (plot.getPlot() == _linePlot)
           {
             // if the line plot was clicked on, we'll delete
-            // the sensor cut.  This makes sense, since all sensor
+            // the sensor cut. This makes sense, since all sensor
             // cuts are shown on the line plot. Markers are only
             // present on the error plot if TMA points are present
             seriesName = SENSOR;
@@ -1307,7 +1296,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           else if (plot.getPlot() == _dotPlot)
           {
             // if the dot (error) plot was clicked on, we'll delete
-            // the TMA position.  This makes sense, since markers are only
+            // the TMA position. This makes sense, since markers are only
             // present on the error plot if TMA points are present
             seriesName = TMA;
           }
@@ -1324,8 +1313,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           {
             final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) plot;
             final Point source = trigger.getPoint();
-            final PlotRenderingInfo plotInfo =
-                _holder.getChartRenderingInfo().getPlotInfo();
+            final PlotRenderingInfo plotInfo = _holder.getChartRenderingInfo()
+                .getPlotInfo();
             final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
             if (subPlot != null && subPlot.equals(_linePlot))
             {
@@ -1348,20 +1337,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         return seriesName;
       }
 
-      @Override
-      public void chartMouseMoved(final ChartMouseEvent arg0)
-      {
-      }
-
       private void highlightDataItemNearest(final long dateMillis,
           final String seriesName)
       {
-        final TimeSeriesCollection tsc =
-            (TimeSeriesCollection) _linePlot.getDataset();
+        final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
+            .getDataset();
 
         if (tsc == null)
         {
-          CorePlugin.logError(Status.ERROR,
+          CorePlugin.logError(IStatus.ERROR,
               "Trying to select item. Can't find line plot data", null);
         }
         else
@@ -1370,10 +1354,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           if (t == null)
           {
-            CorePlugin
-                .logError(Status.ERROR,
-                    "Trying to select item. Can't find series titled:"
-                        + seriesName, null);
+            CorePlugin.logError(IStatus.ERROR,
+                "Trying to select item. Can't find series titled:" + seriesName,
+                null);
           }
           else
           {
@@ -1390,12 +1373,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               }
               else
               {
-                final long myDelta =
-                    Math.abs(nearest.getPeriod().getMiddleMillisecond()
-                        - dateMillis);
-                final long hisDelta =
-                    Math.abs(thisI.getPeriod().getMiddleMillisecond()
-                        - dateMillis);
+                final long myDelta = Math.abs(nearest.getPeriod()
+                    .getMiddleMillisecond() - dateMillis);
+                final long hisDelta = Math.abs(thisI.getPeriod()
+                    .getMiddleMillisecond() - dateMillis);
 
                 // ok, take the nearest one
                 nearest = myDelta < hisDelta ? nearest : thisI;
@@ -1466,7 +1447,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final WatchableList[] secs = _myTrackDataProvider.getSecondaryTracks();
       if (secs != null && secs.length == 1)
       {
-        WatchableList firstSec = secs[0];
+        final WatchableList firstSec = secs[0];
         if (firstSec instanceof TrackWrapper)
         {
           final TrackWrapper secT = (TrackWrapper) firstSec;
@@ -1656,7 +1637,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * format the value in a suitable way for marking the current value of the cursor
-   * 
+   *
    * @param current
    *          data value at cursor
    * @return suitably formatted version
@@ -1670,8 +1651,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
-      final long wholeStart, final long wholeEnd,
-      final List<Long> thisLegTimes, final List<Double> thisLegBearings)
+      final long wholeStart, final long wholeEnd, final List<Long> thisLegTimes,
+      final List<Double> thisLegBearings)
   {
     // get the bearings in this time period
     final Iterator<SensorContactWrapper> lIter = cuts.iterator();
@@ -1697,7 +1678,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * produce an operation that will delete selected cuts
-   * 
+   *
    * @return
    */
   protected Runnable getDeleteCutsOperation()
@@ -1728,7 +1709,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * provide an operation that gets run when the user wants to resolve ambiguity
-   * 
+   *
    * @return
    */
   protected Runnable getResolveAmbiguityOperation()
@@ -1755,9 +1736,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void deleted(final Zone zone)
       {
         // capture the time period
-        final TimePeriod zonePeriod =
-            new TimePeriod.BaseTimePeriod(new HiResDate(zone.getStart()),
-                new HiResDate(zone.getEnd()));
+        final TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(
+            new HiResDate(zone.getStart()), new HiResDate(zone.getEnd()));
 
         // ok, delete the relevant leg
         // see if there is already a leg for this time
@@ -1778,8 +1758,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // ok, we know we're working through segments
           final TrackSegment cSeg = (TrackSegment) nextSeg;
 
-          final TimePeriod legPeriod =
-              new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+          final TimePeriod legPeriod = new TimePeriod.BaseTimePeriod(cSeg
+              .startDTG(), cSeg.endDTG());
 
           if (zonePeriod.equals(legPeriod))
           {
@@ -1847,7 +1827,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * collate some zones based on legs in the target track
-   * 
+   *
    * @return
    */
   protected List<Zone> getTargetZones()
@@ -1855,8 +1835,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final List<Zone> zones = new ArrayList<Zone>();
     if (_myTrackDataProvider != null)
     {
-      final WatchableList[] secTracks =
-          _myTrackDataProvider.getSecondaryTracks();
+      final WatchableList[] secTracks = _myTrackDataProvider
+          .getSecondaryTracks();
       if (secTracks != null && secTracks.length == 1)
       {
         final ISecondaryTrack sw = (ISecondaryTrack) secTracks[0];
@@ -1865,10 +1845,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // have a peak, to check if we've actually got a segment list
         if (iter.hasMoreElements())
         {
-          Editable first = iter.nextElement();
+          final Editable first = iter.nextElement();
           if (first instanceof SegmentList)
           {
-            SegmentList segs = (SegmentList) first;
+            final SegmentList segs = (SegmentList) first;
             iter = segs.elements();
           }
         }
@@ -1892,22 +1872,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
 
             final RelativeTMASegment rel = (RelativeTMASegment) thisSeg;
-            final Zone newZ =
-                new Zone(rel.getDTG_Start().getDate().getTime(), rel
-                    .getDTG_End().getDate().getTime(), color);
+            final Zone newZ = new Zone(rel.getDTG_Start().getDate().getTime(),
+                rel.getDTG_End().getDate().getTime(), color);
             zones.add(newZ);
           }
           else if (thisSeg instanceof TrackSegment)
           {
-            final TrackSegment seg = (TrackSegment) thisSeg;
+            final TrackSegment seg = thisSeg;
             if (!thisSeg.isEmpty())
             {
-              final FixWrapper firstE =
-                  (FixWrapper) thisSeg.elements().nextElement();
+              final FixWrapper firstE = (FixWrapper) thisSeg.elements()
+                  .nextElement();
               final Color color = firstE.getColor();
-              final Zone newZ =
-                  new Zone(seg.startDTG().getDate().getTime(), seg.endDTG()
-                      .getDate().getTime(), color);
+              final Zone newZ = new Zone(seg.startDTG().getDate().getTime(), seg
+                  .endDTG().getDate().getTime(), color);
               zones.add(newZ);
             }
           }
@@ -1987,7 +1965,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (legs.size() == 0)
       {
         // ok, run from start time up to this
-        legs.add(new Zone(startTime, zig.getStart(), randomProv.getZoneColor()));
+        legs.add(new Zone(startTime, zig.getStart(), randomProv
+            .getZoneColor()));
       }
       else
       {
@@ -2029,9 +2008,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // somehow, put the message into the UI
           _myChart.setTitle(string);
         }
-        else if(string == null && _myChart.getTitle() != null)
+        else if (string == null && _myChart.getTitle() != null)
         {
-          _myChart.setTitle((String)null);
+          _myChart.setTitle((String) null);
         }
 
         // is it a fail status
@@ -2083,8 +2062,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _autoResize.setChecked(true);
     _autoResize.setToolTipText("Keep plot sized to show all data");
-    _autoResize.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/fit_to_win.png"));
+    _autoResize.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/fit_to_win.png"));
 
     _showZones = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
@@ -2105,8 +2084,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showZones.setChecked(false);
     _showZones.setToolTipText("Show the slicing graphs");
-    _showZones.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/GanttBars.png"));
+    _showZones.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/GanttBars.png"));
 
     _showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
     {
@@ -2128,8 +2107,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showLinePlot.setChecked(true);
     _showLinePlot.setToolTipText("Show the actuals plot");
-    _showLinePlot.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/stacked_lines.png"));
+    _showLinePlot.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/stacked_lines.png"));
 
     _showDotPlot = new Action("Error plot", IAction.AS_CHECK_BOX)
     {
@@ -2150,8 +2129,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
     _showDotPlot.setChecked(true);
     _showDotPlot.setToolTipText("Show the error plot");
-    _showDotPlot.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/stacked_dots.png"));
+    _showDotPlot.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/stacked_dots.png"));
 
     _showTargetOverview = new Action("Target Overview", IAction.AS_CHECK_BOX)
     {
@@ -2177,75 +2156,74 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // get an error logger
     final ErrorLogger logger = this;
-    _onlyVisible =
-        new Action("Only draw dots for visible data points",
-            IAction.AS_CHECK_BOX)
-        {
+    _onlyVisible = new Action("Only draw dots for visible data points",
+        IAction.AS_CHECK_BOX)
+    {
 
-          @Override
-          public void run()
-          {
-            super.run();
+      @Override
+      public void run()
+      {
+        super.run();
 
-            // set the title, so there's something useful in there
-            _myChart.setTitle("");
+        // set the title, so there's something useful in there
+        _myChart.setTitle("");
 
-            // we need to get a fresh set of data pairs - the number may
-            // have
-            // changed
-            _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
-                .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+        // we need to get a fresh set of data pairs - the number may
+        // have
+        // changed
+        _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
+            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
 
-            // and a new plot please
-            updateStackedDots(true);
-          }
-        };
+        // and a new plot please
+        updateStackedDots(true);
+      }
+    };
     _onlyVisible.setText("Only plot visible data");
     _onlyVisible.setChecked(true);
     _onlyVisible.setToolTipText("Only draw dots for visible data points");
-    _onlyVisible.setImageDescriptor(TrackShiftActivator
-        .getImageDescriptor("icons/24/reveal.png"));
+    _onlyVisible.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/reveal.png"));
 
-    _selectOnClick =
-        new Action("Select TMA position or Sensor Cut under crosshair",
-            IAction.AS_CHECK_BOX)
-        {
-        };
+    _selectOnClick = new Action(
+        "Select TMA position or Sensor Cut under crosshair",
+        IAction.AS_CHECK_BOX)
+    {
+    };
     _selectOnClick.setChecked(true);
-    _selectOnClick
-        .setToolTipText("Reveal the respective TMA Fix when an error clicked on plot");
-    _selectOnClick.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/outline.png"));
+    _selectOnClick.setToolTipText(
+        "Reveal the respective TMA Fix when an error clicked on plot");
+    _selectOnClick.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/outline.png"));
 
-    _showCrossHairs =
-        new Action("Show/hide crosshair marker", IAction.AS_CHECK_BOX)
+    _showCrossHairs = new Action("Show/hide crosshair marker",
+        IAction.AS_CHECK_BOX)
+    {
+
+      @Override
+      public void run()
+      {
+        super.run();
+
+        _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
+        _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
+
+        if (_showCrossHairs.isChecked())
         {
-
-          @Override
-          public void run()
-          {
-            super.run();
-
-            _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
-            _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
-
-            if (_showCrossHairs.isChecked())
-            {
-              // ok, show it
-              _linePlot.removeAnnotation(crossHairAnnotation);
-              _linePlot.addAnnotation(crossHairAnnotation);
-            }
-            else
-            {
-              _linePlot.removeAnnotation(crossHairAnnotation);
-            }
-          }
-        };
+          // ok, show it
+          _linePlot.removeAnnotation(crossHairAnnotation);
+          _linePlot.addAnnotation(crossHairAnnotation);
+        }
+        else
+        {
+          _linePlot.removeAnnotation(crossHairAnnotation);
+        }
+      }
+    };
     _showCrossHairs.setText("Show cross-hair marker");
     _showCrossHairs.setChecked(true);
     _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
-    _showCrossHairs.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/fix.png"));
+    _showCrossHairs.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/fix.png"));
 
   }
 
@@ -2275,16 +2253,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * create a leg of data for the specified time period
-   * 
+   *
    * @param secTrack
    * @param leg
    */
   public void setLeg(final TrackWrapper primaryTrack,
       final ISecondaryTrack secTrack, final Zone leg)
   {
-    final TimePeriod zonePeriod =
-        new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()),
-            new HiResDate(leg.getEnd()));
+    final TimePeriod zonePeriod = new TimePeriod.BaseTimePeriod(new HiResDate(
+        leg.getStart()), new HiResDate(leg.getEnd()));
 
     RelativeTMASegment otherSegment = null;
 
@@ -2305,8 +2282,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // ok, we know we're working through segments
       // check the time period for this leg
       final TrackSegment cSeg = (TrackSegment) nextSeg;
-      final TimePeriod legPeriod =
-          new TimePeriod.BaseTimePeriod(cSeg.startDTG(), cSeg.endDTG());
+      final TimePeriod legPeriod = new TimePeriod.BaseTimePeriod(cSeg
+          .startDTG(), cSeg.endDTG());
 
       // remember that segment, it may prove useful to us
       if (cSeg instanceof RelativeTMASegment)
@@ -2395,22 +2372,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // ok, we've got to create a new TMA segment
 
       // get the host cuts for this time period
-      final TimePeriod period =
-          new TimePeriod.BaseTimePeriod(new HiResDate(leg.getStart()),
-              new HiResDate(leg.getEnd()));
-      final List<SensorContactWrapper> cuts =
-          _myHelper.getBearings(primaryTrack, false, period);
-      final SensorContactWrapper[] observations =
-          cuts.toArray(new SensorContactWrapper[]
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(leg
+          .getStart()), new HiResDate(leg.getEnd()));
+      final List<SensorContactWrapper> cuts = _myHelper.getBearings(
+          primaryTrack, false, period);
+      final SensorContactWrapper[] observations = cuts.toArray(
+          new SensorContactWrapper[]
           {});
 
       final double courseDegs;
       final WorldSpeed speed;
       final WorldVector offset;
 
-      final WorldVector defaultOffset =
-          new WorldVector(Math.toDegrees(135), new WorldDistance(2,
-              WorldDistance.NM), new WorldDistance(0, WorldDistance.METRES));
+      final WorldVector defaultOffset = new WorldVector(Math.toDegrees(135),
+          new WorldDistance(2, WorldDistance.NM), new WorldDistance(0,
+              WorldDistance.METRES));
 
       if (otherSegment != null)
       {
@@ -2430,20 +2406,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (lastFix != null)
         {
           // ok, build up the vector
-          final long timePeriod =
-              leg.getStart() - lastFix.getDTG().getDate().getTime();
-          final double distTravelled =
-              speed.getValueIn(WorldSpeed.M_sec) * timePeriod / 1000d;
-          final WorldVector vector =
-              new WorldVector(Math.toRadians(otherSegment.getCourse()),
-                  new WorldDistance(distTravelled, WorldDistance.METRES),
-                  new WorldDistance(0, WorldDistance.DEGS));
+          final long timePeriod = leg.getStart() - lastFix.getDTG().getDate()
+              .getTime();
+          final double distTravelled = speed.getValueIn(WorldSpeed.M_sec)
+              * timePeriod / 1000d;
+          final WorldVector vector = new WorldVector(Math.toRadians(otherSegment
+              .getCourse()), new WorldDistance(distTravelled,
+                  WorldDistance.METRES), new WorldDistance(0,
+                      WorldDistance.DEGS));
 
           final WorldLocation legStart = lastFix.getFixLocation().add(vector);
 
           // work out the offset from the host at this time
-          final Watchable[] matches =
-              primaryTrack.getNearestTo(new HiResDate(leg.getStart()), false);
+          final Watchable[] matches = primaryTrack.getNearestTo(new HiResDate(
+              leg.getStart()), false);
 
           if (matches != null && matches.length > 0)
           {
@@ -2452,21 +2428,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            CorePlugin
-                .logError(
-                    IStatus.WARNING,
-                    "Couldn't create target leg properly,  couldn't find matching point in ownship leg",
-                    null);
+            CorePlugin.logError(IStatus.WARNING,
+                "Couldn't create target leg properly,  couldn't find matching point in ownship leg",
+                null);
             offset = defaultOffset;
           }
         }
         else
         {
-          CorePlugin
-              .logError(
-                  IStatus.WARNING,
-                  "Couldn't create target leg properly,  couldn't last fix in existing leg",
-                  null);
+          CorePlugin.logError(IStatus.WARNING,
+              "Couldn't create target leg properly,  couldn't last fix in existing leg",
+              null);
           offset = defaultOffset;
         }
       }
@@ -2490,9 +2462,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       else
       {
         // ok, ready to go
-        final RelativeTMASegment newLeg =
-            new RelativeTMASegment(observations, offset, speed, courseDegs,
-                theLayers, override);
+        final RelativeTMASegment newLeg = new RelativeTMASegment(observations,
+            offset, speed, courseDegs, theLayers, override);
 
         // ok, now add the leg to the secondary track
         final TrackWrapper secondary = (TrackWrapper) secTrack;
@@ -2503,7 +2474,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * show/hide the two zone charts
-   * 
+   *
    * @param isVisible
    */
   private void setZoneChartsVisible(final boolean isVisible)
@@ -2529,8 +2500,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
 
     // hmm, don't know if we have one or more legs
-    final EditableWrapper sensors =
-        new EditableWrapper(secTrack.getSensors(), parentP, layers);
+    final EditableWrapper sensors = new EditableWrapper(secTrack.getSensors(),
+        parentP, layers);
     final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
 
     final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
@@ -2548,16 +2519,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // check we know the secondary track (we may not, if it's an SATC track)
     if (secTrack != null)
     {
-      final EditableWrapper parentP =
-          new EditableWrapper(secTrack, null, layers);
+      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
+          layers);
 
       // hmm, don't know if we have one or more legs
       final EditableWrapper leg;
       if (secTrack.getSegments().size() > 1)
       {
         // ok, we need the in-between item
-        final EditableWrapper segments =
-            new EditableWrapper(secTrack.getSegments(), parentP, layers);
+        final EditableWrapper segments = new EditableWrapper(secTrack
+            .getSegments(), parentP, layers);
         leg = new EditableWrapper(seg, segments, layers);
       }
       else
@@ -2577,8 +2548,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subject);
-    final IContentOutlinePage outline =
-        (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+    final IContentOutlinePage outline = editor.getAdapter(
+        IContentOutlinePage.class);
     // did we find an outline?
     if (outline != null)
     {
@@ -2612,7 +2583,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * slice the target bearings according to these zones
-   * 
+   *
    * @param ownshipZones
    * @param randomProv
    * @param slicePrecision
@@ -2714,8 +2685,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     endTime = ownshipZones.get(ownshipZones.size() - 1).getEnd();
 
     // ok, we've got to turn the zigs into legs
-    final List<Zone> oldLegs =
-        legsFromZigs(startTime, endTime, zigs, randomProv);
+    final List<Zone> oldLegs = legsFromZigs(startTime, endTime, zigs,
+        randomProv);
 
     // ok, loop through the legs, updating our TMA legs
     for (final Zone leg : oldLegs)
@@ -2749,7 +2720,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // get the bearings in this leg
     final List<Long> thisLegTimes = new ArrayList<Long>();
     final List<Double> thisLegBearings = new ArrayList<Double>();
-    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes, thisLegBearings);
+    getCutsForThisLeg(cuts, wholeStart, wholeEnd, thisLegTimes,
+        thisLegBearings);
 
     // slice the leg
     slicer.sliceThis(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
@@ -2761,7 +2733,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   /**
    * some data has changed. if we're auto ranging, update the axes
-   * 
+   *
    */
   protected void updateLinePlotRanges()
   {
@@ -2868,8 +2840,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
           }
         });
-    _myPartMonitor.addPartListener(ISelectionProvider.class,
-        PartMonitor.CLOSED, new PartMonitor.ICallback()
+    _myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
         {
           @Override
           public void eventTriggered(final String type, final Object part,
@@ -2912,12 +2884,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               if (_myTrackDataProvider != null)
               {
                 _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
-                _myTrackDataProvider
-                    .removeTrackDataListener(_myTrackDataListener);
+                _myTrackDataProvider.removeTrackDataListener(
+                    _myTrackDataListener);
 
                 // remove ourselves as a location listener from the sec track, if there is one
-                final WatchableList[] secs =
-                    _myTrackDataProvider.getSecondaryTracks();
+                final WatchableList[] secs = _myTrackDataProvider
+                    .getSecondaryTracks();
                 if (secs != null && secs.length == 1)
                 {
                   final WatchableList firstSec = secs[0];
@@ -2938,8 +2910,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // special case = we have to register to listen to infills changing
               // since they aren't triggered by the UI (mouse drag) events.
 
-              final WatchableList[] secs =
-                  _myTrackDataProvider.getSecondaryTracks();
+              final WatchableList[] secs = _myTrackDataProvider
+                  .getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
                 final WatchableList firstSec = secs[0];
@@ -2959,10 +2931,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _myChart.setTitle("");
 
               // ok - fire off the event for the new tracks
-              _myHelper
-                  .initialise(_myTrackDataProvider, false, _onlyVisible
-                      .isChecked(), _holder, logger, getType(), _needBrg,
-                      _needFreq);
+              _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
+                  .isChecked(), _holder, logger, getType(), _needBrg,
+                  _needFreq);
 
               // hey - fire a dot update
               updateStackedDots(true);
@@ -2993,11 +2964,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if (tdp == _myTrackDataProvider)
             {
               // remove ourselves as a location listener from the sec track, if there is one
-              final WatchableList[] secs =
-                  _myTrackDataProvider.getSecondaryTracks();
+              final WatchableList[] secs = _myTrackDataProvider
+                  .getSecondaryTracks();
               if (secs != null && secs.length == 1)
               {
-                WatchableList firstSec = secs[0];
+                final WatchableList firstSec = secs[0];
                 if (firstSec instanceof TrackWrapper)
                 {
                   final TrackWrapper secT = (TrackWrapper) firstSec;
@@ -3045,8 +3016,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     final Plottable newItem, final HasEditables parent)
                 {
                   // ok, see if this is our secondary track
-                  if (parent != null
-                      && parent.equals(_myHelper.getSecondaryTrack()))
+                  if (parent != null && parent.equals(_myHelper
+                      .getSecondaryTrack()))
                   {
                     // also update the zone charts, the secondary
                     // may have been split/merged
@@ -3064,9 +3035,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void dataReformatted(final Layers theData,
                     final Layer changedLayer)
                 {
-                  _myHelper.initialise(_myTrackDataProvider, false,
-                      _onlyVisible.isChecked(), _holder, logger, getType(),
-                      _needBrg, _needFreq);
+                  _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
+                      .isChecked(), _holder, logger, getType(), _needBrg,
+                      _needFreq);
 
                   updateStackedDots(true);
 
@@ -3081,8 +3052,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // one!)
               if (_ourLayersSubject != null)
               {
-                _ourLayersSubject
-                    .removeDataReformattedListener(_layersListener);
+                _ourLayersSubject.removeDataReformattedListener(
+                    _layersListener);
                 _ourLayersSubject.removeDataExtendedListener(_layersListener);
               }
 
@@ -3137,8 +3108,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     if (updateDoublets)
     {
       // trigger recalculation of date axis ticks
-      final CachedTickDateAxis date =
-          (CachedTickDateAxis) _combined.getDomainAxis();
+      final CachedTickDateAxis date = (CachedTickDateAxis) _combined
+          .getDomainAxis();
       date.clearTicks();
 
       // Note: we no longer resize the domain axes - we just do this
