@@ -1298,11 +1298,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           final PlotEntity plot = (PlotEntity) entity;
           if (plot.getPlot() == _linePlot)
           {
-            seriesName = TMA;
+            // if the line plot was clicked on, we'll delete
+            // the sensor cut.  This makes sense, since all sensor
+            // cuts are shown on the line plot. Markers are only
+            // present on the error plot if TMA points are present
+            seriesName = SENSOR;
           }
           else if (plot.getPlot() == _dotPlot)
           {
-            seriesName = SENSOR;
+            // if the dot (error) plot was clicked on, we'll delete
+            // the TMA position.  This makes sense, since markers are only
+            // present on the error plot if TMA points are present
+            seriesName = TMA;
           }
           else
           {
