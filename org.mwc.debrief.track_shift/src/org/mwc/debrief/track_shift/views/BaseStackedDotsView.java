@@ -1206,7 +1206,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
                   final IWorkbenchPage page = win.getActivePage();
                   final IEditorPart editor = page.getActiveEditor();
-                  final Layers layers = editor.getAdapter(Layers.class);
+                  final Layers layers = (Layers) editor.getAdapter(Layers.class);
                   if (layers != null)
                   {
                     final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -2548,7 +2548,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subject);
-    final IContentOutlinePage outline = editor.getAdapter(
+    final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
     if (outline != null)
