@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.JFreeChart;
 
@@ -39,6 +39,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.JFreeChart.DateAxisEditor.DatedRNFormatter;
 import MWC.GUI.JFreeChart.DateAxisEditor.RNFormatter;
 import MWC.GUI.Properties.GraphicSizePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
@@ -60,7 +61,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     static public final String AUTO_VALUE = "Auto";
 
     static private final String[] stringTags =
-    {AUTO_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm",
+    {AUTO_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "HHmm // ddHHmm", "ddHHmm",
         "ddHHmm.ss", "yy/MM/dd HH:mm",};
 
     private int getMyIndexOf(final String val)
@@ -100,7 +101,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * constructor for this editor, takes the actual track as a parameter
-     * 
+     *
      * @param data
      *          track being edited
      */
@@ -188,7 +189,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * create a time offset provider
-     * 
+     *
      * @param stepper
      */
     public SwitchableTimeOffsetProvider(
@@ -199,7 +200,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * whether we are active
-     * 
+     *
      * @return
      */
     public boolean isApplied()
@@ -209,7 +210,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * offset the provided time by the desired amount
-     * 
+     *
      * @param val
      *          the actual time value
      * @return the processed time value
@@ -235,7 +236,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * change whether we are active
-     * 
+     *
      * @param applied
      */
     public void setApplied(final boolean applied)
@@ -245,13 +246,18 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   public static final String CHART_LABEL_FORMAT = "ChartLabelFormat";
 
   private static ToolParent _toolParent;
+
+  public static void initialise(final ToolParent toolParent)
+  {
+    _toolParent = toolParent;
+  }
 
   // ////////////////////////////////////////////////
   // member variables
@@ -261,14 +267,14 @@ public class NewFormattedJFreeChart extends JFreeChart implements
    */
   private int _dataLineWidth = 3;
 
+  // ////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////
+
   /**
    * our editable details
    */
   transient private Editable.EditorType _myEditor = null;
-
-  // ////////////////////////////////////////////////
-  // constructor
-  // ////////////////////////////////////////////////
 
   /**
    * the time offset supplier
@@ -277,17 +283,17 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   private Duration _fixedDuration;
 
-  private String _labelFormat;
-
   // ////////////////////////////////////////////////
   // member methods
   // ////////////////////////////////////////////////
+
+  private String _labelFormat;
 
   /**
    * Constructs a chart.
    * <P>
    * Note that the ChartFactory class contains static methods that will return a ready-made chart.
-   * 
+   *
    * @param title
    *          the main chart title.
    * @param titleFont
@@ -328,7 +334,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
    * Constructs a chart.
    * <P>
    * Note that the ChartFactory class contains static methods that will return a ready-made chart.
-   * 
+   *
    * @param title
    *          the main chart title.
    * @param titleFont
@@ -357,7 +363,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the width of the data line
-   * 
+   *
    * @return width in pixels
    */
   public int getDataLineWidth()
@@ -385,7 +391,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the editable details for this track
-   * 
+   *
    * @return the details
    */
   @Override
@@ -421,7 +427,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the name of this object
-   * 
+   *
    * @return the name of this editable object
    */
   @Override
@@ -432,7 +438,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * find out if we're in relative time plotting mode
-   * 
+   *
    * @return
    */
   public boolean getRelativeTimes()
@@ -450,7 +456,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * Returns the Stroke used to draw any shapes for a series.
-   * 
+   *
    * @param index
    *          the series (zero-based index).
    * @return the Stroke used to draw any shapes for a series.
@@ -479,7 +485,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * accessor to get hold of the time offset provider
-   * 
+   *
    * @return
    */
   public SwitchableTimeOffsetProvider getTimeOffsetProvider()
@@ -489,7 +495,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @param title
    *          the new title to use
    */
@@ -500,7 +506,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @return
    */
   public String getTitleText()
@@ -521,7 +527,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   /**
    * whether there is any edit information for this item this is a convenience function to save
    * creating the EditorType data first
-   * 
+   *
    * @return yes/no
    */
   @Override
@@ -550,7 +556,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * set the width of the data line
-   * 
+   *
    * @param dataLineWidth
    *          width in pixels
    */
@@ -611,16 +617,25 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     // get the date axis
     final ValueAxis va = this.getXYPlot().getDomainAxis();
     final DateAxis da = (DateAxis) va;
-    
+
     // special case, if it's AUTO format
     final DateFormat target;
-    if(ChartDateFormatPropertyEditor.AUTO_VALUE.equals(format))
+    if (ChartDateFormatPropertyEditor.AUTO_VALUE.equals(format))
     {
       target = null;
     }
     else
     {
-      target = new RNFormatter(format);
+      // see if it's a special format
+      if (format.contains("//"))
+      {
+        final String[] items = format.split("//");
+        target = new DatedRNFormatter(items[0], items[1]);
+      }
+      else
+      {
+        target = new RNFormatter(format);
+      }
     }
 
     // and set the tick
@@ -641,7 +656,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * update whether we're in relative time plotting mode
-   * 
+   *
    * @param val
    */
   public void setRelativeTimes(final boolean val)
@@ -671,6 +686,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   }
 
+  // ////////////////////////////////////////////////
+  // editable methods
+  // ////////////////////////////////////////////////
+
   public void setShowLegend(final boolean showLegend)
   {
     if (showLegend)
@@ -695,10 +714,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     this.fireChartChanged();
   }
-
-  // ////////////////////////////////////////////////
-  // editable methods
-  // ////////////////////////////////////////////////
 
   public void setShowSymbols(final boolean showSymbols)
   {
@@ -727,7 +742,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @param title
    *          the new title to use
    */
@@ -749,11 +764,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   public void setY_AxisTitle(final String yTitle)
   {
     this.getXYPlot().getRangeAxis().setLabel(yTitle);
-  }
-
-  public static void initialise(ToolParent toolParent)
-  {
-    _toolParent = toolParent;
   }
 
 }
