@@ -974,7 +974,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final DateAxis xAxis = new CachedTickDateAxis("");
     xAxis.setDateFormatOverride(_df);
-    final Font tickLabelFont = Defaults.getScaledFont(0.8f);
+    final Font tickLabelFont = new Font("Arial", Font.PLAIN, 14);
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
     xAxis.setStandardTickUnits(DateAxisEditor
@@ -984,7 +984,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // create the special stepper plot
     _dotPlot = new XYPlot();
     final NumberAxis errorAxis = new NumberAxis("Error (" + getUnits() + ")");
-    final Font axisLabelFont = Defaults.getFont();
+    final Font axisLabelFont = new Font("Arial", Font.PLAIN, 14);
     errorAxis.setLabelFont(axisLabelFont);
     errorAxis.setTickLabelFont(tickLabelFont);
     _dotPlot.setRangeAxis(errorAxis);
@@ -1101,7 +1101,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     crossHairAnnotation = new XYTextAnnotation("-----", 2, 2);
     crossHairAnnotation.setTextAnchor(TextAnchor.TOP_LEFT);
 
-    final Font annotationFont = Defaults.getScaledFont(0.8f);
+    final Font annotationFont = new Font("Arial", Font.PLAIN, 14);
     crossHairAnnotation.setFont(annotationFont);
     crossHairAnnotation.setPaint(Color.DARK_GRAY);
     crossHairAnnotation.setBackgroundPaint(Color.white);
