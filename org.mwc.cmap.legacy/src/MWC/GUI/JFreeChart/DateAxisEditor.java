@@ -32,7 +32,7 @@ import MWC.GUI.Properties.AbstractPropertyEditor;
 public class DateAxisEditor extends AbstractPropertyEditor
 {
 
-  public static class DatedRNFormatter extends SimpleDateFormat
+  public static class DatedRNFormatter extends RNFormatter
   {
     /**
      *
@@ -54,10 +54,9 @@ public class DateAxisEditor extends AbstractPropertyEditor
     public DatedRNFormatter(final String pattern, final String datePattern)
     {
       super(pattern);
-
+      
+      // store the date (even if we then choose to ignore it)
       _datePattern = datePattern;
-
-      this.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     @SuppressWarnings("deprecation")
@@ -95,9 +94,6 @@ public class DateAxisEditor extends AbstractPropertyEditor
       return new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 0, null);
     }
 
-    // ////////////////////////////////////////////////
-    // member variables
-    // ////////////////////////////////////////////////
     /**
      * components of DateTickUnit
      */
