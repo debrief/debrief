@@ -1574,4 +1574,23 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     return false;
   }
 
+  @Override
+  public void drawLine(int x1, int y1, int x2, int y2, int transparency)
+  {
+    if (_theDest != null && !_theDest.isDisposed())
+    {
+      // get current transparency
+      final int curT = _theDest.getAlpha();
+
+      _theDest.setAlpha(transparency);
+
+      // do paint
+      this.drawLine(x1, y1, x2, y2);
+
+      // restore transparency
+      _theDest.setAlpha(curT);
+    }
+
+  }
+
 }

@@ -523,7 +523,7 @@ public final class TMAContactWrapper extends
 	 *          whether to allow a change in line style
 	 */
 	public final void paint(final MWC.GenericData.WatchableList track,
-			final MWC.GUI.CanvasType dest, final boolean keep_simple)
+			final MWC.GUI.CanvasType dest, final boolean keep_simple, final int alpha)
 	{
 		// are we visible?
 		if (!getVisible())
