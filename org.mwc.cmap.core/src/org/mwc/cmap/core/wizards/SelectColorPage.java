@@ -102,13 +102,16 @@ public class SelectColorPage extends CoreEditableWizardPage
   @Override
   public void dispose()
   {
-    // try to store some defaults
-    final Preferences prefs = getPrefs();
 
-    prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
-    prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
-    prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
+    if (!_skipPrefs)
+    {
+      // try to store some defaults
+      final Preferences prefs = getPrefs();
 
+      prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
+      prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
+      prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
+    }
     super.dispose();
   }
 
