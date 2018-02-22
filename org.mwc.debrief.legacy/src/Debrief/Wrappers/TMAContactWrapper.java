@@ -98,6 +98,7 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
@@ -109,12 +110,14 @@ import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
@@ -124,7 +127,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public final class TMAContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
+		Watchable, CanvasType.MultiLineTooltipProvider,
 		Editable.DoNotHighlightMe
 {
 	// ///////////////////////////////////////////
@@ -181,7 +184,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * our editor
 	 */
-	transient private MWC.GUI.Editable.EditorType _myEditor;
+	transient private EditorType _myEditor;
 
 	/**
 	 * the parent object (which supplies our colour, should we need it)
@@ -191,17 +194,17 @@ public final class TMAContactWrapper extends
 	/**
 	 * the ellipse respresenting the solution
 	 */
-	MWC.GUI.Shapes.EllipseShape _theEllipse;
+	EllipseShape _theEllipse;
 
 	/**
 	 * the wrapper object containing the labelled ellipse
 	 */
-	Debrief.Wrappers.ShapeWrapper _labelledEllipse = null;
+	ShapeWrapper _labelledEllipse = null;
 
 	/**
 	 * the wrapper object containing the symbol
 	 */
-	private Debrief.Wrappers.LabelWrapper _symbolWrapper = null;
+	private LabelWrapper _symbolWrapper = null;
 
 	/**
 	 * the course parameter
@@ -276,7 +279,7 @@ public final class TMAContactWrapper extends
 		_DTG = DTG;
 		_targetDepth = depthMetres;
 
-		_targetBrgRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
+		_targetBrgRads = Conversions.Degs2Rads(bearingDegs);
 		_targetRange = new WorldDistance(rangeYds, WorldDistance.YARDS);
 
 		// now the course/speed
@@ -344,7 +347,7 @@ public final class TMAContactWrapper extends
 	 * return the coordinates for the centre of the ellipse
 	 */
 	public final WorldLocation getCentre(
-			final MWC.GenericData.WatchableList parentWatchable)
+			final WatchableList parentWatchable)
 	{
 	  TrackWrapper parent = (TrackWrapper) parentWatchable;
 	  
@@ -360,8 +363,8 @@ public final class TMAContactWrapper extends
 		{
 			// right, we'll have to retrieve the centre
 			// get the origin
-			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG, false);
-			MWC.GenericData.Watchable wa = null;
+			final Watchable[] list = parent.getNearestTo(_DTG, false);
+			Watchable wa = null;
 			if (list.length > 0)
 				wa = list[0];
 
@@ -386,7 +389,7 @@ public final class TMAContactWrapper extends
 	 * return the coordinates of the sensor end of the bearing line
 	 */
 	public final WorldLocation getSensorEnd(
-			final MWC.GenericData.WatchableList parentWatchable)
+			final WatchableList parentWatchable)
 	{
 		WorldLocation res = null;
     TrackWrapper parent = (TrackWrapper) parentWatchable;
@@ -396,7 +399,7 @@ public final class TMAContactWrapper extends
 		{
 			// right, we'll have to retrieve the centre
 			// get the origin
-			final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG, false);
+			final Watchable[] list = parent.getNearestTo(_DTG, false);
 			if (list.length > 0)
 			{
 				res = list[0].getLocation();
@@ -488,7 +491,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * paint this object to the specified canvas
 	 */
-	public final void paint(final MWC.GUI.CanvasType dest)
+	public final void paint(final CanvasType dest)
 	{
 		// DUFF METHOD TO MEET INTERFACE REQUIREMENTS
 	}
@@ -522,8 +525,8 @@ public final class TMAContactWrapper extends
 	 * @param keep_simple
 	 *          whether to allow a change in line style
 	 */
-	public final void paint(final MWC.GenericData.WatchableList track,
-			final MWC.GUI.CanvasType dest, final boolean keep_simple)
+	public final void paint(final WatchableList track,
+			final CanvasType dest, final boolean keep_simple, final int alpha)
 	{
 		// are we visible?
 		if (!getVisible())
@@ -532,7 +535,7 @@ public final class TMAContactWrapper extends
 		// do we know who our parents are?
 		if (track == null)
 		{
-			MWC.Utilities.Errors.Trace
+			Trace
 					.trace("failed to find track for solution data");
 			return;
 		}
@@ -677,7 +680,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * find the data area occupied by this item, using the current track locations
 	 */
-	public final WorldArea getBounds(final MWC.GenericData.WatchableList track)
+	public final WorldArea getBounds(final WatchableList track)
 	{
 		WorldArea res = null;
 
@@ -877,7 +880,7 @@ public final class TMAContactWrapper extends
 	 * 
 	 * @return the returned MWC.GUI.Editable.EditorType
 	 */
-	public final MWC.GUI.Editable.EditorType getInfo()
+	public final EditorType getInfo()
 	{
 		if (_myEditor == null)
 			_myEditor = new TMAContactInfo(this);
@@ -1001,7 +1004,7 @@ public final class TMAContactWrapper extends
 	 */
 	public final double getCourse()
 	{
-		return MWC.Algorithms.Conversions.Degs2Rads(_targetCourseDegs);
+		return Conversions.Degs2Rads(_targetCourseDegs);
 	}
 
 	/**
@@ -1041,12 +1044,12 @@ public final class TMAContactWrapper extends
 
 	public double getBearing()
 	{
-		return MWC.Algorithms.Conversions.Rads2Degs(getBearingRads());
+		return Conversions.Rads2Degs(getBearingRads());
 	}
 
 	public void setBearing(final double val)
 	{
-		setBearingRads(MWC.Algorithms.Conversions.Degs2Rads(val));
+		setBearingRads(Conversions.Degs2Rads(val));
 	}
 
 	public void setBearingRads(final double valRads)
@@ -1204,7 +1207,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * the definition of what is editable about this object
 	 */
-	public final class TMAContactInfo extends MWC.GUI.Editable.EditorType
+	public final class TMAContactInfo extends EditorType
 	{
 
 		private static final String SOLUTION = "Solution";
@@ -1254,7 +1257,7 @@ public final class TMAContactWrapper extends
 						longProp("Symbol", "the symbol to use for this solution",
 								SymbolFactoryPropertyEditor.class, EditorType.FORMAT),
 						displayLongProp("LabelLocation", "Label location", "the label location",
-								MWC.GUI.Properties.LocationPropertyEditor.class,
+								LocationPropertyEditor.class,
 								EditorType.FORMAT),
 						prop("Maxima", "the maxima for the ellipse", SOLUTION),
 						prop("Minima", "the minima for the ellipse", SOLUTION),
@@ -1345,7 +1348,7 @@ public final class TMAContactWrapper extends
 			assertEquals("correct origin", ed_abs._theEllipse.getCentre(), origin);
 			assertEquals("right course", ed_abs._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_abs.getCourse(),
-					MWC.Algorithms.Conversions.Degs2Rads(5d), 0.001);
+					Conversions.Degs2Rads(5d), 0.001);
 			assertEquals("right speed", ed_abs._targetSpeedKts, 6d, 0.001);
 			assertEquals("right speed", ed_abs.getSpeed(), 6d, 0.001);
 			assertEquals("right depth", ed_abs._targetDepth, 1d, 0.001);
@@ -1375,7 +1378,7 @@ public final class TMAContactWrapper extends
 			assertEquals("correct bearing", ed_rel._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_rel._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_rel.getCourse(),
-					MWC.Algorithms.Conversions.Degs2Rads(5d), 0.001);
+					Conversions.Degs2Rads(5d), 0.001);
 			assertEquals("right speed", ed_rel._targetSpeedKts, 6d, 0.001);
 			assertEquals("right speed", ed_rel.getSpeed(), 6d, 0.001);
 			assertEquals("right depth", ed_rel._targetDepth, 1d, 0.001);
@@ -1406,7 +1409,7 @@ public final class TMAContactWrapper extends
 			ed.setTMATrack(wrap);
 
 			// check the editable parameters
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+			Editable.editableTesterSupport.testParams(ed, this);
 		}
 
 		public final void testMyCalcs()
@@ -1414,8 +1417,8 @@ public final class TMAContactWrapper extends
 			// setup our object to be tested using an absolute location
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
 			final EllipseShape es = new EllipseShape(null, 0, new WorldDistance(
-					MWC.Algorithms.Conversions.Yds2Degs(100), WorldDistance.DEGS),
-					new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(50),
+					Conversions.Yds2Degs(100), WorldDistance.DEGS),
+					new WorldDistance(Conversions.Yds2Degs(50),
 							WorldDistance.DEGS));
 			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
@@ -1427,7 +1430,7 @@ public final class TMAContactWrapper extends
 			 */
 
 			// ok, now test that we find the distance from the origin
-			final double dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(origin));
+			final double dist = Conversions.Degs2Yds(ed.rangeFrom(origin));
 			assertEquals("find nearest from origin", dist, 0d, 0.001);
 
 		}
@@ -1437,7 +1440,7 @@ public final class TMAContactWrapper extends
 	public void buildSetVector(final double theBearingDegs, final WorldDistance theRange,
 			final double theDepth)
 	{
-		_targetBrgRads = MWC.Algorithms.Conversions.Degs2Rads(theBearingDegs);
+		_targetBrgRads = Conversions.Degs2Rads(theBearingDegs);
 		_targetRange = theRange;
 		_targetDepth = theDepth;
 	}

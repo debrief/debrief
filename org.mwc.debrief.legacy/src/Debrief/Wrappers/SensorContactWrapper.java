@@ -156,28 +156,38 @@ import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.Doublet;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Properties.LineLocationPropertyEditor;
+import MWC.GUI.Properties.LineStylePropertyEditor;
+import MWC.GUI.Properties.LocationPropertyEditor;
+import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class SensorContactWrapper extends
     SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-    MWC.GenericData.Watchable, CanvasType.MultiLineTooltipProvider,
-    Editable.DoNotHighlightMe, TimeStampedDataItem, ExcludeFromRightClickEdit
+    Watchable, CanvasType.MultiLineTooltipProvider, Editable.DoNotHighlightMe,
+    TimeStampedDataItem, ExcludeFromRightClickEdit
 {
 
   public static class DitchAmbiguousBearing implements SubjectAction
@@ -327,18 +337,16 @@ public final class SensorContactWrapper extends
             displayProp("AmbiguousBearing", "Ambiguous bearing",
                 "the Ambiguous Bearing line for this data item", OPTIONAL),
             displayLongProp("LabelLocation", "Label location",
-                "the label location",
-                MWC.GUI.Properties.LocationPropertyEditor.class),
+                "the label location", LocationPropertyEditor.class),
             displayLongProp("PutLabelAt", "Put label at",
                 "whereabouts on the line to position the label",
-                MWC.GUI.Properties.LineLocationPropertyEditor.class),
-            displayLongProp("LineStyle", "Line style",
-                "style to use to plot the line",
-                MWC.GUI.Properties.LineStylePropertyEditor.class), prop("Range",
-                    "range to centre of solution", SPATIAL), displayProp(
-                        "Comment", "Comment", "Comment for this entry",
-                        OPTIONAL), prop("Bearing",
-                            "bearing to centre of solution", SPATIAL)
+                LineLocationPropertyEditor.class), displayLongProp("LineStyle",
+                    "Line style", "style to use to plot the line",
+                    LineStylePropertyEditor.class), prop("Range",
+                        "range to centre of solution", SPATIAL), displayProp(
+                            "Comment", "Comment", "Comment for this entry",
+                            OPTIONAL), prop("Bearing",
+                                "bearing to centre of solution", SPATIAL)
 
         };
 
@@ -398,8 +406,8 @@ public final class SensorContactWrapper extends
       final WorldLocation origin = new WorldLocation(0, 0, 0);
       final SensorContactWrapper ed = new SensorContactWrapper("blank track",
           new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
-              WorldDistance.DEGS), 55d, origin,
-          MWC.GUI.Properties.DebriefColors.RED, "my label", 1, "theSensorName");
+              WorldDistance.DEGS), 55d, origin, DebriefColors.RED, "my label",
+          1, "theSensorName");
 
       // check the editable parameters
       editableTesterSupport.testParams(ed, this);
@@ -407,8 +415,8 @@ public final class SensorContactWrapper extends
       /**
        * test the distance calcs
        */
-      final WorldVector test_other_vector = new WorldVector(
-          MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
+      final WorldVector test_other_vector = new WorldVector(Conversions
+          .Degs2Rads(55), 1, 0);
       final WorldLocation test_other_end = origin.add(test_other_vector);
 
       final SensorWrapper sw = new SensorWrapper("dummy");
@@ -498,8 +506,8 @@ public final class SensorContactWrapper extends
       assertEquals("should be offset location", locationBitSouth, wl);
 
       // and try again, giving the host a course this time
-      fx1.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
-      fx2.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
+      fx1.setCourse(Conversions.Degs2Rads(90.0));
+      fx2.setCourse(Conversions.Degs2Rads(90.0));
       sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1,
           WorldDistance.DEGS)));
       wl = scw.getCalculatedOrigin(host);
@@ -507,9 +515,9 @@ public final class SensorContactWrapper extends
       assertEquals("should be centre of rectangle", locationBitEast, wl);
 
       // check offset knows about track being shifted
-      fx1.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
+      fx1.setCourse(Conversions.Degs2Rads(0.0));
       fw1.setFixLocation(location2);
-      fx2.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
+      fx2.setCourse(Conversions.Degs2Rads(0.0));
       fw2.setFixLocation(location2);
       wl = scw.getCalculatedOrigin(host);
       assertNotNull("should be a location", wl);
@@ -527,9 +535,11 @@ public final class SensorContactWrapper extends
   private static final int MAXIMUM_SENSOR_BEARING_RANGE = 5;
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
+
+  public static final String TRANSPARENCY = "SensorTransparency";
 
   /**
    * calculate the relative bearing when on this course
@@ -597,7 +607,7 @@ public final class SensorContactWrapper extends
   /**
    * our editor
    */
-  transient private MWC.GUI.Editable.EditorType _myEditor;
+  transient private EditorType _myEditor;
 
   /**
    * the style to plot this line
@@ -612,13 +622,12 @@ public final class SensorContactWrapper extends
   /**
    * the label describing this contact
    */
-  private final MWC.GUI.Shapes.TextLabel _theLabel;
+  private final TextLabel _theLabel;
 
   /**
    * whereabouts on the line where we plot the label
    */
-  private int _theLineLocation =
-      MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
+  private int _theLineLocation = LineLocationPropertyEditor.MIDDLE;
   private String _sensorName;
 
   private boolean _hasAmbiguous = false;
@@ -653,7 +662,7 @@ public final class SensorContactWrapper extends
   public SensorContactWrapper()
   {
     // create the label
-    _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
+    _theLabel = new TextLabel(new WorldLocation(0, 0, 0), null);
 
     // by default, objects based on plain wrapper are coloured yellow.
     // but, we use a null colour value to indicate 'use parent color'
@@ -880,7 +889,7 @@ public final class SensorContactWrapper extends
    * find the data area occupied by this item
    */
   @Override
-  public final MWC.GenericData.WorldArea getBounds()
+  public final WorldArea getBounds()
   {
     WorldArea res = null;
     final WorldLocation origin = getCalculatedOrigin(null);
@@ -907,10 +916,9 @@ public final class SensorContactWrapper extends
   /**
    * return the coordinates for the start of the line
    */
-  public final WorldLocation getCalculatedOrigin(
-      final MWC.GenericData.WatchableList parent)
+  public final WorldLocation getCalculatedOrigin(final WatchableList parent)
   {
-    MWC.GenericData.WatchableList theParent = parent;
+    WatchableList theParent = parent;
     if (theParent == null)
     {
       theParent = _mySensor.getHost();
@@ -1030,8 +1038,8 @@ public final class SensorContactWrapper extends
       }
 
       // also do the far end
-      res = _calculatedOrigin.add(new WorldVector(MWC.Algorithms.Conversions
-          .Degs2Rads(bearing), rangeToUse, 0d));
+      res = _calculatedOrigin.add(new WorldVector(Conversions.Degs2Rads(
+          bearing), rangeToUse, 0d));
 
       // just do an idiot check, to ensure it's possible to calculate us
       if (res.getLat() > 89d)
@@ -1090,7 +1098,7 @@ public final class SensorContactWrapper extends
    * @return the returned MWC.GUI.Editable.EditorType
    */
   @Override
-  public final MWC.GUI.Editable.EditorType getInfo()
+  public final EditorType getInfo()
   {
     if (_myEditor == null)
     {
@@ -1261,9 +1269,8 @@ public final class SensorContactWrapper extends
     if (_cachedPortBearing == null)
     {
       // get the origin
-      final MWC.GenericData.Watchable[] list = _mySensor._myHost.getNearestTo(
-          _DTG, false);
-      MWC.GenericData.Watchable wa = null;
+      final Watchable[] list = _mySensor._myHost.getNearestTo(_DTG, false);
+      Watchable wa = null;
       if (list.length > 0)
       {
         wa = list[0];
@@ -1273,8 +1280,7 @@ public final class SensorContactWrapper extends
       if (wa != null)
       {
         // find out current course
-        final double course = MWC.Algorithms.Conversions.Rads2Degs(wa
-            .getCourse());
+        final double course = Conversions.Rads2Degs(wa.getCourse());
 
         // cool, we have a course - we can go for it. remember the bearings
         final double bearing1 = getBearing();
@@ -1300,6 +1306,15 @@ public final class SensorContactWrapper extends
 
   /**
    * paint this object to the specified canvas
+   */
+  @Override
+  public final void paint(final CanvasType dest)
+  {
+    // DUFF METHOD TO MEET INTERFACE REQUIREMENTS
+  }
+
+  /**
+   * paint this object to the specified canvas
    *
    * @param track
    *          the parent list (from which we calculate origins if required)
@@ -1309,8 +1324,8 @@ public final class SensorContactWrapper extends
    *          whether to allow a change in line style
    */
   @Override
-  public final void paint(final MWC.GenericData.WatchableList track,
-      final MWC.GUI.CanvasType dest, final boolean keep_simple)
+  public final void paint(final WatchableList track, final CanvasType dest,
+      final boolean keep_simple, final int alpha)
   {
     if (!getVisible())
     {
@@ -1320,8 +1335,7 @@ public final class SensorContactWrapper extends
     // do we know our track?
     if (track == null)
     {
-      MWC.Utilities.Errors.Trace.trace("failed to find track for sensor data:"
-          + this.getLabel());
+      Trace.trace("failed to find track for sensor data:" + this.getLabel());
       return;
     }
 
@@ -1394,7 +1408,15 @@ public final class SensorContactWrapper extends
         // draw the line
         if (farEnd != null)
         {
-          dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          if (dest instanceof ExtendedCanvasType)
+          {
+            final ExtendedCanvasType ex = (ExtendedCanvasType) dest;
+            ex.drawLine(pt.x, pt.y, farEnd.x, farEnd.y, alpha);
+          }
+          else
+          {
+            dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          }
         }
 
         // do we have an ambiguous bearing?
@@ -1406,31 +1428,39 @@ public final class SensorContactWrapper extends
               .getProjection().getDataArea());
 
           final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
-          // draw the line
-          dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+
+          if (dest instanceof ExtendedCanvasType)
+          {
+            final ExtendedCanvasType ex = (ExtendedCanvasType) dest;
+            ex.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y, alpha);
+          }
+          else
+          {
+            dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+          }
         }
 
         // only plot the label if we don't want it simple
         if (!keep_simple && getLabelVisible())
         {
           // restore the solid line style, for the next poor bugger
-          dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
+          dest.setLineStyle(CanvasType.SOLID);
 
           // now draw the label
           WorldLocation labelPos = null;
 
           // sort out where to plot it
-          if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.START)
+          if (_theLineLocation == LineLocationPropertyEditor.START)
           {
             // use the start
             labelPos = origin;
           }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.END)
+          else if (_theLineLocation == LineLocationPropertyEditor.END)
           {
             // put it at the end
             labelPos = theFarEnd;
           }
-          else if (_theLineLocation == MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE)
+          else if (_theLineLocation == LineLocationPropertyEditor.MIDDLE)
           {
             // calculate the centre point
             final WorldArea tmpArea = new WorldArea(origin, theFarEnd);
@@ -1444,25 +1474,16 @@ public final class SensorContactWrapper extends
 
         }
         // restore the solid line style, for the next poor bugger
-        dest.setLineStyle(MWC.GUI.CanvasType.SOLID);
+        dest.setLineStyle(CanvasType.SOLID);
       }
     }
-  }
-
-  /**
-   * paint this object to the specified canvas
-   */
-  @Override
-  public final void paint(final MWC.GUI.CanvasType dest)
-  {
-    // DUFF METHOD TO MEET INTERFACE REQUIREMENTS
   }
 
   /**
    * how far away are we from this point? or return null if it can't be calculated
    */
   @Override
-  public final double rangeFrom(final MWC.GenericData.WorldLocation other)
+  public final double rangeFrom(final WorldLocation other)
   {
     // return the distance from each end
     double res = Plottable.INVALID_RANGE;
