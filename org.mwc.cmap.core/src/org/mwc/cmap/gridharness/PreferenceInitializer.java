@@ -29,7 +29,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     final IPreferenceStore preferences = CorePlugin.getDefault()
         .getPreferenceStore();
     preferences.setDefault(CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, false);
-  //  preferences.setDefault(CorePlugin.DEFAULT_FONT, "Arial-regular-12");
+    preferences.setDefault(CorePlugin.DEFAULT_FONT, "font:1|Arial|12.0|0|COCOA|1|ArialMT;");
     preferences.setDefault(Defaults.SENSOR_TRANSPARENCY, 100);
   }
 }
