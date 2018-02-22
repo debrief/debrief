@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables;
@@ -124,8 +125,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     {
       _desiredTime = desiredTime;
       _startTime = startValue.getTime().getMicros();
-      _timeDelta =
-          endValue.getTime().getMicros() - startValue.getTime().getMicros();
+      _timeDelta = endValue.getTime().getMicros() - startValue.getTime()
+          .getMicros();
     }
 
     /**
@@ -168,11 +169,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       long nowMillis = 3000;
       for (int i = 0; i < 6; i++)
       {
-        final SensorContactWrapper scw =
-            new SensorContactWrapper("parent", new HiResDate(nowMillis),
-                new WorldDistance(i, WorldDistance.NM), (double) i,
-                new WorldLocation(1, i, 0), Color.RED, "the label", 0,
-                "other label");
+        final SensorContactWrapper scw = new SensorContactWrapper("parent",
+            new HiResDate(nowMillis), new WorldDistance(i, WorldDistance.NM),
+            (double) i, new WorldLocation(1, i, 0), Color.RED, "the label", 0,
+            "other label");
         sw.add(scw);
         nowMillis += 16 * 1000;
       }
@@ -182,11 +182,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
       for (int j = 0; j < 6; j++)
       {
-        final SensorContactWrapper scw =
-            new SensorContactWrapper("parent", new HiResDate(nowMillis),
-                new WorldDistance(j, WorldDistance.NM), (double) j,
-                new WorldLocation(1, j, 0), Color.RED, "the label", 0,
-                "other label");
+        final SensorContactWrapper scw = new SensorContactWrapper("parent",
+            new HiResDate(nowMillis), new WorldDistance(j, WorldDistance.NM),
+            (double) j, new WorldLocation(1, j, 0), Color.RED, "the label", 0,
+            "other label");
         sw.add(scw);
         nowMillis += 16 * 1000;
       }
@@ -213,9 +212,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
       assertEquals("correct number before", 7, sw._myContacts.size());
 
-      final Date startDate =
-          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
-              .parse("July 7, 2011 12:34:00 PM GMT");
+      final Date startDate = new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
+          .parse("July 7, 2011 12:34:00 PM GMT");
 
       sw.decimate(new HiResDate(60000), startDate.getTime());
 
@@ -233,60 +231,53 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     {
       final SensorWrapper sw = new SensorWrapper("mySensor");
 
-      SensorContactWrapper scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:34:04 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 13.1, new WorldLocation(
-                  1, 3, 0), Color.RED, "the label", 0, "other label");
+      SensorContactWrapper scw = new SensorContactWrapper("parent",
+          new HiResDate(new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
+              .parse("July 7, 2011 12:34:04 PM GMT").getTime()),
+          new WorldDistance(2, WorldDistance.NM), 13.1, new WorldLocation(1, 3,
+              0), Color.RED, "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:34:54 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 7.9, new WorldLocation(1,
-                  3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:34:54 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 7.9, new WorldLocation(1, 3, 0), Color.RED,
+          "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:35:32 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 4.8, new WorldLocation(1,
-                  3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:35:32 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 4.8, new WorldLocation(1, 3, 0), Color.RED,
+          "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:36:36 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 359.1, new WorldLocation(
-                  1, 3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:36:36 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 359.1, new WorldLocation(1, 3, 0),
+          Color.RED, "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:37:24 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 355.2, new WorldLocation(
-                  1, 3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:37:24 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 355.2, new WorldLocation(1, 3, 0),
+          Color.RED, "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:38:18 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 348.6, new WorldLocation(
-                  1, 3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:38:18 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 348.6, new WorldLocation(1, 3, 0),
+          Color.RED, "the label", 0, "other label");
       sw.add(scw);
 
-      scw =
-          new SensorContactWrapper("parent", new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
-                  "July 7, 2011 12:39:04 PM GMT").getTime()),
-              new WorldDistance(2, WorldDistance.NM), 345.1, new WorldLocation(
-                  1, 3, 0), Color.RED, "the label", 0, "other label");
+      scw = new SensorContactWrapper("parent", new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:39:04 PM GMT").getTime()), new WorldDistance(2,
+                  WorldDistance.NM), 345.1, new WorldLocation(1, 3, 0),
+          Color.RED, "the label", 0, "other label");
       sw.add(scw);
       return sw;
     }
@@ -295,45 +286,38 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     {
       SensorWrapper ts0 = getList();
 
-      TimePeriod newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
-              "MMMM d, yyyy HH:mm:ss aa z")
-              .parse("July 7, 2011 12:34:04 PM GMT")), new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
-                  .parse("July 7, 2011 12:39:04 PM GMT")));
+      TimePeriod newP = new TimePeriod.BaseTimePeriod(new HiResDate(
+          new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+              "July 7, 2011 12:34:04 PM GMT")), new HiResDate(
+                  new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z").parse(
+                      "July 7, 2011 12:39:04 PM GMT")));
       assertEquals("correct len", 7, ts0._myContacts.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 7, ts0._myContacts.size());
 
       ts0 = getList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
-              "MMMM d, yyyy HH:mm:ss aa z")
-              .parse("July 7, 2011 12:34:04 PM GMT")), new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
-                  .parse("July 7, 2011 12:35:32 PM GMT")));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
+          "MMMM d, yyyy HH:mm:ss aa z").parse("July 7, 2011 12:34:04 PM GMT")),
+          new HiResDate(new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
+              .parse("July 7, 2011 12:35:32 PM GMT")));
       assertEquals("correct len", 7, ts0._myContacts.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 3, ts0._myContacts.size());
 
       ts0 = getList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
-              "MMMM d, yyyy HH:mm:ss aa z")
-              .parse("July 7, 2011 12:35:32 PM GMT")), new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
-                  .parse("July 7, 2011 12:38:18 PM GMT")));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
+          "MMMM d, yyyy HH:mm:ss aa z").parse("July 7, 2011 12:35:32 PM GMT")),
+          new HiResDate(new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
+              .parse("July 7, 2011 12:38:18 PM GMT")));
       assertEquals("correct len", 7, ts0._myContacts.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 4, ts0._myContacts.size());
 
       ts0 = getList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
-              "MMMM d, yyyy HH:mm:ss aa z")
-              .parse("July 7, 2011 12:41:04 PM GMT")), new HiResDate(
-              new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
-                  .parse("July 7, 2012 12:39:04 PM GMT")));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(new SimpleDateFormat(
+          "MMMM d, yyyy HH:mm:ss aa z").parse("July 7, 2011 12:41:04 PM GMT")),
+          new HiResDate(new SimpleDateFormat("MMMM d, yyyy HH:mm:ss aa z")
+              .parse("July 7, 2012 12:39:04 PM GMT")));
       assertEquals("correct len", 7, ts0._myContacts.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 0, ts0._myContacts.size());
@@ -349,8 +333,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
   private static final int THRESHOLD = 3 * 60 * 1000;
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   // //////////////////////////////////////
@@ -564,9 +548,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
         _last = _next;
         _next = null;
         if (_cuts.hasMoreElements())
-          _next =
-              (PlottableWrapperWithTimeAndOverrideableColor) _cuts
-                  .nextElement();
+          _next = (PlottableWrapperWithTimeAndOverrideableColor) _cuts
+              .nextElement();
       }
 
       // have we overshot?
@@ -580,12 +563,11 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
         // right, we appear to be either side of the relevant item
         // interpolate the values
         // go for the freq first
-        final LinearInterpolator interp =
-            new LinearInterpolator((Watchable) _last, (Watchable) _next, tNow);
+        final LinearInterpolator interp = new LinearInterpolator(
+            (Watchable) _last, (Watchable) _next, tNow);
 
-        final long timeDelta =
-            _next.getDTG().getDate().getTime()
-                - _last.getDTG().getDate().getTime();
+        final long timeDelta = _next.getDTG().getDate().getTime() - _last
+            .getDTG().getDate().getTime();
         if (timeDelta < THRESHOLD)
         {
           // create a new data value
@@ -862,6 +844,26 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     // set the line width
     canvas.setLineWidth(_lineWidth);
 
+    // sort out the alpha
+    String alphaStr = Defaults.getPreference(SensorContactWrapper.TRANSPARENCY);
+    int alpha;
+    try
+    {
+      if (alphaStr != null && alphaStr.length() > 0)
+      {
+        alpha = Integer.parseInt(alphaStr);
+      }
+      else
+      {
+        alpha = 255;
+      }
+    }
+    catch (NumberFormatException e)
+    {
+      alpha = 255;
+      e.printStackTrace();
+    }
+
     // trigger our child sensor contact data items to plot themselves
     final java.util.Iterator<Editable> it = _myContacts.iterator();
     while (it.hasNext())
@@ -872,6 +874,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
       if (con.getVisible())
       {
+
         // ok, plot it - and don't make it keep it simple, lets really go
         // for it man!
         con.paint(_myHost, canvas, false);
@@ -920,8 +923,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       final PlottableWrapperWithTimeAndOverrideableColor last =
           (PlottableWrapperWithTimeAndOverrideableColor) _myContacts.last();
 
-      _timePeriod =
-          new TimePeriod.BaseTimePeriod(first.getDTG(), last.getDTG());
+      _timePeriod = new TimePeriod.BaseTimePeriod(first.getDTG(), last
+          .getDTG());
     }
   }
 

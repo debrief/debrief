@@ -71,6 +71,9 @@ public class SelectColorPage extends CoreEditableWizardPage
   private Color _startColor;
   private final String _fieldExplanation;
 
+  /** whether we should skip using a default value from prefs
+   * 
+   */
   private final boolean _skipPrefs;
 
   public SelectColorPage(final ISelection selection, final Color startColor,
