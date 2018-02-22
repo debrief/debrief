@@ -159,6 +159,7 @@ import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -1391,10 +1392,20 @@ public final class SensorContactWrapper extends
           dest.setLineStyle(_myLineStyle);
         }
 
+        boolean hasAlpha = dest instanceof ExtendedCanvasType;
+
         // draw the line
         if (farEnd != null)
         {
-          dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          if (hasAlpha)
+          {
+            ExtendedCanvasType ex = (ExtendedCanvasType) dest;
+            ex.drawLine(pt.x, pt.y, farEnd.x, farEnd.y, 200);
+          }
+          else
+          {
+            dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          }
         }
 
         // do we have an ambiguous bearing?

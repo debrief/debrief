@@ -1101,7 +1101,7 @@ public abstract class CorePlotEditor extends EditorPart implements
   }
 
   @SuppressWarnings(
-  {"rawtypes"})
+  {"rawtypes", "unchecked"})
   public Object getAdapter(final Class adapter)
   {
     final Object res;
@@ -1339,7 +1339,6 @@ public abstract class CorePlotEditor extends EditorPart implements
         Display.getDefault().asyncExec(new Runnable()
         {
 
-          @SuppressWarnings("synthetic-access")
           public void run()
           {
             final boolean isPending = _propsNeedsRefresh.getAndSet(false);
