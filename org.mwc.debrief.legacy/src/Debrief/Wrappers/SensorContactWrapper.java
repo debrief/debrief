@@ -1300,10 +1300,10 @@ public final class SensorContactWrapper extends
   {
     ditchBearing(false);
   }
-  
+
   @Override
   public final void paint(final MWC.GenericData.WatchableList track,
-      final MWC.GUI.CanvasType dest, final boolean keep_simple)
+      final CanvasType dest, final boolean keep_simple)
   {
     paint(track, dest, keep_simple, 255);
   }
@@ -1319,7 +1319,7 @@ public final class SensorContactWrapper extends
    *          whether to allow a change in line style
    */
   public final void paint(final MWC.GenericData.WatchableList track,
-      final MWC.GUI.CanvasType dest, final boolean keep_simple, final int alpha)
+      final CanvasType dest, final boolean keep_simple, final int alpha)
   {
     if (!getVisible())
     {
