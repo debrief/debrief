@@ -1574,6 +1574,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // loading of individual tracks - just fire a "modified" flag
     _trackDataProvider.fireTracksChanged();
 
+    // if we've got a single layer, and it's a track,
+    // make it the primary
+    if (_myLayers.size() == 1)
+    {
+      final Editable first = _myLayers.elements().nextElement();
+      if (first instanceof WatchableList)
+      {
+        final WatchableList list = (WatchableList) first;
+        final TrackManager mgr = (TrackManager) _trackDataProvider;
+        mgr.setPrimary(list);
+      }
+    }
   }
 
   public String getAbsoluteName(final IFile iff) throws CoreException

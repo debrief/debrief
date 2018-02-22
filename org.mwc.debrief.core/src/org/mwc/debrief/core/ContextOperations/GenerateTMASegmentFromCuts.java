@@ -26,12 +26,15 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.core.wizards.RangeBearingPage;
@@ -89,45 +92,60 @@ public class GenerateTMASegmentFromCuts implements
     {
 
     }
-    
+
     public void testTrimmingTrack()
     {
       TrackWrapper host = new TrackWrapper();
       host.setName("host");
-      
+
       SensorWrapper sensor = new SensorWrapper("sensor");
       host.add(sensor);
-      
-      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(0,0,0),10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(0,0,0),10, 20)));
 
-      sensor.add(new SensorContactWrapper("host", new HiResDate(800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(1800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(2800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(5800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(7800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(8800), null, 100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null, 100d, null, Color.RED, "label", 12, "sensor"));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+
+      sensor.add(new SensorContactWrapper("host", new HiResDate(800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(1800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(2800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(5800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(7800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(8800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
 
       Enumeration<Editable> cuts = sensor.elements();
       SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor.size()];
-      int ctr =0;
+      int ctr = 0;
       while (cuts.hasMoreElements())
       {
         SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
         cutArr[ctr++] = cut;
       }
-      
+
       assertEquals("expected number of cuts", 7, cutArr.length);
-      
+
       SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
-      assertEquals("expected number of cuts", 4, trimmed.length);     
+      assertEquals("expected number of cuts", 4, trimmed.length);
     }
 
     @SuppressWarnings("deprecation")
@@ -141,10 +159,9 @@ public class GenerateTMASegmentFromCuts implements
       for (int i = 0; i < 50; i++)
       {
         long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
-        final FixWrapper fw =
-            new FixWrapper(new Fix(new HiResDate(thisTime), lastLoc
-                .add(getVector(25, 0)),
-                MWC.Algorithms.Conversions.Degs2Rads(0), 110));
+        final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(thisTime),
+            lastLoc.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(
+                0), 110));
         fw.setLabel("fw1");
         tw.addFix(fw);
 
@@ -158,9 +175,8 @@ public class GenerateTMASegmentFromCuts implements
       for (int i = 0; i < 50; i += 3)
       {
         long thisTime = new Date(2016, 1, 14, 12, i, 30).getTime();
-        final SensorContactWrapper scwa1 =
-            new SensorContactWrapper("aaa", new HiResDate(thisTime), null,
-                null, null, null, null, 0, null);
+        final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+            new HiResDate(thisTime), null, null, null, null, null, 0, null);
         swa.add(scwa1);
       }
 
@@ -174,8 +190,8 @@ public class GenerateTMASegmentFromCuts implements
       assertNotNull(tw);
 
       // get the sensor data
-      SensorWrapper sw =
-          (SensorWrapper) tw.getSensors().elements().nextElement();
+      SensorWrapper sw = (SensorWrapper) tw.getSensors().elements()
+          .nextElement();
 
       assertNotNull(sw);
 
@@ -195,8 +211,8 @@ public class GenerateTMASegmentFromCuts implements
       WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
 
       // ok, generate the target track
-      CMAPOperation op =
-          new TMAfromCuts(items, theLayers, worldOffset, tgtCourse, tgtSpeed);
+      CMAPOperation op = new TMAfromCuts(items, theLayers, worldOffset,
+          tgtCourse, tgtSpeed);
 
       // and run it
       op.execute(null, null);
@@ -209,8 +225,8 @@ public class GenerateTMASegmentFromCuts implements
       // ok, now try to split it
       assertEquals("only has one segment", 1, sol.getSegments().size());
 
-      RelativeTMASegment seg =
-          (RelativeTMASegment) sol.getSegments().elements().nextElement();
+      RelativeTMASegment seg = (RelativeTMASegment) sol.getSegments().elements()
+          .nextElement();
 
       assertNotNull("new seg not found", seg);
 
@@ -305,46 +321,48 @@ public class GenerateTMASegmentFromCuts implements
       _speed = speed;
       _offset = offset;
     }
-    
-    protected static SensorContactWrapper[] trimToHost(SensorContactWrapper[] cuts)
+
+    protected static SensorContactWrapper[] trimToHost(
+        SensorContactWrapper[] cuts)
     {
       final SensorContactWrapper[] res;
-      if(cuts.length > 0)
+      if (cuts.length > 0)
       {
         // get the host
         final TrackWrapper host = cuts[0].getSensor().getHost();
-        final TimePeriod hostPeriod = new TimePeriod.BaseTimePeriod(host.getStartDTG(), host.getEndDTG());
-        
-        final List<SensorContactWrapper> matches = new ArrayList<SensorContactWrapper>();
-        for(final SensorContactWrapper cut: cuts)
+        final TimePeriod hostPeriod = new TimePeriod.BaseTimePeriod(host
+            .getStartDTG(), host.getEndDTG());
+
+        final List<SensorContactWrapper> matches =
+            new ArrayList<SensorContactWrapper>();
+        for (final SensorContactWrapper cut : cuts)
         {
-          if(hostPeriod.contains(cut.getDTG()))
+          if (hostPeriod.contains(cut.getDTG()))
           {
             matches.add(cut);
           }
         }
-        res = matches.toArray(new SensorContactWrapper[]{});
+        res = matches.toArray(new SensorContactWrapper[]
+        {});
       }
       else
       {
         res = null;
       }
-      
+
       return res;
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
 
       // sort out the color of the segment
       final Color colorOverride;
 
       // have a looka the property
-      String useCutColorStr =
-          Application.getThisProperty(USE_CUT_COLOR);
+      String useCutColorStr = Application.getThisProperty(USE_CUT_COLOR);
       if (useCutColorStr == null)
       {
         useCutColorStr = "TRUE";
@@ -361,22 +379,35 @@ public class GenerateTMASegmentFromCuts implements
       }
 
       // create it, then
-      final TrackSegment seg =
-          new RelativeTMASegment(_items, _offset, _speed, _courseDegs, _layers,
-              colorOverride);
+      final TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed,
+          _courseDegs, _layers, colorOverride);
 
       // now wrap it
       _newTrack = new TrackWrapper();
       _newTrack.setColor(Color.red);
       _newTrack.add(seg);
-      final String tNow =
-          TrackSegment.TMA_LEADER
-              + FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
-                  .getTime());
+      final String tNow = TrackSegment.TMA_LEADER + FormatRNDateTime.toString(
+          _newTrack.getStartDTG().getDate().getTime());
       _newTrack.setName(tNow);
 
       _layers.addThisLayerAllowDuplication(_newTrack);
 
+      // also set it as a secondary track
+      if (Platform.isRunning())
+      {
+        final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
+        if (editor != null)
+        {
+          // get the track manager
+          final TrackManager mgr = (TrackManager) editor.getAdapter(
+              TrackManager.class);
+          if (mgr != null)
+          {
+            // and assign the new secondary
+            mgr.setSecondary(_newTrack);
+          }
+        }
+      }
       // sorted, do the update
       _layers.fireExtended();
 
@@ -456,8 +487,8 @@ public class GenerateTMASegmentFromCuts implements
         }
         if (!wraps.isEmpty())
         {
-          final SensorContactWrapper[] items =
-              new SensorContactWrapper[wraps.size()];
+          final SensorContactWrapper[] items = new SensorContactWrapper[wraps
+              .size()];
           final SensorContactWrapper[] finalItems = wraps.toArray(items);
           final SensorContactWrapper firstContact = finalItems[0];
 
@@ -480,12 +511,11 @@ public class GenerateTMASegmentFromCuts implements
                 theDist = new WorldDistance(6, WorldDistance.NM);
 
               // get the supporting data
-              final TMAFromSensorWizard wizard =
-                  new TMAFromSensorWizard(firstContact.getBearing(), theDist,
-                      DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
-              final WizardDialog dialog =
-                  new WizardDialog(Display.getCurrent().getActiveShell(),
-                      wizard);
+              final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+                  firstContact.getBearing(), theDist, DEFAULT_TARGET_COURSE,
+                  DEFAULT_TARGET_SPEED);
+              final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+                  .getActiveShell(), wizard);
               dialog.create();
               dialog.open();
 
@@ -493,16 +523,15 @@ public class GenerateTMASegmentFromCuts implements
               if (dialog.getReturnCode() == WizardDialog.OK)
               {
 
-                final RangeBearingPage offsetPage =
-                    (RangeBearingPage) wizard.getPage(RangeBearingPage.NAME);
+                final RangeBearingPage offsetPage = (RangeBearingPage) wizard
+                    .getPage(RangeBearingPage.NAME);
                 if (offsetPage != null)
                 {
                   if (offsetPage.isPageComplete())
                   {
-                    res =
-                        new WorldVector(MWC.Algorithms.Conversions
-                            .Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-                            .getRange(), null);
+                    res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+                        offsetPage.getBearingDegs()), offsetPage.getRange(),
+                        null);
                   }
                 }
 
@@ -521,9 +550,8 @@ public class GenerateTMASegmentFromCuts implements
 
                 // ok, go for it.
                 // sort it out as an operation
-                final IUndoableOperation convertToTrack1 =
-                    new TMAfromCuts(finalItems, theLayers, res, courseDegs,
-                        speed);
+                final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+                    finalItems, theLayers, res, courseDegs, speed);
 
                 // ok, stick it on the buffer
                 runIt(convertToTrack1);
@@ -571,35 +599,31 @@ public class GenerateTMASegmentFromCuts implements
             {
 
               // get the supporting data
-              final TMAFromSensorWizard wizard =
-                  new TMAFromSensorWizard(firstContact.getBearing(),
-                      firstContact.getRange(), DEFAULT_TARGET_COURSE,
-                      DEFAULT_TARGET_SPEED);
-              final WizardDialog dialog =
-                  new WizardDialog(Display.getCurrent().getActiveShell(),
-                      wizard);
+              final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+                  firstContact.getBearing(), firstContact.getRange(),
+                  DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
+              final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+                  .getActiveShell(), wizard);
               dialog.create();
               dialog.open();
 
               // did it work?
               if (dialog.getReturnCode() == WizardDialog.OK)
               {
-                WorldVector res =
-                    new WorldVector(0, new WorldDistance(5, WorldDistance.NM),
-                        null);
+                WorldVector res = new WorldVector(0, new WorldDistance(5,
+                    WorldDistance.NM), null);
                 double courseDegs = 0;
                 WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-                final RangeBearingPage offsetPage =
-                    (RangeBearingPage) wizard.getPage(RangeBearingPage.NAME);
+                final RangeBearingPage offsetPage = (RangeBearingPage) wizard
+                    .getPage(RangeBearingPage.NAME);
                 if (offsetPage != null)
                 {
                   if (offsetPage.isPageComplete())
                   {
-                    res =
-                        new WorldVector(MWC.Algorithms.Conversions
-                            .Degs2Rads(offsetPage.getBearingDegs()), offsetPage
-                            .getRange(), null);
+                    res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+                        offsetPage.getBearingDegs()), offsetPage.getRange(),
+                        null);
                   }
                 }
 
@@ -618,8 +642,8 @@ public class GenerateTMASegmentFromCuts implements
 
                 // ok, go for it.
                 // sort it out as an operation
-                final IUndoableOperation convertToTrack1 =
-                    new TMAfromCuts(items, theLayers, res, courseDegs, speed);
+                final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+                    items, theLayers, res, courseDegs, speed);
 
                 // ok, stick it on the buffer
                 runIt(convertToTrack1);
