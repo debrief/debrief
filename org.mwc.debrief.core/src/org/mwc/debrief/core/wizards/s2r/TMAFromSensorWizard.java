@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.wizards.s2r;
 
@@ -34,20 +34,13 @@ public class TMAFromSensorWizard extends Wizard
   private final WorldDistance _range;
   private final double _initialCourse;
   private final WorldSpeed _initialSpeed;
-  private boolean _showOffset;
+  private final boolean _showOffset;
   private SelectColorPage colorPage;
   private final Color _color;
 
   public TMAFromSensorWizard(final double brgDegs, final WorldDistance range,
       final double initialCourse, final WorldSpeed initialSpeed,
-      final Color color)
-  {
-    this(brgDegs, range, initialCourse, initialSpeed, true, color);
-  }
-
-  public TMAFromSensorWizard(final double brgDegs, final WorldDistance range,
-      final double initialCourse, final WorldSpeed initialSpeed,
-      boolean showOffset, final Color color)
+      final boolean showOffset, final Color color)
   {
     _brgDegs = brgDegs;
     _range = range;
@@ -57,6 +50,14 @@ public class TMAFromSensorWizard extends Wizard
     _color = color;
   }
 
+  public TMAFromSensorWizard(final double brgDegs, final WorldDistance range,
+      final double initialCourse, final WorldSpeed initialSpeed,
+      final Color color)
+  {
+    this(brgDegs, range, initialCourse, initialSpeed, true, color);
+  }
+
+  @Override
   public void addPages()
   {
     final String imagePath = "images/grid_wizard.gif";
@@ -94,15 +95,16 @@ public class TMAFromSensorWizard extends Wizard
     }
   }
 
-  public boolean performFinish()
-  {
-    return true;
-  }
-
   @Override
   public IWizardPage getPage(final String name)
   {
     return super.getPage(name);
+  }
+
+  @Override
+  public boolean performFinish()
+  {
+    return true;
   }
 
 }

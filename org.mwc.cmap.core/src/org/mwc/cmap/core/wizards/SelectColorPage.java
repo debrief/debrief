@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.wizards;
 
@@ -35,24 +35,27 @@ public class SelectColorPage extends CoreEditableWizardPage
       return _myColor;
     }
 
-    public void setColor(final Color color)
-    {
-      this._myColor = color;
-    }
-
+    @Override
     public EditorType getInfo()
     {
       return null;
     }
 
+    @Override
     public String getName()
     {
       return null;
     }
 
+    @Override
     public boolean hasEditor()
     {
       return false;
+    }
+
+    public void setColor(final Color color)
+    {
+      this._myColor = color;
     }
 
   }
@@ -73,7 +76,8 @@ public class SelectColorPage extends CoreEditableWizardPage
   public SelectColorPage(final ISelection selection, final Color startColor,
       final String pageTitle, final String pageExplanation,
       final String fieldExplanation, final String imagePath,
-      final String helpContext, String trailingMessage, boolean skipPrefs)
+      final String helpContext, final String trailingMessage,
+      final boolean skipPrefs)
   {
     super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
         false, trailingMessage);
@@ -83,20 +87,16 @@ public class SelectColorPage extends CoreEditableWizardPage
     setDefaults();
   }
 
-  private void setDefaults()
+  @Override
+  protected Editable createMe()
   {
-    if (!_skipPrefs)
+    if (_myWrapper == null)
     {
-      final Preferences prefs = getPrefs();
-
-      if (prefs != null)
-      {
-        final int red = prefs.getInt(COLOR_RED, 255);
-        final int green = prefs.getInt(COLOR_GREEN, 0);
-        final int blue = prefs.getInt(COLOR_BLUE, 0);
-        _startColor = new Color(red, green, blue);
-      }
+      _myWrapper = new DataItem();
+      _myWrapper.setColor(_startColor);
     }
+
+    return _myWrapper;
   }
 
   @Override
@@ -115,11 +115,15 @@ public class SelectColorPage extends CoreEditableWizardPage
     super.dispose();
   }
 
-  public String getString()
+  public Color getColor()
   {
-    return _myWrapper.getName();
+    Color res = Color.red;
+    if (_myWrapper.getColor() != null)
+      res = _myWrapper.getColor();
+    return res;
   }
 
+  @Override
   protected PropertyDescriptor[] getPropertyDescriptors()
   {
     final PropertyDescriptor[] descriptors =
@@ -127,23 +131,25 @@ public class SelectColorPage extends CoreEditableWizardPage
     return descriptors;
   }
 
-  protected Editable createMe()
+  public String getString()
   {
-    if (_myWrapper == null)
-    {
-      _myWrapper = new DataItem();
-      _myWrapper.setColor(_startColor);
-    }
-
-    return _myWrapper;
+    return _myWrapper.getName();
   }
 
-  public Color getColor()
+  private void setDefaults()
   {
-    Color res = Color.red;
-    if (_myWrapper.getColor() != null)
-      res = _myWrapper.getColor();
-    return res;
+    if (!_skipPrefs)
+    {
+      final Preferences prefs = getPrefs();
+
+      if (prefs != null)
+      {
+        final int red = prefs.getInt(COLOR_RED, 255);
+        final int green = prefs.getInt(COLOR_GREEN, 0);
+        final int blue = prefs.getInt(COLOR_BLUE, 0);
+        _startColor = new Color(red, green, blue);
+      }
+    }
   }
 
 }

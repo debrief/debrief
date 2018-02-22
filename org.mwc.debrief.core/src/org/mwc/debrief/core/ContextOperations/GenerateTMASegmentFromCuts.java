@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -29,6 +29,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
@@ -63,16 +64,11 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
 public class GenerateTMASegmentFromCuts implements
     RightClickContextItemGenerator
 {
-
-  private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
-      WorldSpeed.Kts);
-  private static final double DEFAULT_TARGET_COURSE = 120d;
-  public static final String USE_CUT_COLOR = "USE_CUT_COLOR";
 
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
@@ -86,17 +82,179 @@ public class GenerateTMASegmentFromCuts implements
       super(val);
     }
 
+    @SuppressWarnings("deprecation")
+    private TrackWrapper getLongerTrack()
+    {
+      final TrackWrapper tw = new TrackWrapper();
+
+      final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
+      WorldLocation lastLoc = loc_1;
+
+      for (int i = 0; i < 50; i++)
+      {
+        final long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
+        final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(thisTime),
+            lastLoc.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(
+                0), 110));
+        fw.setLabel("fw1");
+        tw.addFix(fw);
+
+        lastLoc = new WorldLocation(fw.getLocation());
+      }
+
+      final SensorWrapper swa = new SensorWrapper("title one");
+      tw.add(swa);
+      swa.setSensorOffset(new ArrayLength(-400));
+
+      for (int i = 0; i < 50; i += 3)
+      {
+        final long thisTime = new Date(2016, 1, 14, 12, i, 30).getTime();
+        final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+            new HiResDate(thisTime), null, null, null, null, null, 0, null);
+        swa.add(scwa1);
+      }
+
+      return tw;
+    }
+
+    /**
+     * @return
+     */
+    private WorldVector getVector(final double courseDegs, final double distM)
+    {
+      return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
+          new WorldDistance(distM, WorldDistance.METRES), null);
+    }
+
     public final void testIWork()
     {
 
     }
 
+    public void testSplitWithOffset() throws ExecutionException
+    {
+      final TrackWrapper tw = getLongerTrack();
+
+      assertNotNull(tw);
+
+      // get the sensor data
+      final SensorWrapper sw = (SensorWrapper) tw.getSensors().elements()
+          .nextElement();
+
+      assertNotNull(sw);
+
+      // create a list of cuts (to simulate the selection)
+      final SensorContactWrapper[] items = new SensorContactWrapper[sw.size()];
+      final Enumeration<Editable> numer = sw.elements();
+      int ctr = 0;
+      while (numer.hasMoreElements())
+      {
+        final SensorContactWrapper cut = (SensorContactWrapper) numer
+            .nextElement();
+        items[ctr++] = cut;
+      }
+
+      final Layers theLayers = new Layers();
+      final WorldVector worldOffset = new WorldVector(Math.PI, 0.002, 0);
+      final double tgtCourse = 0;
+      final WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
+
+      final Color newColor = Color.GREEN;
+
+      // check we haven't got the new color
+      final Color oldColor = items[0].getColor();
+      assertEquals("correct original color", Color.YELLOW, oldColor);
+
+      // ok, generate the target track
+      final CMAPOperation op = new TMAfromCuts(items, theLayers, worldOffset,
+          tgtCourse, tgtSpeed, newColor);
+
+      // and run it
+      op.execute(null, null);
+
+      assertEquals("has new data", 1, theLayers.size());
+
+      final TrackWrapper sol = (TrackWrapper) theLayers.elementAt(0);
+      assertNotNull("new layer not found", sol);
+
+      // ok, now try to split it
+      assertEquals("only has one segment", 1, sol.getSegments().size());
+
+      final RelativeTMASegment seg = (RelativeTMASegment) sol.getSegments()
+          .elements().nextElement();
+
+      assertNotNull("new seg not found", seg);
+
+      // check the color
+      final SensorContactWrapper first = items[0];
+      assertEquals("new color:", newColor, first.getColor());
+
+      // ok, and we split it.
+      int ctr2 = 0;
+      FixWrapper beforeF = null;
+      FixWrapper afterF = null;
+      final Enumeration<Editable> eF = seg.elements();
+      while (eF.hasMoreElements())
+      {
+        final FixWrapper fix = (FixWrapper) eF.nextElement();
+        ctr2++;
+        if (ctr2 > seg.size() / 2)
+        {
+          if (beforeF == null)
+          {
+            beforeF = fix;
+          }
+          else
+          {
+            afterF = fix;
+            break;
+          }
+        }
+      }
+
+      assertNotNull("fix not found", beforeF);
+
+      // ok, what's the time offset
+      final WorldLocation afterBeforeSplit = afterF.getLocation();
+
+      // ok, time to split
+      final SubjectAction[] actions = beforeF.getInfo().getUndoableActions();
+      final SubjectAction doSplit = actions[1];
+      doSplit.execute(beforeF);
+
+      // ok, have another look
+      assertEquals("now has two segments", 2, sol.getSegments().size());
+      Enumeration<Editable> aNum = sol.getSegments().elements();
+      aNum.nextElement();
+      TrackSegment afterSeg = (TrackSegment) aNum.nextElement();
+      WorldLocation locAfterSplit = afterSeg.getTrackStart();
+
+      assertEquals("origin remains valid", afterBeforeSplit, locAfterSplit);
+
+      // hey, try the undo
+      doSplit.undo(beforeF);
+
+      assertEquals("now has one segment again", 1, sol.getSegments().size());
+
+      // hey, try the undo
+      doSplit.execute(beforeF);
+      assertEquals("now has two segments", 2, sol.getSegments().size());
+
+      aNum = sol.getSegments().elements();
+      aNum.nextElement();
+      afterSeg = (TrackSegment) aNum.nextElement();
+      locAfterSplit = afterSeg.getTrackStart();
+      assertEquals("origin remains valid, after undo/redo", afterBeforeSplit,
+          locAfterSplit);
+
+    }
+
     public void testTrimmingTrack()
     {
-      TrackWrapper host = new TrackWrapper();
+      final TrackWrapper host = new TrackWrapper();
       host.setName("host");
 
-      SensorWrapper sensor = new SensorWrapper("sensor");
+      final SensorWrapper sensor = new SensorWrapper("sensor");
       host.add(sensor);
 
       host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(
@@ -131,210 +289,29 @@ public class GenerateTMASegmentFromCuts implements
       sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null,
           100d, null, Color.RED, "label", 12, "sensor"));
 
-      Enumeration<Editable> cuts = sensor.elements();
-      SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor.size()];
+      final Enumeration<Editable> cuts = sensor.elements();
+      final SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor
+          .size()];
       int ctr = 0;
       while (cuts.hasMoreElements())
       {
-        SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
+        final SensorContactWrapper cut = (SensorContactWrapper) cuts
+            .nextElement();
         cutArr[ctr++] = cut;
       }
 
       assertEquals("expected number of cuts", 7, cutArr.length);
 
-      SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
+      final SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
       assertEquals("expected number of cuts", 4, trimmed.length);
-    }
-
-    @SuppressWarnings("deprecation")
-    private TrackWrapper getLongerTrack()
-    {
-      final TrackWrapper tw = new TrackWrapper();
-
-      final WorldLocation loc_1 = new WorldLocation(0.00000001, 0.000000001, 0);
-      WorldLocation lastLoc = loc_1;
-
-      for (int i = 0; i < 50; i++)
-      {
-        long thisTime = new Date(2016, 1, 14, 12, i, 0).getTime();
-        final FixWrapper fw = new FixWrapper(new Fix(new HiResDate(thisTime),
-            lastLoc.add(getVector(25, 0)), MWC.Algorithms.Conversions.Degs2Rads(
-                0), 110));
-        fw.setLabel("fw1");
-        tw.addFix(fw);
-
-        lastLoc = new WorldLocation(fw.getLocation());
-      }
-
-      final SensorWrapper swa = new SensorWrapper("title one");
-      tw.add(swa);
-      swa.setSensorOffset(new ArrayLength(-400));
-
-      for (int i = 0; i < 50; i += 3)
-      {
-        long thisTime = new Date(2016, 1, 14, 12, i, 30).getTime();
-        final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
-            new HiResDate(thisTime), null, null, null, null, null, 0, null);
-        swa.add(scwa1);
-      }
-
-      return tw;
-    }
-
-    public void testSplitWithOffset() throws ExecutionException
-    {
-      TrackWrapper tw = getLongerTrack();
-
-      assertNotNull(tw);
-
-      // get the sensor data
-      SensorWrapper sw = (SensorWrapper) tw.getSensors().elements()
-          .nextElement();
-
-      assertNotNull(sw);
-
-      // create a list of cuts (to simulate the selection)
-      SensorContactWrapper[] items = new SensorContactWrapper[sw.size()];
-      Enumeration<Editable> numer = sw.elements();
-      int ctr = 0;
-      while (numer.hasMoreElements())
-      {
-        SensorContactWrapper cut = (SensorContactWrapper) numer.nextElement();
-        items[ctr++] = cut;
-      }
-
-      Layers theLayers = new Layers();
-      WorldVector worldOffset = new WorldVector(Math.PI, 0.002, 0);
-      double tgtCourse = 0;
-      WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
-
-      Color newColor = Color.GREEN;
-      
-      // check we haven't got the new color
-      Color oldColor = items[0].getColor();
-      assertEquals("correct original color", Color.YELLOW, oldColor);
-      
-      // ok, generate the target track
-      CMAPOperation op = new TMAfromCuts(items, theLayers, worldOffset,
-          tgtCourse, tgtSpeed, newColor);
-
-      
-      // and run it
-      op.execute(null, null);
-
-      assertEquals("has new data", 1, theLayers.size());
-
-      TrackWrapper sol = (TrackWrapper) theLayers.elementAt(0);
-      assertNotNull("new layer not found", sol);
-
-      // ok, now try to split it
-      assertEquals("only has one segment", 1, sol.getSegments().size());
-
-      RelativeTMASegment seg = (RelativeTMASegment) sol.getSegments().elements()
-          .nextElement();
-
-      assertNotNull("new seg not found", seg);
-      
-      // check the color
-      SensorContactWrapper first = items[0];
-      assertEquals("new color:", newColor, first.getColor());
-
-      // ok, and we split it.
-      int ctr2 = 0;
-      FixWrapper beforeF = null;
-      FixWrapper afterF = null;
-      Enumeration<Editable> eF = seg.elements();
-      while (eF.hasMoreElements())
-      {
-        FixWrapper fix = (FixWrapper) eF.nextElement();
-        ctr2++;
-        if (ctr2 > seg.size() / 2)
-        {
-          if (beforeF == null)
-          {
-            beforeF = fix;
-          }
-          else
-          {
-            afterF = fix;
-            break;
-          }
-        }
-      }
-
-      assertNotNull("fix not found", beforeF);
-
-      // ok, what's the time offset
-      WorldLocation afterBeforeSplit = afterF.getLocation();
-
-      // ok, time to split
-      SubjectAction[] actions = beforeF.getInfo().getUndoableActions();
-      SubjectAction doSplit = actions[1];
-      doSplit.execute(beforeF);
-
-      // ok, have another look
-      assertEquals("now has two segments", 2, sol.getSegments().size());
-      Enumeration<Editable> aNum = sol.getSegments().elements();
-      aNum.nextElement();
-      TrackSegment afterSeg = (TrackSegment) aNum.nextElement();
-      WorldLocation locAfterSplit = afterSeg.getTrackStart();
-
-      assertEquals("origin remains valid", afterBeforeSplit, locAfterSplit);
-
-      // hey, try the undo
-      doSplit.undo(beforeF);
-
-      assertEquals("now has one segment again", 1, sol.getSegments().size());
-
-      // hey, try the undo
-      doSplit.execute(beforeF);
-      assertEquals("now has two segments", 2, sol.getSegments().size());
-
-      aNum = sol.getSegments().elements();
-      aNum.nextElement();
-      afterSeg = (TrackSegment) aNum.nextElement();
-      locAfterSplit = afterSeg.getTrackStart();
-      assertEquals("origin remains valid, after undo/redo", afterBeforeSplit,
-          locAfterSplit);
-
-    }
-
-    /**
-     * @return
-     */
-    private WorldVector getVector(final double courseDegs, final double distM)
-    {
-      return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
-          new WorldDistance(distM, WorldDistance.METRES), null);
     }
   }
 
   public static class TMAfromCuts extends CMAPOperation
   {
 
-    private final Layers _layers;
-    private final SensorContactWrapper[] _items;
-    private TrackWrapper _newTrack;
-    private final double _courseDegs;
-    private final WorldSpeed _speed;
-    private final WorldVector _offset;
-    private final Color _newColor;
-
-    public TMAfromCuts(final SensorContactWrapper[] items,
-        final Layers theLayers, final WorldVector offset,
-        final double courseDegs, final WorldSpeed speed, Color newColor)
-    {
-      super("Create TMA solution from sensor cuts");
-      _items = trimToHost(items);
-      _layers = theLayers;
-      _courseDegs = courseDegs;
-      _speed = speed;
-      _offset = offset;
-      _newColor = newColor;
-    }
-
     protected static SensorContactWrapper[] trimToHost(
-        SensorContactWrapper[] cuts)
+        final SensorContactWrapper[] cuts)
     {
       final SensorContactWrapper[] res;
       if (cuts.length > 0)
@@ -364,6 +341,46 @@ public class GenerateTMASegmentFromCuts implements
       return res;
     }
 
+    private final Layers _layers;
+    private final SensorContactWrapper[] _items;
+    private TrackWrapper _newTrack;
+    private final double _courseDegs;
+    private final WorldSpeed _speed;
+    private final WorldVector _offset;
+
+    private final Color _newColor;
+
+    public TMAfromCuts(final SensorContactWrapper[] items,
+        final Layers theLayers, final WorldVector offset,
+        final double courseDegs, final WorldSpeed speed, final Color newColor)
+    {
+      super("Create TMA solution from sensor cuts");
+      _items = trimToHost(items);
+      _layers = theLayers;
+      _courseDegs = courseDegs;
+      _speed = speed;
+      _offset = offset;
+      _newColor = newColor;
+    }
+
+    @Override
+    public boolean canExecute()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return true;
+    }
+
     @Override
     public IStatus execute(final IProgressMonitor monitor,
         final IAdaptable info) throws ExecutionException
@@ -379,7 +396,7 @@ public class GenerateTMASegmentFromCuts implements
         useCutColorStr = "TRUE";
       }
 
-      boolean useCutColor = Boolean.valueOf(useCutColorStr);
+      final boolean useCutColor = Boolean.valueOf(useCutColorStr);
       if (useCutColor)
       {
         colorOverride = null;
@@ -402,7 +419,7 @@ public class GenerateTMASegmentFromCuts implements
       _newTrack.setName(tNow);
 
       _layers.addThisLayerAllowDuplication(_newTrack);
-      
+
       shadeCuts();
 
       // sorted, do the update
@@ -411,12 +428,27 @@ public class GenerateTMASegmentFromCuts implements
       return Status.OK_STATUS;
     }
 
+    @Override
+    public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      _layers.addThisLayerAllowDuplication(_newTrack);
+
+      // sorted, do the update
+      _layers.fireExtended();
+
+      // re-shade the cuts
+      shadeCuts();
+
+      return Status.OK_STATUS;
+    }
+
     private void shadeCuts()
     {
       // and re-shade the cuts
-      if(_newColor != null)
+      if (_newColor != null)
       {
-        for(SensorContactWrapper cut: _items)
+        for (final SensorContactWrapper cut : _items)
         {
           cut.setColor(_newColor);
         }
@@ -430,11 +462,11 @@ public class GenerateTMASegmentFromCuts implements
       // forget about the new tracks
       _layers.removeThisLayer(_newTrack);
       _layers.fireExtended();
-      
+
       // did we use a color?
-      if(_newColor != null)
+      if (_newColor != null)
       {
-        for(SensorContactWrapper cut: _items)
+        for (final SensorContactWrapper cut : _items)
         {
           cut.resetColor();
         }
@@ -443,40 +475,14 @@ public class GenerateTMASegmentFromCuts implements
       return Status.OK_STATUS;
     }
 
-    @Override
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      _layers.addThisLayerAllowDuplication(_newTrack);
-
-      // sorted, do the update
-      _layers.fireExtended();
-      
-      // re-shade the cuts
-      shadeCuts();
-
-      return Status.OK_STATUS;
-    }
-
-    @Override
-    public boolean canExecute()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean canRedo()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean canUndo()
-    {
-      return true;
-    }
-
   }
+
+  private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
+      WorldSpeed.Kts);
+
+  private static final double DEFAULT_TARGET_COURSE = 120d;
+
+  public static final String USE_CUT_COLOR = "USE_CUT_COLOR";
 
   /**
    * @param parent
@@ -484,6 +490,7 @@ public class GenerateTMASegmentFromCuts implements
    * @param parentLayers
    * @param subjects
    */
+  @Override
   public void generate(final IMenuManager parent, final Layers theLayers,
       final Layer[] parentLayers, final Editable[] subjects)
   {
@@ -544,7 +551,7 @@ public class GenerateTMASegmentFromCuts implements
               dialog.open();
 
               // did it work?
-              if (dialog.getReturnCode() == WizardDialog.OK)
+              if (dialog.getReturnCode() == Window.OK)
               {
 
                 final RangeBearingPage offsetPage = (RangeBearingPage) wizard
@@ -577,7 +584,7 @@ public class GenerateTMASegmentFromCuts implements
                 final Color newColor;
                 if (colorPage != null && colorPage.isPageComplete())
                 {
-                  Color color = colorPage.getColor();
+                  final Color color = colorPage.getColor();
                   if (!color.equals(firstColor))
                   {
                     newColor = color;
@@ -654,7 +661,7 @@ public class GenerateTMASegmentFromCuts implements
               dialog.open();
 
               // did it work?
-              if (dialog.getReturnCode() == WizardDialog.OK)
+              if (dialog.getReturnCode() == Window.OK)
               {
                 WorldVector res = new WorldVector(0, new WorldDistance(5,
                     WorldDistance.NM), null);
@@ -685,13 +692,13 @@ public class GenerateTMASegmentFromCuts implements
                     speed = item.getSpeed();
                   }
                 }
-                
+
                 final SelectColorPage colorPage = (SelectColorPage) wizard
                     .getPage(SelectColorPage.NAME);
                 final Color newColor;
                 if (colorPage != null && colorPage.isPageComplete())
                 {
-                  Color color = colorPage.getColor();
+                  final Color color = colorPage.getColor();
                   if (!color.equals(firstColor))
                   {
                     newColor = color;
@@ -735,7 +742,7 @@ public class GenerateTMASegmentFromCuts implements
   /**
    * put the operation firer onto the undo history. We've refactored this into a separate method so
    * testing classes don't have to simulate the CorePlugin
-   * 
+   *
    * @param operation
    */
   protected void runIt(final IUndoableOperation operation)
