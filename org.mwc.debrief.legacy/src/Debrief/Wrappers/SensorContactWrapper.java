@@ -532,7 +532,7 @@ public final class SensorContactWrapper extends
    */
   private static final long serialVersionUID = 1L;
 
-  public static final String TRANSPARENCY = "Transparency";
+  public static final String TRANSPARENCY = "SensorTransparency";
 
   /**
    * calculate the relative bearing when on this course
