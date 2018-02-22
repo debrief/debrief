@@ -14,7 +14,9 @@
  */
 package Debrief.GUI.Tote.Painters;
 
+import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.Duration;
@@ -69,6 +71,18 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
 
     // how long? (convert to millis)
     final long trail_len = (long) _fixPlotter.getTrailLength().getValueIn(Duration.MICROSECONDS);
+
+    final String alphaStr = Defaults.getPreference(SensorContactWrapper.TRANSPARENCY);
+    int alpha;
+    try
+    {
+      alpha = Integer.parseInt(alphaStr);
+    }
+    catch (NumberFormatException e)
+    {
+      alpha = 255;
+      e.printStackTrace();
+    }
 
     // are we plotting a back-track?
     if (trail_len > 0)
@@ -131,7 +145,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
               scw.setColor(newCol);
 
               // paint the object
-              scw.paint(hostTrack, adaptor, keepItSimple);
+              scw.paint(hostTrack, adaptor, keepItSimple, alpha);
 
               // restore the colour, if it's non-null
               scw.setColor(oldCol);
@@ -168,7 +182,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
       thisR = thisArea;
 
       // and plot in the line
-      contact.paint(null, adaptor, keepItSimple);
+      contact.paint(null, adaptor, keepItSimple, alpha);
 
     }
 
@@ -239,7 +253,8 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
      */
     abstract public void paint(final MWC.GenericData.WatchableList track,
                                final MWC.GUI.CanvasType dest,
-                               final boolean keep_simple);
+                               final boolean keep_simple,
+                               final int transparency);
 
 	
 
