@@ -249,7 +249,7 @@ public class GenerateTMASegmentFromOwnshipPositions implements
 							// get the supporting data
 							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
 									new WorldDistance(5, WorldDistance.NM),
-									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
+									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED, null);
 							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
 							dialog.create();
