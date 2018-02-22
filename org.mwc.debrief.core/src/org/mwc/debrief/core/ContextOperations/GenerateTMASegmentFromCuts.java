@@ -88,11 +88,6 @@ public class GenerateTMASegmentFromCuts implements
       super(val);
     }
 
-    public final void testIWork()
-    {
-
-    }
-
     public void testTrimmingTrack()
     {
       TrackWrapper host = new TrackWrapper();
