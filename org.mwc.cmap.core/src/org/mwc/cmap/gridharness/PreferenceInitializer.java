@@ -15,6 +15,8 @@
 package org.mwc.cmap.gridharness;
 
 import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.mwc.cmap.core.CorePlugin;
 
 public class PreferenceInitializer extends AbstractPreferenceInitializer
 {
@@ -22,8 +24,8 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
   @Override
   public void initializeDefaultPreferences()
   {
-//    final IPreferenceStore preferences = CorePlugin.getDefault()
-//        .getPreferenceStore();
+    final IPreferenceStore preferences = CorePlugin.getDefault()
+        .getPreferenceStore();
 //    preferences.setDefault(CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, false);
 //    preferences.setDefault(CorePlugin.DEFAULT_FONT, "Arial-regular-12");
 //    preferences.setDefault(SensorContactWrapper.TRANSPARENCY, 100);
