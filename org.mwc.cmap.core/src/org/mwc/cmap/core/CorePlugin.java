@@ -168,7 +168,7 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
    * preference for detault font size
    *
    */
-  public static final String DEFAULT_FONT = "DefaultFont";
+  public static final String DEFAULT_FONT = "DefaultPlotFont";
 
   /**
    * support for lat/long editor in grid editor

@@ -18,6 +18,7 @@ import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.ScaleFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -27,10 +28,12 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.Wrappers.SensorContactWrapper;
+import MWC.GUI.Defaults;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 
-public class DebriefFormattingOptionsPreferencesPage extends FieldEditorPreferencePage
-    implements IWorkbenchPreferencePage
+public class DebriefFormattingOptionsPreferencesPage extends
+    FieldEditorPreferencePage implements IWorkbenchPreferencePage
 {
 
   public static final String LABEL_DD_DDD = "DD.DDDDD\u00B0";
@@ -85,12 +88,8 @@ public class DebriefFormattingOptionsPreferencesPage extends FieldEditorPreferen
     lbl = new Label(locationFormatGroup, SWT.NONE);
     lbl.setText("      ");
 
-    final RadioGroupFieldEditor formarEditor = new RadioGroupFieldEditor(//
-        CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, //
-        "", //
-        1, choices, locationFormatGroup, true);
-
-    addField(formarEditor);
+    addField(new RadioGroupFieldEditor(CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS,
+        "", 1, choices, locationFormatGroup, true));
 
     lbl = new Label(locationFormatGroup, SWT.NONE);
     lbl.setText("   ");
@@ -115,11 +114,36 @@ public class DebriefFormattingOptionsPreferencesPage extends FieldEditorPreferen
 
     addField(fontEditor);
 
-    BooleanFieldEditor shadeNE = new BooleanFieldEditor(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH , 
-        "Use Natural Earth shades for ETOPO", BooleanFieldEditor.SEPARATE_LABEL, locationFormatGroup);
-    
-    addField(shadeNE);
-    
+    addField(new BooleanFieldEditor(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH,
+        "Use Natural Earth shades for ETOPO:",
+        BooleanFieldEditor.SEPARATE_LABEL, locationFormatGroup));
+
+    lbl = new Label(locationFormatGroup, SWT.NONE);
+    lbl.setText("   ");
+    lbl = new Label(locationFormatGroup, SWT.NONE);
+    lbl.setText("   ");
+
+    // current transparency
+    final int curVal = CorePlugin.getDefault().getPreferenceStore().getInt(
+        SensorContactWrapper.TRANSPARENCY);
+
+    // lastly, the transparency editor
+    final String title = "Sensor cut transparency ";
+    addField(new ScaleFieldEditor(Defaults.SENSOR_TRANSPARENCY, title
+        + " (" + curVal + "):", locationFormatGroup, 0, 255, 1, 10)
+    {
+      @Override
+      protected void valueChanged()
+      {
+        super.valueChanged();
+        final String newTitle = title + " (" + this.getScaleControl()
+            .getSelection() + "):";
+        this.getLabelControl().setText(newTitle);
+      }
+    });
+    lbl = new Label(locationFormatGroup, SWT.NONE);
+    lbl.setText("(0=transparent, 255=solid)");
+
     // the field editors mangle the layout, so we do it last.
 
     locationFormatGroup.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true,

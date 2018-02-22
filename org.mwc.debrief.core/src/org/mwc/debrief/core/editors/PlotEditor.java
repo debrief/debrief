@@ -67,6 +67,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ISelection;
@@ -510,6 +511,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private PlotPropertySheetPage _propertySheetPage;
 
+  private final IPropertyChangeListener _sensorTransparencyListener;
+
   /**
    * constructor - quite simple really.
    */
@@ -562,6 +565,23 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // and how time is managed
     _timePreferences = new TimeControlProperties();
+
+    // listen for the sensor transparency hcanging
+    _sensorTransparencyListener = new IPropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(
+          org.eclipse.jface.util.PropertyChangeEvent event)
+      {
+        if (SensorContactWrapper.TRANSPARENCY.equals(event.getProperty()))
+        {
+          // ok, trigger redraw
+          _myLayers.fireExtended();
+        }
+      }
+    };
+    CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(
+        _sensorTransparencyListener);
 
     // listen out for when our input changes, since we will change the
     // editor
@@ -1071,6 +1091,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     _timeManager = null;
+
+    // stop listening for sensor transparency changes
+    CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(
+        _sensorTransparencyListener);
 
     if (_layerPainterManager != null)
     {
