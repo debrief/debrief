@@ -159,6 +159,7 @@ import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -1299,6 +1300,13 @@ public final class SensorContactWrapper extends
   {
     ditchBearing(false);
   }
+  
+  @Override
+  public final void paint(final MWC.GenericData.WatchableList track,
+      final MWC.GUI.CanvasType dest, final boolean keep_simple)
+  {
+    paint(track, dest, keep_simple, 255);
+  }
 
   /**
    * paint this object to the specified canvas
@@ -1310,9 +1318,8 @@ public final class SensorContactWrapper extends
    * @param keep_simple
    *          whether to allow a change in line style
    */
-  @Override
   public final void paint(final MWC.GenericData.WatchableList track,
-      final MWC.GUI.CanvasType dest, final boolean keep_simple)
+      final MWC.GUI.CanvasType dest, final boolean keep_simple, final int alpha)
   {
     if (!getVisible())
     {
@@ -1393,10 +1400,20 @@ public final class SensorContactWrapper extends
           dest.setLineStyle(_myLineStyle);
         }
 
+        final boolean canAlpha = dest instanceof ExtendedCanvasType;
+
         // draw the line
         if (farEnd != null)
         {
-          dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          if (canAlpha)
+          {
+            ExtendedCanvasType ex = (ExtendedCanvasType) dest;
+            ex.drawLine(pt.x, pt.y, farEnd.x, farEnd.y, alpha);
+          }
+          else
+          {
+            dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
+          }
         }
 
         // do we have an ambiguous bearing?
