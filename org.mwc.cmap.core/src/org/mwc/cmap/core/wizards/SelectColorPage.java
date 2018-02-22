@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.wizards;
 
@@ -35,24 +35,27 @@ public class SelectColorPage extends CoreEditableWizardPage
       return _myColor;
     }
 
-    public void setColor(final Color color)
-    {
-      this._myColor = color;
-    }
-
+    @Override
     public EditorType getInfo()
     {
       return null;
     }
 
+    @Override
     public String getName()
     {
       return null;
     }
 
+    @Override
     public boolean hasEditor()
     {
       return false;
+    }
+
+    public void setColor(final Color color)
+    {
+      this._myColor = color;
     }
 
   }
@@ -68,12 +71,13 @@ public class SelectColorPage extends CoreEditableWizardPage
   private Color _startColor;
   private final String _fieldExplanation;
 
-  private boolean _skipPrefs;
+  private final boolean _skipPrefs;
 
   public SelectColorPage(final ISelection selection, final Color startColor,
       final String pageTitle, final String pageExplanation,
       final String fieldExplanation, final String imagePath,
-      final String helpContext, String trailingMessage, final boolean skipPrefs)
+      final String helpContext, final String trailingMessage,
+      final boolean skipPrefs)
   {
     super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
         false, trailingMessage);
@@ -81,6 +85,55 @@ public class SelectColorPage extends CoreEditableWizardPage
     _skipPrefs = skipPrefs;
     _fieldExplanation = fieldExplanation;
     setDefaults();
+  }
+
+  @Override
+  protected Editable createMe()
+  {
+    if (_myWrapper == null)
+    {
+      _myWrapper = new DataItem();
+      _myWrapper.setColor(_startColor);
+    }
+
+    return _myWrapper;
+  }
+
+  @Override
+  public void dispose()
+  {
+
+    if (!_skipPrefs)
+    {
+      // try to store some defaults
+      final Preferences prefs = getPrefs();
+
+      prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
+      prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
+      prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
+    }
+    super.dispose();
+  }
+
+  public Color getColor()
+  {
+    Color res = Color.red;
+    if (_myWrapper.getColor() != null)
+      res = _myWrapper.getColor();
+    return res;
+  }
+
+  @Override
+  protected PropertyDescriptor[] getPropertyDescriptors()
+  {
+    final PropertyDescriptor[] descriptors =
+    {prop("Color", _fieldExplanation, getEditable())};
+    return descriptors;
+  }
+
+  public String getString()
+  {
+    return _myWrapper.getName();
   }
 
   private void setDefaults()
@@ -97,52 +150,6 @@ public class SelectColorPage extends CoreEditableWizardPage
         _startColor = new Color(red, green, blue);
       }
     }
-  }
-
-  @Override
-  public void dispose()
-  {
-    if (!_skipPrefs)
-    {
-      // try to store some defaults
-      final Preferences prefs = getPrefs();
-
-      prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
-      prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
-      prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
-    }
-    super.dispose();
-  }
-
-  public String getString()
-  {
-    return _myWrapper.getName();
-  }
-
-  protected PropertyDescriptor[] getPropertyDescriptors()
-  {
-    final PropertyDescriptor[] descriptors =
-    {prop("Color", _fieldExplanation, getEditable())};
-    return descriptors;
-  }
-
-  protected Editable createMe()
-  {
-    if (_myWrapper == null)
-    {
-      _myWrapper = new DataItem();
-      _myWrapper.setColor(_startColor);
-    }
-
-    return _myWrapper;
-  }
-
-  public Color getColor()
-  {
-    Color res = Color.red;
-    if (_myWrapper.getColor() != null)
-      res = _myWrapper.getColor();
-    return res;
   }
 
 }
