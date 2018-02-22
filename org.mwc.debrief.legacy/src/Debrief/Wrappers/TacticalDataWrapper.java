@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables;
@@ -861,6 +862,19 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
     // set the line width
     canvas.setLineWidth(_lineWidth);
+    
+    // sort out the alpha
+    String alphaStr = Defaults.getPreference(SensorContactWrapper.TRANSPARENCY);
+    int alpha;
+    try
+    {
+      alpha = Integer.parseInt(alphaStr);
+    }
+    catch (NumberFormatException e)
+    {
+      alpha = 255;
+      e.printStackTrace();
+    }
 
     // trigger our child sensor contact data items to plot themselves
     final java.util.Iterator<Editable> it = _myContacts.iterator();
@@ -872,6 +886,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
       if (con.getVisible())
       {
+        
         // ok, plot it - and don't make it keep it simple, lets really go
         // for it man!
         con.paint(_myHost, canvas, false);
