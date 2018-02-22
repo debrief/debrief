@@ -1583,7 +1583,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         final WatchableList list = (WatchableList) first;
         final TrackManager mgr = (TrackManager) _trackDataProvider;
-        mgr.setPrimary(list);
+
+        // do we already have a primary
+        if (mgr.getPrimaryTrack() == null)
+        {
+          mgr.setPrimary(list);
+        }
       }
     }
   }
