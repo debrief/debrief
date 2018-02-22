@@ -26,13 +26,16 @@ import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.core.wizards.RangeBearingPage;
@@ -82,6 +85,61 @@ public class GenerateTMASegmentFromCuts implements
       super(val);
     }
 
+    public void testTrimmingTrack()
+    {
+      TrackWrapper host = new TrackWrapper();
+      host.setName("host");
+
+      SensorWrapper sensor = new SensorWrapper("sensor");
+      host.add(sensor);
+
+      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+
+      sensor.add(new SensorContactWrapper("host", new HiResDate(800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(1800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(2800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(5800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(7800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(8800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+
+      Enumeration<Editable> cuts = sensor.elements();
+      SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor.size()];
+      int ctr = 0;
+      while (cuts.hasMoreElements())
+      {
+        SensorContactWrapper cut = (SensorContactWrapper) cuts.nextElement();
+        cutArr[ctr++] = cut;
+      }
+
+      assertEquals("expected number of cuts", 7, cutArr.length);
+
+      SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
+      assertEquals("expected number of cuts", 4, trimmed.length);
+    }
+
     @SuppressWarnings("deprecation")
     private TrackWrapper getLongerTrack()
     {
@@ -124,11 +182,6 @@ public class GenerateTMASegmentFromCuts implements
     {
       return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(courseDegs),
           new WorldDistance(distM, WorldDistance.METRES), null);
-    }
-
-    public final void testIWork()
-    {
-
     }
 
     public void testSplitWithOffset() throws ExecutionException
@@ -249,62 +302,6 @@ public class GenerateTMASegmentFromCuts implements
 
     }
 
-    public void testTrimmingTrack()
-    {
-      final TrackWrapper host = new TrackWrapper();
-      host.setName("host");
-
-      final SensorWrapper sensor = new SensorWrapper("sensor");
-      host.add(sensor);
-
-      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(
-          0, 0, 0), 10, 20)));
-
-      sensor.add(new SensorContactWrapper("host", new HiResDate(800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(1800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(2800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(5800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(7800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(8800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-      sensor.add(new SensorContactWrapper("host", new HiResDate(9800), null,
-          100d, null, Color.RED, "label", 12, "sensor"));
-
-      final Enumeration<Editable> cuts = sensor.elements();
-      final SensorContactWrapper[] cutArr = new SensorContactWrapper[sensor
-          .size()];
-      int ctr = 0;
-      while (cuts.hasMoreElements())
-      {
-        final SensorContactWrapper cut = (SensorContactWrapper) cuts
-            .nextElement();
-        cutArr[ctr++] = cut;
-      }
-
-      assertEquals("expected number of cuts", 7, cutArr.length);
-
-      final SensorContactWrapper[] trimmed = TMAfromCuts.trimToHost(cutArr);
-      assertEquals("expected number of cuts", 4, trimmed.length);
-    }
   }
 
   public static class TMAfromCuts extends CMAPOperation
@@ -420,12 +417,30 @@ public class GenerateTMASegmentFromCuts implements
 
       _layers.addThisLayerAllowDuplication(_newTrack);
 
+      // shade the sensor cuts
       shadeCuts();
 
+      // also set it as a secondary track
+      if (Platform.isRunning())
+      {
+        final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
+        if (editor != null)
+        {
+          // get the track manager
+          final TrackManager mgr = (TrackManager) editor.getAdapter(
+              TrackManager.class);
+          if (mgr != null)
+          {
+            // and assign the new secondary
+            mgr.setSecondary(_newTrack);
+          }
+        }
+      }
       // sorted, do the update
       _layers.fireExtended();
 
       return Status.OK_STATUS;
+
     }
 
     @Override

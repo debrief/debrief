@@ -135,7 +135,6 @@ import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
-import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.HasEditables;
@@ -1136,17 +1135,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // double-check our label is still in the right place
-        final double xVal = _linePlot.getRangeAxis().getLowerBound();
-        final double yVal = _linePlot.getDomainAxis().getUpperBound();
+        final double yVal = _linePlot.getRangeAxis().getLowerBound();
+        final double xVal = _linePlot.getDomainAxis().getUpperBound();
         boolean annotChanged = false;
-        if (crossHairAnnotation.getX() != yVal)
+        if (crossHairAnnotation.getX() != xVal)
         {
-          crossHairAnnotation.setX(yVal);
+          crossHairAnnotation.setX(xVal);
           annotChanged = true;
         }
-        if (crossHairAnnotation.getY() != xVal)
+        if (crossHairAnnotation.getY() != yVal)
         {
-          crossHairAnnotation.setY(xVal);
+          crossHairAnnotation.setY(yVal);
           annotChanged = true;
         }
         // and write the text
@@ -1167,6 +1166,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           _linePlot.removeAnnotation(crossHairAnnotation);
           _linePlot.addAnnotation(crossHairAnnotation);
+          annotChanged = false;
+
+          // note: we need to defer processing the annotation update,
+          // until after the current redraw is complete
+          Display.getCurrent().asyncExec(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              _myChart.fireChartChanged();
+            }
+          });
         }
 
         // ok, do we also have a selection event pending
@@ -1206,7 +1218,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
                   final IWorkbenchPage page = win.getActivePage();
                   final IEditorPart editor = page.getActiveEditor();
-                  final Layers layers = (Layers) editor.getAdapter(Layers.class);
+                  final Layers layers = (Layers) editor.getAdapter(
+                      Layers.class);
                   if (layers != null)
                   {
                     final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -1469,73 +1482,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     manager.add(_selectOnClick);
     // and the help link
     manager.add(new Separator());
-
-    // TEMPORARILY INTRODUCE SLICE MODE
-    // MenuManager sliceMenu = new MenuManager("Ownship slicing algorithm");
-    // manager.add(sliceMenu);
-    //
-    // // ok - try to add modes for the slicing algorithm
-    // _modePeak = new Action("Peak tracking", SWT.TOGGLE)
-    // {
-    // @Override
-    // public void run()
-    // {
-    // super.run();
-    // _sliceMode = SliceMode.PEAK_FIT;
-    // _modeThreshold.setChecked(false);
-    // _modeArea.setChecked(false);
-    // _modeArtificial.setChecked(false);
-    // _modePeak.setChecked(true);
-    // }
-    // };
-    // _modeArtificial = new Action("Artificial legs", SWT.TOGGLE)
-    // {
-    // @Override
-    // public void run()
-    // {
-    // super.run();
-    // _sliceMode = SliceMode.ARTIFICIAL_LEG;
-    // _modeThreshold.setChecked(false);
-    // _modePeak.setChecked(false);
-    // _modeArea.setChecked(false);
-    // _modeArtificial.setChecked(true);
-    // }
-    // };
-    // _modeArea = new Action("Area under curve", SWT.TOGGLE)
-    // {
-    // @Override
-    // public void run()
-    // {
-    // super.run();
-    // _sliceMode = SliceMode.AREA_UNDER_CURVE;
-    // _modePeak.setChecked(false);
-    // _modeThreshold.setChecked(false);
-    // _modeArtificial.setChecked(false);
-    // _modeArea.setChecked(true);
-    // }
-    // };
-    // _modeThreshold = new Action("Original", SWT.TOGGLE)
-    // {
-    // @Override
-    // public void run()
-    // {
-    // super.run();
-    // _sliceMode = SliceMode.ORIGINAL;
-    // _modePeak.setChecked(false);
-    // _modeArea.setChecked(false);
-    // _modeArtificial.setChecked(false);
-    // _modeThreshold.setChecked(true);
-    // // _modeTwo.setChecked(false);
-    // }
-    // };
-    //
-    // _modePeak.setChecked(true);
-    // sliceMenu.add(_modePeak);
-    // sliceMenu.add(_modeArtificial);
-    // sliceMenu.add(_modeThreshold);
-    // sliceMenu.add(_modeArea);
-
-    // also allo the target tracking accuracy to vary
 
     // TEMPORARILY INTRODUCE SLICE precision
     final MenuManager accuracyMenu = new MenuManager("Target Slice Precision");
@@ -2625,7 +2571,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           final long tEnd, final double rms)
       {
         final Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
-        // System.out.println("got zig:" + newZone);
         zigs.add(newZone);
       }
     };
@@ -3111,27 +3056,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final CachedTickDateAxis date = (CachedTickDateAxis) _combined
           .getDomainAxis();
       date.clearTicks();
-
-      // Note: we no longer resize the domain axes - we just do this
-      // when the data has been extended.
-      // if (_showDotPlot.isChecked())
-      // {
-      // _dotPlot.getDomainAxis().setAutoRange(false);
-      // _dotPlot.getDomainAxis().setAutoRange(true);
-      // _dotPlot.getDomainAxis().setAutoRange(false);
-      // }
-      // if (_showLinePlot.isChecked())
-      // {
-      // _linePlot.getDomainAxis().setAutoRange(false);
-      // _linePlot.getDomainAxis().setAutoRange(true);
-      // _linePlot.getDomainAxis().setAutoRange(false);
-      // }
-      // if (_showTargetOverview.isChecked())
-      // {
-      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-      // _targetOverviewPlot.getDomainAxis().setAutoRange(true);
-      // _targetOverviewPlot.getDomainAxis().setAutoRange(false);
-      // }
     }
 
     // right, are we updating the range data?
