@@ -25,115 +25,122 @@ import MWC.GUI.Editable;
 public class SelectColorPage extends CoreEditableWizardPage
 {
 
-	public static class DataItem implements Editable
-	{
+  public static class DataItem implements Editable
+  {
 
-		Color _myColor;
+    Color _myColor;
 
-		public Color getColor()
-		{
-			return _myColor;
-		}
+    public Color getColor()
+    {
+      return _myColor;
+    }
 
-		public void setColor(final Color color)
-		{
-			this._myColor = color;
-		}
+    public void setColor(final Color color)
+    {
+      this._myColor = color;
+    }
 
-		public EditorType getInfo()
-		{
-			return null;
-		}
+    public EditorType getInfo()
+    {
+      return null;
+    }
 
-		public String getName()
-		{
-			return null;
-		}
+    public String getName()
+    {
+      return null;
+    }
 
-		public boolean hasEditor()
-		{
-			return false;
-		}
+    public boolean hasEditor()
+    {
+      return false;
+    }
 
-	}
+  }
 
-	private static final String COLOR_RED = "RED";
+  private static final String COLOR_RED = "RED";
 
-	private static final String COLOR_BLUE = "GREEN";
+  private static final String COLOR_BLUE = "GREEN";
 
-	private static final String COLOR_GREEN = "BLUE";
+  private static final String COLOR_GREEN = "BLUE";
 
-	public static String NAME = "Get Color";
-	DataItem _myWrapper;
-	private Color _startColor;
-	private final String _fieldExplanation;
+  public static String NAME = "Get Color";
+  DataItem _myWrapper;
+  private Color _startColor;
+  private final String _fieldExplanation;
 
-	public SelectColorPage(final ISelection selection, final Color startColor,
-			final String pageTitle, final String pageExplanation, final String fieldExplanation,
-			final String imagePath, final String helpContext, String trailingMessage)
-	{
-		super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
-				false, trailingMessage);
-		_startColor = startColor;
-		_fieldExplanation = fieldExplanation;
-		setDefaults();
-	}
+  private final boolean _skipPrefs;
 
-	private void setDefaults()
-	{
-		final Preferences prefs = getPrefs();
+  public SelectColorPage(final ISelection selection, final Color startColor,
+      final String pageTitle, final String pageExplanation,
+      final String fieldExplanation, final String imagePath,
+      final String helpContext, String trailingMessage, boolean skipPrefs)
+  {
+    super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
+        false, trailingMessage);
+    _startColor = startColor;
+    _skipPrefs = skipPrefs;
+    _fieldExplanation = fieldExplanation;
+    setDefaults();
+  }
 
-		if (prefs != null)
-		{
-			final int red = prefs.getInt(COLOR_RED, 255);
-			final int green = prefs.getInt(COLOR_GREEN, 0);
-			final int blue = prefs.getInt(COLOR_BLUE, 0);
-			_startColor = new Color(red, green, blue);
-		}
-	}
+  private void setDefaults()
+  {
+    if (!_skipPrefs)
+    {
+      final Preferences prefs = getPrefs();
 
-	@Override
-	public void dispose()
-	{
-		// try to store some defaults
-		final Preferences prefs = getPrefs();
+      if (prefs != null)
+      {
+        final int red = prefs.getInt(COLOR_RED, 255);
+        final int green = prefs.getInt(COLOR_GREEN, 0);
+        final int blue = prefs.getInt(COLOR_BLUE, 0);
+        _startColor = new Color(red, green, blue);
+      }
+    }
+  }
 
-		prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
-		prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
-		prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
+  @Override
+  public void dispose()
+  {
+    // try to store some defaults
+    final Preferences prefs = getPrefs();
 
-		super.dispose();
-	}
+    prefs.putInt(COLOR_RED, _myWrapper.getColor().getRed());
+    prefs.putInt(COLOR_BLUE, _myWrapper.getColor().getBlue());
+    prefs.putInt(COLOR_GREEN, _myWrapper.getColor().getGreen());
 
-	public String getString()
-	{
-		return _myWrapper.getName();
-	}
+    super.dispose();
+  }
 
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		final PropertyDescriptor[] descriptors =
-		{ prop("Color", _fieldExplanation, getEditable()) };
-		return descriptors;
-	}
+  public String getString()
+  {
+    return _myWrapper.getName();
+  }
 
-	protected Editable createMe()
-	{
-		if (_myWrapper == null)
-		{
-			_myWrapper = new DataItem();
-			_myWrapper.setColor(_startColor);
-		}
+  protected PropertyDescriptor[] getPropertyDescriptors()
+  {
+    final PropertyDescriptor[] descriptors =
+    {prop("Color", _fieldExplanation, getEditable())};
+    return descriptors;
+  }
 
-		return _myWrapper;
-	}
+  protected Editable createMe()
+  {
+    if (_myWrapper == null)
+    {
+      _myWrapper = new DataItem();
+      _myWrapper.setColor(_startColor);
+    }
 
-	public Color getColor()
-	{
-		Color res = Color.red;
-		if (_myWrapper.getColor() != null)
-			res = _myWrapper.getColor();
-		return res;
-	}
+    return _myWrapper;
+  }
+
+  public Color getColor()
+  {
+    Color res = Color.red;
+    if (_myWrapper.getColor() != null)
+      res = _myWrapper.getColor();
+    return res;
+  }
 
 }
