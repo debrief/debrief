@@ -29,6 +29,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.SensorContactWrapper;
+import MWC.GUI.Defaults;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 
 public class DebriefFormattingOptionsPreferencesPage extends
@@ -128,7 +129,7 @@ public class DebriefFormattingOptionsPreferencesPage extends
 
     // lastly, the transparency editor
     final String title = "Sensor cut transparency ";
-    addField(new ScaleFieldEditor(SensorContactWrapper.TRANSPARENCY, title
+    addField(new ScaleFieldEditor(Defaults.SENSOR_TRANSPARENCY, title
         + " (" + curVal + "):", locationFormatGroup, 0, 255, 1, 10)
     {
       @Override

@@ -18,6 +18,8 @@ import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.mwc.cmap.core.CorePlugin;
 
+import MWC.GUI.Defaults;
+
 public class PreferenceInitializer extends AbstractPreferenceInitializer
 {
 
@@ -28,6 +30,6 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
         .getPreferenceStore();
     preferences.setDefault(CorePlugin.PREF_BASE60_FORMAT_NO_SECONDS, false);
     preferences.setDefault(CorePlugin.DEFAULT_FONT, "Arial-regular-12");
-  //  preferences.setDefault(SensorContactWrapper.TRANSPARENCY, 100);
+    preferences.setDefault(Defaults.SENSOR_TRANSPARENCY, 100);
   }
 }

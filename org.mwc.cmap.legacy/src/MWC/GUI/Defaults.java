@@ -10,6 +10,8 @@ public class Defaults
     
     public String getPreference(final String name);
   }
+  
+  public static final String SENSOR_TRANSPARENCY = "SensorTransparency";
 
   private static FontProvider _provider;
 
