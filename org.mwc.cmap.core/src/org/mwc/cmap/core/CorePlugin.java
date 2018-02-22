@@ -1017,9 +1017,9 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
       final String pref = getToolParent().getProperty(DEFAULT_FONT);
       if (pref != null && pref.length() > 0)
       {
-        final FontData font = new FontData(pref);
         try
         {
+          final FontData font = new FontData(pref);
           _defaultFont = new Font(font.getName(), font.getStyle(), font
               .getHeight());
         }
