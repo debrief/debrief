@@ -106,7 +106,7 @@ public interface SensorImportHelper
           new SelectColorPage(null, sensorColor, "Import Sensor data",
               "Now format the new sensor",
               "The default color for the cuts for this new sensor", imagePath,
-              null, null);
+              null, null, false);
       getVis =
           new EnterBooleanPage(null, false, "Import Sensor data",
               "Please specify if this sensor should be displayed once loaded",
