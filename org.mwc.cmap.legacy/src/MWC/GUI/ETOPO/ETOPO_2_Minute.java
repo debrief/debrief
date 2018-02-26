@@ -17,7 +17,8 @@ package MWC.GUI.ETOPO;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Map;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -32,7 +33,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    * 
    */
   private static final long serialVersionUID = 1L;
-  
+
   public static final String SHADE_AS_NATURAL_EARTH = "ShadeAsNaturalEarth";
 
   // //////////////////////////////////
@@ -106,18 +107,21 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    */
   public final void paint(final CanvasType dest)
   {
-    // start the paint
-    openFile();
-
-    // hey, it's only worth plotting if we've got some data
-    if (!isDataLoaded())
-      return;
 
     if (getVisible())
     {
-      // clear the cache
-      _pointCache.clear();
+      final long start = System.currentTimeMillis();
       
+      // start the paint
+      openFile();
+
+      // hey, it's only worth plotting if we've got some data
+      if (!isDataLoaded())
+        return;
+
+      // clear the cache
+    //  _pointCache.clear();
+
       // remember width
       final float oldWid = dest.getLineWidth();
 
@@ -128,24 +132,16 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
       // and restore the old one
       dest.setLineWidth(oldWid);
+      
+      System.out.println("Elapsed:" + (System.currentTimeMillis() - start));
     }
-
-    // end the paint, by closing the file
-    // try {
-    // ra.close();
-    // }
-    // catch (IOException e) {
-    // e.printStackTrace();
-    // }
-
-    // long tNow = System.currentTimeMillis();
-    // System.out.println("Elapsed time:" + (tNow - tThen));
   }
-  
-  /** cache the values we read from file. At some resolutions
-   * we re-read the same depth cell many times.
+
+  /**
+   * cache the values we read from file. At some resolutions we re-read the same depth cell many
+   * times.
    */
-  TreeMap<Integer, Integer> _pointCache = new TreeMap<Integer, Integer>();
+  Map<Integer, Integer> _pointCache = new HashMap<Integer, Integer>();
 
   // ////////////////////////////////////////////////
   // bathy provider support
@@ -408,42 +404,46 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
   private int getValueAtIndex(final int index)
   {
-    int res = 0;
-    
+
+
     // check the cache
     final Integer cached = _pointCache.get(index);
-    if(cached != null)
+    if (cached != null)
     {
       return cached.intValue();
     }
-
-    // just check we have the file open
-    openFile();
-    
-    // just check we have a +ve (valid) index
-    if (index >= 0)
+    else
     {
-      // and retrieve the value
-      try
-      {
-        ra.seek(index);
-        res = ra.readShort();
+      int res = 0;
+      
+      // just check we have the file open
+      openFile();
 
-        // rescale as appropriate
-        res = rescaleValue(res);
-      }
-      catch (final IOException e)
+      // just check we have a +ve (valid) index
+      if (index >= 0)
       {
-        e.printStackTrace(); // To change body of catch statement use
-        // Options |
-        // File Templates.
+        // and retrieve the value
+        try
+        {
+          ra.seek(index);
+          res = ra.readShort();
+
+          // rescale as appropriate
+          res = rescaleValue(res);
+        }
+        catch (final IOException e)
+        {
+          e.printStackTrace(); // To change body of catch statement use
+          // Options |
+          // File Templates.
+        }
       }
+
+      // cache the value
+      _pointCache.put(index, res);
+
+      return res;
     }
-    
-    // cache the value
-    _pointCache.put(index, res);
-    
-    return res;
   }
 
   /**
