@@ -696,11 +696,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   @Override
   public final void paint(final CanvasType dest)
   {
-
     if (getVisible())
     {
-      final long start = System.currentTimeMillis();
-
       // start the paint
       openFile();
 
@@ -721,8 +718,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
       // and restore the old one
       dest.setLineWidth(oldWid);
-
-      System.out.println("Elapsed:" + (System.currentTimeMillis() - start));
     }
   }
 
