@@ -48,7 +48,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -277,9 +277,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
      * ok, do the operation
      */
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       // ok, take a copy of the selection - for our undo/redo operations
       _theSelection = (StructuredSelection) _provider.getSelection();
@@ -507,15 +506,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
   private Action _sortSensorsName;
 
-  private final ViewerSorter _mySorter;
+  private final ViewerComparator _myComparator;
 
   public PlotOutlinePage(final PlotEditor _plotEditor, final Layers _myLayers)
   {
     this._plotEditor = _plotEditor;
     this._myLayers = _myLayers;
-    this._theTrackDataListener =
-        (TrackManager) _plotEditor.getAdapter(TrackManager.class);
-    _mySorter = new OutlineNameSorter(new OutlineNameSorter.NameSortHelper()
+    this._theTrackDataListener = (TrackManager) _plotEditor.getAdapter(
+        TrackManager.class);
+
+    _myComparator = new OutlineNameSorter(new OutlineNameSorter.NameSortHelper()
     {
 
       @Override
@@ -569,17 +569,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
    */
   void applyOperationToSelection(final IOperateOn operation)
   {
-    final IStructuredSelection selection =
-        (IStructuredSelection) _treeViewer.getSelection();
+    final IStructuredSelection selection = (IStructuredSelection) _treeViewer
+        .getSelection();
     applyOperation(operation, selection, _myLayers);
 
   }
 
   private void assignCorrectSortMode()
   {
-    final Boolean sortByDTGPref =
-        CorePlugin.getDefault().getPreferenceStore().getBoolean(
-            SENSOR_SORT_BY_DTG);
+    final Boolean sortByDTGPref = CorePlugin.getDefault().getPreferenceStore()
+        .getBoolean(SENSOR_SORT_BY_DTG);
     final boolean byD = (sortByDTGPref == null || sortByDTGPref.booleanValue());
     _sortSensorsDTG.setChecked(byD);
     _sortSensorsName.setChecked(!byD);
@@ -603,38 +602,36 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   {
     final IActionBars actionBars = getSite().getActionBars();
 
-    actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
-        new Action()
+    actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), new Action()
+    {
+      @Override
+      public boolean isEnabled()
+      {
+        final Tree control = (Tree) _treeViewer.getControl();
+        final int count = control.getSelectionCount();
+        return count > 0;
+      }
+
+      @Override
+      public void run()
+      {
+        // get the selected item
+        final StructuredSelection sel = (StructuredSelection) _treeViewer
+            .getSelection();
+
+        if (!sel.isEmpty())
         {
-          @Override
-          public boolean isEnabled()
-          {
-            final Tree control = (Tree) _treeViewer.getControl();
-            final int count = control.getSelectionCount();
-            return count > 0;
-          }
+          final SelectionContext selectionContext = SelectionContext.create(
+              sel);
+          final DeleteItem deleteItem = new DeleteItem(selectionContext.eList,
+              selectionContext.parentLayers, _myLayers,
+              selectionContext.updateLayers);
+          deleteItem.run();
+        }
 
-          @Override
-          public void run()
-          {
-            // get the selected item
-            final StructuredSelection sel =
-                (StructuredSelection) _treeViewer.getSelection();
+      }
 
-            if (!sel.isEmpty())
-            {
-              final SelectionContext selectionContext =
-                  SelectionContext.create(sel);
-              final DeleteItem deleteItem =
-                  new DeleteItem(selectionContext.eList,
-                      selectionContext.parentLayers, _myLayers,
-                      selectionContext.updateLayers);
-              deleteItem.run();
-            }
-
-          }
-
-        });
+    });
     actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), new Action()
     {
       @Override
@@ -649,19 +646,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // get the selected item
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
+        final StructuredSelection sel = (StructuredSelection) _treeViewer
+            .getSelection();
 
         if (!sel.isEmpty())
         {
           final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
 
-          final SelectionContext selectionContext =
-              SelectionContext.create(sel);
-          final CopyItem copyItem =
-              new CopyItem(selectionContext.eList, theClipboard,
-                  selectionContext.parentLayers, _myLayers,
-                  selectionContext.updateLayers);
+          final SelectionContext selectionContext = SelectionContext.create(
+              sel);
+          final CopyItem copyItem = new CopyItem(selectionContext.eList,
+              theClipboard, selectionContext.parentLayers, _myLayers,
+              selectionContext.updateLayers);
           copyItem.run();
         }
 
@@ -682,19 +678,18 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // get the selected item
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
+        final StructuredSelection sel = (StructuredSelection) _treeViewer
+            .getSelection();
 
         if (!sel.isEmpty())
         {
           final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
 
-          final SelectionContext selectionContext =
-              SelectionContext.create(sel);
-          final CutItem cutItem =
-              new CutItem(selectionContext.eList, theClipboard,
-                  selectionContext.parentLayers, _myLayers,
-                  selectionContext.updateLayers);
+          final SelectionContext selectionContext = SelectionContext.create(
+              sel);
+          final CutItem cutItem = new CutItem(selectionContext.eList,
+              theClipboard, selectionContext.parentLayers, _myLayers,
+              selectionContext.updateLayers);
           cutItem.run();
         }
 
@@ -716,8 +711,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           return false;
         }
 
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
+        final StructuredSelection sel = (StructuredSelection) _treeViewer
+            .getSelection();
         final SelectionContext selectionContext = SelectionContext.create(sel);
 
         Editable selectedItem = null;
@@ -746,8 +741,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           return;
         }
 
-        final StructuredSelection sel =
-            (StructuredSelection) _treeViewer.getSelection();
+        final StructuredSelection sel = (StructuredSelection) _treeViewer
+            .getSelection();
         final SelectionContext selectionContext = SelectionContext.create(sel);
 
         Editable selectedItem = null;
@@ -779,16 +774,15 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   public void createControl(final Composite parent)
   {
 
-    _treeViewer =
-        new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL
-            | SWT.FULL_SELECTION);
+    _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
+        | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
     _treeViewer.setUseHashlookup(true);
     // drillDownAdapter = new DrillDownAdapter(_treeViewer);
     _treeViewer.setContentProvider(new ViewContentProvider());
     _myLabelProvider = new CoreViewLabelProvider();
     _treeViewer.setLabelProvider(_myLabelProvider);
-    _treeViewer.setSorter(_mySorter);
+    _treeViewer.setComparator(_myComparator);
     _treeViewer.setInput(_myLayers);
     _treeViewer.setComparer(new IElementComparer()
     {
@@ -802,13 +796,21 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         if (obj1 instanceof EditableWrapper)
         {
           final EditableWrapper pw = (EditableWrapper) obj1;
-          obj1 = pw.getEditable();
+          // does it have an editable?
+          if (pw.getEditable() != null)
+          {
+            obj1 = pw.getEditable();
+          }
         }
 
         if (obj2 instanceof EditableWrapper)
         {
           final EditableWrapper pw = (EditableWrapper) obj2;
-          obj2 = pw.getEditable();
+          // does it have an editable?
+          if (pw.getEditable() != null)
+          {
+            obj2 = pw.getEditable();
+          }
         }
 
         return obj1.equals(obj2);
@@ -927,9 +929,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
         final ViewerCell viewerCell = _treeViewer.getCell(pt);
         // click on visibility column and check image only.
-        if (viewerCell != null && viewerCell.getColumnIndex() == 1
-            && viewerCell.getImageBounds() != null
-            && viewerCell.getImageBounds().contains(pt))
+        if (viewerCell != null && viewerCell.getColumnIndex() == 1 && viewerCell
+            .getImageBounds() != null && viewerCell.getImageBounds().contains(
+                pt))
         {
           final Object element = viewerCell.getElement();
           if (element instanceof EditableWrapper)
@@ -980,7 +982,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
    */
   private Job createRefreshOnDeleteJob()
   {
-    return new WorkbenchJob("Refresh Filter") {//$NON-NLS-1$
+    return new WorkbenchJob("Refresh Filter") //$NON-NLS-1$
+    {
       @Override
       public IStatus runInUIThread(final IProgressMonitor monitor)
       {
@@ -1103,8 +1106,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   void fillContextMenu(final IMenuManager manager)
   {
     // get the selected item
-    final StructuredSelection sel =
-        (StructuredSelection) _treeViewer.getSelection();
+    final StructuredSelection sel = (StructuredSelection) _treeViewer
+        .getSelection();
 
     // right, we only worry about primary, secondary, hide, reveal if something
     // is selected
@@ -1134,8 +1137,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
     // ok, sort out what we can do with all of this...
     RightClickSupport.getDropdownListFor(manager, selectionContext.eList,
-        selectionContext.updateLayers, selectionContext.parentLayers,
-        _myLayers, false);
+        selectionContext.updateLayers, selectionContext.parentLayers, _myLayers,
+        false);
 
   }
 
@@ -1368,16 +1371,14 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
           // ok, it's a candidate. now see if it's already one of the secondaries
           if (_theTrackDataListener == null)
           {
-            CorePlugin
-                .logError(
-                    IStatus.INFO,
-                    "PROBLEM: Outline View does not hold track data listener.  Maintaner to track this occurrence",
-                    null);
+            CorePlugin.logError(IStatus.INFO,
+                "PROBLEM: Outline View does not hold track data listener.  Maintaner to track this occurrence",
+                null);
           }
           else
           {
-            final WatchableList[] secs =
-                _theTrackDataListener.getSecondaryTracks();
+            final WatchableList[] secs = _theTrackDataListener
+                .getSecondaryTracks();
             if (secs != null)
             {
               for (int i = 0; i < secs.length; i++)
@@ -1404,16 +1405,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     // _myPartMonitor.createSyncedAction("Link to current plot",
     // "Always show layers for selected Plot", getSite());
 
-    _followSelectionToggle =
-        new Action("Jump to selection", IAction.AS_CHECK_BOX)
-        {
-        };
+    _followSelectionToggle = new Action("Jump to selection",
+        IAction.AS_CHECK_BOX)
+    {
+    };
     _followSelectionToggle.setText("Follow selection");
     _followSelectionToggle.setChecked(true);
-    _followSelectionToggle
-        .setToolTipText("Ensure selected item in plot is always visible");
-    _followSelectionToggle.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/followselection.png"));
+    _followSelectionToggle.setToolTipText(
+        "Ensure selected item in plot is always visible");
+    _followSelectionToggle.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/followselection.png"));
 
     _collapseAllAction = new Action("Collapse all", IAction.AS_PUSH_BUTTON)
     {
@@ -1437,12 +1438,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
 
     _collapseAllAction.setText("Collapse all layers");
-    _collapseAllAction
-        .setToolTipText("Collapse all layers in the Outline View");
-    _collapseAllAction.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/collapse_all.png"));
-    _collapseAllAction
-        .setActionDefinitionId(IWorkbenchCommandConstants.NAVIGATE_COLLAPSE_ALL);
+    _collapseAllAction.setToolTipText(
+        "Collapse all layers in the Outline View");
+    _collapseAllAction.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/collapse_all.png"));
+    _collapseAllAction.setActionDefinitionId(
+        IWorkbenchCommandConstants.NAVIGATE_COLLAPSE_ALL);
 
     _expandAllAction = new Action("Expand all", IAction.AS_PUSH_BUTTON)
     {
@@ -1455,8 +1456,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _expandAllAction.setText("Expand all layers");
     _expandAllAction.setToolTipText("Expand all layers in the Outline View");
-    _expandAllAction.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/expand_all.png"));
+    _expandAllAction.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/expand_all.png"));
 
     _createLayer = new Action()
     {
@@ -1464,8 +1465,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         // ask the user
-        final InputDialog id =
-            new InputDialog(null, "Create new layer", "Layer name:", "", null);
+        final InputDialog id = new InputDialog(null, "Create new layer",
+            "Layer name:", "", null);
         final int res = id.open();
 
         // was ok pressed?
@@ -1485,16 +1486,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _createLayer.setText("Create new layer");
     _createLayer.setToolTipText("Create a new top-level layer");
-    _createLayer.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/new_layer.png"));
+    _createLayer.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/new_layer.png"));
 
     _makePrimary = new Action()
     {
       @Override
       public void run()
       {
-        final AbstractOperation doIt =
-            new SelectionOperation("Make primary", new IOperateOn()
+        final AbstractOperation doIt = new SelectionOperation("Make primary",
+            new IOperateOn()
             {
               @Override
               public void doItTo(final Editable item)
@@ -1558,8 +1559,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _makePrimary.setText("Make Primary");
     _makePrimary.setToolTipText("Make this item the primary ");
-    _makePrimary.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/make_primary.png"));
+    _makePrimary.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/make_primary.png"));
     _makePrimary.setEnabled(false);
 
     _makeSecondary = new Action()
@@ -1568,8 +1569,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
 
-        final AbstractOperation doIt =
-            new SelectionOperation("Make secondary", new IOperateOn()
+        final AbstractOperation doIt = new SelectionOperation("Make secondary",
+            new IOperateOn()
             {
               @Override
               public void doItTo(final Editable item)
@@ -1627,8 +1628,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _makeSecondary.setText("Make Secondary");
     _makeSecondary.setToolTipText("Set this item as the secondary track");
-    _makeSecondary.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/make_secondary.png"));
+    _makeSecondary.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/make_secondary.png"));
     _makeSecondary.setEnabled(false);
 
     _addAsSecondary = new Action()
@@ -1637,8 +1638,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
 
-        final AbstractOperation doIt =
-            new SelectionOperation("Add as secondary", new IOperateOn()
+        final AbstractOperation doIt = new SelectionOperation(
+            "Add as secondary", new IOperateOn()
             {
               @Override
               public void doItTo(final Editable item)
@@ -1696,8 +1697,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _addAsSecondary.setText("Add as Secondary");
     _addAsSecondary.setToolTipText("Add this item to the secondary tracks");
-    _addAsSecondary.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/add_secondary.png"));
+    _addAsSecondary.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/add_secondary.png"));
     _addAsSecondary.setEnabled(false);
 
     _hideAction = new Action()
@@ -1706,8 +1707,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       @Override
       public void run()
       {
-        final AbstractOperation doIt =
-            new SelectionOperation("Hide item", new IOperateOn()
+        final AbstractOperation doIt = new SelectionOperation("Hide item",
+            new IOperateOn()
             {
               @Override
               public void doItTo(final Editable item)
@@ -1735,16 +1736,16 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _hideAction.setText("Hide item");
     _hideAction.setToolTipText("Hide selected items");
-    _hideAction.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/hide.png"));
+    _hideAction.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/hide.png"));
 
     _revealAction = new Action()
     {
       @Override
       public void run()
       {
-        final AbstractOperation doIt =
-            new SelectionOperation("reveal item", new IOperateOn()
+        final AbstractOperation doIt = new SelectionOperation("reveal item",
+            new IOperateOn()
             {
               @Override
               public void doItTo(final Editable item)
@@ -1772,8 +1773,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     };
     _revealAction.setText("Reveal item");
     _revealAction.setToolTipText("Reveal selected items");
-    _revealAction.setImageDescriptor(DebriefPlugin
-        .getImageDescriptor("icons/16/show.png"));
+    _revealAction.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/show.png"));
 
     _sortSensorsDTG = new Action("By DTG", IAction.AS_CHECK_BOX)
     {
@@ -1813,8 +1814,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     // assign the correct sensor
     assignCorrectSortMode();
 
-    final IHandlerService handlerService =
-        (IHandlerService) getSite().getService(IHandlerService.class);
+    final IHandlerService handlerService = (IHandlerService) getSite()
+        .getService(IHandlerService.class);
     handlerService.activateHandler(CollapseAllHandler.COMMAND_ID,
         new ActionHandler(_collapseAllAction));
   }
@@ -1848,6 +1849,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         // a dedicated UI refresh
         Display.getDefault().asyncExec(new Runnable()
         {
+          @SuppressWarnings("unlikely-arg-type")
           @Override
           public void run()
           {
@@ -1877,8 +1879,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               else
               {
                 // wrap the plottable
-                final EditableWrapper parentWrapper =
-                    new EditableWrapper((Editable) parentLayer, null, theData);
+                final EditableWrapper parentWrapper = new EditableWrapper(
+                    (Editable) parentLayer, null, theData);
                 wrapped = new EditableWrapper(newItem, parentWrapper, theData);
                 selected = new StructuredSelection(wrapped);
               }
@@ -1914,8 +1916,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         }
 
         @Override
-        public void
-            dataModified(final Layers theData, final Layer changedLayer)
+        public void dataModified(final Layers theData, final Layer changedLayer)
         {
         }
 
@@ -1994,8 +1995,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     }
     catch (final Exception e)
     {
-      CorePlugin.getDefault().getLog().log(
-          new Status(IStatus.WARNING, CorePlugin.PLUGIN_ID, "Tree warning", e));
+      CorePlugin.getDefault().getLog().log(new Status(IStatus.WARNING,
+          CorePlugin.PLUGIN_ID, "Tree warning", e));
     }
     finally
     {
