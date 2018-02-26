@@ -17,6 +17,7 @@ package MWC.GUI.ETOPO;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.TreeMap;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -114,6 +115,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
     if (getVisible())
     {
+      // clear the cache
+      _pointCache.clear();
+      
       // remember width
       final float oldWid = dest.getLineWidth();
 
@@ -137,6 +141,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
     // long tNow = System.currentTimeMillis();
     // System.out.println("Elapsed time:" + (tNow - tThen));
   }
+  
+  /** cache the values we read from file. At some resolutions
+   * we re-read the same depth cell many times.
+   */
+  TreeMap<Integer, Integer> _pointCache = new TreeMap<Integer, Integer>();
 
   // ////////////////////////////////////////////////
   // bathy provider support
@@ -400,10 +409,17 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   private int getValueAtIndex(final int index)
   {
     int res = 0;
+    
+    // check the cache
+    final Integer cached = _pointCache.get(index);
+    if(cached != null)
+    {
+      return cached.intValue();
+    }
 
     // just check we have the file open
     openFile();
-
+    
     // just check we have a +ve (valid) index
     if (index >= 0)
     {
@@ -423,6 +439,10 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
         // File Templates.
       }
     }
+    
+    // cache the value
+    _pointCache.put(index, res);
+    
     return res;
   }
 
