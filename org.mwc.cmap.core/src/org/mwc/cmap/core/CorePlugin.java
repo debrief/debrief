@@ -1014,12 +1014,22 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
   {
     if (_defaultFont == null)
     {
-      final String pref = getToolParent().getProperty(DEFAULT_FONT);
+      final String pref = getPreferenceStore().getString(DEFAULT_FONT);
       if (pref != null && pref.length() > 0)
       {
-        final FontData font = new FontData(pref);
-        _defaultFont = new Font(font.getName(), font.getStyle(), font
-            .getHeight());
+        try
+        {
+          final FontData font = new FontData(pref);
+          _defaultFont = new Font(font.getName(), font.getStyle(), font
+              .getHeight());
+        }
+        catch (Exception e)
+        {
+          // it's ok if we throw an exception here, just in case we had
+          // a platform-specific font initialise string
+          _defaultFont = new Font("Arial", Font.PLAIN, 10);
+          e.printStackTrace();
+        }
       }
       else
       {

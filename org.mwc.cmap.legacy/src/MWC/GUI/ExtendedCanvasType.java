@@ -61,6 +61,10 @@ public interface ExtendedCanvasType extends ShapeCanvasType
 	
 	public void semiFillShape(Shape shape);
 	
+  public void drawLine(final int x1, final int y1, final int x2,
+      final int y2, final int transparency);
+
+	
 	public void setXORMode(boolean mode);
 	
 	public boolean getXORMode();

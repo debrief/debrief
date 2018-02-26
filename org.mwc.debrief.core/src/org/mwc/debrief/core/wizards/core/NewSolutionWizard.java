@@ -105,7 +105,7 @@ public class NewSolutionWizard extends Wizard
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the new ellipse", "The color for this new ellipse",
-				imagePath, helpContext, null);
+				imagePath, helpContext, null, false);
 		addPage(colorPage);
 
 		final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
