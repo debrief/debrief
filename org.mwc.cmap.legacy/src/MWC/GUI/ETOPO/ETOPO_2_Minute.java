@@ -398,7 +398,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    * cache the values we read from file. At some resolutions we re-read the same depth cell many
    * times.
    */
-  final Map<Integer, Integer> _pointCache = new HashMap<Integer, Integer>();
+  private final Map<Integer, Integer> _pointCache = new HashMap<Integer, Integer>();
 
   public ETOPO_2_Minute(final String etopo_path)
   {
