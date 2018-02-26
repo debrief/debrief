@@ -373,10 +373,10 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    * 
    * @return yes/no
    */
-  protected final boolean zeroIsMax()
+  protected final boolean zeroIsMax(final boolean useNE)
   {
     // if we are showing land, then we don't want zero to be the top value
-    return !_showLand;
+    return useNE || !_showLand;
   }
 
   /**

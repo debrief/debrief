@@ -317,15 +317,6 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
   abstract public int getValueAt(WorldLocation location);
 
-  /**
-   * over-rideable method to constrain max value to zero (such as when not plotting land)
-   *
-   * @return yes/no
-   */
-  protected boolean zeroIsMax()
-  {
-    return false;
-  }
 
   /**********************************************************************
    * bathy provider support
@@ -678,7 +669,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       final Dimension screen_size = dest.getProjection().getScreenArea();
       double max_h = max_height;
       // are we showing land?
-      if (parent.zeroIsMax())
+      if (parent.zeroIsMax(useNE))
       {
         // yes, make zero the highest value
         max_h = 0;
@@ -919,6 +910,16 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
     final Point pb = new Point(dest.toScreen(wb));
     dest.setColor(getContourColourFor(contourIndex));
     dest.drawLine(pa.x, pa.y, pb.x, pb.y);
+  }
+
+  /** do we make zero the max value in the legend?
+   * 
+   * @param useNE if we're using Natural Earth rendering shades
+   * @return
+   */
+  protected boolean zeroIsMax(final boolean useNE)
+  {
+    return false;
   }
 
   /**
