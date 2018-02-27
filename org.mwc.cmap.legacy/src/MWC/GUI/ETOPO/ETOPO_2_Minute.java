@@ -427,18 +427,22 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
         if (val > upperLimit)
           val = upperLimit;
 
-        final double proportion = val / upperLimit;
+        final double proportion = 1 - val / upperLimit;
+        
+        final int red = (int) (_landCol.getRed() * proportion);
+        final int green = (int) (_landCol.getGreen() * proportion);
+        final int blue = (int) (_landCol.getBlue() * proportion);
 
-        final double color_val = proportion * 125;
+        res = converter.convertColor(red, green, blue);
 
-        // limit the colour val to the minimum value
-        int green_tone = 255 - (int) color_val;
-
-        // just check we've got a valid colour
-        green_tone = Math.min(250, green_tone);
-
-        res = converter.convertColor(88, green_tone, 88);
-
+//        final double color_val = proportion * 125;
+//
+//        // limit the colour val to the minimum value
+//        int green_tone = 255 - (int) color_val;
+//
+//        // just check we've got a valid colour
+//        green_tone = Math.min(250, green_tone);
+     //   res = converter.convertColor(88, green_tone, 88);
       }
       else
       {
