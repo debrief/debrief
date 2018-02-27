@@ -14,6 +14,7 @@
  */
 package MWC.GUI.ETOPO;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -144,7 +145,10 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                 KeyLocationPropertyEditor.class, EditorType.FORMAT), prop(
                     "Color", "the color of the color-key", EditorType.FORMAT),
             displayProp("ShowLand", "Show land", "whether to shade land-data",
-                EditorType.FORMAT), displayLongProp("LineThickness",
+                EditorType.FORMAT), 
+            displayProp("LandColor", "Land Color", "Color to shade land data",
+                EditorType.FORMAT), 
+            displayLongProp("LineThickness",
                     "Line thickness", "the thickness to plot the scale border",
                     LineWidthPropertyEditor.class, EditorType.FORMAT),
             displayProp("BathyRes", "Bathy resolution",
@@ -161,6 +165,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                             "Optimise grid interval",
                             "whether the grid interval should be optimised",
                             EditorType.FORMAT)};
+        
+        
         return res;
       }
       catch (final java.beans.IntrospectionException e)
@@ -210,7 +216,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   }
 
   /* returns a color based on slope and elevation */
-  public static int getETOPOColor(final short elevation,
+  public int getETOPOColor(final short elevation,
       final double lowerLimit, final double upperLimit, final boolean showLand,
       final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
   {
@@ -222,7 +228,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       if ((elevation > 0) && (showLand))
       {
         // ABOVE WATER
-        res = converter.convertColor(235, 219, 188);
+        res = converter.convertColor(_landCol.getRed(), _landCol.getGreen(),
+            _landCol.getBlue());
       }
       else
       {
@@ -379,10 +386,25 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
     return val;
   }
 
+  public Color getLandColor()
+  {
+    return _landCol;
+  }
+
+  public void setLandColor(Color landCol)
+  {
+    this._landCol = landCol;
+  }
+
   /**
    * whether to show land
    */
   private boolean _showLand = true;
+  
+  /** color for the land
+   * 
+   */
+  private Color _landCol = new Color(235, 219, 188);
 
   /**
    * the path to the datafile
@@ -704,9 +726,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       // hey, it's only worth plotting if we've got some data
       if (!isDataLoaded())
         return;
-
-      // clear the cache
-      // _pointCache.clear();
 
       // remember width
       final float oldWid = dest.getLineWidth();
