@@ -14,7 +14,6 @@
  */
 package org.mwc.cmap.gridharness;
 
-import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FontFieldEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -29,7 +28,6 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Wrappers.SensorContactWrapper;
-import MWC.GUI.ETOPO.ETOPO_2_Minute;
 
 public class DebriefFormattingOptionsPreferencesPage extends
     FieldEditorPreferencePage implements IWorkbenchPreferencePage
@@ -112,15 +110,6 @@ public class DebriefFormattingOptionsPreferencesPage extends
     fontEditor.setPage(this);
 
     addField(fontEditor);
-
-    addField(new BooleanFieldEditor(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH,
-        "Use Natural Earth shades for ETOPO:",
-        BooleanFieldEditor.SEPARATE_LABEL, locationFormatGroup));
-
-    lbl = new Label(locationFormatGroup, SWT.NONE);
-    lbl.setText("   ");
-    lbl = new Label(locationFormatGroup, SWT.NONE);
-    lbl.setText("   ");
 
     // current transparency
     final int curVal = CorePlugin.getDefault().getPreferenceStore().getInt(

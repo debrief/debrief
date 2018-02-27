@@ -150,6 +150,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
             displayLongProp("LineThickness", "Line thickness",
                 "the thickness to plot the scale border",
                 LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
+                    "NEShading", "Natural Earth Shading",
+                    "whether to use Natural Earth shading", EditorType.FORMAT),
+            displayLongProp("LineThickness", "Line thickness",
+                "the thickness to plot the scale border",
+                LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
                     "BathyRes", "Bathy resolution",
                     "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
                     EditorType.FORMAT), displayProp("BathyVisible",
@@ -165,7 +170,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                     "Optimise grid interval",
                     "whether the grid interval should be optimised",
                     EditorType.FORMAT)};
-
         return res;
       }
       catch (final java.beans.IntrospectionException e)
@@ -181,8 +185,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    */
   private static final long serialVersionUID = 1L;
 
-  public static final String SHADE_AS_NATURAL_EARTH = "ShadeAsNaturalEarth";
-
   /**
    * the filename of our data-file
    */
@@ -196,7 +198,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   public static WorldArea theArea = null;
 
   /**
-   * static accessor to see if our data-file is there
+   * static accessor to see if our data-file is there <<<<<<< HEAD
+   * 
+   * =======
+   *
+   * >>>>>>> develop
    * 
    * @param etopo_path
    * @return
@@ -324,6 +330,9 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
     // store the path to the data file
     _thePath = etopo_path;
+
+    // switch on NE shading
+    super.setNEShading(true);
 
     _contourDepths = DEFAULT_CONTOUR_DEPTHS;
   }
