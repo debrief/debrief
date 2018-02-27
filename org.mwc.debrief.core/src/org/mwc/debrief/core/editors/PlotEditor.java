@@ -449,6 +449,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private final org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
+  /** note: the outline page isn't final, since
+   * the user may close the page, after which we will
+   * have a new one
+   */
   private PlotOutlinePage _outlinePage;
 
   private final TraverseListener dragModeListener = createTraverseListener();
