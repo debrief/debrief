@@ -146,28 +146,27 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                     "Color", "the color of the color-key", EditorType.FORMAT),
             displayProp("ShowLand", "Show land", "whether to shade land-data",
                 EditorType.FORMAT), displayProp("LandColor", "Land Color",
-                    "Color to shade land data", EditorType.FORMAT),
-            displayProp(
-                    "NEShading", "Natural Earth Shading",
-                    "whether to use Natural Earth shading", EditorType.FORMAT),
-            displayLongProp("LineThickness", "Line thickness",
-                "the thickness to plot the scale border",
-                LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
-                    "BathyRes", "Bathy resolution",
-                    "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
-                    EditorType.FORMAT), displayProp("BathyVisible",
-                        "Bathy visible", "whether to show the gridded contours",
-                        VISIBILITY), displayProp("ContourDepths",
-                            "Contour depths", "the contour depths to plot",
-                            EditorType.FORMAT), displayProp("ContoursVisible",
-                                "Contours visible",
-                                "whether to show the contours", VISIBILITY),
-            displayProp("ContourGridInterval", "Contour grid interval",
-                "the interval at which to calculate the contours (larger interval leads to faster performance)",
-                EditorType.FORMAT), displayProp("ContourOptimiseGrid",
-                    "Optimise grid interval",
-                    "whether the grid interval should be optimised",
-                    EditorType.FORMAT)};
+                    "Color to shade land data", EditorType.FORMAT), displayProp(
+                        "NEShading", "Natural Earth Shading",
+                        "whether to use Natural Earth shading",
+                        EditorType.FORMAT), displayLongProp("LineThickness",
+                            "Line thickness",
+                            "the thickness to plot the scale border",
+                            LineWidthPropertyEditor.class, EditorType.FORMAT),
+            displayProp("BathyRes", "Bathy resolution",
+                "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
+                EditorType.FORMAT), displayProp("BathyVisible", "Bathy visible",
+                    "whether to show the gridded contours", VISIBILITY),
+            displayProp("ContourDepths", "Contour depths",
+                "the contour depths to plot", EditorType.FORMAT), displayProp(
+                    "ContoursVisible", "Contours visible",
+                    "whether to show the contours", VISIBILITY), displayProp(
+                        "ContourGridInterval", "Contour grid interval",
+                        "the interval at which to calculate the contours (larger interval leads to faster performance)",
+                        EditorType.FORMAT), displayProp("ContourOptimiseGrid",
+                            "Optimise grid interval",
+                            "whether the grid interval should be optimised",
+                            EditorType.FORMAT)};
         return res;
       }
       catch (final java.beans.IntrospectionException e)
@@ -197,11 +196,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
   /**
    * static accessor to see if our data-file is there <<<<<<< HEAD
-   * 
+   *
    * =======
    *
    * >>>>>>> develop
-   * 
+   *
    * @param etopo_path
    * @return
    */
@@ -428,21 +427,21 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
           val = upperLimit;
 
         final double proportion = 1 - val / upperLimit;
-        
+
         final int red = (int) (_landCol.getRed() * proportion);
         final int green = (int) (_landCol.getGreen() * proportion);
         final int blue = (int) (_landCol.getBlue() * proportion);
 
         res = converter.convertColor(red, green, blue);
 
-//        final double color_val = proportion * 125;
-//
-//        // limit the colour val to the minimum value
-//        int green_tone = 255 - (int) color_val;
-//
-//        // just check we've got a valid colour
-//        green_tone = Math.min(250, green_tone);
-     //   res = converter.convertColor(88, green_tone, 88);
+        // final double color_val = proportion * 125;
+        //
+        // // limit the colour val to the minimum value
+        // int green_tone = 255 - (int) color_val;
+        //
+        // // just check we've got a valid colour
+        // green_tone = Math.min(250, green_tone);
+        // res = converter.convertColor(88, green_tone, 88);
       }
       else
       {
