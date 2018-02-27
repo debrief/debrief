@@ -1078,7 +1078,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               if (currentState != null)
               {
-                final ICommandService service = getSite().getService(
+                final ICommandService service = (ICommandService) getSite().getService(
                     ICommandService.class);
                 final Command command = service.getCommand(RadioHandler.ID);
                 HandlerUtil.updateRadioState(command, currentState);
