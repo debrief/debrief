@@ -21,7 +21,7 @@
 			<xs:enumeration value="Range/Time" />
 			<xs:enumeration value="Range/Speed" />
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="colourElement">
 		<xs:restriction base="xs:integer">
 			<xs:minInclusive value="0" />
@@ -210,6 +210,13 @@
 			<xs:element name="colour" type="colourType" />
 		</xs:sequence>
 		<xs:attribute name="ContourDepths" type="xs:string" />
+		<xs:attribute name="NE_SHADES" type="xs:boolean">
+			<xs:annotation>
+				<xs:documentation>
+					whether to use Natural Earth shading for the depth data.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="ScaleLocation" type="xs:integer" />
 		<xs:attribute name="ShowBathy" type="xs:boolean" />
 		<xs:attribute name="ShowContours" type="xs:boolean" />
@@ -275,11 +282,11 @@
 			<xs:element name="SYMBOL_WIDTH" type="worldDistanceType" />
 			<xs:element name="SYMBOL_LENGTH" type="worldDistanceType" />
 			<xs:element name="CustomTrailLength" type="unitsValueType">
-			   <xs:annotation>
-			     <xs:documentation>
-			     	(Optionally) override the snail trail length
-			     </xs:documentation>
-			   </xs:annotation>
+				<xs:annotation>
+					<xs:documentation>
+						(Optionally) override the snail trail length
+					</xs:documentation>
+				</xs:annotation>
 			</xs:element>
 		</xs:choice>
 		<xs:attribute name="InterpolatePoints" default="true"
@@ -300,29 +307,32 @@
 			type="xs:boolean" />
 		<xs:attribute name="Symbol" default="SQUARE" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
-		<xs:attribute name="CustomVectorStretch" use="optional"  default="1.0" type="xs:double">
-		   <xs:annotation>
-		     <xs:documentation>
-		     	(Optionally) override the vector stretch, just for this track
-		     </xs:documentation>
-		   </xs:annotation>
+		<xs:attribute name="CustomVectorStretch" use="optional"
+			default="1.0" type="xs:double">
+			<xs:annotation>
+				<xs:documentation>
+					(Optionally) override the vector stretch, just for this track
+				</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="EndTimeLabels" default="true" type="xs:boolean">
-		   <xs:annotation>
-		     <xs:documentation>
-		     Whether to show a 6-figure DTG at the start &amp; end of the track
-		     </xs:documentation>
-		   </xs:annotation>
+			<xs:annotation>
+				<xs:documentation>
+					Whether to show a 6-figure DTG at the start &amp; end of the track
+				</xs:documentation>
+			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	
+
 	<xs:complexType name="composite_track">
 		<xs:complexContent>
 			<xs:extension base="track">
 				<xs:sequence>
 					<xs:element minOccurs="0" name="Origin" type="locationType" />
-					<xs:element minOccurs="0" maxOccurs="unbounded" name="planning_segment" type="PlanningSegment" />
-					<xs:element minOccurs="0" maxOccurs="unbounded" name="closing_segment" type="ClosingSegment" />
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="planning_segment"
+						type="PlanningSegment" />
+					<xs:element minOccurs="0" maxOccurs="unbounded" name="closing_segment"
+						type="ClosingSegment" />
 				</xs:sequence>
 				<xs:attribute name="SymbolIntervalMillis" type="xs:integer" />
 				<xs:attribute name="LabelIntervalMillis" type="xs:integer" />
@@ -330,16 +340,17 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
 	<!-- worldDistanceType can be removed -->
 	<xs:complexType name="unitsValueType">
 		<xs:attribute name="Units" use="required" type="xs:string" />
 		<xs:attribute name="Value" use="required" type="xs:double" />
 	</xs:complexType>
-	
+
 	<xs:complexType name="PlanningSegment">
 		<xs:sequence>
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="fix" type="fix" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="fix"
+				type="fix" />
 			<xs:element minOccurs="0" name="WorldDistance" type="unitsValueType" />
 			<xs:element minOccurs="0" name="Speed" type="unitsValueType" />
 			<xs:element minOccurs="0" name="colour" type="colourType" />
@@ -349,10 +360,11 @@
 		<xs:attribute name="Name" type="xs:string" />
 		<xs:attribute name="calcModel" type="calcModelType" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
-		<xs:attribute name="VectorLabelVisible" default="true" type="xs:boolean" />
+		<xs:attribute name="VectorLabelVisible" default="true"
+			type="xs:boolean" />
 		<xs:attribute name="course" type="xs:double" />
 		<xs:attribute name="depth" type="xs:double" />
-		
+
 	</xs:complexType>
 
 	<xs:complexType name="ClosingSegment">
@@ -367,7 +379,8 @@
 				minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>
-						A definable set of sectors that are centred on, and oriented with a Debrief track.
+						A definable set of sectors that are centred on,
+						and oriented with a Debrief track.
 					</xs:documentation>
 				</xs:annotation>
 				<xs:complexType>
@@ -385,19 +398,22 @@
 					<xs:attribute type="xs:string" name="EndDtg" use="optional">
 						<xs:annotation>
 							<xs:documentation>
-								If the end DTG isn't supplied, then the shape will be shown 
+								If the end DTG isn't supplied, then the shape
+								will be shown
 								permanently from the start DTG
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute type="xs:string" name="LineStyle" use="optional" />
 					<xs:attribute name="Label" use="required" type="xs:string" />
-					<xs:attribute name="LabelLocation" default="Left" type="labelLocationType" />
+					<xs:attribute name="LabelLocation" default="Left"
+						type="labelLocationType" />
 					<xs:attribute name="LabelShowing" default="true" type="xs:boolean" />
 					<xs:attribute type="xs:string" name="StartDtg" use="optional">
 						<xs:annotation>
 							<xs:documentation>
-								If the start DTG isn't supplied, then the shape will be shown until 
+								If the start DTG isn't supplied, then the shape
+								will be shown until
 								the time reaches any end DTG
 							</xs:documentation>
 						</xs:annotation>
@@ -406,8 +422,10 @@
 					<xs:attribute type="xs:string" name="arcs" use="required">
 						<xs:annotation>
 							<xs:documentation>
-								A series of 4-element integers, that specify start-angle, end-angle (both in degs from current
-								ownship heading), then inner radius, outer radius (both in yds)
+								A series of 4-element integers, that specify
+								start-angle, end-angle (both in degs from current
+								ownship
+								heading), then inner radius, outer radius (both in yds)
 							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
@@ -419,7 +437,8 @@
 		<xs:attribute type="xs:string" name="TrackName" use="required">
 			<xs:annotation>
 				<xs:documentation>
-					Name of the Debrief track that this shape annotation will be added to
+					Name of the Debrief track that this shape
+					annotation will be added to
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -427,9 +446,12 @@
 	</xs:complexType>
 	<xs:complexType name="sensor">
 		<xs:sequence>
-			<xs:element minOccurs="0" maxOccurs="1" name="colour" type="colourType" />
-			<xs:element minOccurs="0" maxOccurs="1" name="Offset" type="worldDistanceType" />
-			<xs:element minOccurs="0" maxOccurs="unbounded" name="sensor_contact" type="sensor_contact" />
+			<xs:element minOccurs="0" maxOccurs="1" name="colour"
+				type="colourType" />
+			<xs:element minOccurs="0" maxOccurs="1" name="Offset"
+				type="worldDistanceType" />
+			<xs:element minOccurs="0" maxOccurs="unbounded" name="sensor_contact"
+				type="sensor_contact" />
 		</xs:sequence>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
@@ -439,9 +461,10 @@
 		<xs:attribute name="BaseFrequency" type="xs:float" use="optional">
 			<xs:annotation>
 				<xs:documentation>
-					The radiated frequency (f-nought) for the tonal being tracked
+					The radiated frequency (f-nought) for the tonal
+					being tracked
 				</xs:documentation>
-			</xs:annotation>		
+			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
 	<xs:complexType name="sensor_contact">
@@ -573,20 +596,23 @@
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="HostTrack" use="required" type="xs:string" >
+				<xs:attribute name="HostTrack" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-							The name of the host track that this segment is relative to
+							The name of the host track that this segment is
+							relative to
 						</xs:documentation>
-					</xs:annotation>						
+					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="HostSensor" use="optional" type="xs:string" >
+				<xs:attribute name="HostSensor" use="optional" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-							The name of the sensor used as an origin (this allows the solution to be referenced from a towed array sensor).
-							If a host sensor isn't available, the relevant point on the host track will be used
+							The name of the sensor used as an origin (this
+							allows the solution to be referenced from a towed array sensor).
+							If a host sensor isn't available, the relevant point on the host
+							track will be used
 						</xs:documentation>
-					</xs:annotation>						
+					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
@@ -604,8 +630,9 @@
 	<xs:complexType name="DynamicInfillSegment">
 		<xs:annotation>
 			<xs:documentation>
-			This is an infill segment that Debrief inserts between straight TMA Legs. The 
-			infill regenerates if/when either the before or after leg are changed.
+				This is an infill segment that Debrief inserts between straight TMA
+				Legs. The
+				infill regenerates if/when either the before or after leg are changed.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
@@ -617,21 +644,21 @@
 				<xs:attribute name="BeforeLeg" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the leg TMA leg immediately before the infill
+							Name of the leg TMA leg immediately before the infill
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="AfterLeg" use="required" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>
-						Name of the leg TMA leg immediately after the infill
+							Name of the leg TMA leg immediately after the infill
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
 	<!-- end of plot -> session -> layers -> track -->
 
 	<!-- reusable elements for (plot -> session -> layers -> layer) and (plot 
@@ -670,8 +697,10 @@
 			<xs:element minOccurs="0" name="font" type="font" />
 		</xs:all>
 		<xs:attribute name="AutoMode" type="xs:boolean" />
-		<xs:attribute name="FillBackground" type="xs:boolean" default="false"/>
-		<xs:attribute name="SemiTransparent" type="xs:boolean" default="false" />
+		<xs:attribute name="FillBackground" type="xs:boolean"
+			default="false" />
+		<xs:attribute name="SemiTransparent" type="xs:boolean"
+			default="false" />
 		<xs:attribute name="DisplayUnits" type="xs:string" />
 		<xs:attribute name="Location" type="xs:string" />
 		<xs:attribute name="Name" type="xs:string" />
@@ -681,10 +710,10 @@
 	</xs:complexType>
 	<xs:complexType name="timeDisplay">
 		<xs:all>
-			<xs:element minOccurs="0" name="Color" type="colourType" /> 
+			<xs:element minOccurs="0" name="Color" type="colourType" />
 			<xs:element minOccurs="0" name="BackgroundColor" type="colourType" />
 			<xs:element minOccurs="0" name="NegativeColor" type="colourType" />
-			<xs:element minOccurs="0" name="font" type="font"  />
+			<xs:element minOccurs="0" name="font" type="font" />
 		</xs:all>
 		<xs:attribute name="Prefix" type="xs:string" />
 		<xs:attribute name="Suffix" type="xs:string" />
@@ -695,7 +724,8 @@
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 		<xs:attribute name="Absolute" default="true" type="xs:boolean" />
 		<xs:attribute name="FillBackground" default="false" type="xs:boolean" />
-		<xs:attribute name="SemiTransparent" default="false" type="xs:boolean" />
+		<xs:attribute name="SemiTransparent" default="false"
+			type="xs:boolean" />
 	</xs:complexType>
 	<xs:complexType name="grid">
 		<xs:sequence>
@@ -805,8 +835,9 @@
 	<xs:complexType name="dynamicShapeLayer">
 		<xs:annotation>
 			<xs:documentation>
-			  A layer that contains a series of time-stamped shapes. Debrief will only plot the shape
-			  nearest to the current replay time
+				A layer that contains a series of time-stamped shapes. Debrief will
+				only plot the shape
+				nearest to the current replay time
 			</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -817,10 +848,11 @@
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
 		<xs:attribute name="Visible" default="true" type="xs:boolean" />
-		<xs:attribute name="PlotAllShapes" use="optional" default="false" type="xs:boolean">
+		<xs:attribute name="PlotAllShapes" use="optional"
+			default="false" type="xs:boolean">
 			<xs:annotation>
 				<xs:documentation>
-				Whether to just plot all shapes, ignoring the time component
+					Whether to just plot all shapes, ignoring the time component
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -828,7 +860,7 @@
 	<xs:complexType name="dynamicLayer">
 		<xs:annotation>
 			<xs:documentation>
-			  A layer that contains a series of time display widgets.
+				A layer that contains a series of time display widgets.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -852,7 +884,8 @@
 		<xs:attribute name="Visible" type="xs:boolean" />
 		<xs:attribute name="SemiTransparent" type="xs:boolean">
 			<xs:annotation>
-				<xs:documentation>Whether to paint this object on-screen as semi-transparent.
+				<xs:documentation>Whether to paint this object on-screen as
+					semi-transparent.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -870,9 +903,11 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="ShowAutoCalc" type="xs:boolean" use="optional">
+				<xs:attribute name="ShowAutoCalc" type="xs:boolean"
+					use="optional">
 					<xs:annotation>
-						<xs:documentation>Whether to show range/bearing in the middle of the line
+						<xs:documentation>Whether to show range/bearing in the middle of
+							the line
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -1017,7 +1052,8 @@
 		</xs:sequence>
 		<xs:attribute type="xs:boolean" name="LiveRunning">
 			<xs:annotation>
-				<xs:documentation>Whether the scenario auto-runs when the user changes a contribution
+				<xs:documentation>Whether the scenario auto-runs when the user
+					changes a contribution
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
