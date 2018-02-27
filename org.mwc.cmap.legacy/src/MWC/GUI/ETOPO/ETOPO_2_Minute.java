@@ -147,6 +147,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                 EditorType.FORMAT), displayLongProp("LineThickness",
                     "Line thickness", "the thickness to plot the scale border",
                     LineWidthPropertyEditor.class, EditorType.FORMAT),
+            displayProp("NEShading", "Natural Earth Shading",
+                "whether to use Natural Earth shading", EditorType.FORMAT),
+            displayLongProp("LineThickness", "Line thickness",
+                "the thickness to plot the scale border",
+                LineWidthPropertyEditor.class, EditorType.FORMAT),
             displayProp("BathyRes", "Bathy resolution",
                 "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
                 EditorType.FORMAT), displayProp("BathyVisible", "Bathy visible",
@@ -176,8 +181,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    */
   private static final long serialVersionUID = 1L;
 
-  public static final String SHADE_AS_NATURAL_EARTH = "ShadeAsNaturalEarth";
-
   /**
    * the filename of our data-file
    */
@@ -190,11 +193,12 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
   public static WorldArea theArea = null;
 
-   /** static accessor to see if our data-file is there
-    * 
-    * @param etopo_path
-    * @return
-    */
+  /**
+   * static accessor to see if our data-file is there
+   * 
+   * @param etopo_path
+   * @return
+   */
   static public boolean dataFileExists(final String etopo_path)
   {
     boolean res = false;
@@ -398,7 +402,8 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
    * cache the values we read from file. At some resolutions we re-read the same depth cell many
    * times.
    */
-  private final Map<Integer, Integer> _pointCache = new HashMap<Integer, Integer>();
+  private final Map<Integer, Integer> _pointCache =
+      new HashMap<Integer, Integer>();
 
   public ETOPO_2_Minute(final String etopo_path)
   {
