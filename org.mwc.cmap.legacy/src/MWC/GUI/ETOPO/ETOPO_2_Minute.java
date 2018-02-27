@@ -196,7 +196,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
   /**
    * static accessor to see if our data-file is there
-   * 
+   *
    * @param etopo_path
    * @return
    */
