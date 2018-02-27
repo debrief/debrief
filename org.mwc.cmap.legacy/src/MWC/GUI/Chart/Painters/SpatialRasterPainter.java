@@ -36,7 +36,6 @@ import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.ETOPO.BathyProvider;
 import MWC.GUI.ETOPO.Conrec;
-import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -68,6 +67,10 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
    */
   Integer _keyLocation = new Integer(KeyLocationPropertyEditor.LEFT);
 
+  /** whether to use NE shading
+   * 
+   */
+  private boolean _neShading = false;
 
   /**
    * the bit which does the painting
@@ -346,7 +349,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
    * @author ian.mayo
    *
    */
-  public static class SwingPainterComponent extends PainterComponent
+  public class SwingPainterComponent extends PainterComponent
   {
     /**
      * the image we plot
@@ -492,17 +495,8 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
         to metafile more quickly.  The rectangles should be either sized to suit the
         resolution of the data, or the resolution requested by the user */
 
-      String pref = Defaults.getPreference(ETOPO_2_Minute.SHADE_AS_NATURAL_EARTH);
-      final boolean useNE;
-      if(pref != null && pref.length() > 0)
-      {
-        useNE = Boolean.parseBoolean(pref);
-      }
-      else
-      {
-        useNE = false;
-      }
-
+      final boolean useNE = parent.isNEShading();
+      
       // reset the min and max depths
       min_depth = max_depth = 0;
 
@@ -911,6 +905,17 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
     dest.setColor(getContourColourFor(contourIndex));
     dest.drawLine(pa.x, pa.y, pb.x, pb.y);
   }
+
+  public boolean isNEShading()
+  {
+    return _neShading;
+  }
+
+  public void setNEShading(boolean _neShading)
+  {
+    this._neShading = _neShading;
+  }
+
 
   /** do we make zero the max value in the legend?
    * 
