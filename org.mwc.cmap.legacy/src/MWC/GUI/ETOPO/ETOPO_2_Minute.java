@@ -14,6 +14,7 @@
  */
 package MWC.GUI.ETOPO;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -144,29 +145,28 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                 KeyLocationPropertyEditor.class, EditorType.FORMAT), prop(
                     "Color", "the color of the color-key", EditorType.FORMAT),
             displayProp("ShowLand", "Show land", "whether to shade land-data",
-                EditorType.FORMAT), displayLongProp("LineThickness",
-                    "Line thickness", "the thickness to plot the scale border",
-                    LineWidthPropertyEditor.class, EditorType.FORMAT),
-            displayProp("NEShading", "Natural Earth Shading",
-                "whether to use Natural Earth shading", EditorType.FORMAT),
-            displayLongProp("LineThickness", "Line thickness",
-                "the thickness to plot the scale border",
-                LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
-                    "BathyRes", "Bathy resolution",
-                    "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
-                    EditorType.FORMAT), displayProp("BathyVisible",
-                        "Bathy visible", "whether to show the gridded contours",
-                        VISIBILITY), displayProp("ContourDepths",
-                            "Contour depths", "the contour depths to plot",
-                            EditorType.FORMAT), displayProp("ContoursVisible",
-                                "Contours visible",
-                                "whether to show the contours", VISIBILITY),
-            displayProp("ContourGridInterval", "Contour grid interval",
-                "the interval at which to calculate the contours (larger interval leads to faster performance)",
-                EditorType.FORMAT), displayProp("ContourOptimiseGrid",
-                    "Optimise grid interval",
-                    "whether the grid interval should be optimised",
-                    EditorType.FORMAT)};
+                EditorType.FORMAT), displayProp("LandColor", "Land Color",
+                    "Color to shade land data", EditorType.FORMAT), displayProp(
+                        "NEShading", "Natural Earth Shading",
+                        "whether to use Natural Earth shading",
+                        EditorType.FORMAT), displayLongProp("LineThickness",
+                            "Line thickness",
+                            "the thickness to plot the scale border",
+                            LineWidthPropertyEditor.class, EditorType.FORMAT),
+            displayProp("BathyRes", "Bathy resolution",
+                "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
+                EditorType.FORMAT), displayProp("BathyVisible", "Bathy visible",
+                    "whether to show the gridded contours", VISIBILITY),
+            displayProp("ContourDepths", "Contour depths",
+                "the contour depths to plot", EditorType.FORMAT), displayProp(
+                    "ContoursVisible", "Contours visible",
+                    "whether to show the contours", VISIBILITY), displayProp(
+                        "ContourGridInterval", "Contour grid interval",
+                        "the interval at which to calculate the contours (larger interval leads to faster performance)",
+                        EditorType.FORMAT), displayProp("ContourOptimiseGrid",
+                            "Optimise grid interval",
+                            "whether the grid interval should be optimised",
+                            EditorType.FORMAT)};
         return res;
       }
       catch (final java.beans.IntrospectionException e)
@@ -195,7 +195,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   public static WorldArea theArea = null;
 
   /**
-   * static accessor to see if our data-file is there
+   * static accessor to see if our data-file is there <<<<<<< HEAD
+   *
+   * =======
+   *
+   * >>>>>>> develop
    *
    * @param etopo_path
    * @return
@@ -210,101 +214,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
     if (testFile.exists())
       res = true;
-
-    return res;
-  }
-
-  /* returns a color based on slope and elevation */
-  public static int getETOPOColor(final short elevation,
-      final double lowerLimit, final double upperLimit, final boolean showLand,
-      final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
-  {
-    final int res;
-
-    if (useNE)
-    {
-      // see if we are above or beneath water level
-      if ((elevation > 0) && (showLand))
-      {
-        // ABOVE WATER
-        res = converter.convertColor(235, 219, 188);
-      }
-      else
-      {
-        // BELOW WATER
-
-        // switch to positive
-        double val = elevation;
-        if (val < lowerLimit)
-          val = lowerLimit;
-
-        final double x = val / lowerLimit;
-
-        final int red = (int) (169.0577 - 157.9448 * x + 19.64085 * Math.pow(x,
-            2));
-        final int green = (int) (197.4973 - 103.4937 * x - 2.004169 * Math.pow(
-            x, 2));
-        final int blue = (int) (227.4203 - (35.15651 * x) - (30.06253 * Math
-            .pow(x, 2)));
-
-        res = converter.convertColor(red, green, blue);
-
-      }
-    }
-    else
-    {
-      // see if we are above or beneath water level
-      if ((elevation > 0) && (showLand))
-      {
-        // ABOVE WATER
-
-        // switch to positive
-        double val = elevation;
-        if (val > upperLimit)
-          val = upperLimit;
-
-        final double proportion = val / upperLimit;
-
-        final double color_val = proportion * 125;
-
-        // limit the colour val to the minimum value
-        int green_tone = 255 - (int) color_val;
-
-        // just check we've got a valid colour
-        green_tone = Math.min(250, green_tone);
-
-        res = converter.convertColor(88, green_tone, 88);
-
-      }
-      else
-      {
-        // BELOW WATER
-
-        // switch to positive
-        double val = elevation;
-        if (val < lowerLimit)
-          val = lowerLimit;
-
-        final double proportion = val / lowerLimit;
-
-        final double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
-
-        // limit the colour val to the minimum value
-        int blue_tone = 255 - (int) color_val;
-
-        // just check we've got a valid colour
-        blue_tone = Math.min(250, blue_tone);
-
-        final int green = (int) ETOPOWrapper.GREEN_BASE_VALUE + (int) (blue_tone
-            * ETOPOWrapper.GREEN_MULTIPLIER);
-
-        res = converter.convertColor(ETOPOWrapper.RED_COMPONENT, green,
-            blue_tone);
-
-      }
-    }
-
-    // so, just produce a shade of blue depending on how deep we are.
 
     return res;
   }
@@ -390,6 +299,12 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   private boolean _showLand = true;
 
   /**
+   * color for the land
+   *
+   */
+  private Color _landCol = new Color(235, 219, 188);
+
+  /**
    * the path to the datafile
    */
   private final String _thePath;
@@ -461,6 +376,106 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
         converter, useNE);
   }
 
+  /* returns a color based on slope and elevation */
+  public int getETOPOColor(final short elevation, final double lowerLimit,
+      final double upperLimit, final boolean showLand,
+      final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
+  {
+    final int res;
+
+    if (useNE)
+    {
+      // see if we are above or beneath water level
+      if ((elevation > 0) && (showLand))
+      {
+        // ABOVE WATER
+        res = converter.convertColor(_landCol.getRed(), _landCol.getGreen(),
+            _landCol.getBlue());
+      }
+      else
+      {
+        // BELOW WATER
+
+        // switch to positive
+        double val = elevation;
+        if (val < lowerLimit)
+          val = lowerLimit;
+
+        final double x = val / lowerLimit;
+
+        final int red = (int) (169.0577 - 157.9448 * x + 19.64085 * Math.pow(x,
+            2));
+        final int green = (int) (197.4973 - 103.4937 * x - 2.004169 * Math.pow(
+            x, 2));
+        final int blue = (int) (227.4203 - (35.15651 * x) - (30.06253 * Math
+            .pow(x, 2)));
+
+        res = converter.convertColor(red, green, blue);
+
+      }
+    }
+    else
+    {
+      // see if we are above or beneath water level
+      if ((elevation > 0) && (showLand))
+      {
+        // ABOVE WATER
+
+        // switch to positive
+        double val = elevation;
+        if (val > upperLimit)
+          val = upperLimit;
+
+        final double proportion = 1 - val / upperLimit;
+
+        final int red = (int) (_landCol.getRed() * proportion);
+        final int green = (int) (_landCol.getGreen() * proportion);
+        final int blue = (int) (_landCol.getBlue() * proportion);
+
+        res = converter.convertColor(red, green, blue);
+
+        // final double color_val = proportion * 125;
+        //
+        // // limit the colour val to the minimum value
+        // int green_tone = 255 - (int) color_val;
+        //
+        // // just check we've got a valid colour
+        // green_tone = Math.min(250, green_tone);
+        // res = converter.convertColor(88, green_tone, 88);
+      }
+      else
+      {
+        // BELOW WATER
+
+        // switch to positive
+        double val = elevation;
+        if (val < lowerLimit)
+          val = lowerLimit;
+
+        final double proportion = val / lowerLimit;
+
+        final double color_val = proportion * ETOPOWrapper.BLUE_MULTIPLIER;
+
+        // limit the colour val to the minimum value
+        int blue_tone = 255 - (int) color_val;
+
+        // just check we've got a valid colour
+        blue_tone = Math.min(250, blue_tone);
+
+        final int green = (int) ETOPOWrapper.GREEN_BASE_VALUE + (int) (blue_tone
+            * ETOPOWrapper.GREEN_MULTIPLIER);
+
+        res = converter.convertColor(ETOPOWrapper.RED_COMPONENT, green,
+            blue_tone);
+
+      }
+    }
+
+    // so, just produce a shade of blue depending on how deep we are.
+
+    return res;
+  }
+
   /**
    * provide the delta for the data (in degrees)
    */
@@ -494,6 +509,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       _myEditor = new MARTOPOInfo(this);
 
     return _myEditor;
+  }
+
+  public Color getLandColor()
+  {
+    return _landCol;
   }
 
   /**
@@ -714,9 +734,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       if (!isDataLoaded())
         return;
 
-      // clear the cache
-      // _pointCache.clear();
-
       // remember width
       final float oldWid = dest.getLineWidth();
 
@@ -728,6 +745,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       // and restore the old one
       dest.setLineWidth(oldWid);
     }
+  }
+
+  public void setLandColor(final Color landCol)
+  {
+    this._landCol = landCol;
   }
 
   /**

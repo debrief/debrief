@@ -14,6 +14,8 @@
  */
 package MWC.Utilities.ReaderWriter.XML.Features;
 
+import java.awt.Color;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -36,7 +38,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 public class TOPOHandler extends MWCXMLReader
 {
 
-  java.awt.Color _theColor;
+  Color _theColor;
   boolean _isVisible;
   private final Layers _theLayers;
   Integer _scaleLocation;
@@ -46,8 +48,10 @@ public class TOPOHandler extends MWCXMLReader
 
   Boolean _showContours = null;
   Boolean _showBathy = null;
-  
+  Color _landColor = null;
+
   private static final String NE_SHADES = "NE_SHADES";
+  private static final String LAND_COLOR = "LAND_COLOR";
 
   /**
    * class which contains list of textual representations of scale locations
@@ -104,6 +108,13 @@ public class TOPOHandler extends MWCXMLReader
         _theColor = color;
       }
     });
+    addHandler(new ColourHandler(LAND_COLOR)
+    {
+      public void setColour(final java.awt.Color color)
+      {
+        _landColor = color;
+      }
+    });
     addAttributeHandler(new HandleAttribute("ScaleLocation")
     {
       public void setValue(final String name, final String val)
@@ -146,9 +157,13 @@ public class TOPOHandler extends MWCXMLReader
       painter.setBathyVisible(_showBathy.booleanValue());
     if (_showContours != null)
       painter.setContoursVisible(_showContours.booleanValue());
-    if(_neShade != null)
+    if (_neShade != null)
     {
       painter.setNEShading(_neShade);
+    }
+    if (_landColor != null)
+    {
+      painter.setLandColor(_landColor);
     }
 
     if (_scaleLocation != null)
@@ -160,6 +175,7 @@ public class TOPOHandler extends MWCXMLReader
     _theLayers.addThisLayer(painter);
 
     // reset our variables
+    _landColor = null;
     _neShade = null;
     _theColor = null;
     _isVisible = false;
@@ -190,6 +206,8 @@ public class TOPOHandler extends MWCXMLReader
 
     // do the colour
     ColourHandler.exportColour(csp.getColor(), etopo, doc);
+
+    ColourHandler.exportColour(csp.getLandColor(), etopo, doc, LAND_COLOR);
 
     parent.appendChild(etopo);
   }
