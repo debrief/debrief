@@ -306,6 +306,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return result;
   }
 
+  private static String getAbsoluteName(final IFile iff) throws CoreException
+  {
+    String name;
+    URI uri = iff.getLocationURI();
+    if (iff.isLinked())
+    {
+      uri = iff.getRawLocationURI();
+    }
+    final File javaFile = EFS.getStore(uri).toLocalFile(0,
+        new NullProgressMonitor());
+    name = javaFile.getAbsolutePath();
+    return name;
+  }
+
   private static TimePeriod getPeriodFor(final Layers theData)
   {
     TimePeriod res = null;
@@ -393,30 +407,30 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   /**
    * helper object which loads plugin file-loaders
    */
-  LoaderManager _loader;
+  private final LoaderManager _loader;
 
   /**
    * we keep the reference to our track-type adapter
    */
-  TrackDataProvider _trackDataProvider;
+  private final TrackDataProvider _trackDataProvider;
 
   /**
    * The job used to handle large changes in layers
    */
-  private Job _refreshJob;
+  private final Job _refreshJob;
 
   /**
    * something to look after our layer painters
    */
-  LayerPainterManager _layerPainterManager;
+  private final LayerPainterManager _layerPainterManager;
 
   /**
    * and how we view the time
    *
    */
-  protected TimeControlPreferences _timePreferences;
+  protected final TimeControlPreferences _timePreferences;
 
-  private PlotOperations _myOperations;
+  private final PlotOperations _myOperations;
 
   /**
    * support tool that provides a relative plot
@@ -431,83 +445,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   /**
    * an object to look after all of the time bits
    */
-  private TimeManager _timeManager;
+  private final TimeManager _timeManager;
 
-  private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
+  private final org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
   private PlotOutlinePage _outlinePage;
 
-  private final TraverseListener dragModeListener = new TraverseListener()
-  {
-
-    @Override
-    public void keyTraversed(final TraverseEvent e)
-    {
-      if (getChart() == null)
-      {
-        return;
-      }
-      final Control control = getChart().getCanvasControl();
-      if (control == null || control.isDisposed() || !control.isVisible())
-      {
-        return;
-      }
-      if (e.detail == SWT.TRAVERSE_TAB_NEXT)
-      {
-        final PlotMouseDragger dragMode = getChart().getDragMode();
-        if (dragMode != null)
-        {
-          try
-          {
-            String currentState = null;
-            final ExecutionEvent executionEvent = new ExecutionEvent();
-            if (dragMode instanceof DragSegmentMode)
-            {
-              new DragComponent().execute(executionEvent);
-              currentState = RadioHandler.DRAG_COMPONENT;
-            }
-            else if (dragMode instanceof DragComponentMode)
-            {
-              new DragFeature().execute(executionEvent);
-              currentState = RadioHandler.DRAG_FEATURE;
-            }
-            else if (dragMode instanceof DragFeatureMode)
-            {
-              new RangeBearing().execute(executionEvent);
-              currentState = RadioHandler.RANGE_BEARING;
-            }
-            else if (dragMode instanceof RangeBearingMode)
-            {
-              new Pan().execute(executionEvent);
-              currentState = RadioHandler.PAN;
-            }
-            else if (dragMode instanceof PanMode)
-            {
-              new ZoomIn().execute(executionEvent);
-              currentState = RadioHandler.ZOOM_IN;
-            }
-            else if (dragMode instanceof ZoomInMode)
-            {
-              new DragSegment().execute(executionEvent);
-              currentState = RadioHandler.DRAG_SEGMENT;
-            }
-            if (currentState != null)
-            {
-              final ICommandService service = (ICommandService) getSite()
-                  .getService(ICommandService.class);
-              final Command command = service.getCommand(RadioHandler.ID);
-              HandlerUtil.updateRadioState(command, currentState);
-            }
-          }
-          catch (final Exception e1)
-          {
-            CorePlugin.logError(IStatus.WARNING, "Cannot change drag mode:",
-                e1);
-          }
-        }
-      }
-    }
-  };
+  private final TraverseListener dragModeListener = createTraverseListener();
 
   private PlotPropertySheetPage _propertySheetPage;
 
@@ -571,7 +515,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       @Override
       public void propertyChange(
-          org.eclipse.jface.util.PropertyChangeEvent event)
+          final org.eclipse.jface.util.PropertyChangeEvent event)
       {
         if (SensorContactWrapper.TRANSPARENCY.equals(event.getProperty()))
         {
@@ -582,6 +526,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     };
     CorePlugin.getDefault().getPreferenceStore().addPropertyChangeListener(
         _sensorTransparencyListener);
+
+    _refreshJob = createRefreshJob();
+
+    // ok - declare and load the supplemental plugins which can load
+    // datafiles
+    _loader = initialiseFileLoaders();
 
     // listen out for when our input changes, since we will change the
     // editor
@@ -866,12 +816,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
    * Create the refresh job for the receiver.
    *
    */
-  private void createRefreshJob()
+  private WorkbenchJob createRefreshJob()
   {
     // Creates a workbench job that will update the UI. But, it can be
     // cancelled and re-scheduled
     // may override.
-    _refreshJob = new WorkbenchJob("Refresh Filter") //$NON-NLS-1$
+    final WorkbenchJob refreshJob = new WorkbenchJob("Refresh Filter") //$NON-NLS-1$
     {
       @Override
       public IStatus runInUIThread(final IProgressMonitor monitor)
@@ -901,7 +851,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
     };
 
-    _refreshJob.setSystem(true);
+    refreshJob.setSystem(true);
+
+    return refreshJob;
   }
 
   /**
@@ -1064,6 +1016,81 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return res;
   }
 
+  private TraverseListener createTraverseListener()
+  {
+    return new TraverseListener()
+    {
+
+      @Override
+      public void keyTraversed(final TraverseEvent e)
+      {
+        if (getChart() == null)
+        {
+          return;
+        }
+        final Control control = getChart().getCanvasControl();
+        if (control == null || control.isDisposed() || !control.isVisible())
+        {
+          return;
+        }
+        if (e.detail == SWT.TRAVERSE_TAB_NEXT)
+        {
+          final PlotMouseDragger dragMode = getChart().getDragMode();
+          if (dragMode != null)
+          {
+            try
+            {
+              String currentState = null;
+              final ExecutionEvent executionEvent = new ExecutionEvent();
+              if (dragMode instanceof DragSegmentMode)
+              {
+                new DragComponent().execute(executionEvent);
+                currentState = RadioHandler.DRAG_COMPONENT;
+              }
+              else if (dragMode instanceof DragComponentMode)
+              {
+                new DragFeature().execute(executionEvent);
+                currentState = RadioHandler.DRAG_FEATURE;
+              }
+              else if (dragMode instanceof DragFeatureMode)
+              {
+                new RangeBearing().execute(executionEvent);
+                currentState = RadioHandler.RANGE_BEARING;
+              }
+              else if (dragMode instanceof RangeBearingMode)
+              {
+                new Pan().execute(executionEvent);
+                currentState = RadioHandler.PAN;
+              }
+              else if (dragMode instanceof PanMode)
+              {
+                new ZoomIn().execute(executionEvent);
+                currentState = RadioHandler.ZOOM_IN;
+              }
+              else if (dragMode instanceof ZoomInMode)
+              {
+                new DragSegment().execute(executionEvent);
+                currentState = RadioHandler.DRAG_SEGMENT;
+              }
+              if (currentState != null)
+              {
+                final ICommandService service = getSite().getService(
+                    ICommandService.class);
+                final Command command = service.getCommand(RadioHandler.ID);
+                HandlerUtil.updateRadioState(command, currentState);
+              }
+            }
+            catch (final Exception e1)
+            {
+              CorePlugin.logError(IStatus.WARNING, "Cannot change drag mode:",
+                  e1);
+            }
+          }
+        }
+      }
+    };
+  }
+
   private List<TrackWrapper> determineCandidateHosts()
   {
     final List<TrackWrapper> res = new ArrayList<TrackWrapper>();
@@ -1090,8 +1117,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     _timeManager.removeListener(_timeListener,
         TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
-    _timeManager = null;
-
     // stop listening for sensor transparency changes
     CorePlugin.getDefault().getPreferenceStore().removePropertyChangeListener(
         _sensorTransparencyListener);
@@ -1099,7 +1124,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     if (_layerPainterManager != null)
     {
       _layerPainterManager.close();
-      _layerPainterManager = null;
     }
 
     if (_outlinePage != null)
@@ -1599,49 +1623,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     _trackDataProvider.fireTracksChanged();
   }
 
-  @Override
-  protected void layerAdded(final Layer layer)
-  {
-    super.layerAdded(layer);
-
-    // if we've only got one layer, and we like the look of it,
-    // then make it the primary layer
-    if (_myLayers.size() == 1)
-    {
-      final TrackManager mgr = (TrackManager) _trackDataProvider;
-
-      // do we already have a primary
-      if (mgr.getPrimaryTrack() == null)
-      {
-        final Display display = Display.getDefault();
-        if(display != null)
-        {
-          display.asyncExec(new Runnable() {
-
-            @Override
-            public void run()
-            {
-              mgr.setPrimary((WatchableList) layer);
-            }});
-        }
-      }
-    }
-  }
-
-  public String getAbsoluteName(final IFile iff) throws CoreException
-  {
-    String name;
-    URI uri = iff.getLocationURI();
-    if (iff.isLinked())
-    {
-      uri = iff.getRawLocationURI();
-    }
-    final File javaFile = EFS.getStore(uri).toLocalFile(0,
-        new NullProgressMonitor());
-    name = javaFile.getAbsolutePath();
-    return name;
-  }
-
   /*
    * (non-Javadoc)
    *
@@ -1886,10 +1867,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     setSite(site);
     setInputWithNotify(input);
 
-    // ok - declare and load the supplemental plugins which can load
-    // datafiles
-    initialiseFileLoaders();
-
     // and start the load
     loadThisFile(input);
 
@@ -1902,20 +1879,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     {
       this.setTitleImage(icon.createImage());
     }
-
-    // ok, also sort out that refresh job
-    createRefreshJob();
   }
 
   /**
    *
    */
-  private void initialiseFileLoaders()
+  private LoaderManager initialiseFileLoaders()
   {
     // hey - sort out our plot readers
-    _loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
+    return new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
     {
-
       @Override
       public INamedItem createInstance(
           final IConfigurationElement configElement, final String label)
@@ -1937,7 +1910,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         // and return it.
         return res;
       }
-
     };
   }
 
@@ -1964,6 +1936,37 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
     }
     return alreadyLoaded;
+  }
+
+  @Override
+  protected void layerAdded(final Layer layer)
+  {
+    super.layerAdded(layer);
+
+    // if we've only got one layer, and we like the look of it,
+    // then make it the primary layer
+    if (_myLayers.size() == 1 && layer instanceof WatchableList)
+    {
+      final TrackManager mgr = (TrackManager) _trackDataProvider;
+
+      // do we already have a primary
+      if (mgr.getPrimaryTrack() == null)
+      {
+        final Display display = Display.getDefault();
+        if (display != null)
+        {
+          display.asyncExec(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              mgr.setPrimary((WatchableList) layer);
+            }
+          });
+        }
+      }
+    }
   }
 
   /**
