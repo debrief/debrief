@@ -1597,21 +1597,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // hmm, we may have loaded more track data - but we don't track
     // loading of individual tracks - just fire a "modified" flag
     _trackDataProvider.fireTracksChanged();
+  }
 
-    // if we've got a single layer, and it's a track,
-    // make it the primary
+  @Override
+  protected void layerAdded(final Layer layer)
+  {
+    super.layerAdded(layer);
+
+    // if we've only got one layer, and we like the look of it,
+    // then make it the primary layer
     if (_myLayers.size() == 1)
     {
-      final Editable first = _myLayers.elements().nextElement();
-      if (first instanceof WatchableList)
-      {
-        final WatchableList list = (WatchableList) first;
-        final TrackManager mgr = (TrackManager) _trackDataProvider;
+      final TrackManager mgr = (TrackManager) _trackDataProvider;
 
-        // do we already have a primary
-        if (mgr.getPrimaryTrack() == null)
+      // do we already have a primary
+      if (mgr.getPrimaryTrack() == null)
+      {
+        final Display display = Display.getDefault();
+        if(display != null)
         {
-          mgr.setPrimary(list);
+          display.asyncExec(new Runnable() {
+
+            @Override
+            public void run()
+            {
+              mgr.setPrimary((WatchableList) layer);
+            }});
         }
       }
     }
