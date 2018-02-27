@@ -147,9 +147,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
             displayProp("ShowLand", "Show land", "whether to shade land-data",
                 EditorType.FORMAT), displayProp("LandColor", "Land Color",
                     "Color to shade land data", EditorType.FORMAT),
-            displayLongProp("LineThickness", "Line thickness",
-                "the thickness to plot the scale border",
-                LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
+            displayProp(
                     "NEShading", "Natural Earth Shading",
                     "whether to use Natural Earth shading", EditorType.FORMAT),
             displayLongProp("LineThickness", "Line thickness",
