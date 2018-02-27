@@ -145,28 +145,27 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
                 KeyLocationPropertyEditor.class, EditorType.FORMAT), prop(
                     "Color", "the color of the color-key", EditorType.FORMAT),
             displayProp("ShowLand", "Show land", "whether to shade land-data",
-                EditorType.FORMAT), 
-            displayProp("LandColor", "Land Color", "Color to shade land data",
-                EditorType.FORMAT), 
-            displayLongProp("LineThickness",
-                    "Line thickness", "the thickness to plot the scale border",
-                    LineWidthPropertyEditor.class, EditorType.FORMAT),
-            displayProp("BathyRes", "Bathy resolution",
-                "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
-                EditorType.FORMAT), displayProp("BathyVisible", "Bathy visible",
-                    "whether to show the gridded contours", VISIBILITY),
-            displayProp("ContourDepths", "Contour depths",
-                "the contour depths to plot", EditorType.FORMAT), displayProp(
-                    "ContoursVisible", "Contours visible",
-                    "whether to show the contours", VISIBILITY), displayProp(
-                        "ContourGridInterval", "Contour grid interval",
-                        "the interval at which to calculate the contours (larger interval leads to faster performance)",
-                        EditorType.FORMAT), displayProp("ContourOptimiseGrid",
-                            "Optimise grid interval",
-                            "whether the grid interval should be optimised",
-                            EditorType.FORMAT)};
-        
-        
+                EditorType.FORMAT), displayProp("LandColor", "Land Color",
+                    "Color to shade land data", EditorType.FORMAT),
+            displayLongProp("LineThickness", "Line thickness",
+                "the thickness to plot the scale border",
+                LineWidthPropertyEditor.class, EditorType.FORMAT), displayProp(
+                    "BathyRes", "Bathy resolution",
+                    "the size of the grid at which to plot the shaded bathy (larger blocks gives faster performance)",
+                    EditorType.FORMAT), displayProp("BathyVisible",
+                        "Bathy visible", "whether to show the gridded contours",
+                        VISIBILITY), displayProp("ContourDepths",
+                            "Contour depths", "the contour depths to plot",
+                            EditorType.FORMAT), displayProp("ContoursVisible",
+                                "Contours visible",
+                                "whether to show the contours", VISIBILITY),
+            displayProp("ContourGridInterval", "Contour grid interval",
+                "the interval at which to calculate the contours (larger interval leads to faster performance)",
+                EditorType.FORMAT), displayProp("ContourOptimiseGrid",
+                    "Optimise grid interval",
+                    "whether the grid interval should be optimised",
+                    EditorType.FORMAT)};
+
         return res;
       }
       catch (final java.beans.IntrospectionException e)
@@ -196,11 +195,12 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
   public static WorldArea theArea = null;
 
-   /** static accessor to see if our data-file is there
-    * 
-    * @param etopo_path
-    * @return
-    */
+  /**
+   * static accessor to see if our data-file is there
+   * 
+   * @param etopo_path
+   * @return
+   */
   static public boolean dataFileExists(final String etopo_path)
   {
     boolean res = false;
@@ -215,9 +215,164 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
     return res;
   }
 
+  /**
+   * how many horizonal data points are in our data
+   */
+  private static int getHorizontalNumber()
+  {
+    return 10800;
+  }
+
+  /**
+   * get the latitude for the indicated index
+   */
+  static double getLatitudeFor(final int index)
+  {
+    double res;
+
+    res = index;
+
+    // convert to mins
+    res *= 2;
+
+    // add 1 for luck
+    res += 1;
+
+    // convert to degs
+    res /= 60;
+
+    // put in hemisphere
+    if (res > 90)
+    {
+      res = -(res - 90);
+    }
+    else
+    {
+      res = 90 - res;
+    }
+
+    return res;
+  }
+
+  /**
+   * get the longitude for the indicated index
+   */
+  static double getLongitudeFor(final int index)
+  {
+    double res;
+
+    // convert to mins
+    res = index * 2;
+
+    // add 1 for luck
+    res += 1;
+
+    // convert to degs
+    res /= 60;
+
+    // put in hemisphere
+    res -= 180;
+
+    return res;
+  }
+
+  /**
+   * rescale the data-set, if necessary
+   *
+   * @param val
+   *          the depth as read from file
+   * @return the rescaled depth (from feet to metres in this case)
+   */
+  private static int rescaleValue(final int val)
+  {
+    // convert from feet to metres
+    // return (int)MWC.Algorithms.Conversions.ft2m(val);
+    return val;
+  }
+
+  /**
+   * whether to show land
+   */
+  private boolean _showLand = true;
+
+  /**
+   * color for the land
+   *
+   */
+  private Color _landCol = new Color(235, 219, 188);
+
+  /**
+   * the path to the datafile
+   */
+  private final String _thePath;
+
+  /**
+   * flag to ensure we only report missing data on the first occasion
+   */
+  private boolean _reportedMissingData = false;
+
+  /**
+   * cache the values we read from file. At some resolutions we re-read the same depth cell many
+   * times.
+   */
+  private final Map<Integer, Integer> _pointCache =
+      new HashMap<Integer, Integer>();
+
+  public ETOPO_2_Minute(final String etopo_path)
+  {
+    super("ETOPO (2 Minute)");
+
+    // store the path to the data file
+    _thePath = etopo_path;
+
+    _contourDepths = DEFAULT_CONTOUR_DEPTHS;
+  }
+
+  /**
+   * function to retrieve a data value at the indicated index
+   */
+  @Override
+  protected final double contour_valAt(final int i, final int j)
+  {
+
+    final double res;
+    final int index;
+    index = 2 * (j * getHorizontalNumber() + i);
+    res = getValueAtIndex(index);
+    return res;
+  }
+
+  /**
+   * function to retrieve the x-location for a specific array index
+   */
+  @Override
+  protected final double contour_xValAt(final int i)
+  {
+    return getLongitudeFor(i);
+  }
+
+  /**
+   * function to retrieve the x-location for a specific array index
+   */
+  @Override
+  protected final double contour_yValAt(final int i)
+  {
+    return getLatitudeFor(i);
+  }
+
   /* returns a color based on slope and elevation */
-  public int getETOPOColor(final short elevation,
-      final double lowerLimit, final double upperLimit, final boolean showLand,
+  @Override
+  public final int getColor(final int elevation, final double lowerLimit,
+      final double upperLimit,
+      final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
+  {
+    return getETOPOColor((short) elevation, lowerLimit, upperLimit, _showLand,
+        converter, useNE);
+  }
+
+  /* returns a color based on slope and elevation */
+  public int getETOPOColor(final short elevation, final double lowerLimit,
+      final double upperLimit, final boolean showLand,
       final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
   {
     final int res;
@@ -312,169 +467,6 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
   }
 
   /**
-   * how many horizonal data points are in our data
-   */
-  private static int getHorizontalNumber()
-  {
-    return 10800;
-  }
-
-  /**
-   * get the latitude for the indicated index
-   */
-  static double getLatitudeFor(final int index)
-  {
-    double res;
-
-    res = index;
-
-    // convert to mins
-    res *= 2;
-
-    // add 1 for luck
-    res += 1;
-
-    // convert to degs
-    res /= 60;
-
-    // put in hemisphere
-    if (res > 90)
-    {
-      res = -(res - 90);
-    }
-    else
-    {
-      res = 90 - res;
-    }
-
-    return res;
-  }
-
-  /**
-   * get the longitude for the indicated index
-   */
-  static double getLongitudeFor(final int index)
-  {
-    double res;
-
-    // convert to mins
-    res = index * 2;
-
-    // add 1 for luck
-    res += 1;
-
-    // convert to degs
-    res /= 60;
-
-    // put in hemisphere
-    res -= 180;
-
-    return res;
-  }
-
-  /**
-   * rescale the data-set, if necessary
-   *
-   * @param val
-   *          the depth as read from file
-   * @return the rescaled depth (from feet to metres in this case)
-   */
-  private static int rescaleValue(final int val)
-  {
-    // convert from feet to metres
-    // return (int)MWC.Algorithms.Conversions.ft2m(val);
-    return val;
-  }
-
-  public Color getLandColor()
-  {
-    return _landCol;
-  }
-
-  public void setLandColor(Color landCol)
-  {
-    this._landCol = landCol;
-  }
-
-  /**
-   * whether to show land
-   */
-  private boolean _showLand = true;
-  
-  /** color for the land
-   * 
-   */
-  private Color _landCol = new Color(235, 219, 188);
-
-  /**
-   * the path to the datafile
-   */
-  private final String _thePath;
-
-  /**
-   * flag to ensure we only report missing data on the first occasion
-   */
-  private boolean _reportedMissingData = false;
-
-  /**
-   * cache the values we read from file. At some resolutions we re-read the same depth cell many
-   * times.
-   */
-  private final Map<Integer, Integer> _pointCache = new HashMap<Integer, Integer>();
-
-  public ETOPO_2_Minute(final String etopo_path)
-  {
-    super("ETOPO (2 Minute)");
-
-    // store the path to the data file
-    _thePath = etopo_path;
-
-    _contourDepths = DEFAULT_CONTOUR_DEPTHS;
-  }
-
-  /**
-   * function to retrieve a data value at the indicated index
-   */
-  @Override
-  protected final double contour_valAt(final int i, final int j)
-  {
-
-    final double res;
-    final int index;
-    index = 2 * (j * getHorizontalNumber() + i);
-    res = getValueAtIndex(index);
-    return res;
-  }
-
-  /**
-   * function to retrieve the x-location for a specific array index
-   */
-  @Override
-  protected final double contour_xValAt(final int i)
-  {
-    return getLongitudeFor(i);
-  }
-
-  /**
-   * function to retrieve the x-location for a specific array index
-   */
-  @Override
-  protected final double contour_yValAt(final int i)
-  {
-    return getLatitudeFor(i);
-  }
-
-  /* returns a color based on slope and elevation */
-  @Override
-  public final int getColor(final int elevation, final double lowerLimit,
-      final double upperLimit,
-      final SpatialRasterPainter.ColorConverter converter, final boolean useNE)
-  {
-    return getETOPOColor((short) elevation, lowerLimit, upperLimit, _showLand,
-        converter, useNE);
-  }
-
-  /**
    * provide the delta for the data (in degrees)
    */
   @Override
@@ -507,6 +499,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       _myEditor = new MARTOPOInfo(this);
 
     return _myEditor;
+  }
+
+  public Color getLandColor()
+  {
+    return _landCol;
   }
 
   /**
@@ -738,6 +735,11 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
       // and restore the old one
       dest.setLineWidth(oldWid);
     }
+  }
+
+  public void setLandColor(final Color landCol)
+  {
+    this._landCol = landCol;
   }
 
   /**
