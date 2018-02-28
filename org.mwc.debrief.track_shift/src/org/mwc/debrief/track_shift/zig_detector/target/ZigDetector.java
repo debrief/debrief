@@ -842,7 +842,7 @@ public class ZigDetector
     @Override
     public int compareTo(final TPeriod other)
     {
-      return Integer.compare(start, other.start);
+      return new Integer(start).compareTo(other.start);
     }
 
     @Override
