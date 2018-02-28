@@ -3,7 +3,7 @@ package org.mwc.cmap.core.ui_support;
 import java.util.Comparator;
 
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import Debrief.Wrappers.SensorWrapper;
@@ -11,7 +11,7 @@ import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 
-public class OutlineNameSorter extends ViewerSorter
+public class OutlineNameSorter extends ViewerComparator
 {
 
   public static class EditableComparer implements Comparator<Editable>

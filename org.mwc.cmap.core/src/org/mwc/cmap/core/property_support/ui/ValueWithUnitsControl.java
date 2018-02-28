@@ -158,10 +158,22 @@ final public class ValueWithUnitsControl extends Composite implements
 		final String distTxt = _myText.getText();
 		if (distTxt.length() > 0)
 		{
-			final double dist = new Double(distTxt).doubleValue();
-			final int units = _myCombo.getSelectionIndex();
-			if (units != -1)
-				res = _myModel.createResultsObject(dist, units);
+		  // wrap the parse operation, since we may have -ve value
+			try
+      {
+        final double dist = new Double(distTxt).doubleValue();
+        final int units = _myCombo.getSelectionIndex();
+        if (units != -1)
+        	res = _myModel.createResultsObject(dist, units);
+      }
+      catch (NumberFormatException e)
+      {
+        // we don't fall over for a single "-" character
+        if(!e.getMessage().equals("For input string: \"-\""))
+        {
+          e.printStackTrace();
+        }
+      }
 		}
 		return res;
 	}

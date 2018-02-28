@@ -127,7 +127,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
 				
 			}
 
-			protected void updatePixelColors(SpatialRasterPainter parent, int width, int height, int min_height, int max_height, CanvasType dest)
+			protected void updatePixelColors(SpatialRasterPainter parent, int width, int height, int min_height, int max_height, CanvasType dest, boolean useNE)
 			{
 				
 			}

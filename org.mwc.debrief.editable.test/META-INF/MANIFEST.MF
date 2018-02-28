@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Editable Tests
 Bundle-SymbolicName: org.mwc.debrief.editable.test
-Bundle-Version: 1.0.6
+Bundle-Version: 1.0.7
 Bundle-Activator: org.mwc.debrief.editable.test.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
@@ -11,7 +11,6 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.ide,
  org.eclipse.help.base,
  org.apache.lucene.core,
- org.apache.lucene.analysis,
  org.mwc.cmap.LiveDataMonitor;bundle-version="1.0.8",
  org.mwc.cmap.NarrativeViewer;bundle-version="1.0.23",
  org.mwc.cmap.NaturalEarth;bundle-version="1.0.3",

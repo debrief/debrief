@@ -142,6 +142,7 @@ import org.mwc.cmap.core.property_support.FontHelper;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
@@ -253,9 +254,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   public SWTCanvasAdapter(final PlainProjection proj)
   {
     // get the background color
-    final String backGroundColor =
-        CorePlugin.getDefault().getPreferenceStore().getString(
-            BACKGROUND_COLOR_PROPERTY);
+    final String backGroundColor = CorePlugin.getDefault().getPreferenceStore()
+        .getString(BACKGROUND_COLOR_PROPERTY);
     final String[] items = backGroundColor.split(",");
     final java.awt.Color defaultColor;
     if (items.length == 3)
@@ -386,8 +386,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     final Enumeration<PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
-      final CanvasType.PaintListener thisP =
-          (CanvasType.PaintListener) enumer.nextElement();
+      final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer
+          .nextElement();
       final WorldArea thisArea = thisP.getDataArea();
       if (thisArea != null)
       {
@@ -498,8 +498,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     {
       if (theFont != null)
       {
-        final org.eclipse.swt.graphics.Font myFont =
-            FontHelper.convertFontFromAWT(theFont);
+        final org.eclipse.swt.graphics.Font myFont = FontHelper
+            .convertFontFromAWT(theFont);
         if (!_theDest.isDisposed())
           _theDest.setFont(myFont);
       }
@@ -556,8 +556,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
   public final void setFont(final java.awt.Font theFont)
   {
-    final org.eclipse.swt.graphics.Font swtFont =
-        FontHelper.convertFontFromAWT(theFont);
+    final org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFontFromAWT(
+        theFont);
     if (!_theDest.isDisposed())
       _theDest.setFont(swtFont);
   }
@@ -627,9 +627,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
         // It is probably a bug in SWT.
         ImageData data = img.getImageData();
         final java.awt.Color trColor = DebriefColors.BLACK;
-        final int transPx =
-            data.palette.getPixel(new RGB(trColor.getRed(), trColor.getGreen(),
-                trColor.getBlue()));
+        final int transPx = data.palette.getPixel(new RGB(trColor.getRed(),
+            trColor.getGreen(), trColor.getBlue()));
         data.transparentPixel = transPx;
         final Image image = new Image(Display.getCurrent(), data);
         _theDest.drawImage(image, x, y, width, height, x, y, width, height);
@@ -725,8 +724,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     }
   }
 
-  private static int[] getPolygonArray(final int[] xPoints,
-      final int[] yPoints, final int nPoints)
+  private static int[] getPolygonArray(final int[] xPoints, final int[] yPoints,
+      final int nPoints)
   {
     final int[] poly = new int[nPoints * 2];
 
@@ -1047,7 +1046,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     _theDest = (GC) theVal;
 
     if (!_theDest.isDisposed())
+    {
       _sg2d = new SWTGraphics2D(_theDest);
+      _sg2d.setFont(Defaults.getFont());
+    }
 
     // initialise the background color
     if (!_theDest.isDisposed())
@@ -1104,9 +1106,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
       final Transform tr = new Transform(_theDest.getDevice());
       tr.translate(x, y2);
       tr.rotate(rotate);
-      final Font awFont =
-          new Font(fontData.getName(), fontData.getStyle(), fontData
-              .getHeight());
+      final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+          fontData.getHeight());
       final int strWidth = getStringWidth(awFont, theStr);
       tr.translate(-x - strWidth / 2, -y2);
 
@@ -1133,10 +1134,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
       int deltaX = 0, deltaY = 0;
 
-      int height =
-          _theDest.getFontMetrics().getDescent()
-              + _theDest.getFontMetrics().getAscent()
-              + _theDest.getFontMetrics().getLeading();
+      int height = _theDest.getFontMetrics().getDescent() + _theDest
+          .getFontMetrics().getAscent() + _theDest.getFontMetrics()
+              .getLeading();
 
       if (!above)
       {
@@ -1156,21 +1156,21 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
       if (rotate > 180)
       {
         rotate -= 180;
-        final Font awFont =
-            new Font(fontData.getName(), fontData.getStyle(), fontData
-                .getHeight());
+        final Font awFont = new Font(fontData.getName(), fontData.getStyle(),
+            fontData.getHeight());
         final int distance = getStringWidth(awFont, theStr);
 
         double direction = Math.toRadians(rotate - 90);
-        if (!above)
+        if (above)
         {
-          deltaX = -(int) 1.5 * deltaX - (int) (distance * Math.cos(direction));
-          deltaY = -(int) 1.5 * deltaY - (int) (distance * Math.sin(direction));
+          deltaX -= (int) (distance * Math.cos(direction));
+          deltaY -= (int) (distance * Math.sin(direction)) - 5;
         }
         else
         {
-          deltaX -= (int) (distance * Math.cos(direction));
-          deltaY -= (int) (distance * Math.sin(direction));
+          deltaX = -(int) 1.5 * deltaX - (int) (distance * Math.cos(direction));
+          deltaY = -(int) 1.5 * deltaY - (int) (distance * Math.sin(direction))
+              - 5;
         }
       }
       rotate -= 90;
@@ -1450,11 +1450,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
       try
       {
         final PropertyDescriptor[] res =
-            {
-                displayProp("BackgroundColor", "Background color",
-                    "the background color"),
-                displayProp("LineThickness", "Line thickness",
-                    "the line thickness"),};
+        {displayProp("BackgroundColor", "Background color",
+            "the background color"), displayProp("LineThickness",
+                "Line thickness", "the line thickness"),};
 
         return res;
 
@@ -1574,6 +1572,24 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
       return _theDest.getXORMode();
     }
     return false;
+  }
+
+  @Override
+  public void drawLine(int x1, int y1, int x2, int y2, int transparency)
+  {
+    if (_theDest != null && !_theDest.isDisposed())
+    {
+      // get current transparency
+      final int curT = _theDest.getAlpha();
+
+      _theDest.setAlpha(transparency);
+
+      // do paint
+      this.drawLine(x1, y1, x2, y2);
+
+      // restore transparency
+      _theDest.setAlpha(curT);
+    }
   }
 
 }

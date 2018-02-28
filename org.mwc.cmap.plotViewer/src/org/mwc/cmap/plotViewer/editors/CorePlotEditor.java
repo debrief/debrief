@@ -383,7 +383,11 @@ public abstract class CorePlotEditor extends EditorPart implements
             super.addThisLayer(wrappedLayer);
         }
         else
+        {
           super.addThisLayer(theLayer);
+        }
+        
+        layerAdded(theLayer);
       }
 
       @Override
@@ -537,6 +541,15 @@ public abstract class CorePlotEditor extends EditorPart implements
     };
   }
 
+  /** utility function for tracking new layers getting added
+   * 
+   * @param layer the new layer
+   */
+  protected void layerAdded(final Layer layer)
+  {
+    
+  }
+  
   /**
    * get the first NNN valid items from the selection
    * 
@@ -1101,7 +1114,7 @@ public abstract class CorePlotEditor extends EditorPart implements
   }
 
   @SuppressWarnings(
-  {"rawtypes"})
+  {"rawtypes", "unchecked"})
   public Object getAdapter(final Class adapter)
   {
     final Object res;
@@ -1339,7 +1352,6 @@ public abstract class CorePlotEditor extends EditorPart implements
         Display.getDefault().asyncExec(new Runnable()
         {
 
-          @SuppressWarnings("synthetic-access")
           public void run()
           {
             final boolean isPending = _propsNeedsRefresh.getAndSet(false);

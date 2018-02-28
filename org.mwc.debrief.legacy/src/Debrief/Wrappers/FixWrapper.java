@@ -264,6 +264,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -415,9 +416,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
                       "the label location", LocationPropertyEditor.class,
                       FORMAT)};
         }
-        
+
         // do we have a comment?
-        FixWrapper fix = (FixWrapper) this.getData();
+        final FixWrapper fix = (FixWrapper) this.getData();
         if (fix.getComment() != null)
         {
           // ok
@@ -775,12 +776,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   transient private Editable.EditorType _myEditor = null;
 
   /**
-   * the plain font we use as a basis
-   * 
-   */
-  static private final Font _plainFont = new Font("Sans Serif", Font.PLAIN, 9);
-
-  /**
    * the current format we're using
    * 
    */
@@ -1003,7 +998,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // declare a duff track
     _trackWrapper = null;
     // start us off with a nice font
-    setFont(_plainFont);
+    setFont(Defaults.getFont());
     // whether to show symbol
     _showSymbol = false;
 
@@ -1154,6 +1149,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public final double getDepth()
   {
     return _theFix.getLocation().getDepth();
+  }
+
+  public boolean getDisplayComment()
+  {
+    return _displayComment;
   }
 
   @Override
@@ -1347,7 +1347,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       // are we overriding the label with the comment marker
       if (_displayComment && getComment() != null)
       {
-        String oldLbl = _theLabel.getString();
+        final String oldLbl = _theLabel.getString();
 
         _theLabel.setString(getComment());
 
@@ -1360,16 +1360,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
         _theLabel.paint(dest);
       }
     }
-  }
-
-  public boolean getDisplayComment()
-  {
-    return _displayComment;
-  }
-
-  public void setDisplayComment(boolean displayComment)
-  {
-    _displayComment = displayComment;
   }
 
   /**
@@ -1546,6 +1536,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _theFix.getLocation().setDepth(val);
   }
 
+  public void setDisplayComment(final boolean displayComment)
+  {
+    _displayComment = displayComment;
+  }
+
   @Override
   public void setDTG(final HiResDate date)
   {
@@ -1626,7 +1621,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // check it's a legitimate format
     if (!MyDateFormatPropertyEditor.NULL_VALUE.equals(format))
     {
-      boolean includesSpeed =
+      final boolean includesSpeed =
           MyDateFormatPropertyEditor.DTG_SPEED.equals(format);
 
       final String theFormat;

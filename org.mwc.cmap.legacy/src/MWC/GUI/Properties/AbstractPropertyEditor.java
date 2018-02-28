@@ -108,7 +108,7 @@ abstract public class AbstractPropertyEditor extends PropertyEditorSupport
       final String val = (String) p1;
       setAsText(val);
     }
-    if(p1 instanceof Integer)
+    else if(p1 instanceof Integer)
     {
       _currentlySelectedValue = ((Integer)p1).intValue();
     }

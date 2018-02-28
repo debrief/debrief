@@ -12,7 +12,7 @@
 
 	<groupId>org.mwc.debrief</groupId>
 	<artifactId>org.eclipse.nebula.cwt</artifactId>
-	<version>0.9.0</version>
+	<version>0.9.1</version>
 	<packaging>eclipse-plugin</packaging>
 
 </project>

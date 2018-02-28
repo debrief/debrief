@@ -172,7 +172,7 @@ public class TimeFrequencyPropertyEditor extends PropertyEditorSupport
     {
       _myFreq = new HiResDate((HiResDate) p1);
     }
-    if (p1 instanceof String)
+    else if (p1 instanceof String)
     {
       final String val = (String) p1;
       setAsText(val);

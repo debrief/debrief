@@ -1340,6 +1340,17 @@ public class ImportReplay extends PlainImporterBase
       // show the message dialog
       super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+    finally
+    {
+      try
+      {
+        br.close();
+      }
+      catch (IOException e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+      }
+    }
   }
 
   private void proccessShapeWrapper(final PlainLineImporter thisOne,
@@ -1705,12 +1716,12 @@ public class ImportReplay extends PlainImporterBase
       trkWrapper.add(initialLayer);
 
       // if this was relative, make it plot as italic
-      if (initialLayer.getPlotRelative())
-      {
-        // ok, retrieve the original font, and make it italic
-        trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(
-            Font.ITALIC));
-      }
+//      if (initialLayer.getPlotRelative())
+//      {
+//        // ok, retrieve the original font, and make it italic
+//        trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(
+//            Font.ITALIC));
+//      }
 
       // get the colour for this track
       trkWrapper.setColor(thisColor);

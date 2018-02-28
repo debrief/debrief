@@ -74,154 +74,158 @@
 // Initial revision
 //
 
-
 package MWC.GUI.Properties;
 
 import java.beans.PropertyEditorSupport;
 
-/** property editor which provides a set of date formats to be used in date presentation.
+/**
+ * property editor which provides a set of date formats to be used in date presentation.
+ * 
  * @see java.text.SimpleDateFormat
  */
 
 public class DateFormatPropertyEditor extends PropertyEditorSupport
 {
 
-  public static final int INVALID_INDEX = 4;
-
-
-
-	//////////////////////////////////////////////////
-  // member objects
-  //////////////////////////////////////////////////
-  static private String _stringTags[];
-  
-
-
-  /** the currently selected format
-   *
-   */
-  protected int _myFormat = 4;
-
-  //////////////////////////////////////////////////
-  //
-  //////////////////////////////////////////////////
-
-  public String[] getTags()
-  {
-  	return getTagList();
-  }
-  
-  /** provide easy access to the 'first cut of the day' format
-   * 
-   */
-	public static final String DATE_FORMAT = "ddHHmm";
-
-	/** provide easy access to the 'normal' time lable format
-	 * 
-	 */
-	public static final String TIME_FORMAT = "HHmm";
-
-
-  
-  /** retrieve/initialise our list of date formats
-   * 
-   * @return
-   */
-  public static String[] getTagList()
-  {
-  	if(_stringTags == null)
-  		_stringTags = new String[]{
-          "mm:ss.SSS",
-          "HHmm.ss",
-          TIME_FORMAT,
-          DATE_FORMAT,
-          "ddHHmm:ss",
-          "yy/MM/dd HH:mm"
-  		};
-    return _stringTags;
-  }
-
-  public Object getValue()
-  {
-    return getTags()[_myFormat];
-  }
-
-
-
-  public void setValue(final Object p1)
-  {
-    if(p1 instanceof String)
-    {
-      final String val = (String) p1;
-      setAsText(val);
-    }
-  }
-
-  public void setAsText(final String val)
-  {
-    _myFormat = getIndexOf(val);
-  }
-
-  public static int getIndexOf(final String val)
-  {
-  	int res = INVALID_INDEX;
-  	
-  	// cycle through the tags until we get a matching one
-  	for (int i = 0; i < getTagList().length; i++)
-		{
-			final String thisTag = getTagList()[i];
-			if(thisTag.equals(val))
-			{
-				res = i;
-				break;
-			}
-			
-		}
-  	return res;
-  }
-  
-  public String getAsText()
-  {
-    return getTags()[_myFormat];
-  }
-
-  @SuppressWarnings("rawtypes")
-	abstract static public class SwingDateFormatEditor extends javax.swing.JComboBox
+  abstract static public class SwingDateFormatEditor extends
+      javax.swing.JComboBox
   {
 
     /**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-
-		@SuppressWarnings({ "unchecked" })
-		public SwingDateFormatEditor()
+    public SwingDateFormatEditor()
     {
       // get our property editor data
       final DateFormatPropertyEditor pe = new DateFormatPropertyEditor();
 
       // create and collate the data model for the combo box
-      final javax.swing.DefaultComboBoxModel dcm = new javax.swing.DefaultComboBoxModel(pe.getTags());
+      final javax.swing.DefaultComboBoxModel dcm =
+          new javax.swing.DefaultComboBoxModel(pe.getTags());
 
       // put the model into the combo box
       super.setModel(dcm);
 
       // assign the listener for the combobox
-      super.addActionListener( new java.awt.event.ActionListener()
+      super.addActionListener(new java.awt.event.ActionListener()
       {
+        @Override
         public void actionPerformed(final java.awt.event.ActionEvent e)
         {
-          final String current = (String)getSelectedItem();
-          if(current != null)
+          final String current = (String) getSelectedItem();
+          if (current != null)
+          {
             newFormat(current);
+          }
         }
       });
     }
 
-
     abstract public void newFormat(String format);
 
   }
-}
 
+  public static final int INVALID_INDEX = 4;
+
+  // ////////////////////////////////////////////////
+  // member objects
+  // ////////////////////////////////////////////////
+  static private String _stringTags[];
+
+  // ////////////////////////////////////////////////
+  //
+  // ////////////////////////////////////////////////
+
+  public static int getIndexOf(final String val)
+  {
+    int res = INVALID_INDEX;
+
+    // cycle through the tags until we get a matching one
+    for (int i = 0; i < getTagList().length; i++)
+    {
+      final String thisTag = getTagList()[i];
+      if (thisTag.equals(val))
+      {
+        res = i;
+        break;
+      }
+
+    }
+    return res;
+  }
+
+  /**
+   * the currently selected format
+   * 
+   */
+  protected int _myFormat = 4;
+
+  /**
+   * provide easy access to the 'first cut of the day' format
+   * 
+   */
+  public static final String DATE_FORMAT = "ddHHmm";
+
+  /**
+   * provide easy access to the 'normal' time lable format
+   * 
+   */
+  public static final String TIME_FORMAT = "HHmm";
+
+  /**
+   * retrieve/initialise our list of date formats
+   * 
+   * @return
+   */
+  public static String[] getTagList()
+  {
+    if (_stringTags == null)
+    {
+      _stringTags =
+          new String[]
+          {"mm:ss.SSS", "HHmm.ss", TIME_FORMAT, DATE_FORMAT, "ddHHmm:ss",
+              "yy/MM/dd HH:mm"};
+    }
+    return _stringTags;
+  }
+
+  @Override
+  public String getAsText()
+  {
+    return getTags()[_myFormat];
+  }
+
+  @Override
+  public String[] getTags()
+  {
+    return getTagList();
+  }
+
+  @Override
+  public Object getValue()
+  {
+    return getTags()[_myFormat];
+  }
+
+  @Override
+  public void setAsText(final String val)
+  {
+    _myFormat = getIndexOf(val);
+  }
+
+  @Override
+  public void setValue(final Object p1)
+  {
+    if (p1 instanceof String)
+    {
+      final String val = (String) p1;
+      setAsText(val);
+    }
+    else if (p1 instanceof Integer)
+    {
+      _myFormat = (Integer) p1;
+    }
+  }
+}

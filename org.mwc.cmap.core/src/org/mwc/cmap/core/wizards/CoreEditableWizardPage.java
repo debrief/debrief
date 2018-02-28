@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.jface.action.Action;
@@ -47,6 +46,7 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 import MWC.GUI.Editable;
@@ -105,7 +105,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
     }
     catch (final IntrospectionException e)
     {
-      CorePlugin.logError(Status.ERROR, "Problem creating descriptor for:"
+      CorePlugin.logError(IStatus.ERROR, "Problem creating descriptor for:"
           + name, e);
     }
     return res;
@@ -130,10 +130,11 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
   private String _helpContext;
 
-  /** (optional) message shown beneath properties
+  /**
+   * (optional) message shown beneath properties
    * 
    */
-  private String trailingMessage;
+  private final String trailingMessage;
 
   /**
    * Constructor for SampleNewWizardPage.
@@ -148,18 +149,6 @@ abstract public class CoreEditableWizardPage extends WizardPage
     this(selection, pageName, title, description, null, helpContext);
   }
 
-  protected Preferences getPrefs()
-  {
-    final String index = getIndex();
-    final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
-    return prefs;
-  }
-
-  protected String getIndex()
-  {
-    return this.getClass() + "_" + this.getName();
-  }
-
   /**
    * Constructor for SampleNewWizardPage.
    * 
@@ -170,7 +159,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
       final String pageName, final String title, final String description,
       final String imageName, final String helpContext)
   {
-    this(selection, pageName, title, description, imageName, helpContext, true, null);
+    this(selection, pageName, title, description, imageName, helpContext, true,
+        null);
   }
 
   /**
@@ -181,7 +171,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
    */
   public CoreEditableWizardPage(final ISelection selection,
       final String pageName, final String title, final String description,
-      final String imageName, final String helpContext, final boolean optional, final String trailingMsg)
+      final String imageName, final String helpContext, final boolean optional,
+      final String trailingMsg)
   {
     super(pageName);
     _optional = optional;
@@ -206,25 +197,25 @@ abstract public class CoreEditableWizardPage extends WizardPage
     }
   }
 
-  @SuppressWarnings("deprecation")
-  @Override
-  public void performHelp()
+  protected void addComponents(final Composite container)
   {
+  }
 
-    if (_helpContext != null)
-    {
-      final Action help =
-          CorePlugin.createOpenHelpAction(_helpContext, null, PlatformUI
-              .getWorkbench().getActiveWorkbenchWindow().getActivePage()
-              .getViews()[0]);
-      help.run();
-    }
-    super.performHelp();
+  /**
+   * allocate a text modified listners
+   * 
+   * @param listener
+   * 
+   */
+  public void addModifiedListener(final ModifyListener listener)
+  {
+    _txtModifiedListener = listener;
   }
 
   /**
    * @see IDialogPage#createControl(Composite)
    */
+  @Override
   final public void createControl(final Composite parent)
   {
     final Composite container = new Composite(parent, SWT.NULL);
@@ -276,9 +267,8 @@ abstract public class CoreEditableWizardPage extends WizardPage
       Label label = new Label(container, SWT.NONE);
       label = new Label(container, SWT.NONE);
       label = new Label(container, SWT.NONE);
-      label.setFont(
-          JFaceResources.getFontRegistry().getBold(JFaceResources.DEFAULT_FONT)
-      );
+      label.setFont(JFaceResources.getFontRegistry().getBold(
+          JFaceResources.DEFAULT_FONT));
       label.setText(trailingMessage);
     }
 
@@ -294,21 +284,6 @@ abstract public class CoreEditableWizardPage extends WizardPage
     if (_myEditors.size() > 0)
       _myEditors.get(0).setFocus();
 
-  }
-
-  protected void addComponents(Composite container)
-  {
-  }
-
-  /**
-   * allocate a text modified listners
-   * 
-   * @param listener
-   * 
-   */
-  public void addModifiedListener(final ModifyListener listener)
-  {
-    _txtModifiedListener = listener;
   }
 
   /**
@@ -376,6 +351,25 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
   }
 
+  @Override
+  public void dispose()
+  {
+    // some/most of our implementing classes remember the last value used.
+    // So, ensure the prefs are written to disk
+    try
+    {
+      getPrefs().flush();
+    }
+    catch (final BackingStoreException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    // carry on with dispose
+    super.dispose();
+  }
+
   /**
    * Ensures that all fields are set.
    */
@@ -417,90 +411,22 @@ abstract public class CoreEditableWizardPage extends WizardPage
     return res;
   }
 
+  protected String getIndex()
+  {
+    return this.getClass() + "_" + this.getName();
+  }
+
+  protected Preferences getPrefs()
+  {
+    final String index = getIndex();
+    final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(index);
+    return prefs;
+  }
+
   /**
    * @return
    */
   abstract protected PropertyDescriptor[] getPropertyDescriptors();
-
-  /**
-   * Tests if the current workbench selection is a suitable container to use.
-   */
-
-  final protected void initialize()
-  {
-    if (selection != null && selection.isEmpty() == false
-        && selection instanceof IStructuredSelection)
-    {
-      final IStructuredSelection ssel = (IStructuredSelection) selection;
-      if (ssel.size() > 1)
-        return;
-
-      // IN HERE WE CAN USE WHATEVER IS CURRENTLY SELECTED FOR BACKGROUND INFO
-    }
-  }
-
-  /**
-   * @param container
-   *          the think to stick our controls into
-   * @param myItem
-   *          the object we're editing
-   * @param descriptors
-   *          the set of editable properties for this object
-   */
-  final protected void populateEditors(final Composite container,
-      final Editable myItem, final PropertyDescriptor[] descriptors)
-  {
-    // build up the list of editors
-    _myEditors = new Vector<Control>(0, 1);
-
-    Label label;
-    // right, walk through the properties
-    for (int i = 0; i < descriptors.length; i++)
-    {
-      final PropertyDescriptor thisD = descriptors[i];
-
-      // ok, determine the editor & helper classes for this property
-      final DebriefProperty thisProp = new DebriefProperty(thisD, myItem, null);
-
-      // ok, did we find a set of tags or a text-item?
-      if (thisProp != null)
-      {
-        // cool, insert the items
-        label = new Label(container, SWT.NONE);
-        label.setText(thisProp.getDisplayName() + ":");
-
-        // and now for the editor bit.
-        final Control newEditor = thisProp.createEditor(container);
-
-        if (newEditor != null)
-        {
-          // set the initial value
-          initialiseEditor(myItem, thisD, thisProp.getDisplayName(), newEditor);
-
-          // ok, remember the editor, so we can handle enable/disable later on
-          _myEditors.add(newEditor);
-
-          // listen out for changes on this control,
-          newEditor.addListener(SWT.Selection, new Listener()
-          {
-            public void handleEvent(final Event event)
-            {
-              dialogChanged();
-            }
-          });
-        }
-        else
-        {
-          // insert duff label as place-holder
-          label = new Label(container, SWT.BORDER);
-          label.setText("Suitable editor not found");
-        }
-
-        label = new Label(container, SWT.NONE);
-        label.setText(thisProp.getDescription());
-      }
-    }
-  }
 
   private void initialiseEditor(final Editable myItem,
       final PropertyDescriptor thisD, final String propertyName,
@@ -556,12 +482,109 @@ abstract public class CoreEditableWizardPage extends WizardPage
     }
     catch (final Exception e)
     {
-      CorePlugin.logError(Status.ERROR,
+      CorePlugin.logError(IStatus.ERROR,
           "Whilst reading existing value of object:" + myItem, e);
     }
   }
 
-  public final void setPresent(boolean val)
+  /**
+   * Tests if the current workbench selection is a suitable container to use.
+   */
+
+  final protected void initialize()
+  {
+    if (selection != null && selection.isEmpty() == false
+        && selection instanceof IStructuredSelection)
+    {
+      final IStructuredSelection ssel = (IStructuredSelection) selection;
+      if (ssel.size() > 1)
+        return;
+
+      // IN HERE WE CAN USE WHATEVER IS CURRENTLY SELECTED FOR BACKGROUND INFO
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void performHelp()
+  {
+
+    if (_helpContext != null)
+    {
+      final Action help =
+          CorePlugin.createOpenHelpAction(_helpContext, null, PlatformUI
+              .getWorkbench().getActiveWorkbenchWindow().getActivePage()
+              .getViews()[0]);
+      help.run();
+    }
+    super.performHelp();
+  }
+
+  /**
+   * @param container
+   *          the think to stick our controls into
+   * @param myItem
+   *          the object we're editing
+   * @param descriptors
+   *          the set of editable properties for this object
+   */
+  final protected void populateEditors(final Composite container,
+      final Editable myItem, final PropertyDescriptor[] descriptors)
+  {
+    // build up the list of editors
+    _myEditors = new Vector<Control>(0, 1);
+
+    Label label;
+    // right, walk through the properties
+    for (int i = 0; i < descriptors.length; i++)
+    {
+      final PropertyDescriptor thisD = descriptors[i];
+
+      // ok, determine the editor & helper classes for this property
+      final DebriefProperty thisProp = new DebriefProperty(thisD, myItem, null);
+
+      // ok, did we find a set of tags or a text-item?
+      if (thisProp != null)
+      {
+        // cool, insert the items
+        label = new Label(container, SWT.NONE);
+        label.setText(thisProp.getDisplayName() + ":");
+
+        // and now for the editor bit.
+        final Control newEditor = thisProp.createEditor(container);
+
+        if (newEditor != null)
+        {
+          // set the initial value
+          initialiseEditor(myItem, thisD, thisProp.getDisplayName(), newEditor);
+
+          // ok, remember the editor, so we can handle enable/disable later on
+          _myEditors.add(newEditor);
+
+          // listen out for changes on this control,
+          newEditor.addListener(SWT.Selection, new Listener()
+          {
+            @Override
+            public void handleEvent(final Event event)
+            {
+              dialogChanged();
+            }
+          });
+        }
+        else
+        {
+          // insert duff label as place-holder
+          label = new Label(container, SWT.BORDER);
+          label.setText("Suitable editor not found");
+        }
+
+        label = new Label(container, SWT.NONE);
+        label.setText(thisProp.getDescription());
+      }
+    }
+  }
+
+  public final void setPresent(final boolean val)
   {
     _enabledBtn.setSelection(val);
     enabledChanged();

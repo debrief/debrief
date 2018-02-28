@@ -57,6 +57,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Test;
 import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
@@ -2550,29 +2551,29 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
           final Enumeration<Editable> pIter;
           if (_lastPosIterator != null)
           {
-            final FixWrapper lastPos =
+            final FixWrapper thisPos =
                 (FixWrapper) _lastPosIterator.currentElement();
             final FixWrapper prevPos =
                 (FixWrapper) _lastPosIterator.previousElement();
 
-            if (lastPos.getDTG().equals(srchDTG))
+            if (thisPos.getDTG().equals(srchDTG))
             {
               // ok, we know this answer, use it
-              res = lastPos;
+              res = thisPos;
               pIter = null;
             }
-            else if (lastPos.getDTG().lessThan(srchDTG))
+            else if (thisPos.getDTG().lessThan(srchDTG))
             {
               // the current iterator is still valid, stick with it
               pIter = _lastPosIterator;
-              previous = lastPos;
+              previous = thisPos;
             }
-            else if (prevPos != null && lastPos.getDTG().greaterThan(srchDTG)
+            else if (prevPos != null && thisPos.getDTG().greaterThan(srchDTG)
                 && prevPos.getDTG().lessThan(srchDTG))
             {
               // we're currently either side of the required value
               // we don't need to restart the iterator
-              res = lastPos;
+              res = thisPos;
               previous = prevPos;
               pIter = _lastPosIterator;
             }
@@ -3770,7 +3771,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         {
           final WorldLocation firstLoc = seg.first().getBounds().getCentre();
           final WorldLocation lastLoc = seg.last().getBounds().getCentre();
-          final Font f = new Font("Sans Serif", Font.PLAIN, 11);
+          final Font f = Defaults.getFont();
           final Color c = _theLabel.getColor();
 
           // tell the segment it's being stretched
@@ -4951,7 +4952,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements
         else if (toBeDeleted.equals(infill.getAfterSegment()))
         {
           // connect to new before
-          infill.configure(infill.getBeforeSegment(), newAfter);
+          infill.configure(infill.getBeforeSegment(), newBefore);
         }
       }
     }

@@ -16,7 +16,7 @@ package org.mwc.cmap.plotViewer.editors.chart;
 
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.gridharness.LocationFormatPreferencePage;
+import org.mwc.cmap.gridharness.DebriefFormattingOptionsPreferencesPage;
 
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -57,7 +57,7 @@ public final class CursorTracker extends CoreTracker
 	{
 
 		// declare the item
-		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, LocationFormatPreferencePage.PREFS_PAGE_ID);
+		super("CursorTracker", POSITION_TEMPLATE, POSITION_TOOLTIP, DebriefFormattingOptionsPreferencesPage.PREFS_PAGE_ID);
 
 		// sort out a chart listener
 		_myMoveListener = new PlainChart.ChartCursorMovedListener()

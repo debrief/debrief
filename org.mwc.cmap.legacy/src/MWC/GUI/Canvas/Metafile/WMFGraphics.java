@@ -111,6 +111,7 @@ import java.awt.image.PixelGrabber;
 import java.util.Iterator;
 import java.util.Vector;
 
+import MWC.GUI.Defaults;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.Utilities.Errors.Trace;
@@ -142,7 +143,7 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 	 * have our own nice, safe font to save recreating it each time
 	 * 
 	 */
-	private static Font _cachedFont = new Font("Helvetica", 0, 12);
+	private static Font _cachedFont = Defaults.getFont();
 
 	AffineTransform trans = new AffineTransform();
 	

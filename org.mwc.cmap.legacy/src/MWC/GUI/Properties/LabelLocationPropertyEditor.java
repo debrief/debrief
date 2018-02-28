@@ -125,7 +125,7 @@ public class LabelLocationPropertyEditor extends PropertyEditorSupport
     {
       _myLocation = (Integer) p1;
     }
-    if (p1 instanceof String)
+    else if (p1 instanceof String)
     {
       final String val = (String) p1;
       setAsText(val);

@@ -250,6 +250,7 @@ import java.util.Collection;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
@@ -545,7 +546,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		_theShape.setName(getName());
 
 		// set the default font
-		setFont(new Font("Sans Serif", Font.PLAIN, 9));
+		setFont(Defaults.getFont());
 
 		// and the color.
 		_theLabel.setColor(theColor);

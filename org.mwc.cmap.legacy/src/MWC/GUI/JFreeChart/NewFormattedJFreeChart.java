@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.JFreeChart;
 
@@ -22,11 +22,10 @@ import java.awt.Font;
 import java.awt.Stroke;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Calendar;
+import java.text.DateFormat;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.block.LineBorder;
 import org.jfree.chart.plot.Plot;
@@ -37,7 +36,11 @@ import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
 
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.StepperListener;
+import MWC.GUI.ToolParent;
+import MWC.GUI.JFreeChart.DateAxisEditor.DatedRNFormatter;
+import MWC.GUI.JFreeChart.DateAxisEditor.RNFormatter;
 import MWC.GUI.Properties.GraphicSizePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
@@ -52,16 +55,53 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     MWC.GUI.Editable
 {
 
-  /**
-   * ******************************************************************* class containing editable
-   * details of this plot *******************************************************************
-   */
+  public static class ChartDateFormatPropertyEditor extends
+      MWC.GUI.Properties.DateFormatPropertyEditor
+  {
+    static public final String AUTO_VALUE = "Auto";
+
+    static private final String[] stringTags =
+    {AUTO_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "HHmm // ddHHmm", "ddHHmm",
+        "ddHHmm.ss", "yy/MM/dd HH:mm",};
+
+    private int getMyIndexOf(final String val)
+    {
+      int res = INVALID_INDEX;
+
+      // cycle through the tags until we get a matching one
+      for (int i = 0; i < getTags().length; i++)
+      {
+        final String thisTag = getTags()[i];
+        if (thisTag.equals(val))
+        {
+          res = i;
+          break;
+        }
+
+      }
+      return res;
+    }
+
+    @Override
+    public final String[] getTags()
+    {
+      return stringTags;
+    }
+
+    @Override
+    public void setAsText(final String val)
+    {
+      _myFormat = getMyIndexOf(val);
+    }
+
+  }
+
   public final class PlotInfo extends Editable.EditorType
   {
 
     /**
      * constructor for this editor, takes the actual track as a parameter
-     * 
+     *
      * @param data
      *          track being edited
      */
@@ -76,51 +116,51 @@ public class NewFormattedJFreeChart extends JFreeChart implements
       try
       {
         final PropertyDescriptor[] res =
-            {
-                displayExpertLongProp("DataLineWidth", "Data line width",
-                    "the width to draw the data lines", EditorType.FORMAT,
-                    LineWidthPropertyEditor.class),
-                displayProp("TitleText", "Title text", "the title of this plot"),
-                displayProp("FixedDuration", "Fixed duration",
+        {displayExpertLongProp("DataLineWidth", "Data line width",
+            "the width to draw the data lines", EditorType.FORMAT,
+            LineWidthPropertyEditor.class), displayProp("TitleText",
+                "Title text", "the title of this plot"), displayProp(
+                    "FixedDuration", "Fixed duration",
                     "How long a time-span to display", EditorType.TEMPORAL),
-                displayProp("DisplayFixedDuration", "Display fixed duration",
-                    "Whether to show a limited time period (in Grow mode)",
-                    EditorType.TEMPORAL),
-                displayProp("X_AxisTitle", "X axis title",
-                    "the x axis title of this plot"),
-                displayProp("Y_AxisTitle", "Y axis title",
-                    "the y axis title of this plot"),
-                displayProp(
-                    "RelativeTimes",
-                    "Relative times",
-                    "whether to plot times relative to an anchor value (tZero)",
-                    EditorType.TEMPORAL),
-                displayLongProp("DateTickUnits", "Date tick units",
-                    "the minutes separation to the axis", DateAxisEditor.class,
-                    EditorType.TEMPORAL),
-                displayProp("ShowSymbols", "Show symbols",
-                    "whether to show symbols at the data points",
-                    EditorType.VISIBILITY),
-                displayExpertLongProp("SymbolSize", "Symbol size",
-                    "whether to show S/M/L symbols", EditorType.FORMAT,
-                    GraphicSizePropertyEditor.class),
-                displayProp("TitleFont", "Title font",
-                    "font to use for the plot title", EditorType.FORMAT),
-                displayProp("AxisFont", "Axis font",
-                    "font to use for the plot axis titles", EditorType.FORMAT),
-                displayProp("TickFont", "Tick font",
-                    "font to use for the plot axis tick mark labels",
-                    EditorType.FORMAT),
-                displayProp("LegendFont", "Legend font",
+            displayProp("DisplayFixedDuration", "Display fixed duration",
+                "Whether to show a limited time period (in Grow mode)",
+                EditorType.TEMPORAL), displayProp("X_AxisTitle", "X axis title",
+                    "the x axis title of this plot"), displayProp("Y_AxisTitle",
+                        "Y axis title", "the y axis title of this plot"),
+            displayProp("RelativeTimes", "Relative times",
+                "whether to plot times relative to an anchor value (tZero)",
+                EditorType.TEMPORAL),
+
+            displayProp("ShowSymbols", "Show symbols",
+                "whether to show symbols at the data points",
+                EditorType.VISIBILITY), displayExpertLongProp("SymbolSize",
+                    "Symbol size", "whether to show S/M/L symbols",
+                    EditorType.FORMAT, GraphicSizePropertyEditor.class),
+            displayProp("TitleFont", "Title font",
+                "font to use for the plot title", EditorType.FORMAT),
+            displayProp("AxisFont", "Axis font",
+                "font to use for the plot axis titles", EditorType.FORMAT),
+            displayProp("TickFont", "Tick font",
+                "font to use for the plot axis tick mark labels",
+                EditorType.FORMAT), displayProp("LegendFont", "Legend font",
                     "font to use for the legend", EditorType.FORMAT),
-                displayProp("ShowLegend", "Show legend",
-                    "whether to show legend", EditorType.VISIBILITY),};
+            displayProp("ShowLegend", "Show legend", "whether to show legend",
+                EditorType.VISIBILITY), displayLongProp("LabelFormat",
+                    "Label format",
+                    "the time format of the label, or N/A to leave as-is",
+                    ChartDateFormatPropertyEditor.class, FORMAT)};
         return res;
       }
       catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
+
+      // NOTE: we deprecated the tick units, since auto-tick units
+      // works well
+      // displayLongProp("DateTickUnits", "Date tick units",
+      // "the minutes separation to the axis", DateAxisEditor.class,
+      // EditorType.TEMPORAL),
     }
 
   }
@@ -149,7 +189,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * create a time offset provider
-     * 
+     *
      * @param stepper
      */
     public SwitchableTimeOffsetProvider(
@@ -160,7 +200,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * whether we are active
-     * 
+     *
      * @return
      */
     public boolean isApplied()
@@ -170,7 +210,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * offset the provided time by the desired amount
-     * 
+     *
      * @param val
      *          the actual time value
      * @return the processed time value
@@ -196,7 +236,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     /**
      * change whether we are active
-     * 
+     *
      * @param applied
      */
     public void setApplied(final boolean applied)
@@ -206,9 +246,18 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
+
+  public static final String CHART_LABEL_FORMAT = "ChartLabelFormat";
+
+  private static ToolParent _toolParent;
+
+  public static void initialise(final ToolParent toolParent)
+  {
+    _toolParent = toolParent;
+  }
 
   // ////////////////////////////////////////////////
   // member variables
@@ -218,21 +267,14 @@ public class NewFormattedJFreeChart extends JFreeChart implements
    */
   private int _dataLineWidth = 3;
 
+  // ////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////
+
   /**
    * our editable details
    */
   transient private Editable.EditorType _myEditor = null;
-
-  /**
-   * the interval & format of the date axis
-   */
-  private DateAxisEditor.MWCDateTickUnitWrapper _theDateTick =
-      new DateAxisEditor.MWCDateTickUnitWrapper(DateTickUnitType.MINUTE,
-          Calendar.MINUTE, "HH:mm");
-
-  // ////////////////////////////////////////////////
-  // constructor
-  // ////////////////////////////////////////////////
 
   /**
    * the time offset supplier
@@ -245,11 +287,13 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   // member methods
   // ////////////////////////////////////////////////
 
+  private String _labelFormat;
+
   /**
    * Constructs a chart.
    * <P>
    * Note that the ChartFactory class contains static methods that will return a ready-made chart.
-   * 
+   *
    * @param title
    *          the main chart title.
    * @param titleFont
@@ -271,13 +315,26 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
     // let's not show symbols by default, eh?
     this.setShowSymbols(false);
+
+    // initialise the time format - do we know the previous one?
+    final String prefFormat = _toolParent.getProperty(CHART_LABEL_FORMAT);
+    final String theFormat;
+    if (prefFormat != null && prefFormat.length() > 0)
+    {
+      theFormat = prefFormat;
+    }
+    else
+    {
+      theFormat = "HHmm.ss";
+    }
+    setLabelFormat(theFormat);
   }
 
   /**
    * Constructs a chart.
    * <P>
    * Note that the ChartFactory class contains static methods that will return a ready-made chart.
-   * 
+   *
    * @param title
    *          the main chart title.
    * @param titleFont
@@ -306,17 +363,12 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the width of the data line
-   * 
+   *
    * @return width in pixels
    */
   public int getDataLineWidth()
   {
     return _dataLineWidth;
-  }
-
-  public DateAxisEditor.MWCDateTickUnitWrapper getDateTickUnits()
-  {
-    return _theDateTick;
   }
 
   public boolean getDisplayFixedDuration()
@@ -339,7 +391,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the editable details for this track
-   * 
+   *
    * @return the details
    */
   @Override
@@ -353,11 +405,16 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     return _myEditor;
   }
 
+  public final String getLabelFormat()
+  {
+    return _labelFormat;
+  }
+
   public Font getLegendFont()
   {
     final LegendTitle legend = this.getLegend();
     final Font res;
-    if(legend != null)
+    if (legend != null)
     {
       res = legend.getItemFont();
     }
@@ -370,7 +427,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the name of this object
-   * 
+   *
    * @return the name of this editable object
    */
   @Override
@@ -381,7 +438,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * find out if we're in relative time plotting mode
-   * 
+   *
    * @return
    */
   public boolean getRelativeTimes()
@@ -399,7 +456,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * Returns the Stroke used to draw any shapes for a series.
-   * 
+   *
    * @param index
    *          the series (zero-based index).
    * @return the Stroke used to draw any shapes for a series.
@@ -428,7 +485,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * accessor to get hold of the time offset provider
-   * 
+   *
    * @return
    */
   public SwitchableTimeOffsetProvider getTimeOffsetProvider()
@@ -438,7 +495,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @param title
    *          the new title to use
    */
@@ -449,7 +506,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @return
    */
   public String getTitleText()
@@ -470,7 +527,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   /**
    * whether there is any edit information for this item this is a convenience function to save
    * creating the EditorType data first
-   * 
+   *
    * @return yes/no
    */
   @Override
@@ -486,8 +543,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   public boolean isShowSymbols()
   {
-    final DefaultXYItemRenderer sx =
-        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+        .getRenderer();
     return sx.getBaseShapesVisible();
   }
 
@@ -499,7 +556,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * set the width of the data line
-   * 
+   *
    * @param dataLineWidth
    *          width in pixels
    */
@@ -515,33 +572,6 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     {
       final Stroke stroke = theStrokes[i];
       thePlot.getRenderer().setSeriesStroke(i, stroke);
-    }
-  }
-
-  public void setDateTickUnits(
-      final DateAxisEditor.MWCDateTickUnitWrapper theDateTick)
-  {
-    final ValueAxis hd = this.getXYPlot().getDomainAxis();
-
-    // store the current tick
-    _theDateTick = theDateTick;
-
-    if (theDateTick.isAutoScale())
-    {
-      hd.setAutoTickUnitSelection(true);
-    }
-    else
-    {
-      // cancel auto calc
-      hd.setAutoTickUnitSelection(false);
-
-      // get the date axis
-      final ValueAxis va = this.getXYPlot().getDomainAxis();
-      final DateAxis da = (DateAxis) va;
-
-      // and set the tick
-      da.setTickUnit(_theDateTick.getUnit());
-
     }
   }
 
@@ -579,6 +609,42 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     }
   }
 
+  @FireReformatted
+  public final void setLabelFormat(final String format)
+  {
+    _labelFormat = format;
+
+    // get the date axis
+    final ValueAxis va = this.getXYPlot().getDomainAxis();
+    final DateAxis da = (DateAxis) va;
+
+    // special case, if it's AUTO format
+    final DateFormat target;
+    if (ChartDateFormatPropertyEditor.AUTO_VALUE.equals(format))
+    {
+      target = null;
+    }
+    else
+    {
+      // see if it's a special format
+      if (format.contains("//"))
+      {
+        final String[] items = format.split("//");
+        target = new DatedRNFormatter(items[0], items[1]);
+      }
+      else
+      {
+        target = new RNFormatter(format);
+      }
+    }
+
+    // and set the tick
+    da.setDateFormatOverride(target);
+
+    // also store it as a pref, for the next format
+    _toolParent.setProperty(CHART_LABEL_FORMAT, format);
+  }
+
   public void setLegendFont(final Font legendFont)
   {
     final LegendTitle legend = this.getLegend();
@@ -590,7 +656,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * update whether we're in relative time plotting mode
-   * 
+   *
    * @param val
    */
   public void setRelativeTimes(final boolean val)
@@ -620,6 +686,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   }
 
+  // ////////////////////////////////////////////////
+  // editable methods
+  // ////////////////////////////////////////////////
+
   public void setShowLegend(final boolean showLegend)
   {
     if (showLegend)
@@ -645,14 +715,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     this.fireChartChanged();
   }
 
-  // ////////////////////////////////////////////////
-  // editable methods
-  // ////////////////////////////////////////////////
-
   public void setShowSymbols(final boolean showSymbols)
   {
-    final DefaultXYItemRenderer sx =
-        (DefaultXYItemRenderer) getXYPlot().getRenderer();
+    final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
+        .getRenderer();
     sx.setBaseShapesVisible(showSymbols);
 
     this.fireChartChanged();
@@ -676,7 +742,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
 
   /**
    * the title of this plot
-   * 
+   *
    * @param title
    *          the new title to use
    */

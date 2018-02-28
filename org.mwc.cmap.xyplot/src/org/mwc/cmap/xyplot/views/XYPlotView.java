@@ -97,12 +97,18 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.FontHelper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.RTFWriter;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
 
+import com.pietjonas.wmfwriter2d.ClipboardCopy;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+
 import Debrief.GUI.Tote.StepControl;
 import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -110,7 +116,6 @@ import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.JFreeChart.AttractiveDataItem;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
-import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.JFreeChart.RelativeDateAxis;
@@ -120,10 +125,6 @@ import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
-
-import com.pietjonas.wmfwriter2d.ClipboardCopy;
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 
 public class XYPlotView extends ViewPart
 {
@@ -194,7 +195,7 @@ public class XYPlotView extends ViewPart
 
     final String Y_Title = "Y_Title";
 
-    final String DateUnits = "DateUnits";
+    final String LabelFormat = NewFormattedJFreeChart.CHART_LABEL_FORMAT;
 
     final String RelativeTimes = "RelativeTimes";
 
@@ -405,7 +406,6 @@ public class XYPlotView extends ViewPart
         new ChartComposite(parent, SWT.NONE, null, 400, 600, 300, 200, 1800,
             1800, true, false, true, true, true, true)
         {
-
           @Override
           public void mouseUp(MouseEvent event)
           {
@@ -416,8 +416,8 @@ public class XYPlotView extends ViewPart
               c.setNotify(true); // force redraw
             }
           }
-
         };
+    _plotControl.setFont(FontHelper.convertFontFromAWT(Defaults.getFont()));
 
     // and lastly do the remaining bits...
     makeActions();
@@ -549,9 +549,9 @@ public class XYPlotView extends ViewPart
       str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
       if (str != null)
         _thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
-      str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
+      str = _myMemento.getString(PLOT_ATTRIBUTES.LabelFormat);
       if (str != null)
-        _thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
+        _thePlotArea.setLabelFormat((String) xs.fromXML(str));
       str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
       if (str != null)
         _thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str))
@@ -591,8 +591,8 @@ public class XYPlotView extends ViewPart
 
     // the y axis is common to hi & lo res. Format it here
     final NumberAxis yAxis = new NumberAxis(units);
-    final Font tickFont = new Font("SansSerif", Font.PLAIN, 14);
-    Font labelFont = new Font("SansSerif", Font.PLAIN, 16);
+    final Font tickFont = Defaults.getFont();
+    Font labelFont = Defaults.getFont();
     yAxis.setLabelFont(labelFont);
     yAxis.setTickLabelFont(tickFont);
 
@@ -721,7 +721,7 @@ public class XYPlotView extends ViewPart
     // and the plot object to display the cross hair value
     _crosshairValueText = new XYTextAnnotation(" ", 0, 0);
     _crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
-    _crosshairValueText.setFont(new Font("SansSerif", Font.BOLD, 15));
+    _crosshairValueText.setFont(Defaults.getFont());
     _crosshairValueText.setPaint(Color.black);
     _crosshairValueText.setBackgroundPaint(Color.white);
     _thePlot.addAnnotation(_crosshairValueText);
@@ -1539,8 +1539,8 @@ public class XYPlotView extends ViewPart
     memento.putString(PLOT_ATTRIBUTES.X_Title, str);
     str = xs.toXML(_thePlotArea.getY_AxisTitle());
     memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
-    str = xs.toXML(_thePlotArea.getDateTickUnits());
-    memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
+    str = xs.toXML(_thePlotArea.getLabelFormat());
+    memento.putString(PLOT_ATTRIBUTES.LabelFormat, str);
     str = xs.toXML(new Boolean(_thePlotArea.getRelativeTimes()));
     memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
     str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));

@@ -51,7 +51,7 @@ public class NewSensorWizard extends Wizard
 		// ok, we need to let the user enter the solution wrapper name
 		colorPage = new SelectColorPage(null, Color.RED, PAGE_TITLE,
 				"Now format the sensor", "The default color for this new sensor",
-				imagePath, helpContext, null);
+				imagePath, helpContext, null, false);
 		addPage(colorPage);
 
 		final String message = "The sensor will now be added to the specified track, \n"
