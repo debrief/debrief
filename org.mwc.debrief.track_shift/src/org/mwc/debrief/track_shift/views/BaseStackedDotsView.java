@@ -357,6 +357,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Action _precisionOne;
   private Action _precisionTwo;
 
+  // the time of the point nearest to a screen click
   private Double _rangeValueToLookup = null;
 
   private Action _precisionThree;
@@ -1331,11 +1332,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
             if (subPlot != null && subPlot.equals(_linePlot))
             {
-              seriesName = TMA;
+              // see comment about about why we choose which data type to select
+              seriesName = SENSOR;
             }
             else if (subPlot != null && subPlot.equals(_dotPlot))
             {
-              seriesName = SENSOR;
+              // see comment about about why we choose which data type to select
+              seriesName = TMA;
             }
             else
             {
