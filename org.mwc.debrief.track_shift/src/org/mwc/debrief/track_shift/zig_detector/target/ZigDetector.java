@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
@@ -588,6 +591,7 @@ public class ZigDetector
 
     public void testMinBearingRate()
     {
+
       final double[] times = new double[]
       {0, 17.99999981, 33.99999978, 47.99999991, 62.00000003, 82.00000031,
           98.00000028, 109.9999999, 125.9999999, 140, 157.9999998, 172,
@@ -637,6 +641,11 @@ public class ZigDetector
           -109.3, -108.6, -107.6, -106.6, -105.6, -104.9, -104.3, -103.6,
           -102.3, -100.9, -99.9, -97.9, -96.6, -95.3, -92.9, -91.9};
 
+      // final double[] times = new double[]
+      // {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
+      // final Double[] bearings = new Double[]
+      // {1.0d, 1.1d, 1.4d, 1.3d, 5.4d, 6.6d, 7.3d, 7.4d, 7.5d, 7.6d, 7.6d};
+
       final List<Long> timeList = new ArrayList<Long>();
       for (final double d : times)
       {
@@ -645,9 +654,29 @@ public class ZigDetector
       final List<Double> bearingList = new ArrayList<Double>();
       bearingList.addAll(Arrays.asList(bearings));
 
-      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 1000L * 60
-          * 5);
+      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 600L);
       System.out.println("flattest:" + minRate.toString(timeList));
+      assertEquals("correct start", 195, minRate.start);
+      assertEquals("correct end", 209, minRate.end);
+    }
+
+    public void testSorting()
+    {
+      final SortedMap<Double, TPeriod> scores = new TreeMap<Double, TPeriod>();
+      scores.put(12d, new TPeriod(12, 2));
+      scores.put(13d, new TPeriod(13, 2));
+      scores.put(9d, new TPeriod(9, 2));
+      scores.put(6d, new TPeriod(6, 2));
+
+      Iterator<TPeriod> iter = scores.values().iterator();
+      assertEquals("lowest first", 6, (int) iter.next().start);
+      assertEquals("lowest first", 9, (int) iter.next().start);
+
+      for (TPeriod t : scores.values())
+      {
+        System.out.println(t.start);
+      }
+
     }
 
     public void testMultiSlice() throws ParseException
@@ -1168,69 +1197,85 @@ public class ZigDetector
    * @return
    */
   private static TPeriod findLowestRateIn(final List<Long> legTimes,
-      final List<Double> legBearings, final long periodMillis)
+      final List<Double> legBearings, final long periodSecs)
   {
-    int window;
-    final int len = legTimes.size();
-    if (len < 20)
-    {
-      window = 5;
-    }
-    else if (len < 40)
-    {
-      window = 7;
-    }
-    else
-    {
-      window = 12;
-    }
-
+    // check the period is long enough
+    final long dataPeriod = legTimes.get(legTimes.size() - 1) - legTimes.get(0);
     final TPeriod res;
-    if (legTimes.size() <= window)
+    if (dataPeriod < periodSecs)
     {
       res = null;
     }
     else
     {
-      int lowestStart = -1;
-      double lowestRate = Double.POSITIVE_INFINITY;
+      final SortedMap<Double, TPeriod> scores = new TreeMap<Double, TPeriod>();
 
-      for (int i = 0; i < legTimes.size() - window; i++)
+      // work through all the window start times
+      for (int i = 0; i < legTimes.size(); i++)
       {
-        // find the sum of the bearing changes in this time period
+        // ok, build up a list of values from this index to the window size
         double runningSum = 0;
-        Double lastB = null;
-        for (int j = i + 1; j <= i + window; j++)
+        int ctr = 0;
+        int lastProcessed = -1;
+        Double lastBDelta = null;
+        final long startTime = legTimes.get(i);
+        for (int j = i + 1; j < legTimes.size(); j++)
         {
-          double bDelta = Math.abs(legBearings.get(j) - legBearings.get(j - 1));
+          final long thisTime = legTimes.get(j);
 
-          // check for passing through 360
-          if (bDelta > 180)
+          if (thisTime <= startTime + periodSecs)
           {
-            bDelta = Math.abs(bDelta - 360d);
-          }
+            lastProcessed = j;
 
-          if (lastB != null)
+            double bDelta = Math.abs(legBearings.get(j) - legBearings.get(j
+                - 1));
+
+            // check for passing through 360
+            if (bDelta > 180)
+            {
+              bDelta = Math.abs(bDelta - 360d);
+            }
+
+            // do know the previous delta bearing?
+            if (lastBDelta != null)
+            {
+              // yes, we can compare them
+              final double bDelta2 = Math.abs(lastBDelta - bDelta);
+              final double tDelta = legTimes.get(j) - legTimes.get(j - 2);
+              final double bDelta2Rate = bDelta2 / tDelta;
+
+              runningSum += (bDelta2Rate);
+              ctr++;
+            }
+            lastBDelta = bDelta;
+          }
+          else
           {
-            final double bDelta2 = Math.abs(lastB - bDelta);
-            final double tDelta = legTimes.get(j) - legTimes.get(j - 1);
-            final double bDelta2Rate = bDelta2 / tDelta;
-
-            runningSum += (bDelta2Rate);
+            break;
           }
-          lastB = bDelta;
-
         }
 
-        // System.out.println(legTimes.get(i) + ", " + runningSum);
-
-        if (runningSum < lowestRate)
+        if (ctr > 1)
         {
-          lowestStart = i;
-          lowestRate = runningSum;
+          // ok, store the score
+          final TPeriod thisP = new TPeriod(i, lastProcessed);
+          final double meanRate = runningSum / ctr;
+          scores.put(meanRate, thisP);
+
+//          DecimalFormat df = new DecimalFormat("0.0000000");
+//          System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
+//              + thisP.toString(legTimes));
+//          
+//          double startT = legTimes.get(thisP.start);
+//          double endT = legTimes.get(thisP.end);
+//          
+//          double time = startT + (endT - startT)/2;
+//          System.out.println(time + ", " + meanRate * 100);
         }
       }
-      res = new TPeriod(lowestStart, lowestStart + window);
+
+      // get the lowest score, if we have any
+      res = scores.size() > 1 ? scores.values().iterator().next() : null;
     }
     return res;
   }
