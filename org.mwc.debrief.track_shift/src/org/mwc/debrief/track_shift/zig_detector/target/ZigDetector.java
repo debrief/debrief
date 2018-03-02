@@ -660,25 +660,6 @@ public class ZigDetector
       assertEquals("correct end", 209, minRate.end);
     }
 
-    public void testSorting()
-    {
-      final SortedMap<Double, TPeriod> scores = new TreeMap<Double, TPeriod>();
-      scores.put(12d, new TPeriod(12, 2));
-      scores.put(13d, new TPeriod(13, 2));
-      scores.put(9d, new TPeriod(9, 2));
-      scores.put(6d, new TPeriod(6, 2));
-
-      Iterator<TPeriod> iter = scores.values().iterator();
-      assertEquals("lowest first", 6, (int) iter.next().start);
-      assertEquals("lowest first", 9, (int) iter.next().start);
-
-      for (TPeriod t : scores.values())
-      {
-        System.out.println(t.start);
-      }
-
-    }
-
     public void testMultiSlice() throws ParseException
     {
 
@@ -1050,6 +1031,25 @@ public class ZigDetector
 
     }
 
+    public void testSorting()
+    {
+      final SortedMap<Double, TPeriod> scores = new TreeMap<Double, TPeriod>();
+      scores.put(12d, new TPeriod(12, 2));
+      scores.put(13d, new TPeriod(13, 2));
+      scores.put(9d, new TPeriod(9, 2));
+      scores.put(6d, new TPeriod(6, 2));
+
+      final Iterator<TPeriod> iter = scores.values().iterator();
+      assertEquals("lowest first", 6, iter.next().start);
+      assertEquals("lowest first", 9, iter.next().start);
+
+      for (final TPeriod t : scores.values())
+      {
+        System.out.println(t.start);
+      }
+
+    }
+
     public void testStartTimes()
     {
       assertEquals(2, 5 / 2);
@@ -1262,15 +1262,15 @@ public class ZigDetector
           final double meanRate = runningSum / ctr;
           scores.put(meanRate, thisP);
 
-//          DecimalFormat df = new DecimalFormat("0.0000000");
-//          System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
-//              + thisP.toString(legTimes));
-//          
-//          double startT = legTimes.get(thisP.start);
-//          double endT = legTimes.get(thisP.end);
-//          
-//          double time = startT + (endT - startT)/2;
-//          System.out.println(time + ", " + meanRate * 100);
+          // DecimalFormat df = new DecimalFormat("0.0000000");
+          // System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
+          // + thisP.toString(legTimes));
+          //
+          // double startT = legTimes.get(thisP.start);
+          // double endT = legTimes.get(thisP.end);
+          //
+          // double time = startT + (endT - startT)/2;
+          // System.out.println(time + ", " + meanRate * 100);
         }
       }
 
