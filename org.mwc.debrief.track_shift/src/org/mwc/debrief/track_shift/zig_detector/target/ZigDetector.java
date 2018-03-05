@@ -1317,6 +1317,13 @@ public class ZigDetector
         int lastProcessed = -1;
         Double lastBDelta = null;
         final long startTime = legTimes.get(i);
+        
+        boolean examine = startTime > 500 && startTime < 1200;
+        if(examine)
+          System.out.println("== " + startTime);
+        
+     //   check why we're not getting the flattest period in the second run of this method
+        
         for (int j = i + 1; j < legTimes.size(); j++)
         {
           final long thisTime = legTimes.get(j);
@@ -1341,8 +1348,13 @@ public class ZigDetector
               final double bDelta2 = Math.abs(lastBDelta - bDelta);
               final double tDelta = legTimes.get(j) - legTimes.get(j - 2);
               final double bDelta2Rate = bDelta2 / tDelta;
+              final double sqrRate = Math.pow(bDelta2Rate, 2);
+              
+              if(examine)
+                System.out.println(sqrRate);
 
-              runningSum += (bDelta2Rate);
+              
+              runningSum += sqrRate;
               ctr++;
             }
             lastBDelta = bDelta;
@@ -1358,6 +1370,7 @@ public class ZigDetector
           // ok, store the score
           final TPeriod thisP = new TPeriod(i, lastProcessed);
           final double meanRate = runningSum / ctr;
+          final double rootMeanRate = Math.sqrt(meanRate);
           double startT = legTimes.get(thisP.start);
           double endT = legTimes.get(thisP.end);
 
@@ -1367,14 +1380,14 @@ public class ZigDetector
 
           if (endT - startT >= relaxedFinish)
           {
-            scores.put(meanRate, thisP);
+            scores.put(rootMeanRate, thisP);
 
-            // DecimalFormat df = new DecimalFormat("0.0000000");
-            // System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
-            // + thisP.toString(legTimes));
-            //
-            // double time = startT + (endT - startT) / 2;
-            // System.out.println(time + ", " + meanRate * 100);
+             java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000000");
+             System.out.println(df.format(rootMeanRate) + " from:" + ctr + " items, "
+             + thisP.toString(legTimes));
+            
+         //    double time = startT + (endT - startT) / 2;
+         //    System.out.println(time + ", " + rootMeanRate * 100);
           }
         }
       }
