@@ -437,10 +437,11 @@ public class ZigDetector
   {
     /**
      * do something using this time period
+     * @param innerPeriod
+     * @param score 
      *
-     * @param period
      */
-    void doIt(final TPeriod innerPeriod);
+    void doIt(final TPeriod innerPeriod, double score);
   }
 
   protected static class ScoredTime implements Comparable<ScoredTime>
@@ -1359,7 +1360,11 @@ public class ZigDetector
           double startT = legTimes.get(thisP.start);
           double endT = legTimes.get(thisP.end);
 
-          if (endT - startT >= periodSecs)
+          // we may end up finishing slightly before the required period.
+          // let's stay relaxed about it
+          final double relaxedFinish = periodSecs * 0.8;
+          
+          if (endT - startT >= relaxedFinish)
           {
             scores.put(meanRate, thisP);
 
@@ -1516,7 +1521,7 @@ public class ZigDetector
         downHelper.stopGrowing();
       }
 
-      final boolean me = thisLeg.toString().equals("Period:127-149");
+      final boolean me = thisLeg.toString().equals("Period:194-210");
 
       ctr++;
 
@@ -1541,10 +1546,10 @@ public class ZigDetector
       final double[] coeff = optimiser.getParamValues();
 
       // if it's more than a few minutes, let's ditch it.
-      final long timeSecs = times.get(times.size() - 1) - times.get(0);
+      final long elapsedTimeSecs = times.get(times.size() - 1) - times.get(0);
 
       System.out.println(thisLeg.toString(thisTimes) + " Error score:"
-          + optimiser.getMinimum() + " secs:" + timeSecs + " error/item:"
+          + optimiser.getMinimum() + " secs:" + elapsedTimeSecs + " error/item:"
           + (optimiser.getMinimum() / times.size()));
       // System.out.println("Growing:" + thisLeg);
 
@@ -1564,6 +1569,7 @@ public class ZigDetector
            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
            .calcForecast(coeff, t));
         }
+        System.out.println("===");
       }
 
       if (optimiser.getMinimum() > validFit)
@@ -1589,12 +1595,12 @@ public class ZigDetector
           }
         }
 
-        if (timeSecs > 180)
+        if (elapsedTimeSecs > 180)
         {
           // ok, let's ditch this period, and move on.
           if (deleteIfCantFit)
           {
-            deleter.doIt(thisLeg);
+            deleter.doIt(thisLeg, optimiser.getMinimum());
             return null;
           }
           else
@@ -1617,8 +1623,17 @@ public class ZigDetector
       // }
       // System.out.println();
 
-      walkThisEnd(upHelper, times, bearings, coeff, thisLeg, downHelper);
-      walkThisEnd(downHelper, times, bearings, coeff, thisLeg, upHelper);
+      // to walk up, give it a few more values at the end
+      final int extraLeg = 2;
+      final int newStart = Math.max(thisLeg.start - extraLeg, 0);
+      final int newEnd = Math.min(thisLeg.end + extraLeg, thisTimes.size()-1);
+      List<Long> tmpTimes = thisTimes.subList(thisLeg.start, newEnd);
+      List<Double> tmpBearings = thisBearings.subList(thisLeg.start, newEnd);
+      walkThisEnd(upHelper, tmpTimes, tmpBearings, coeff, thisLeg, downHelper);
+      
+      tmpTimes = thisTimes.subList(newStart, thisLeg.end);
+      tmpBearings = thisBearings.subList(newStart, thisLeg.end);
+      walkThisEnd(downHelper, tmpTimes, tmpBearings, coeff, thisLeg, upHelper);
     }
 
     return thisLeg;
@@ -1875,7 +1890,9 @@ public class ZigDetector
         double measuredB = bearings.get(i);
         final double predictedB = FlanaganArctan.calcForecast(coeff, thisT);
 
-        if (measuredB < 0 && predictedB > 0)
+        final boolean largeError = Math.abs(measuredB - predictedB) > 100;
+        final boolean oppositeSides = measuredB < 0 && predictedB > 0;
+        if (oppositeSides && largeError)
         {
           measuredB += 360d;
         }
@@ -1884,15 +1901,17 @@ public class ZigDetector
 
         final boolean thisAbove = error > 0;
 
-        states.add(thisT + ", " + measuredB + ", " + predictedB + ", "
-            + (thisAbove));
+        String thisState = thisT + ", " + measuredB + ", " + predictedB + ", "
+            + (thisAbove) + ", ";
+       // System.out.println(thisState);
+        states.add(thisState);
 
         final double absError = Math.abs(error);
 
         if (walker.justStarted())
         {
           // ok, initialise the oppositve value
-          walker.setLastOpposite(i);
+          walker.setLastOpposite(helper.trimmed(i));
         }
         else if (thisAbove != walker.getLastAbove())
         {
@@ -1905,11 +1924,14 @@ public class ZigDetector
 
           // how far the error needs to be from the last one, to
           // represent a divergence
-          final double minDiff = 2d;
+          final double minDiff = 0.5d;
+
+          System.out.println("error at:" + thisT + " " + absError + ", " + lastScore + ", " + (absError < lastScore + minDiff));
 
           if (absError < lastScore + minDiff)
           {
             walker.setSameSideCount(0);
+            walker.setLastOpposite(helper.trimmed(i));
           }
           else
           {
@@ -1928,7 +1950,7 @@ public class ZigDetector
               // ok, have a look.
               for (final String s : states)
               {
-                System.out.println(s);
+           //     System.out.println(s);
               }
 
               // is the other end still walking? if it is, restart it.
@@ -2151,10 +2173,10 @@ public class ZigDetector
         final PeriodHandler deleter = new PeriodHandler()
         {
           @Override
-          public void doIt(final TPeriod innerPeriod)
+          public void doIt(final TPeriod innerPeriod, double score)
           {
             System.out.println("deleting:" + innerPeriod.toString(fullTimes) + " from "
-                + outerPeriod.toString(fullTimes));
+                + outerPeriod.toString(fullTimes) + " score:" + score);
             // get rid of this period of data, create legs either side.
             handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5,
                 false);
@@ -2194,7 +2216,7 @@ public class ZigDetector
         // have we finished growing?
         if (thisLeg != null)
         {
-          if (thisLeg.toString().equals("Period:30-35"))
+          if (thisLeg.toString().equals("aPeriod:30-35"))
           {
             System.out.println("bad");
           }
@@ -2202,7 +2224,7 @@ public class ZigDetector
           handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
         }
         
-//        return;
+      //  return;
       }
     }
   }
