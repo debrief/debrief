@@ -860,41 +860,12 @@ public class ZigDetector
 
       final List<Double> tBearings1 = Arrays.asList(bearings);
 
-      // System.out
-      // .println("last time:" + new Date(tList1.get(tList1.size() - 1)));
-
-      // get the last 40 elements
-      // final int start = tList1.size() - 50;
-      // final int end = tList1.size() - 1;
-      //
-      // List<Long> tList = tList1.subList(start, end);
-      // List<Double> tBearings = tBearings1.subList(start, end);
-
       final List<Double> tBearings = tBearings1;
-
-      // final TPeriod flattest = findLowestRateIn(tList, tBearings);
-      // assertNotNull("found data", flattest);
-      // assertEquals(0, flattest.start);
-      // assertEquals(6, flattest.end);
-
-      // System.out.println("from:" + new Date(times[0]) + " // to:"
-      // + new Date(times[times.length - 1]) + " // " + times.length + " entries");
 
       final ZigDetector detector = new ZigDetector();
       double zigRatio = 1000d;
       final double optimiseTolerance = 0.0000000004;
 
-      // ILog logger = getLogger();
-      // ILegStorer legStorer = getLegStorer();
-      // IZigStorer zigStorer = getZigStorer();
-      // detector.sliceThis(logger, "some name", "scenario", times[0],
-      // times[times.length - 1], legStorer, zigStorer, zigRatio,
-      // optimiseTolerance, tList, tBearings);
-
-      // reverse the arrays
-      // Collections.reverse(tList);
-      // Collections.reverse(tBearings);
-      //
       final long timeWindow = 240;
       zigRatio = 15d;
       final EventHappened happened = new EventHappened()
@@ -1392,12 +1363,12 @@ public class ZigDetector
           {
             scores.put(meanRate, thisP);
 
-//            DecimalFormat df = new DecimalFormat("0.0000000");
-//            System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
-//                + thisP.toString(legTimes));
-//
-//            double time = startT + (endT - startT) / 2;
-//            System.out.println(time + ", " + meanRate * 100);
+            // DecimalFormat df = new DecimalFormat("0.0000000");
+            // System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
+            // + thisP.toString(legTimes));
+            //
+            // double time = startT + (endT - startT) / 2;
+            // System.out.println(time + ", " + meanRate * 100);
           }
         }
       }
@@ -1551,7 +1522,7 @@ public class ZigDetector
         downHelper.stopGrowing();
       }
 
-      final boolean me = thisLeg.toString().equals("Period:57-97");
+      final boolean me = thisLeg.toString().equals("aPeriod:122-154");
 
       ctr++;
 
@@ -1595,9 +1566,8 @@ public class ZigDetector
             thisB += 360d;
           }
 
-          // System.out.println(t + ", " + thisBearings.get(j));
-          System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-              .calcForecast(coeff, t));
+          // System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+          // .calcForecast(coeff, t));
         }
       }
 
@@ -1619,9 +1589,8 @@ public class ZigDetector
               thisB += 360d;
             }
 
-            // System.out.println(t + ", " + thisBearings.get(j));
-            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-                .calcForecast(coeff, t));
+            // System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+            // .calcForecast(coeff, t));
           }
         }
 
@@ -1939,7 +1908,11 @@ public class ZigDetector
         {
           final double lastScore = walker.getLastError();
 
-          if (absError < lastScore)
+          // how far the error needs to be from the last one, to
+          // represent a divergence
+          final double minDiff = 2d;
+
+          if (absError < lastScore + minDiff)
           {
             walker.setSameSideCount(0);
           }
@@ -1975,7 +1948,6 @@ public class ZigDetector
         }
         walker.setLastAbove(thisAbove);
         walker.setLastError(absError);
-
       }
     }
   }
