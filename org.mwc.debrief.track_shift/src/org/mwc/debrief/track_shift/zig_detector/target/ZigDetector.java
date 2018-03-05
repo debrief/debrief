@@ -1484,12 +1484,6 @@ public class ZigDetector
     // take safe copy of leg
     final TPeriod originalLeg = new TPeriod(thisLeg.start, thisLeg.end);
 
-    // check that it's above minimum size
-    // if (thisLeg.end - thisLeg.start < 6)
-    // {
-    // return null;
-    // }
-
     final Helpers.WalkHelper downHelper = new Helpers.DownHelper(thisLeg);
     final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, thisTimes
         .size());
@@ -1522,7 +1516,7 @@ public class ZigDetector
         downHelper.stopGrowing();
       }
 
-      final boolean me = thisLeg.toString().equals("aPeriod:122-154");
+      final boolean me = thisLeg.toString().equals("Period:127-149");
 
       ctr++;
 
@@ -1556,6 +1550,7 @@ public class ZigDetector
 
       if (me)
       {
+        System.out.println("==="  + thisLeg.toString());
         for (int j = 0; j < times.size(); j++)
         {
           final long t = times.get(j);
@@ -1566,8 +1561,8 @@ public class ZigDetector
             thisB += 360d;
           }
 
-          // System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-          // .calcForecast(coeff, t));
+           System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+           .calcForecast(coeff, t));
         }
       }
 
@@ -1589,8 +1584,8 @@ public class ZigDetector
               thisB += 360d;
             }
 
-            // System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-            // .calcForecast(coeff, t));
+             System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+             .calcForecast(coeff, t));
           }
         }
 
@@ -2158,8 +2153,8 @@ public class ZigDetector
           @Override
           public void doIt(final TPeriod innerPeriod)
           {
-            System.out.println("deleting:" + innerPeriod + " from "
-                + outerPeriod);
+            System.out.println("deleting:" + innerPeriod.toString(fullTimes) + " from "
+                + outerPeriod.toString(fullTimes));
             // get rid of this period of data, create legs either side.
             handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5,
                 false);
@@ -2195,7 +2190,7 @@ public class ZigDetector
         // than they finish
         thisLeg = growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
             validFit, deleter, true);
-
+        
         // have we finished growing?
         if (thisLeg != null)
         {
@@ -2206,6 +2201,8 @@ public class ZigDetector
           showLeg("STORING:", thisTimes, thisLeg);
           handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
         }
+        
+//        return;
       }
     }
   }
