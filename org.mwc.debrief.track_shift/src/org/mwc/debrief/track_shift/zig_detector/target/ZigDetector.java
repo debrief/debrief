@@ -437,8 +437,9 @@ public class ZigDetector
   {
     /**
      * do something using this time period
+     * 
      * @param innerPeriod
-     * @param score 
+     * @param score
      *
      */
     void doIt(final TPeriod innerPeriod, double score);
@@ -1363,7 +1364,7 @@ public class ZigDetector
           // we may end up finishing slightly before the required period.
           // let's stay relaxed about it
           final double relaxedFinish = periodSecs * 0.8;
-          
+
           if (endT - startT >= relaxedFinish)
           {
             scores.put(meanRate, thisP);
@@ -1497,6 +1498,8 @@ public class ZigDetector
     downHelper.rememberOtherStart();
     upHelper.rememberOtherStart();
 
+    TPeriod lastLeg = null;
+
     while (upHelper.isGrowing() || downHelper.isGrowing())
     {
       if (upHelper.isGrowing() && upHelper.smallEnough())
@@ -1521,7 +1524,7 @@ public class ZigDetector
         downHelper.stopGrowing();
       }
 
-      final boolean me = thisLeg.toString().equals("Period:194-210");
+      final boolean me = thisLeg.toString().equals("aPeriod:194-210");
 
       ctr++;
 
@@ -1555,7 +1558,7 @@ public class ZigDetector
 
       if (me)
       {
-        System.out.println("==="  + thisLeg.toString());
+        System.out.println("===" + thisLeg.toString());
         for (int j = 0; j < times.size(); j++)
         {
           final long t = times.get(j);
@@ -1566,8 +1569,8 @@ public class ZigDetector
             thisB += 360d;
           }
 
-           System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-           .calcForecast(coeff, t));
+          System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+              .calcForecast(coeff, t));
         }
         System.out.println("===");
       }
@@ -1590,22 +1593,31 @@ public class ZigDetector
               thisB += 360d;
             }
 
-             System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-             .calcForecast(coeff, t));
+            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+                .calcForecast(coeff, t));
           }
         }
 
         if (elapsedTimeSecs > 180)
         {
-          // ok, let's ditch this period, and move on.
-          if (deleteIfCantFit)
+          if (lastLeg == null)
           {
-            deleter.doIt(thisLeg, optimiser.getMinimum());
-            return null;
+
+            // ok, let's ditch this period, and move on.
+            if (deleteIfCantFit)
+            {
+              deleter.doIt(thisLeg, optimiser.getMinimum());
+              return null;
+            }
+            else
+            {
+              return originalLeg;
+            }
           }
           else
           {
-            return originalLeg;
+            // ok, we've grown. Let's just use the previous dimensions
+            return lastLeg;
           }
         }
         else
@@ -1626,14 +1638,16 @@ public class ZigDetector
       // to walk up, give it a few more values at the end
       final int extraLeg = 2;
       final int newStart = Math.max(thisLeg.start - extraLeg, 0);
-      final int newEnd = Math.min(thisLeg.end + extraLeg, thisTimes.size()-1);
+      final int newEnd = Math.min(thisLeg.end + extraLeg, thisTimes.size() - 1);
       List<Long> tmpTimes = thisTimes.subList(thisLeg.start, newEnd);
       List<Double> tmpBearings = thisBearings.subList(thisLeg.start, newEnd);
       walkThisEnd(upHelper, tmpTimes, tmpBearings, coeff, thisLeg, downHelper);
-      
+
       tmpTimes = thisTimes.subList(newStart, thisLeg.end);
       tmpBearings = thisBearings.subList(newStart, thisLeg.end);
       walkThisEnd(downHelper, tmpTimes, tmpBearings, coeff, thisLeg, upHelper);
+
+      lastLeg = new TPeriod(thisLeg.start, thisLeg.end);
     }
 
     return thisLeg;
@@ -1903,7 +1917,7 @@ public class ZigDetector
 
         String thisState = thisT + ", " + measuredB + ", " + predictedB + ", "
             + (thisAbove) + ", ";
-       // System.out.println(thisState);
+        // System.out.println(thisState);
         states.add(thisState);
 
         final double absError = Math.abs(error);
@@ -1926,7 +1940,8 @@ public class ZigDetector
           // represent a divergence
           final double minDiff = 0.5d;
 
-          System.out.println("error at:" + thisT + " " + absError + ", " + lastScore + ", " + (absError < lastScore + minDiff));
+//          System.out.println("error at:" + thisT + " " + absError + ", "
+//              + lastScore + ", " + (absError < lastScore + minDiff));
 
           if (absError < lastScore + minDiff)
           {
@@ -1950,7 +1965,7 @@ public class ZigDetector
               // ok, have a look.
               for (final String s : states)
               {
-           //     System.out.println(s);
+                // System.out.println(s);
               }
 
               // is the other end still walking? if it is, restart it.
@@ -2175,8 +2190,9 @@ public class ZigDetector
           @Override
           public void doIt(final TPeriod innerPeriod, double score)
           {
-            System.out.println("deleting:" + innerPeriod.toString(fullTimes) + " from "
-                + outerPeriod.toString(fullTimes) + " score:" + score);
+            System.out.println("deleting:" + innerPeriod.toString(fullTimes)
+                + " from " + outerPeriod.toString(fullTimes) + " score:"
+                + score);
             // get rid of this period of data, create legs either side.
             handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5,
                 false);
@@ -2212,7 +2228,7 @@ public class ZigDetector
         // than they finish
         thisLeg = growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
             validFit, deleter, true);
-        
+
         // have we finished growing?
         if (thisLeg != null)
         {
@@ -2223,8 +2239,8 @@ public class ZigDetector
           showLeg("STORING:", thisTimes, thisLeg);
           handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
         }
-        
-      //  return;
+
+        // return;
       }
     }
   }
