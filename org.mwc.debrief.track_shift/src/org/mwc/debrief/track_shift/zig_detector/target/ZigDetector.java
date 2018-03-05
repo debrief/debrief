@@ -589,6 +589,40 @@ public class ZigDetector
 
     }
 
+    public void testContinuousSlicing()
+    {
+      final long sepSecs = 600;
+      final Long[] times = new Long[]
+      {0l, 50l, 100l, 150l, 300l, 500l, 800l, 1500l, 1700l, 2100l, 2800l, 3000l,
+          3200l, 3900l};
+      final Double[] bearings = new Double[]
+      {0d, 5d, 10d, 15d, 30d, 50d, 80d, 150d, 170d, 210d, 280d, 300d, 320d,
+          380d};
+      final List<Long> tList = new ArrayList<Long>();
+      tList.addAll(Arrays.asList(times));
+      final List<Double> bList = new ArrayList<Double>();
+      bList.addAll(Arrays.asList(bearings));
+
+      final List<List<Long>> slicedT = new ArrayList<List<Long>>();
+      final List<List<Double>> slicedB = new ArrayList<List<Double>>();
+      sliceIntoBlocks(tList, bList, slicedT, slicedB, sepSecs);
+
+      assertTrue("has times", slicedT.size() > 0);
+      assertTrue("has bearings", slicedB.size() > 0);
+      assertEquals("same len", slicedT.size(), slicedB.size());
+
+      assertEquals("correct length", 4, slicedT.size());
+      for (final List<Long> t : slicedT)
+      {
+        System.out.println("===");
+        for (final Long l : t)
+        {
+          System.out.print(l + " ");
+        }
+        System.out.println("");
+      }
+    }
+
     public void testMinBearingRate()
     {
 
@@ -770,7 +804,7 @@ public class ZigDetector
       // Collections.reverse(tList);
       // Collections.reverse(tBearings);
       //
-      final long timeWindow = 240000;
+      final long timeWindow = 240;
       zigRatio = 15d;
       final EventHappened happened = new EventHappened()
       {
@@ -1725,6 +1759,43 @@ public class ZigDetector
 
   }
 
+  private static void sliceIntoBlocks(final List<Long> legTimes,
+      final List<Double> legBearings, final List<List<Long>> slicedTimes,
+      final List<List<Double>> slicedBearings, final long sepSecs)
+  {
+
+    List<Long> thisTList = new ArrayList<Long>();
+    List<Double> thisBList = new ArrayList<Double>();
+
+    slicedTimes.add(thisTList);
+    slicedBearings.add(thisBList);
+
+    final int pCount = legTimes.size();
+    for (int i = 0; i < pCount; i++)
+    {
+      final long thisT = legTimes.get(i);
+      final double thisB = legTimes.get(i);
+
+      if (thisTList.size() > 0)
+      {
+        // ok, we've got a previous entry. get it
+        final long lastT = thisTList.get(thisTList.size() - 1);
+
+        // how's the gap?
+        if (thisT - lastT > sepSecs)
+        {
+          // ok. we're on a new leg
+          thisTList = new ArrayList<Long>();
+          thisBList = new ArrayList<Double>();
+          slicedTimes.add(thisTList);
+          slicedBearings.add(thisBList);
+        }
+      }
+      thisTList.add(thisT);
+      thisBList.add(thisB);
+    }
+  }
+
   private static void walkThisEnd(final Helpers.WalkHelper helper,
       final List<Long> times, final List<Double> bearings, final double[] coeff,
       final TPeriod thisLeg, final Helpers.WalkHelper otherHelper)
@@ -1968,78 +2039,104 @@ public class ZigDetector
     }
   }
 
+  /**
+   *
+   * @param optimiseTolerance
+   * @param legTimes
+   * @param legBearings
+   * @param listener
+   * @param zigThreshold
+   * @param timeWindowSecs
+   * @param legs
+   */
   private void runThrough2(final double optimiseTolerance,
-      final List<Long> legTimes, final List<Double> legBearings,
+      final List<Long> fullTimes, final List<Double> fullBearings,
       final EventHappened listener, final double zigThreshold,
-      final long timeWindow, final List<TPeriod> legs)
+      final long timeWindowSecs, final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
 
-    // sort out the beraings
-    final List<Double> legBearings1 = prepareBearings(legBearings);
+    // slice the data into contiguous blocks
+    final List<List<Long>> slicedTimes = new ArrayList<List<Long>>();
+    final List<List<Double>> slicedBearings = new ArrayList<List<Double>>();
+    final long sepSecs = 600;
+    sliceIntoBlocks(fullTimes, fullBearings, slicedTimes, slicedBearings,
+        sepSecs);
 
-    // give the times a zero offset
-    final List<Long> zeroTimes = prepareTimes(legTimes);
-
-    // initialise the list
-    sliceQueue.add(new TPeriod(0, zeroTimes.size() - 1));
-
-    while (!sliceQueue.isEmpty())
+    // ok, now loop through them
+    final int len = slicedTimes.size();
+    for (int thisSlice = 0; thisSlice < len; thisSlice++)
     {
-      final TPeriod outerPeriod = sliceQueue.get(0);
+      final List<Long> legTimes = slicedTimes.get(thisSlice);
+      final List<Double> legBearings = slicedBearings.get(thisSlice);
 
-      // create helper, to ditch data we can't use
-      final PeriodHandler deleter = new PeriodHandler()
+      // sort out the beraings
+      final List<Double> legBearings1 = prepareBearings(legBearings);
+
+      // give the times a zero offset
+      final List<Long> zeroTimes = prepareTimes(legTimes);
+
+      // initialise the list
+      sliceQueue.add(new TPeriod(0, zeroTimes.size() - 1));
+
+      while (!sliceQueue.isEmpty())
       {
-        @Override
-        public void doIt(final TPeriod innerPeriod)
+        final TPeriod outerPeriod = sliceQueue.get(0);
+
+        // create helper, to ditch data we can't use
+        final PeriodHandler deleter = new PeriodHandler()
         {
-          System.out.println("deleting:" + innerPeriod + " from "
-              + outerPeriod);
-          // get rid of this period of data, create legs either side.
-          handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5, false);
-        }
-      };
+          @Override
+          public void doIt(final TPeriod innerPeriod)
+          {
+            System.out.println("deleting:" + innerPeriod + " from "
+                + outerPeriod);
+            // get rid of this period of data, create legs either side.
+            handleNewSlices(sliceQueue, legs, outerPeriod, innerPeriod, 5,
+                false);
+          }
+        };
 
-      System.out.println("=======");
-      System.out.println("Analysing:" + outerPeriod.toString(zeroTimes));
+        System.out.println("=======");
+        System.out.println("Analysing:" + outerPeriod.toString(zeroTimes));
 
-      // slice the data
-      final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
-          outerPeriod.end);
-      final List<Double> thisBearings = legBearings1.subList(outerPeriod.start,
-          outerPeriod.end);
+        // slice the data
+        final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
+            outerPeriod.end);
+        final List<Double> thisBearings = legBearings1.subList(
+            outerPeriod.start, outerPeriod.end);
 
-      final long minPeriod = 1000 * 60 * 5;
-      // ok, find the period with the lowest bearing rate
-      TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
+        final long minPeriod = 60 * 5;
+        // ok, find the period with the lowest bearing rate
+        TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
 
-      // check we can find a flat section
-      if (thisLeg == null)
-      {
-        // ok, ditch this leg
-        sliceQueue.remove(outerPeriod);
-        continue;
-      }
-
-      showLeg("flattest:", thisTimes, thisLeg);
-
-      final double validFit = 4d;
-
-      // grow right first, since turns normally start more sharply
-      // than they finish
-      thisLeg = growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
-          validFit, deleter, true);
-
-      // have we finished growing?
-      if (thisLeg != null)
-      {
-        if (thisLeg.toString().equals("Period:30-35"))
+        // check we can find a flat section
+        if (thisLeg == null)
         {
-          System.out.println("bad");
+          // ok, ditch this leg
+          sliceQueue.remove(outerPeriod);
+          continue;
         }
-        showLeg("STORING:", thisTimes, thisLeg);
-        handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
+
+        showLeg("flattest:", thisTimes, thisLeg);
+
+        final double validFit = 4d;
+
+        // grow right first, since turns normally start more sharply
+        // than they finish
+        thisLeg = growLeg(optimiseTolerance, thisTimes, thisBearings, thisLeg,
+            validFit, deleter, true);
+
+        // have we finished growing?
+        if (thisLeg != null)
+        {
+          if (thisLeg.toString().equals("Period:30-35"))
+          {
+            System.out.println("bad");
+          }
+          showLeg("STORING:", thisTimes, thisLeg);
+          handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
+        }
       }
     }
   }
