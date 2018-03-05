@@ -675,11 +675,6 @@ public class ZigDetector
           -109.3, -108.6, -107.6, -106.6, -105.6, -104.9, -104.3, -103.6,
           -102.3, -100.9, -99.9, -97.9, -96.6, -95.3, -92.9, -91.9};
 
-      // final double[] times = new double[]
-      // {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-      // final Double[] bearings = new Double[]
-      // {1.0d, 1.1d, 1.4d, 1.3d, 5.4d, 6.6d, 7.3d, 7.4d, 7.5d, 7.6d, 7.6d};
-
       final List<Long> timeList = new ArrayList<Long>();
       for (final double d : times)
       {
@@ -688,10 +683,106 @@ public class ZigDetector
       final List<Double> bearingList = new ArrayList<Double>();
       bearingList.addAll(Arrays.asList(bearings));
 
-      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 600L);
+      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300L);
       System.out.println("flattest:" + minRate.toString(timeList));
-      assertEquals("correct start", 195, minRate.start);
-      assertEquals("correct end", 209, minRate.end);
+      assertEquals("correct start", 200, minRate.start);
+      assertEquals("correct end", 207, minRate.end);
+    }
+
+    public void testNonContinuousMultiSlice() throws ParseException
+    {
+
+      final double[] times = new double[]
+      {0, 17.99999981, 33.99999978, 47.99999991, 62.00000003, 82.00000031,
+          98.00000028, 109.9999999, 125.9999999, 140, 157.9999998, 172,
+          186.0000001, 200.0000002, 210.0000001, 227.9999999, 243.9999998, 258,
+          272.0000001, 294.0000002, 312, 332.0000003, 358.0000001, 383.9999999,
+          410.0000003, 436.0000001, 472.0000003, 504.0000003, 531.9999999,
+          563.9999998, 592.0000001, 624, 657.9999998, 692.0000002, 727.9999998,
+          764.0000001, 810.0000001, 840.0000002, 875.9999998, 907.9999998, 944,
+          982.0000001, 1020, 1056, 1092, 1126, 1172, 1214, 1258, 1296, 1334,
+          1372, 1404, 1426, 1456, 1486, 1514, 1540, 1562, 1590, 1624, 1652,
+          1678, 1710, 1744, 1774, 1808, 1846, 1880, 1912, 1942, 1982, 2014,
+          2758, 2790, 2822, 2852, 2886, 2922, 2952, 2980, 3012, 3038, 3066,
+          3090, 3114, 3140, 3172, 3202, 3234, 3274, 3310, 3344, 3382, 3418,
+          3448, 3478, 3508, 3542, 3570, 3606, 3642, 3676, 3710, 3746, 3778,
+          3808, 3846, 3884, 3922, 3954, 3990, 4026, 4060, 4098, 4140, 4174,
+          4214, 4254, 4288, 4324, 4360, 4398, 4440, 4484, 4512, 4542, 4574,
+          4610, 4644, 4668, 4690, 4716, 4738, 4760, 4782, 4802, 4822, 4842,
+          4852, 4864, 4880, 4900, 4916, 4932, 4952, 4972, 4992, 5014, 5040,
+          5068, 5090, 5112, 5138, 5158, 5188, 5210, 5238, 5264, 5294, 5324,
+          5358, 5390, 5416, 5444, 5476, 5514, 5556, 5592, 5634, 5680, 5720,
+          5756, 5800, 5842, 5882, 5918, 5958, 6000, 6046, 6090, 6128, 6186,
+          6222, 6264, 6300, 6334, 6370, 6408, 6448, 6488, 6534, 6576, 6620,
+          6664, 6712};
+      final Double[] bearings = new Double[]
+      {-147d, -143.6, -140.3, -137.3, -134d, -130d, -125.9, -122.6, -117.9,
+          -114.9, -111.3, -107.3, -103.6, -99.6, -95.6, -91.3, -87.9, -84.2,
+          -80.6, -76.9, -72.6, -68.9, -65.6, -60.6, -56.6, -52.9, -50.2, -47.2,
+          -45.5, -43.9, -42.2, -40.2, -38.9, -37.9, -36.9, -36.5, -36.2, -35.5,
+          -34.9, -34.2, -33.5, -32.9, -32.2, -31.9, -31.2, -30.9, -29.9, -28.5,
+          -27.9, -27.2, -25.5, -24.9, -23.9, -23.9, -26.2, -28.5, -29.5, -31.5,
+          -32.5, -31.5, -31.5, -31.2, -31.2, -30.9, -30.5, -29.9, -28.9, -28.2,
+          -27.5, -27.9, -26.5, -25.5, -24.9, -24.2, -23.5, -22.9, -21.9, -20.9,
+          -19.9, -19.5, -18.9, -18.2, -17.5, -16.8, -15.5, -15.2, -14.5, -13.8,
+          -13.2, -12.2, -11.5, -10.2, -9.8, -8.5, -7.5, -6.5, -5.5, -4.8, -3.5,
+          -3.2, -2.2, -1.5, -0.8, -0.2, 1.2, 1.5, 2.2, 4.2, 4.8, 5.8, 6.8, 7.8,
+          8.8, 10.2, 10.5, 11.5, 12.5, 13.2, 14.5, 14.8, 16.5, 17.5, 18.5, 19.9,
+          32.9, 32.9, 33.2, 33.2, 32.9, 31.9, 30.2, 27.5, 23.9, 20.2, 14.8, 8.8,
+          3.2, -3.8, -9.5, -14.8, -19.5, -24.9, -31.2, -36.2, -40.2, -46.5,
+          -51.5, -55.6, -60.6, -66.6, -72.9, -77.9, -82.9, -87.9, -91.9, -96.9,
+          -101.6, -104.9, -107.9, -111.6, -114.9, -117.6, -120.3, -122.3,
+          -123.3, -123.3, -123.3, -123.3, -122.3, -120.9, -118.9, -118.3,
+          -116.9, -116.3, -115.3, -114.3, -113.3, -111.9, -110.9, -110.3,
+          -109.3, -108.6, -107.6, -106.6, -105.6, -104.9, -104.3, -103.6,
+          -102.3, -100.9, -99.9, -97.9, -96.6, -95.3, -92.9, -91.9};
+
+      final Long[] normalTimes = new Long[times.length];
+      final Long[] rawTimes = new Long[times.length];
+      // final java.text.DateFormat sdf = new SimpleDateFormat("HHmmss");
+      long startTime = 0;
+      for (int i = 0; i < times.length; i++)
+      {
+        final long thisTime = (long) times[i];
+
+        rawTimes[i] = thisTime;
+
+        if (i == 0)
+        {
+          startTime = thisTime;
+        }
+
+        normalTimes[i] = (thisTime - startTime);
+      }
+
+      // start to collate the adta
+      final List<Long> rawList1 = Arrays.asList(rawTimes);
+      final List<Double> tBearings = Arrays.asList(bearings);
+
+      final ZigDetector detector = new ZigDetector();
+      double zigRatio = 1000d;
+      final double optimiseTolerance = 0.0000000004;
+      //
+      final long timeWindow = 240;
+      zigRatio = 15d;
+      final EventHappened happened = new EventHappened()
+      {
+        @Override
+        public void eventAt(final long time, final double score,
+            final double threshold)
+        {
+          // System.out.println("event at " + new Date(time) + " score:" + score);
+        }
+      };
+
+      final List<TPeriod> legs = new ArrayList<TPeriod>();
+
+      detector.runThrough2(optimiseTolerance, rawList1, tBearings, happened,
+          zigRatio, timeWindow, legs);
+
+      listSlices(legs, rawList1);
+
+      listSlicesForPlotting(legs, rawList1);
     }
 
     public void testMultiSlice() throws ParseException
@@ -1294,17 +1385,20 @@ public class ZigDetector
           // ok, store the score
           final TPeriod thisP = new TPeriod(i, lastProcessed);
           final double meanRate = runningSum / ctr;
-          scores.put(meanRate, thisP);
+          double startT = legTimes.get(thisP.start);
+          double endT = legTimes.get(thisP.end);
 
-          // DecimalFormat df = new DecimalFormat("0.0000000");
-          // System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
-          // + thisP.toString(legTimes));
-          //
-          // double startT = legTimes.get(thisP.start);
-          // double endT = legTimes.get(thisP.end);
-          //
-          // double time = startT + (endT - startT)/2;
-          // System.out.println(time + ", " + meanRate * 100);
+          if (endT - startT >= periodSecs)
+          {
+            scores.put(meanRate, thisP);
+
+//            DecimalFormat df = new DecimalFormat("0.0000000");
+//            System.out.println(df.format(meanRate) + " from:" + ctr + " items, "
+//                + thisP.toString(legTimes));
+//
+//            double time = startT + (endT - startT) / 2;
+//            System.out.println(time + ", " + meanRate * 100);
+          }
         }
       }
 
@@ -1632,6 +1726,9 @@ public class ZigDetector
     int colCtr = 0;
     final int numLegs = legs.size();
 
+    if (numLegs == 0)
+      return;
+
     for (int i = 0; i < legTimes.size(); i++)
     {
       boolean matched = false;
@@ -1774,7 +1871,7 @@ public class ZigDetector
     for (int i = 0; i < pCount; i++)
     {
       final long thisT = legTimes.get(i);
-      final double thisB = legTimes.get(i);
+      final double thisB = legBearings.get(i);
 
       if (thisTList.size() > 0)
       {
@@ -2106,7 +2203,7 @@ public class ZigDetector
         final List<Double> thisBearings = legBearings1.subList(
             outerPeriod.start, outerPeriod.end);
 
-        final long minPeriod = 60 * 5;
+        final long minPeriod = 60 * 10;
         // ok, find the period with the lowest bearing rate
         TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
 
