@@ -1317,13 +1317,13 @@ public class ZigDetector
         int lastProcessed = -1;
         Double lastBDelta = null;
         final long startTime = legTimes.get(i);
-        
-        boolean examine = false; //startTime > 500 && startTime < 1200;
-        if(examine)
+
+        boolean examine = legTimes.get(0) == 4574;
+        if (examine)
           System.out.println("== " + startTime);
-        
-      //  check why we're not getting the flattest period in the second run of this method
-        
+
+        // check why we're not getting the flattest period in the second run of this method
+
         for (int j = i + 1; j < legTimes.size(); j++)
         {
           final long thisTime = legTimes.get(j);
@@ -1345,21 +1345,22 @@ public class ZigDetector
             if (lastBDelta != null)
             {
               // yes, we can compare them
-           //   final double bDelta2 = Math.abs(lastBDelta - bDelta);
+              final double bDelta2 = Math.abs(lastBDelta - bDelta);
               final double tDelta = legTimes.get(j) - legTimes.get(j - 1);
-              final double bDelta2Rate = bDelta / tDelta;
-              final double sqrRate = Math.pow(bDelta2Rate, 2);
+              final double bDelta2Rate = bDelta2 / tDelta;
 
-              runningSum += sqrRate;
+              runningSum += bDelta2Rate;
               ctr++;
 
-              if(examine)
+              if (examine)
               {
-                java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000000");
-                System.out.println(thisTime + ", " + df.format(legBearings.get(j)) + ", "
-                + df.format(bDelta) + ", " + df.format(bDelta) + ", " + df.format(runningSum));
+                java.text.DecimalFormat df = new java.text.DecimalFormat(
+                    " #0.0000000;-#0.0000000");
+                System.out.println(thisTime + ", " + df.format(legBearings.get(
+                    j)) + ", " + df.format(bDelta) + ", " + df.format(bDelta2)
+                    + ", " + df.format(runningSum));
               }
-              
+
             }
             lastBDelta = bDelta;
           }
@@ -1374,7 +1375,7 @@ public class ZigDetector
           // ok, store the score
           final TPeriod thisP = new TPeriod(i, lastProcessed);
           final double meanRate = runningSum / ctr;
-          final double rootMeanRate = Math.sqrt(meanRate);
+          final double rootMeanRate = meanRate;
           double startT = legTimes.get(thisP.start);
           double endT = legTimes.get(thisP.end);
 
@@ -1386,12 +1387,16 @@ public class ZigDetector
           {
             scores.put(rootMeanRate, thisP);
 
-//             java.text.DecimalFormat df = new java.text.DecimalFormat("0.0000000");
-//             System.out.println(df.format(rootMeanRate) + " from:" + ctr + " items, "
-//             + thisP.toString(legTimes));
-            
-         //    double time = startT + (endT - startT) / 2;
-         //    System.out.println(time + ", " + rootMeanRate * 100);
+            if (examine)
+            {
+              java.text.DecimalFormat df = new java.text.DecimalFormat(
+                  "0.0000000");
+              System.out.println(df.format(rootMeanRate) + " from:" + ctr
+                  + " items, total:" + df.format(runningSum) + ", " + thisP.toString(legTimes));
+            }
+
+            // double time = startT + (endT - startT) / 2;
+            // System.out.println(time + ", " + rootMeanRate * 100);
           }
         }
       }
@@ -1516,7 +1521,7 @@ public class ZigDetector
     upHelper.rememberOtherStart();
 
     TPeriod lastLeg = null;
-    
+
     double lastScore = Double.MIN_NORMAL;
 
     while (upHelper.isGrowing() || downHelper.isGrowing())
@@ -1554,7 +1559,7 @@ public class ZigDetector
 
       final Minimisation optimiser = optimiseThis(times, bearings,
           optimiseTolerance);
-      
+
       // check it worked
       if (!optimiser.getConvStatus())
       {
@@ -1573,8 +1578,8 @@ public class ZigDetector
       final long elapsedTimeSecs = times.get(times.size() - 1) - times.get(0);
 
       System.out.println(thisLeg.toString(thisTimes) + " Error score:"
-          + thisScore + " secs:" + elapsedTimeSecs + " error/item:"
-          + (thisScore / times.size()) + " growth:" + (thisScore / lastScore));
+          + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
+              / times.size()) + " growth:" + (thisScore / lastScore));
       // System.out.println("Growing:" + thisLeg);
 
       if (me)
@@ -1646,7 +1651,7 @@ public class ZigDetector
           // still short. let it grow a little more
           continue;
         }
-        
+
       }
       // System.out.print("B:" + bearings.get(0).intValue() + ", " + " func:"
       // + optimiser.getMinimum() + ", ");
@@ -1939,7 +1944,7 @@ public class ZigDetector
 
         String thisState = thisT + ", " + measuredB + ", " + predictedB + ", "
             + (thisAbove) + ", ";
-         System.out.println(thisState);
+        // System.out.println(thisState);
         states.add(thisState);
 
         final double absError = Math.abs(error);
@@ -1962,8 +1967,8 @@ public class ZigDetector
           // represent a divergence
           final double minDiff = 0.5d;
 
-//          System.out.println("error at:" + thisT + " " + absError + ", "
-//              + lastScore + ", " + (absError < lastScore + minDiff));
+          // System.out.println("error at:" + thisT + " " + absError + ", "
+          // + lastScore + ", " + (absError < lastScore + minDiff));
 
           if (absError < lastScore + minDiff)
           {
