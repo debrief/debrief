@@ -1308,6 +1308,8 @@ public class ZigDetector
     {
       final SortedMap<Double, TPeriod> scores = new TreeMap<Double, TPeriod>();
 
+      final boolean examine = legTimes.get(0) == 4611;
+
       // work through all the window start times
       for (int i = 0; i < legTimes.size(); i++)
       {
@@ -1318,7 +1320,6 @@ public class ZigDetector
         Double lastBDelta = null;
         final long startTime = legTimes.get(i);
 
-        boolean examine = legTimes.get(0) == 4574;
         if (examine)
           System.out.println("== " + startTime);
 
@@ -1522,8 +1523,6 @@ public class ZigDetector
 
     TPeriod lastLeg = null;
 
-    double lastScore = Double.MIN_NORMAL;
-
     while (upHelper.isGrowing() || downHelper.isGrowing())
     {
       if (upHelper.isGrowing() && upHelper.smallEnough())
@@ -1548,7 +1547,7 @@ public class ZigDetector
         downHelper.stopGrowing();
       }
 
-      final boolean me = thisLeg.toString().equals("Period:31-48");
+      final boolean me = thisLeg.toString().equals("aPeriod:31-48");
 
       ctr++;
 
@@ -1577,10 +1576,9 @@ public class ZigDetector
       // if it's more than a few minutes, let's ditch it.
       final long elapsedTimeSecs = times.get(times.size() - 1) - times.get(0);
 
-      System.out.println(thisLeg.toString(thisTimes) + " Error score:"
-          + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
-              / times.size()) + " growth:" + (thisScore / lastScore));
-      // System.out.println("Growing:" + thisLeg);
+//      System.out.println(thisLeg.toString(thisTimes) + " Error score:"
+//          + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
+//              / times.size()) + " growth:" + (thisScore / lastScore));
 
       if (me)
       {
@@ -1674,7 +1672,6 @@ public class ZigDetector
       walkThisEnd(downHelper, tmpTimes, tmpBearings, coeff, thisLeg, upHelper);
 
       lastLeg = new TPeriod(thisLeg.start, thisLeg.end);
-      lastScore = thisScore;
     }
 
     return thisLeg;
@@ -1990,10 +1987,10 @@ public class ZigDetector
               System.out.println("End value updated to" + thisLeg);
 
               // ok, have a look.
-              for (final String s : states)
-              {
-                // System.out.println(s);
-              }
+//              for (final String s : states)
+//              {
+//                // System.out.println(s);
+//              }
 
               // is the other end still walking? if it is, restart it.
               if (otherHelper.isGrowing())
