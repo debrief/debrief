@@ -14,6 +14,9 @@
  */
 package org.mwc.debrief.core.gpx.mappers;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -31,15 +34,19 @@ import org.mwc.debrief.core.gpx.TrackExtensionType;
 import org.mwc.debrief.core.loaders.DebriefJaxbContextAware;
 import org.w3c.dom.Node;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
+import junit.framework.TestCase;
 
 import com.topografix.gpx.v10.Gpx;
 import com.topografix.gpx.v10.Gpx.Trk;
 import com.topografix.gpx.v10.Gpx.Trk.Trkseg;
+import com.topografix.gpx.v10.Gpx.Trk.Trkseg.Trkpt;
 import com.topografix.gpx.v10.ObjectFactory;
 import com.topografix.gpx.v11.ExtensionsType;
 import com.topografix.gpx.v11.GpxType;
@@ -65,6 +72,84 @@ public class TrackMapper implements DebriefJaxbContextAware
 	private JAXBContext debriefContext;
 	private static final ObjectFactory GPX_1_0_OBJ_FACTORY = new ObjectFactory();
 
+	public static class TestGPXExport extends TestCase
+	{
+	  private static TrackWrapper getData(final String name)
+        throws FileNotFoundException
+    {
+      // get our sample data-file
+      final ImportReplay importer = new ImportReplay();
+      final Layers theLayers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/"
+              + name;
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      importer.importThis(fName, is, theLayers);
+
+      // sort out the sensors
+      importer.storePendingSensors();
+
+      // get the sensor track
+      final TrackWrapper track = (TrackWrapper) theLayers.elements().nextElement();
+
+      return track;
+    }
+	  
+	  public void testTrackExport() throws FileNotFoundException
+	  {
+	    List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+	    
+	    TrackMapper mapper = new TrackMapper();
+	    
+      List<Trk> res = mapper.toGpx10(tracks);
+      
+      assertEquals("empty list", 0, res.size());
+      
+      TrackWrapper trk1 = getData("boat1.rep");
+      
+      tracks.add(trk1);
+      
+      res = mapper.toGpx10(tracks);
+      
+      assertEquals("has track", 1, res.size());
+
+      TrackWrapper trk2 = getData("boat2.rep");
+      
+      tracks.add(trk2);
+      
+      res = mapper.toGpx10(tracks);
+      
+      assertEquals("has track", 2, res.size());
+      
+      // check the data
+      Trk firstTrack = res.get(0);
+      Trkseg seg = firstTrack.getTrkseg().iterator().next();
+      Iterator<Trkpt> tIter = seg.getTrkpt().iterator();
+      Trkpt fix1 = tIter.next();
+
+      assertEquals("correct lat", 22.186286d, fix1.getLat().doubleValue(), 0.000001);
+      assertEquals("correct lon", -21.697880, fix1.getLon().doubleValue(), 0.000001);
+      assertEquals("correct course", 269.7d, MWC.Algorithms.Conversions
+          .Rads2Degs(fix1.getCourse().doubleValue()), 0.1);
+      assertEquals("correct speed", 2d, MWC.Algorithms.Conversions.Mps2Kts(fix1
+          .getSpeed().doubleValue()), 0.001);
+      assertEquals("correct time", "1995-12-12T05:00:00Z", fix1.getTime().toString());
+      
+      Trkpt fix2 = tIter.next();
+
+      assertEquals("correct lat", 22.186272d, fix2.getLat().doubleValue(), 0.000001);
+      assertEquals("correct lon", -21.700827, fix2.getLon().doubleValue(), 0.000001);
+      assertEquals("correct course", 269.7d, MWC.Algorithms.Conversions
+          .Rads2Degs(fix2.getCourse().doubleValue()), 0.1);
+      assertEquals("correct speed", 2d, MWC.Algorithms.Conversions.Mps2Kts(fix2
+          .getSpeed().doubleValue()), 0.001);
+      assertEquals("correct time", "1995-12-12T05:01:00Z", fix2.getTime().toString());
+
+	  }
+	}
+	
 	/**
 	 * @category gpx11
 	 */
