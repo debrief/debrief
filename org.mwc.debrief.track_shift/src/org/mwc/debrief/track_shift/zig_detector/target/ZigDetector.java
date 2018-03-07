@@ -767,20 +767,11 @@ public class ZigDetector
       //
       final long timeWindow = 240;
       zigRatio = 15d;
-      final EventHappened happened = new EventHappened()
-      {
-        @Override
-        public void eventAt(final long time, final double score,
-            final double threshold)
-        {
-          // System.out.println("event at " + new Date(time) + " score:" + score);
-        }
-      };
 
       final List<TPeriod> legs = new ArrayList<TPeriod>();
 
-      detector.runThrough2(optimiseTolerance, rawList1, tBearings, happened,
-          zigRatio, timeWindow, legs);
+      detector.runThrough2(optimiseTolerance, rawList1, tBearings, zigRatio,
+          timeWindow, legs);
 
       listSlices(legs, rawList1);
 
@@ -870,20 +861,11 @@ public class ZigDetector
 
       final long timeWindow = 240;
       zigRatio = 15d;
-      final EventHappened happened = new EventHappened()
-      {
-        @Override
-        public void eventAt(final long time, final double score,
-            final double threshold)
-        {
-          // System.out.println("event at " + new Date(time) + " score:" + score);
-        }
-      };
 
       final List<TPeriod> legs = new ArrayList<TPeriod>();
 
-      detector.runThrough2(optimiseTolerance, rawList1, tBearings, happened,
-          zigRatio, timeWindow, legs);
+      detector.runThrough2(optimiseTolerance, rawList1, tBearings, zigRatio,
+          timeWindow, legs);
 
       listSlices(legs, rawList1);
 
@@ -1574,7 +1556,7 @@ public class ZigDetector
       final double[] coeff = optimiser.getParamValues();
 
       // if it's more than a few minutes, let's ditch it.
-      final long elapsedTimeSecs = times.get(times.size() - 1) - times.get(0);
+      final long elapsedTimeSecs = (times.get(times.size() - 1) - times.get(0)) / 1000L;
 
 //      System.out.println(thisLeg.toString(thisTimes) + " Error score:"
 //          + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
@@ -1609,6 +1591,7 @@ public class ZigDetector
         {
           for (int j = 0; j < times.size(); j++)
           {
+            @SuppressWarnings("unused")
             final long t = times.get(j);
 
             double thisB = bearings.get(j);
@@ -1617,8 +1600,8 @@ public class ZigDetector
               thisB += 360d;
             }
 
-            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-                .calcForecast(coeff, t));
+//            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+//                .calcForecast(coeff, t));
           }
         }
 
@@ -1873,9 +1856,17 @@ public class ZigDetector
 
   }
 
+  /**
+   * 
+   * @param legTimes the list of times
+   * @param legBearings the list of bearings
+   * @param slicedTimes the outgoing list of blocks of time
+   * @param slicedBearings the outgoing list of blocks of bearings
+   * @param sepMillis the size of gap that causes a split
+   */
   private static void sliceIntoBlocks(final List<Long> legTimes,
       final List<Double> legBearings, final List<List<Long>> slicedTimes,
-      final List<List<Double>> slicedBearings, final long sepSecs)
+      final List<List<Double>> slicedBearings, final long sepMillis)
   {
 
     List<Long> thisTList = new ArrayList<Long>();
@@ -1896,7 +1887,7 @@ public class ZigDetector
         final long lastT = thisTList.get(thisTList.size() - 1);
 
         // how's the gap?
-        if (thisT - lastT > sepSecs)
+        if (thisT - lastT > sepMillis)
         {
           // ok. we're on a new leg
           thisTList = new ArrayList<Long>();
@@ -2167,26 +2158,25 @@ public class ZigDetector
   /**
    *
    * @param optimiseTolerance
-   * @param legTimes
-   * @param legBearings
-   * @param listener
    * @param zigThreshold
    * @param timeWindowSecs
    * @param legs
+   * @param legTimes
+   * @param legBearings
    */
   private void runThrough2(final double optimiseTolerance,
       final List<Long> fullTimes, final List<Double> fullBearings,
-      final EventHappened listener, final double zigThreshold,
-      final long timeWindowSecs, final List<TPeriod> legs)
+      final double zigThreshold, final long timeWindowSecs,
+      final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
 
     // slice the data into contiguous blocks
     final List<List<Long>> slicedTimes = new ArrayList<List<Long>>();
     final List<List<Double>> slicedBearings = new ArrayList<List<Double>>();
-    final long sepSecs = 600;
+    final long sepMillis = 600000;
     sliceIntoBlocks(fullTimes, fullBearings, slicedTimes, slicedBearings,
-        sepSecs);
+        sepMillis);
 
     // ok, now loop through them
     final int len = slicedTimes.size();
@@ -2232,7 +2222,7 @@ public class ZigDetector
         final List<Double> thisBearings = legBearings1.subList(
             outerPeriod.start, outerPeriod.end);
 
-        final long minPeriod = 60 * 7;
+        final long minPeriod = 1000 * 60 * 7;
         // ok, find the period with the lowest bearing rate
         TPeriod thisLeg = findLowestRateIn(thisTimes, thisBearings, minPeriod);
 
@@ -2410,7 +2400,47 @@ public class ZigDetector
     }
 
   }
+  
+  public void sliceThis2(final ILog log, final String PLUGIN_ID,
+      final String scenario, 
+      final ILegStorer legStorer,
+      final double RMS_ZIG_RATIO, final double optimiseTolerance,
+      final List<Long> legTimes, final List<Double> rawLegBearings)
+  {
+    // check we have some
+    if (legTimes.isEmpty())
+    {
+      return;
+    }
 
+    // ok, find the best slice
+    // prepare the data
+    final List<Double> legBearings = prepareBearings(rawLegBearings);
+
+    if (legBearings.size() == 0)
+    {
+      return;
+    }
+
+    // double threshold = 0.002;
+    final long timeWindow = 120000;
+    
+    final List<TPeriod> legs = new ArrayList<TPeriod>();
+
+    runThrough2(optimiseTolerance, legTimes, legBearings, RMS_ZIG_RATIO,
+        timeWindow, legs);
+
+    // ok, share the good news
+    int ctr = 1;
+    for (final TPeriod leg : legs)
+    {
+      if (legStorer != null)
+      {
+        legStorer.storeLeg("leg_" + ctr++, leg.start, leg.end, 2d);
+      }
+    }
+  }
+  
   private void storeZigs(final long wholeEnd, final IZigStorer zigStorer,
       final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
   {

@@ -881,6 +881,58 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public List<Zone> performSlicing(final boolean wholePeriod)
       {
+        final boolean doCombined = true;
+        if (doCombined)
+        {
+          return performSlicingCombined(wholePeriod);
+        }
+        else
+        {
+          return performSlicingSeparate(wholePeriod);
+        }
+
+      }
+
+      private List<Zone> performSlicingCombined(final boolean wholePeriod)
+      {
+        // hmm, the above set of bearings only covers windows where we have
+        // target track defined. But, in order to consider the actual extent
+        // of the target track we need all the data. So, get the bearings
+        // captured during the whole outer time period of the secondary track
+
+        final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
+        final List<Zone> res;
+
+        if (secondary != null)
+        {
+          // now find data in the primary track
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+              .getStartDTG(), secondary.getEndDTG());
+          final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+              _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
+
+          // note: the slicer depends upon bearing. check we have bearing
+          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0)
+              .getBearing()))
+          {
+            res = sliceTarget2(bearings, randomProv, secondary,
+                _slicePrecision);
+          }
+          else
+          {
+            res = null;
+          }
+        }
+        else
+        {
+          res = null;
+        }
+        return res;
+      }
+
+      private List<Zone> performSlicingSeparate(final boolean wholePeriod)
+      {
         // hmm, the above set of bearings only covers windows where we have
         // target track defined. But, in order to consider the actual extent
         // of the target track we need all the data. So, get the bearings
@@ -1952,7 +2004,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void run()
       {
         // check it's not already the message
-        if (string != null && !string.equals(_myChart.getTitle()))
+        if (string != null && !string.equals(_myChart.getTitle().getText()))
         {
           // somehow, put the message into the UI
           _myChart.setTitle(string);
@@ -2528,6 +2580,103 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       });
     }
+  }
+
+  /**
+   * slice the target bearings according to these zones
+   *
+   * @param ownshipZones
+   * @param randomProv
+   * @param slicePrecision
+   * @param secondaryTrack
+   * @param targetBearingSeries2
+   * @return
+   */
+  protected List<Zone> sliceTarget2(final List<SensorContactWrapper> cuts,
+      final ColorProvider randomProv, final ISecondaryTrack tgtTrack,
+      final Precision slicePrecision)
+  {
+    final ZigDetector slicer = new ZigDetector();
+    final List<Zone> legs = new ArrayList<Zone>();
+
+    // check we have some data
+    if (cuts.isEmpty())
+    {
+      Application.logError2(ToolParent.ERROR, "List of cuts is empty", null);
+      return null;
+    }
+
+    final ILegStorer legStorer = new ILegStorer()
+    {
+      @Override
+      public void storeLeg(final String scenarioName, final long tStart,
+          final long tEnd, final double rms)
+      {
+        final Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
+        legs.add(newZone);
+      }
+    };
+
+    final double optimiseTolerance = 0.000001;
+    final double RMS_ZIG_RATIO = getPrecision(slicePrecision);
+
+    // get a logger to use
+    final ILog log;
+    if (TrackShiftActivator.getDefault() == null)
+    {
+      log = new TrackShiftActivator().getLog();
+    }
+    else
+    {
+      log = TrackShiftActivator.getDefault().getLog();
+    }
+
+    // get the bearings in this leg
+    final List<Long> thisLegTimes = new ArrayList<Long>();
+    final List<Double> thisLegBearings = new ArrayList<Double>();
+    getCutsForThisLeg(cuts, Long.MIN_VALUE, Long.MAX_VALUE, thisLegTimes,
+        thisLegBearings);
+
+    // slice the leg
+    slicer.sliceThis2(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
+        legStorer, RMS_ZIG_RATIO, optimiseTolerance, thisLegTimes,
+        thisLegBearings);
+
+    // special case: if we've manually deleted the target legs, and have to re-create them
+    final Enumeration<Editable> segments = tgtTrack.segments();
+    boolean hasData = segments.hasMoreElements();
+
+    // hmm, if it's a normal track, the list may be a list of different data types
+    // have a look at the first one
+    if (hasData)
+    {
+      final Editable first = segments.nextElement();
+      if (first instanceof SegmentList)
+      {
+        final SegmentList list = (SegmentList) first;
+        hasData = list.size() > 0;
+      }
+    }
+
+    // ok, loop through the legs, updating our TMA legs
+    for (final Zone leg : legs)
+    {
+      // ok, see if there is already a leg at this time
+      setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);
+    }
+
+    // ok, fire some updates
+    if (_ourLayersSubject != null)
+    {
+      // share the good news
+      _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+
+      // and re-generate the doublets
+      updateData(true);
+    }
+
+    // ok, done.
+    return legs;
   }
 
   /**
