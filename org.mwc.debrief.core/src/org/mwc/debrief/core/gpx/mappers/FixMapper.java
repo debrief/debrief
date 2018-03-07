@@ -270,8 +270,9 @@ public class FixMapper implements DebriefJaxbContextAware
     // disable fractional second as this is never used
     gpxTime.setFractionalSecond(null);
     gpxPoint.setTime(gpxTime.normalize());
-    gpxPoint.setCourse(BigDecimal.valueOf(fixWrapper.getFix().getCourse())
-        .setScale(4, BigDecimal.ROUND_CEILING));
+    gpxPoint.setCourse(BigDecimal.valueOf(MWC.Algorithms.Conversions.Rads2Degs(
+        fixWrapper.getFix().getCourse())).setScale(4,
+            BigDecimal.ROUND_CEILING));
     gpxPoint.setSpeed(BigDecimal.valueOf(MWC.Algorithms.Conversions.Kts2Mps(
         fixWrapper.getSpeed())).setScale(4, BigDecimal.ROUND_CEILING));
     //
