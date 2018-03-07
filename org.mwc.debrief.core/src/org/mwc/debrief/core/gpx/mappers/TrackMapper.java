@@ -128,10 +128,10 @@ public class TrackMapper implements DebriefJaxbContextAware
           0.000001);
       assertEquals("correct lon", -21.697880, fix1.getLon().doubleValue(),
           0.000001);
-      assertEquals("correct course", 269.7d, MWC.Algorithms.Conversions
-          .Rads2Degs(fix1.getCourse().doubleValue()), 0.1);
-      assertEquals("correct speed", 2d, MWC.Algorithms.Conversions.Mps2Kts(fix1
-          .getSpeed().doubleValue()), 0.001);
+      assertEquals("correct course", 269.7d, fix1.getCourse().doubleValue(),
+          0.1);
+      assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix1
+          .getSpeed().doubleValue(), 0.001);
       assertEquals("correct time", "1995-12-12T05:00:00Z", fix1.getTime()
           .toString());
 
@@ -141,10 +141,10 @@ public class TrackMapper implements DebriefJaxbContextAware
           0.000001);
       assertEquals("correct lon", -21.700827, fix2.getLon().doubleValue(),
           0.000001);
-      assertEquals("correct course", 269.7d, MWC.Algorithms.Conversions
-          .Rads2Degs(fix2.getCourse().doubleValue()), 0.1);
-      assertEquals("correct speed", 2d, MWC.Algorithms.Conversions.Mps2Kts(fix2
-          .getSpeed().doubleValue()), 0.001);
+      assertEquals("correct course", 269.7d, fix2.getCourse().doubleValue(),
+          0.1);
+      assertEquals("correct speed", MWC.Algorithms.Conversions.Kts2Mps(2d), fix2
+          .getSpeed().doubleValue(), 0.001);
       assertEquals("correct time", "1995-12-12T05:01:00Z", fix2.getTime()
           .toString());
 
