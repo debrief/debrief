@@ -680,15 +680,15 @@ public class ZigDetector
       final List<Long> timeList = new ArrayList<Long>();
       for (final double d : times)
       {
-        timeList.add((long) d);
+        timeList.add((long) d * 1000L);
       }
       final List<Double> bearingList = new ArrayList<Double>();
       bearingList.addAll(Arrays.asList(bearings));
 
-      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300L);
+      final TPeriod minRate = findLowestRateIn(timeList, bearingList, 300000L);
       System.out.println("flattest:" + minRate.toString(timeList));
-      assertEquals("correct start", 200, minRate.start);
-      assertEquals("correct end", 207, minRate.end);
+      assertEquals("correct start", 202, minRate.start);
+      assertEquals("correct end", 209, minRate.end);
     }
 
     public void testNonContinuousMultiSlice() throws ParseException
