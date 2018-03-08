@@ -179,6 +179,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
   final public static String AMBIG_NAME = "Measured (Ambiguous)";
+  public static final String USE_HOLISTIC_SLICER = "USE_HOLISTIC_SLICER";
 
   /*
    * Undo and redo actions
@@ -823,11 +824,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
+    // are we doing holistic legs?
+    final boolean goingHolistic = Boolean.valueOf(CorePlugin.getDefault().getPreference(USE_HOLISTIC_SLICER));
+
     // put the courses into a TimeSeries
     final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
 
     final ZoneChartConfig oZoneConfig = new ZoneChart.ZoneChartConfig(
-        "Ownship Legs", "Course", DebriefColors.BLUE);
+        "Ownship Legs", "Course", DebriefColors.BLUE, goingHolistic);
 
     final Runnable deleteCutsInTurn = getDeleteCutsOperation();
     final Runnable resolveAmbiguity = getResolveAmbiguityOperation();
@@ -841,7 +845,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // final TimeSeries[] scoreSeries = new TimeSeries[]
     // {ambigScores};
     final TimeSeries[] scoreSeries = null;
-
+    
     ownshipZoneChart = ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm,
         osZones, ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
         ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
@@ -979,7 +983,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     final ZoneChartConfig tZoneConfig = new ZoneChart.ZoneChartConfig(
-        "Target Legs", "Bearing", DebriefColors.RED);
+        "Target Legs", "Bearing", DebriefColors.RED, false);
     final TimeSeries[] otherSeries = new TimeSeries[]
     {targetCalculatedSeries};
     targetZoneChart = ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm,
