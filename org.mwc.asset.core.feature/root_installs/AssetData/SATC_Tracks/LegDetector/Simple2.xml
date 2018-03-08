@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="SATC_Tracks/LegDetector/Output"  xmlns="http://www.mwc.org/asset" >
+		<ScenarioGenerator></ScenarioGenerator>
+	
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="120" Units="minutes" ></Duration>
+		</TimeObserver>
+		<DebriefReplayObserver Name="BothTracks" record_detections="true"
+			record_positions="true" Active="true" record_decisions="false"
+			file_name="Simple">
+			<FormatHelper Text=";FORMAT_FIX: hour_min_arrow ARROW NULL NULL TRUE 900000" /><FormatHelper
+				Text=";FORMAT_FIX: 30_min_label LABEL NULL NULL TRUE 1800000" />
+		</DebriefReplayObserver>
+		<CSVDetectionObserver Name="detections" Active="true"
+			file_name="detections">
+		</CSVDetectionObserver>
+		<CSVStatusObserver Name="positions" Active="true"
+			file_name="blue_pos">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</CSVStatusObserver>
+		<CSVStatusObserver Name="positions" Active="true"
+			file_name="red_pos">
+			<SubjectToTrack>
+				<Type Name="RED" />
+			</SubjectToTrack>
+		</CSVStatusObserver>
+	</ObserverList>
+</ScenarioController>

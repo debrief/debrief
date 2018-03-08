@@ -1397,29 +1397,29 @@ public abstract class LookupSensor extends CoreSensor
 			sl.detects(env, dets, alpha, scenario, curTime += 1000);
 
 			// check that we still have the old detections
-			assertTrue("still have last contact", dets.contains(d1));
-			assertTrue("still have last contact", dets.contains(d2));
+			assertFalse("last contact deleted", dets.contains(d1));
+			assertFalse("last contact deleted", dets.contains(d2));
 
 			// keep moving forward,
 			sl.detects(env, dets, alpha, scenario, curTime += 1000);
 
 			// check that we still have the old detections
-			assertTrue("still have last contact", dets.contains(d1));
-			assertTrue("still have last contact", dets.contains(d2));
+      assertFalse("last contact deleted", dets.contains(d1));
+      assertFalse("last contact deleted", dets.contains(d2));
 
 			// keep moving forward,
 			sl.detects(env, dets, alpha, scenario, curTime += 1000);
 
 			// check that we still have the old detections
-			assertTrue("still have last contact", dets.contains(d1));
-			assertTrue("still have last contact", dets.contains(d2));
+      assertFalse("last contact deleted", dets.contains(d1));
+      assertFalse("last contact deleted", dets.contains(d2));
 
 			// keep moving forward,
 			sl.detects(env, dets, alpha, scenario, curTime += 1000);
 
 			// check that we still have the old detections
-			assertTrue("still have last contact", dets.contains(d1));
-			assertTrue("still have last contact", dets.contains(d2));
+      assertFalse("last contact deleted", dets.contains(d1));
+      assertFalse("last contact deleted", dets.contains(d2));
 
 			// keep moving forward,
 			sl.detects(env, dets, alpha, scenario, curTime += 1000);
@@ -1445,9 +1445,9 @@ public abstract class LookupSensor extends CoreSensor
 
 			// check that we have removed the old detections and that we still have
 			// the old detections
-			assertTrue("still have last contact", dets.contains(d1));
-			assertTrue("still have last contact", dets.contains(d2));
-			assertEquals("should have kept contacts, havne't done next scan yet", 2, dets
+      assertFalse("last contact deleted", dets.contains(d1));
+      assertFalse("last contact deleted", dets.contains(d2));
+			assertEquals("should have kept contacts, havne't done next scan yet", 0, dets
 					.size());
 
 			// keep moving forward,
@@ -1526,7 +1526,7 @@ public abstract class LookupSensor extends CoreSensor
 			time += 100;
 			ts.detects(env, res, alpha, scenario, time);
 			assertEquals(
-					"old detections should have been returned (because it's not time yet)", 1, res
+					"old detections wiped", 0, res
 							.size());
 
 			// now move forward in time though

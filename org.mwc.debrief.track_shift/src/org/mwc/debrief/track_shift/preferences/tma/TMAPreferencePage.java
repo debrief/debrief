@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.track_shift.views.BaseStackedDotsView;
 
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
@@ -53,6 +54,8 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
         DynamicInfillSegment.INFILL_COLOR_STRATEGY;
     public static final String SPEED_OF_SOUND_KTS =
         FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY;
+    public static final String HOLISTIC_LEG_SLICER =
+        BaseStackedDotsView.USE_HOLISTIC_SLICER;
   }
 
   private SelectionListener freqListener;
@@ -60,8 +63,8 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
 
   public TMAPreferencePage()
   {
-    super("Debrief Preferences", CorePlugin
-        .getImageDescriptor("icons/24/MultiPath.png"), GRID);
+    super("Debrief Preferences", CorePlugin.getImageDescriptor(
+        "icons/24/MultiPath.png"), GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
     setDescription("TMA-specific settings");
   }
@@ -78,16 +81,16 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
         getFieldEditorParent()));
 
     // insert a separator
-    Label label1 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    Label label1 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
     label1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     addField(new IntegerFieldEditor(PreferenceConstants.SPEED_OF_SOUND_KTS,
         "Speed of sound for Doppler calcs (kts)", getFieldEditorParent()));
 
     // insert a separator
-    Label label3 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    Label label3 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
     label3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     addField(new IntegerFieldEditor(PreferenceConstants.CUT_OFF_VALUE_DEGS,
@@ -96,9 +99,8 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
 
     final String freqLabelStr =
         "Cut-off value for acceptable frequency errors in stacked dots";
-    freqEdit =
-        new ScaleFieldEditor(PreferenceConstants.CUT_OFF_VALUE_HZ, "Cut-off",
-            getFieldEditorParent());
+    freqEdit = new ScaleFieldEditor(PreferenceConstants.CUT_OFF_VALUE_HZ,
+        "Cut-off", getFieldEditorParent());
     freqEdit.setMinimum(0);
     freqEdit.setMaximum(100);
     freqEdit.setIncrement(5);
@@ -125,8 +127,8 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
     addField(freqEdit);
 
     // insert a separator
-    Label label2 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    Label label2 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
     label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     // initialise the import choice tags, if we have to
@@ -149,9 +151,12 @@ public class TMAPreferencePage extends FieldEditorPreferencePage implements
         "Color for infill segments in merged track:", getFieldEditorParent()));
 
     // insert a separator
-    Label label4 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    Label label4 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
     label4.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+
+    addField(new BooleanFieldEditor(PreferenceConstants.HOLISTIC_LEG_SLICER,
+        "Use holistic leg slicer", getFieldEditorParent()));
 
   }
 

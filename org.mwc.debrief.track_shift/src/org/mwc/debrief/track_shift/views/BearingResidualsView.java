@@ -119,13 +119,13 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   }
 
-  private class BearingZoneSlicer implements ZoneSlicer
+  private class OwnshipZoneSlicer implements ZoneSlicer
   {
     private final ColorProvider _blueProv;
 
     Map<Zone, ZoneModes> zoneTracker = new HashMap<Zone, ZoneModes>();
 
-    public BearingZoneSlicer(final ColorProvider blueProv)
+    public OwnshipZoneSlicer(final ColorProvider blueProv)
     {
       _blueProv = blueProv;
     }
@@ -1038,7 +1038,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
   {
-    return new BearingZoneSlicer(blueProv);
+    return new OwnshipZoneSlicer(blueProv);
   }
 
   @Override

@@ -40,6 +40,12 @@ public class DateAxisEditor extends AbstractPropertyEditor
     private static final long serialVersionUID = 1L;
 
     /**
+     * cache the last date formatted. when this moves backwards, we know we're restarting - which
+     * helps us to detect the first item.
+     */
+    private long _lastDate = Long.MIN_VALUE;
+
+    /**
      * pattern for the on-the-day values. Note: we currently ignore this, since we just prepend the
      * date value as a 2-digit value
      */
@@ -54,7 +60,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
     public DatedRNFormatter(final String pattern, final String datePattern)
     {
       super(pattern);
-      
+
       // store the date (even if we then choose to ignore it)
       _datePattern = datePattern;
     }
@@ -66,9 +72,15 @@ public class DateAxisEditor extends AbstractPropertyEditor
     {
       StringBuffer timeBit = super.format(arg0, arg1, arg2);
 
-      // see if we're on the exact day
-      if ((arg0.getHours() == 0) && (arg0.getMinutes() == 0) && (arg0
-          .getSeconds() == 0))
+      // see of we've moved back in time
+      long thisT = arg0.getTime();
+
+      // when in this special mode we show the date for the first item
+      final boolean firstOne = thisT < _lastDate;
+
+      // see if we're on the exact day (or if this is the first one)
+      if (((arg0.getHours() == 0) && (arg0.getMinutes() == 0) && (arg0
+          .getSeconds() == 0)) || firstOne)
       {
         // ok, use the suffix
         final DecimalFormat df = new DecimalFormat("00");
@@ -78,6 +90,9 @@ public class DateAxisEditor extends AbstractPropertyEditor
         res.append(timeBit);
         timeBit = res;
       }
+
+      // remember the date
+      _lastDate = thisT;
 
       return timeBit;
     }
