@@ -825,7 +825,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // are we doing holistic legs?
-    final boolean goingHolistic = Boolean.valueOf(CorePlugin.getDefault().getPreference(USE_HOLISTIC_SLICER));
+    final boolean goingHolistic = Boolean.valueOf(CorePlugin.getDefault()
+        .getPreference(USE_HOLISTIC_SLICER));
 
     // put the courses into a TimeSeries
     final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
@@ -845,7 +846,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // final TimeSeries[] scoreSeries = new TimeSeries[]
     // {ambigScores};
     final TimeSeries[] scoreSeries = null;
-    
+
     ownshipZoneChart = ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm,
         osZones, ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
         ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
@@ -870,117 +871,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the bearings into a TimeSeries
-    final ZoneSlicer targetLegSlicer = new ZoneSlicer()
-    {
-      @Override
-      public boolean ambigDataPresent()
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err.println(
-            "Should not be trying to check ambig cuts on target track");
-
-        return false;
-      }
-
-      @Override
-      public List<Zone> performSlicing(final boolean wholePeriod)
-      {
-        final boolean doCombined = Boolean.valueOf(CorePlugin.getDefault()
-            .getPreference(USE_HOLISTIC_SLICER));
-        if (doCombined)
-        {
-          return performSlicingCombined(wholePeriod);
-        }
-        else
-        {
-          return performSlicingSeparate(wholePeriod);
-        }
-      }
-
-      private List<Zone> performSlicingCombined(final boolean wholePeriod)
-      {
-        // hmm, the above set of bearings only covers windows where we have
-        // target track defined. But, in order to consider the actual extent
-        // of the target track we need all the data. So, get the bearings
-        // captured during the whole outer time period of the secondary track
-
-        final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
-
-        final List<Zone> res;
-
-        if (secondary != null)
-        {
-          // now find data in the primary track
-          final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
-              .getStartDTG(), secondary.getEndDTG());
-          final List<SensorContactWrapper> bearings = _myHelper.getBearings(
-              _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
-
-          // note: the slicer depends upon bearing. check we have bearing
-          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0)
-              .getBearing()))
-          {
-            res = sliceTarget2(bearings, randomProv, secondary,
-                _slicePrecision);
-          }
-          else
-          {
-            res = null;
-          }
-        }
-        else
-        {
-          res = null;
-        }
-        return res;
-      }
-
-      private List<Zone> performSlicingSeparate(final boolean wholePeriod)
-      {
-        // hmm, the above set of bearings only covers windows where we have
-        // target track defined. But, in order to consider the actual extent
-        // of the target track we need all the data. So, get the bearings
-        // captured during the whole outer time period of the secondary track
-
-        final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
-
-        final List<Zone> res;
-
-        if (secondary != null)
-        {
-          // now find data in the primary track
-          final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
-              .getStartDTG(), secondary.getEndDTG());
-          final List<SensorContactWrapper> bearings = _myHelper.getBearings(
-              _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
-
-          // note: the slicer depends upon bearing. check we have bearing
-          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0)
-              .getBearing()))
-          {
-            res = sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-                secondary, _slicePrecision);
-          }
-          else
-          {
-            res = null;
-          }
-        }
-        else
-        {
-          res = null;
-        }
-        return res;
-      }
-
-      @Override
-      public void switchAmbiguousCuts(final Zone zone)
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err.println(
-            "Should not be trying to switch cuts on a target track");
-      }
-    };
+    final ZoneSlicer targetLegSlicer = new TargetZoneSlicer(randomProv);
 
     final ZoneChartConfig tZoneConfig = new ZoneChart.ZoneChartConfig(
         "Target Legs", "Bearing", DebriefColors.RED, false);
@@ -1830,6 +1721,124 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
   }
 
+  protected class TargetZoneSlicer implements ZoneSlicer
+  {
+
+    private final ColorProvider _randomProv;
+
+    public TargetZoneSlicer(ColorProvider randomProv)
+    {
+      _randomProv = randomProv;
+    }
+
+    @Override
+    public boolean ambigDataPresent()
+    {
+      // don't worry. we shouldn't be doing this for this zone
+      System.err.println(
+          "Should not be trying to check ambig cuts on target track");
+
+      return false;
+    }
+
+    @Override
+    public List<Zone> performSlicing(final boolean wholePeriod)
+    {
+      final boolean doCombined = Boolean.valueOf(CorePlugin.getDefault()
+          .getPreference(USE_HOLISTIC_SLICER));
+      if (doCombined)
+      {
+        return performSlicingCombined(wholePeriod);
+      }
+      else
+      {
+        return performSlicingSeparate(wholePeriod);
+      }
+    }
+
+    private List<Zone> performSlicingCombined(final boolean wholePeriod)
+    {
+      // hmm, the above set of bearings only covers windows where we have
+      // target track defined. But, in order to consider the actual extent
+      // of the target track we need all the data. So, get the bearings
+      // captured during the whole outer time period of the secondary track
+
+      final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
+      final List<Zone> res;
+
+      if (secondary != null)
+      {
+        // now find data in the primary track
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+            .getStartDTG(), secondary.getEndDTG());
+        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+            _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
+
+        // note: the slicer depends upon bearing. check we have bearing
+        if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+        {
+          res = sliceTarget2(bearings, _randomProv, secondary, _slicePrecision);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+      return res;
+    }
+
+    private List<Zone> performSlicingSeparate(final boolean wholePeriod)
+    {
+      // hmm, the above set of bearings only covers windows where we have
+      // target track defined. But, in order to consider the actual extent
+      // of the target track we need all the data. So, get the bearings
+      // captured during the whole outer time period of the secondary track
+
+      final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
+      final List<Zone> res;
+
+      if (secondary != null)
+      {
+        // now find data in the primary track
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+            .getStartDTG(), secondary.getEndDTG());
+        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+            _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
+
+        // note: the slicer depends upon bearing. check we have bearing
+        if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+        {
+          res = sliceTarget(ownshipZoneChart.getZones(), bearings, _randomProv,
+              secondary, _slicePrecision);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+      return res;
+    }
+
+    @Override
+    public void switchAmbiguousCuts(final Zone zone)
+    {
+      // don't worry. we shouldn't be doing this for this zone
+      System.err.println(
+          "Should not be trying to switch cuts on a target track");
+    }
+
+  }
+
   /**
    * collate some zones based on legs in the target track
    *
@@ -2007,22 +2016,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void run()
       {
-        // check it's not already the message
-        if (string != null && !string.equals(_myChart.getTitle().getText()))
+        if (_myChart != null)
         {
-          // somehow, put the message into the UI
-          _myChart.setTitle(string);
-        }
-        else if (string == null && _myChart.getTitle() != null)
-        {
-          _myChart.setTitle((String) null);
-        }
+          // check it's not already the message
+          if (string != null && !string.equals(_myChart.getTitle().getText()))
+          {
+            // somehow, put the message into the UI
+            _myChart.setTitle(string);
+          }
+          else if (string == null && _myChart.getTitle() != null)
+          {
+            _myChart.setTitle((String) null);
+          }
 
-        // is it a fail status
-        if (statusCode != IStatus.OK)
+          // is it a fail status
+          if (statusCode != IStatus.OK)
+          {
+            // and store the problem into the log
+            CorePlugin.logError(statusCode, string, object);
+          }
+        }
+        else
         {
-          // and store the problem into the log
-          CorePlugin.logError(statusCode, string, object);
+          System.out.println("TRYING TO SHOW MESSAGE WHEN CHART CLOSED");
         }
 
       }
