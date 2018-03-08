@@ -230,11 +230,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     removeMyOldDetections(existingDetections);
 
     // can we?
-    if (canRun)
-    {
-
-      // are we active?
-      if (isWorking())
+    if (canRun && isWorking())
       {
 
         // just check that our list is empty
@@ -300,7 +296,6 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
           _newDetections.removeAllElements();
         }
       }
-    }
   }
 
   /**

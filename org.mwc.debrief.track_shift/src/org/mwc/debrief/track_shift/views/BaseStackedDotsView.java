@@ -1748,15 +1748,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           .getPreference(USE_HOLISTIC_SLICER));
       if (doCombined)
       {
-        return performSlicingCombined(wholePeriod);
+        return performSlicingCombined();
       }
       else
       {
-        return performSlicingSeparate(wholePeriod);
+        return performSlicingSeparate();
       }
     }
 
-    private List<Zone> performSlicingCombined(final boolean wholePeriod)
+    private List<Zone> performSlicingCombined()
     {
       // hmm, the above set of bearings only covers windows where we have
       // target track defined. But, in order to consider the actual extent
@@ -1792,7 +1792,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       return res;
     }
 
-    private List<Zone> performSlicingSeparate(final boolean wholePeriod)
+    private List<Zone> performSlicingSeparate()
     {
       // hmm, the above set of bearings only covers windows where we have
       // target track defined. But, in order to consider the actual extent

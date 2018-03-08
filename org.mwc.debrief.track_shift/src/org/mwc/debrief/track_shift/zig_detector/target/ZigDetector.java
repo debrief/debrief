@@ -297,7 +297,7 @@ public class ZigDetector
 
     final static class DownHelper extends BaseHelper
     {
-      int otherEnd = -1;
+      private  int otherEnd = -1;
 
       public DownHelper(final TPeriod thisLeg)
       {
@@ -765,13 +765,13 @@ public class ZigDetector
       double zigRatio = 1000d;
       final double optimiseTolerance = 0.0000000004;
       //
-      final long timeWindow = 240;
+      // final long timeWindow = 240;
       zigRatio = 15d;
 
       final List<TPeriod> legs = new ArrayList<TPeriod>();
 
       detector.runThrough2(optimiseTolerance, rawList1, tBearings, zigRatio,
-          timeWindow, legs);
+          legs);
 
       listSlices(legs, rawList1);
 
@@ -859,13 +859,13 @@ public class ZigDetector
       double zigRatio = 1000d;
       final double optimiseTolerance = 0.0000000004;
 
-      final long timeWindow = 240;
+      // final long timeWindow = 240;
       zigRatio = 15d;
 
       final List<TPeriod> legs = new ArrayList<TPeriod>();
 
       detector.runThrough2(optimiseTolerance, rawList1, tBearings, zigRatio,
-          timeWindow, legs);
+           legs);
 
       listSlices(legs, rawList1);
 
@@ -1261,7 +1261,7 @@ public class ZigDetector
 
   }
 
-  static int ctr = 0;
+  private static int ctr = 0;
 
   private static int calculateNewStart(final List<Long> legTimes,
       final int startPoint, final long interval)
@@ -1604,8 +1604,8 @@ public class ZigDetector
 
         // ok. we;ve got a low quality fit. This probably
         // isn't an ArcTan period
-
-        if (true)
+        final boolean showIt = true;
+        if (showIt)
         {
           for (int j = 0; j < times.size(); j++)
           {
@@ -2189,8 +2189,7 @@ public class ZigDetector
    */
   private void runThrough2(final double optimiseTolerance,
       final List<Long> fullTimes, final List<Double> fullBearings,
-      final double zigThreshold, final long timeWindowSecs,
-      final List<TPeriod> legs)
+      final double zigThreshold, final List<TPeriod> legs)
   {
     final List<TPeriod> sliceQueue = new ArrayList<TPeriod>();
 
@@ -2445,12 +2444,12 @@ public class ZigDetector
     }
 
     // double threshold = 0.002;
-    final long timeWindow = 120000;
+    // final long timeWindow = 120000;
 
     final List<TPeriod> legs = new ArrayList<TPeriod>();
 
     runThrough2(optimiseTolerance, legTimes, legBearings, RMS_ZIG_RATIO,
-        timeWindow, legs);
+        legs);
 
     // ok, share the good news
     int ctr = 1;
