@@ -2436,7 +2436,7 @@ public class ZigDetector
     {
       if (legStorer != null)
       {
-        legStorer.storeLeg("leg_" + ctr++, leg.start, leg.end, 2d);
+        legStorer.storeLeg("leg_" + ctr++, legTimes.get(leg.start), legTimes.get(leg.end), 2d);
       }
     }
   }
