@@ -1241,8 +1241,22 @@ public class ZigDetector
                                                                        // thisTimes.get(end) +
                                                                        // "secs";
       }
-      return "Period:" + start + "-" + end + ", " + thisTimes.get(start) + "-"
-          + thisTimes.get(end) + " secs";
+      else
+      {
+        String dates;
+        if(thisTimes.get(start) < 10000000)
+        {
+          dates = thisTimes.get(start) + "-"
+              + thisTimes.get(end) + " secs" ;
+        }
+        else
+        {
+          dates  = new Date(thisTimes.get(start)) + "-" + new Date(thisTimes
+              .get(end));
+        }
+        return "Period:" + start + "-" + end + ", " + dates;
+      }
+
     }
 
   }
@@ -1375,7 +1389,8 @@ public class ZigDetector
               java.text.DecimalFormat df = new java.text.DecimalFormat(
                   "0.0000000");
               System.out.println(df.format(rootMeanRate) + " from:" + ctr
-                  + " items, total:" + df.format(runningSum) + ", " + thisP.toString(legTimes));
+                  + " items, total:" + df.format(runningSum) + ", " + thisP
+                      .toString(legTimes));
             }
 
             // double time = startT + (endT - startT) / 2;
@@ -1482,7 +1497,7 @@ public class ZigDetector
   }
 
   private static TPeriod growLeg(final double optimiseTolerance,
-      final List<Long> thisTimes, final List<Double> thisBearings,
+      final List<Long> outerTimes, final List<Double> outerBearings,
       final TPeriod thisLeg, final double validFit, final PeriodHandler deleter,
       final boolean deleteIfCantFit)
   {
@@ -1496,7 +1511,7 @@ public class ZigDetector
     final TPeriod originalLeg = new TPeriod(thisLeg.start, thisLeg.end);
 
     final Helpers.WalkHelper downHelper = new Helpers.DownHelper(thisLeg);
-    final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, thisTimes
+    final Helpers.WalkHelper upHelper = new Helpers.UpHelper(thisLeg, outerTimes
         .size());
 
     // remember the value at hte other end
@@ -1534,11 +1549,13 @@ public class ZigDetector
       ctr++;
 
       // fit the curve
-      final List<Long> times = thisTimes.subList(thisLeg.start, thisLeg.end);
-      final List<Double> bearings = thisBearings.subList(thisLeg.start,
+      final List<Long> times = outerTimes.subList(thisLeg.start, thisLeg.end);
+      final List<Double> bearings = outerBearings.subList(thisLeg.start,
           thisLeg.end);
-
-      final Minimisation optimiser = optimiseThis(times, bearings,
+      final List<Long> zeroTimes = prepareTimes(times);
+      
+      // adjust the times to start at zero
+      final Minimisation optimiser = optimiseThis(zeroTimes, bearings,
           optimiseTolerance);
 
       // check it worked
@@ -1556,18 +1573,19 @@ public class ZigDetector
       final double[] coeff = optimiser.getParamValues();
 
       // if it's more than a few minutes, let's ditch it.
-      final long elapsedTimeSecs = (times.get(times.size() - 1) - times.get(0)) / 1000L;
+      final long elapsedTimeSecs = (zeroTimes.get(zeroTimes.size() - 1) - zeroTimes.get(0))
+          / 1000L;
 
-//      System.out.println(thisLeg.toString(thisTimes) + " Error score:"
-//          + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
-//              / times.size()) + " growth:" + (thisScore / lastScore));
+      // System.out.println(thisLeg.toString(thisTimes) + " Error score:"
+      // + thisScore + " secs:" + elapsedTimeSecs + " error/item:" + (thisScore
+      // / times.size()) + " growth:" + (thisScore / lastScore));
 
       if (me)
       {
         System.out.println("===" + thisLeg.toString());
-        for (int j = 0; j < times.size(); j++)
+        for (int j = 0; j < zeroTimes.size(); j++)
         {
-          final long t = times.get(j);
+          final long t = zeroTimes.get(j);
 
           double thisB = bearings.get(j);
           if (thisB < 0)
@@ -1600,8 +1618,8 @@ public class ZigDetector
               thisB += 360d;
             }
 
-//            System.out.println(t + ", " + thisB + ", " + FlanaganArctan
-//                .calcForecast(coeff, t));
+            // System.out.println(t + ", " + thisB + ", " + FlanaganArctan
+            // .calcForecast(coeff, t));
           }
         }
 
@@ -1645,13 +1663,13 @@ public class ZigDetector
       // to walk up, give it a few more values at the end
       final int extraLeg = 2;
       final int newStart = Math.max(thisLeg.start - extraLeg, 0);
-      final int newEnd = Math.min(thisLeg.end + extraLeg, thisTimes.size() - 1);
-      List<Long> tmpTimes = thisTimes.subList(thisLeg.start, newEnd);
-      List<Double> tmpBearings = thisBearings.subList(thisLeg.start, newEnd);
+      final int newEnd = Math.min(thisLeg.end + extraLeg, outerTimes.size() - 1);
+      List<Long> tmpTimes = outerTimes.subList(thisLeg.start, newEnd);
+      List<Double> tmpBearings = outerBearings.subList(thisLeg.start, newEnd);
       walkThisEnd(upHelper, tmpTimes, tmpBearings, coeff, thisLeg, downHelper);
 
-      tmpTimes = thisTimes.subList(newStart, thisLeg.end);
-      tmpBearings = thisBearings.subList(newStart, thisLeg.end);
+      tmpTimes = outerTimes.subList(newStart, thisLeg.end);
+      tmpBearings = outerBearings.subList(newStart, thisLeg.end);
       walkThisEnd(downHelper, tmpTimes, tmpBearings, coeff, thisLeg, upHelper);
 
       lastLeg = new TPeriod(thisLeg.start, thisLeg.end);
@@ -1858,11 +1876,16 @@ public class ZigDetector
 
   /**
    * 
-   * @param legTimes the list of times
-   * @param legBearings the list of bearings
-   * @param slicedTimes the outgoing list of blocks of time
-   * @param slicedBearings the outgoing list of blocks of bearings
-   * @param sepMillis the size of gap that causes a split
+   * @param legTimes
+   *          the list of times
+   * @param legBearings
+   *          the list of bearings
+   * @param slicedTimes
+   *          the outgoing list of blocks of time
+   * @param slicedBearings
+   *          the outgoing list of blocks of bearings
+   * @param sepMillis
+   *          the size of gap that causes a split
    */
   private static void sliceIntoBlocks(final List<Long> legTimes,
       final List<Double> legBearings, final List<List<Long>> slicedTimes,
@@ -1978,10 +2001,10 @@ public class ZigDetector
               System.out.println("End value updated to" + thisLeg);
 
               // ok, have a look.
-//              for (final String s : states)
-//              {
-//                // System.out.println(s);
-//              }
+              // for (final String s : states)
+              // {
+              // // System.out.println(s);
+              // }
 
               // is the other end still walking? if it is, restart it.
               if (otherHelper.isGrowing())
@@ -2006,7 +2029,7 @@ public class ZigDetector
    *          regular time values
    * @return zero-based version of time dataset
    */
-  private List<Long> prepareTimes(final List<Long> times)
+  private static List<Long> prepareTimes(final List<Long> times)
   {
     final long first = times.get(0);
     final List<Long> res = new ArrayList<Long>();
@@ -2214,7 +2237,7 @@ public class ZigDetector
         };
 
         System.out.println("=======");
-        System.out.println("Analysing:" + outerPeriod.toString(zeroTimes));
+        System.out.println("Analysing:" + outerPeriod.toString(fullTimes));
 
         // slice the data
         final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
@@ -2234,7 +2257,7 @@ public class ZigDetector
           continue;
         }
 
-        showLeg("flattest:", thisTimes, thisLeg);
+        showLeg("flattest:", fullTimes, thisLeg);
 
         final double validFit = 2.5d;
 
@@ -2250,7 +2273,7 @@ public class ZigDetector
           {
             System.out.println("bad");
           }
-          showLeg("STORING:", thisTimes, thisLeg);
+          showLeg("STORING:", fullTimes, thisLeg);
           handleNewSlices(sliceQueue, legs, outerPeriod, thisLeg, 5, true);
         }
 
@@ -2400,10 +2423,9 @@ public class ZigDetector
     }
 
   }
-  
+
   public void sliceThis2(final ILog log, final String PLUGIN_ID,
-      final String scenario, 
-      final ILegStorer legStorer,
+      final String scenario, final ILegStorer legStorer,
       final double RMS_ZIG_RATIO, final double optimiseTolerance,
       final List<Long> legTimes, final List<Double> rawLegBearings)
   {
@@ -2424,7 +2446,7 @@ public class ZigDetector
 
     // double threshold = 0.002;
     final long timeWindow = 120000;
-    
+
     final List<TPeriod> legs = new ArrayList<TPeriod>();
 
     runThrough2(optimiseTolerance, legTimes, legBearings, RMS_ZIG_RATIO,
@@ -2436,11 +2458,12 @@ public class ZigDetector
     {
       if (legStorer != null)
       {
-        legStorer.storeLeg("leg_" + ctr++, legTimes.get(leg.start), legTimes.get(leg.end), 2d);
+        legStorer.storeLeg("leg_" + ctr++, legTimes.get(leg.start), legTimes
+            .get(leg.end), 2d);
       }
     }
   }
-  
+
   private void storeZigs(final long wholeEnd, final IZigStorer zigStorer,
       final Set<ScoredTime> zigStarts, final Set<ScoredTime> zigEnds)
   {
