@@ -30,7 +30,7 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   int _myId;
   String _myName;
   private final static String WORKING = "Working";
-  private Integer _detectionInterval = null;
+  protected Integer _detectionInterval = null;
   private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
   protected boolean _working = true;
   private static final String ID_VAL = "id";
