@@ -36,7 +36,7 @@
              category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
              class="org.mwc.debrief.track_shift.preferences.tma.TMAPreferencePage"
              id="org.mwc.debrief.track_shift.preferences.tma.TMAPreferencePage"
-             name="Target Motion Analysis (TMA)">
+             name="TMA operations">
        </page>
     </extension>
    <extension

@@ -28,6 +28,7 @@ public class TMAPreferenceInitializer extends AbstractPreferenceInitializer {
     store.setDefault(TMAPreferencePage.PreferenceConstants.CUT_OFF_VALUE_DEGS, 3);
     store.setDefault(TMAPreferencePage.PreferenceConstants.CUT_OFF_VALUE_HZ, 0.2);
     store.setDefault(TMAPreferencePage.PreferenceConstants.SPEED_OF_SOUND_KTS, "2951");
+    store.setDefault(TMAPreferencePage.PreferenceConstants.HOLISTIC_LEG_SLICER, true);
 	}
 
 }
