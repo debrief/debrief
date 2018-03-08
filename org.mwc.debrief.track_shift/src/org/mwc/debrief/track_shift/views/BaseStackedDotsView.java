@@ -885,7 +885,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public List<Zone> performSlicing(final boolean wholePeriod)
       {
-        final boolean doCombined = true;
+        final boolean doCombined = Boolean.valueOf(CorePlugin.getDefault()
+            .getPreference(USE_HOLISTIC_SLICER));
         if (doCombined)
         {
           return performSlicingCombined(wholePeriod);
@@ -894,7 +895,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           return performSlicingSeparate(wholePeriod);
         }
-
       }
 
       private List<Zone> performSlicingCombined(final boolean wholePeriod)
