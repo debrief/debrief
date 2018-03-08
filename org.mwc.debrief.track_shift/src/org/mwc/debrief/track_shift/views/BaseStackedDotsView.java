@@ -179,6 +179,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
 
   final public static String AMBIG_NAME = "Measured (Ambiguous)";
+  public static final String USE_HOLISTIC_SLICER = "USE_HOLISTIC_SLICER";
 
   /*
    * Undo and redo actions
@@ -823,11 +824,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
+    // are we doing holistic legs?
+    final boolean goingHolistic = Boolean.valueOf(CorePlugin.getDefault()
+        .getPreference(USE_HOLISTIC_SLICER));
+
     // put the courses into a TimeSeries
     final ZoneSlicer ownshipLegSlicer = getOwnshipZoneSlicer(blueProv);
 
     final ZoneChartConfig oZoneConfig = new ZoneChart.ZoneChartConfig(
-        "Ownship Legs", "Course", DebriefColors.BLUE);
+        "Ownship Legs", "Course", DebriefColors.BLUE, goingHolistic);
 
     final Runnable deleteCutsInTurn = getDeleteCutsOperation();
     final Runnable resolveAmbiguity = getResolveAmbiguityOperation();
@@ -866,68 +871,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
 
     // put the bearings into a TimeSeries
-    final ZoneSlicer targetLegSlicer = new ZoneSlicer()
-    {
-      @Override
-      public boolean ambigDataPresent()
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err.println(
-            "Should not be trying to check ambig cuts on target track");
-
-        return false;
-      }
-
-      @Override
-      public List<Zone> performSlicing(final boolean wholePeriod)
-      {
-        // hmm, the above set of bearings only covers windows where we have
-        // target track defined. But, in order to consider the actual extent
-        // of the target track we need all the data. So, get the bearings
-        // captured during the whole outer time period of the secondary track
-
-        final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
-
-        final List<Zone> res;
-
-        if (secondary != null)
-        {
-          // now find data in the primary track
-          final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
-              .getStartDTG(), secondary.getEndDTG());
-          final List<SensorContactWrapper> bearings = _myHelper.getBearings(
-              _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
-
-          // note: the slicer depends upon bearing. check we have bearing
-          if (bearings.size() > 0 && !Double.isNaN(bearings.get(0)
-              .getBearing()))
-          {
-            res = sliceTarget(ownshipZoneChart.getZones(), bearings, randomProv,
-                secondary, _slicePrecision);
-          }
-          else
-          {
-            res = null;
-          }
-        }
-        else
-        {
-          res = null;
-        }
-        return res;
-      }
-
-      @Override
-      public void switchAmbiguousCuts(final Zone zone)
-      {
-        // don't worry. we shouldn't be doing this for this zone
-        System.err.println(
-            "Should not be trying to switch cuts on a target track");
-      }
-    };
+    final ZoneSlicer targetLegSlicer = new TargetZoneSlicer(randomProv);
 
     final ZoneChartConfig tZoneConfig = new ZoneChart.ZoneChartConfig(
-        "Target Legs", "Bearing", DebriefColors.RED);
+        "Target Legs", "Bearing", DebriefColors.RED, false);
     final TimeSeries[] otherSeries = new TimeSeries[]
     {targetCalculatedSeries};
     targetZoneChart = ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm,
@@ -1774,6 +1721,124 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     };
   }
 
+  protected class TargetZoneSlicer implements ZoneSlicer
+  {
+
+    private final ColorProvider _randomProv;
+
+    public TargetZoneSlicer(ColorProvider randomProv)
+    {
+      _randomProv = randomProv;
+    }
+
+    @Override
+    public boolean ambigDataPresent()
+    {
+      // don't worry. we shouldn't be doing this for this zone
+      System.err.println(
+          "Should not be trying to check ambig cuts on target track");
+
+      return false;
+    }
+
+    @Override
+    public List<Zone> performSlicing(final boolean wholePeriod)
+    {
+      final boolean doCombined = Boolean.valueOf(CorePlugin.getDefault()
+          .getPreference(USE_HOLISTIC_SLICER));
+      if (doCombined)
+      {
+        return performSlicingCombined();
+      }
+      else
+      {
+        return performSlicingSeparate();
+      }
+    }
+
+    private List<Zone> performSlicingCombined()
+    {
+      // hmm, the above set of bearings only covers windows where we have
+      // target track defined. But, in order to consider the actual extent
+      // of the target track we need all the data. So, get the bearings
+      // captured during the whole outer time period of the secondary track
+
+      final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
+      final List<Zone> res;
+
+      if (secondary != null)
+      {
+        // now find data in the primary track
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+            .getStartDTG(), secondary.getEndDTG());
+        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+            _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
+
+        // note: the slicer depends upon bearing. check we have bearing
+        if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+        {
+          res = sliceTarget2(bearings, _randomProv, secondary, _slicePrecision);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+      return res;
+    }
+
+    private List<Zone> performSlicingSeparate()
+    {
+      // hmm, the above set of bearings only covers windows where we have
+      // target track defined. But, in order to consider the actual extent
+      // of the target track we need all the data. So, get the bearings
+      // captured during the whole outer time period of the secondary track
+
+      final ISecondaryTrack secondary = _myHelper.getSecondaryTrack();
+
+      final List<Zone> res;
+
+      if (secondary != null)
+      {
+        // now find data in the primary track
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
+            .getStartDTG(), secondary.getEndDTG());
+        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+            _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
+
+        // note: the slicer depends upon bearing. check we have bearing
+        if (bearings.size() > 0 && !Double.isNaN(bearings.get(0).getBearing()))
+        {
+          res = sliceTarget(ownshipZoneChart.getZones(), bearings, _randomProv,
+              secondary, _slicePrecision);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+      return res;
+    }
+
+    @Override
+    public void switchAmbiguousCuts(final Zone zone)
+    {
+      // don't worry. we shouldn't be doing this for this zone
+      System.err.println(
+          "Should not be trying to switch cuts on a target track");
+    }
+
+  }
+
   /**
    * collate some zones based on legs in the target track
    *
@@ -1952,7 +2017,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       public void run()
       {
         // check it's not already the message
-        if (string != null && !string.equals(_myChart.getTitle()))
+        if (string != null && _myChart.getTitle() != null && !string.equals(
+            _myChart.getTitle().getText()))
         {
           // somehow, put the message into the UI
           _myChart.setTitle(string);
@@ -1968,7 +2034,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // and store the problem into the log
           CorePlugin.logError(statusCode, string, object);
         }
-
       }
     });
   }
@@ -2528,6 +2593,103 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
       });
     }
+  }
+
+  /**
+   * slice the target bearings according to these zones
+   *
+   * @param ownshipZones
+   * @param randomProv
+   * @param slicePrecision
+   * @param secondaryTrack
+   * @param targetBearingSeries2
+   * @return
+   */
+  protected List<Zone> sliceTarget2(final List<SensorContactWrapper> cuts,
+      final ColorProvider randomProv, final ISecondaryTrack tgtTrack,
+      final Precision slicePrecision)
+  {
+    final ZigDetector slicer = new ZigDetector();
+    final List<Zone> legs = new ArrayList<Zone>();
+
+    // check we have some data
+    if (cuts.isEmpty())
+    {
+      Application.logError2(ToolParent.ERROR, "List of cuts is empty", null);
+      return null;
+    }
+
+    final ILegStorer legStorer = new ILegStorer()
+    {
+      @Override
+      public void storeLeg(final String scenarioName, final long tStart,
+          final long tEnd, final double rms)
+      {
+        final Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
+        legs.add(newZone);
+      }
+    };
+
+    final double optimiseTolerance = 0.000001;
+    final double RMS_ZIG_RATIO = getPrecision(slicePrecision);
+
+    // get a logger to use
+    final ILog log;
+    if (TrackShiftActivator.getDefault() == null)
+    {
+      log = new TrackShiftActivator().getLog();
+    }
+    else
+    {
+      log = TrackShiftActivator.getDefault().getLog();
+    }
+
+    // get the bearings in this leg
+    final List<Long> thisLegTimes = new ArrayList<Long>();
+    final List<Double> thisLegBearings = new ArrayList<Double>();
+    getCutsForThisLeg(cuts, Long.MIN_VALUE, Long.MAX_VALUE, thisLegTimes,
+        thisLegBearings);
+
+    // slice the leg
+    slicer.sliceThis2(log, TrackShiftActivator.PLUGIN_ID, "Some scenario",
+        legStorer, RMS_ZIG_RATIO, optimiseTolerance, thisLegTimes,
+        thisLegBearings);
+
+    // special case: if we've manually deleted the target legs, and have to re-create them
+    final Enumeration<Editable> segments = tgtTrack.segments();
+    boolean hasData = segments.hasMoreElements();
+
+    // hmm, if it's a normal track, the list may be a list of different data types
+    // have a look at the first one
+    if (hasData)
+    {
+      final Editable first = segments.nextElement();
+      if (first instanceof SegmentList)
+      {
+        final SegmentList list = (SegmentList) first;
+        hasData = list.size() > 0;
+      }
+    }
+
+    // ok, loop through the legs, updating our TMA legs
+    for (final Zone leg : legs)
+    {
+      // ok, see if there is already a leg at this time
+      setLeg(_myHelper.getPrimaryTrack(), tgtTrack, leg);
+    }
+
+    // ok, fire some updates
+    if (_ourLayersSubject != null)
+    {
+      // share the good news
+      _ourLayersSubject.fireModified((Layer) _myHelper.getSecondaryTrack());
+
+      // and re-generate the doublets
+      updateData(true);
+    }
+
+    // ok, done.
+    return legs;
   }
 
   /**

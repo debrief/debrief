@@ -15,6 +15,7 @@
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -345,18 +346,27 @@ public class CSVExportDetectionsObserver extends RecordStatusToFileObserverType
           final WorldLocation loc = de.getSensorLocation();
 
           // _os.write("Date, Bearing (Degs), Frequency (Hz), Strength");
+          
+          DecimalFormat threeDP = new DecimalFormat("0.###");
+          DecimalFormat sixDP = new DecimalFormat("0.######");
+
 
           buff.append(dateStr);
           buff.append(", ");
-          buff.append(loc.getLat());
+          buff.append(sixDP.format(loc.getLat()));
           buff.append(", ");
-          buff.append(loc.getLong());
+          buff.append(sixDP.format(loc.getLong()));
           buff.append(", ");
-          buff.append(de.getBearing());
+          buff.append(threeDP.format(de.getBearing()));
           buff.append(", ");
-          buff.append(de.getFreq());
+          
+          final String freqStr = de.getFreq() == null ? "N/A" : threeDP.format(de.getFreq().floatValue());        
+          buff.append(freqStr);
+          
           buff.append(", ");
-          buff.append(de.getStrength());
+          
+          final String strengthStr = de.getStrength() == null ? "N/A" : threeDP.format(de.getStrength().floatValue());
+          buff.append(strengthStr);
 
           buff.append(System.getProperty("line.separator"));
 

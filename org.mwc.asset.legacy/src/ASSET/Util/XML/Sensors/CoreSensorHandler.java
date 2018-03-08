@@ -30,6 +30,8 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   int _myId;
   String _myName;
   private final static String WORKING = "Working";
+  protected Integer _detectionInterval = null;
+  private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
   protected boolean _working = true;
   private static final String ID_VAL = "id";
 
@@ -42,6 +44,13 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
       public void setValue(String name, final String val)
       {
         _myId = Integer.parseInt(val);
+      }
+    });
+    addAttributeHandler(new HandleIntegerAttribute(DETECTION_INTERVAL)
+    {
+      public void setValue(String name, final int val)
+      {
+        _detectionInterval = val;
       }
     });
 
@@ -74,7 +83,14 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
     // ok - now store it
     addSensor(sensor);
     sensor.setWorking(_working);
-
+    
+    // TBDO?
+    if(_detectionInterval != null && sensor instanceof CoreSensor)
+      {
+        CoreSensor core = (CoreSensor) sensor;
+        core.setTimeBetweenDetectionOpportunities(_detectionInterval);
+        _detectionInterval = null;
+      }
 
     // and clear the data
     _myName = null;

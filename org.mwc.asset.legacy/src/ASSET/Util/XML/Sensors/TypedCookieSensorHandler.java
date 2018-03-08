@@ -43,11 +43,8 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
   private final static String type = "TypedCookieSensor";
   private final static String HAS_RANGE = "ProducesRange";
   private final static String INCLUDES_NOISE = "IncludesNoise";
-  private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
 	private Vector<TypedRangeDoublet> _rangeDoublets;
-	
   String _detectionLevel;
-  Integer _detectionInterval = null;
   protected final static String DETECTION_LEVEL = "DetectionLevel";
   
   int _medium = -1;
@@ -97,14 +94,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
         _medium = _myEditor.getIndex();
       }
     });
-    addAttributeHandler(new HandleIntegerAttribute(DETECTION_INTERVAL)
-    {
-      public void setValue(String name, final int val)
-      {
-      	_detectionInterval = val;
-      }
-    });
-    
+   
     addAttributeHandler(new HandleAttribute(DETECTION_LEVEL)
     {
       public void setValue(String name, final String val)

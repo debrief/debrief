@@ -103,8 +103,6 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
-import MWC.GUI.Properties.DebriefColors;
-
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
@@ -156,12 +154,15 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.Ranging1959ContributionV
 import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
 
+import MWC.GUI.Properties.DebriefColors;
+
 /**
  * mock class to test high level application flows
  * 
  * @author ian
  * 
  */
+@SuppressWarnings("deprecation")
 public class MaintainContributionsView extends ViewPart
 {
 
@@ -617,7 +618,6 @@ public class MaintainContributionsView extends ViewPart
 
   }
 
-  @SuppressWarnings("deprecation")
   private void initGraphTabs(Composite parent)
   {
     GridData gridData = new GridData();
@@ -656,7 +656,7 @@ public class MaintainContributionsView extends ViewPart
     };
     ZoneChartConfig zoneConfig =
         new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
-            DebriefColors.BLUE);
+            DebriefColors.BLUE, true);
     long[] timeArr = new long[]
     {new Date("2016/10/10 10:00:00").getTime(),
       new Date("2016/10/10 10:21:00").getTime(),
@@ -1902,7 +1902,6 @@ public class MaintainContributionsView extends ViewPart
       final String newLine = System.getProperty("line.separator");
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
       sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-      @SuppressWarnings("deprecation")
       Date dateLead = new Date(100, 7, 7);
 
       Iterator<BaseContribution> conts =
