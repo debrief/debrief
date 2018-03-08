@@ -2016,31 +2016,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void run()
       {
-        if (_myChart != null)
+        // check it's not already the message
+        if (string != null && _myChart.getTitle() != null && !string.equals(
+            _myChart.getTitle().getText()))
         {
-          // check it's not already the message
-          if (string != null && !string.equals(_myChart.getTitle().getText()))
-          {
-            // somehow, put the message into the UI
-            _myChart.setTitle(string);
-          }
-          else if (string == null && _myChart.getTitle() != null)
-          {
-            _myChart.setTitle((String) null);
-          }
-
-          // is it a fail status
-          if (statusCode != IStatus.OK)
-          {
-            // and store the problem into the log
-            CorePlugin.logError(statusCode, string, object);
-          }
+          // somehow, put the message into the UI
+          _myChart.setTitle(string);
         }
-        else
+        else if (string == null && _myChart.getTitle() != null)
         {
-          System.out.println("TRYING TO SHOW MESSAGE WHEN CHART CLOSED");
+          _myChart.setTitle((String) null);
         }
 
+        // is it a fail status
+        if (statusCode != IStatus.OK)
+        {
+          // and store the problem into the log
+          CorePlugin.logError(statusCode, string, object);
+        }
       }
     });
   }
