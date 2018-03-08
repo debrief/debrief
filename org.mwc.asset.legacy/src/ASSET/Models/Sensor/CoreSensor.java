@@ -45,8 +45,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
   // //////////////////////////////////////////////////
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -109,6 +109,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    */
   private String _defaultName;
 
+  private boolean _wipeDetectionsEachStep = true;
+
   /**
    * externally suppled operation to fire when somebody wants to watch us.
    */
@@ -158,8 +160,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
       ParticipantDetectedListener listener)
   {
     if (_participantDetectedListeners == null)
-      _participantDetectedListeners =
-          new Vector<ParticipantDetectedListener>(1, 2);
+      _participantDetectedListeners = new Vector<ParticipantDetectedListener>(1,
+          2);
 
     _participantDetectedListeners.add(listener);
   }
@@ -227,75 +229,76 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     // removeMyOldDetections(existingDetections);
 
     // ditch any old detections, since we're about to supercede them
-    removeMyOldDetections(existingDetections);
+    if (_wipeDetectionsEachStep)
+      removeMyOldDetections(existingDetections);
 
     // can we?
     if (canRun && isWorking())
+    {
+
+      // just check that our list is empty
+      _newDetections.removeAllElements();
+
+      // step through the participants in the scenario
+      final Collection<ParticipantType> parts = scenario
+          .getListOfVisibleParticipants();
+
+      for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
+          .hasNext();)
       {
+        ParticipantType target = (ParticipantType) iterator.next();
 
-        // just check that our list is empty
-        _newDetections.removeAllElements();
-
-        // step through the participants in the scenario
-        final Collection<ParticipantType> parts =
-            scenario.getListOfVisibleParticipants();
-
-        for (Iterator<ParticipantType> iterator = parts.iterator(); iterator
-            .hasNext();)
+        // is this target alive in the scenario yet?
+        if (target.isAlive())
         {
-          ParticipantType target = (ParticipantType) iterator.next();
-
-          // is this target alive in the scenario yet?
-          if (target.isAlive())
+          // yes
+          // is this us?
+          if (target != ownship)
           {
-            // yes
-            // is this us?
-            if (target != ownship)
+            // can we detect it?
+            boolean canDetectHim = canDetectThisType(ownship, target,
+                environment);
+
+            if (canDetectHim)
             {
-              // can we detect it?
-              boolean canDetectHim =
-                  canDetectThisType(ownship, target, environment);
 
-              if (canDetectHim)
+              final DetectionEvent thisD = detectThis(environment, ownship,
+                  target, time, scenario);
+
+              if (thisD != null)
               {
+                // add to our current list of detections
+                existingDetections.add(thisD);
 
-                final DetectionEvent thisD =
-                    detectThis(environment, ownship, target, time, scenario);
+                // and add to our historic list of detections
+                _pastDetections.add(thisD);
 
-                if (thisD != null)
-                {
-                  // add to our current list of detections
-                  existingDetections.add(thisD);
+                // and remember for our new list
+                _newDetections.add(thisD);
+              } // whether we made a detection
+            } // whether we should even try to detect a participant of this
+              // type
+          } // of this is not us
+        } // if it's alive
+      } // if index was valid
 
-                  // and add to our historic list of detections
-                  _pastDetections.add(thisD);
-
-                  // and remember for our new list
-                  _newDetections.add(thisD);
-                } // whether we made a detection
-              } // whether we should even try to detect a participant of this
-                // type
-            } // of this is not us
-          }// if it's alive
-        } // if index was valid
-
-        // ok, we've performed all of our detections
-        if (_pSupport != null)
-        {
-          Long theTime = new Long(time);
-          _pSupport.firePropertyChange(DETECTION_CYCLE_COMPLETE, null, theTime);
-        }
-
-        // and have we got anything to report?
-        if (_newDetections.size() > 0)
-        {
-          // yup, fire them off
-          fireTheseDetections(_newDetections);
-
-          // and clear the list
-          _newDetections.removeAllElements();
-        }
+      // ok, we've performed all of our detections
+      if (_pSupport != null)
+      {
+        Long theTime = new Long(time);
+        _pSupport.firePropertyChange(DETECTION_CYCLE_COMPLETE, null, theTime);
       }
+
+      // and have we got anything to report?
+      if (_newDetections.size() > 0)
+      {
+        // yup, fire them off
+        fireTheseDetections(_newDetections);
+
+        // and clear the list
+        _newDetections.removeAllElements();
+      }
+    }
   }
 
   /**
@@ -309,8 +312,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     {
       for (int i = 0; i < _participantDetectedListeners.size(); i++)
       {
-        ParticipantDetectedListener listener =
-            _participantDetectedListeners.elementAt(i);
+        ParticipantDetectedListener listener = _participantDetectedListeners
+            .elementAt(i);
         listener.newDetections(thisD);
       }
     }
@@ -599,8 +602,8 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
       try
       {
         final java.beans.PropertyDescriptor[] res =
-            {prop("Name", "the name of this optic sensor"),
-                prop("Working", "whether this sensor is in use"),};
+        {prop("Name", "the name of this optic sensor"), prop("Working",
+            "whether this sensor is in use"),};
         return res;
       }
       catch (java.beans.IntrospectionException e)
