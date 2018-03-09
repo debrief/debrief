@@ -369,6 +369,11 @@ public class ImportNarrativeDocument
      */
     private static String lastMonth;
 
+    /**
+     * don#t assume a decreasing day is wrong if the year has incremented
+     */
+    private static String lastYear;
+
     static public NarrEntry create(final String msg, final int lineNum)
     {
       NarrEntry res = null;
@@ -412,6 +417,7 @@ public class ImportNarrativeDocument
       lastEntry = null;
       lastDay = null;
       lastMonth = null;
+      lastYear = null;
     }
 
     @SuppressWarnings("deprecation")
@@ -494,8 +500,10 @@ public class ImportNarrativeDocument
         final boolean monthIncreased =
             lastMonth != null
                 && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
+        final boolean yearIncreased = lastYear != null && Integer.parseInt(
+            yrStr) > Integer.parseInt(lastYear);
 
-        if (dayDecreased && !monthIncreased)
+        if (dayDecreased && !monthIncreased && !yearIncreased)
         {
           // ok, the day has dropped, but the month hasn't increased
           dayStr = lastDay;
@@ -511,6 +519,7 @@ public class ImportNarrativeDocument
           // it's valid, update the last day
           lastDay = dayStr;
           lastMonth = monStr;
+          lastYear = yrStr;
         }
 
         // hmm, on occasion we don't get the closing comma on the entry type
@@ -745,6 +754,45 @@ public class ImportNarrativeDocument
       }
       return lines;
     }
+    
+    public void testSpanningYear() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+      
+      assertEquals("read in track", 1, tLayers.size());
+      
+      // we've also got to change the date of the very last entry on the track,
+      // so that we can load narrative entries that go past the end of the track
+      // (into the next year).
+      TrackWrapper trk = (TrackWrapper) tLayers.elementAt(0);
+      FixWrapper lastFix = (FixWrapper) trk.getNearestTo(trk.getEndDTG())[0];
+      lastFix.setDateTimeGroup(new HiResDate(new Date()));
+      
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportNarrativeDocument importer =
+          new ImportNarrativeDocument(tLayers);
+      HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
+      importer.processThese(strings);
+      
+      NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      assertEquals("Got num lines", 371, narr.size());
+    }
 
     public void testAddFCSToTrack() throws InterruptedException, IOException
     {
@@ -780,7 +828,7 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 371, narrLayer.size());
+      assertEquals("Got num lines", 364, narrLayer.size());
 
       // hey, let's have a look them
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
@@ -854,7 +902,7 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer =
           (NarrativeWrapper) tLayers.elementAt(1);
       // correct final count
-      assertEquals("Got num lines", 371, narrLayer.size());
+      assertEquals("Got num lines", 364, narrLayer.size());
 
       // hey, let's have a look them
       TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
