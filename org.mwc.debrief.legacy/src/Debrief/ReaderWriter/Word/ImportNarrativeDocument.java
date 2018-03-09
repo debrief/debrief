@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.ReaderWriter.Word;
 
@@ -34,8 +34,6 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import junit.framework.TestCase;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPageTree;
@@ -68,14 +66,15 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import junit.framework.TestCase;
 
 public class ImportNarrativeDocument
 {
   /**
    * collection of fields for an FCS entry
-   * 
+   *
    * @author ian
-   * 
+   *
    */
   private static class FCSEntry
   {
@@ -97,13 +96,13 @@ public class ImportNarrativeDocument
 
     /**
      * get the element that starts with the provided identifier
-     * 
+     *
      * @param identifier
      * @param input
      * @return
      */
-    private static Double
-        getElement(final String identifier, final String input)
+    private static Double getElement(final String identifier,
+        final String input)
     {
       Double res = null;
 
@@ -129,7 +128,7 @@ public class ImportNarrativeDocument
 
     /**
      * special element handler that can accommodate a range of types of units
-     * 
+     *
      * @param tidied
      * @return
      */
@@ -243,7 +242,7 @@ public class ImportNarrativeDocument
 
     /**
      * extract the track number from the provided string
-     * 
+     *
      * @param str
      * @return
      */
@@ -286,7 +285,7 @@ public class ImportNarrativeDocument
 
     /**
      * have brg/rng as objects, so they can be null
-     * 
+     *
      */
     final Double brgDegs;
     final Double rangYds;
@@ -329,33 +328,19 @@ public class ImportNarrativeDocument
 
   private static class NarrEntry
   {
-    HiResDate dtg;
-    String type;
-    String platform;
-    String text;
-
-    boolean appendedToPrevious = false;
-
-    // ///////////////////
-    // static variables to help handle corrupt/incomplete data.
-    // NOTE: any new ones should be included in the "reset() processing
-    // ///////////////////
-
     /**
      * what is the last valid time we have. if time fields are missing we will extend from the last
      * DTG
      */
     private static Date lastDtg;
-
     /**
      * what was the last platform we read in, in case the platform is missing
-     * 
+     *
      */
     private static String lastPlatform;
-
     /**
      * what was the last entry? We remember it, so we can append ourselves to it
-     * 
+     *
      */
     private static NarrEntry lastEntry;
     /**
@@ -368,6 +353,11 @@ public class ImportNarrativeDocument
      * don#t assume a decreasing day is wrong if the month has incremented
      */
     private static String lastMonth;
+
+    // ///////////////////
+    // static variables to help handle corrupt/incomplete data.
+    // NOTE: any new ones should be included in the "reset() processing
+    // ///////////////////
 
     /**
      * don#t assume a decreasing day is wrong if the year has incremented
@@ -388,9 +378,8 @@ public class ImportNarrativeDocument
         else
         {
           // just check it's valid
-          final boolean valid =
-              (res.dtg != null) && (res.type != null) && (res.platform != null)
-                  && (res.text != null);
+          final boolean valid = (res.dtg != null) && (res.type != null)
+              && (res.platform != null) && (res.text != null);
           if (!valid)
           {
             res = null;
@@ -408,7 +397,7 @@ public class ImportNarrativeDocument
 
     /**
      * reset the static variables we use to handle missing, or mangled data
-     * 
+     *
      */
     public static void reset()
     {
@@ -419,6 +408,16 @@ public class ImportNarrativeDocument
       lastMonth = null;
       lastYear = null;
     }
+
+    HiResDate dtg;
+
+    String type;
+
+    String platform;
+
+    String text;
+
+    boolean appendedToPrevious = false;
 
     @SuppressWarnings("deprecation")
     public NarrEntry(final String entry) throws ParseException
@@ -440,12 +439,10 @@ public class ImportNarrativeDocument
       // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
 
       final boolean correctLength = parts.length > 5;
-      final boolean sixFigDTG =
-          correctLength && parts[0].length() == 6
-              && parts[0].matches(DATE_MATCH_SIX);
-      final boolean fourFigDTG =
-          correctLength && parts[0].length() == 4
-              && parts[0].matches(DATE_MATCH_FOUR);
+      final boolean sixFigDTG = correctLength && parts[0].length() == 6
+          && parts[0].matches(DATE_MATCH_SIX);
+      final boolean fourFigDTG = correctLength && parts[0].length() == 4
+          && parts[0].matches(DATE_MATCH_FOUR);
       final boolean hasDTG = sixFigDTG || fourFigDTG;
 
       if (hasDTG)
@@ -492,14 +489,12 @@ public class ImportNarrativeDocument
 
         /**
          * special processing, to overcome the previous day being used
-         * 
+         *
          */
-        final boolean dayDecreased =
-            lastDay != null
-                && Integer.parseInt(dayStr) < Integer.parseInt(lastDay);
-        final boolean monthIncreased =
-            lastMonth != null
-                && Integer.parseInt(monStr) > Integer.parseInt(lastMonth);
+        final boolean dayDecreased = lastDay != null && Integer.parseInt(
+            dayStr) < Integer.parseInt(lastDay);
+        final boolean monthIncreased = lastMonth != null && Integer.parseInt(
+            monStr) > Integer.parseInt(lastMonth);
         final boolean yearIncreased = lastYear != null && Integer.parseInt(
             yrStr) > Integer.parseInt(lastYear);
 
@@ -509,9 +504,8 @@ public class ImportNarrativeDocument
           dayStr = lastDay;
 
           // insert warning, since this may be a mangled DTG
-          final String msg =
-              "Day decreased, but month didn't increase: " + dtgStr
-                  + ". The previous entry may be a mangled cut/paste";
+          final String msg = "Day decreased, but month didn't increase: "
+              + dtgStr + ". The previous entry may be a mangled cut/paste";
           logThisError(ToolParent.ERROR, msg, null);
         }
         else
@@ -550,9 +544,8 @@ public class ImportNarrativeDocument
           year = Integer.parseInt(yrStr);
         }
 
-        final Date datePart =
-            new Date(year - 1900, Integer.parseInt(monStr) - 1, Integer
-                .parseInt(dayStr));
+        final Date datePart = new Date(year - 1900, Integer.parseInt(monStr)
+            - 1, Integer.parseInt(dayStr));
 
         final Date timePart = fourBlock.parse(dtgStr);
 
@@ -579,8 +572,8 @@ public class ImportNarrativeDocument
         }
 
         // see if the first few characters are date
-        final String dateStr =
-            trimmed.substring(0, Math.min(trimmed.length(), blockToUse));
+        final String dateStr = trimmed.substring(0, Math.min(trimmed.length(),
+            blockToUse));
 
         // is this all numeric
         boolean probIsDate = false;
@@ -622,9 +615,8 @@ public class ImportNarrativeDocument
             final Date timePart = fourBlock.parse(parseStr);
 
             // ok, we can go for it
-            final Date newDate =
-                new Date(lastDtg.getYear(), lastDtg.getMonth(), lastDtg
-                    .getDate());
+            final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth(),
+                lastDtg.getDate());
 
             // ok, we're ready for the DTG
             dtg = new HiResDate(newDate.getTime() + timePart.getTime());
@@ -641,8 +633,8 @@ public class ImportNarrativeDocument
             // System.out.println("here");
             // }
 
-            final String startOfLine =
-                text.substring(0, Math.min(20, text.length() - 1));
+            final String startOfLine = text.substring(0, Math.min(20, text
+                .length() - 1));
             final String trackNum = FCSEntry.parseTrack(startOfLine);
             if (trackNum != null)
             {
@@ -700,7 +692,7 @@ public class ImportNarrativeDocument
 
   /**
    * helper that can ask the user a question
-   * 
+   *
    */
   public static interface QuestionHelper
   {
@@ -717,29 +709,6 @@ public class ImportNarrativeDocument
     private final static String ownship_track =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
-    @SuppressWarnings("unused")
-    private String messageStr = null;
-
-    public void setUp()
-    {
-
-      System.out.println("setting up message provider ");
-
-      // clear the message string
-      messageStr = null;
-
-      // initialise the message provider
-      MessageProvider.Base.setProvider(new MessageProvider()
-      {
-
-        @Override
-        public void show(String title, String message, int status)
-        {
-          messageStr = message;
-        }
-      });
-    }
-
     public static int countLines(final String str)
     {
       if (str == null || str.isEmpty())
@@ -754,47 +723,34 @@ public class ImportNarrativeDocument
       }
       return lines;
     }
-    
-    public void testSpanningYear() throws InterruptedException, IOException
+
+    @SuppressWarnings("unused")
+    private String messageStr = null;
+
+    @Override
+    public void setUp()
     {
-      final Layers tLayers = new Layers();
 
-      // start off with the ownship track
-      final File boatFile = new File(ownship_track);
-      assertTrue(boatFile.exists());
-      final InputStream bs = new FileInputStream(boatFile);
+      System.out.println("setting up message provider ");
 
-      final ImportReplay trackImporter = new ImportReplay();
-      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
-          ImportReplay.IMPORT_AS_OTG, 0L));
-      trackImporter.importThis(ownship_track, bs, tLayers);
-      
-      assertEquals("read in track", 1, tLayers.size());
-      
-      // we've also got to change the date of the very last entry on the track,
-      // so that we can load narrative entries that go past the end of the track
-      // (into the next year).
-      TrackWrapper trk = (TrackWrapper) tLayers.elementAt(0);
-      FixWrapper lastFix = (FixWrapper) trk.getNearestTo(trk.getEndDTG())[0];
-      lastFix.setDateTimeGroup(new HiResDate(new Date()));
-      
-      final String testFile = valid_doc_path;
-      final File testI = new File(testFile);
-      assertTrue(testI.exists());
+      // clear the message string
+      messageStr = null;
 
-      final InputStream is = new FileInputStream(testI);
+      // initialise the message provider
+      MessageProvider.Base.setProvider(new MessageProvider()
+      {
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
-      HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
-      importer.processThese(strings);
-      
-      NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
-      assertEquals("Got num lines", 371, narr.size());
+        @Override
+        public void show(final String title, final String message,
+            final int status)
+        {
+          messageStr = message;
+        }
+      });
     }
 
-    public void testAddFCSToTrack() throws InterruptedException, IOException
+    public void testAddFCSToHiddenTrack() throws InterruptedException,
+        IOException
     {
       final Layers tLayers = new Layers();
 
@@ -810,23 +766,32 @@ public class ImportNarrativeDocument
 
       assertEquals("read in track", 1, tLayers.size());
 
+      // ok, now filter it to a time period
+      final TrackWrapper track = (TrackWrapper) tLayers.elementAt(0);
+
+      // filter the list to a period of data after the narrative cuts
+      track.filterListTo(new HiResDate(818749200000L), new HiResDate(
+          818766600000L));
+
+      // now load the FCS data
+
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
-      HWPFDocument doc = new HWPFDocument(is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
       final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 8, tLayers.size());
 
-      final NarrativeWrapper narrLayer =
-          (NarrativeWrapper) tLayers.elementAt(1);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
+          1);
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
 
@@ -859,7 +824,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testAddFCSToHiddenTrack() throws InterruptedException, IOException
+    public void testAddFCSToTrack() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -875,32 +840,23 @@ public class ImportNarrativeDocument
 
       assertEquals("read in track", 1, tLayers.size());
 
-      // ok, now filter it to a time period
-      TrackWrapper track = (TrackWrapper) tLayers.elementAt(0);
-
-      // filter the list to a period of data after the narrative cuts
-      track.filterListTo(new HiResDate(818749200000L), new HiResDate(
-          818766600000L));
-
-      // now load the FCS data
-
       final String testFile = valid_doc_path;
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
       final InputStream is = new FileInputStream(testI);
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
-      HWPFDocument doc = new HWPFDocument(is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
       final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 8, tLayers.size());
 
-      final NarrativeWrapper narrLayer =
-          (NarrativeWrapper) tLayers.elementAt(1);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
+          1);
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
 
@@ -949,8 +905,8 @@ public class ImportNarrativeDocument
       // create mock importer
       final String[] strings = new String[]
       {str1, str1a, str2, str3, str4};
-      final ArrayList<String> strList =
-          new ArrayList<String>(Arrays.asList(strings));
+      final ArrayList<String> strList = new ArrayList<String>(Arrays.asList(
+          strings));
 
       final Layers target = new Layers();
 
@@ -972,8 +928,8 @@ public class ImportNarrativeDocument
 
       target.addThisLayer(nonsuch);
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(target);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          target);
 
       assertEquals("one track", 1, target.size());
 
@@ -1022,17 +978,17 @@ public class ImportNarrativeDocument
 
       final Layers tLayers = new Layers();
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(tLayers);
-      HWPFDocument doc = new HWPFDocument(is);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
       final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 1, tLayers.size());
 
-      final NarrativeWrapper narrLayer =
-          (NarrativeWrapper) tLayers.elementAt(0);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
+          0);
       System.out.println("processed:" + narrLayer.size());
 
       // hey, let's have a look tthem
@@ -1223,8 +1179,8 @@ public class ImportNarrativeDocument
       // create mock importer
       final String[] strings = new String[]
       {str1, str1a, str2, str3, str4};
-      final ArrayList<String> strList =
-          new ArrayList<String>(Arrays.asList(strings));
+      final ArrayList<String> strList = new ArrayList<String>(Arrays.asList(
+          strings));
 
       final Layers target = new Layers();
 
@@ -1246,8 +1202,8 @@ public class ImportNarrativeDocument
 
       target.addThisLayer(nonsuch);
 
-      final ImportNarrativeDocument importer =
-          new ImportNarrativeDocument(target);
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          target);
 
       assertEquals("one track", 1, target.size());
 
@@ -1283,25 +1239,48 @@ public class ImportNarrativeDocument
       assertEquals("right id", "M00", FCSEntry.parseTrack(str5));
       assertNull("right id", FCSEntry.parseTrack(str3));
     }
+
+    public void testSpanningYear() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      // we've also got to change the date of the very last entry on the track,
+      // so that we can load narrative entries that go past the end of the track
+      // (into the next year).
+      final TrackWrapper trk = (TrackWrapper) tLayers.elementAt(0);
+      final FixWrapper lastFix = (FixWrapper) trk.getNearestTo(trk
+          .getEndDTG())[0];
+      lastFix.setDateTimeGroup(new HiResDate(new Date()));
+
+      final String testFile = valid_doc_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
+      importer.processThese(strings);
+
+      final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
+          ImportReplay.NARRATIVE_LAYER);
+      assertEquals("Got num lines", 371, narr.size());
+    }
   }
-
-  public static void logThisError(final int status, final String msg,
-      final Exception e)
-  {
-    Application.logError3(status, msg, e, true);
-  }
-
-  /**
-   * keep track of which track-source combinations we've asked about
-   * 
-   */
-  private final List<String> askedAbout = new ArrayList<String>();
-
-  /**
-   * flag for if we've informed user that we couldn't find host track
-   * 
-   */
-  private boolean _declaredNoHostFound = false;
 
   /**
    * helper class that can ask the user a question populated via Dependency Injection
@@ -1312,7 +1291,7 @@ public class ImportNarrativeDocument
 
   /**
    * match a 6 figure DTG
-   * 
+   *
    */
   static final String DATE_MATCH_SIX = "(\\d{6})";
 
@@ -1328,8 +1307,8 @@ public class ImportNarrativeDocument
     for (int i = 0; i < ctr; i++)
     {
       final Layer thisL = layers.elementAt(i);
-      if (thisL.getVisible()
-          && thisL.getName().startsWith(ImportNMEA.WECDIS_OWNSHIP_PREFIX))
+      if (thisL.getVisible() && thisL.getName().startsWith(
+          ImportNMEA.WECDIS_OWNSHIP_PREFIX))
       {
         final String existingName = thisL.getName();
 
@@ -1353,14 +1332,59 @@ public class ImportNarrativeDocument
     return res;
   }
 
+  public static void logThisError(final int status, final String msg,
+      final Exception e)
+  {
+    Application.logError3(status, msg, e, true);
+  }
+
+  /**
+   * do some pre-processing of text, to protect robustness of data written to file
+   *
+   * @param raw_text
+   * @return text with some control chars removed
+   */
+  public static String removeBadChars(final String raw_text)
+  {
+    // swap soft returns for hard ones
+    String res = raw_text.replace('\u000B', '\n');
+
+    // we learned that whilst MS Word includes the following
+    // control chars, and we can persist them via XML, we
+    // can't restore them via SAX. So, swap them for
+    // spaces
+    res = res.replace((char) 1, (char) 32);
+    res = res.replace((char) 19, (char) 32);
+    res = res.replace((char) 8, (char) 32); // backspace char, occurred in Oct 17, near an inserted
+                                            // picture
+    res = res.replace((char) 20, (char) 32);
+    res = res.replace((char) 21, (char) 32);
+    res = res.replace((char) 5, (char) 32); // MS Word comment marker
+
+    // done.
+    return res;
+  }
+
   public static void setQuestionHelper(final QuestionHelper helper)
   {
     questionHelper = helper;
   }
 
   /**
+   * keep track of which track-source combinations we've asked about
+   *
+   */
+  private final List<String> askedAbout = new ArrayList<String>();
+
+  /**
+   * flag for if we've informed user that we couldn't find host track
+   *
+   */
+  private boolean _declaredNoHostFound = false;
+
+  /**
    * where we write our data
-   * 
+   *
    */
   private final Layers _layers;
 
@@ -1372,7 +1396,7 @@ public class ImportNarrativeDocument
 
   /**
    * keep track of track names that we have matched
-   * 
+   *
    */
   Map<String, String> nameMatches = new HashMap<String, String>();
 
@@ -1402,9 +1426,8 @@ public class ImportNarrativeDocument
       hisTrack = thisN.platform;
     }
 
-    final NarrativeEntry ne =
-        new NarrativeEntry(hisTrack, thisN.type, new HiResDate(thisN.dtg),
-            thisN.text);
+    final NarrativeEntry ne = new NarrativeEntry(hisTrack, thisN.type,
+        new HiResDate(thisN.dtg), thisN.text);
 
     // remember that entry, in case we get incomplete text inthe future
     _lastEntry = ne;
@@ -1433,8 +1456,8 @@ public class ImportNarrativeDocument
     }
 
     // find the host
-    final TrackWrapper host =
-        (TrackWrapper) _layers.findLayer(trackFor(thisN.platform));
+    final TrackWrapper host = (TrackWrapper) _layers.findLayer(trackFor(
+        thisN.platform));
     if (host != null)
     {
       // find the fix nearest this time
@@ -1443,10 +1466,9 @@ public class ImportNarrativeDocument
       {
         final Watchable fix = nearest[0];
         // apply the offset
-        final WorldVector vec =
-            new WorldVector(Math.toRadians(fe.brgDegs), new WorldDistance(
-                fe.rangYds, WorldDistance.YARDS), new WorldDistance(0,
-                WorldDistance.METRES));
+        final WorldVector vec = new WorldVector(Math.toRadians(fe.brgDegs),
+            new WorldDistance(fe.rangYds, WorldDistance.YARDS),
+            new WorldDistance(0, WorldDistance.METRES));
         final WorldLocation loc = fix.getLocation().add(vec);
 
         // build the track name
@@ -1479,8 +1501,8 @@ public class ImportNarrativeDocument
         // ok, now create the fix
         final WorldSpeed ws = new WorldSpeed(fe.spdKts, WorldSpeed.Kts);
         final double yds_per_sec = ws.getValueIn(WorldSpeed.ft_sec / 3);
-        final Fix newF =
-            new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs), yds_per_sec);
+        final Fix newF = new Fix(thisN.dtg, loc, Math.toRadians(fe.crseDegs),
+            yds_per_sec);
         final FixWrapper newFw = new FixWrapper(newF);
 
         // lastly, reset the label, so it's legible
@@ -1498,8 +1520,8 @@ public class ImportNarrativeDocument
           // ok, have a look at it.
           while (hisNearest[0].getTime().equals(newF.getTime()))
           {
-            newF.setTime(new HiResDate(
-                newF.getTime().getDate().getTime() + 1000));
+            newF.setTime(new HiResDate(newF.getTime().getDate().getTime()
+                + 1000));
           }
         }
 
@@ -1517,7 +1539,7 @@ public class ImportNarrativeDocument
   /**
    * repeatably find a color for the specified track id The color will be RED if it's a master track
    * ("M01"). Shades of gray nor ownship blue are returned.
-   * 
+   *
    * @param trackId
    * @return
    */
@@ -1541,8 +1563,8 @@ public class ImportNarrativeDocument
 
   private NarrativeWrapper getNarrativeLayer()
   {
-    NarrativeWrapper nw =
-        (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+    NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(
+        ImportReplay.NARRATIVE_LAYER);
 
     if (nw == null)
     {
@@ -1604,7 +1626,7 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(XWPFDocument doc)
+  public ArrayList<String> importFromWordX(final XWPFDocument doc)
   {
     final ArrayList<String> strings = new ArrayList<String>();
 
@@ -1637,7 +1659,7 @@ public class ImportNarrativeDocument
 
   /**
    * parse a list of strings
-   * 
+   *
    * @param strings
    */
   public void processThese(final ArrayList<String> strings)
@@ -1661,8 +1683,8 @@ public class ImportNarrativeDocument
         final WatchableList wl = (WatchableList) thisL;
         if (wl.getStartDTG() != null && wl.getEndDTG() != null)
         {
-          final TimePeriod thisP =
-              new TimePeriod.BaseTimePeriod(wl.getStartDTG(), wl.getEndDTG());
+          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl
+              .getStartDTG(), wl.getEndDTG());
           if (outerPeriod == null)
           {
             outerPeriod = thisP;
@@ -1779,34 +1801,8 @@ public class ImportNarrativeDocument
   }
 
   /**
-   * do some pre-processing of text, to protect robustness of data written to file
-   * 
-   * @param raw_text
-   * @return text with some control chars removed
-   */
-  public static String removeBadChars(final String raw_text)
-  {
-    // swap soft returns for hard ones
-    String res = raw_text.replace('\u000B', '\n');
-
-    // we learned that whilst MS Word includes the following
-    // control chars, and we can persist them via XML, we
-    // can't restore them via SAX. So, swap them for
-    // spaces
-    res = res.replace((char) 1, (char) 32);
-    res = res.replace((char) 19, (char) 32);
-    res = res.replace((char) 8, (char) 32); // backspace char, occurred in Oct 17, near an inserted picture
-    res = res.replace((char) 20, (char) 32);
-    res = res.replace((char) 21, (char) 32);
-    res = res.replace((char) 5, (char) 32); // MS Word comment marker
-
-    // done.
-    return res;
-  }
-
-  /**
    * is there a single visible track present?
-   * 
+   *
    * @param layers
    * @param narrativeName
    * @return
@@ -1920,10 +1916,9 @@ public class ImportNarrativeDocument
             if (questionHelper != null)
             {
 
-              final boolean wantsTo =
-                  questionHelper.askYes("Change track name",
-                      "Host platform not found for narrative entries.\nDo you want to rename track ["
-                          + singleTrack.getName() + "] to [" + name + "]");
+              final boolean wantsTo = questionHelper.askYes("Change track name",
+                  "Host platform not found for narrative entries.\nDo you want to rename track ["
+                      + singleTrack.getName() + "] to [" + name + "]");
 
               // remember that we've asked about it
               askedAbout.add(singleTrack.getName() + name);
