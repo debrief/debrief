@@ -100,7 +100,6 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -720,6 +719,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     });
   }
 
+  private static final TimeSeriesDataItem findNearestPointTo(final long time,
+      final TimeSeries t)
+  {
+    // Note: we did make this call, but it was failing when
+    // more than about 100 points were visible on screen
+    // return t.getDataItem(
+    // new FixedMillisecond(time));
+
+    final int len = t.getItemCount();
+    for (int i = 0; i < len; i++)
+    {
+      final TimeSeriesDataItem item = t.getDataItem(i);
+      if (item.getPeriod().getMiddleMillisecond() == time)
+      {
+        return item;
+      }
+    }
+    return null;
+  }
+
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
@@ -1151,16 +1170,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final List<TimeSeries> sets = tsc.getSeries();
             for (final TimeSeries t : sets)
             {
-              final TimeSeriesDataItem nearest = t.getDataItem(
-                  new FixedMillisecond(newDate.getTime()));
+              final TimeSeriesDataItem nearest = findNearestPointTo(newDate
+                  .getTime(), t);
 
               if (nearest != null)
               {
                 // ok, check the value
                 final double value = (Double) nearest.getValue();
 
+                System.out.println("returned: " + value + " target:"
+                    + targetValue);
+
                 if (value == targetValue)
                 {
+                  System.out.println("FOUND:" + nearest.getValue());
+
                   // ok, get the editor
                   final IWorkbench wb = PlatformUI.getWorkbench();
                   final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -1192,6 +1216,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
         }
       }
+
     });
 
     // and insert into the panel
@@ -1208,24 +1233,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (seriesName != null)
         {
           // ok, try to select the sensor cut at this time
-          final Point2D p = _holder.translateScreenToJava2D(arg0.getTrigger()
-              .getPoint());
+          Point screenClick = arg0.getTrigger()
+              .getPoint();
+          final Point2D p = _holder.translateScreenToJava2D(screenClick);
 
           // what's the y value at this time?
           final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) arg0
               .getChart().getPlot();
-          final ValueAxis range = dPlot.getDomainAxis();
+          final ValueAxis dateRange = dPlot.getDomainAxis();
+
+          // and the data value
+          XYPlot selectedPlot = findSelectedPlot(arg0.getChart(), arg0
+              .getTrigger(), arg0.getEntity());
+          ValueAxis valueRange = selectedPlot.getRangeAxis();
 
           final org.eclipse.swt.graphics.Rectangle area = _holder
-              .getScreenDataArea();
+              .getScreenDataArea(screenClick.x, screenClick.y);
           final Rectangle jRect = new Rectangle(area.width, area.height);
           jRect.setLocation(area.x, area.y);
-          final double dataVal = range.java2DToValue(p.getY(), jRect,
+          final double dateVal = dateRange.java2DToValue(p.getY(), jRect,
               RectangleEdge.LEFT);
-          final long dateMillis = (long) dataVal;
+          final long dateMillis = (long) dateVal;
+
+          final double valueVal = valueRange.java2DToValue(p.getX(), jRect,
+              RectangleEdge.TOP);
+          System.out.println("value val:" + valueVal);
 
           // and try to put cross-hairs on sensor
-          highlightDataItemNearest(dateMillis, seriesName);
+          highlightDataItemNearest(dateMillis, valueVal, seriesName);
         }
       }
 
@@ -1240,7 +1275,36 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final String TMA = StackedDotHelper.CALCULATED_VALUES;
         final String SENSOR = MEASURED_VALUES;
 
+        final XYPlot selectedPlot = findSelectedPlot(chart, trigger, entity);
+
         final String seriesName;
+        if (selectedPlot == _linePlot)
+        {
+          // if the line plot was clicked on, we'll delete
+          // the sensor cut. This makes sense, since all sensor
+          // cuts are shown on the line plot. Markers are only
+          // present on the error plot if TMA points are present
+          seriesName = SENSOR;
+        }
+        else if (selectedPlot == _dotPlot)
+        {
+          // if the dot (error) plot was clicked on, we'll delete
+          // the TMA position. This makes sense, since markers are only
+          // present on the error plot if TMA points are present
+          seriesName = TMA;
+        }
+        else
+        {
+          seriesName = null;
+        }
+
+        return seriesName;
+      }
+
+      private XYPlot findSelectedPlot(final JFreeChart chart,
+          final java.awt.event.MouseEvent trigger, final ChartEntity entity)
+      {
+        final XYPlot selectedPlot;
 
         if (entity instanceof PlotEntity)
         {
@@ -1248,22 +1312,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           final PlotEntity plot = (PlotEntity) entity;
           if (plot.getPlot() == _linePlot)
           {
-            // if the line plot was clicked on, we'll delete
-            // the sensor cut. This makes sense, since all sensor
-            // cuts are shown on the line plot. Markers are only
-            // present on the error plot if TMA points are present
-            seriesName = SENSOR;
+            selectedPlot = _linePlot;
           }
           else if (plot.getPlot() == _dotPlot)
           {
-            // if the dot (error) plot was clicked on, we'll delete
-            // the TMA position. This makes sense, since markers are only
-            // present on the error plot if TMA points are present
-            seriesName = TMA;
+            selectedPlot = _dotPlot;
           }
           else
           {
-            seriesName = null;
+            selectedPlot = null;
           }
         }
         else
@@ -1279,29 +1336,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final XYPlot subPlot = dPlot.findSubplot(plotInfo, source);
             if (subPlot != null && subPlot.equals(_linePlot))
             {
-              // see comment about about why we choose which data type to select
-              seriesName = SENSOR;
+              selectedPlot = _linePlot;
             }
             else if (subPlot != null && subPlot.equals(_dotPlot))
             {
-              // see comment about about why we choose which data type to select
-              seriesName = TMA;
+              selectedPlot = _dotPlot;
             }
             else
             {
-              seriesName = null;
+              selectedPlot = null;
             }
           }
           else
           {
-            seriesName = null;
+            selectedPlot = null;
           }
         }
-        return seriesName;
+        return selectedPlot;
       }
 
       private void highlightDataItemNearest(final long dateMillis,
-          final String seriesName)
+          final double valueVal, final String seriesName)
       {
         final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
             .getDataset();
@@ -1327,8 +1382,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // work through, to find the nearest item
             final List<?> list = t.getItems();
             TimeSeriesDataItem nearest = null;
+
+            int ctr = 0;
+
             for (final Object item : list)
             {
+
+              ctr++;
+
               final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
               if (nearest == null)
               {
@@ -1336,18 +1397,36 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               }
               else
               {
-                final long myDelta = Math.abs(nearest.getPeriod()
+                final long myTimeDelta = Math.abs(nearest.getPeriod()
                     .getMiddleMillisecond() - dateMillis);
-                final long hisDelta = Math.abs(thisI.getPeriod()
+                final long hisTimeDelta = Math.abs(thisI.getPeriod()
                     .getMiddleMillisecond() - dateMillis);
+                final double myValueDelta = Math.abs(nearest.getValue()
+                    .doubleValue() - valueVal);
+                final double hisValueDelta = Math.abs(thisI.getValue()
+                    .doubleValue() - valueVal);
+
+                final double nearestDelta = Math.pow(myValueDelta, 3) * myTimeDelta;
+                final double thisDelta = Math.pow(hisValueDelta, 3) * hisTimeDelta;
+                
+                if (ctr < 1)
+                {
+                  System.out.println("Time. nearestDelta:" + myTimeDelta + " this:" + hisTimeDelta);
+                  System.out.println("Value. nearestDelta:" + myValueDelta + " this:" + hisValueDelta);
+                  System.out.println("Product. nearest:" + nearestDelta + " this:" + thisDelta);
+                }
 
                 // ok, take the nearest one
-                nearest = myDelta < hisDelta ? nearest : thisI;
+                nearest = nearestDelta < thisDelta ? nearest : thisI;
+
               }
+
             }
 
             if (nearest != null)
             {
+              System.out.println("nearest value found at:" + new Date(nearest.getPeriod().getMiddleMillisecond()));
+              
               // get the value
               final double value = (Double) nearest.getValue();
               final TimeSeriesDataItem fItem = nearest;
@@ -1355,6 +1434,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _linePlot.setDomainCrosshairValue(fItem.getPeriod()
                   .getMiddleMillisecond());
               _linePlot.setRangeCrosshairValue(value);
+
+              System.out.println("setting search range to:" + value);
 
               // remember we need to select a new item
               _rangeValueToLookup = value;
