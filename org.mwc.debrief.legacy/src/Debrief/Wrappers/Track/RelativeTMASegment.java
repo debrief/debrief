@@ -1100,19 +1100,36 @@ public class RelativeTMASegment extends CoreTMASegment implements
       final long oldEndT = endDTG().getDate().getTime();
       final long newEndT = newEnd.getDate().getTime();
 
+      // see if we've managed to find some cuts to use
+      final boolean handled;
+
       // If we have a reference sensor, take visible cuts
       // from that sensor
       if (this.getReferenceSensor() != null)
       {
         SensorWrapper ref = this.getReferenceSensor();
         Collection<Editable> cuts = ref.getItemsBetween(endDTG(), newEnd);
-        for(Editable t: cuts)
+        if (cuts != null)
         {
-          SensorContactWrapper cut = (SensorContactWrapper) t;
-          addFix(theLoc, cut.getDTG().getDate().getTime());
+          handled = true;
+          for (Editable t : cuts)
+          {
+            SensorContactWrapper cut = (SensorContactWrapper) t;
+            addFix(theLoc, cut.getDTG().getDate().getTime());
+          }
+        }
+        else
+        {
+          handled = false;
         }
       }
       else
+      {
+        handled = false;
+      }
+
+      // are we sorted?
+      if (!handled)
       {
         // ok, we don't have sensor. just add some at "nice" sizes
         final long typicalDelta = typicalTimeStep();
@@ -1124,7 +1141,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
           thisT += typicalDelta;
         }
       }
-      
+
       // and create one at the end time
       addFix(theLoc, newEndT);
     }
