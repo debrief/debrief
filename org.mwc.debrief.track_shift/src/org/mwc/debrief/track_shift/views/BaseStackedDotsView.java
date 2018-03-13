@@ -358,7 +358,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private Action _precisionTwo;
 
   // the time of the point nearest to a screen click
-  private Double _rangeValueToLookup = null;
+  private String _seriesToSearch = null;
 
   private Action _precisionThree;
   private final PropertyChangeListener _infillListener;
@@ -1149,16 +1149,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
 
         // ok, do we also have a selection event pending
-        if (_selectOnClick.isChecked() && _rangeValueToLookup != null)
+        if (_selectOnClick.isChecked() && _seriesToSearch != null)
         {
           // note: we were using the
           // _linePlot.getRangeCrosshairValue() value,
           // but, we want to force which data item gets
           // selected. TMA for line plot, Cut for sensor plot
-          final double targetValue = _rangeValueToLookup;
+          final String targetSeries = _seriesToSearch;
 
           // clear the flag
-          _rangeValueToLookup = null;
+          _seriesToSearch = null;
 
           final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
               .getDataset();
@@ -1166,57 +1166,38 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // do we have data on the line plot?
           if (tsc != null)
           {
-            @SuppressWarnings("unchecked")
-            final List<TimeSeries> sets = tsc.getSeries();
-            for (final TimeSeries t : sets)
+            final TimeSeries t = tsc.getSeries(targetSeries);
+            final TimeSeriesDataItem nearest = findNearestPointTo(newDate
+                .getTime(), t);
+
+            if (nearest != null)
             {
-              final TimeSeriesDataItem nearest = findNearestPointTo(newDate
-                  .getTime(), t);
-
-              if (nearest != null)
+              // ok, get the editor
+              final IWorkbench wb = PlatformUI.getWorkbench();
+              final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+              final IWorkbenchPage page = win.getActivePage();
+              final IEditorPart editor = page.getActiveEditor();
+              final Layers layers = (Layers) editor.getAdapter(Layers.class);
+              if (layers != null)
               {
-                // ok, check the value
-                final double value = (Double) nearest.getValue();
-
-                System.out.println("returned: " + value + " target:"
-                    + targetValue);
-
-                if (value == targetValue)
+                final ColouredDataItem item = (ColouredDataItem) nearest;
+                final Editable payload = item.getPayload();
+                if (payload != null)
                 {
-                  System.out.println("FOUND:" + nearest.getValue());
-
-                  // ok, get the editor
-                  final IWorkbench wb = PlatformUI.getWorkbench();
-                  final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-                  final IWorkbenchPage page = win.getActivePage();
-                  final IEditorPart editor = page.getActiveEditor();
-                  final Layers layers = (Layers) editor.getAdapter(
-                      Layers.class);
-                  if (layers != null)
+                  if (payload instanceof SensorContactWrapper)
                   {
-                    final ColouredDataItem item = (ColouredDataItem) nearest;
-                    final Editable payload = item.getPayload();
-                    if (payload != null)
-                    {
-                      if (payload instanceof SensorContactWrapper)
-                      {
-                        showThisCut((SensorContactWrapper) payload, layers,
-                            editor);
-                      }
-                      else if (payload instanceof FixWrapper)
-                      {
-                        showThisFix((FixWrapper) payload, layers, editor);
-                      }
-                    }
+                    showThisCut((SensorContactWrapper) payload, layers, editor);
                   }
-                  break;
+                  else if (payload instanceof FixWrapper)
+                  {
+                    showThisFix((FixWrapper) payload, layers, editor);
+                  }
                 }
               }
             }
           }
         }
       }
-
     });
 
     // and insert into the panel
@@ -1233,8 +1214,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         if (seriesName != null)
         {
           // ok, try to select the sensor cut at this time
-          Point screenClick = arg0.getTrigger()
-              .getPoint();
+          Point screenClick = arg0.getTrigger().getPoint();
           final Point2D p = _holder.translateScreenToJava2D(screenClick);
 
           // what's the y value at this time?
@@ -1257,7 +1237,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           final double valueVal = valueRange.java2DToValue(p.getX(), jRect,
               RectangleEdge.TOP);
-          System.out.println("value val:" + valueVal);
 
           // and try to put cross-hairs on sensor
           highlightDataItemNearest(dateMillis, valueVal, seriesName);
@@ -1406,27 +1385,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 final double hisValueDelta = Math.abs(thisI.getValue()
                     .doubleValue() - valueVal);
 
-                final double nearestDelta = Math.pow(myValueDelta, 3) * myTimeDelta;
-                final double thisDelta = Math.pow(hisValueDelta, 3) * hisTimeDelta;
-                
-                if (ctr < 1)
-                {
-                  System.out.println("Time. nearestDelta:" + myTimeDelta + " this:" + hisTimeDelta);
-                  System.out.println("Value. nearestDelta:" + myValueDelta + " this:" + hisValueDelta);
-                  System.out.println("Product. nearest:" + nearestDelta + " this:" + thisDelta);
-                }
+                final double nearestDelta = Math.pow(myValueDelta, 3)
+                    * myTimeDelta;
+                final double thisDelta = Math.pow(hisValueDelta, 3)
+                    * hisTimeDelta;
 
                 // ok, take the nearest one
                 nearest = nearestDelta < thisDelta ? nearest : thisI;
-
               }
-
             }
 
             if (nearest != null)
             {
-              System.out.println("nearest value found at:" + new Date(nearest.getPeriod().getMiddleMillisecond()));
-              
               // get the value
               final double value = (Double) nearest.getValue();
               final TimeSeriesDataItem fItem = nearest;
@@ -1435,10 +1405,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   .getMiddleMillisecond());
               _linePlot.setRangeCrosshairValue(value);
 
-              System.out.println("setting search range to:" + value);
-
               // remember we need to select a new item
-              _rangeValueToLookup = value;
+              _seriesToSearch = seriesName;
             }
           }
         }
