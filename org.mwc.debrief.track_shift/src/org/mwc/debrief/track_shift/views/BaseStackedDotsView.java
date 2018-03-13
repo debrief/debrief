@@ -1265,11 +1265,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           // do we have data on the line plot?
           if (tsc != null)
-          {
+          {            
+            // get the series we want the data item for
             final TimeSeries t = tsc.getSeries(targetSeries);
+            
+            // get the data point nearest our target time
             final TimeSeriesDataItem nearest = t.getDataItem(
                 new FixedMillisecond(newDate.getTime()));
 
+            // did we find one?
             if (nearest != null)
             {
               // ok, get the editor
@@ -1277,7 +1281,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
               final IWorkbenchPage page = win.getActivePage();
               final IEditorPart editor = page.getActiveEditor();
-              final Layers layers = editor.getAdapter(Layers.class);
+              final Layers layers = (Layers) editor.getAdapter(Layers.class);
               if (layers != null)
               {
                 final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -2586,7 +2590,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subject);
-    final IContentOutlinePage outline = editor.getAdapter(
+    final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
     if (outline != null)
