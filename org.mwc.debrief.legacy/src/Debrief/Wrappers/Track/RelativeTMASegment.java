@@ -1231,19 +1231,53 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // note: we don't want one large leap. So, insert a few points
       final long oldStartT = startDTG().getDate().getTime();
       final long newStartT = theNewStart.getDate().getTime();
-      final long typicalDelta = typicalTimeStep();
 
-      // ok, insert new fix at the new start time
-      addFix(theLoc, newStartT);
+      // see if we've managed to find some cuts to use
+      final boolean handled;
 
-      // now walk forwards until we meet the old start time
-      long thisT = newStartT + typicalDelta;
-
-      while (thisT < oldStartT)
+      // If we have a reference sensor, take visible cuts
+      // from that sensor
+      if (this.getReferenceSensor() != null)
       {
-        addFix(theLoc, thisT);
+        SensorWrapper ref = this.getReferenceSensor();
+        Collection<Editable> cuts = ref.getItemsBetween(theNewStart,
+            startDTG());
+        if (cuts != null)
+        {
+          handled = true;
+          for (Editable t : cuts)
+          {
+            SensorContactWrapper cut = (SensorContactWrapper) t;
+            addFix(theLoc, cut.getDTG().getDate().getTime());
+          }
+        }
+        else
+        {
+          handled = false;
+        }
+      }
+      else
+      {
+        handled = false;
+      }
 
-        thisT += typicalDelta;
+      // are we sorted?
+      if (!handled)
+      {
+        // ok, we don't have sensor. just add some at "nice" sizes
+        final long typicalDelta = typicalTimeStep();
+
+        // ok, insert new fix at the new start time
+        addFix(theLoc, newStartT);
+
+        // now walk forwards until we meet the old start time
+        long thisT = newStartT + typicalDelta;
+
+        while (thisT < oldStartT)
+        {
+          addFix(theLoc, thisT);
+          thisT += typicalDelta;
+        }
       }
     }
 
