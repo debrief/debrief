@@ -1287,7 +1287,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
               final IWorkbenchPage page = win.getActivePage();
               final IEditorPart editor = page.getActiveEditor();
-              final Layers layers = (Layers) editor.getAdapter(Layers.class);
+              final Layers layers = editor.getAdapter(Layers.class);
               if (layers != null)
               {
                 final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -1313,7 +1313,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   if (subject != null)
                   {
                     // and show it
-                    List<EditableWrapper> items =
+                    final List<EditableWrapper> items =
                         new ArrayList<EditableWrapper>();
                     items.add(subject);
                     showThisSelectionInOutline(items, editor);
@@ -1592,6 +1592,89 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // stop the part monitor
     _myPartMonitor.ditch();
 
+  }
+
+  protected void doSelectCore(final XYPlot subjectPlot, final String seriesName)
+  {
+    // find current bounds of line plot
+    final Range valueRange = subjectPlot.getRangeAxis().getRange();
+    final Range timeRange = _combined.getDomainAxis().getRange();
+
+    // loop through measured data
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
+        .getDataset();
+    final TimeSeries measurements = tsc.getSeries(seriesName);
+
+    final List<?> list = measurements.getItems();
+    final List<Editable> toSelect = new ArrayList<Editable>();
+
+    for (final Object item : list)
+    {
+      final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+      final long time = thisI.getPeriod().getMiddleMillisecond();
+      final double value = thisI.getValue().doubleValue();
+
+      // is this point visible?
+      if (valueRange.contains(value) && timeRange.contains(time)
+          && thisI instanceof ColouredDataItem)
+      {
+        // add to list
+        final ColouredDataItem ourItem = (ColouredDataItem) thisI;
+        final Editable payload = ourItem.getPayload();
+
+        toSelect.add(payload);
+      }
+    }
+
+    if (!toSelect.isEmpty())
+    {
+      // ok, get the editor
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
+      final Layers layers = editor.getAdapter(Layers.class);
+
+      // build up results selection
+      final List<EditableWrapper> wrappedItems =
+          new ArrayList<EditableWrapper>();
+      for (final Editable t : toSelect)
+      {
+        EditableWrapper item;
+        if (t instanceof SensorContactWrapper)
+        {
+          item = wrapThisCut((SensorContactWrapper) t, layers);
+        }
+        else if (t instanceof FixWrapper)
+        {
+          item = wrapThisFix((FixWrapper) t, layers);
+        }
+        else
+        {
+          item = null;
+        }
+
+        if (item != null)
+        {
+          wrappedItems.add(item);
+        }
+
+      }
+
+      // set selection
+      showThisSelectionInOutline(wrappedItems, editor);
+
+    }
+  }
+
+  protected void doSelectMeasurements()
+  {
+    doSelectCore(_linePlot, MEASURED_VALUES);
+  }
+
+  protected void doSelectPositions()
+  {
+    doSelectCore(_dotPlot, StackedDotHelper.CALCULATED_VALUES);
   }
 
   protected void fillLocalPullDown(final IMenuManager manager)
@@ -2329,88 +2412,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
-  protected void doSelectPositions()
-  {
-    doSelectCore(_dotPlot, StackedDotHelper.CALCULATED_VALUES);
-  }
-
-  protected void doSelectMeasurements()
-  {
-    doSelectCore(_linePlot, MEASURED_VALUES);
-  }
-
-  protected void doSelectCore(XYPlot subjectPlot, String seriesName)
-  {
-    // find current bounds of line plot
-    Range valueRange = subjectPlot.getRangeAxis().getRange();
-    Range timeRange = _combined.getDomainAxis().getRange();
-
-    // loop through measured data
-    final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
-        .getDataset();
-    TimeSeries measurements = tsc.getSeries(seriesName);
-
-    final List<?> list = measurements.getItems();
-    final List<Editable> toSelect = new ArrayList<Editable>();
-
-    for (final Object item : list)
-    {
-      final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
-      final long time = thisI.getPeriod().getMiddleMillisecond();
-      final double value = thisI.getValue().doubleValue();
-
-      // is this point visible?
-      if (valueRange.contains(value) && timeRange.contains(time)
-          && thisI instanceof ColouredDataItem)
-      {
-        // add to list
-        final ColouredDataItem ourItem = (ColouredDataItem) thisI;
-        final Editable payload = ourItem.getPayload();
-
-        toSelect.add(payload);
-      }
-    }
-
-    if (!toSelect.isEmpty())
-    {
-      // ok, get the editor
-      final IWorkbench wb = PlatformUI.getWorkbench();
-      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-      final IWorkbenchPage page = win.getActivePage();
-      final IEditorPart editor = page.getActiveEditor();
-      final Layers layers = (Layers) editor.getAdapter(Layers.class);
-
-      // build up results selection
-      List<EditableWrapper> wrappedItems = new ArrayList<EditableWrapper>();
-      for (Editable t : toSelect)
-      {
-        EditableWrapper item;
-        if (t instanceof SensorContactWrapper)
-        {
-          item = wrapThisCut((SensorContactWrapper) t, layers);
-        }
-        else if (t instanceof FixWrapper)
-        {
-          item = wrapThisFix((FixWrapper) t, layers);
-        }
-        else
-        {
-          item = null;
-        }
-
-        if (item != null)
-        {
-          wrappedItems.add(item);
-        }
-
-      }
-
-      // set selection
-      showThisSelectionInOutline(wrappedItems, editor);
-
-    }
-  }
-
   @Override
   public void saveState(final IMemento memento)
   {
@@ -2674,66 +2675,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private EditableWrapper wrapThisCut(final SensorContactWrapper cut,
-      final Layers layers)
-  {
-    final SensorWrapper sensor = cut.getSensor();
-    final TrackWrapper secTrack = sensor.getHost();
-
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper sensors = new EditableWrapper(secTrack.getSensors(),
-        parentP, layers);
-    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
-
-    return new EditableWrapper(cut, leg, layers);
-  }
-
-  private EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
-  {
-    final EditableWrapper res;
-
-    final TrackSegment seg = fix.getSegment();
-    final TrackWrapper secTrack = seg.getWrapper();
-
-    // check we know the secondary track (we may not, if it's an SATC track)
-    if (secTrack != null)
-    {
-      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
-          layers);
-
-      // hmm, don't know if we have one or more legs
-      final EditableWrapper leg;
-      if (secTrack.getSegments().size() > 1)
-      {
-        // ok, we need the in-between item
-        final EditableWrapper segments = new EditableWrapper(secTrack
-            .getSegments(), parentP, layers);
-        leg = new EditableWrapper(seg, segments, layers);
-      }
-      else
-      {
-        leg = new EditableWrapper(seg, parentP, layers);
-
-      }
-
-      res = new EditableWrapper(fix, leg, layers);
-    }
-    else
-    {
-      res = null;
-    }
-
-    return res;
-  }
-
   private void showThisSelectionInOutline(final List<EditableWrapper> subjects,
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subjects);
-    final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
+    final IContentOutlinePage outline = editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
     if (outline != null)
@@ -3415,6 +3361,61 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
+  }
+
+  private EditableWrapper wrapThisCut(final SensorContactWrapper cut,
+      final Layers layers)
+  {
+    final SensorWrapper sensor = cut.getSensor();
+    final TrackWrapper secTrack = sensor.getHost();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper sensors = new EditableWrapper(secTrack.getSensors(),
+        parentP, layers);
+    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
+
+    return new EditableWrapper(cut, leg, layers);
+  }
+
+  private EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
+  {
+    final EditableWrapper res;
+
+    final TrackSegment seg = fix.getSegment();
+    final TrackWrapper secTrack = seg.getWrapper();
+
+    // check we know the secondary track (we may not, if it's an SATC track)
+    if (secTrack != null)
+    {
+      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
+          layers);
+
+      // hmm, don't know if we have one or more legs
+      final EditableWrapper leg;
+      if (secTrack.getSegments().size() > 1)
+      {
+        // ok, we need the in-between item
+        final EditableWrapper segments = new EditableWrapper(secTrack
+            .getSegments(), parentP, layers);
+        leg = new EditableWrapper(seg, segments, layers);
+      }
+      else
+      {
+        leg = new EditableWrapper(seg, parentP, layers);
+
+      }
+
+      res = new EditableWrapper(fix, leg, layers);
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
   }
 
 }
