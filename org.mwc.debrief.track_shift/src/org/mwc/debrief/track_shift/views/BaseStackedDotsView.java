@@ -2315,21 +2315,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void doSelectPositions()
   {
-    // TODO Auto-generated method stub
-
+    doSelectCore(_dotPlot, StackedDotHelper.CALCULATED_VALUES);
   }
 
   protected void doSelectMeasurements()
   {
+    doSelectCore(_linePlot, MEASURED_VALUES);
+  }
+
+  protected void doSelectCore(XYPlot subjectPlot, String seriesName)
+  {
     // find current bounds of line plot
-    Range valueRange = _linePlot.getRangeAxis().getRange();
+    Range valueRange = subjectPlot.getRangeAxis().getRange();
     Range timeRange = _combined.getDomainAxis().getRange();
 
     // loop through measured data
-    final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
         .getDataset();
-    TimeSeries measurements = tsc.getSeries(MEASURED_VALUES);
-
+    TimeSeries measurements = tsc.getSeries(seriesName);
+    
     final List<?> list = measurements.getItems();
     final List<Editable> toSelect = new ArrayList<Editable>();
 
