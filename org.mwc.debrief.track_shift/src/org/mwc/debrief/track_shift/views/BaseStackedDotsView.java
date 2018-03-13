@@ -1415,7 +1415,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final XYPlot selectedPlot = findSelectedPlot(chart, trigger, entity);
 
         final String seriesName;
-        if (selectedPlot == _linePlot)
+        if (selectedPlot.equals(_linePlot))
         {
           // if the line plot was clicked on, we'll delete
           // the sensor cut. This makes sense, since all sensor
@@ -1423,7 +1423,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // present on the error plot if TMA points are present
           seriesName = SENSOR;
         }
-        else if (selectedPlot == _dotPlot)
+        else if (selectedPlot.equals(_dotPlot))
         {
           // if the dot (error) plot was clicked on, we'll delete
           // the TMA position. This makes sense, since markers are only
