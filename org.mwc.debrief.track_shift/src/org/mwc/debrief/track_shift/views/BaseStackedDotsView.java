@@ -1294,13 +1294,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 final Editable payload = item.getPayload();
                 if (payload != null)
                 {
+                  final EditableWrapper subject;
                   if (payload instanceof SensorContactWrapper)
                   {
-                    showThisCut((SensorContactWrapper) payload, layers, editor);
+                    subject = wrapThisCut((SensorContactWrapper) payload,
+                        layers);
                   }
                   else if (payload instanceof FixWrapper)
                   {
-                    showThisFix((FixWrapper) payload, layers, editor);
+                    subject = wrapThisFix((FixWrapper) payload, layers);
+                    // and show it
+                  }
+                  else
+                  {
+                    subject = null;
+                  }
+
+                  if (subject != null)
+                  {
+                    // and show it
+                    List<EditableWrapper> items =
+                        new ArrayList<EditableWrapper>();
+                    items.add(subject);
+                    showThisSelectionInOutline(items, editor);
                   }
                 }
               }
@@ -2333,7 +2349,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
         .getDataset();
     TimeSeries measurements = tsc.getSeries(seriesName);
-    
+
     final List<?> list = measurements.getItems();
     final List<Editable> toSelect = new ArrayList<Editable>();
 
@@ -2355,16 +2371,44 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
-    // build up results selection
-    List<EditableWrapper> wrappedItems = new ArrayList<EditableWrapper>();
-    for(Editable t: toSelect)
+    if (!toSelect.isEmpty())
     {
-      
+      // ok, get the editor
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
+      final Layers layers = (Layers) editor.getAdapter(Layers.class);
+
+      // build up results selection
+      List<EditableWrapper> wrappedItems = new ArrayList<EditableWrapper>();
+      for (Editable t : toSelect)
+      {
+        EditableWrapper item;
+        if (t instanceof SensorContactWrapper)
+        {
+          item = wrapThisCut((SensorContactWrapper) t, layers);
+        }
+        else if (t instanceof FixWrapper)
+        {
+          item = wrapThisFix((FixWrapper) t, layers);
+        }
+        else
+        {
+          item = null;
+        }
+
+        if (item != null)
+        {
+          wrappedItems.add(item);
+        }
+
+      }
+
+      // set selection
+      showThisSelectionInOutline(wrappedItems, editor);
+
     }
-    StructuredSelection sel = new StructuredSelection(wrappedItems);
-
-    // set selection
-
   }
 
   @Override
@@ -2630,8 +2674,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private void showThisCut(final SensorContactWrapper cut, final Layers layers,
-      final IEditorPart editor)
+  private EditableWrapper wrapThisCut(final SensorContactWrapper cut,
+      final Layers layers)
   {
     final SensorWrapper sensor = cut.getSensor();
     final TrackWrapper secTrack = sensor.getHost();
@@ -2644,15 +2688,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         parentP, layers);
     final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
 
-    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
+    return new EditableWrapper(cut, leg, layers);
   }
 
-  private void showThisFix(final FixWrapper fix, final Layers layers,
-      final IEditorPart editor)
+  private EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
   {
+    final EditableWrapper res;
+
     final TrackSegment seg = fix.getSegment();
     final TrackWrapper secTrack = seg.getWrapper();
 
@@ -2677,17 +2719,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       }
 
-      final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
-
-      // and show it
-      showThisSelectionInOutline(subject, editor);
+      res = new EditableWrapper(fix, leg, layers);
     }
+    else
+    {
+      res = null;
+    }
+
+    return res;
   }
 
-  private void showThisSelectionInOutline(final EditableWrapper subject,
+  private void showThisSelectionInOutline(final List<EditableWrapper> subjects,
       final IEditorPart editor)
   {
-    final IStructuredSelection selection = new StructuredSelection(subject);
+    final IStructuredSelection selection = new StructuredSelection(subjects);
     final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
@@ -2700,7 +2745,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (outline instanceof PlotOutlinePage)
       {
         final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-        plotOutline.editableSelected(selection, subject);
+        plotOutline.editableSelected(selection, subjects.iterator().next());
       }
 
       // ok, also try to give focus to teh outline view
