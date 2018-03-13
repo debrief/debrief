@@ -17,9 +17,10 @@ package Debrief.Wrappers;
 import java.util.Enumeration;
 
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GenericData.WatchableList;
 
-public interface ISecondaryTrack extends WatchableList {
+public interface ISecondaryTrack extends WatchableList, HasEditables {
 
 	/** get the legs
 	 * 
