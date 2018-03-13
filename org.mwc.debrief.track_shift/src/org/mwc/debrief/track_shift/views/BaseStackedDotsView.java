@@ -100,6 +100,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -110,6 +111,7 @@ import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
@@ -401,6 +403,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _showTargetOverview;
 
   protected Action _showZones;
+
+  protected Action _selectMeasurements;
+
+  protected Action _selectPositions;
 
   /**
    * flag indicating whether we should show cross-hairs
@@ -1265,10 +1271,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           // do we have data on the line plot?
           if (tsc != null)
-          {            
+          {
             // get the series we want the data item for
             final TimeSeries t = tsc.getSeries(targetSeries);
-            
+
             // get the data point nearest our target time
             final TimeSeriesDataItem nearest = t.getDataItem(
                 new FixedMillisecond(newDate.getTime()));
@@ -1663,6 +1669,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _showZones.setChecked(false);
     }
+
+    // ok, insert separator
+    toolBarManager.add(new Separator());
+
+    // right, select items goes here
+    toolBarManager.add(_selectMeasurements);
+    toolBarManager.add(_selectPositions);
+
+    // ok, insert separator
+    toolBarManager.add(new Separator());
 
     addExtras(toolBarManager);
 
@@ -2107,6 +2123,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/24/fit_to_win.png"));
 
+    _selectMeasurements = new Action("Select visible measurements",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        doSelectMeasurements();
+      }
+    };
+    _selectMeasurements.setToolTipText("Select measurements currently visible");
+    _selectMeasurements.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/sensor_contact.png"));
+
+    _selectPositions = new Action("Select visible positions",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        doSelectPositions();
+      }
+    };
+    _selectPositions.setToolTipText("Select positions currently visible");
+    _selectPositions.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/fix.png"));
+
     _showZones = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
@@ -2266,6 +2310,56 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
     _showCrossHairs.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/24/fix.png"));
+
+  }
+
+  protected void doSelectPositions()
+  {
+    // TODO Auto-generated method stub
+
+  }
+
+  protected void doSelectMeasurements()
+  {
+    // find current bounds of line plot
+    Range valueRange = _linePlot.getRangeAxis().getRange();
+    Range timeRange = _combined.getDomainAxis().getRange();
+
+    // loop through measured data
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
+        .getDataset();
+    TimeSeries measurements = tsc.getSeries(MEASURED_VALUES);
+
+    final List<?> list = measurements.getItems();
+    final List<Editable> toSelect = new ArrayList<Editable>();
+
+    for (final Object item : list)
+    {
+      final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+      final long time = thisI.getPeriod().getMiddleMillisecond();
+      final double value = thisI.getValue().doubleValue();
+
+      // is this point visible?
+      if (valueRange.contains(value) && timeRange.contains(time)
+          && thisI instanceof ColouredDataItem)
+      {
+        // add to list
+        final ColouredDataItem ourItem = (ColouredDataItem) thisI;
+        final Editable payload = ourItem.getPayload();
+
+        toSelect.add(payload);
+      }
+    }
+
+    // build up results selection
+    List<EditableWrapper> wrappedItems = new ArrayList<EditableWrapper>();
+    for(Editable t: toSelect)
+    {
+      
+    }
+    StructuredSelection sel = new StructuredSelection(wrappedItems);
+
+    // set selection
 
   }
 
