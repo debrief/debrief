@@ -1357,18 +1357,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-
             // work through, to find the nearest item
             final List<?> list = t.getItems();
             TimeSeriesDataItem nearest = null;
-
-            int ctr = 0;
-
+            
             for (final Object item : list)
             {
-
-              ctr++;
-
               final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
               if (nearest == null)
               {
