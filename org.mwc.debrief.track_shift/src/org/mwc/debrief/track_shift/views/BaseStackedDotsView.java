@@ -100,6 +100,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -719,26 +720,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     });
   }
 
-  private static final TimeSeriesDataItem findNearestPointTo(final long time,
-      final TimeSeries t)
-  {
-    // Note: we did make this call, but it was failing when
-    // more than about 100 points were visible on screen
-    // return t.getDataItem(
-    // new FixedMillisecond(time));
-
-    final int len = t.getItemCount();
-    for (int i = 0; i < len; i++)
-    {
-      final TimeSeriesDataItem item = t.getDataItem(i);
-      if (item.getPeriod().getMiddleMillisecond() == time)
-      {
-        return item;
-      }
-    }
-    return null;
-  }
-
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
@@ -1167,8 +1148,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           if (tsc != null)
           {
             final TimeSeries t = tsc.getSeries(targetSeries);
-            final TimeSeriesDataItem nearest = findNearestPointTo(newDate
-                .getTime(), t);
+            final TimeSeriesDataItem nearest = t.getDataItem(
+                new FixedMillisecond(newDate.getTime()));
 
             if (nearest != null)
             {
