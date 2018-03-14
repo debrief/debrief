@@ -122,7 +122,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
 				
 			}
 
-			protected void paintTheImage(CanvasType dest, int width, int height)
+			protected void paintTheImage(CanvasType dest, int width, int height, final int alpha)
 			{
 				
 			}

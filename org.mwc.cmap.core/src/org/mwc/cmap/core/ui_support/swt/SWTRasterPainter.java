@@ -94,7 +94,7 @@ public class SWTRasterPainter extends PainterComponent
    * @param height
    */
   protected void paintTheImage(final CanvasType dest, final int width,
-      final int height)
+      final int height, final int alpha)
   {
     if (dest instanceof SWTCanvasAdapter)
     {
@@ -105,7 +105,7 @@ public class SWTRasterPainter extends PainterComponent
       Image image = new Image(Display.getCurrent(), _myImageBuffer);
 
       // and draw it to the canvas
-      canvas.drawImage(image, 0, 0, width, height);
+      canvas.drawImage(image, 0, 0, width, height, alpha);
 
       // we've created SWT image - we'd better delete it!
       image.dispose();

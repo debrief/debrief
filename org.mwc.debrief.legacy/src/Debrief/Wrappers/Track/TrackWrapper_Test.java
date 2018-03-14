@@ -1823,7 +1823,6 @@ public class TrackWrapper_Test extends TestCase
       FixWrapper fw = (FixWrapper) sIter.next();
       System.out.println(fw.getDTG().getDate().getTime());
     }
-
   }
 
   /**

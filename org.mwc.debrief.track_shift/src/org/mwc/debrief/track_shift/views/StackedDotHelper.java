@@ -963,7 +963,7 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
+    final TimeSeries errorValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
     final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
@@ -1152,7 +1152,7 @@ public final class StackedDotHelper
 
               final ColouredDataItem newTrueError =
                   new ColouredDataItem(thisMilli, thisTrueError, brgColor,
-                      false, null, true, parentIsNotDynamic);
+                      false, null, true, parentIsNotDynamic, thisD.getTarget());
 
               final ColouredDataItem cBearing =
                   new ColouredDataItem(thisMilli, calculatedBearing, brgColor,

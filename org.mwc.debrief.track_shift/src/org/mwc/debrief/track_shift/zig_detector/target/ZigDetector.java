@@ -16,6 +16,8 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.ILogListener;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.track_shift.zig_detector.moving_average.TimeRestrictedMovingAverage;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.osgi.framework.Bundle;
@@ -394,7 +396,7 @@ public class ZigDetector
       {
         if (_thisLeg.start + lastOpposite == 52)
         {
-          System.out.println("Leg:" + _thisLeg + " opp:" + lastOpposite);
+          log("Leg:" + _thisLeg + " opp:" + lastOpposite);
         }
 
         _thisLeg.end = _thisLeg.start + lastOpposite;
@@ -1561,7 +1563,7 @@ public class ZigDetector
       // check it worked
       if (!optimiser.getConvStatus())
       {
-        System.out.println("can't converge. Max iterations:" + optimiser
+        log("can't converge. Max iterations:" + optimiser
             .getNiter());
         System.out.println("Ctr:" + ctr);
         // failed to converge. skip to the next one - see if more data will help
@@ -1720,11 +1722,11 @@ public class ZigDetector
     {
       if (legTimes != null)
       {
-        System.out.println(legTimes.get(p.start) + "-" + legTimes.get(p.end));
+        log(legTimes.get(p.start) + "-" + legTimes.get(p.end));
       }
       else
       {
-        System.out.println(p);
+        log("" + p);
       }
     }
   }
@@ -1994,11 +1996,11 @@ public class ZigDetector
 
             if (walker.getSameSideCount() == 3)
             {
-              System.out.println(walker + ": stopping growing at:" + i + "("
+              log(walker + ": stopping growing at:" + i + "("
                   + times.get(i) + ")" + " leg:" + thisLeg);
               helper.stopGrowing();
               helper.storeEnd(walker.getLastOpposite());
-              System.out.println("End value updated to" + thisLeg);
+              log("End value updated to" + thisLeg);
 
               // ok, have a look.
               // for (final String s : states)
@@ -2010,7 +2012,7 @@ public class ZigDetector
               if (otherHelper.isGrowing())
               {
                 helper.restoreOtherEnd();
-                System.out.println("Leg restored to:" + thisLeg);
+                log("Leg restored to:" + thisLeg);
                 continue;
               }
             }
@@ -2226,7 +2228,7 @@ public class ZigDetector
           @Override
           public void doIt(final TPeriod innerPeriod, double score)
           {
-            System.out.println("deleting:" + innerPeriod.toString(fullTimes)
+            log("deleting:" + innerPeriod.toString(fullTimes)
                 + " from " + outerPeriod.toString(fullTimes) + " score:"
                 + score);
             // get rid of this period of data, create legs either side.
@@ -2235,8 +2237,8 @@ public class ZigDetector
           }
         };
 
-        System.out.println("=======");
-        System.out.println("Analysing:" + outerPeriod.toString(fullTimes));
+        log("====");
+        log("Analysing:" + outerPeriod.toString(fullTimes));
 
         // slice the data
         final List<Long> thisTimes = zeroTimes.subList(outerPeriod.start,
@@ -2286,12 +2288,17 @@ public class ZigDetector
   {
     if (thisLeg != null)
     {
-      System.out.println(msg + thisLeg.toString(thisTimes));
+      log(msg + thisLeg.toString(thisTimes));
     }
     else
     {
-      System.out.println(msg + "NULL");
+      log(msg + "NULL");
     }
+  }
+  
+  private static void log(final String msg)
+  {
+    CorePlugin.logError(Status.INFO, msg, null);
   }
 
   /**
