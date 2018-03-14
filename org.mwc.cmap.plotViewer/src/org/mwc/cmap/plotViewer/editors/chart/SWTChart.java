@@ -787,15 +787,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
    *          the image we're going to copy
    * @return
    */
-  protected static org.eclipse.swt.graphics.Image createSWTImage(
+  protected static Image createSWTImage(
       final ImageData myImageTemplate)
   {
     final Color trColor = Color.white;
     final int transPx = myImageTemplate.palette.getPixel(new RGB(trColor
         .getRed(), trColor.getGreen(), trColor.getBlue()));
     myImageTemplate.transparentPixel = transPx;
-    final org.eclipse.swt.graphics.Image image =
-        new org.eclipse.swt.graphics.Image(Display.getCurrent(),
+    final Image image =
+        new Image(Display.getCurrent(),
             myImageTemplate);
     return image;
   }
@@ -1162,7 +1162,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
                       // do our double-buffering bit
                       // do we have a layer for this object
-                      org.eclipse.swt.graphics.Image image = _myLayers.get(
+                      Image image = _myLayers.get(
                           thisLayer);
                       if (image == null)
                       {
