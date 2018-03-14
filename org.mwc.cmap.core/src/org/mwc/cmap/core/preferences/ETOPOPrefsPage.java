@@ -77,6 +77,7 @@ public class ETOPOPrefsPage extends FieldEditorPreferencePage implements
   @Override
   public void init(final IWorkbench workbench)
   {
+    //
   }
 
 }
