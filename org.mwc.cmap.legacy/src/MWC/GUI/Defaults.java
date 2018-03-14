@@ -4,16 +4,16 @@ import java.awt.Font;
 
 public class Defaults
 {
-  public static interface FontProvider
+  public static interface PreferenceProvider
   {
     public Font getDefaultFont();
     
     public String getPreference(final String name);
   }
 
-  private static FontProvider _provider;
+  private static PreferenceProvider _provider;
 
-  public static void setProvider(FontProvider provider)
+  public static void setProvider(PreferenceProvider provider)
   {
     _provider = provider;
   }

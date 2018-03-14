@@ -83,7 +83,7 @@ import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.EarthModel;
 import MWC.GUI.Defaults;
-import MWC.GUI.Defaults.FontProvider;
+import MWC.GUI.Defaults.PreferenceProvider;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
@@ -99,7 +99,7 @@ import interfaces.IEarthModelProvider;
  * The main plugin class to be used in the desktop.
  */
 public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
-    FontProvider
+    PreferenceProvider
 {
 
   static public final class ClipboardTest extends junit.framework.TestCase

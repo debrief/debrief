@@ -1525,11 +1525,22 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   }
 
   public void drawImage(final Image image, final int x, final int y,
-      final int width, final int height)
+      final int width, final int height, final int alpha)
   {
     if (_theDest != null)
       if (!_theDest.isDisposed())
+      {
+        int oldAlpha = _theDest.getAlpha();
+        _theDest.setAlpha(alpha);
         _theDest.drawImage(image, x, y);
+        _theDest.setAlpha(oldAlpha);
+      }
+  }
+
+  public void drawImage(final Image image, final int x, final int y,
+      final int width, final int height)
+  {
+    drawImage(image, x, y, width, height, 255);
   }
 
   @Override

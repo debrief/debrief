@@ -103,6 +103,13 @@ public class CreateTOPO extends PlainCreateLayer
 	 * 
 	 */
 	public static String ETOPO_PATH = "ETOPO_Directory";
+	
+  /**
+   * the name of the property which indicates how
+   * transparent to make ETOPO
+   * 
+   */
+	public static String ETOPO_TRANSPARENCY = "ETOPO_Transparency";
 
 	/**
 	 * the default path to find the ETOPO data
