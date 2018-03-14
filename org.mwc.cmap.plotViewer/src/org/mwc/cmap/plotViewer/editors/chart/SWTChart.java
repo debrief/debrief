@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: SWTChart.java,v $
 // @author $Author$
@@ -219,13 +219,9 @@ import MWC.GenericData.WorldLocation;
 public abstract class SWTChart extends PlainChart implements ISelectionProvider
 {
 
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
-
   /**
    * customised SWTCanvas class that supports our right-click editing
-   * 
+   *
    * @author ian.mayo
    */
   public abstract class CustomisedSWTCanvas extends SWTCanvas
@@ -393,15 +389,21 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
   /**
    * embedded interface for classes that are able to handle drag events
-   * 
+   *
    * @author ian.mayo
    */
   abstract public static class PlotMouseDragger
   {
 
+    public void close()
+    {
+      // ditch our objects
+      // we haven't to dispose static Debrief cursors
+    }
+
     /**
      * handle the mouse being dragged
-     * 
+     *
      * @param pt
      *          the new cursor location
      * @param theCanvas
@@ -411,7 +413,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
     /**
      * handle the mouse moving across the screen
-     * 
+     *
      * @param pt
      *          the new cursor location
      * @param theCanvas
@@ -424,7 +426,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
     /**
      * handle the mouse drag finishing
-     * 
+     *
      * @param keyState
      * @param pt
      *          the final cursor location
@@ -434,7 +436,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
     /**
      * ok, assign the cursor for when we're just hovering
-     * 
+     *
      * @return the new cursor to use, silly.
      */
     public Cursor getNormalCursor()
@@ -447,7 +449,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
     /**
      * handle the mouse drag starting
-     * 
+     *
      * @param canvas
      *          the control it's dragging over
      * @param theChart
@@ -457,21 +459,68 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
         SWTCanvas canvas, PlainChart theChart);
 
-    public void close()
-    {
-      // ditch our objects
-      // we haven't to dispose static Debrief cursors
-    }
-
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
-  private transient SWTCanvas _theCanvas;
+  /**
+   * colour palette for our image
+   *
+   */
+  private static final PaletteData PALETTE_DATA = new PaletteData(0xFF0000,
+      0xFF00, 0xFF);
 
+  /** RGB value to use as transparent color */
+  private static final int TRANSPARENT_COLOR = 0x123456;
+
+  public static ImageData awtToSwt(final BufferedImage bufferedImage,
+      final int width, final int height)
+  {
+    // System.err.println("DOING AWT TO SWT!!!!");
+    final int[] awtPixels = new int[width * height];
+    final ImageData swtImageData = new ImageData(width, height, 24,
+        PALETTE_DATA);
+    swtImageData.transparentPixel = TRANSPARENT_COLOR;
+    final int step = swtImageData.depth / 8;
+    final byte[] data = swtImageData.data;
+    bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
+    for (int i = 0; i < height; i++)
+    {
+      int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
+      for (int j = 0; j < width; j++)
+      {
+        final int rgb = awtPixels[j + i * width];
+        for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
+        {
+          data[idx++] = (byte) ((rgb >> k) & 0xFF);
+        }
+      }
+    }
+
+    return swtImageData;
+  }
+
+  /**
+   * create the transparent image we need to for collating multiple layers into an image
+   *
+   * @param myImageTemplate
+   *          the image we're going to copy
+   * @return
+   */
+  protected static Image createSWTImage(final ImageData myImageTemplate)
+  {
+    final Color trColor = Color.white;
+    final int transPx = myImageTemplate.palette.getPixel(new RGB(trColor
+        .getRed(), trColor.getGreen(), trColor.getBlue()));
+    myImageTemplate.transparentPixel = transPx;
+    final Image image = new Image(Display.getCurrent(), myImageTemplate);
+    return image;
+  }
+
+  private transient SWTCanvas _theCanvas;
   /**
    * our list of layered images.
    */
@@ -492,6 +541,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
    * track drag operations
    */
   private transient Point _startPoint = null;
+
   /**
    * the last point dragged over
    */
@@ -516,21 +566,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
   private final IPropertyChangeListener _propertyChangeListener;
 
   /**
-   * colour palette for our image
-   * 
-   */
-  private static final PaletteData PALETTE_DATA = new PaletteData(0xFF0000,
-      0xFF00, 0xFF);
-
-  /** RGB value to use as transparent color */
-  private static final int TRANSPARENT_COLOR = 0x123456;
-
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-  /**
    * constructor, providing us with the set of layers to plot.
-   * 
+   *
    * @param theLayers
    *          the data to plot
    * @param _myProjection
@@ -639,10 +676,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     _propertyChangeListener = new IPropertyChangeListener()
     {
       @Override
-      public void propertyChange(PropertyChangeEvent event)
+      public void propertyChange(final PropertyChangeEvent event)
       {
         final String source = event.getProperty();
-        if(imageProps.contains(source))
+        if (imageProps.contains(source))
         {
           clearImages();
 
@@ -663,9 +700,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
   {
   }
 
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
   @Override
   public void canvasResized()
   {
@@ -749,9 +783,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
   /**
    * over-rideable member function which allows us to over-ride the canvas which gets used.
-   * 
+   *
    * @param projection
-   * 
+   *
    * @return the Canvas to use
    */
   public SWTCanvas createCanvas(final Composite parent,
@@ -761,7 +795,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     {
 
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
@@ -778,26 +812,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
         chartFireSelectionChanged(selected);
       }
     };
-  }
-
-  /**
-   * create the transparent image we need to for collating multiple layers into an image
-   * 
-   * @param myImageTemplate
-   *          the image we're going to copy
-   * @return
-   */
-  protected static Image createSWTImage(
-      final ImageData myImageTemplate)
-  {
-    final Color trColor = Color.white;
-    final int transPx = myImageTemplate.palette.getPixel(new RGB(trColor
-        .getRed(), trColor.getGreen(), trColor.getBlue()));
-    myImageTemplate.transparentPixel = transPx;
-    final Image image =
-        new Image(Display.getCurrent(),
-            myImageTemplate);
-    return image;
   }
 
   protected void doMouseDoubleClick(final MouseEvent e)
@@ -942,10 +956,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     return _theCanvas.getCanvas();
   }
 
-  // ////////////////////////////////////////////////////////
-  // methods for handling requests from our canvas
-  // ////////////////////////////////////////////////////////
-
   final public PlotMouseDragger getDragMode()
   {
     return _myDragMode;
@@ -961,7 +971,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
   /**
    * get the size of the canvas.
-   * 
+   *
    * @return the dimensions of the canvas
    */
   @Override
@@ -985,7 +995,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
   /**
    * paint the solid background.
-   * 
+   *
    * @param dest
    *          where we're painting to
    */
@@ -1162,8 +1172,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
                       // do our double-buffering bit
                       // do we have a layer for this object
-                      Image image = _myLayers.get(
-                          thisLayer);
+                      Image image = _myLayers.get(thisLayer);
                       if (image == null)
                       {
                         // ok - do we have an image template?
@@ -1254,7 +1263,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
   /**
    * Convenience method added, to allow child classes to override how we plot non-background layers.
    * This was originally inserted to let us support snail trails
-   * 
+   *
    * @param thisLayer
    * @param dest
    */
@@ -1294,7 +1303,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
   /**
    * specify whether paint events should get deferred, with only the most recent one getting painted
-   * 
+   *
    * @param val
    *          yes/no
    */
@@ -1325,6 +1334,33 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     // and start the update
     _theCanvas.updateMe();
   }
+
+  // private void setMap(Editable layer)
+  // {
+  // // TODO: I don't think this should be a "setMap" call, I think it should be a
+  // // configureMap call. The gtLayer will already know its map object.
+  // // It just needs to re-configure layers are displayed.
+  //
+  //
+  // if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
+  // // a workaround for "Problem painting NELayer when Chart Overview is opened"
+  // // https://github.com/debrief/debrief/issues/1018
+  // return;
+  // }
+  // if (layer instanceof InterestedInViewportChange)
+  // {
+  // if (layer instanceof GeoToolsLayer)
+  // {
+  // GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
+  // PlainProjection projection = _theCanvas.getProjection();
+  // if (projection instanceof GtProjection)
+  // {
+  // GtProjection gtProjection = (GtProjection) projection;
+  // gtLayer.setMap(gtProjection.getMapContent());
+  // }
+  // }
+  // }
+  // }
 
   @Override
   public final void update(final HasEditables changedLayer)
@@ -1381,60 +1417,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
       _theCanvas.updateMe();
 
     }
-  }
-
-  // private void setMap(Editable layer)
-  // {
-  // // TODO: I don't think this should be a "setMap" call, I think it should be a
-  // // configureMap call. The gtLayer will already know its map object.
-  // // It just needs to re-configure layers are displayed.
-  //
-  //
-  // if (this.getClass().getName().startsWith("org.mwc.cmap.overview.views.ChartOverview")) {
-  // // a workaround for "Problem painting NELayer when Chart Overview is opened"
-  // // https://github.com/debrief/debrief/issues/1018
-  // return;
-  // }
-  // if (layer instanceof InterestedInViewportChange)
-  // {
-  // if (layer instanceof GeoToolsLayer)
-  // {
-  // GeoToolsLayer gtLayer = (GeoToolsLayer) layer;
-  // PlainProjection projection = _theCanvas.getProjection();
-  // if (projection instanceof GtProjection)
-  // {
-  // GtProjection gtProjection = (GtProjection) projection;
-  // gtLayer.setMap(gtProjection.getMapContent());
-  // }
-  // }
-  // }
-  // }
-
-  public static ImageData awtToSwt(final BufferedImage bufferedImage,
-      final int width, final int height)
-  {
-    // System.err.println("DOING AWT TO SWT!!!!");
-    final int[] awtPixels = new int[width * height];
-    final ImageData swtImageData = new ImageData(width, height, 24,
-        PALETTE_DATA);
-    swtImageData.transparentPixel = TRANSPARENT_COLOR;
-    final int step = swtImageData.depth / 8;
-    final byte[] data = swtImageData.data;
-    bufferedImage.getRGB(0, 0, width, height, awtPixels, 0, width);
-    for (int i = 0; i < height; i++)
-    {
-      int idx = (0 + i) * swtImageData.bytesPerLine + 0 * step;
-      for (int j = 0; j < width; j++)
-      {
-        final int rgb = awtPixels[j + i * width];
-        for (int k = swtImageData.depth - 8; k >= 0; k -= 8)
-        {
-          data[idx++] = (byte) ((rgb >> k) & 0xFF);
-        }
-      }
-    }
-
-    return swtImageData;
   }
 
 }
