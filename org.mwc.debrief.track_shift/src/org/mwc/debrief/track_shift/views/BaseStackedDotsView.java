@@ -26,8 +26,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -86,8 +89,12 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnitSource;
+import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
@@ -148,7 +155,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
-import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
@@ -870,12 +876,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       @Override
-      public void restoreAutoBounds()
+      public void zoom(org.eclipse.swt.graphics.Rectangle selection)
       {
         // we also need to clear the cached date labels
-        final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
-            .getDomainAxis();
-        axis.clearTicks();
+        clearDateTickUnits();
+        super.zoom(selection);
+      }
+
+      @Override
+      public void restoreAutoBounds()
+      {
+        clearDateTickUnits();
 
         // let the parent refresh
         super.restoreAutoBounds();
@@ -884,15 +895,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // this is to overcome a problem when TMA positions are
         // removed. When we try to zoom out after the delete,
         // the bearing axis is still constrained.
-        if (_autoResize.isChecked())
+        if (_autoResize.isChecked() && _showDotPlot.isChecked())
         {
-          if (_showDotPlot.isChecked())
-          {
-            _dotPlot.getRangeAxis().setAutoRange(false);
-            _dotPlot.getRangeAxis().setAutoRange(true);
-          }
+          _dotPlot.getRangeAxis().setAutoRange(false);
+          _dotPlot.getRangeAxis().setAutoRange(true);
         }
-
       }
     };
 
@@ -1032,6 +1039,164 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
+
+  /**
+   * Returns a collection of standard date tick units. This collection will be used by default, but
+   * you are free to create your own collection if you want to (see the
+   * {@link ValueAxis#setStandardTickUnits(TickUnitSource)} method inherited from the
+   * {@link ValueAxis} class).
+   *
+   * @param zone
+   *          the time zone (<code>null</code> not permitted).
+   * @param locale
+   *          the locale (<code>null</code> not permitted).
+   *
+   * @return A collection of standard date tick units.
+   *
+   * @since 1.0.11
+   */
+  private TickUnitSource createMyStandardDateTickUnits()
+  {
+    TickUnits units = new TickUnits();
+
+    // date formatters
+    final DateFormat f4 = new SimpleDateFormat("ddHHmm");
+    final DateFormat f5 = new SimpleDateFormat("ddHHmm:ss");
+    DateFormat f1 = new SimpleDateFormat("HHmm:ss.SSS");
+    DateFormat f2 = new MidnightDateFormat("HHmm:ss", f5);
+    DateFormat f3 = new MidnightDateFormat("HHmm", f4);
+    
+    f1.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f2.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f3.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f4.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f5.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    // milliseconds
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 5,
+        DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 10,
+        DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 25,
+        DateTickUnitType.MILLISECOND, 5, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 50,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 100,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 250,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 500,
+        DateTickUnitType.MILLISECOND, 50, f1));
+
+    // seconds
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 1,
+        DateTickUnitType.MILLISECOND, 50, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 5,
+        DateTickUnitType.SECOND, 1, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 10,
+        DateTickUnitType.SECOND, 1, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 30,
+        DateTickUnitType.SECOND, 5, f2));
+
+    // minutes
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 1,
+        DateTickUnitType.SECOND, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 2,
+        DateTickUnitType.SECOND, 10, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 5,
+        DateTickUnitType.MINUTE, 1, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 10,
+        DateTickUnitType.MINUTE, 1, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 15,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 20,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 30,
+        DateTickUnitType.MINUTE, 5, f3));
+
+    // hours
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 1,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 2,
+        DateTickUnitType.MINUTE, 10, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 4,
+        DateTickUnitType.MINUTE, 30, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 6, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 12, DateTickUnitType.HOUR,
+        1, f4));
+
+    // days
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 1, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 2, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 7, DateTickUnitType.DAY, 1,
+        f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 15, DateTickUnitType.DAY,
+        1, f4));
+
+    return units;
+
+  }
+  
+  private static class MidnightDateFormat extends SimpleDateFormat
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /** format to use for midnight dates
+     * 
+     */
+    private final DateFormat _midFormat;
+    
+    /** 
+     * 
+     * @param format normal format to use
+     * @param midnightFormat format to use at midnight
+     */
+    public MidnightDateFormat(String format, DateFormat midnightFormat)
+    {
+      super(format);
+      _midFormat = midnightFormat;
+    }
+    
+    @Override
+    public StringBuffer format(Date date, StringBuffer toAppendTo,
+        FieldPosition pos)
+    {
+      if(isMidnight(date))
+      // just check if we're at midnight
+      {
+        return _midFormat.format(date, toAppendTo, pos);
+      }
+      else
+      {
+        return super.format(date, toAppendTo, pos);
+      }
+      
+    }
+
+    /** check if this date is at midnight
+     * 
+     * @param date
+     * @return
+     */
+    private boolean isMidnight(Date date)
+    {
+      Calendar myCal = Calendar.getInstance();
+      myCal.setTimeInMillis(date.getTime());
+      return myCal.get(Calendar.HOUR_OF_DAY) == 0
+             && myCal.get(Calendar.MINUTE) == 0
+             && myCal.get(Calendar.SECOND) == 0
+             && myCal.get(Calendar.MILLISECOND) == 0;
+    }
+  }
+  
   /**
    * method to create a working plot (to contain our data)
    *
@@ -1045,12 +1210,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     final DateAxis xAxis = new CachedTickDateAxis("");
-    xAxis.setDateFormatOverride(_df);
+    
+ //   xAxis.setDateFormatOverride(_df);
     final Font tickLabelFont = new Font("Arial", Font.PLAIN, 14);
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
-    xAxis.setStandardTickUnits(DateAxisEditor
-        .createStandardDateTickUnitsAsTickUnits());
+    xAxis.setStandardTickUnits(createMyStandardDateTickUnits());
     xAxis.setAutoTickUnitSelection(true);
 
     // create the special stepper plot
@@ -3347,10 +3512,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // question
     if (updateDoublets)
     {
-      // trigger recalculation of date axis ticks
-      final CachedTickDateAxis date = (CachedTickDateAxis) _combined
-          .getDomainAxis();
-      date.clearTicks();
+      clearDateTickUnits();
     }
 
     // right, are we updating the range data?
@@ -3426,6 +3588,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       res = null;
     }
     return res;
+  }
+
+  private void clearDateTickUnits()
+  {
+    DateAxis dAxis = (DateAxis) _combined.getDomainAxis();
+    if (dAxis instanceof CachedTickDateAxis)
+    {
+      final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
+          .getDomainAxis();
+      axis.clearTicks();
+    }
   }
 
 }
