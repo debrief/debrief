@@ -300,7 +300,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
     /**
      * method to draw in the key
      */
-    final void drawKey(final CanvasType dest, final double min_height,
+    private final void drawKey(final CanvasType dest, final double min_height,
         final double max_height, final Integer keyLocation,
         final SpatialRasterPainter parent, final boolean useNE)
     {
@@ -1299,7 +1299,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements
     final TreeSet<Double> sortedDepths = new TreeSet<Double>();
 
     // parse the string
-    final java.util.StringTokenizer token = new StringTokenizer(contourDepths,
+    final StringTokenizer token = new StringTokenizer(contourDepths,
         ",", false);
     while (token.hasMoreTokens())
     {
