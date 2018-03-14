@@ -1327,8 +1327,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   if (subject != null)
                   {
                     // and show it
-                    final List<EditableWrapper> items =
-                        new ArrayList<>();
+                    final List<EditableWrapper> items = new ArrayList<>();
                     items.add(subject);
                     showThisSelectionInOutline(items, editor);
                   }
