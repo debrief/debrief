@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
@@ -24,17 +24,19 @@ import org.jfree.ui.RectangleEdge;
 public class CachedTickDateAxis extends DateAxis
 {
 
-
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
   private Double _lastHeight = null;
 
+  @SuppressWarnings("rawtypes")
+  private List _myTicks;
+
   /**
    * pass the constructor args back to the parent
-   * 
+   *
    * @param string
    */
   public CachedTickDateAxis(final String string)
@@ -42,12 +44,9 @@ public class CachedTickDateAxis extends DateAxis
     super(string);
   }
 
-  @SuppressWarnings("rawtypes")
-  private List _myTicks;
-
   /**
    * utility method to clear our cached list (when we know dates have changed)
-   * 
+   *
    */
   public void clearTicks()
   {
