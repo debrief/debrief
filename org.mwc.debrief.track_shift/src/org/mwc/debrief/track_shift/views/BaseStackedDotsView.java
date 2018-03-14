@@ -879,6 +879,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         // let the parent refresh
         super.restoreAutoBounds();
+
+        // also clear the range axis ranges
+        // this is to overcome a problem when TMA positions are
+        // removed. When we try to zoom out after the delete,
+        // the bearing axis is still constrained.
+        if (_autoResize.isChecked())
+        {
+          if (_showDotPlot.isChecked())
+          {
+            _dotPlot.getRangeAxis().setAutoRange(false);
+            _dotPlot.getRangeAxis().setAutoRange(true);
+          }
+        }
+
       }
     };
 
@@ -1287,7 +1301,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
               final IWorkbenchPage page = win.getActivePage();
               final IEditorPart editor = page.getActiveEditor();
-              final Layers layers = editor.getAdapter(Layers.class);
+              final Layers layers = (Layers) editor.getAdapter(Layers.class);
               if (layers != null)
               {
                 final ColouredDataItem item = (ColouredDataItem) nearest;
@@ -1314,7 +1328,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                   {
                     // and show it
                     final List<EditableWrapper> items =
-                        new ArrayList<EditableWrapper>();
+                        new ArrayList<>();
                     items.add(subject);
                     showThisSelectionInOutline(items, editor);
                   }
@@ -1633,7 +1647,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
       final IWorkbenchPage page = win.getActivePage();
       final IEditorPart editor = page.getActiveEditor();
-      final Layers layers = editor.getAdapter(Layers.class);
+      final Layers layers = (Layers) editor.getAdapter(Layers.class);
 
       // build up results selection
       final List<EditableWrapper> wrappedItems =
@@ -2679,7 +2693,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subjects);
-    final IContentOutlinePage outline = editor.getAdapter(
+    final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
     if (outline != null)
@@ -3405,16 +3419,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       else
       {
         leg = new EditableWrapper(seg, parentP, layers);
-
       }
-
       res = new EditableWrapper(fix, leg, layers);
     }
     else
     {
       res = null;
     }
-
     return res;
   }
 
