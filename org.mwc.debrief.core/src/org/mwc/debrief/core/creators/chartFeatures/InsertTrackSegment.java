@@ -19,6 +19,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.eclipse.jface.dialogs.InputDialog;
@@ -160,6 +161,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 
 //						 ok, also get a start time
 						final DateFormat df = new SimpleDateFormat("yyMMdd HHmmss");
+				    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+
 						final String dateToday = df.format(new Date());
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),
 								"New track", "Enter start DTG  (yyMMdd HHmmss)",

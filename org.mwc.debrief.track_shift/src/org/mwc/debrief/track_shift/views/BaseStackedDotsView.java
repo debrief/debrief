@@ -26,8 +26,11 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DateFormat;
+import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -86,8 +89,12 @@ import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.DateTickUnit;
+import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnitSource;
+import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
@@ -100,6 +107,7 @@ import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.data.Range;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -110,6 +118,7 @@ import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.core.editors.PlotOutlinePage;
 import org.mwc.debrief.track_shift.TrackShiftActivator;
@@ -146,7 +155,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
-import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
@@ -167,6 +175,66 @@ import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
+
+  private static class MidnightDateFormat extends SimpleDateFormat
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * format to use for midnight dates
+     *
+     */
+    private final DateFormat _midFormat;
+
+    /**
+     *
+     * @param format
+     *          normal format to use
+     * @param midnightFormat
+     *          format to use at midnight
+     */
+    public MidnightDateFormat(final String format,
+        final DateFormat midnightFormat)
+    {
+      super(format);
+      _midFormat = midnightFormat;
+    }
+
+    @Override
+    public StringBuffer format(final Date date, final StringBuffer toAppendTo,
+        final FieldPosition pos)
+    {
+      if (isMidnight(date))
+      // just check if we're at midnight
+      {
+        return _midFormat.format(date, toAppendTo, pos);
+      }
+      else
+      {
+        return super.format(date, toAppendTo, pos);
+      }
+
+    }
+
+    /**
+     * check if this date is at midnight
+     *
+     * @param date
+     * @return
+     */
+    private boolean isMidnight(final Date date)
+    {
+      final Calendar myCal = Calendar.getInstance();
+      myCal.setTimeInMillis(date.getTime());
+      return myCal.get(Calendar.HOUR_OF_DAY) == 0 && myCal.get(
+          Calendar.MINUTE) == 0 && myCal.get(Calendar.SECOND) == 0 && myCal.get(
+              Calendar.MILLISECOND) == 0;
+    }
+  }
 
   protected class TargetZoneSlicer implements ZoneSlicer
   {
@@ -291,24 +359,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
   private static final String SHOW_ZONES = "SHOW_ZONES";
+
   private static final String SELECT_ON_CLICK = "SELECT_ON_CLICK";
 
   private static final String SHOW_ONLY_VIS = "ONLY_SHOW_VIS";
-
   private static final String SHOW_CROSSHAIRS = "SHOW_CROSSHAIRS";
+
   final public static String AMBIG_NAME = "Measured (Ambiguous)";
 
   public static final String USE_HOLISTIC_SLICER = "USE_HOLISTIC_SLICER";
-
-  /*
-   * Undo and redo actions
-   */
-  private HandlerAction undoAction;
 
   // private enum SliceMode
   // {
   // ORIGINAL, PEAK_FIT, AREA_UNDER_CURVE, ARTIFICIAL_LEG;
   // }
+
+  /*
+   * Undo and redo actions
+   */
+  private HandlerAction undoAction;
 
   private HandlerAction redoAction;
 
@@ -368,7 +437,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    */
   protected XYPlot _targetOverviewPlot;
-
   /**
    * declare the tgt course dataset, we need to give it to the renderer
    *
@@ -385,6 +453,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * legacy helper class
    */
   final protected StackedDotHelper _myHelper;
+
   /**
    * our listener for tracks being shifted...
    */
@@ -401,6 +470,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _showTargetOverview;
 
   protected Action _showZones;
+
+  protected Action _selectMeasurements;
+
+  protected Action _selectPositions;
 
   /**
    * flag indicating whether we should show cross-hairs
@@ -436,9 +509,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   private Vector<Action> _customActions;
 
-  protected Action _autoResize;
-
   // private Action _magicBtn;
+
+  protected Action _autoResize;
 
   private CombinedDomainXYPlot _combined;
 
@@ -449,7 +522,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    */
   private final boolean _needBrg;
-
   /**
    * does our output need frequency in the data?
    *
@@ -458,28 +530,29 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Vector<ISelectionProvider> _selProviders;
   protected ISelectionChangedListener _mySelListener;
   protected Vector<DraggableItem> _draggableSelection;
-  protected ZoneChart ownshipZoneChart;
 
+  protected ZoneChart ownshipZoneChart;
   protected ZoneChart targetZoneChart;
   final protected TimeSeries ownshipCourseSeries = new TimeSeries(
       "Ownship course");
   final protected TimeSeries targetBearingSeries = new TimeSeries("Bearing");
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
+
   final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
 
   final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
-
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
   private Precision _slicePrecision = Precision.MEDIUM;
+
   private Action _precisionOne;
 
   private Action _precisionTwo;
-
   // the time of the point nearest to a screen click
   private String _seriesToSearch = null;
   private Action _precisionThree;
+
   private final PropertyChangeListener _infillListener;
 
   /**
@@ -608,6 +681,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final int subPlots = _combined.getSubplots().size();
     _holder.setVisible(subPlots > 0);
     _holder.getParent().layout();
+  }
+
+  private void clearDateTickUnits()
+  {
+    final DateAxis dAxis = (DateAxis) _combined.getDomainAxis();
+    if (dAxis instanceof CachedTickDateAxis)
+    {
+      final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
+          .getDomainAxis();
+      axis.clearTicks();
+    }
   }
 
   /**
@@ -840,6 +924,107 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   /**
+   * Returns a collection of standard date tick units. This collection will be used by default, but
+   * you are free to create your own collection if you want to (see the
+   * {@link ValueAxis#setStandardTickUnits(TickUnitSource)} method inherited from the
+   * {@link ValueAxis} class).
+   *
+   * @param zone
+   *          the time zone (<code>null</code> not permitted).
+   * @param locale
+   *          the locale (<code>null</code> not permitted).
+   *
+   * @return A collection of standard date tick units.
+   *
+   * @since 1.0.11
+   */
+  private TickUnitSource createMyStandardDateTickUnits()
+  {
+    final TickUnits units = new TickUnits();
+
+    // date formatters
+    final DateFormat f4 = new SimpleDateFormat("ddHHmm");
+    final DateFormat f5 = new SimpleDateFormat("ddHHmm:ss");
+    final DateFormat f1 = new SimpleDateFormat("HHmm:ss.SSS");
+    final DateFormat f2 = new MidnightDateFormat("HHmm:ss", f5);
+    final DateFormat f3 = new MidnightDateFormat("HHmm", f4);
+
+    f1.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f2.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f3.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f4.setTimeZone(TimeZone.getTimeZone("GMT"));
+    f5.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+    // milliseconds
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 5,
+        DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 10,
+        DateTickUnitType.MILLISECOND, 1, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 25,
+        DateTickUnitType.MILLISECOND, 5, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 50,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 100,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 250,
+        DateTickUnitType.MILLISECOND, 10, f1));
+    units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 500,
+        DateTickUnitType.MILLISECOND, 50, f1));
+
+    // seconds
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 1,
+        DateTickUnitType.MILLISECOND, 50, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 5,
+        DateTickUnitType.SECOND, 1, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 10,
+        DateTickUnitType.SECOND, 1, f2));
+    units.add(new DateTickUnit(DateTickUnitType.SECOND, 30,
+        DateTickUnitType.SECOND, 5, f2));
+
+    // minutes
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 1,
+        DateTickUnitType.SECOND, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 2,
+        DateTickUnitType.SECOND, 10, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 5,
+        DateTickUnitType.MINUTE, 1, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 10,
+        DateTickUnitType.MINUTE, 1, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 15,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 20,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.MINUTE, 30,
+        DateTickUnitType.MINUTE, 5, f3));
+
+    // hours
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 1,
+        DateTickUnitType.MINUTE, 5, f3));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 2,
+        DateTickUnitType.MINUTE, 10, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 4,
+        DateTickUnitType.MINUTE, 30, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 6, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.HOUR, 12, DateTickUnitType.HOUR,
+        1, f4));
+
+    // days
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 1, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 2, DateTickUnitType.HOUR,
+        1, f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 7, DateTickUnitType.DAY, 1,
+        f4));
+    units.add(new DateTickUnit(DateTickUnitType.DAY, 15, DateTickUnitType.DAY,
+        1, f4));
+
+    return units;
+
+  }
+
+  /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
   @Override
@@ -866,13 +1051,28 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void restoreAutoBounds()
       {
-        // we also need to clear the cached date labels
-        final CachedTickDateAxis axis = (CachedTickDateAxis) _combined
-            .getDomainAxis();
-        axis.clearTicks();
+        clearDateTickUnits();
 
         // let the parent refresh
         super.restoreAutoBounds();
+
+        // also clear the range axis ranges
+        // this is to overcome a problem when TMA positions are
+        // removed. When we try to zoom out after the delete,
+        // the bearing axis is still constrained.
+        if (_autoResize.isChecked() && _showDotPlot.isChecked())
+        {
+          _dotPlot.getRangeAxis().setAutoRange(false);
+          _dotPlot.getRangeAxis().setAutoRange(true);
+        }
+      }
+
+      @Override
+      public void zoom(final org.eclipse.swt.graphics.Rectangle selection)
+      {
+        // we also need to clear the cached date labels
+        clearDateTickUnits();
+        super.zoom(selection);
       }
     };
 
@@ -1025,12 +1225,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     final DateAxis xAxis = new CachedTickDateAxis("");
-    xAxis.setDateFormatOverride(_df);
+
+    // xAxis.setDateFormatOverride(_df);
     final Font tickLabelFont = new Font("Arial", Font.PLAIN, 14);
     xAxis.setTickLabelFont(tickLabelFont);
     xAxis.setTickLabelPaint(Color.BLACK);
-    xAxis.setStandardTickUnits(DateAxisEditor
-        .createStandardDateTickUnitsAsTickUnits());
+    xAxis.setStandardTickUnits(createMyStandardDateTickUnits());
     xAxis.setAutoTickUnitSelection(true);
 
     // create the special stepper plot
@@ -1265,10 +1465,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
           // do we have data on the line plot?
           if (tsc != null)
-          {            
+          {
             // get the series we want the data item for
             final TimeSeries t = tsc.getSeries(targetSeries);
-            
+
             // get the data point nearest our target time
             final TimeSeriesDataItem nearest = t.getDataItem(
                 new FixedMillisecond(newDate.getTime()));
@@ -1288,13 +1488,28 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 final Editable payload = item.getPayload();
                 if (payload != null)
                 {
+                  final EditableWrapper subject;
                   if (payload instanceof SensorContactWrapper)
                   {
-                    showThisCut((SensorContactWrapper) payload, layers, editor);
+                    subject = wrapThisCut((SensorContactWrapper) payload,
+                        layers);
                   }
                   else if (payload instanceof FixWrapper)
                   {
-                    showThisFix((FixWrapper) payload, layers, editor);
+                    subject = wrapThisFix((FixWrapper) payload, layers);
+                    // and show it
+                  }
+                  else
+                  {
+                    subject = null;
+                  }
+
+                  if (subject != null)
+                  {
+                    // and show it
+                    final List<EditableWrapper> items = new ArrayList<>();
+                    items.add(subject);
+                    showThisSelectionInOutline(items, editor);
                   }
                 }
               }
@@ -1572,6 +1787,89 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
+  protected void doSelectCore(final XYPlot subjectPlot, final String seriesName)
+  {
+    // find current bounds of line plot
+    final Range valueRange = subjectPlot.getRangeAxis().getRange();
+    final Range timeRange = _combined.getDomainAxis().getRange();
+
+    // loop through measured data
+    final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
+        .getDataset();
+    final TimeSeries measurements = tsc.getSeries(seriesName);
+
+    final List<?> list = measurements.getItems();
+    final List<Editable> toSelect = new ArrayList<Editable>();
+
+    for (final Object item : list)
+    {
+      final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+      final long time = thisI.getPeriod().getMiddleMillisecond();
+      final double value = thisI.getValue().doubleValue();
+
+      // is this point visible?
+      if (valueRange.contains(value) && timeRange.contains(time)
+          && thisI instanceof ColouredDataItem)
+      {
+        // add to list
+        final ColouredDataItem ourItem = (ColouredDataItem) thisI;
+        final Editable payload = ourItem.getPayload();
+
+        toSelect.add(payload);
+      }
+    }
+
+    if (!toSelect.isEmpty())
+    {
+      // ok, get the editor
+      final IWorkbench wb = PlatformUI.getWorkbench();
+      final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+      final IWorkbenchPage page = win.getActivePage();
+      final IEditorPart editor = page.getActiveEditor();
+      final Layers layers = (Layers) editor.getAdapter(Layers.class);
+
+      // build up results selection
+      final List<EditableWrapper> wrappedItems =
+          new ArrayList<EditableWrapper>();
+      for (final Editable t : toSelect)
+      {
+        EditableWrapper item;
+        if (t instanceof SensorContactWrapper)
+        {
+          item = wrapThisCut((SensorContactWrapper) t, layers);
+        }
+        else if (t instanceof FixWrapper)
+        {
+          item = wrapThisFix((FixWrapper) t, layers);
+        }
+        else
+        {
+          item = null;
+        }
+
+        if (item != null)
+        {
+          wrappedItems.add(item);
+        }
+
+      }
+
+      // set selection
+      showThisSelectionInOutline(wrappedItems, editor);
+
+    }
+  }
+
+  protected void doSelectMeasurements()
+  {
+    doSelectCore(_linePlot, MEASURED_VALUES);
+  }
+
+  protected void doSelectPositions()
+  {
+    doSelectCore(_dotPlot, StackedDotHelper.CALCULATED_VALUES);
+  }
+
   protected void fillLocalPullDown(final IMenuManager manager)
   {
     manager.add(_showCrossHairs);
@@ -1663,6 +1961,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _showZones.setChecked(false);
     }
+
+    // ok, insert separator
+    toolBarManager.add(new Separator());
+
+    // right, select items goes here
+    toolBarManager.add(_selectMeasurements);
+    toolBarManager.add(_selectPositions);
+
+    // ok, insert separator
+    toolBarManager.add(new Separator());
 
     addExtras(toolBarManager);
 
@@ -2107,6 +2415,34 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _autoResize.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/24/fit_to_win.png"));
 
+    _selectMeasurements = new Action("Select visible measurements",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        doSelectMeasurements();
+      }
+    };
+    _selectMeasurements.setToolTipText("Select measurements currently visible");
+    _selectMeasurements.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/sensor_contact.png"));
+
+    _selectPositions = new Action("Select visible positions",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
+        doSelectPositions();
+      }
+    };
+    _selectPositions.setToolTipText("Select positions currently visible");
+    _selectPositions.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/fix.png"));
+
     _showZones = new Action("Show slicing charts", IAction.AS_CHECK_BOX)
     {
       @Override
@@ -2532,64 +2868,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private void showThisCut(final SensorContactWrapper cut, final Layers layers,
+  private void showThisSelectionInOutline(final List<EditableWrapper> subjects,
       final IEditorPart editor)
   {
-    final SensorWrapper sensor = cut.getSensor();
-    final TrackWrapper secTrack = sensor.getHost();
-
-    // done.
-    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
-
-    // hmm, don't know if we have one or more legs
-    final EditableWrapper sensors = new EditableWrapper(secTrack.getSensors(),
-        parentP, layers);
-    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
-
-    final EditableWrapper subject = new EditableWrapper(cut, leg, layers);
-
-    // and show it
-    showThisSelectionInOutline(subject, editor);
-  }
-
-  private void showThisFix(final FixWrapper fix, final Layers layers,
-      final IEditorPart editor)
-  {
-    final TrackSegment seg = fix.getSegment();
-    final TrackWrapper secTrack = seg.getWrapper();
-
-    // check we know the secondary track (we may not, if it's an SATC track)
-    if (secTrack != null)
-    {
-      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
-          layers);
-
-      // hmm, don't know if we have one or more legs
-      final EditableWrapper leg;
-      if (secTrack.getSegments().size() > 1)
-      {
-        // ok, we need the in-between item
-        final EditableWrapper segments = new EditableWrapper(secTrack
-            .getSegments(), parentP, layers);
-        leg = new EditableWrapper(seg, segments, layers);
-      }
-      else
-      {
-        leg = new EditableWrapper(seg, parentP, layers);
-
-      }
-
-      final EditableWrapper subject = new EditableWrapper(fix, leg, layers);
-
-      // and show it
-      showThisSelectionInOutline(subject, editor);
-    }
-  }
-
-  private void showThisSelectionInOutline(final EditableWrapper subject,
-      final IEditorPart editor)
-  {
-    final IStructuredSelection selection = new StructuredSelection(subject);
+    final IStructuredSelection selection = new StructuredSelection(subjects);
     final IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
         IContentOutlinePage.class);
     // did we find an outline?
@@ -2602,7 +2884,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       if (outline instanceof PlotOutlinePage)
       {
         final PlotOutlinePage plotOutline = (PlotOutlinePage) outline;
-        plotOutline.editableSelected(selection, subject);
+        plotOutline.editableSelected(selection, subjects.iterator().next());
       }
 
       // ok, also try to give focus to teh outline view
@@ -3245,10 +3527,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // question
     if (updateDoublets)
     {
-      // trigger recalculation of date axis ticks
-      final CachedTickDateAxis date = (CachedTickDateAxis) _combined
-          .getDomainAxis();
-      date.clearTicks();
+      clearDateTickUnits();
     }
 
     // right, are we updating the range data?
@@ -3272,6 +3551,58 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     }
 
+  }
+
+  private EditableWrapper wrapThisCut(final SensorContactWrapper cut,
+      final Layers layers)
+  {
+    final SensorWrapper sensor = cut.getSensor();
+    final TrackWrapper secTrack = sensor.getHost();
+
+    // done.
+    final EditableWrapper parentP = new EditableWrapper(secTrack, null, layers);
+
+    // hmm, don't know if we have one or more legs
+    final EditableWrapper sensors = new EditableWrapper(secTrack.getSensors(),
+        parentP, layers);
+    final EditableWrapper leg = new EditableWrapper(sensor, sensors, layers);
+
+    return new EditableWrapper(cut, leg, layers);
+  }
+
+  private EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
+  {
+    final EditableWrapper res;
+
+    final TrackSegment seg = fix.getSegment();
+    final TrackWrapper secTrack = seg.getWrapper();
+
+    // check we know the secondary track (we may not, if it's an SATC track)
+    if (secTrack != null)
+    {
+      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
+          layers);
+
+      // hmm, don't know if we have one or more legs
+      final EditableWrapper leg;
+      if (secTrack.getSegments().size() > 1)
+      {
+        // ok, we need the in-between item
+        final EditableWrapper segments = new EditableWrapper(secTrack
+            .getSegments(), parentP, layers);
+        leg = new EditableWrapper(seg, segments, layers);
+      }
+      else
+      {
+        leg = new EditableWrapper(seg, parentP, layers);
+      }
+      res = new EditableWrapper(fix, leg, layers);
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
   }
 
 }
