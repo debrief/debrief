@@ -15,6 +15,9 @@
 package ASSET.GUI.DigiClock;
 
 import javax.swing.*;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 import java.awt.*;
 import java.util.Date;
 import java.util.TimeZone;
@@ -48,7 +51,7 @@ public class SwingClock extends javax.swing.JComponent
   /** our text formatter
    *
    */
-  private java.text.SimpleDateFormat _dateF = null;
+  private java.text.DateFormat _dateF = null;
 
   /***************************************************************
    *  constructor
@@ -64,8 +67,7 @@ public class SwingClock extends javax.swing.JComponent
 
     setSize(204, 54);
 
-    _dateF = new SimpleDateFormat("hhmmss");
-    _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
+    _dateF = new GMTDateFormat("hhmmss");
 
     init();
   }

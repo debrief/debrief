@@ -17,11 +17,12 @@ package ASSET.Scenario.Observers;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 import ASSET.ScenarioType;
 import MWC.GUI.Editable;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -198,7 +199,7 @@ public abstract class RecordToFileObserverType extends CoreObserver
       theName = theName.replaceAll("%s", scenario.getName());
 
       // now the current DTG
-      SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss");
+      DateFormat sdf = new GMTDateFormat("yyMMdd_HHmmss");
       theName = theName.replaceAll("%d", sdf.format(new Date()));
 
     }

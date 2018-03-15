@@ -19,11 +19,9 @@ import java.io.CharArrayWriter;
 import java.text.DateFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import org.xml.sax.Attributes;
@@ -36,6 +34,7 @@ import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * @author IAN MAYO
@@ -280,16 +279,14 @@ public class MWCXMLReader extends DefaultHandler {
 	// ///////////////////////////////////////////////////////
 	public synchronized static DateFormat getRNDateFormatter() {
 		if (RNdateFormat == null) {
-			RNdateFormat = new SimpleDateFormat("yyMMdd HHmmss.SSS");
-			RNdateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			RNdateFormat = new GMTDateFormat("yyMMdd HHmmss.SSS");
 		}
 		return RNdateFormat;
 	}
 
 	synchronized static DateFormat getXMLDateFormatter() {
 		if (_XMLDateFormat == null) {
-			_XMLDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-			_XMLDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			_XMLDateFormat = new GMTDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		}
 
 		return _XMLDateFormat;

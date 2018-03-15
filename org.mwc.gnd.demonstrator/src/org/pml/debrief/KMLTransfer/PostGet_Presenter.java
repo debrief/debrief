@@ -22,8 +22,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class PostGet_Presenter
 {
@@ -48,7 +50,7 @@ public class PostGet_Presenter
 
 			FileWriter outFile = new FileWriter("portland6.rep");
 
-			SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd HHmmss");
+			DateFormat sdf = new GMTDateFormat("yyMMdd HHmmss");
 
 			ResultSet res = sql.executeQuery();
 			while (res.next())

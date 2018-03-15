@@ -66,8 +66,7 @@ public class FullFormatDateTime
     String res;
 
   
-    final DateFormat df = new SimpleDateFormat(thePattern);    
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat(thePattern);    
     res = df.format(theTime);
 
     return res;
@@ -77,8 +76,7 @@ public class FullFormatDateTime
 	static protected long fromStringLikeThis(final String theTxt,
 																				final String thePattern) throws ParseException
 	{
-    final DateFormat df = new SimpleDateFormat(thePattern);    
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat(thePattern);    
     final long res = df.parse(theTxt).getTime();
 
     return res;

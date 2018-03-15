@@ -1,6 +1,7 @@
 package MWC.Utilities.TextFormatting;
 
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /** date formatter that forces use of GMT timezone
@@ -25,6 +26,12 @@ public class GMTDateFormat extends SimpleDateFormat
   {
     super(format);
     
+    super.setTimeZone(GMT_ZONE);
+  }
+
+  public GMTDateFormat(String pattern, Locale us)
+  {
+    super(pattern, us);
     super.setTimeZone(GMT_ZONE);
   }
 

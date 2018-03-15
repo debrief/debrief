@@ -131,12 +131,14 @@ import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.DateFormat;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.ShapeCanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class MetafileCanvas implements CanvasType, ShapeCanvasType
 {
@@ -212,7 +214,7 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 		String name = "d3_";
 		final java.util.Date tNow = new java.util.Date();
 
-		final java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
+		final DateFormat df = new GMTDateFormat("mm_ss");
 
 		name = name + "_" + df.format(tNow) + ".wmf";
 

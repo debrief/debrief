@@ -17,7 +17,6 @@ package MWC.GUI.JFreeChart;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -28,11 +27,12 @@ import org.jfree.chart.axis.DateTickUnitType;
 import org.jfree.chart.axis.TickUnits;
 
 import MWC.GUI.Properties.AbstractPropertyEditor;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class DateAxisEditor extends AbstractPropertyEditor
 {
 
-  public static class DatedRNFormatter extends RNFormatter
+  public static class DatedRNFormatter extends GMTDateFormat
   {
     /**
      *
@@ -132,16 +132,14 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
       if (_formatter != DateAxisEditor.RELATIVE_DTG_FORMAT)
       {
-        final SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final DateFormat sdf = new GMTDateFormat(_formatter);
 
         res = new OptimisedDateTickUnit(_unit, _count, sdf);
 
       }
       else
       {
-        final SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final DateFormat sdf = new GMTDateFormat(_formatter);
 
         res = new OptimisedDateTickUnit(_unit, _count, sdf)
         {
@@ -272,26 +270,6 @@ public class DateAxisEditor extends AbstractPropertyEditor
     }
   }
 
-  public static class RNFormatter extends SimpleDateFormat
-  {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * Construct a SimpleDateFormat using the given pattern in the default locale. <b>Note:</b> Not
-     * all locales support SimpleDateFormat; for full generality, use the factory methods in the
-     * DateFormat class.
-     */
-    public RNFormatter(final String pattern)
-    {
-      super(pattern);
-
-      this.setTimeZone(TimeZone.getTimeZone("GMT"));
-    }
-  }
-
   /**
    * the string format used to denote a relative time description
    */
@@ -384,49 +362,49 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
     // milliseconds
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MILLISECOND, 500,
-        new RNFormatter("HH:mm:ss.SSS")));
+        new GMTDateFormat("HH:mm:ss.SSS")));
 
     // seconds
     units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 1,
-        new RNFormatter("HH:mm:ss")));
+        new GMTDateFormat("HH:mm:ss")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 5,
-        new RNFormatter("HH:mm:ss")));
+        new GMTDateFormat("HH:mm:ss")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 10,
-        new RNFormatter("HH:mm:ss")));
+        new GMTDateFormat("HH:mm:ss")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 30,
-        new RNFormatter("HH:mm:ss")));
+        new GMTDateFormat("HH:mm:ss")));
 
     // minutes
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 1,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 2,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 5,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 10,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 15,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 20,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 30,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
 
     // hours
     units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 1,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 2,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 4,
-        new RNFormatter("HH:mm")));
+        new GMTDateFormat("HH:mm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 6,
-        new RNFormatter("ddHHmm")));
+        new GMTDateFormat("ddHHmm")));
     units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 12,
-        new RNFormatter("ddHHmm")));
+        new GMTDateFormat("ddHHmm")));
 
     // days
     units.add(new OptimisedDateTickUnit(DateTickUnitType.DAY, 1,
-        new RNFormatter("d-MMM")));
+        new GMTDateFormat("d-MMM")));
 
     return units;
   }

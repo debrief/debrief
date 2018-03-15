@@ -34,9 +34,8 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import javax.swing.JComponent;
 
@@ -125,6 +124,7 @@ import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class XYPlotView extends ViewPart
 {
@@ -768,8 +768,7 @@ public class XYPlotView extends ViewPart
                 .formatOneDecimalPlace(_thePlot.getRangeCrosshairValue());
         final Date newDate =
             new Date((long) _thePlot.getDomainCrosshairValue());
-        final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
-        _df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final DateFormat _df = new GMTDateFormat("HHmm:ss");
         final String dateVal = _df.format(newDate);
         final String theMessage = " [" + dateVal + "," + numA + "]";
         if (!theMessage.equals(_crosshairValueText.getText()))

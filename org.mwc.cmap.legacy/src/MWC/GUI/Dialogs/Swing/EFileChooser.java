@@ -44,8 +44,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Vector;
@@ -84,6 +84,8 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 /**
  * A wrapper for JFileChooser with accessories for directory history and file
  * preview. (E)nhancedFilechooser.
@@ -121,7 +123,6 @@ public class EFileChooser extends JFileChooser
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@SuppressWarnings("unchecked")
 		PreviewAndHistoryPanel()
 		{
 			setPreferredSize(new Dimension(250, 250));
@@ -214,7 +215,6 @@ public class EFileChooser extends JFileChooser
 			 */
 			private static final long serialVersionUID = 1L;
 
-			@SuppressWarnings("rawtypes")
 			public Component getListCellRendererComponent(final JList list, final Object value,
 					final int index, final boolean isSelected, final boolean cellHasFocus)
 			{
@@ -545,7 +545,6 @@ public class EFileChooser extends JFileChooser
 	 * JComboBox has no public setUI() method, so we have to go this way using the
 	 * protected setUI() method of JComponent.
 	 */
-	@SuppressWarnings("rawtypes")
 	class MyComboBox extends JComboBox
 	{
 
@@ -554,7 +553,6 @@ public class EFileChooser extends JFileChooser
 		 */
 		private static final long serialVersionUID = 1L;
 
-		@SuppressWarnings("unchecked")
 		public MyComboBox(final Vector<String> items)
 		{
 			super(items);
@@ -589,13 +587,10 @@ public class EFileChooser extends JFileChooser
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			@SuppressWarnings("rawtypes")
 			protected JList list_;
-			@SuppressWarnings("rawtypes")
 			protected JComboBox comboBox_;
 			protected boolean hasEntered_;
 
-			@SuppressWarnings("rawtypes")
 			MyComboPopup(final JComboBox combo)
 			{
 				super(combo);
@@ -1552,9 +1547,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		@SuppressWarnings("rawtypes")
 		protected DefaultListModel model = null;
-		@SuppressWarnings("rawtypes")
 		protected JList fileList = null;
 
 		/**
@@ -1562,7 +1555,7 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * item is double-clicked the FindAccessory controller will be instructed to
 		 * select the file in the parent JFileChooser's item display.
 		 */
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({ })
 		FindResults()
 		{
 			super();
@@ -1602,7 +1595,6 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param f
 		 *          file found
 		 */
-		@SuppressWarnings("unchecked")
 		public void append(final File f)
 		{
 			if (f == null)
@@ -1626,7 +1618,6 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		/**
 		 * Convenience class for rendering cells in the results list.
 		 */
-		@SuppressWarnings("rawtypes")
 		class FindResultsCellRenderer extends JLabel implements ListCellRenderer
 		{
 
@@ -1746,9 +1737,7 @@ class FindByDate extends JPanel implements FindFilterFactory
 	public static String FROM_DATE_LABEL = "between start of";
 	public static String TO_DATE_LABEL = "and end of";
 
-	@SuppressWarnings("rawtypes")
 	protected JComboBox fromDateField = null;
-	@SuppressWarnings("rawtypes")
 	protected JComboBox toDateField = null;
 
 	protected String[] fromDateItems =
@@ -1756,7 +1745,7 @@ class FindByDate extends JPanel implements FindFilterFactory
 	protected String[] toDateItems =
 	{ THE_BIG_CRUNCH, TODAY, NOW, YESTERDAY };
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ })
 	FindByDate()
 	{
 		super();
@@ -1834,7 +1823,7 @@ class FindByDate extends JPanel implements FindFilterFactory
 	{
 		if (s == null)
 			return -1;
-		final SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+		final DateFormat formatter = new GMTDateFormat("MM/dd/yyyy");
 		Date d = formatter.parse(s, new ParsePosition(0));
 		if (d == null)
 		{
@@ -1870,7 +1859,7 @@ class FindByDate extends JPanel implements FindFilterFactory
 	{
 		if (s == null)
 			return -1;
-		final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy");
+		final DateFormat dateFormatter = new GMTDateFormat("MM/dd/yyyy");
 
 		long time = -1;
 		Date d = dateFormatter.parse(s, new ParsePosition(0));
@@ -1972,11 +1961,10 @@ class FindByName extends JPanel implements FindFilterFactory
 	{ NAME_CONTAINS, NAME_IS, NAME_STARTS_WITH, NAME_ENDS_WITH };
 
 	protected JTextField nameField = null;
-	@SuppressWarnings("rawtypes")
 	protected JComboBox combo = null;
 	protected JCheckBox ignoreCaseCheck = null;
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ })
 	FindByName()
 	{
 		super();
