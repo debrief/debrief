@@ -17,12 +17,11 @@ package org.mwc.cmap.NarrativeViewer.app;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
@@ -82,6 +81,7 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
     ISelectionProvider
@@ -109,7 +109,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
    */
   private Action _clipText;
 
-  private static SimpleDateFormat _myFormat;
+  private static DateFormat _myFormat;
   private static String _myFormatString;
 
   /**
@@ -194,8 +194,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     if (_myFormat == null)
     {
       _myFormatString = pattern;
-      _myFormat = new SimpleDateFormat(pattern);
-      _myFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+      _myFormat = new GMTDateFormat(pattern);
     }
 
     res.append(_myFormat.format(theTime));

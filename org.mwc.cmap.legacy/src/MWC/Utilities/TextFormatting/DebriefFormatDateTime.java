@@ -22,9 +22,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import MWC.GenericData.HiResDate;
 
@@ -131,9 +129,9 @@ public class DebriefFormatDateTime
   private static NumberFormat _micros = null;
   private static NumberFormat _millis = null;
   private static final DateFormat FOUR_DIGIT_YEAR_FORMAT =
-      new SimpleDateFormat("yyyyMMdd HHmmss");
+      new GMTDateFormat("yyyyMMdd HHmmss");
 
-  private static final DateFormat TWO_DIGIT_YEAR_FORMAT = new SimpleDateFormat(
+  private static final DateFormat TWO_DIGIT_YEAR_FORMAT = new GMTDateFormat(
       "yyMMdd HHmmss");
 
   /**
@@ -170,13 +168,8 @@ public class DebriefFormatDateTime
   {
     if (_dfMillis == null)
     {
-      FOUR_DIGIT_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-      TWO_DIGIT_YEAR_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-
-      _dfMillis = new SimpleDateFormat("yyMMdd HHmmss.SSS");
-      _df = new SimpleDateFormat("yyMMdd HHmmss");
-      _df.setTimeZone(TimeZone.getTimeZone("GMT"));
-      _dfMillis.setTimeZone(TimeZone.getTimeZone("GMT"));
+      _dfMillis = new GMTDateFormat("yyMMdd HHmmss.SSS");
+      _df = new GMTDateFormat("yyMMdd HHmmss");
 
       // and the microsecond bits
       _micros = new DecimalFormat("000000");
@@ -430,8 +423,7 @@ public class DebriefFormatDateTime
     }
     else
     {
-      final DateFormat myDF = new SimpleDateFormat(formatStr);
-      myDF.setTimeZone(TimeZone.getTimeZone("GMT"));
+      final DateFormat myDF = new GMTDateFormat(formatStr);
       res = myDF.format(time.getDate());
     }
 

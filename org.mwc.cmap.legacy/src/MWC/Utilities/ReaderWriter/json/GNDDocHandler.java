@@ -45,6 +45,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.Track;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class GNDDocHandler
 {
@@ -381,7 +382,7 @@ public class GNDDocHandler
 				theStr = theStr.replace("Z", "");
 			}
 
-			return new SimpleDateFormat(format).parse(theStr);
+			return new GMTDateFormat(format).parse(theStr);
 
 		}
 

@@ -104,6 +104,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 public class SwingGrabControl extends JPanel
 {
   /**
@@ -397,7 +399,7 @@ public class SwingGrabControl extends JPanel
       }
     }
 
-    private static java.text.DateFormat df = new java.text.SimpleDateFormat("hh:mm:ss.SSS");
+    private static java.text.DateFormat df = new GMTDateFormat("hh:mm:ss.SSS");
 
     public synchronized void paint(final Graphics g)
     {

@@ -82,12 +82,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.AttributedCharacterIterator;
+import java.text.DateFormat;
 import java.util.Map;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 {
@@ -154,7 +156,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 		String name = "d3_";
 		final java.util.Date tNow = new java.util.Date();
 
-		final java.text.SimpleDateFormat df = new java.text.SimpleDateFormat("mm_ss");
+    final DateFormat df = new GMTDateFormat("mm_ss");
 
 		name = name + "_" + df.format(tNow) + ".wmf";
 

@@ -103,11 +103,11 @@ import java.awt.TextField;
 import java.beans.PropertyEditorSupport;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class DatePropertyEditor extends
   PropertyEditorSupport
@@ -146,8 +146,8 @@ abstract public class DatePropertyEditor extends
   /**
    * date formats
    */
-  protected DateFormat _dateF = new SimpleDateFormat(NULL_DATE);
-  protected DateFormat _timeF = new SimpleDateFormat(NULL_TIME);
+  protected DateFormat _dateF = new GMTDateFormat(NULL_DATE);
+  protected DateFormat _timeF = new GMTDateFormat(NULL_TIME);
 
 
   /////////////////////////////////////////////////////////////
@@ -176,10 +176,6 @@ abstract public class DatePropertyEditor extends
    */
   public synchronized void setValue(final Object p1)
   {
-    // check the formats are in the correct time zone
-    _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
-    _timeF.setTimeZone(TimeZone.getTimeZone("GMT"));
-
     // reset value
     _myVal = null;
 

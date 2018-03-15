@@ -19,8 +19,6 @@
 package MWC.Utilities.TextFormatting;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 public class LabelledDateFormat 
 {
@@ -29,8 +27,7 @@ public class LabelledDateFormat
     
     final java.util.Date theTime = new java.util.Date(theVal);
     String res;
-    final DateFormat df = new SimpleDateFormat("dd'd HH'h mm'm ss's");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat("dd'd HH'h mm'm ss's");
     res = df.format(theTime);
 
     return res;

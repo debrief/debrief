@@ -28,6 +28,7 @@ import org.xml.sax.Attributes;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class TimeRangeHandler extends MWCXMLReader
 {
@@ -36,16 +37,10 @@ abstract public class TimeRangeHandler extends MWCXMLReader
 	private HiResDate _start = MWC.GenericData.TimePeriod.INVALID_DATE;
   private HiResDate _end = MWC.GenericData.TimePeriod.INVALID_DATE;
 
-  private java.text.SimpleDateFormat sdf = null;
-
   public TimeRangeHandler(final String type)
   {
     // inform our parent what type of class we are
     super(type);
-
-    sdf = new java.text.SimpleDateFormat("dd MMM yy HH:mm:ss");
-    sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
-  	
   }
 
   public TimeRangeHandler()

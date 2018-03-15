@@ -23,8 +23,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -48,6 +48,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class KMLTX_Presenter
 {
@@ -109,7 +110,7 @@ public class KMLTX_Presenter
 			// parser.setContentHandler(saxer);
 
 			// see about format
-			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			DateFormat df = new GMTDateFormat("yyyy-MM-dd HH:mm:ss");
 
 			// ditch gash
 			String clearTracks = "delete from wednesday";

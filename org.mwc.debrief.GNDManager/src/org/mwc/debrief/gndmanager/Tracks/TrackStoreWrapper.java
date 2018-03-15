@@ -21,15 +21,14 @@ import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TimeZone;
 
 import org.bitbucket.es4gwt.shared.elastic.ElasticFacet;
 import org.bitbucket.es4gwt.shared.spec.SearchDate;
@@ -66,6 +65,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 		Serializable
@@ -100,11 +100,10 @@ public class TrackStoreWrapper extends BaseLayer implements WatchableList,
 	 * sort out a GMT-syncd date formatter
 	 * 
 	 */
-	private static final SimpleDateFormat iso;
+	private static final DateFormat iso;
 	static
 	{
-		iso = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-		iso.setTimeZone(TimeZone.getTimeZone("GMT"));
+		iso = new GMTDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 	}
 
 	/** whether this type of BaseLayer is able to have shapes added to it
