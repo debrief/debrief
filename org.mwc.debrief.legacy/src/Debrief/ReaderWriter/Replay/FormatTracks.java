@@ -77,22 +77,17 @@ import MWC.GUI.Properties.DateFormatPropertyEditor;
  */
 public final class FormatTracks implements ImportReplay.LayersFormatter
 {
-  //
-  // /**
-  // * the format we use for the first point on a track plus the point equal to or
-  // * greater than 2400 hrs
-  // */
-  // private static java.text.SimpleDateFormat _dayFormat = null;
-  //
-  // /**
-  // * the default format we use
-  // */
-  // private static java.text.SimpleDateFormat _normalFormat = null;
 
   /**
    * const to represent a day in millis
    */
+  @SuppressWarnings("unused")
   private static final long _day = 24 * 60 * 60 * 1000;
+  
+  /** const to represent a 6 hour period in millis
+   * 
+   */
+  private static final long _6hour = 6 * 60 * 60 * 1000;
 
   /**
    * do the formatting for this particular track
@@ -113,7 +108,6 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
   {
     try
     {
-
       final SimpleDateFormat dayFormat =
           new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
       final SimpleDateFormat normalFormat =
@@ -166,12 +160,12 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
                   thisLabel = dayFormat.format(worker);
 
                   // ok, done
-                  lastStamp = thisTime / _day;
+                  lastStamp = thisTime / _6hour;
                 }
                 else
                 {
                   // find the last hour stamp before this time
-                  final long hour = thisTime / _day;
+                  final long hour = thisTime / _6hour;
 
                   if (hour > lastStamp)
                   {
