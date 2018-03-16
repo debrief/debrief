@@ -321,26 +321,7 @@ public class SelectAllChildren implements RightClickContextItemGenerator
 
       // does it have any children?
       if (selected instanceof HasEditables)
-      {
-        // ok, generate the operation
-        final IUndoableOperation action = getOperation(theLayers,
-            (HasEditables) selected);
-
-        // and now wrap it in an action
-        final Action doIt = new Action("Select all child elements")
-        {
-          @Override
-          public void run()
-          {
-            runIt(action);
-          }
-        };
-        doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-            "icons/16/show.png"));
-
-        // ok, go for it
-        parent.add(doIt);
-
+      {   
         // are the children time-stamped?
         final TimePeriod coverage = timePeriodFor(selected);
         if (coverage != null)
@@ -350,8 +331,26 @@ public class SelectAllChildren implements RightClickContextItemGenerator
           // and the new drop-down list of interpolation frequencies
           final MenuManager newMenu = new MenuManager(
               "Select child elements with this interval");
-          newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+          
+          // ok, generate the operation
+          final IUndoableOperation action = getOperation(theLayers,
+              (HasEditables) selected);
+
+          // and now wrap it in an action
+          final Action doIt = new Action("All")
+          {
+            @Override
+            public void run()
+            {
+              runIt(action);
+            }
+          };
+          doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
               "icons/16/show.png"));
+
+          // ok, go for it
+          newMenu.add(doIt);
+          
 
           for (int i = 0; i < _freqs.length; i++)
           {
@@ -378,6 +377,27 @@ public class SelectAllChildren implements RightClickContextItemGenerator
             }
           }
           parent.add(newMenu);
+        }
+        else
+        {
+          // ok, generate the operation
+          final IUndoableOperation action = getOperation(theLayers,
+              (HasEditables) selected);
+
+          // and now wrap it in an action
+          final Action doIt = new Action("Select all child elements")
+          {
+            @Override
+            public void run()
+            {
+              runIt(action);
+            }
+          };
+          doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+              "icons/16/show.png"));
+
+          // ok, go for it
+          parent.add(doIt);
         }
       }
     }
