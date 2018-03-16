@@ -81,7 +81,6 @@ import java.beans.PropertyEditorSupport;
 /**
  * property editor which provides a set of date formats to be used in date presentation.
  * 
- * @see java.text.SimpleDateFormat
  */
 
 public class DateFormatPropertyEditor extends PropertyEditorSupport

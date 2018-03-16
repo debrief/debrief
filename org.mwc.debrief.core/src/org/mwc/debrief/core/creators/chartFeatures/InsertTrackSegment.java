@@ -16,10 +16,8 @@ package org.mwc.debrief.core.creators.chartFeatures;
 
 import java.awt.Color;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import org.eclipse.jface.dialogs.InputDialog;
@@ -43,6 +41,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * @author ian.mayo
@@ -160,8 +159,7 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						HiResDate startDate = null;
 
 //						 ok, also get a start time
-						final DateFormat df = new SimpleDateFormat("yyMMdd HHmmss");
-				    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+						final DateFormat df = new GMTDateFormat("yyMMdd HHmmss");
 
 						final String dateToday = df.format(new Date());
 						inp = new InputDialog(Display.getCurrent().getActiveShell(),

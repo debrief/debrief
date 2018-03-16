@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -12,7 +11,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +38,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ImportWord_LEGACY
 {
@@ -244,8 +243,7 @@ public class ImportWord_LEGACY
 //      }
 
       // sort out our date formats
-      final DateFormat fourBlock = new SimpleDateFormat("HHmm");
-      fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
+      final DateFormat fourBlock = new GMTDateFormat("HHmm");
 
       // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
       // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -440,8 +438,7 @@ public class ImportWord_LEGACY
           // hmm, see if it's just text. If it is, stick it on the end of the previous one
 
           // ooh, it may be a next day marker. have a check
-          final DateFormat dtgBlock = new SimpleDateFormat("dd MMM yy");
-          dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+          final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
 
           boolean hasDate = false;
           try

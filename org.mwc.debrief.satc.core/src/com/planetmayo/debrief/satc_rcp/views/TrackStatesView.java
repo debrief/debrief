@@ -50,6 +50,8 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
 import com.vividsolutions.jts.geom.Geometry;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 /**
  * view that monitors the current set of bounded states
  * 
@@ -130,7 +132,7 @@ public class TrackStatesView extends ViewPart implements IConstrainSpaceListener
 	private ISolver _activeSolver;
 
 	private TableViewer viewer;
-	private SimpleDateFormat _df = new SimpleDateFormat("MMM/dd HH:mm:ss");
+	private SimpleDateFormat _df = new GMTDateFormat("MMM/dd HH:mm:ss");
 
 	private IConstrainSpaceListener constrainSpaceListener;
 	private ISolversManagerListener solversManagerListener;

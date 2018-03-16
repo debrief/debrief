@@ -2,6 +2,8 @@ package org.mwc.debrief.track_shift.zig_detector.ownship;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 /**
  * class to store the time period representing a leg of ownship data
  * 
@@ -56,7 +58,7 @@ public class LegOfData
 	@Override
 	public String toString()
 	{
-		final SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+		final SimpleDateFormat sdf = new GMTDateFormat("hh:mm:ss");
 		return getName() + " " + sdf.format(new Date(tStart)) + "-"
 				+ sdf.format(new Date(tEnd));
 	}

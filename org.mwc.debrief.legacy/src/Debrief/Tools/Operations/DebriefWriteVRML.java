@@ -67,7 +67,7 @@
 package Debrief.Tools.Operations;
 
 import java.text.ParseException;
-import java.util.*;
+import java.util.Enumeration;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -104,10 +104,6 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
   protected final void plotData(final MWC.GUI.Layers theData, final java.io.BufferedWriter out)
     throws java.io.IOException
   {
-
-    final java.text.DateFormat df = new java.text.SimpleDateFormat("ddHHmm");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
     // work through the layers
     int num = _theData.size();
     for (int i = 0; i < num; i++)

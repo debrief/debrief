@@ -14,6 +14,15 @@
  */
 package Debrief.GUI.Tote;
 
+import java.beans.BeanInfo;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditorSupport;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: StepControl.java,v $
 // @author $Author: Ian.Mayo $
@@ -232,21 +241,16 @@ package Debrief.GUI.Tote;
 
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import MWC.GUI.Editable;
-import MWC.GUI.Properties.BoundedInteger;
-import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.StepperListener;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
-import java.beans.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.TimeZone;
-import java.util.Vector;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class StepControl implements Editable,
   MWC.Utilities.Timer.TimerListener,
@@ -402,8 +406,7 @@ abstract public class StepControl implements Editable,
     _currentHighlighter = _myHighlighters.elementAt(0);
 
     // initialise the date format
-    _dateFormatter = new java.text.SimpleDateFormat(MWC.Utilities.TextFormatting.FormatRNDateTime.getExample());
-    _dateFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
+    _dateFormatter = new GMTDateFormat(MWC.Utilities.TextFormatting.FormatRNDateTime.getExample());
   }
 
   /**

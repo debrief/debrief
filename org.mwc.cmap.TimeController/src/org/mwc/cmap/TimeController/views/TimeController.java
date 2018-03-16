@@ -26,11 +26,8 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.TimerTask;
 import java.util.Vector;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
@@ -109,7 +106,9 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import MWC.Utilities.Timer.TimerListener;
+import junit.framework.TestCase;
 
 /**
  * View performing time management: show current time, allow control of time, allow selection of
@@ -1967,8 +1966,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     if (_myFormat == null)
     {
       _myFormatString = pattern;
-      _myFormat = new SimpleDateFormat(pattern);
-      _myFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+      _myFormat = new GMTDateFormat(pattern);
     }
 
     res.append(_myFormat.format(theTime));

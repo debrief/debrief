@@ -155,6 +155,7 @@ import com.planetmayo.debrief.satc_rcp.ui.contributions.SpeedContributionView;
 import com.planetmayo.debrief.satc_rcp.ui.contributions.StraightLegForecastContributionView;
 
 import MWC.GUI.Properties.DebriefColors;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * mock class to test high level application flows
@@ -774,7 +775,7 @@ public class MaintainContributionsView extends ViewPart
     legPlot.setDomainCrosshairVisible(true);
     legPlot.setRangeCrosshairVisible(true);
     final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
-    axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+    axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
     legPlot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     legPlot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
@@ -825,8 +826,7 @@ public class MaintainContributionsView extends ViewPart
         final String numA =
             _oneDPFormat.format(legPlot.getRangeCrosshairValue());
         final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
-        final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
-        _df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
         final String dateVal = _df.format(newDate);
         final String theMessage = " [" + dateVal + "," + numA + "]";
         if (!theMessage.equals(annot.getText()))
@@ -1027,8 +1027,7 @@ public class MaintainContributionsView extends ViewPart
     Iterator<Date> vIter = valueTimes.iterator();
 
     // get our date formatter ready
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+    SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
 
     // determine frequency f (trim to 1)
     int wid = performanceChart.getBounds().width;
@@ -1900,8 +1899,7 @@ public class MaintainContributionsView extends ViewPart
     {
       StringBuffer res = new StringBuffer();
       final String newLine = System.getProperty("line.separator");
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
-      sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+      SimpleDateFormat sdf = new GMTDateFormat("yyyy/MMM/dd HH:mm:ss");
       Date dateLead = new Date(100, 7, 7);
 
       Iterator<BaseContribution> conts =

@@ -14,7 +14,6 @@
  */
 package com.planetmayo.debrief.satc.support;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +33,8 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TestSupport
 {
@@ -86,7 +87,7 @@ public class TestSupport
 			String speed = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
@@ -486,34 +487,28 @@ public class TestSupport
 
 		// sort out the legs
 		StraightLegForecastContribution st1 = new StraightLegForecastContribution();
-		st1.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 121329"));
-		st1.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 123029"));
+		GMTDateFormat dateFormat = new GMTDateFormat(
+				"yyMMdd HHmmss");
+    st1.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
+		st1.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 123029"));
 		st1.setName("Straight leg one");
 		contributions.addContribution(st1);
 
 		StraightLegForecastContribution st2 = new StraightLegForecastContribution();
-		st2.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 123329"));
-		st2.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 124829"));
+		st2.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 123329"));
+		st2.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 124829"));
 		st2.setName("Straight leg two");
 		contributions.addContribution(st2);
 
 		StraightLegForecastContribution st3 = new StraightLegForecastContribution();
-		st3.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 125100"));
-		st3.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 130429"));
+		st3.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 125100"));
+		st3.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		st3.setName("Straight leg three");
 		contributions.addContribution(st3);
 
 		CourseForecastContribution course = new CourseForecastContribution();
-		course.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 121329"));
-		course.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 130429"));
+		course.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
+		course.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		course.setMinCourse(Math.toRadians(190));
 		course.setMaxCourse(Math.toRadians(315));
 		course.setEstimate(Math.toRadians(225));
@@ -521,10 +516,8 @@ public class TestSupport
 		contributions.addContribution(course);
 
 		SpeedForecastContribution speed = new SpeedForecastContribution();
-		speed.setStartDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 121329"));
-		speed.setFinishDate(ObjectUtils.safeParseDate(new SimpleDateFormat(
-				"yyMMdd HHmmss"), "100112 130429"));
+		speed.setStartDate(ObjectUtils.safeParseDate(dateFormat, "100112 121329"));
+		speed.setFinishDate(ObjectUtils.safeParseDate(dateFormat, "100112 130429"));
 		speed.setMinSpeed(GeoSupport.kts2MSec(4d));
 		speed.setMaxSpeed(GeoSupport.kts2MSec(14d));
 		speed.setEstimate(GeoSupport.kts2MSec(8d));

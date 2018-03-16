@@ -15,7 +15,6 @@
 package com.planetmayo.debrief.satc.model.contributions;
 
 import java.awt.geom.Point2D;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +29,8 @@ import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.ObjectUtils;
 import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class FrequencyMeasurementContribution extends
 		CoreMeasurementContribution<FrequencyMeasurementContribution.FMeasurement>
@@ -276,7 +277,7 @@ public class FrequencyMeasurementContribution extends
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location

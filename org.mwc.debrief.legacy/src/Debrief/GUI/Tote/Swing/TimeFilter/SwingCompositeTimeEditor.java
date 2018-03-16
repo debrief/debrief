@@ -27,14 +27,19 @@
 package Debrief.GUI.Tote.Swing.TimeFilter;
 
 import java.awt.FlowLayout;
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * Class defining panel which will combines a time slider with a text box to provide a constrained time period
@@ -86,12 +91,12 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
   /**
    * format the date (yy/mm/dd) part of the date
    */
-  private final SimpleDateFormat _dateF = new SimpleDateFormat("dd/MM/yy");
+  private final SimpleDateFormat _dateF = new GMTDateFormat("dd/MM/yy");
 
   /**
    * format the time (hh:mm:ss) part of the DTG
    */
-  private final SimpleDateFormat _timeF = new SimpleDateFormat("HH:mm:ss");
+  private final SimpleDateFormat _timeF = new GMTDateFormat("HH:mm:ss");
 
 
   /**
@@ -110,9 +115,6 @@ public final class SwingCompositeTimeEditor extends javax.swing.JPanel
   public SwingCompositeTimeEditor(final String title)
   {
     initComponents(title);
-
-    _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
-    _timeF.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     // set the min value to
     _theSlider.setMinimum(MIN_VALUE);

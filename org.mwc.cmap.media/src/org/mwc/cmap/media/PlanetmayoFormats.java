@@ -22,14 +22,16 @@ import java.util.TimeZone;
 import org.eclipse.nebula.widgets.formattedtext.DateTimeFormatter;
 import org.mwc.cmap.media.utility.DateUtils;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 public class PlanetmayoFormats {
 	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	private static final String TIME_FORMAT_PATTERN = "HH:mm:ss";
 	private static final String FILE_NAME_FORMAT_PATTERN = "yyyy_MM_dd_HH_mm_ss";
 	
-	private static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_PATTERN);
-	private static SimpleDateFormat TIME_FORMAT = new SimpleDateFormat(TIME_FORMAT_PATTERN);
-	private static SimpleDateFormat FILE_NAME_FORMAT = new SimpleDateFormat(FILE_NAME_FORMAT_PATTERN);
+	private static SimpleDateFormat DATE_FORMAT = new GMTDateFormat(DATE_FORMAT_PATTERN);
+	private static SimpleDateFormat TIME_FORMAT = new GMTDateFormat(TIME_FORMAT_PATTERN);
+	private static SimpleDateFormat FILE_NAME_FORMAT = new GMTDateFormat(FILE_NAME_FORMAT_PATTERN);
 	private static DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatter(DATE_FORMAT_PATTERN);
 	
 	private static final String[] supportedImageFormats = {"png", "jpg", "jpeg", "tif", "tiff"}; 
@@ -37,10 +39,6 @@ public class PlanetmayoFormats {
 	private static PlanetmayoFormats instance;
 	
 	static {
-		DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-		TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-		FILE_NAME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-		DATE_TIME_FORMATTER.setTimeZone(TimeZone.getTimeZone("GMT"));
 	}
 	public static PlanetmayoFormats getInstance() {		
 		if (instance == null) {

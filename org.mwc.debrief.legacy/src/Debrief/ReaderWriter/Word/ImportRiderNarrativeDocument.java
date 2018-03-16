@@ -417,8 +417,7 @@ public class ImportRiderNarrativeDocument
     {
       final String string2 = "090000Z JUL 17";
 
-      final DateFormat df = new SimpleDateFormat(DATE_FORMAT_STR);
-      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      final DateFormat df = new GMTDateFormat(DATE_FORMAT_STR);
       assertEquals("correct date", "9 Jul 2017 00:00:00 GMT", df.parse(string2)
           .toGMTString());
     }
@@ -700,9 +699,8 @@ public class ImportRiderNarrativeDocument
     private void testThisData(final Layers tLayers, final TrackWrapper parent,
         final ImportRiderNarrativeDocument importer, final TableBreakdown data)
     {
-      final SimpleDateFormat dateF = new SimpleDateFormat(
+      final SimpleDateFormat dateF = new GMTDateFormat(
           "yyyy/MM/dd hh:mm:ss");
-      dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
 
       assertNotNull(data);
       assertNotNull(data.header);
@@ -831,8 +829,7 @@ public class ImportRiderNarrativeDocument
     public void testTimeImport() throws ParseException
     {
       final String string2 = "02:01:34";
-      final DateFormat df = new SimpleDateFormat("HH:mm:ss");
-      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      final DateFormat df = new GMTDateFormat("HH:mm:ss");
       assertEquals("correct time", "1 Jan 1970 02:01:34 GMT", df.parse(string2)
           .toGMTString());
     }
@@ -1136,10 +1133,8 @@ public class ImportRiderNarrativeDocument
     _layers = target;
     _trackProvider = trackProvider;
 
-    DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STR);
-    DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
-    TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-    TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+    DATE_FORMAT = new GMTDateFormat(DATE_FORMAT_STR);
+    TIME_FORMAT = new GMTDateFormat("HH:mm:ss");
 
     if (SkipNames == null)
     {

@@ -7,16 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
-import junit.framework.TestCase;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Paragraph;
@@ -36,6 +32,8 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 public class ImportWordDummy
 {
@@ -320,8 +318,7 @@ public class ImportWordDummy
 
     public NarrEntry(String entry) throws ParseException
     {
-      DateFormat dateF = new SimpleDateFormat("HH:mm:ss");
-      dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
+      DateFormat dateF = new GMTDateFormat("HH:mm:ss");
 
       String[] parts = entry.split(",");
       int ctr = 0;
@@ -469,7 +466,7 @@ public class ImportWordDummy
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
-      DateFormat df = new SimpleDateFormat("yyyy,MM,dd,HH:mm:ss");
+      DateFormat df = new GMTDateFormat("yyyy,MM,dd,HH:mm:ss");
 
       final InputStream is = new FileInputStream(testI);
 

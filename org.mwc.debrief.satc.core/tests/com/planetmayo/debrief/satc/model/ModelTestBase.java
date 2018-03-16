@@ -14,10 +14,11 @@
  */
 package com.planetmayo.debrief.satc.model;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.util.ObjectUtils;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ModelTestBase
 {
@@ -25,6 +26,6 @@ public class ModelTestBase
 	
 	protected Date parseDate(String pattern, String data) 
 	{
-		return ObjectUtils.safeParseDate(new SimpleDateFormat(pattern), data);
+		return ObjectUtils.safeParseDate(new GMTDateFormat(pattern), data);
 	}
 }

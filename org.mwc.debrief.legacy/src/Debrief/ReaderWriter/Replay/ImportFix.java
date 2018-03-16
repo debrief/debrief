@@ -139,7 +139,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -151,6 +150,7 @@ import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * import a fix from a line of text (in Replay format)
@@ -527,7 +527,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			Date fixDate = res.theFix.getTime().getDate();
-			DateFormat yearFormat = new SimpleDateFormat("yyyy");
+			DateFormat yearFormat = new GMTDateFormat("yyyy");
 			String dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
@@ -543,7 +543,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new SimpleDateFormat("yyyy");
+			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
@@ -559,7 +559,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new SimpleDateFormat("yyyy");
+			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
@@ -812,8 +812,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			final HiResDate hrd = DebriefFormatDateTime.parseThis("951212 051600.000100");
 			assertEquals("time hasn't got mangled", hrd, res.theFix.getTime());
 
-			final DateFormat otherFormat = new SimpleDateFormat("yyMMdd HHmmss");
-			otherFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			final DateFormat otherFormat = new GMTDateFormat("yyMMdd HHmmss");
 			Date theDate = null;
 			try
 			{
@@ -853,7 +852,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			Date fixDate = res.theFix.getTime().getDate();
-			DateFormat yearFormat = new SimpleDateFormat("yyyy");
+			DateFormat yearFormat = new GMTDateFormat("yyyy");
 			String dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
@@ -869,7 +868,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new SimpleDateFormat("yyyy");
+			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
@@ -885,7 +884,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("right depth", 0.0, res.theFix.getLocation().getDepth(),
 					0.01);
 			fixDate = res.theFix.getTime().getDate();
-			yearFormat = new SimpleDateFormat("yyyy");
+			yearFormat = new GMTDateFormat("yyyy");
 			dateYear = yearFormat.format(fixDate);
 			assertEquals("right date", "1995", dateYear);
 
