@@ -36,7 +36,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -168,6 +167,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.TacticalData.TrackDataProvider.TrackShiftListener;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  */
@@ -176,7 +176,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     ErrorLogger
 {
 
-  private static class MidnightDateFormat extends SimpleDateFormat
+  private static class MidnightDateFormat extends GMTDateFormat
   {
 
     /**
@@ -943,17 +943,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TickUnits units = new TickUnits();
 
     // date formatters
-    final DateFormat f4 = new SimpleDateFormat("ddHHmm");
-    final DateFormat f5 = new SimpleDateFormat("ddHHmm:ss");
-    final DateFormat f1 = new SimpleDateFormat("HHmm:ss.SSS");
+    final DateFormat f4 = new GMTDateFormat("ddHHmm");
+    final DateFormat f5 = new GMTDateFormat("ddHHmm:ss");
+    final DateFormat f1 = new GMTDateFormat("HHmm:ss.SSS");
     final DateFormat f2 = new MidnightDateFormat("HHmm:ss", f5);
     final DateFormat f3 = new MidnightDateFormat("HHmm", f4);
-
-    f1.setTimeZone(TimeZone.getTimeZone("GMT"));
-    f2.setTimeZone(TimeZone.getTimeZone("GMT"));
-    f3.setTimeZone(TimeZone.getTimeZone("GMT"));
-    f4.setTimeZone(TimeZone.getTimeZone("GMT"));
-    f5.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     // milliseconds
     units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 1, f1));
@@ -1221,9 +1215,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected void createStackedPlot()
   {
     // first create the x (time) axis
-    final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
-    _df.setTimeZone(TimeZone.getTimeZone("GMT"));
-
     final DateAxis xAxis = new CachedTickDateAxis("");
 
     // xAxis.setDateFormatOverride(_df);
@@ -1420,8 +1411,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
         final long crossDate = (long) _linePlot.getDomainCrosshairValue();
         final Date newDate = new Date(crossDate);
-        final SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
-        _df.setTimeZone(TimeZone.getTimeZone("GMT"));
+        final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
         final String dateVal = _df.format(newDate);
         final String theMessage = " [" + dateVal + "," + numA + "]";
         if (!theMessage.equals(crossHairAnnotation.getText()))

@@ -15,7 +15,6 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,7 +29,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -543,12 +541,6 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
-  /**
-   * the format we use to parse text
-   */
-  private final java.text.DateFormat dateFormat =
-      new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
-
   private static Vector<PlainLineImporter> _coreImporters;
 
   private static ArrayList<ExtensibleLineImporter> _extensionImporters;
@@ -921,9 +913,6 @@ public class ImportReplay extends PlainImporterBase
    */
   public ImportReplay()
   {
-
-    dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-
     _myTypes = new String[]
     {".rep", ".dsf", ".dtf"};
 

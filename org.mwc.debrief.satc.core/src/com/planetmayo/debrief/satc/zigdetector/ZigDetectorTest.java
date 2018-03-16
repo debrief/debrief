@@ -41,6 +41,7 @@ import org.mwc.debrief.track_shift.zig_detector.target.ZigDetector;
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import flanagan.math.Minimisation;
 
 public class ZigDetectorTest
@@ -63,7 +64,7 @@ public class ZigDetectorTest
 
 	final static Long timeEnd = null; // osL1end;
 
-	final static SimpleDateFormat dateF = new SimpleDateFormat("HH:mm:ss");
+	final static SimpleDateFormat dateF = new GMTDateFormat("HH:mm:ss");
 
 	final static DecimalFormat numF = new DecimalFormat(
 			" 0000.0000000;-0000.0000000");

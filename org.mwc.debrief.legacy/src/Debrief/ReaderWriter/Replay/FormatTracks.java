@@ -63,7 +63,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -71,6 +70,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * class to apply default formatting to a set of tracks
@@ -109,12 +109,9 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
     try
     {
       final SimpleDateFormat dayFormat =
-          new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
+          new GMTDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
       final SimpleDateFormat normalFormat =
-          new java.text.SimpleDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
-
-      dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-      normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+          new GMTDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
 
       // the last hour we stamped
       long lastStamp = -1;

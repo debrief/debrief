@@ -23,7 +23,6 @@ import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 
@@ -43,6 +42,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  */
@@ -58,7 +58,7 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
     public ImportSATCSample(final Layers theLayers)
     {
       _theLayers = theLayers;
-      _df = new SimpleDateFormat("dd HH:mm:ss.SSS");
+      _df = new GMTDateFormat("dd HH:mm:ss.SSS");
     }
 
     public void importThis(final String path, final InputStream inputStream)

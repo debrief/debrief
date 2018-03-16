@@ -18,14 +18,11 @@ import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
 import org.jfree.data.statistics.Regression;
@@ -55,6 +52,9 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 public class BearingMeasurementContribution extends
 		CoreMeasurementContribution<BearingMeasurementContribution.BMeasurement>
@@ -322,7 +322,7 @@ public class BearingMeasurementContribution extends
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location

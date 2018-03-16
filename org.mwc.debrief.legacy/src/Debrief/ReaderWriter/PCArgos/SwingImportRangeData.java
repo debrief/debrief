@@ -15,17 +15,26 @@
 package Debrief.ReaderWriter.PCArgos;
 
 import java.awt.FlowLayout;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.File;
-import java.text.*;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public final class SwingImportRangeData extends ImportRangeDataPanel
 {
@@ -65,7 +74,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
 
   /** the format to use for the data field
    */
-  private final DateFormat _dateF = new SimpleDateFormat("yyyy/MM/dd");
+  private final DateFormat _dateF = new GMTDateFormat("yyyy/MM/dd");
 
 
   ///////////////////////////////////
@@ -76,9 +85,6 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
                               final PropertiesPanel thePanel)
   {
     super(theData, lastDirectory, thePanel);
-
-    // initialise the date to GMT, so that the date points aren't shifted
-    _dateF.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
   }
 
 

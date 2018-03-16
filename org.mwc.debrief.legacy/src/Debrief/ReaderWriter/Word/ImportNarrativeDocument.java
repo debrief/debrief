@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -66,6 +65,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
 public class ImportNarrativeDocument
@@ -432,8 +432,7 @@ public class ImportNarrativeDocument
       // }
 
       // sort out our date formats
-      final DateFormat fourBlock = new SimpleDateFormat("HHmm");
-      fourBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
+      final DateFormat fourBlock = new GMTDateFormat("HHmm");
 
       // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
       // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -655,8 +654,7 @@ public class ImportNarrativeDocument
           // hmm, see if it's just text. If it is, stick it on the end of the previous one
 
           // ooh, it may be a next day marker. have a check
-          final DateFormat dtgBlock = new SimpleDateFormat("dd MMM yy");
-          dtgBlock.setTimeZone(TimeZone.getTimeZone("GMT"));
+          final DateFormat dtgBlock = new GMTDateFormat("dd MMM yy");
 
           boolean hasDate = false;
           try
@@ -915,7 +913,7 @@ public class ImportNarrativeDocument
       nonsuch.setName("NONSUCH");
 
       // we also need fixes covering this period
-      final SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+      final SimpleDateFormat df = new GMTDateFormat("MM/dd/yyyy HH:mm:ss");
       final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
       final HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
       final WorldLocation loc1 = new WorldLocation(1, 1, 0);
@@ -1189,7 +1187,7 @@ public class ImportNarrativeDocument
       nonsuch.setName("NONSUCH");
 
       // we also need fixes covering this period
-      final SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+      final SimpleDateFormat df = new GMTDateFormat("MM/dd/yyyy HH:mm:ss");
       final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
       final HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
       final WorldLocation loc1 = new WorldLocation(1, 1, 0);

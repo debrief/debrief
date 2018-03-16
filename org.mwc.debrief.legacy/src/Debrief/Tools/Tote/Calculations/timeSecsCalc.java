@@ -14,6 +14,8 @@
  */
 package Debrief.Tools.Tote.Calculations;
 
+import java.text.DecimalFormat;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: timeSecsCalc.java,v $
 // @author $Author: Ian.Mayo $
@@ -89,9 +91,7 @@ package Debrief.Tools.Tote.Calculations;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
-import java.text.DecimalFormat;
-import java.util.TimeZone;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public final class timeSecsCalc extends plainCalc
 {
@@ -108,11 +108,8 @@ public final class timeSecsCalc extends plainCalc
     super(new DecimalFormat("00.00"), "Time", "hhmm.ss");
 
     // create the format
-    _myDateFormat = new java.text.SimpleDateFormat("HHmm.ss");
-    _milliSecsFormat = new java.text.SimpleDateFormat("s");
-
-    // set to GMT
-    _myDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+    _myDateFormat = new GMTDateFormat("HHmm.ss");
+    _milliSecsFormat = new GMTDateFormat("s");
 
     // just over-ride the units when we're in hi-res mode
     if(HiResDate.inHiResProcessingMode())

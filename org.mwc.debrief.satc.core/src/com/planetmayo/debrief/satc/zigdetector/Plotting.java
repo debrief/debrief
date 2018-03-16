@@ -2,7 +2,6 @@ package com.planetmayo.debrief.satc.zigdetector;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.List;
 
@@ -24,6 +23,8 @@ import org.jfree.ui.Layer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.jfree.util.ShapeUtilities;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class Plotting
 {
@@ -84,7 +85,7 @@ public class Plotting
 		xyPlot.setDomainCrosshairVisible(true);
 		xyPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) xyPlot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
 		final NumberAxis rangeAxis = new LogarithmicAxis("Log(error)");
 		xyPlot.setRangeAxis(rangeAxis);
@@ -139,7 +140,7 @@ public class Plotting
 				"Domain"));
 		plot.setGap(10.0);
 		final DateAxis axis = (DateAxis) plot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 		return plot;
 	}
 
@@ -193,7 +194,7 @@ public class Plotting
 		xyPlot.setDomainCrosshairVisible(true);
 		xyPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) xyPlot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
 		final NumberAxis axis2 = new NumberAxis("Speed");
 		xyPlot.setRangeAxis(1, axis2);
@@ -306,7 +307,7 @@ public class Plotting
 		xyPlot.setDomainCrosshairVisible(true);
 		xyPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) xyPlot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
 		// final NumberAxis axis2 = new NumberAxis(title + "Speed");
 		// xyPlot.setRangeAxis(1, axis2);
@@ -350,7 +351,7 @@ public class Plotting
 		xyPlot.setDomainCrosshairVisible(true);
 		xyPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) xyPlot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
 		// final NumberAxis rangeAxis = new LogarithmicAxis("Log(error)");
 		// xyPlot.setRangeAxis(rangeAxis);
@@ -419,7 +420,7 @@ public class Plotting
 		xyPlot.setDomainCrosshairVisible(true);
 		xyPlot.setRangeCrosshairVisible(true);
 		final DateAxis axis = (DateAxis) xyPlot.getDomainAxis();
-		axis.setDateFormatOverride(new SimpleDateFormat("HH:mm:ss"));
+		axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
 
 		final NumberAxis axis2 = new NumberAxis(title + "Speed");
 		xyPlot.setRangeAxis(1, axis2);

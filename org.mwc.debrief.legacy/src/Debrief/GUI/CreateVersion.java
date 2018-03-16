@@ -14,9 +14,13 @@
  */
 package Debrief.GUI;
 
-import java.io.*;
-import java.text.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.text.DateFormat;
 import java.util.Date;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class CreateVersion
 {
@@ -39,7 +43,7 @@ public class CreateVersion
       System.out.println(" File will be placed in: " + fName);
       try{
         final Date now = new Date();
-        final DateFormat df = new SimpleDateFormat("dd MMM yy HH:mm");
+        final DateFormat df = new GMTDateFormat("dd MMM yy HH:mm");
         final java.io.FileWriter fw = new FileWriter(fName);
         final java.io.BufferedWriter out = new BufferedWriter(fw);
         out.write("package Debrief.GUI;");

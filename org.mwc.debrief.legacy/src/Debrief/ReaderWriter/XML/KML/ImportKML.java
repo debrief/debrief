@@ -28,7 +28,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -52,6 +51,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ImportKML
 {
@@ -196,8 +196,7 @@ public class ImportKML
 
       // get our XML date parser ready
       final SimpleDateFormat parser =
-          new SimpleDateFormat("yyyy-MM-d'T'HH:mm:ss'Z'");
-      parser.setTimeZone(TimeZone.getTimeZone("GMT"));
+          new GMTDateFormat("yyyy-MM-d'T'HH:mm:ss'Z'");
 
       // find the placemarks
       final NodeList nodeList = doc.getElementsByTagName("Placemark");
@@ -264,8 +263,7 @@ public class ImportKML
 
             // get our XML date parser ready
             final SimpleDateFormat nokiaDateFormat =
-                new SimpleDateFormat("yyyyMMddHHmms");
-            nokiaDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+                new GMTDateFormat("yyyyMMddHHmms");
             Date theDate = new Date();
 
             try

@@ -19,7 +19,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,6 +46,8 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class Range1959ForecastContribution extends BaseContribution
 {
@@ -538,7 +539,7 @@ public class Range1959ForecastContribution extends BaseContribution
 			String freq = elements[15];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location
@@ -624,7 +625,7 @@ public class Range1959ForecastContribution extends BaseContribution
 		private void addBearing(ProblemSpace space, String date, String time,
 				double bearingDegs) throws IncompatibleStateException
 		{
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			BoundedState state = new BoundedState(theDate);

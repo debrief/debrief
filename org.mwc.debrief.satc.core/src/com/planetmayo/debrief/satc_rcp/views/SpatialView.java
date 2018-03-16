@@ -85,6 +85,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 public class SpatialView extends ViewPart implements IConstrainSpaceListener, 
 				IGASolutionsListener, IBruteForceSolutionsListener
 {
@@ -128,7 +130,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 	private ISolversManager _solversManager;	
 	private ISolver _activeSolver;	
 
-	final private SimpleDateFormat _legendDateFormat = new SimpleDateFormat("HH:mm:ss");
+	final private SimpleDateFormat _legendDateFormat = new GMTDateFormat("HH:mm:ss");
 
 	private ISolversManagerListener solversManagerListener;
 	private IConstrainSpaceListener constrainSpaceListener;
@@ -998,7 +1000,7 @@ public class SpatialView extends ViewPart implements IConstrainSpaceListener,
 
 		// we need to store the point labels. get ready to store them
 		_scoredRouteLabels.clear();
-		final DateFormat labelTimeFormat = new SimpleDateFormat("mm:ss");
+		final DateFormat labelTimeFormat = new GMTDateFormat("mm:ss");
 
 		// work through the legs
 		Iterator<LegWithRoutes> lIter = legRoutes.keySet().iterator();

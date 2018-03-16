@@ -27,8 +27,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 
@@ -61,7 +59,9 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import flanagan.interpolation.CubicSpline;
+import junit.framework.TestCase;
 
 /**
  * @author Administrator
@@ -948,7 +948,7 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimateRelative() throws InterruptedException,
       ParseException
   {
-    SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
+    SimpleDateFormat sdf = new GMTDateFormat("hh:mm:ss");
 
     final TrackSegment ts1 = new TrackSegment(TrackSegment.RELATIVE);
     ts1.addFix(createFix(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));

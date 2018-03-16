@@ -15,12 +15,10 @@
 package Debrief.ReaderWriter.FlatFile.DopplerShift;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
-import java.util.TimeZone;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -29,9 +27,9 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.TrackSegment;
-import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
@@ -41,6 +39,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * exporter class to replicate old Strand export format
@@ -288,8 +287,7 @@ public class DopplerShiftExporter
 	 */
 	static protected String formatThis(final Date val)
 	{
-		final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-		df.setTimeZone(TimeZone.getTimeZone("GMT"));
+		final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
 		return df.format(val);
 	}
 

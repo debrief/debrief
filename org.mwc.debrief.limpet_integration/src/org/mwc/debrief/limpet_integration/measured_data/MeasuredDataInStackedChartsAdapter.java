@@ -1,27 +1,8 @@
 package org.mwc.debrief.limpet_integration.measured_data;
 
-import info.limpet.stackedcharts.model.Chart;
-import info.limpet.stackedcharts.model.ChartSet;
-import info.limpet.stackedcharts.model.DataItem;
-import info.limpet.stackedcharts.model.Dataset;
-import info.limpet.stackedcharts.model.Datum;
-import info.limpet.stackedcharts.model.DependentAxis;
-import info.limpet.stackedcharts.model.IndependentAxis;
-import info.limpet.stackedcharts.model.PlainStyling;
-import info.limpet.stackedcharts.model.ScatterSet;
-import info.limpet.stackedcharts.model.StackedchartsFactory;
-import info.limpet.stackedcharts.model.impl.StackedchartsFactoryImpl;
-import info.limpet.stackedcharts.ui.view.StackedChartsView;
-import info.limpet.stackedcharts.ui.view.StackedChartsView.ControllableDate;
-import info.limpet.stackedcharts.ui.view.adapter.IStackedDatasetAdapter;
-import info.limpet.stackedcharts.ui.view.adapter.IStackedScatterSetAdapter;
-import info.limpet.stackedcharts.ui.view.adapter.IStackedTimeListener;
-import info.limpet.stackedcharts.ui.view.adapter.IStackedTimeProvider;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +41,24 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+import info.limpet.stackedcharts.model.Chart;
+import info.limpet.stackedcharts.model.ChartSet;
+import info.limpet.stackedcharts.model.DataItem;
+import info.limpet.stackedcharts.model.Dataset;
+import info.limpet.stackedcharts.model.Datum;
+import info.limpet.stackedcharts.model.DependentAxis;
+import info.limpet.stackedcharts.model.IndependentAxis;
+import info.limpet.stackedcharts.model.PlainStyling;
+import info.limpet.stackedcharts.model.ScatterSet;
+import info.limpet.stackedcharts.model.StackedchartsFactory;
+import info.limpet.stackedcharts.model.impl.StackedchartsFactoryImpl;
+import info.limpet.stackedcharts.ui.view.StackedChartsView;
+import info.limpet.stackedcharts.ui.view.StackedChartsView.ControllableDate;
+import info.limpet.stackedcharts.ui.view.adapter.IStackedDatasetAdapter;
+import info.limpet.stackedcharts.ui.view.adapter.IStackedScatterSetAdapter;
+import info.limpet.stackedcharts.ui.view.adapter.IStackedTimeListener;
+import info.limpet.stackedcharts.ui.view.adapter.IStackedTimeProvider;
 
 public class MeasuredDataInStackedChartsAdapter implements
     IStackedDatasetAdapter, IStackedScatterSetAdapter, IStackedTimeProvider,
@@ -542,7 +541,7 @@ public class MeasuredDataInStackedChartsAdapter implements
         final IWorkbenchPage page = window.getActivePage();
 
         // produce a name for the view
-        DateFormat df = new SimpleDateFormat("hh_mm_ss");
+        DateFormat df = new GMTDateFormat("hh_mm_ss");
         final String viewId = "Measured Data " + df.format(new Date());
 
         // create a new instance of the Tactical Overview

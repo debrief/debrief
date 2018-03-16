@@ -61,6 +61,7 @@ import ASSET.Util.XML.ScenarioHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.GUI.Layer;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class MultiScenarioPresenter extends CoreControllerPresenter
 {
@@ -144,8 +145,8 @@ public class MultiScenarioPresenter extends CoreControllerPresenter
 	 */
 	private final ScenarioSteppedListener _stepListener;
 
-	private final SimpleDateFormat _dateFormat = new SimpleDateFormat("yy/MM/dd");
-	private final SimpleDateFormat _timeFormat = new SimpleDateFormat("HH:mm:ss");
+	private final SimpleDateFormat _dateFormat = new GMTDateFormat("yy/MM/dd");
+	private final SimpleDateFormat _timeFormat = new GMTDateFormat("HH:mm:ss");
 
 	private final ScenarioRunningListener _runListener;
 
