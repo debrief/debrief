@@ -914,8 +914,8 @@ public class ImportNarrativeDocument
 
       // we also need fixes covering this period
       final SimpleDateFormat df = new GMTDateFormat("MM/dd/yyyy HH:mm:ss");
-      final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
-      final HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
+      final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 03:00:00"));
+      final HiResDate hd2 = new HiResDate(df.parse("08/16/2016 08:00:00"));
       final WorldLocation loc1 = new WorldLocation(1, 1, 0);
       final WorldLocation loc2 = new WorldLocation(2, 2, 0);
       final Fix fx1 = new Fix(hd1, loc1, 12d, 5);
@@ -1188,7 +1188,7 @@ public class ImportNarrativeDocument
 
       // we also need fixes covering this period
       final SimpleDateFormat df = new GMTDateFormat("MM/dd/yyyy HH:mm:ss");
-      final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 05:00:00"));
+      final HiResDate hd1 = new HiResDate(df.parse("08/16/2016 04:00:00"));
       final HiResDate hd2 = new HiResDate(df.parse("08/16/2016 06:00:00"));
       final WorldLocation loc1 = new WorldLocation(1, 1, 0);
       final WorldLocation loc2 = new WorldLocation(2, 2, 0);
