@@ -42,6 +42,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -246,6 +247,23 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper segList = new EditableWrapper(wrap.getWrapper()
             .getSegments(), track, _theLayers);
         final EditableWrapper thisList = new EditableWrapper(wrap, segList,
+            _theLayers);
+
+        res = new ArrayList<EditableWrapper>();
+
+        final Enumeration<Editable> items = wrap.elements();
+        while (items.hasMoreElements())
+        {
+          final Editable item = items.nextElement();
+          res.add(new EditableWrapper(item, thisList, _theLayers));
+        }
+      }
+      else if (parent instanceof NarrativeWrapper)
+      {
+        final NarrativeWrapper wrap = (NarrativeWrapper) parent;
+        final EditableWrapper track = new EditableWrapper(wrap, null,
+            _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, track,
             _theLayers);
 
         res = new ArrayList<EditableWrapper>();
