@@ -302,6 +302,60 @@ public class GenerateTMASegmentFromCuts implements
 
     }
 
+    public void testUndo() throws ExecutionException
+    {
+      final TrackWrapper tw = getLongerTrack();
+
+      assertNotNull(tw);
+
+      // get the sensor data
+      final SensorWrapper sw = (SensorWrapper) tw.getSensors().elements()
+          .nextElement();
+
+      assertNotNull(sw);
+
+      // create a list of cuts (to simulate the selection)
+      final SensorContactWrapper[] items = new SensorContactWrapper[sw.size()];
+      final Enumeration<Editable> numer = sw.elements();
+      int ctr = 0;
+      while (numer.hasMoreElements())
+      {
+        final SensorContactWrapper cut = (SensorContactWrapper) numer
+            .nextElement();
+        items[ctr++] = cut;
+      }
+
+      final Layers theLayers = new Layers();
+      final WorldVector worldOffset = new WorldVector(Math.PI, 0.002, 0);
+      final double tgtCourse = 0;
+      final WorldSpeed tgtSpeed = new WorldSpeed(3, WorldSpeed.Kts);
+
+      final Color newColor = Color.GREEN;
+
+      theLayers.addThisLayer(tw);
+
+      // check we haven't got the new color
+      final Color oldColor = items[0].getColor();
+      assertEquals("correct original color", Color.YELLOW, oldColor);
+
+      // ok, generate the target track
+      final CMAPOperation op = new TMAfromCuts(items, theLayers, worldOffset,
+          tgtCourse, tgtSpeed, newColor);
+
+      // and run it
+      op.execute(null, null);
+
+      assertEquals("has new data", 2, theLayers.size());
+
+      final TrackWrapper sol = (TrackWrapper) theLayers.elementAt(1);
+      assertNotNull("new layer not found", sol);
+
+      // ok, now undo the operation
+      op.undo(null, null);
+
+      assertEquals("new track didn't get deleted", 1, theLayers.size());
+    }
+
   }
 
   public static class TMAfromCuts extends CMAPOperation
@@ -547,9 +601,6 @@ public class GenerateTMASegmentFromCuts implements
               // get ready for the supporting data (using selected sensor data,
               // if
               // we can)
-              WorldVector res = null;
-              double courseDegs = 0;
-              WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
               // just check we have some kind of range
               WorldDistance theDist = firstContact.getRange();
@@ -568,56 +619,13 @@ public class GenerateTMASegmentFromCuts implements
               // did it work?
               if (dialog.getReturnCode() == Window.OK)
               {
-
-                final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-                    .getPage(RangeBearingPage.NAME);
-                if (offsetPage != null)
-                {
-                  if (offsetPage.isPageComplete())
-                  {
-                    res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
-                        offsetPage.getBearingDegs()), offsetPage.getRange(),
-                        null);
-                  }
-                }
-
-                final EnterSolutionPage solutionPage =
-                    (EnterSolutionPage) wizard.getPage(EnterSolutionPage.NAME);
-                if (solutionPage != null)
-                {
-                  if (solutionPage.isPageComplete())
-                  {
-                    final EnterSolutionPage.SolutionDataItem item =
-                        (SolutionDataItem) solutionPage.getEditable();
-                    courseDegs = item.getCourse();
-                    speed = item.getSpeed();
-                  }
-                }
-
-                final SelectColorPage colorPage = (SelectColorPage) wizard
-                    .getPage(SelectColorPage.NAME);
-                final Color newColor;
-                if (colorPage != null && colorPage.isPageComplete())
-                {
-                  final Color color = colorPage.getColor();
-                  if (!color.equals(firstColor))
-                  {
-                    newColor = color;
-                  }
-                  else
-                  {
-                    newColor = null;
-                  }
-                }
-                else
-                {
-                  newColor = null;
-                }
+                final UserChoice answers = getUserChoice(wizard, firstColor);
 
                 // ok, go for it.
                 // sort it out as an operation
                 final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-                    finalItems, theLayers, res, courseDegs, speed, newColor);
+                    finalItems, theLayers, answers.res, answers.courseDegs,
+                    answers.speed, answers.newColor);
 
                 // ok, stick it on the buffer
                 runIt(convertToTrack1);
@@ -678,60 +686,13 @@ public class GenerateTMASegmentFromCuts implements
               // did it work?
               if (dialog.getReturnCode() == Window.OK)
               {
-                WorldVector res = new WorldVector(0, new WorldDistance(5,
-                    WorldDistance.NM), null);
-                double courseDegs = 0;
-                WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
-
-                final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-                    .getPage(RangeBearingPage.NAME);
-                if (offsetPage != null)
-                {
-                  if (offsetPage.isPageComplete())
-                  {
-                    res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
-                        offsetPage.getBearingDegs()), offsetPage.getRange(),
-                        null);
-                  }
-                }
-
-                final EnterSolutionPage solutionPage =
-                    (EnterSolutionPage) wizard.getPage(EnterSolutionPage.NAME);
-                if (solutionPage != null)
-                {
-                  if (solutionPage.isPageComplete())
-                  {
-                    final EnterSolutionPage.SolutionDataItem item =
-                        (SolutionDataItem) solutionPage.getEditable();
-                    courseDegs = item.getCourse();
-                    speed = item.getSpeed();
-                  }
-                }
-
-                final SelectColorPage colorPage = (SelectColorPage) wizard
-                    .getPage(SelectColorPage.NAME);
-                final Color newColor;
-                if (colorPage != null && colorPage.isPageComplete())
-                {
-                  final Color color = colorPage.getColor();
-                  if (!color.equals(firstColor))
-                  {
-                    newColor = color;
-                  }
-                  else
-                  {
-                    newColor = null;
-                  }
-                }
-                else
-                {
-                  newColor = null;
-                }
+                final UserChoice answers = getUserChoice(wizard, firstColor);
 
                 // ok, go for it.
                 // sort it out as an operation
                 final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-                    items, theLayers, res, courseDegs, speed, newColor);
+                    items, theLayers, answers.res, answers.courseDegs,
+                    answers.speed, answers.newColor);
 
                 // ok, stick it on the buffer
                 runIt(convertToTrack1);
@@ -751,6 +712,71 @@ public class GenerateTMASegmentFromCuts implements
     // go for it, or not...
     if (_myAction != null)
       parent.add(_myAction);
+
+  }
+
+  protected UserChoice getUserChoice(final TMAFromSensorWizard wizard,
+      final Color firstColor)
+  {
+    UserChoice choice = new UserChoice();
+    choice.res = new WorldVector(0, new WorldDistance(5, WorldDistance.NM),
+        null);
+    choice.courseDegs = 0d;
+    choice.speed = new WorldSpeed(5, WorldSpeed.Kts);
+
+    final RangeBearingPage offsetPage = (RangeBearingPage) wizard.getPage(
+        RangeBearingPage.NAME);
+    if (offsetPage != null)
+    {
+      if (offsetPage.isPageComplete())
+      {
+        choice.res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+            offsetPage.getBearingDegs()), offsetPage.getRange(), null);
+      }
+    }
+
+    final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard.getPage(
+        EnterSolutionPage.NAME);
+    if (solutionPage != null)
+    {
+      if (solutionPage.isPageComplete())
+      {
+        final EnterSolutionPage.SolutionDataItem item =
+            (SolutionDataItem) solutionPage.getEditable();
+        choice.courseDegs = item.getCourse();
+        choice.speed = item.getSpeed();
+      }
+    }
+
+    final SelectColorPage colorPage = (SelectColorPage) wizard.getPage(
+        SelectColorPage.NAME);
+    if (colorPage != null && colorPage.isPageComplete())
+    {
+      final Color color = colorPage.getColor();
+      if (!color.equals(firstColor))
+      {
+        choice.newColor = color;
+      }
+      else
+      {
+        choice.newColor = null;
+      }
+    }
+    else
+    {
+      choice.newColor = null;
+    }
+
+    return choice;
+  }
+
+  private static class UserChoice
+  {
+
+    public Color newColor;
+    public WorldSpeed speed;
+    public double courseDegs;
+    public WorldVector res;
 
   }
 
