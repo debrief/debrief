@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -55,7 +55,7 @@ import MWC.GenericData.TimePeriod;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
 public class SelectAllChildren implements RightClickContextItemGenerator
 {
@@ -66,30 +66,31 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     @SuppressWarnings("unused")
     private final long _interval;
 
-    public SelectChildrenAtFrequencyOperation(Layers theLayers,
-        HasEditables selected, final long interval)
+    public SelectChildrenAtFrequencyOperation(final Layers theLayers,
+        final HasEditables selected, final long interval)
     {
       super(theLayers, selected);
       _interval = interval;
     }
 
     @Override
-    protected List<EditableWrapper> itemsFor(HasEditables parent)
+    protected List<EditableWrapper> itemsFor(final HasEditables parent)
     {
       final List<EditableWrapper> res = new ArrayList<>();
 
-      TrackSegment wrap = (TrackSegment) parent;
-      EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
+      final TrackSegment wrap = (TrackSegment) parent;
+      final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
           _theLayers);
-      EditableWrapper segment = new EditableWrapper(wrap, track, _theLayers);
+      final EditableWrapper segment = new EditableWrapper(wrap, track,
+          _theLayers);
 
-      Enumeration<Editable> items = wrap.elements();
+      final Enumeration<Editable> items = wrap.elements();
       long lastStamp = -1;
       while (items.hasMoreElements())
       {
-        Editable item = items.nextElement();
+        final Editable item = items.nextElement();
 
-        FixWrapper fix = (FixWrapper) item;
+        final FixWrapper fix = (FixWrapper) item;
         final long time = fix.getDateTimeGroup().getDate().getTime();
 
         // is this the first element?
@@ -126,133 +127,12 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     final private HasEditables _hasEditables;
     protected final Layers _theLayers;
 
-    public SelectChildrenOperation(Layers theLayers, HasEditables selected)
+    public SelectChildrenOperation(final Layers theLayers,
+        final HasEditables selected)
     {
       super("Select all children");
       _hasEditables = selected;
       _theLayers = theLayers;
-    }
-
-    @Override
-    public IStatus execute(final IProgressMonitor monitor,
-        final IAdaptable info) throws ExecutionException
-    {
-      List<EditableWrapper> selection = itemsFor(_hasEditables);
-
-      if (selection != null && selection.size() > 0)
-      {
-        // ok, get the editor
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-        final IWorkbenchPage page = win.getActivePage();
-        final IEditorPart editor = page.getActiveEditor();
-
-        if (editor != null)
-        {
-          IContentOutlinePage outline = (IContentOutlinePage) editor.getAdapter(
-              IContentOutlinePage.class);
-          if (outline != null)
-          {
-            // now set the selection
-            IStructuredSelection str = new StructuredSelection(selection);
-
-            outline.setSelection(str);
-          }
-        }
-      }
-
-      return Status.OK_STATUS;
-    }
-
-    protected List<EditableWrapper> itemsFor(HasEditables parent)
-    {
-      final List<EditableWrapper> res;
-      if (parent instanceof TacticalDataWrapper)
-      {
-        TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
-        EditableWrapper track = new EditableWrapper(wrap.getHost(), null,
-            _theLayers);
-        EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
-
-        res = new ArrayList<EditableWrapper>();
-
-        Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
-      }
-      else if (parent instanceof BaseLayer)
-      {
-        BaseLayer wrap = (BaseLayer) parent;
-        EditableWrapper track = new EditableWrapper(wrap, null, _theLayers);
-        EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
-
-        res = new ArrayList<EditableWrapper>();
-
-        Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
-      }
-      else if (parent instanceof TrackSegment)
-      {
-        TrackSegment wrap = (TrackSegment) parent;
-        EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
-            _theLayers);
-        EditableWrapper thisList = new EditableWrapper(wrap, track, _theLayers);
-
-        res = new ArrayList<EditableWrapper>();
-
-        Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
-      }
-      else if (parent instanceof SegmentList)
-      {
-        SegmentList wrap = (SegmentList) parent;
-        EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
-            _theLayers);
-        EditableWrapper segList = new EditableWrapper(wrap.getWrapper()
-            .getSegments(), track, _theLayers);
-        EditableWrapper thisList = new EditableWrapper(wrap, segList,
-            _theLayers);
-
-        res = new ArrayList<EditableWrapper>();
-
-        Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
-      }
-      else
-      {
-        System.out.println("not handling:" + parent.getClass());
-        res = null;
-      }
-      return res;
-    }
-
-    @Override
-    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
-    }
-
-    @Override
-    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
-    {
-      return Status.OK_STATUS;
     }
 
     @Override
@@ -271,6 +151,132 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     public boolean canUndo()
     {
       return false;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      final List<EditableWrapper> selection = itemsFor(_hasEditables);
+
+      if (selection != null && selection.size() > 0)
+      {
+        // ok, get the editor
+        final IWorkbench wb = PlatformUI.getWorkbench();
+        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+        final IWorkbenchPage page = win.getActivePage();
+        final IEditorPart editor = page.getActiveEditor();
+
+        if (editor != null)
+        {
+          final IContentOutlinePage outline = (IContentOutlinePage) editor
+              .getAdapter(IContentOutlinePage.class);
+          if (outline != null)
+          {
+            // now set the selection
+            final IStructuredSelection str = new StructuredSelection(selection);
+
+            outline.setSelection(str);
+          }
+        }
+      }
+
+      return Status.OK_STATUS;
+    }
+
+    protected List<EditableWrapper> itemsFor(final HasEditables parent)
+    {
+      final List<EditableWrapper> res;
+      if (parent instanceof TacticalDataWrapper)
+      {
+        final TacticalDataWrapper wrap = (TacticalDataWrapper) parent;
+        final EditableWrapper track = new EditableWrapper(wrap.getHost(), null,
+            _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, track,
+            _theLayers);
+
+        res = new ArrayList<EditableWrapper>();
+
+        final Enumeration<Editable> items = wrap.elements();
+        while (items.hasMoreElements())
+        {
+          final Editable item = items.nextElement();
+          res.add(new EditableWrapper(item, thisList, _theLayers));
+        }
+      }
+      else if (parent instanceof BaseLayer)
+      {
+        final BaseLayer wrap = (BaseLayer) parent;
+        final EditableWrapper track = new EditableWrapper(wrap, null,
+            _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, track,
+            _theLayers);
+
+        res = new ArrayList<EditableWrapper>();
+
+        final Enumeration<Editable> items = wrap.elements();
+        while (items.hasMoreElements())
+        {
+          final Editable item = items.nextElement();
+          res.add(new EditableWrapper(item, thisList, _theLayers));
+        }
+      }
+      else if (parent instanceof TrackSegment)
+      {
+        final TrackSegment wrap = (TrackSegment) parent;
+        final EditableWrapper track = new EditableWrapper(wrap.getWrapper(),
+            null, _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, track,
+            _theLayers);
+
+        res = new ArrayList<EditableWrapper>();
+
+        final Enumeration<Editable> items = wrap.elements();
+        while (items.hasMoreElements())
+        {
+          final Editable item = items.nextElement();
+          res.add(new EditableWrapper(item, thisList, _theLayers));
+        }
+      }
+      else if (parent instanceof SegmentList)
+      {
+        final SegmentList wrap = (SegmentList) parent;
+        final EditableWrapper track = new EditableWrapper(wrap.getWrapper(),
+            null, _theLayers);
+        final EditableWrapper segList = new EditableWrapper(wrap.getWrapper()
+            .getSegments(), track, _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, segList,
+            _theLayers);
+
+        res = new ArrayList<EditableWrapper>();
+
+        final Enumeration<Editable> items = wrap.elements();
+        while (items.hasMoreElements())
+        {
+          final Editable item = items.nextElement();
+          res.add(new EditableWrapper(item, thisList, _theLayers));
+        }
+      }
+      else
+      {
+        System.out.println("not handling:" + parent.getClass());
+        res = null;
+      }
+      return res;
+    }
+
+    @Override
+    public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      return Status.OK_STATUS;
     }
 
   }
@@ -311,7 +317,7 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     if (subjects.length == 1)
     {
 
-      Editable selected = subjects[0];
+      final Editable selected = subjects[0];
 
       // does it have any children?
       if (selected instanceof HasEditables)
@@ -336,7 +342,7 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         parent.add(doIt);
 
         // are the children time-stamped?
-        TimePeriod coverage = timePeriodFor(selected);
+        final TimePeriod coverage = timePeriodFor(selected);
         if (coverage != null)
         {
           // ok, create the children at freq action
@@ -349,7 +355,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
 
           for (int i = 0; i < _freqs.length; i++)
           {
-            long thisLen = _freqs[i] / 1000;
+            // convert from microseconds to milliseconds
+            final long thisLen = _freqs[i] / 1000;
 
             if (thisLen < coverage.getExtent())
             {
@@ -376,26 +383,25 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     }
   }
 
-  private TimePeriod timePeriodFor(Editable selected)
+  /**
+   * move the operation generation to a method, so it can be overwritten (in testing)
+   *
+   *
+   * @param theLayers
+   * @param suitableSegments
+   * @param commonParent
+   * @return
+   */
+  protected IUndoableOperation getOperation(final Layers theLayers,
+      final HasEditables selected)
   {
-    TimePeriod res;
-    if (selected instanceof TrackSegment)
-    {
-      TrackSegment track = (TrackSegment) selected;
-      res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
-    }
-    else
-    {
-      res = null;
-    }
-
-    return res;
+    return new SelectChildrenOperation(theLayers, selected);
   }
 
   /**
    * move the operation generation to a method, so it can be overwritten (in testing)
-   * 
-   * 
+   *
+   *
    * @param theLayers
    * @param suitableSegments
    * @param commonParent
@@ -409,29 +415,30 @@ public class SelectAllChildren implements RightClickContextItemGenerator
   }
 
   /**
-   * move the operation generation to a method, so it can be overwritten (in testing)
-   * 
-   * 
-   * @param theLayers
-   * @param suitableSegments
-   * @param commonParent
-   * @return
-   */
-  protected IUndoableOperation getOperation(final Layers theLayers,
-      final HasEditables selected)
-  {
-    return new SelectChildrenOperation(theLayers, selected);
-  }
-
-  /**
    * put the operation firer onto the undo history. We've refactored this into a separate method so
    * testing classes don't have to simulate the CorePlugin
-   * 
+   *
    * @param operation
    */
   protected void runIt(final IUndoableOperation operation)
   {
     CorePlugin.run(operation);
+  }
+
+  private TimePeriod timePeriodFor(final Editable selected)
+  {
+    TimePeriod res;
+    if (selected instanceof TrackSegment)
+    {
+      final TrackSegment track = (TrackSegment) selected;
+      res = new TimePeriod.BaseTimePeriod(track.startDTG(), track.endDTG());
+    }
+    else
+    {
+      res = null;
+    }
+
+    return res;
   }
 
 }
