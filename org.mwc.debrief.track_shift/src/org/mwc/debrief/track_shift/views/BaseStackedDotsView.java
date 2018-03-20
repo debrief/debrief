@@ -2590,8 +2590,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showCrossHairs.setText("Show cross-hair marker");
     _showCrossHairs.setChecked(true);
     _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
-    _showCrossHairs.setImageDescriptor(CorePlugin.getImageDescriptor(
-        "icons/24/fix.png"));
+    _showCrossHairs.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
+        "icons/24/crosshair.png"));
 
   }
 
