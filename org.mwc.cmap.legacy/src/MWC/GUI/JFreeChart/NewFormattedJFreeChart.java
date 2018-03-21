@@ -40,11 +40,11 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.DateAxisEditor.DatedRNFormatter;
-import MWC.GUI.JFreeChart.DateAxisEditor.RNFormatter;
 import MWC.GUI.Properties.GraphicSizePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * ******************************************************************* embedded class for plot for
@@ -634,7 +634,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements
       }
       else
       {
-        target = new RNFormatter(format);
+        target = new GMTDateFormat(format);
       }
     }
 

@@ -257,7 +257,6 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import Debrief.Wrappers.Track.TrackSegment;
@@ -281,6 +280,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
@@ -1643,8 +1643,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       }
 
       // ok, reformat the label to this format
-      final java.text.DateFormat df = new java.text.SimpleDateFormat(theFormat);
-      df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      final java.text.DateFormat df = new GMTDateFormat(theFormat);
 
       final String timeStr = df.format(this.getTime().getDate());
       // special handling. See if it's the special SPEED marker

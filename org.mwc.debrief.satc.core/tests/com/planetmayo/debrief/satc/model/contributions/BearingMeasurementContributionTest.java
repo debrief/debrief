@@ -36,6 +36,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 @SuppressWarnings("deprecation")
 public class BearingMeasurementContributionTest extends ModelTestBase
 {
@@ -89,20 +91,21 @@ public class BearingMeasurementContributionTest extends ModelTestBase
 
 		// ok, create a well-performing route to use
 		Point startP = GeoSupport.getFactory().createPoint(new Coordinate(-30.005, 0.010));
-		Date startT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
+		SimpleDateFormat dateFormat = new GMTDateFormat("yyMMdd HHmmss");
+    Date startT = ObjectUtils.safeParseDate(dateFormat,
 				"100112 121300");
 		Point endP = GeoSupport.getFactory().createPoint(new Coordinate(-30.075, 0.010));
-		Date endT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
+		Date endT = ObjectUtils.safeParseDate(dateFormat,
 				"100112 122836");
 		StraightRoute goodRoute = new StraightRoute("rName", startP, startT, endP,
 				endT);
 
 		// and a performing route to use
 		startP = GeoSupport.getFactory().createPoint(new Coordinate(-30.003, -0.05));
-		startT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"),
+		startT = ObjectUtils.safeParseDate(dateFormat,
 				"100112 121300");
 		endP = GeoSupport.getFactory().createPoint(new Coordinate(-30.075, 0.010));
-		endT = ObjectUtils.safeParseDate(new SimpleDateFormat("yyMMdd HHmmss"), "100112 122836");
+		endT = ObjectUtils.safeParseDate(dateFormat, "100112 122836");
 		StraightRoute badRoute = new StraightRoute("rName", startP, startT, endP,
 				endT);
 

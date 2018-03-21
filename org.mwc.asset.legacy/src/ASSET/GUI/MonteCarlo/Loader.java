@@ -27,7 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.TooManyListenersException;
@@ -45,6 +45,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingCustomEditor;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * Created by IntelliJ IDEA. User: Ian.Mayo Date: 07-Oct-2004 Time: 13:58:18 To
@@ -127,7 +128,7 @@ abstract public class Loader extends SwingCustomEditor
 				_buildButton.setEnabled(enabled);
 			}
 
-			SimpleDateFormat sdf = new SimpleDateFormat("[hh:mm:ss]");
+			DateFormat sdf = new GMTDateFormat("[hh:mm:ss]");
 
 			/**
 			 * write a message to a message tracking window

@@ -5,9 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.TimeZone;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class InflectionPointDetector
 {
@@ -36,8 +36,7 @@ public class InflectionPointDetector
 
     System.out.format("Processing: %s\n", args[0]);
     
-    final DateFormat df = new SimpleDateFormat("HH:mm:ss");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat("HH:mm:ss");
 
     final BufferedReader br = new BufferedReader(new FileReader(args[0]));
     while ((line = br.readLine()) != null)

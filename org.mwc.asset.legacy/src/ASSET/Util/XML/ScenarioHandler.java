@@ -14,27 +14,23 @@
  */
 package ASSET.Util.XML;
 
-/**
- * Title:        Debrief 2000
- * Description:  Debrief 2000 Track Analysis Software
- * Copyright:    Copyright (c) 2000
- * Company:      MWC
- * @author Ian Mayo
- * @version 1.0
- */
-
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
-import ASSET.Models.Environment.*;
+import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Scenario.CoreScenario;
-import ASSET.Util.XML.Utils.*;
-import MWC.GUI.*;
+import ASSET.Util.XML.Utils.EnvironmentHandler;
+import ASSET.Util.XML.Utils.MockLayerHandler;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GenericData.Duration;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
@@ -166,8 +162,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   public static org.w3c.dom.Element exportScenario(final ScenarioType scenario, Layer theDecorations, final org.w3c.dom.Document doc)
   {
     final org.w3c.dom.Element scen = doc.createElement(type);
-    SimpleDateFormat xmlFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    xmlFormatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    DateFormat xmlFormatter = new GMTDateFormat("yyyy-MM-dd'T'HH:mm:ss");
     scen.setAttribute("Created",xmlFormatter.format(new java.util.Date()));
     scen.setAttribute(NAME_ATTRIBUTE, "ASSET Scenario");
     scen.setAttribute(TIME, writeThisInXML(new Date(scenario.getTime())));   

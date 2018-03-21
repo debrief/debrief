@@ -9,7 +9,6 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -24,6 +23,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ImportSATC
 {
@@ -65,9 +65,7 @@ public class ImportSATC
 		br.readLine();
 
 		WorldLocation thisLocation = new WorldLocation(0, -12, 0);
-		SimpleDateFormat sds = new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss");
-
-		sds.setTimeZone(TimeZone.getTimeZone("GMT"));
+		SimpleDateFormat sds = new GMTDateFormat("yyyy/MMM/dd HH:mm:ss");
 
 		boolean positionsComplete = false;
 

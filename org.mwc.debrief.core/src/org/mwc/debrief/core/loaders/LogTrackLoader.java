@@ -25,9 +25,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -49,6 +46,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
@@ -316,8 +315,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 
 	public Date dateFor(String date) throws ParseException
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH mm ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+		SimpleDateFormat sdf = new GMTDateFormat("dd-MM-yyyy HH mm ss");
 		return sdf.parse(date);
 	}
 
@@ -387,8 +385,7 @@ public class LogTrackLoader extends IPlotLoader.BaseLoader
 			Date d2 = loader.dateFor(testLine2.split(",")[1]);
 			Date d3 = loader.dateFor(testLine3.split(",")[1]);
 			
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
-			sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+			SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
 
 			
 			assertEquals("correct hours", "11:00:12", sdf.format(d1));

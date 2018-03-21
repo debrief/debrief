@@ -7,15 +7,12 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.TimeZone;
 
-import junit.framework.TestCase;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -25,6 +22,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class ImportAIS
 {
@@ -134,9 +132,6 @@ public class ImportAIS
 
     // get ready to parse
     final AISParser parser = new AISParser();
-
-    final SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmm");
-    sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
     // ok, loop through the lines
     final BufferedReader br = new BufferedReader(new InputStreamReader(is));

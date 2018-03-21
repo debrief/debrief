@@ -102,6 +102,12 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
    * get the end of this time period
    */
   public HiResDate getEndDTG();
+  
+  /** 
+   * get the extent of this period
+   * @return extent (millis)
+   */
+  public long getExtent();
 
   /**
    * set the start of this time period
@@ -333,10 +339,27 @@ public interface TimePeriod extends java.io.Serializable, Cloneable
     }
 
 
+    @Override
+    public long getExtent()
+    {
+      return _endDTG.getDate().getTime() - _startDTG.getDate().getTime();
+    }
+
+
   }
 
   public static class TestTimePeriod extends TestCase
   {
+    @SuppressWarnings("deprecation")
+    public void testExtent()
+    {
+      HiResDate t1 = new HiResDate(new Date(2016,3,3, 12, 00, 00));
+      HiResDate t4 = new HiResDate(new Date(2016,3,3, 12, 01, 00));
+      
+      BaseTimePeriod p1 = new BaseTimePeriod(t1,  t4);
+      assertEquals("correct extent", 60 * 1000, p1.getExtent());
+    }
+    
     @SuppressWarnings("deprecation")
     public void testIntersects()
     {

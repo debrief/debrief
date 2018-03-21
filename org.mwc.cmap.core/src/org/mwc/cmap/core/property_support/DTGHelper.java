@@ -14,17 +14,23 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import java.text.*;
-import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.views.properties.*;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
+import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class DTGHelper extends EditorHelper
 {
@@ -49,15 +55,11 @@ public class DTGHelper extends EditorHelper
 	{
 		if (_dateFormat == null)
 		{
-			_dateFormat = new SimpleDateFormat(DATE_FORMAT_DEFN);
-			_dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			_longTimeFormat = new SimpleDateFormat(LONG_TIME_FORMAT_DEFN);
-			_longTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			_shortTimeFormat = new SimpleDateFormat(SHORT_TIME_FORMAT_DEFN);
-			_shortTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			_fullFormat = new SimpleDateFormat(DATE_FORMAT_DEFN + "Z"
+			_dateFormat = new GMTDateFormat(DATE_FORMAT_DEFN);
+			_longTimeFormat = new GMTDateFormat(LONG_TIME_FORMAT_DEFN);
+			_shortTimeFormat = new GMTDateFormat(SHORT_TIME_FORMAT_DEFN);
+			_fullFormat = new GMTDateFormat(DATE_FORMAT_DEFN + "Z"
 					+ LONG_TIME_FORMAT_DEFN);
-			_fullFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		}
 	}
 

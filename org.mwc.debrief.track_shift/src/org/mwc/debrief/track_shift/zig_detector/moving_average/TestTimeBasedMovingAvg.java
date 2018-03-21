@@ -6,11 +6,13 @@ import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeSet;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 
 public class TestTimeBasedMovingAvg
 {
 
-	private static final SimpleDateFormat FORMATTER = new SimpleDateFormat(
+	private static final SimpleDateFormat FORMATTER = new GMTDateFormat(
 			"dd/MMM/yyyy HH:mm:ss");
 
 	public static void main(String[] args)
@@ -284,7 +286,7 @@ public class TestTimeBasedMovingAvg
 
 		private final Double value;
 
-		private SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+		private SimpleDateFormat sdf = new GMTDateFormat("dd/MM/yyyy HH:mm:ss");
 
 		public DataPoint(Calendar timestamp, Double value)
 		{

@@ -11,11 +11,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.TestCase;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -28,6 +26,8 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 public class ImportNMEA
 {
@@ -51,8 +51,7 @@ public class ImportNMEA
     {
       if (sdf == null)
       {
-        sdf = new SimpleDateFormat("yyyyMMdd,HHmmss.SSS");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        sdf = new GMTDateFormat("yyyyMMdd,HHmmss.SSS");
       }
       Date res = null;
       try

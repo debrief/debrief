@@ -14,8 +14,9 @@
  */
 package org.mwc.cmap.gridharness.data;
 
-import java.text.*;
-import java.util.*;
+import java.text.SimpleDateFormat;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class FormatDateTime {
 	public static final String DEFAULT_PATTERN = "yy/MM/dd HH:mm:ss";
@@ -37,8 +38,7 @@ public class FormatDateTime {
 		String res;
 
 		if (_df == null) {
-			_df = new SimpleDateFormat(thePattern);
-			_df.setTimeZone(TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
+			_df = new GMTDateFormat(thePattern);
 		}
 
 		// do we need to change the pattern?

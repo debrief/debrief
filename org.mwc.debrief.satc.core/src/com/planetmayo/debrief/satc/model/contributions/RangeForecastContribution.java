@@ -14,7 +14,6 @@
  */
 package com.planetmayo.debrief.satc.model.contributions;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -34,6 +33,8 @@ import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class RangeForecastContribution extends BaseContribution
 {
@@ -313,7 +314,7 @@ public class RangeForecastContribution extends BaseContribution
 			String range = elements[14];
 
 			// ok,now construct the date=time
-			Date theDate = ObjectUtils.safeParseDate(new SimpleDateFormat(
+			Date theDate = ObjectUtils.safeParseDate(new GMTDateFormat(
 					"yyMMdd HHmmss"), date + " " + time);
 
 			// and the location

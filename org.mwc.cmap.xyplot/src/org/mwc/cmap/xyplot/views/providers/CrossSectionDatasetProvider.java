@@ -42,6 +42,7 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class CrossSectionDatasetProvider implements
     ICrossSectionDatasetProvider
@@ -171,7 +172,7 @@ public class CrossSectionDatasetProvider implements
   static public final class CrossSectionDatasetProviderTest extends
       junit.framework.TestCase
   {
-    DateFormat _dateFormat = new SimpleDateFormat("dd-mm-yyyy HH:mm");
+    DateFormat _dateFormat = new GMTDateFormat("dd-mm-yyyy HH:mm");
     HiResDate[] _times;
     int TIME_ARRAY_SIZE = 7;
 

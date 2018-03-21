@@ -19,18 +19,20 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 
 public class XYPlotUtilities 
 {
 	
-	final static SimpleDateFormat df = new SimpleDateFormat("dd/MMM/yyyy HH:mm");
+	final static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
 	
 	public static void copyToClipboard(final String plotTitle,
 			final TimeSeriesCollection dataset)

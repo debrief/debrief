@@ -79,14 +79,25 @@
 package Debrief.ReaderWriter.PCArgos;
 
 import java.awt.Color;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
-import Debrief.Wrappers.*;
-import MWC.GUI.*;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /** class to read in a complete PCArgos file, producing vessel fixes
  */
@@ -140,8 +151,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
   {
 
     // initialise the date format
-    _dateF = new java.text.SimpleDateFormat("dd MMM yy");
-    _dateF.setTimeZone(TimeZone.getTimeZone("GMT"));
+    _dateF = new GMTDateFormat("dd MMM yy");
 
     _myTypes = new String[]{".prn"};
 

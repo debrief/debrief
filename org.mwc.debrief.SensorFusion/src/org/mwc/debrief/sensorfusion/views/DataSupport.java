@@ -47,6 +47,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class DataSupport
 {
@@ -96,7 +97,7 @@ public class DataSupport
     }
 
     final DateAxis axis = (DateAxis) plot.getDomainAxis();
-    axis.setDateFormatOverride(new SimpleDateFormat("HH:mm.ss"));
+    axis.setDateFormatOverride(new GMTDateFormat("HH:mm.ss"));
 
     return chart;
 

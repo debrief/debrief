@@ -63,7 +63,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -71,28 +70,24 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * class to apply default formatting to a set of tracks
  */
 public final class FormatTracks implements ImportReplay.LayersFormatter
 {
-  //
-  // /**
-  // * the format we use for the first point on a track plus the point equal to or
-  // * greater than 2400 hrs
-  // */
-  // private static java.text.SimpleDateFormat _dayFormat = null;
-  //
-  // /**
-  // * the default format we use
-  // */
-  // private static java.text.SimpleDateFormat _normalFormat = null;
 
   /**
    * const to represent a day in millis
    */
+  @SuppressWarnings("unused")
   private static final long _day = 24 * 60 * 60 * 1000;
+  
+  /** const to represent a 6 hour period in millis
+   * 
+   */
+  private static final long _6hour = 6 * 60 * 60 * 1000;
 
   /**
    * do the formatting for this particular track
@@ -113,14 +108,10 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
   {
     try
     {
-
       final SimpleDateFormat dayFormat =
-          new java.text.SimpleDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
+          new GMTDateFormat(DateFormatPropertyEditor.DATE_FORMAT);
       final SimpleDateFormat normalFormat =
-          new java.text.SimpleDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
-
-      dayFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-      normalFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+          new GMTDateFormat(DateFormatPropertyEditor.TIME_FORMAT);
 
       // the last hour we stamped
       long lastStamp = -1;
@@ -166,12 +157,12 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
                   thisLabel = dayFormat.format(worker);
 
                   // ok, done
-                  lastStamp = thisTime / _day;
+                  lastStamp = thisTime / _6hour;
                 }
                 else
                 {
                   // find the last hour stamp before this time
-                  final long hour = thisTime / _day;
+                  final long hour = thisTime / _6hour;
 
                   if (hour > lastStamp)
                   {

@@ -19,7 +19,6 @@
 package MWC.Utilities.TextFormatting;
 
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 public class FormatRNDateTime 
 {
@@ -53,8 +52,7 @@ public class FormatRNDateTime
 
     if(_df == null)
     {
-      _df = new SimpleDateFormat(thePattern);
-      _df.setTimeZone(TimeZone.getTimeZone("GMT"));
+      _df = new GMTDateFormat(thePattern);
     }
 
     // do we need to change the pattern?

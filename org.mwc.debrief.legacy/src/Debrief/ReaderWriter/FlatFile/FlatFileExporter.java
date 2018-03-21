@@ -35,8 +35,8 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.Doublet;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
+import Debrief.Wrappers.Track.Doublet;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -45,6 +45,7 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * exporter class to replicate old Strand export format
@@ -310,8 +311,7 @@ public class FlatFileExporter
    */
   private static Date dateFrom(final String dateStr) throws ParseException
   {
-    final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
     Date res = null;
     res = df.parse(dateStr);
     return res;
@@ -326,8 +326,7 @@ public class FlatFileExporter
    */
   static protected String formatThis(final Date val)
   {
-    final DateFormat df = new SimpleDateFormat("HH:mm:ss	dd/MM/yyyy");
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    final DateFormat df = new GMTDateFormat("HH:mm:ss	dd/MM/yyyy");
     return df.format(val);
   }
 

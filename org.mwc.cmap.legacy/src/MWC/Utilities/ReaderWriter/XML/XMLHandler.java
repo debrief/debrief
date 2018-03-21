@@ -27,6 +27,8 @@ import org.xml.sax.HandlerBase;
 import org.xml.sax.Parser;
 import org.xml.sax.SAXException;
 
+import MWC.Utilities.TextFormatting.GMTDateFormat;
+
 /**
  * @author IAN MAYO
  */
@@ -49,7 +51,7 @@ public class XMLHandler extends HandlerBase
    * date formatter to be used by child classes
    */
   static protected java.text.DateFormat RNdateFormat =
-    new java.text.SimpleDateFormat("yyMMdd HHmmss.SSS");
+    new GMTDateFormat("yyMMdd HHmmss.SSS");
 
   /**
    * number formatter used by our "writeThis" methods
@@ -65,7 +67,6 @@ public class XMLHandler extends HandlerBase
     _myType = myType;
     _myHandlers = new Vector<XMLHandler>(0, 1);
     _myAttributeHandlers = new Vector<HandleAttribute>(0, 1);
-    RNdateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
   }
 
   /**

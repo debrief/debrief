@@ -87,19 +87,33 @@ package Debrief.GUI.Panels;
 // Initial revision
 //
 // Revision 1.2  2001-01-05 09:13:19+00  novatech
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Vector;
 
-import java.awt.*;
-import java.util.*;
-
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellRenderer;
 
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor implements MWC.GUI.StepperListener,
   MWC.GUI.Properties.NoEditorButtons
@@ -537,10 +551,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    */
   void newDateFormat(final String format)
   {
-    df = new java.text.SimpleDateFormat(format);
-
-    // check the formats are in the correct time zone
-    df.setTimeZone(TimeZone.getTimeZone("GMT"));
+    df = new GMTDateFormat(format);
 
     // now resize, since the width of the first column may have changed, if we have data
     if (_myTable != null)
