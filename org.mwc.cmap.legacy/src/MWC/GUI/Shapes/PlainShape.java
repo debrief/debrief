@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: PlainShape.java,v $
 // @author $Author: Ian.Mayo $
@@ -141,383 +141,396 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 /**
- * parent for Shapes. Shapes are screen entities which are scaled using
- * geographic coordinates, not like @see PlainSymbol which is scaled using a
- * screen scale factor
+ * parent for Shapes. Shapes are screen entities which are scaled using geographic coordinates, not
+ * like @see PlainSymbol which is scaled using a screen scale factor
  */
 abstract public class PlainShape implements Serializable, DraggableItem
 {
 
-	private static final int STANDARD_LINE_WIDTH = 2;
+  private static final int STANDARD_LINE_WIDTH = 2;
 
-	// ////////////////////////////////////////////////
-	// member variables
-	// ////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
+  // member variables
+  // ////////////////////////////////////////////////
 
-	// keep track of versions
-	static final long serialVersionUID = 1;
+  // keep track of versions
+  static final long serialVersionUID = 1;
 
-	/**
-	 * the style the lines of this shape are drawn in
-	 */
-	private int _lineStyle;
+  /**
+   * how transparent do we make the filled shapes?
+   * 
+   */
+  protected static final int TRANSPARENCY_SHADE = 160;
 
-	/**
-	 * the colour this shape is drawn in
-	 */
-	private Color _foreColor;
+  /**
+   * our default colour for new features
+   */
+  public static final java.awt.Color DEFAULT_COLOR = new java.awt.Color(150,
+      150, 150);
 
-	/**
-	 * the width of the lines this shape is drawn in
-	 */
-	private int _lineWidth;
+  /**
+   * utility method to assist in checking draggable components
+   * 
+   * @param thisLocation
+   * @param cursorLoc
+   * @param currentNearest
+   * @param shape
+   * @param parentLayer
+   */
+  protected static void checkThisOne(final WorldLocation thisLocation,
+      final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
+      final HasDraggableComponents shape, final Layer parentLayer)
+  {
+    // now for the BL
+    final WorldDistance blRange = new WorldDistance(thisLocation.rangeFrom(
+        cursorLoc), WorldDistance.DEGS);
 
-	/**
-	 * the name of this shape
-	 */
-	private String _myName;
+    // try range
+    currentNearest.checkMe(shape, blRange, null, parentLayer, thisLocation);
+  }
 
-	/**
-	 * property change support for this shape, this allows us to store a list of
-	 * objects which are intererested in modification to this
-	 */
-	private final PropertyChangeSupport _pSupport;
+  /**
+   * the style the lines of this shape are drawn in
+   */
+  private int _lineStyle;
 
-	private boolean _isVisible;
+  /**
+   * the colour this shape is drawn in
+   */
+  private Color _foreColor;
 
-	/**
-	 * the type of this shape
-	 * 
-	 */
-	protected String _myType;
+  /**
+   * the width of the lines this shape is drawn in
+   */
+  private int _lineWidth;
 
-	/**
-	 * whether this shape is filled
-	 * 
-	 */
-	private boolean _isFilled = false;
-	
-	/**
-	 * whether this filled shape is semi-transparent
-	 * 
-	 */
-	private boolean _semiTransparent = false;
+  /**
+   * the name of this shape
+   */
+  private String _myName;
 
-	/** the font used for this shape
-	 * 
-	 */
-	private Font _myFont;
-	/**
-	 * how transparent do we make the filled shapes?
-	 * 
-	 */
-	protected static final int TRANSPARENCY_SHADE = 160;
+  /**
+   * property change support for this shape, this allows us to store a list of objects which are
+   * intererested in modification to this
+   */
+  private final PropertyChangeSupport _pSupport;
 
-	/**
-	 * our default colour for new features
-	 */
-	public static final java.awt.Color DEFAULT_COLOR = new java.awt.Color(150,
-			150, 150);
+  private boolean _isVisible;
 
+  /**
+   * the type of this shape
+   * 
+   */
+  protected String _myType;
+  /**
+   * whether this shape is filled
+   * 
+   */
+  private boolean _isFilled = false;
 
-	
-	// ////////////////////////////////////////////////
-	// constructor
-	// ////////////////////////////////////////////////
+  /**
+   * whether this filled shape is semi-transparent
+   * 
+   */
+  private boolean _semiTransparent = false;
 
-	/**
-	 * constructor..
-	 * 
-	 * @param theLineStyle
-	 * @param theLineWidth
-	 * @param myType
-	 */
-	protected PlainShape(final int theLineStyle, final String myType)
-	{
-		_lineStyle = theLineStyle;
-		_foreColor = DEFAULT_COLOR; // set the colour to the default one for our
-																// colour editor
-		_lineWidth = STANDARD_LINE_WIDTH;
+  // ////////////////////////////////////////////////
+  // constructor
+  // ////////////////////////////////////////////////
 
-		final StringBuffer sb = new StringBuffer();
-		sb.append("Shape");
-		sb.append(System.currentTimeMillis());
+  /**
+   * the font used for this shape
+   * 
+   */
+  private Font _myFont;
 
-		setName(sb.toString());
-		
-		// sort the default font
-		setFont(Defaults.getFont());
+  // ////////////////////////////////////////////////
+  // member functions
+  // ////////////////////////////////////////////////
 
-		// declare the property support
-		_pSupport = new PropertyChangeSupport(this);
+  /**
+   * constructor..
+   * 
+   * @param theLineStyle
+   * @param theLineWidth
+   * @param myType
+   */
+  protected PlainShape(final int theLineStyle, final String myType)
+  {
+    _lineStyle = theLineStyle;
+    _foreColor = DEFAULT_COLOR; // set the colour to the default one for our
+                                // colour editor
+    _lineWidth = STANDARD_LINE_WIDTH;
 
-		_myType = myType;
+    final StringBuffer sb = new StringBuffer();
+    sb.append("Shape");
+    sb.append(System.currentTimeMillis());
 
-		_isVisible = true;
-	}
+    setName(sb.toString());
 
-	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
+    // sort the default font
+    setFont(Defaults.getFont());
 
-	/**
-	 * paint the shape onto the destination. note that the shape knows <i> where
-	 * </i> to plot itself to
-	 * 
-	 * @param dest
-	 *          - the place to paint to
-	 */
-	public abstract void paint(CanvasType dest);
+    // declare the property support
+    _pSupport = new PropertyChangeSupport(this);
 
-	/**
-	 * get the are covered by the shape
-	 * 
-	 * @return WorldArea representing geographic coverage
-	 */
-	public abstract MWC.GenericData.WorldArea getBounds();
+    _myType = myType;
 
-	/**
-	 * get the range from the indicated world location - making this abstract
-	 * allows for individual shapes to have 'hit-spots' in various locations.
-	 */
-	public abstract double rangeFrom(MWC.GenericData.WorldLocation point);
+    _isVisible = true;
+  }
 
+  // ////////////////////////////////////////////////////
+  // property change support
+  // ///////////////////////////////////////////////////
+  public void addPropertyListener(final PropertyChangeListener list)
+  {
+    _pSupport.addPropertyChangeListener(list);
+  }
 
-	/**
-	 * is this shape filled? (where applicable)
-	 * 
-	 * @return
-	 */
-	public boolean getFilled()
-	{
-		return _isFilled;
-	}
+  /**
+   * get the centre of this shape (given the provided bounds)
+   * 
+   * @param bounds
+   *          rectangular bounding area
+   * @return centre of area
+   */
+  protected WorldLocation centreFor(final WorldArea bounds)
+  {
+    return bounds.getCentre();
+  }
 
-	/**
-	 * is this shape filled? (where applicable)
-	 * 
-	 * @param isFilled
-	 *          yes/no
-	 */
-	public void setFilled(final boolean isFilled)
-	{
-		this._isFilled = isFilled;
-	}
+  /**
+   * ok - see if we are any close to the target
+   * 
+   * @param cursorPos
+   * @param cursorLoc
+   * @param currentNearest
+   * @param parentLayer
+   */
+  @Override
+  public final void findNearestHotSpotIn(final Point cursorPos,
+      final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+      final Layer parentLayer, final Layers theLayers)
+  {
 
-	/**
-	 * accessor to get the type of this shape
-	 * 
-	 */
-	public String getType()
-	{
-		return _myType;
-	}
+    // initialise thisDist, since we're going to be over-writing it
+    final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
+        WorldDistance.DEGS);
 
-	/**
-	 * setter function for name
-	 * 
-	 * @param val
-	 *          String representing name of shape
-	 */
-	final public void setName(final String val)
-	{
-		_myName = val;
-	}
+    // is this our first item?
+    currentNearest.checkMe(this, thisDist, null, parentLayer);
+  }
 
-	/**
-	 * return this item as a string
-	 */
-	public String toString()
-	{
-		return getName();
-	}
+  protected void firePropertyChange(final String name, final Object oldValue,
+      final Object newValue)
+  {
+    if (_pSupport != null)
+      _pSupport.firePropertyChange(name, oldValue, newValue);
+  }
 
-	/**
-	 * getter function for name
-	 * 
-	 * @return String representing name of this shape
-	 */
-	public String getName()
-	{
-		return _myName;
-	}
+  // ////////////////////////////////////////////////////
+  // label/anchor support
+  // ///////////////////////////////////////////////////
+  public WorldLocation getAnchor(final int location)
+  {
+    WorldLocation loc = null;
 
-	public int getLineStyle()
-	{
-		return _lineStyle;
-	}
+    final WorldArea wa = getBounds();
 
-	public void setLineStyle(final int lineStyle)
-	{
-		_lineStyle = lineStyle;
-	}
+    // did we find our bounds?
+    if (wa != null)
+    {
+      final WorldLocation centre = centreFor(wa);
+      switch (location)
+      {
+        case MWC.GUI.Properties.LocationPropertyEditor.TOP:
+        {
+          final WorldLocation res = new WorldLocation(wa.getTopLeft().getLat(),
+              centre.getLong(), 0);
+          loc = res;
+          break;
+        }
+        case MWC.GUI.Properties.LocationPropertyEditor.BOTTOM:
+        {
+          final WorldLocation res = new WorldLocation(wa.getBottomRight()
+              .getLat(), centre.getLong(), 0);
+          loc = res;
+          break;
+        }
+        case MWC.GUI.Properties.LocationPropertyEditor.LEFT:
+        {
+          final WorldLocation res = new WorldLocation(centre.getLat(), wa
+              .getTopLeft().getLong(), 0);
+          loc = res;
+          break;
+        }
+        case MWC.GUI.Properties.LocationPropertyEditor.RIGHT:
+        {
+          final WorldLocation res = new WorldLocation(centre.getLat(), wa
+              .getBottomRight().getLong(), 0);
+          loc = res;
+          break;
+        }
+        case MWC.GUI.Properties.LocationPropertyEditor.CENTRE:
+        {
+          loc = centre;
+        }
+      }
+    }
 
-	public int getLineWidth()
-	{
-		return _lineWidth;
-	}
+    return loc;
+  }
 
-	public void setLineWidth(final int lineWidth)
-	{
-		_lineWidth = lineWidth;
-	}
+  /**
+   * get the are covered by the shape
+   * 
+   * @return WorldArea representing geographic coverage
+   */
+  public abstract MWC.GenericData.WorldArea getBounds();
 
-	public Color getColor()
-	{
-		return _foreColor;
-	}
+  public Color getColor()
+  {
+    return _foreColor;
+  }
 
-	public void setColor(final Color Color)
-	{
-		_foreColor = Color;
-	}
+  /**
+   * is this shape filled? (where applicable)
+   * 
+   * @return
+   */
+  public boolean getFilled()
+  {
+    return _isFilled;
+  }
 
-	public void move()
-	{
-	}
+  public Font getFont()
+  {
+    return _myFont;
+  }
 
-	public boolean getVisible()
-	{
-		return _isVisible;
-	}
+  public int getLineStyle()
+  {
+    return _lineStyle;
+  }
 
-	public void setVisible(final boolean val)
-	{
-		_isVisible = val;
-	}
-	
-	public boolean getSemiTransparent()
-	{
-		return _semiTransparent;
-	}
+  public int getLineWidth()
+  {
+    return _lineWidth;
+  }
 
-	public void setSemiTransparent(final boolean semiTransparent)
-	{
-		_semiTransparent = semiTransparent;
-	}
+  /**
+   * getter function for name
+   * 
+   * @return String representing name of this shape
+   */
+  @Override
+  public String getName()
+  {
+    return _myName;
+  }
 
-	// ////////////////////////////////////////////////////
-	// property change support
-	// ///////////////////////////////////////////////////
-	public void addPropertyListener(final PropertyChangeListener list)
-	{
-		_pSupport.addPropertyChangeListener(list);
-	}
+  public boolean getSemiTransparent()
+  {
+    return _semiTransparent;
+  }
 
-	public void removePropertyListener(final PropertyChangeListener list)
-	{
-		_pSupport.removePropertyChangeListener(list);
-	}
+  /**
+   * accessor to get the type of this shape
+   * 
+   */
+  public String getType()
+  {
+    return _myType;
+  }
 
-	protected void firePropertyChange(final String name, final Object oldValue,
-			final Object newValue)
-	{
-		if (_pSupport != null)
-			_pSupport.firePropertyChange(name, oldValue, newValue);
-	}
+  public boolean getVisible()
+  {
+    return _isVisible;
+  }
 
-	// ////////////////////////////////////////////////////
-	// label/anchor support
-	// ///////////////////////////////////////////////////
-	public WorldLocation getAnchor(final int location)
-	{
-		WorldLocation loc = null;
+  public void move()
+  {
+  }
 
-		final WorldArea wa = getBounds();
+  /**
+   * paint the shape onto the destination. note that the shape knows <i> where </i> to plot itself
+   * to
+   * 
+   * @param dest
+   *          - the place to paint to
+   */
+  @Override
+  public abstract void paint(CanvasType dest);
 
-		// did we find our bounds?
-		if (wa != null)
-		{
-			final WorldLocation centre = wa.getCentre();
-			switch (location)
-			{
-			case MWC.GUI.Properties.LocationPropertyEditor.TOP:
-			{
-				final WorldLocation res = new WorldLocation(wa.getTopLeft().getLat(),
-						centre.getLong(), 0);
-				loc = res;
-				break;
-			}
-			case MWC.GUI.Properties.LocationPropertyEditor.BOTTOM:
-			{
-				final WorldLocation res = new WorldLocation(wa.getBottomRight().getLat(),
-						centre.getLong(), 0);
-				loc = res;
-				break;
-			}
-			case MWC.GUI.Properties.LocationPropertyEditor.LEFT:
-			{
-				final WorldLocation res = new WorldLocation(centre.getLat(), wa.getTopLeft()
-						.getLong(), 0);
-				loc = res;
-				break;
-			}
-			case MWC.GUI.Properties.LocationPropertyEditor.RIGHT:
-			{
-				final WorldLocation res = new WorldLocation(centre.getLat(), wa
-						.getBottomRight().getLong(), 0);
-				loc = res;
-				break;
-			}
-			case MWC.GUI.Properties.LocationPropertyEditor.CENTRE:
-			{
-				loc = centre;
-			}
-			}
-		}
+  /**
+   * get the range from the indicated world location - making this abstract allows for individual
+   * shapes to have 'hit-spots' in various locations.
+   */
+  public abstract double rangeFrom(MWC.GenericData.WorldLocation point);
 
-		return loc;
-	}
+  public void removePropertyListener(final PropertyChangeListener list)
+  {
+    _pSupport.removePropertyChangeListener(list);
+  }
 
-	/**
-	 * ok - see if we are any close to the target
-	 * 
-	 * @param cursorPos
-	 * @param cursorLoc
-	 * @param currentNearest
-	 * @param parentLayer
-	 */
-	public final void findNearestHotSpotIn(final Point cursorPos,
-			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
-			final Layer parentLayer, final Layers theLayers)
-	{
+  public void setColor(final Color Color)
+  {
+    _foreColor = Color;
+  }
 
-		// initialise thisDist, since we're going to be over-writing it
-		final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
-				WorldDistance.DEGS);
+  /**
+   * is this shape filled? (where applicable)
+   * 
+   * @param isFilled
+   *          yes/no
+   */
+  public void setFilled(final boolean isFilled)
+  {
+    this._isFilled = isFilled;
+  }
 
-		// is this our first item?
-		currentNearest.checkMe(this, thisDist, null, parentLayer);
-	}
+  public void setFont(final Font theFont)
+  {
+    _myFont = theFont;
+  }
 
-	/**
-	 * utility method to assist in checking draggable components
-	 * 
-	 * @param thisLocation
-	 * @param cursorLoc
-	 * @param currentNearest
-	 * @param shape
-	 * @param parentLayer
-	 */
-	protected static void checkThisOne(final WorldLocation thisLocation,
-			final WorldLocation cursorLoc, final ComponentConstruct currentNearest,
-			final HasDraggableComponents shape, final Layer parentLayer)
-	{
-		// now for the BL
-		final WorldDistance blRange = new WorldDistance(
-				thisLocation.rangeFrom(cursorLoc), WorldDistance.DEGS);
+  public void setLineStyle(final int lineStyle)
+  {
+    _lineStyle = lineStyle;
+  }
 
-		// try range
-		currentNearest.checkMe(shape, blRange, null, parentLayer, thisLocation);
-	}
+  public void setLineWidth(final int lineWidth)
+  {
+    _lineWidth = lineWidth;
+  }
 
-	public void setFont(final Font theFont)
-	{
-		_myFont = theFont;
-	}
-	
-	public Font getFont()
-	{
-		return _myFont;
-	}
+  /**
+   * setter function for name
+   * 
+   * @param val
+   *          String representing name of shape
+   */
+  final public void setName(final String val)
+  {
+    _myName = val;
+  }
+
+  public void setSemiTransparent(final boolean semiTransparent)
+  {
+    _semiTransparent = semiTransparent;
+  }
+
+  public void setVisible(final boolean val)
+  {
+    _isVisible = val;
+  }
+
+  /**
+   * return this item as a string
+   */
+  @Override
+  public String toString()
+  {
+    return getName();
+  }
 }
