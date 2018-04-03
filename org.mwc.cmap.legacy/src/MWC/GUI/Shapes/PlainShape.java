@@ -428,7 +428,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		// did we find our bounds?
 		if (wa != null)
 		{
-			final WorldLocation centre = wa.getCentre();
+			final WorldLocation centre = centreFor(wa);
 			switch (location)
 			{
 			case MWC.GUI.Properties.LocationPropertyEditor.TOP:
@@ -469,6 +469,17 @@ abstract public class PlainShape implements Serializable, DraggableItem
 		return loc;
 	}
 
+
+	/** get the centre of this shape (given the provided bounds)
+	 * 
+	 * @param bounds rectangular bounding area
+	 * @return centre of area
+	 */
+  protected WorldLocation centreFor(final WorldArea bounds)
+  {
+    return bounds.getCentre();
+  }
+	
 	/**
 	 * ok - see if we are any close to the target
 	 * 

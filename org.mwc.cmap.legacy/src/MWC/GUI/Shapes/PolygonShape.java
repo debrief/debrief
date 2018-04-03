@@ -682,5 +682,24 @@ public class PolygonShape extends PlainShape implements Editable,
 		// done
 		return vec.elements();
 	}
+		 
+	@Override
+  protected WorldLocation centreFor(final WorldArea bounds)
+  {
+    final int len = _nodes.size();
+    
+    // work out total of lats & longs
+    double latSum = 0;
+    double longSum = 0;
+    for(final PolygonNode n: _nodes)
+    {
+      final WorldLocation loc = n.getLocation();
+      latSum += loc.getLat();
+      longSum += loc.getLong();
+    }
+ 
+    // and finally the mean of those values
+    return new WorldLocation(latSum / len, longSum / len, 0d);
+  }
 
 }
