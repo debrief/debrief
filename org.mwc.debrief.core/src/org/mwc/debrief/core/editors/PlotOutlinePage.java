@@ -1085,6 +1085,10 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               // the API indicates the "reveal" parameter in setSelection
               // is ignored. So, let's try to force it
               _treeViewer.reveal(first);
+              
+              CorePlugin.logError(Status.INFO, "Have revealed " + ew
+                  .getEditable() + " (" + ew.getEditable().getClass() + ")",
+                  null);
             }
           }
         }

@@ -49,6 +49,7 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -1478,24 +1479,31 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 final Editable payload = item.getPayload();
                 if (payload != null)
                 {
+                  final String debugString;
                   final EditableWrapper subject;
                   if (payload instanceof SensorContactWrapper)
                   {
-                    subject = wrapThisCut((SensorContactWrapper) payload,
+                    SensorContactWrapper theCut = (SensorContactWrapper) payload;
+                    subject = wrapThisCut(theCut,
                         layers);
+                    debugString = "Selecting sensor contact at:" + theCut.getDTG().getDate();
                   }
                   else if (payload instanceof FixWrapper)
                   {
-                    subject = wrapThisFix((FixWrapper) payload, layers);
-                    // and show it
+                    FixWrapper theFix = (FixWrapper) payload;
+                    subject = wrapThisFix(theFix, layers);
+                    debugString = "Selecting TMA fix at:" + theFix.getDateTimeGroup().getDate();
                   }
                   else
                   {
                     subject = null;
+                    debugString = null;
                   }
 
                   if (subject != null)
                   {
+                    CorePlugin.logError(Status.INFO, debugString, null);
+                    
                     // and show it
                     final List<EditableWrapper> items = new ArrayList<>();
                     items.add(subject);
