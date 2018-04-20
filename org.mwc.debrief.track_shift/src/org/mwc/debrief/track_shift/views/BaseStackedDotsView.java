@@ -1260,8 +1260,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
 
-    formatCrossHair(_linePlot, _showCrossHairs.isChecked());
-    formatCrossHair(_dotPlot, _showCrossHairs.isChecked());
+    formatCrossHair(_linePlot);
+    formatCrossHair(_dotPlot);
 
     _targetOverviewPlot = new XYPlot();
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
@@ -1805,7 +1805,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private static void formatCrossHair(final XYPlot plot, final boolean isChecked)
+  private static void formatCrossHair(final XYPlot plot)
   {
     // start off with it not visible, we will reveal on click
     plot.setDomainCrosshairVisible(false);
