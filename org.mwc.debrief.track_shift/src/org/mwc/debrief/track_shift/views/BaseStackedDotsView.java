@@ -1805,18 +1805,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  private static void formatCrossHair(XYPlot _linePlot, final boolean isChecked)
+  private static void formatCrossHair(final XYPlot plot, final boolean isChecked)
   {
-    _linePlot.setDomainCrosshairVisible(false);
-    _linePlot.setRangeCrosshairVisible(false);
-    _linePlot.setDomainCrosshairPaint(Color.GRAY);
-    _linePlot.setRangeCrosshairPaint(Color.GRAY);
-    _linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
-    _linePlot.setRangeCrosshairStroke(new BasicStroke(3.0f));
-    _linePlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
-    _linePlot.setRangeGridlineStroke(new BasicStroke(2));
-    _linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
-    _linePlot.setDomainGridlineStroke(new BasicStroke(2));
+    // start off with it not visible, we will reveal on click
+    plot.setDomainCrosshairVisible(false);
+    plot.setRangeCrosshairVisible(false);
+    plot.setDomainCrosshairPaint(Color.GRAY);
+    plot.setRangeCrosshairPaint(Color.GRAY);
+    plot.setDomainCrosshairStroke(new BasicStroke(3.0f));
+    plot.setRangeCrosshairStroke(new BasicStroke(3.0f));
+    plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+    plot.setRangeGridlineStroke(new BasicStroke(2));
+    plot.setDomainGridlinePaint(Color.LIGHT_GRAY);
+    plot.setDomainGridlineStroke(new BasicStroke(2));
   }
 
   /**
