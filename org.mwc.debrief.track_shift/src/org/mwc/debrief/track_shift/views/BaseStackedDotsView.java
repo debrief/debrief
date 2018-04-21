@@ -49,7 +49,6 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -98,6 +97,7 @@ import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.PlotEntity;
+import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.event.ChartProgressEvent;
 import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -1260,16 +1260,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
 
-    _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
-    _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
-    _linePlot.setDomainCrosshairPaint(Color.GRAY);
-    _linePlot.setRangeCrosshairPaint(Color.GRAY);
-    _linePlot.setDomainCrosshairStroke(new BasicStroke(3.0f));
-    _linePlot.setRangeCrosshairStroke(new BasicStroke(3.0f));
-    _linePlot.setRangeGridlinePaint(Color.LIGHT_GRAY);
-    _linePlot.setRangeGridlineStroke(new BasicStroke(2));
-    _linePlot.setDomainGridlinePaint(Color.LIGHT_GRAY);
-    _linePlot.setDomainGridlineStroke(new BasicStroke(2));
+    formatCrossHair(_linePlot);
+    formatCrossHair(_dotPlot);
 
     _targetOverviewPlot = new XYPlot();
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
@@ -1409,8 +1401,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         // and write the text
         final String numA = formatValue(_linePlot.getRangeCrosshairValue());
-
-        final long crossDate = (long) _linePlot.getDomainCrosshairValue();
+        
+        // check we're using the correct crosshair
+        final long crossDate = (long) (_linePlot.isDomainCrosshairVisible()
+            ? _linePlot.getDomainCrosshairValue() : _dotPlot
+                .getDomainCrosshairValue());
+        
         final Date newDate = new Date(crossDate);
         final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
         final String dateVal = _df.format(newDate);
@@ -1479,31 +1475,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 final Editable payload = item.getPayload();
                 if (payload != null)
                 {
-                  final String debugString;
                   final EditableWrapper subject;
                   if (payload instanceof SensorContactWrapper)
                   {
-                    SensorContactWrapper theCut = (SensorContactWrapper) payload;
-                    subject = wrapThisCut(theCut,
-                        layers);
-                    debugString = "Selecting sensor contact at:" + theCut.getDTG().getDate();
+                    SensorContactWrapper theCut =
+                        (SensorContactWrapper) payload;
+                    subject = wrapThisCut(theCut, layers);
                   }
                   else if (payload instanceof FixWrapper)
                   {
                     FixWrapper theFix = (FixWrapper) payload;
                     subject = wrapThisFix(theFix, layers);
-                    debugString = "Selecting TMA fix at:" + theFix.getDateTimeGroup().getDate();
                   }
                   else
                   {
                     subject = null;
-                    debugString = null;
                   }
 
                   if (subject != null)
                   {
-                    CorePlugin.logError(Status.INFO, debugString, null);
-                    
                     // and show it
                     final List<EditableWrapper> items = new ArrayList<>();
                     items.add(subject);
@@ -1525,38 +1515,72 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void chartMouseClicked(final ChartMouseEvent arg0)
       {
+        // note, we only bother with this if we're showing crosshairs
+        if (!_showCrossHairs.isChecked())
+        {
+          return;
+        }
+
         final String seriesName = getSeriesToSelect(arg0.getChart(), arg0
             .getTrigger(), arg0.getEntity());
 
+        // ok, clear the hightlight
+        _linePlot.setDomainCrosshairVisible(false);
+        _linePlot.setRangeCrosshairVisible(false);
+
+        // ok, clear the hightlight
+        _dotPlot.setDomainCrosshairVisible(false);
+        _dotPlot.setRangeCrosshairVisible(false);
+
         if (seriesName != null)
         {
-          // ok, try to select the sensor cut at this time
-          final Point screenClick = arg0.getTrigger().getPoint();
-          final Point2D p = _holder.translateScreenToJava2D(screenClick);
+          final ChartEntity ent = arg0.getEntity();
+          if (ent instanceof XYItemEntity)
+          {
+            final XYItemEntity xy = (XYItemEntity) ent;
+            final long time = (long) xy.getDataset().getXValue(xy
+                .getSeriesIndex(), xy.getItem());
+            final double valueVal = xy.getDataset().getYValue(xy
+                .getSeriesIndex(), xy.getItem());
+            // and try to put cross-hairs on sensor
+            highlightDataItemNearest(time, valueVal, seriesName);
+          }
+          else
+          {
 
-          // what's the y value at this time?
-          final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) arg0
-              .getChart().getPlot();
-          final ValueAxis dateRange = dPlot.getDomainAxis();
+            // ok, it wasn't an item that was clicked. Shall we find the nearest item?
+            final boolean findNearest = false;
 
-          // and the data value
-          final XYPlot selectedPlot = findSelectedPlot(arg0.getChart(), arg0
-              .getTrigger(), arg0.getEntity());
-          final ValueAxis valueRange = selectedPlot.getRangeAxis();
+            if (findNearest)
+            {
+              // ok, try to select the sensor cut at this time
+              final Point screenClick = arg0.getTrigger().getPoint();
+              final Point2D p = _holder.translateScreenToJava2D(screenClick);
 
-          final org.eclipse.swt.graphics.Rectangle area = _holder
-              .getScreenDataArea(screenClick.x, screenClick.y);
-          final Rectangle jRect = new Rectangle(area.width, area.height);
-          jRect.setLocation(area.x, area.y);
-          final double dateVal = dateRange.java2DToValue(p.getY(), jRect,
-              RectangleEdge.LEFT);
-          final long dateMillis = (long) dateVal;
+              // what's the y value at this time?
+              final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) arg0
+                  .getChart().getPlot();
+              final ValueAxis dateRange = dPlot.getDomainAxis();
 
-          final double valueVal = valueRange.java2DToValue(p.getX(), jRect,
-              RectangleEdge.TOP);
+              // and the data value
+              final XYPlot selectedPlot = findSelectedPlot(arg0.getChart(), arg0
+                  .getTrigger(), arg0.getEntity());
+              final ValueAxis valueRange = selectedPlot.getRangeAxis();
 
-          // and try to put cross-hairs on sensor
-          highlightDataItemNearest(dateMillis, valueVal, seriesName);
+              final org.eclipse.swt.graphics.Rectangle area = _holder
+                  .getScreenDataArea(screenClick.x, screenClick.y);
+              final Rectangle jRect = new Rectangle(area.width, area.height);
+              jRect.setLocation(area.x, area.y);
+              final double dateVal = dateRange.java2DToValue(p.getY(), jRect,
+                  RectangleEdge.LEFT);
+              final long dateMillis = (long) dateVal;
+
+              final double valueVal = valueRange.java2DToValue(p.getX(), jRect,
+                  RectangleEdge.TOP);
+              // and try to put cross-hairs on sensor
+              highlightDataItemNearest(dateMillis, valueVal, seriesName);
+            }
+          }
         }
       }
 
@@ -1628,20 +1652,27 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         final XYPlot selectedPlot = findSelectedPlot(chart, trigger, entity);
 
         final String seriesName;
-        if (selectedPlot.equals(_linePlot))
+        if (selectedPlot != null)
         {
-          // if the line plot was clicked on, we'll delete
-          // the sensor cut. This makes sense, since all sensor
-          // cuts are shown on the line plot. Markers are only
-          // present on the error plot if TMA points are present
-          seriesName = SENSOR;
-        }
-        else if (selectedPlot.equals(_dotPlot))
-        {
-          // if the dot (error) plot was clicked on, we'll delete
-          // the TMA position. This makes sense, since markers are only
-          // present on the error plot if TMA points are present
-          seriesName = TMA;
+          if (selectedPlot.equals(_linePlot))
+          {
+            // if the line plot was clicked on, we'll delete
+            // the sensor cut. This makes sense, since all sensor
+            // cuts are shown on the line plot. Markers are only
+            // present on the error plot if TMA points are present
+            seriesName = SENSOR;
+          }
+          else if (selectedPlot.equals(_dotPlot))
+          {
+            // if the dot (error) plot was clicked on, we'll delete
+            // the TMA position. This makes sense, since markers are only
+            // present on the error plot if TMA points are present
+            seriesName = TMA;
+          }
+          else
+          {
+            seriesName = null;
+          }
         }
         else
         {
@@ -1654,6 +1685,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       private void highlightDataItemNearest(final long dateMillis,
           final double valueVal, final String seriesName)
       {
+        final boolean findNearest = false;
+        
+        // clear the nearest on
+        _seriesToSearch = null;
+
         final TimeSeriesCollection tsc = (TimeSeriesCollection) _linePlot
             .getDataset();
 
@@ -1674,50 +1710,80 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            // work through, to find the nearest item
-            final List<?> list = t.getItems();
-            TimeSeriesDataItem nearest = null;
+            final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES) ? _linePlot
+                : _dotPlot;
+            
+            final long nearestTime;
+            final double nearestValue;
 
-            for (final Object item : list)
+            if (findNearest)
             {
-              final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
-              if (nearest == null)
+              // Ok - we no longer find the nearest. We now only accept a direct
+              // click. But, should we change strategy, here is the find-nearest code.
+
+              // NOTE: there is a bug in it. We need to check the series name. If it's /
+              // MEASURED - we take the MEASURED series from the LINE plot. If it's CALCULATED then
+              // we take the ERROR series from the ERROR plot.
+
+              // work through, to find the nearest item
+              final List<?> list = t.getItems();
+              TimeSeriesDataItem nearest = null;
+
+              for (final Object item : list)
               {
-                nearest = thisI;
+                final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+                if (nearest == null)
+                {
+                  nearest = thisI;
+                }
+                else
+                {
+                  final long myTimeDelta = Math.abs(nearest.getPeriod()
+                      .getMiddleMillisecond() - dateMillis);
+                  final long hisTimeDelta = Math.abs(thisI.getPeriod()
+                      .getMiddleMillisecond() - dateMillis);
+
+                  // NOTE: we've removed the proximity test for the value
+                  // we just use time.
+                  // final double myValueDelta = Math.abs(nearest.getValue()
+                  // .doubleValue() - valueVal);
+                  // final double hisValueDelta = Math.abs(thisI.getValue()
+                  // .doubleValue() - valueVal);
+
+                  // final double nearestDelta = Math.pow(myValueDelta, 3)
+                  // * myTimeDelta;
+                  // final double thisDelta = Math.pow(hisValueDelta, 3)
+                  // * hisTimeDelta;
+
+                  // ok, take the nearest one
+                  nearest = myTimeDelta < hisTimeDelta ? nearest : thisI;
+                }
               }
-              else
+
+              if (nearest != null)
               {
-                final long myTimeDelta = Math.abs(nearest.getPeriod()
-                    .getMiddleMillisecond() - dateMillis);
-                final long hisTimeDelta = Math.abs(thisI.getPeriod()
-                    .getMiddleMillisecond() - dateMillis);
-                final double myValueDelta = Math.abs(nearest.getValue()
-                    .doubleValue() - valueVal);
-                final double hisValueDelta = Math.abs(thisI.getValue()
-                    .doubleValue() - valueVal);
-
-                final double nearestDelta = Math.pow(myValueDelta, 3)
-                    * myTimeDelta;
-                final double thisDelta = Math.pow(hisValueDelta, 3)
-                    * hisTimeDelta;
-
-                // ok, take the nearest one
-                nearest = nearestDelta < thisDelta ? nearest : thisI;
+                nearestTime = nearest.getPeriod().getMiddleMillisecond();
+                nearestValue = nearest.getValue().doubleValue();  
+                _seriesToSearch = seriesName;
               }
             }
-
-            if (nearest != null)
+            else
             {
-              // get the value
-              final double value = (Double) nearest.getValue();
-              final TimeSeriesDataItem fItem = nearest;
-
-              _linePlot.setDomainCrosshairValue(fItem.getPeriod()
-                  .getMiddleMillisecond());
-              _linePlot.setRangeCrosshairValue(value);
+              nearestTime = dateMillis;
+              nearestValue = valueVal;
 
               // remember we need to select a new item
               _seriesToSearch = seriesName;
+            }
+            
+            if(_seriesToSearch != null)
+            {
+              // ok, show the hightlight
+              plotToUse.setDomainCrosshairVisible(true);
+              plotToUse.setRangeCrosshairVisible(true);
+
+              plotToUse.setDomainCrosshairValue(nearestTime);
+              plotToUse.setRangeCrosshairValue(nearestValue);
             }
           }
         }
@@ -1737,6 +1803,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     {
       _combined.remove(_targetOverviewPlot);
     }
+  }
+
+  private static void formatCrossHair(final XYPlot plot)
+  {
+    // start off with it not visible, we will reveal on click
+    plot.setDomainCrosshairVisible(false);
+    plot.setRangeCrosshairVisible(false);
+    plot.setDomainCrosshairPaint(Color.GRAY);
+    plot.setRangeCrosshairPaint(Color.GRAY);
+    plot.setDomainCrosshairStroke(new BasicStroke(3.0f));
+    plot.setRangeCrosshairStroke(new BasicStroke(3.0f));
+    plot.setRangeGridlinePaint(Color.LIGHT_GRAY);
+    plot.setRangeGridlineStroke(new BasicStroke(2));
+    plot.setDomainGridlinePaint(Color.LIGHT_GRAY);
+    plot.setDomainGridlineStroke(new BasicStroke(2));
   }
 
   /**
@@ -2580,9 +2661,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       {
         super.run();
 
-        _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
-        _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
-
         if (_showCrossHairs.isChecked())
         {
           // ok, show it
@@ -2592,6 +2670,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         else
         {
           _linePlot.removeAnnotation(crossHairAnnotation);
+
+          // hide the crosshiars
+          _linePlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
+          _linePlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
+          _dotPlot.setRangeCrosshairVisible(_showCrossHairs.isChecked());
+          _dotPlot.setDomainCrosshairVisible(_showCrossHairs.isChecked());
         }
       }
     };
