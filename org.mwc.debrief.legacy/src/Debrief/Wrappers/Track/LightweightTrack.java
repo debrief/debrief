@@ -17,26 +17,36 @@ package Debrief.Wrappers.Track;
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
-import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.FixWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottables;
-import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.WorldLocation;
 
 public final class LightweightTrack extends Plottables
 {
   private Color _customColor = null;
+  private LightweightTrackFolder _parent;
+
+  @Override
+  public EditorType getInfo()
+  {
+    return new LightweightInfo(this);
+  }
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
 
   public class LightweightInfo extends Editable.EditorType
   {
 
-    public LightweightInfo(final BaseLayer data)
+    public LightweightInfo(final LightweightTrack data)
     {
       super(data, data.getName(), "");
     }
@@ -47,29 +57,16 @@ public final class LightweightTrack extends Plottables
       {
         final PropertyDescriptor[] res =
             {prop("Visible", "the Layer visibility", VISIBILITY),
+                prop("CustomColor", "a custom color for this track", FORMAT),
                 prop("Name", "the name of the track", FORMAT)};
 
         return res;
-
       }
       catch (final IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
     }
-
-    @SuppressWarnings("rawtypes")
-    public MethodDescriptor[] getMethodDescriptors()
-    {
-      // just add the reset color field first
-      final Class c = BaseLayer.class;
-      final MethodDescriptor mds[] =
-          {method(c, "exportShape", null, "Export Shape"),
-              method(c, "hideChildren", null, "Hide all children"),
-              method(c, "revealChildren", null, "Reveal all children")};
-      return mds;
-    }
-
   }
 
   /**
@@ -81,7 +78,7 @@ public final class LightweightTrack extends Plottables
   {
     setName(name);
   }
-  
+
   public void add(FixWrapper fix)
   {
     super.add(fix);
@@ -96,10 +93,11 @@ public final class LightweightTrack extends Plottables
         "Should not be called, track folder  should control paint");
   }
 
-  public static class PaintOptions
+  public static interface PaintOptions
   {
-    private Color _color = DebriefColors.RED;
+    public Color getColor();
 
+    public boolean showName();
   }
 
   public Color getCustomColor()
@@ -114,27 +112,57 @@ public final class LightweightTrack extends Plottables
 
   public synchronized void paint(CanvasType dest, PaintOptions options)
   {
-    final Color myColor = _customColor == null ? options._color : _customColor;
-    
+    if (!getVisible())
+    {
+      return;
+    }
+
+    final Color myColor =
+        _customColor == null ? options.getColor() : _customColor;
+
     dest.setColor(myColor);
-    
+
     final int len = super.size();
     Enumeration<Editable> iter = super.elements();
     int ctr = 0;
     final int[] xPoints = new int[len];
     final int[] yPoints = new int[len];
-    
+
+    WorldLocation firstLoc = null;
+
     // build up polyline
-    while(iter.hasMoreElements())
+    while (iter.hasMoreElements())
     {
       FixWrapper fw = (FixWrapper) iter.nextElement();
+      if (firstLoc == null)
+      {
+        firstLoc = fw.getLocation();
+      }
       Point loc = dest.toScreen(fw.getLocation());
       xPoints[ctr] = (int) loc.getX();
       yPoints[ctr] = (int) loc.getY();
+      ctr++;
     }
-    
+
     // draw the line
     dest.drawPolyline(xPoints, yPoints, len);
+
+    // and the track name?
+    if (options.showName() && firstLoc != null)
+    {
+      Point loc = dest.toScreen(firstLoc);
+      dest.drawText(getName(), loc.x + 5, loc.y);
+    }
+  }
+
+  public void setParent(LightweightTrackFolder parent)
+  {
+    _parent = parent;
+  }
+
+  public LightweightTrackFolder getParent()
+  {
+    return _parent;
   }
 
 }

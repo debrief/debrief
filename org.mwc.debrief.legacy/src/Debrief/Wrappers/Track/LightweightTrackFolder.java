@@ -14,6 +14,7 @@
  */
 package Debrief.Wrappers.Track;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
@@ -23,8 +24,10 @@ import Debrief.Wrappers.Track.LightweightTrack.PaintOptions;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Properties.DebriefColors;
 
-public final class LightweightTrackFolder extends BaseLayer
+public final class LightweightTrackFolder extends BaseLayer implements
+    PaintOptions
 {
 
   // ////////////////////////////////////////////////////
@@ -33,7 +36,7 @@ public final class LightweightTrackFolder extends BaseLayer
   public class LightweightTrackInfo extends Editable.EditorType
   {
 
-    public LightweightTrackInfo(final BaseLayer data)
+    public LightweightTrackInfo(final LightweightTrackFolder data)
     {
       super(data, data.getName(), "");
     }
@@ -44,7 +47,9 @@ public final class LightweightTrackFolder extends BaseLayer
       {
         final PropertyDescriptor[] res =
             {prop("Visible", "the Layer visibility", VISIBILITY),
-                prop("Name", "the name of the track", FORMAT)};
+                prop("Name", "the name of the track", FORMAT),
+                prop("ShowName", "show the name of the track", FORMAT),
+                prop("Color", "color of the track", FORMAT)};
 
         return res;
 
@@ -66,14 +71,28 @@ public final class LightweightTrackFolder extends BaseLayer
               method(c, "revealChildren", null, "Reveal all children")};
       return mds;
     }
+  }
+  
+  
 
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  @Override
+  public EditorType getInfo()
+  {
+    return new LightweightTrackInfo(this);
   }
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-  private final PaintOptions _options = new PaintOptions();
+  private Color _color = DebriefColors.RED;
+  private boolean _showName = true;
 
   public LightweightTrackFolder(String name)
   {
@@ -83,28 +102,60 @@ public final class LightweightTrackFolder extends BaseLayer
   public void add(LightweightTrack track)
   {
     super.add(track);
+    
+    track.setParent(this);
   }
-  
+
   @Override
   public synchronized void paint(CanvasType dest)
   {
     Enumeration<Editable> ele = super.elements();
-    while(ele.hasMoreElements())
+    while (ele.hasMoreElements())
     {
       LightweightTrack track = (LightweightTrack) ele.nextElement();
-      track.paint(dest, _options);
+      track.paint(dest, this);
     }
   }
 
   public LightweightTrack find(String theTrackName)
   {
-    
-    LightweightTrack res = null;
     Enumeration<Editable> iter = elements();
-    while(iter.hasMoreElements())
+    while (iter.hasMoreElements())
     {
-      
+      Editable next = iter.nextElement();
+      final String name = next.getName();
+      if (name != null && name.equals(theTrackName))
+      {
+        return (LightweightTrack) next;
+      }
     }
-    return res ;
+    return null;
+  }
+
+  @Override
+  public Color getColor()
+  {
+    return _color;
+  }
+
+  @Override
+  public boolean showName()
+  {
+    return _showName;
+  }
+
+  public void setColor(Color _color)
+  {
+    this._color = _color;
+  }
+
+  public boolean isShowName()
+  {
+    return _showName;
+  }
+
+  public void setShowName(boolean _showName)
+  {
+    this._showName = _showName;
   }
 }

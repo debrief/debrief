@@ -1527,30 +1527,6 @@ public class ImportReplay extends PlainImporterBase
   {
     final HiResDate res = rf.theFix.getTime();
 
-    // ok, are we re-sampling the data?
-    if (_importSettings != null)
-    {
-      // are we in OTG mode?
-      if (ImportReplay.IMPORT_AS_OTG.equals(_importSettings.importMode))
-      {
-        final Long lastTime = _lastImportedItem.get(rf.theTrackName);
-
-        final Long sampleFreq = _importSettings.sampleFrequency;
-
-        final boolean isMax = (Long.MAX_VALUE == sampleFreq);
-
-        // ok, are we due to import this one?
-        if (lastTime == null
-            || (!isMax && res.getDate().getTime() >= lastTime + sampleFreq))
-        {
-          // ok, carry on
-        }
-        else
-        {
-          return null;
-        }
-      }
-    }
 
     // ok, we're processing this one. Remember it.
     final long thisTime = res.getDate().getTime();
@@ -1592,19 +1568,43 @@ public class ImportReplay extends PlainImporterBase
       else
       {
         track = new LightweightTrack(rf.theTrackName);
+        final Color thisColor = replayColorFor(rf.theSymbology);
+        track.setCustomColor(thisColor);
         folder.add(track);
       }
 
-      final Color thisColor = replayColorFor(rf.theSymbology);
 
       // create the wrapper for this annotation
       final FixWrapper thisFix = new FixWrapper(rf.theFix);
-      thisFix.setColor(thisColor);
       track.add(thisFix);
     }
     else
     {
 
+      // ok, are we re-sampling the data?
+      if (_importSettings != null)
+      {
+        // are we in OTG mode?
+        if (ImportReplay.IMPORT_AS_OTG.equals(_importSettings.importMode))
+        {
+          final Long lastTime = _lastImportedItem.get(rf.theTrackName);
+
+          final Long sampleFreq = _importSettings.sampleFrequency;
+
+          final boolean isMax = (Long.MAX_VALUE == sampleFreq);
+
+          // ok, are we due to import this one?
+          if (lastTime == null
+              || (!isMax && res.getDate().getTime() >= lastTime + sampleFreq))
+          {
+            // ok, carry on
+          }
+          else
+          {
+            return null;
+          }
+        }
+      }
       // find the track name
       final String theTrack = rf.theTrackName;
       final Color thisColor = replayColorFor(rf.theSymbology);
@@ -2043,7 +2043,12 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // see if the shape symbology specifies a layer
-      final String targetLayer = targetLayerFor(thisOne.getSymbology());
+      String targetLayer = targetLayerFor(thisOne.getSymbology());
+      
+      if(targetLayer == null)
+      {
+        targetLayer = ANNOTATION_LAYER;
+      }
 
       // ok, get that layer
       Layer dest = getLayerFor(targetLayer);
@@ -2110,24 +2115,10 @@ public class ImportReplay extends PlainImporterBase
    */
   final private String targetLayerFor(final String sym)
   {
-    final String res;
-
     // what are we looking for?
     final String LAYER_PREFIX = "LAYER";
 
     // check the symbology
-    final String layerName = getThisSymProperty(sym, LAYER_PREFIX);
-
-    if (layerName != null)
-    {
-      res = layerName;
-    }
-    else
-    {
-      res = ANNOTATION_LAYER;
-    }
-
-    // done
-    return res;
+    return getThisSymProperty(sym, LAYER_PREFIX);
   }
 }
