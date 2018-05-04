@@ -48,6 +48,8 @@ import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
+import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackFolder;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.ExportLayerAsSingleItem;
@@ -406,11 +408,10 @@ public class ImportReplay extends PlainImporterBase
           (NarrativeWrapper) _theLayers.elementAt(2);
       assertEquals("have read in both narrative entries", 2, narratives.size());
     }
-    
 
     private final static String shape_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
-    
+
     public void testReadShapes() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
@@ -429,7 +430,7 @@ public class ImportReplay extends PlainImporterBase
 
       TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL_STYLE");
       assertNotNull("found track", track);
-      
+
       // get the positions
       Enumeration<Editable> pIter = track.getPositionIterator();
       FixWrapper f1 = (FixWrapper) pIter.nextElement();
@@ -443,7 +444,7 @@ public class ImportReplay extends PlainImporterBase
       assertEquals("no comment", null, f3.getComment());
       FixWrapper f4 = (FixWrapper) pIter.nextElement();
       assertEquals("got label", "Override label 3", f4.getLabel());
-      assertEquals("no comment", "comment 3", f4.getComment());      
+      assertEquals("no comment", "comment 3", f4.getComment());
       FixWrapper f5 = (FixWrapper) pIter.nextElement();
       assertEquals("got label", "0504", f5.getLabel());
       assertEquals("no comment", "comment 4", f5.getComment());
@@ -1245,8 +1246,7 @@ public class ImportReplay extends PlainImporterBase
    * import data from this stream
    */
   @Override
-  public final void
-      importThis(final String fName, final InputStream is)
+  public final void importThis(final String fName, final InputStream is)
   {
     // declare linecounter
     int lineCounter = 0;
@@ -1556,224 +1556,265 @@ public class ImportReplay extends PlainImporterBase
     final long thisTime = res.getDate().getTime();
     _lastImportedItem.put(rf.theTrackName, thisTime);
 
-    // find the track name
-    final String theTrack = rf.theTrackName;
-    final Color thisColor = replayColorFor(rf.theSymbology);
+    // do we have a target layer?
+    String targetLayer = targetLayerFor(rf.theSymbology);
 
-    // create the wrapper for this annotation
-    final FixWrapper thisFix = new FixWrapper(rf.theFix);
-
-    // overwrite the label, if there's one there
-    if (rf.label != null)
+    if (targetLayer != null)
     {
-      thisFix.setLabel(rf.label);
-      thisFix.setUserLabelSupplied(true);
+      // does this exist?
+      Layer target = getLayerFor(targetLayer, true);
+
+      final LightweightTrackFolder folder;
+      if (target == null)
+      {
+        // ok, generate the layer
+        folder = new LightweightTrackFolder(targetLayer);
+        addLayer(folder);
+      }
+      else if (target instanceof LightweightTrackFolder)
+      {
+        folder = (LightweightTrackFolder) target;
+      }
+      else
+      {
+        // ok, slight renaming
+        folder = new LightweightTrackFolder(targetLayer + "_1");
+        addLayer(folder);
+      }
+
+      // ok, does it contain the track
+      final LightweightTrack track;
+      LightweightTrack found = folder.find(rf.theTrackName);
+      if (found != null)
+      {
+        track = found;
+      }
+      else
+      {
+        track = new LightweightTrack(rf.theTrackName);
+        folder.add(track);
+      }
+
+      final Color thisColor = replayColorFor(rf.theSymbology);
+
+      // create the wrapper for this annotation
+      final FixWrapper thisFix = new FixWrapper(rf.theFix);
+      thisFix.setColor(thisColor);
+      track.add(thisFix);
     }
     else
     {
-      thisFix.resetName();
-    }
-    if(rf.comment != null)
-    {
-      thisFix.setComment(rf.comment);
-    }
 
-    // keep track of the wrapper for this track
-    // is there a layer for this track?
-    TrackWrapper trkWrapper = (TrackWrapper) getLayerFor(theTrack);
+      // find the track name
+      final String theTrack = rf.theTrackName;
+      final Color thisColor = replayColorFor(rf.theSymbology);
 
-    // have we found the layer?
-    if (trkWrapper != null)
-    {
-      // ok, remember that we've changed this track
-      if (!_existingTracksThatMoved.contains(trkWrapper))
+      // create the wrapper for this annotation
+      final FixWrapper thisFix = new FixWrapper(rf.theFix);
+
+      // overwrite the label, if there's one there
+      if (rf.label != null)
       {
-        _existingTracksThatMoved.add(trkWrapper);
-
-        // ok, this must be the first fix for this new track
-
-        // ask the user if he wants it resampled.
-        if (_myParent instanceof ProvidesModeSelector
-            && _importSettings == null)
-        {
-          final ProvidesModeSelector selector =
-              (ProvidesModeSelector) _myParent;
-          final Long freq = selector.getSelectedImportFrequency(theTrack);
-          if (freq == null)
-          {
-            // ok, skip the data
-            _importSettings =
-                new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
-          }
-          else
-          {
-            _importSettings =
-                new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
-          }
-        }
-      }
-    }
-    else
-    {
-      // ok, see if we're importing it as DR or ATG (or ask the audience)
-      String importMode = null;
-      String freqStr = null;
-      if (_myParent != null)
-      {
-        importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
-        freqStr = _myParent.getProperty(RESAMPLE_FREQUENCY);
+        thisFix.setLabel(rf.label);
+        thisFix.setUserLabelSupplied(true);
       }
       else
       {
-        // prob in a headless test.
-        importMode = IMPORT_AS_OTG;
-        freqStr = "0";
+        thisFix.resetName();
+      }
+      if (rf.comment != null)
+      {
+        thisFix.setComment(rf.comment);
       }
 
-      final Long importFreq;
-      if (freqStr != null && freqStr.length() > 0 && !freqStr.equals("null"))
-      {
-        importFreq = Long.valueOf(freqStr);
-      }
-      else
-      {
-        importFreq = null;
-      }
+      // keep track of the wrapper for this track
+      // is there a layer for this track?
+      TrackWrapper trkWrapper = (TrackWrapper) getLayerFor(theTrack);
 
-      // catch a missing import mode
-      if (importMode == null || importFreq == null)
+      // have we found the layer?
+      if (trkWrapper != null)
       {
-        // belt & braces it is then...
-        importMode = ImportReplay.ASK_THE_AUDIENCE;
-      }
-
-      if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
-      {
-        if (_myParent instanceof ProvidesModeSelector)
+        // ok, remember that we've changed this track
+        if (!_existingTracksThatMoved.contains(trkWrapper))
         {
-          final ProvidesModeSelector selector =
-              (ProvidesModeSelector) _myParent;
-          _importSettings = selector.getSelectedImportMode(theTrack);
-          if (_importSettings != null)
+          _existingTracksThatMoved.add(trkWrapper);
+
+          // ok, this must be the first fix for this new track
+
+          // ask the user if he wants it resampled.
+          if (_myParent instanceof ProvidesModeSelector
+              && _importSettings == null)
           {
-            importMode = _importSettings.importMode;
-          }
-          else
-          {
-            importMode = null;
+            final ProvidesModeSelector selector =
+                (ProvidesModeSelector) _myParent;
+            final Long freq = selector.getSelectedImportFrequency(theTrack);
+            if (freq == null)
+            {
+              // ok, skip the data
+              _importSettings =
+                  new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
+            }
+            else
+            {
+              _importSettings =
+                  new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+            }
           }
         }
       }
       else
       {
-        // don't pass a frequency for DR import, since it will be ignored
-        final Long theFreq;
-        if (importMode.equals(IMPORT_AS_DR))
+        // ok, see if we're importing it as DR or ATG (or ask the audience)
+        String importMode = null;
+        String freqStr = null;
+        if (_myParent != null)
         {
-          theFreq = null;
+          importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+          freqStr = _myParent.getProperty(RESAMPLE_FREQUENCY);
         }
         else
         {
-          theFreq = importFreq;
+          // prob in a headless test.
+          importMode = IMPORT_AS_OTG;
+          freqStr = "0";
         }
 
-        // create the artificial import settings
-        _importSettings = new ImportSettings(importMode, theFreq);
+        final Long importFreq;
+        if (freqStr != null && freqStr.length() > 0 && !freqStr.equals("null"))
+        {
+          importFreq = Long.valueOf(freqStr);
+        }
+        else
+        {
+          importFreq = null;
+        }
+
+        // catch a missing import mode
+        if (importMode == null || importFreq == null)
+        {
+          // belt & braces it is then...
+          importMode = ImportReplay.ASK_THE_AUDIENCE;
+        }
+
+        if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
+        {
+          if (_myParent instanceof ProvidesModeSelector)
+          {
+            final ProvidesModeSelector selector =
+                (ProvidesModeSelector) _myParent;
+            _importSettings = selector.getSelectedImportMode(theTrack);
+            if (_importSettings != null)
+            {
+              importMode = _importSettings.importMode;
+            }
+            else
+            {
+              importMode = null;
+            }
+          }
+        }
+        else
+        {
+          // don't pass a frequency for DR import, since it will be ignored
+          final Long theFreq;
+          if (importMode.equals(IMPORT_AS_DR))
+          {
+            theFreq = null;
+          }
+          else
+          {
+            theFreq = importFreq;
+          }
+
+          // create the artificial import settings
+          _importSettings = new ImportSettings(importMode, theFreq);
+        }
+
+        TrackSegment initialLayer = null;
+
+        // has the user cancelled?
+        if (importMode == null)
+        {
+          // and drop out of the whole affair
+          throw new RuntimeException("User cancelled import");
+        }
+        else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
+        {
+          initialLayer = new TrackSegment(TrackSegment.ABSOLUTE);
+        }
+        else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
+        {
+          initialLayer = new TrackSegment(TrackSegment.RELATIVE);
+        }
+
+        // now create the wrapper
+        trkWrapper = new TrackWrapper();
+
+        // give it the data container
+        trkWrapper.add(initialLayer);
+
+        // get the colour for this track
+        trkWrapper.setColor(thisColor);
+        trkWrapper.setSymbolColor(thisColor);
+
+        // set the sym type for the track
+        final String theSymType = replayTrackSymbolFor(rf.theSymbology);
+        trkWrapper.setSymbolType(theSymType);
+
+        // store the track-specific data
+        trkWrapper.setName(theTrack);
+
+        // add our new layer to the Layers object
+        addLayer(trkWrapper);
+
+        // see if there is any formatting to be done
+        // lastly - see if the layers object has some formatters
+        final Iterator<INewItemListener> newIiter =
+            getLayers().getNewItemListeners().iterator();
+        while (newIiter.hasNext())
+        {
+          final INewItemListener newI = newIiter.next();
+          newI.newItem(trkWrapper, null, null);
+        }
       }
 
-      TrackSegment initialLayer = null;
-
-      // has the user cancelled?
-      if (importMode == null)
+      // Note: line style & thickness only (currently) apply to whole tracks,
+      // so we will effectively just use the last value read in.
+      if (rf.theSymbology != null && rf.theSymbology.length() > 2)
       {
-        // and drop out of the whole affair
-        throw new RuntimeException("User cancelled import");
+        trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(rf.theSymbology
+            .substring(2)));
+        if (rf.theSymbology.length() > 3)
+        {
+          trkWrapper.setLineThickness(ImportReplay
+              .replayLineThicknesFor(rf.theSymbology.substring(3)));
+        }
       }
-      else if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
+
+      // ok, are we
+
+      // add the fix to the track
+      trkWrapper.addFix(thisFix);
+
+      // let's also tell the fix about it's track
+      thisFix.setTrackWrapper(trkWrapper);
+
+      // also, see if this fix is specifying a different colour to use
+      if (thisColor != trkWrapper.getColor())
       {
-        initialLayer = new TrackSegment(TrackSegment.ABSOLUTE);
-      }
-      else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
-      {
-        initialLayer = new TrackSegment(TrackSegment.RELATIVE);
+        // give this fix it's unique colour
+        thisFix.setColor(thisColor);
       }
 
-      // now create the wrapper
-      trkWrapper = new TrackWrapper();
-
-      // give it the data container
-      trkWrapper.add(initialLayer);
-
-      // if this was relative, make it plot as italic
-//      if (initialLayer.getPlotRelative())
-//      {
-//        // ok, retrieve the original font, and make it italic
-//        trkWrapper.setTrackFont(trkWrapper.getTrackFont().deriveFont(
-//            Font.ITALIC));
-//      }
-
-      // get the colour for this track
-      trkWrapper.setColor(thisColor);
-      trkWrapper.setSymbolColor(thisColor);
-
-      // set the sym type for the track
-      final String theSymType = replayTrackSymbolFor(rf.theSymbology);
-      trkWrapper.setSymbolType(theSymType);
-
-      // store the track-specific data
-      trkWrapper.setName(theTrack);
-
-      // add our new layer to the Layers object
-      addLayer(trkWrapper);
-
-      // see if there is any formatting to be done
       // lastly - see if the layers object has some formatters
       final Iterator<INewItemListener> newIiter =
           getLayers().getNewItemListeners().iterator();
       while (newIiter.hasNext())
       {
-        final INewItemListener newI = newIiter.next();
-        newI.newItem(trkWrapper, null, null);
+        final Layers.INewItemListener newI = newIiter.next();
+        newI.newItem(trkWrapper, thisFix, rf.theSymbology);
       }
     }
-
-    // Note: line style & thickness only (currently) apply to whole tracks,
-    // so we will effectively just use the last value read in.
-    if (rf.theSymbology != null && rf.theSymbology.length() > 2)
-    {
-      trkWrapper.setLineStyle(ImportReplay.replayLineStyleFor(rf.theSymbology
-          .substring(2)));
-      if (rf.theSymbology.length() > 3)
-      {
-        trkWrapper.setLineThickness(ImportReplay
-            .replayLineThicknesFor(rf.theSymbology.substring(3)));
-      }
-    }
-
-    // ok, are we
-
-    // add the fix to the track
-    trkWrapper.addFix(thisFix);
-
-    // let's also tell the fix about it's track
-    thisFix.setTrackWrapper(trkWrapper);
-
-    // also, see if this fix is specifying a different colour to use
-    if (thisColor != trkWrapper.getColor())
-    {
-      // give this fix it's unique colour
-      thisFix.setColor(thisColor);
-    }
-
-    // lastly - see if the layers object has some formatters
-    final Iterator<INewItemListener> newIiter =
-        getLayers().getNewItemListeners().iterator();
-    while (newIiter.hasNext())
-    {
-      final Layers.INewItemListener newI = newIiter.next();
-      newI.newItem(trkWrapper, thisFix, rf.theSymbology);
-    }
-
     return res;
 
   }
@@ -2002,7 +2043,7 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // see if the shape symbology specifies a layer
-      final String targetLayer = targetLayerFor(thisOne);
+      final String targetLayer = targetLayerFor(thisOne.getSymbology());
 
       // ok, get that layer
       Layer dest = getLayerFor(targetLayer);
@@ -2067,7 +2108,7 @@ public class ImportReplay extends PlainImporterBase
    * @param thisOne
    * @return the name of the layer to use
    */
-  final private String targetLayerFor(final PlainLineImporter thisOne)
+  final private String targetLayerFor(final String sym)
   {
     final String res;
 
@@ -2075,8 +2116,6 @@ public class ImportReplay extends PlainImporterBase
     final String LAYER_PREFIX = "LAYER";
 
     // check the symbology
-    final String sym = thisOne.getSymbology();
-
     final String layerName = getThisSymProperty(sym, LAYER_PREFIX);
 
     if (layerName != null)

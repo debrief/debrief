@@ -1307,4 +1307,62 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     _suspendFiringExtended = suspendFiring;
   }
+
+  public Layer checkLayer(Layer layer, final String name)
+  {
+    Layer res = null;
+    Enumeration<Editable> iter = layer.elements();
+    while(iter.hasMoreElements() && res == null)
+    {
+      Editable ele = iter.nextElement();
+      if(ele instanceof Layer)
+      {
+        Layer l = (Layer) ele;
+        if(l.getName() != null && l.getName().equals(name))
+        {
+          return l;
+        }
+        else
+        {
+          res = checkLayer(l, name);
+        }
+      }
+    }
+    return res;
+  }
+  
+  public Layer findLayer(final String theName, final boolean recursive)
+  {
+    Layer res = null;
+    
+    if(recursive)
+    {
+      // step through our layers
+      final Enumeration<Editable> enumer = _theLayers.elements();
+      while (enumer.hasMoreElements() && res == null)
+      {
+        final Layer thisL = (Layer) enumer.nextElement();
+        final String layerName = thisL.getName();
+        if (layerName != null && layerName.equalsIgnoreCase(theName))
+          {
+            res = thisL;
+            break;
+          }
+        else
+        {
+          res = checkLayer(thisL, theName);
+        }
+      }
+      //
+      return res;
+
+    }
+    else
+    {
+      res = findLayer(theName);
+    }
+      
+    
+    return res;
+  }
 }
