@@ -18,15 +18,23 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottables;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 
-public final class LightweightTrack extends Plottables
+public final class LightweightTrack extends Plottables implements WatchableList
 {
   private Color _customColor = null;
   private LightweightTrackFolder _parent;
@@ -163,6 +171,124 @@ public final class LightweightTrack extends Plottables
   public LightweightTrackFolder getParent()
   {
     return _parent;
+  }
+
+  @Override
+  public Color getColor()
+  {
+    return getCustomColor();
+  }
+
+  @Override
+  public HiResDate getStartDTG()
+  {
+    return ((FixWrapper)first()).getDTG();
+  }
+
+  @Override
+  public HiResDate getEndDTG()
+  {
+    return ((FixWrapper)last()).getDTG();
+  }
+
+  @Override
+  public Watchable[] getNearestTo(HiResDate DTG)
+  {
+    final long dtg = DTG.getDate().getTime();
+    Iterator<FixWrapper> fIter = getIter();
+    FixWrapper nearest = null;
+
+    FixWrapper myFirst = (FixWrapper) first();
+    FixWrapper myLast = (FixWrapper) last();
+
+    if (DTG.lessThan(myFirst.getDTG()) || DTG.greaterThan(myLast.getDTG()))
+    {
+      nearest = null;
+    }
+    else
+    {
+      long distance = Long.MAX_VALUE;
+      while (fIter.hasNext())
+      {
+        FixWrapper fix = fIter.next();
+        final long dist =
+            Math.abs(fix.getDateTimeGroup().getDate().getTime() - dtg);
+        if (dist < distance)
+        {
+          nearest = fix;
+          distance = dist;
+        }
+      }
+    }
+
+    return new Watchable[]{nearest};
+  }
+
+  private Iterator<FixWrapper> getIter()
+  {
+    final Enumeration<Editable> enumer = elements();
+    return new Iterator<FixWrapper>()
+    {
+
+      @Override
+      public boolean hasNext()
+      {
+        return enumer.hasMoreElements();
+      }
+
+      @Override
+      public FixWrapper next()
+      {
+        return (FixWrapper) enumer.nextElement();
+      }
+
+      @Override
+      public void remove()
+      {
+      }
+    };
+  }
+
+  @Override
+  public void filterListTo(HiResDate start, HiResDate end)
+  {
+    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    Iterator<FixWrapper> fIter = getIter();
+    while (fIter.hasNext())
+    {
+      FixWrapper fix = fIter.next();
+      if (period.contains(fix.getDateTimeGroup()))
+      {
+        fix.setVisible(true);
+      }
+      else
+      {
+        fix.setVisible(false);
+      }
+    }
+  }
+
+  @Override
+  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+  {
+    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    Collection<Editable> items = new Vector<Editable>();
+    Enumeration<Editable> iter = elements();
+    while (iter.hasMoreElements())
+    {
+      FixWrapper fix = (FixWrapper) iter.nextElement();
+      if (period.contains(fix.getDateTimeGroup()))
+      {
+        items.add(fix);
+      }
+    }
+    return items;
+  }
+
+  @Override
+  public PlainSymbol getSnailShape()
+  {
+    return null;
   }
 
 }
