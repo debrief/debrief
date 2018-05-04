@@ -40,6 +40,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.ContextOperations.ConvertAbsoluteTmaToRelative;
+import org.mwc.debrief.core.ContextOperations.ConvertLightweightToTrack;
 import org.mwc.debrief.core.ContextOperations.CopyBearingsToClipboard;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewNarrativeEntry;
@@ -288,6 +289,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     super.start(context);
 
     // also provide someps extra functionality to the right-click editor
+    RightClickSupport.addRightClickGenerator(new ConvertLightweightToTrack());
     RightClickSupport.addRightClickGenerator(new GenerateTrack());
     RightClickSupport.addRightClickGenerator(new GroupTracks());
     RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
