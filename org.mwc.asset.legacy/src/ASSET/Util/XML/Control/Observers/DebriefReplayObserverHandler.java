@@ -86,12 +86,15 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   final private List<String> _formatHelpers = new ArrayList<String>();
   private String _subjectSensor = null;
 
+  protected String _parentFolder;
+
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
   private static final String TARGET_TYPE = "SubjectToTrack";
   private static final String SUBJECT_SENSOR = "SubjectSensor";
-
+  private static final String PARENT_FOLDER = "ParentFolder";
+  
   public DebriefReplayObserverHandler(String type)
   {
     super(type);
@@ -108,6 +111,13 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final String val)
       {
         _subjectSensor = val;
+      }
+    });
+    addAttributeHandler(new HandleAttribute(PARENT_FOLDER)
+    {
+      public void setValue(String name, final String val)
+      {
+        _parentFolder = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
@@ -159,6 +169,11 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       debriefObserver.setSubjectSensor(_subjectSensor);
     }
 
+    if(_parentFolder != null)
+    {
+      debriefObserver.setParentFolder(_parentFolder);
+    }
+    
     setObserver(debriefObserver);
 
     // close the parenet
@@ -170,6 +185,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     _recordPositions = true;
     _targetType = null;
     _subjectSensor = null;
+    _parentFolder = null;
     
     // and clear the format helpers
     _formatHelpers.clear();
