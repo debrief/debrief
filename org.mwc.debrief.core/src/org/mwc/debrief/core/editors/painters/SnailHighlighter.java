@@ -60,7 +60,7 @@ public class SnailHighlighter implements TemporalLayerPainter
   {
     public boolean canPlot(final Watchable wt);
 
-    public java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+    public java.awt.Rectangle drawMe(final PlainProjection proj,
         final CanvasType dest, final WatchableList list, final Watchable watch,
         final SnailHighlighter parent, final HiResDate dtg, final Color backColor);
   }
