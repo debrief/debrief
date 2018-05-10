@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.editors.painters;
 
@@ -47,25 +47,25 @@ import MWC.TacticalData.TrackDataProvider;
 /**
  * painter which plots all data, and draws a square rectangle around tactical items at the current
  * dtg
- * 
+ *
  * @author ian.mayo
  */
 public class SnailHighlighter implements TemporalLayerPainter
 {
-
-  public final static String NAME = "Snail";
 
   // /////////////////////////////////////////////////
   // nested interface for painters which can draw snail trail components
   // /////////////////////////////////////////////////
   public static interface drawSWTHighLight
   {
-    public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-        CanvasType dest, WatchableList list, Watchable watch,
-        SnailHighlighter parent, HiResDate dtg, Color backColor);
+    public boolean canPlot(final Watchable wt);
 
-    public boolean canPlot(Watchable wt);
+    public java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+        final CanvasType dest, final WatchableList list, final Watchable watch,
+        final SnailHighlighter parent, final HiResDate dtg, final Color backColor);
   }
+
+  public final static String NAME = "Snail";
 
   // private static Color _myColor = Color.white;
   //
@@ -90,7 +90,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 
   /**
    * constructor - remember we need to know about the primary/secondary tracks
-   * 
+   *
    * @param dataProvider
    */
   public SnailHighlighter(final TrackDataProvider dataProvider)
@@ -113,27 +113,93 @@ public class SnailHighlighter implements TemporalLayerPainter
     _mySnailPlotter.setVectorStretch(1);
   }
 
-  /**
-   * find out the stretch on the vector for snail plots
-   * 
-   * @return
-   */
-  public double getVectorStretch()
+  public SWTPlotHighlighter getCurrentPrimaryHighlighter()
   {
-    return _mySnailPlotter.getVectorStretch();
+    return new SWTPlotHighlighter.RectangleHighlight();
   }
 
   /**
-   * set the snail stretch factor
+   * NON-STANDARD implementation, we are returning the editor for our snail plotter object, not
+   * ourself
    */
-  public void setVectorStretch(final double val)
+  @Override
+  public final Editable.EditorType getInfo()
   {
-    _mySnailPlotter.setVectorStretch(val);
+    return _mySnailPlotter.getInfo();
+  }
+
+  @Override
+  public String getName()
+  {
+    return toString();
+  }
+
+  private Watchable[] getNearestTo(final WatchableList list,
+      final HiResDate dtg)
+  {
+    if (list instanceof TrackWrapper)
+    {
+      final TrackWrapper track = (TrackWrapper) list;
+
+      // check that we do actually contain some data
+      if (track.getSegments().size() == 0)
+      {
+        return new Watchable[]
+        {};
+      }
+      else if (track.isSinglePointTrack())
+      {
+        final TrackSegment seg = (TrackSegment) track.getPositionIterator()
+            .nextElement();
+        final FixWrapper fix = (FixWrapper) seg.first();
+        return new Watchable[]
+        {fix};
+      }
+      else
+      {
+
+        // check if we're in a segment
+        // find the leg containing the end value
+        final SegmentList legs = track.getSegments();
+        final Enumeration<Editable> iter = legs.elements();
+        while (iter.hasMoreElements())
+        {
+          final TrackSegment seg = (TrackSegment) iter.nextElement();
+          final FixWrapper first = (FixWrapper) seg.first();
+          final FixWrapper last = (FixWrapper) seg.last();
+
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(first
+              .getDateTimeGroup(), last.getDateTimeGroup());
+          if (period.contains(dtg))
+          {
+            final TrackSegment match = seg;
+
+            // ok, get the first item on/after the required time
+            final Enumeration<Editable> ele = match.elements();
+            while (ele.hasMoreElements())
+            {
+              final FixWrapper fix = (FixWrapper) ele.nextElement();
+
+              if (fix.getDateTimeGroup().greaterThanOrEqualTo(dtg))
+              {
+                return new Watchable[]
+                {fix};
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+    else
+    {
+      return list.getNearestTo(dtg);
+    }
   }
 
   /**
    * accessor for the snail properties
-   * 
+   *
    */
   public SnailDrawSWTFix getSnailProperties()
   {
@@ -141,12 +207,64 @@ public class SnailHighlighter implements TemporalLayerPainter
   }
 
   /**
+   * find out the stretch on the vector for snail plots
+   *
+   * @return
+   */
+  public double getVectorStretch()
+  {
+    return _mySnailPlotter.getVectorStretch();
+  }
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  private void highlightIt(final PlainProjection projection,
+      final CanvasType dest, final WatchableList list, final Watchable watch,
+      final HiResDate newDTG, final Color backgroundColor)
+  {
+    // set the highlight colour
+    dest.setColor(Color.white);
+
+    // see if our plotters can plot this type of watchable
+    final Enumeration<drawSWTHighLight> iter = _myHighlightPlotters.elements();
+    while (iter.hasMoreElements())
+    {
+      final drawSWTHighLight plotter = (drawSWTHighLight) iter.nextElement();
+
+      if (plotter.canPlot(watch))
+      {
+        // does this list have a width?
+        if (list instanceof Layer)
+        {
+          final Layer ly = (Layer) list;
+          if (dest instanceof Graphics2D)
+          {
+            final Graphics2D g2 = (Graphics2D) dest;
+            g2.setStroke(new BasicStroke(ly.getLineThickness()));
+          }
+        }
+
+        plotter.drawMe(projection, dest, list, watch, this, newDTG,
+            backgroundColor);
+
+        // and drop out of the loop
+        break;
+      }
+    }
+  }
+
+  /**
    * ok, paint this layer, adding highlights where applicable
-   * 
+   *
    * @param theLayer
    * @param dest
    * @param dtg
    */
+  @Override
   public void paintThisLayer(final Layer theLayer, final CanvasType dest,
       final HiResDate newDTG)
   {
@@ -197,130 +315,18 @@ public class SnailHighlighter implements TemporalLayerPainter
     }
   }
 
-  private Watchable[] getNearestTo(WatchableList list, HiResDate dtg)
+  /**
+   * set the snail stretch factor
+   */
+  public void setVectorStretch(final double val)
   {
-    if (list instanceof TrackWrapper)
-    {
-      TrackWrapper track = (TrackWrapper) list;
-
-      // check that we do actually contain some data
-      if (track.getSegments().size() == 0)
-      {
-        return new Watchable[]
-        {};
-      }
-      else if (track.isSinglePointTrack())
-      {
-        final TrackSegment seg = (TrackSegment) track.getPositionIterator()
-            .nextElement();
-        final FixWrapper fix = (FixWrapper) seg.first();
-        return new Watchable[]
-        {fix};
-      }
-      else
-      {
-
-        // check if we're in a segment
-        // find the leg containing the end value
-        SegmentList legs = track.getSegments();
-        Enumeration<Editable> iter = legs.elements();
-        while (iter.hasMoreElements())
-        {
-          final TrackSegment seg = (TrackSegment) iter.nextElement();
-          final FixWrapper first = (FixWrapper) seg.first();
-          final FixWrapper last = (FixWrapper) seg.last();
-
-          final TimePeriod period = new TimePeriod.BaseTimePeriod(first
-              .getDateTimeGroup(), last.getDateTimeGroup());
-          if (period.contains(dtg))
-          {
-            TrackSegment match = seg;
-
-            // ok, get the first item on/after the required time
-            Enumeration<Editable> ele = match.elements();
-            while (ele.hasMoreElements())
-            {
-              FixWrapper fix = (FixWrapper) ele.nextElement();
-
-              if (fix.getDateTimeGroup().greaterThanOrEqualTo(dtg))
-              {
-                return new Watchable[]
-                {fix};
-              }
-            }
-          }
-        }
-      }
-      return null;
-    }
-    else
-    {
-      return list.getNearestTo(dtg);
-    }
+    _mySnailPlotter.setVectorStretch(val);
   }
 
-  private void highlightIt(final PlainProjection projection,
-      final CanvasType dest, final WatchableList list, final Watchable watch,
-      final HiResDate newDTG, final Color backgroundColor)
-  {
-    // set the highlight colour
-    dest.setColor(Color.white);
-
-    // see if our plotters can plot this type of watchable
-    final Enumeration<drawSWTHighLight> iter = _myHighlightPlotters.elements();
-    while (iter.hasMoreElements())
-    {
-      final drawSWTHighLight plotter = (drawSWTHighLight) iter.nextElement();
-
-      if (plotter.canPlot(watch))
-      {
-        // does this list have a width?
-        if (list instanceof Layer)
-        {
-          final Layer ly = (Layer) list;
-          if (dest instanceof Graphics2D)
-          {
-            final Graphics2D g2 = (Graphics2D) dest;
-            g2.setStroke(new BasicStroke(ly.getLineThickness()));
-          }
-        }
-
-        plotter.drawMe(projection, dest, list, watch, this, newDTG,
-            backgroundColor);
-
-        // and drop out of the loop
-        break;
-      }
-    }
-  }
-
-  public SWTPlotHighlighter getCurrentPrimaryHighlighter()
-  {
-    return new SWTPlotHighlighter.RectangleHighlight();
-  }
-
+  @Override
   public String toString()
   {
     return NAME;
-  }
-
-  public String getName()
-  {
-    return toString();
-  }
-
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  /**
-   * NON-STANDARD implementation, we are returning the editor for our snail plotter object, not
-   * ourself
-   */
-  public final Editable.EditorType getInfo()
-  {
-    return _mySnailPlotter.getInfo();
   }
 
 }
