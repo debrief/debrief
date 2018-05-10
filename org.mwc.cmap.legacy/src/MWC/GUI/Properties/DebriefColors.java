@@ -13,6 +13,11 @@ public interface DebriefColors
   final public static Color MEDIUM_BLUE = new Color(165, 191, 221);
   final public static Color LIGHT_GRAY = new Color(237, 237, 237);
   final public static Color WHITE = new Color(255, 255, 254);
+  
+  /** introduce pure white constant. We need to check for it, since
+   * SWT has trouble plotting it.
+   */
+  final public static Color PURE_WHITE = new Color(255, 255, 255);
 
   final public static Color RED = new Color(224, 28, 62);
   final public static Color GREEN = new Color(0, 128, 11);
