@@ -20,11 +20,14 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
@@ -140,9 +143,59 @@ final class SnailDrawSWTTrack
     _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }
 
-  // /////////////////////////////////
-  // member functions
-  // ////////////////////////////////
+  /**
+   * get the set of fixes contained within this time period which haven't been filtered, and which
+   * have valid depths. 
+   * values
+   * 
+   * @param start
+   *          start DTG
+   * @param end
+   *          end DTG
+   * @return series of fixes
+   */
+  public final Collection<Editable> getUnfilteredItems(final TrackWrapper track, final HiResDate start,
+      final HiResDate end)
+  {
+    Collection<Editable> res = new Vector<Editable>();
+    
+    // find the leg containing the end value
+    SegmentList legs = track.getSegments();
+    Enumeration<Editable> iter = legs.elements();
+    TrackSegment match = null;
+    while(iter.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) iter.nextElement();
+      final FixWrapper first = (FixWrapper) seg.first();
+      final FixWrapper last = (FixWrapper) seg.last();
+      
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(first.getDateTimeGroup(), last.getDateTimeGroup());
+      if(period.contains(end))
+      {
+        match = seg;
+      }
+    }
+    
+    if(match != null)
+    {
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+      
+      // ok, get matching points in this segment
+      Enumeration<Editable> iter2 = match.elements();
+      while(iter2.hasMoreElements())
+      {
+        FixWrapper fw = (FixWrapper) iter2.nextElement();
+        if(period.contains(fw.getDateTimeGroup()))
+        {
+          res.add(fw);
+        }
+      }
+    }
+    
+    
+    return res;
+  }
+ 
   public final java.awt.Rectangle drawMe(
       final MWC.Algorithms.PlainProjection proj, final CanvasType dest,
       final Watchable watch, final SnailHighlighter parent, HiResDate dtg,
@@ -209,7 +262,7 @@ final class SnailDrawSWTTrack
     {
       // retrieve the points in range
       dotPoints =
-          trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros() - trail_len),
+          getUnfilteredItems(trk, new HiResDate(0, dtg.getMicros() - trail_len),
               new HiResDate(0, dtg.getMicros() + 2));
 
       // note we were using the local _tralLength, but we're switching to the

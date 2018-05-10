@@ -28,6 +28,10 @@ import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTSensorContact;
 import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTTMAContact;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -35,224 +39,288 @@ import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.TrackDataProvider;
 
 /**
- * painter which plots all data, and draws a square rectangle around tactical
- * items at the current dtg
+ * painter which plots all data, and draws a square rectangle around tactical items at the current
+ * dtg
  * 
  * @author ian.mayo
  */
 public class SnailHighlighter implements TemporalLayerPainter
 {
 
-	public final static String NAME = "Snail";
+  public final static String NAME = "Snail";
 
-	// /////////////////////////////////////////////////
-	// nested interface for painters which can draw snail trail components
-	// /////////////////////////////////////////////////
-	public static interface drawSWTHighLight
-	{
-		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-				CanvasType dest, WatchableList list, Watchable watch,
-				SnailHighlighter parent, HiResDate dtg, Color backColor);
+  // /////////////////////////////////////////////////
+  // nested interface for painters which can draw snail trail components
+  // /////////////////////////////////////////////////
+  public static interface drawSWTHighLight
+  {
+    public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
+        CanvasType dest, WatchableList list, Watchable watch,
+        SnailHighlighter parent, HiResDate dtg, Color backColor);
 
-		public boolean canPlot(Watchable wt);
-	}
+    public boolean canPlot(Watchable wt);
+  }
 
-	// private static Color _myColor = Color.white;
-	//
-	// private static int _mySize = 5;
+  // private static Color _myColor = Color.white;
+  //
+  // private static int _mySize = 5;
 
-	final TrackDataProvider _dataProvider;
+  final TrackDataProvider _dataProvider;
 
-	/**
-	 * the highlight plotters we know about
-	 */
-	private final Vector<drawSWTHighLight> _myHighlightPlotters;
+  /**
+   * the highlight plotters we know about
+   */
+  private final Vector<drawSWTHighLight> _myHighlightPlotters;
 
-	/**
-	 * the snail track plotter to use
-	 */
-	private final SnailDrawSWTFix _mySnailPlotter;
+  /**
+   * the snail track plotter to use
+   */
+  private final SnailDrawSWTFix _mySnailPlotter;
 
-	/**
-	 * the snail buoy-pattern plotter to use
-	 */
-	private final SnailDrawSWTBuoyPattern _mySnailBuoyPlotter;
+  /**
+   * the snail buoy-pattern plotter to use
+   */
+  private final SnailDrawSWTBuoyPattern _mySnailBuoyPlotter;
 
-	/**
-	 * constructor - remember we need to know about the primary/secondary tracks
-	 * 
-	 * @param dataProvider
-	 */
-	public SnailHighlighter(final TrackDataProvider dataProvider)
-	{
-		_dataProvider = dataProvider;
+  /**
+   * constructor - remember we need to know about the primary/secondary tracks
+   * 
+   * @param dataProvider
+   */
+  public SnailHighlighter(final TrackDataProvider dataProvider)
+  {
+    _dataProvider = dataProvider;
 
-		_mySnailPlotter = new SnailDrawSWTFix("Snail");
-		_mySnailBuoyPlotter = new SnailDrawSWTBuoyPattern();
+    _mySnailPlotter = new SnailDrawSWTFix("Snail");
+    _mySnailBuoyPlotter = new SnailDrawSWTBuoyPattern();
 
-		_myHighlightPlotters = new Vector<drawSWTHighLight>(0, 1);
-		_myHighlightPlotters.addElement(_mySnailPlotter);
-		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
-		_myHighlightPlotters.addElement(new SnailDrawSWTAnnotation());
-		_myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(
-				_mySnailPlotter));
-		_myHighlightPlotters
-				.addElement(new SnailDrawSWTTMAContact(_mySnailPlotter));
+    _myHighlightPlotters = new Vector<drawSWTHighLight>(0, 1);
+    _myHighlightPlotters.addElement(_mySnailPlotter);
+    _myHighlightPlotters.addElement(_mySnailBuoyPlotter);
+    _myHighlightPlotters.addElement(new SnailDrawSWTAnnotation());
+    _myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(
+        _mySnailPlotter));
+    _myHighlightPlotters.addElement(new SnailDrawSWTTMAContact(
+        _mySnailPlotter));
 
-		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
-		_mySnailPlotter.setVectorStretch(1);
-	}
+    _mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
+    _mySnailPlotter.setVectorStretch(1);
+  }
 
-	/**
-	 * find out the stretch on the vector for snail plots
-	 * 
-	 * @return
-	 */
-	public double getVectorStretch()
-	{
-		return _mySnailPlotter.getVectorStretch();
-	}
+  /**
+   * find out the stretch on the vector for snail plots
+   * 
+   * @return
+   */
+  public double getVectorStretch()
+  {
+    return _mySnailPlotter.getVectorStretch();
+  }
 
-	/**
-	 * set the snail stretch factor
-	 */
-	public void setVectorStretch(final double val)
-	{
-		_mySnailPlotter.setVectorStretch(val);
-	}
+  /**
+   * set the snail stretch factor
+   */
+  public void setVectorStretch(final double val)
+  {
+    _mySnailPlotter.setVectorStretch(val);
+  }
 
-	/**
-	 * accessor for the snail properties
-	 * 
-	 */
-	public SnailDrawSWTFix getSnailProperties()
-	{
-		return _mySnailPlotter;
-	}
+  /**
+   * accessor for the snail properties
+   * 
+   */
+  public SnailDrawSWTFix getSnailProperties()
+  {
+    return _mySnailPlotter;
+  }
 
-	/**
-	 * ok, paint this layer, adding highlights where applicable
-	 * 
-	 * @param theLayer
-	 * @param dest
-	 * @param dtg
-	 */
-	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate newDTG)
-	{
-		// right, none of that fannying around painting the whole layer.
+  /**
+   * ok, paint this layer, adding highlights where applicable
+   * 
+   * @param theLayer
+   * @param dest
+   * @param dtg
+   */
+  public void paintThisLayer(final Layer theLayer, final CanvasType dest,
+      final HiResDate newDTG)
+  {
+    // right, none of that fannying around painting the whole layer.
 
-		// start off by finding the non-watchables for this layer
-		final Vector<Plottable> nonWatches = SnailPainter
-				.getNonWatchables(theLayer);
+    // start off by finding the non-watchables for this layer
+    final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(
+        theLayer);
 
-		// cool, draw them
-		final Enumeration<Plottable> iter = nonWatches.elements();
-		while (iter.hasMoreElements())
-		{
-			final Plottable p = (Plottable) iter.nextElement();
-			p.paint(dest);
-		}
+    // cool, draw them
+    final Enumeration<Plottable> iter = nonWatches.elements();
+    while (iter.hasMoreElements())
+    {
+      final Plottable p = (Plottable) iter.nextElement();
+      p.paint(dest);
+    }
 
-		// and now the -watchables
-		final Vector<Plottable> watchables = SnailPainter.getWatchables(theLayer);
+    // and now the -watchables
+    final Vector<Plottable> watchables = SnailPainter.getWatchables(theLayer);
 
-		// cool, draw them between the valid period
+    // cool, draw them between the valid period
 
-		// got through to highlight the data
-		final Enumeration<Plottable> watches = watchables.elements();
-		while (watches.hasMoreElements())
-		{
-			final WatchableList list = (WatchableList) watches.nextElement();
-			// is the primary an instance of layer (with it's own line thickness?)
-			if (list instanceof Layer)
-			{
-				final Layer ly = (Layer) list;
-				final int thickness = ly.getLineThickness();
-				dest.setLineWidth(thickness);
-			}
+    // got through to highlight the data
+    final Enumeration<Plottable> watches = watchables.elements();
+    while (watches.hasMoreElements())
+    {
+      final WatchableList list = (WatchableList) watches.nextElement();
+      // is the primary an instance of layer (with it's own line thickness?)
+      if (list instanceof Layer)
+      {
+        final Layer ly = (Layer) list;
+        final int thickness = ly.getLineThickness();
+        dest.setLineWidth(thickness);
+      }
 
-			// ok, clear the nearest items
-			final Watchable[] wList = list.getNearestTo(newDTG);
-			for (int i = 0; i < wList.length; i++)
-			{
-				final Watchable watch = wList[i];
-				if (watch != null)
-				{
-					// plot it
-					highlightIt(dest.getProjection(), dest, list, watch, newDTG,
-							dest.getBackgroundColor());
-				}
-			}
-		}
-	}
+      // ok, clear the nearest items
+      final Watchable[] wList = getNearestTo(list, newDTG);
+      for (int i = 0; i < wList.length; i++)
+      {
+        final Watchable watch = wList[i];
+        if (watch != null)
+        {
+          // plot it
+          highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest
+              .getBackgroundColor());
+        }
+      }
+    }
+  }
 
-	private void highlightIt(final PlainProjection projection, final CanvasType dest,
-			final WatchableList list, final Watchable watch, final HiResDate newDTG,
-			final Color backgroundColor)
-	{
-		// set the highlight colour
-		dest.setColor(Color.white);
+  private Watchable[] getNearestTo(WatchableList list, HiResDate dtg)
+  {
+    if (list instanceof TrackWrapper)
+    {
+      TrackWrapper track = (TrackWrapper) list;
 
-		// see if our plotters can plot this type of watchable
-		final Enumeration<drawSWTHighLight> iter = _myHighlightPlotters.elements();
-		while (iter.hasMoreElements())
-		{
-			final drawSWTHighLight plotter = (drawSWTHighLight) iter.nextElement();
+      // check that we do actually contain some data
+      if (track.getSegments().size() == 0)
+      {
+        return new Watchable[]
+        {};
+      }
+      else if (track.isSinglePointTrack())
+      {
+        final TrackSegment seg = (TrackSegment) track.getPositionIterator()
+            .nextElement();
+        final FixWrapper fix = (FixWrapper) seg.first();
+        return new Watchable[]
+        {fix};
+      }
+      else
+      {
 
-			if (plotter.canPlot(watch))
-			{
-				// does this list have a width?
-				if (list instanceof Layer)
-				{
-					final Layer ly = (Layer) list;
-					if (dest instanceof Graphics2D)
-					{
-						final Graphics2D g2 = (Graphics2D) dest;
-						g2.setStroke(new BasicStroke(ly.getLineThickness()));
-					}
-				}
+        // check if we're in a segment
+        // find the leg containing the end value
+        SegmentList legs = track.getSegments();
+        Enumeration<Editable> iter = legs.elements();
+        while (iter.hasMoreElements())
+        {
+          final TrackSegment seg = (TrackSegment) iter.nextElement();
+          final FixWrapper first = (FixWrapper) seg.first();
+          final FixWrapper last = (FixWrapper) seg.last();
 
-				plotter.drawMe(projection, dest, list, watch, this, newDTG,
-						backgroundColor);
+          final TimePeriod period = new TimePeriod.BaseTimePeriod(first
+              .getDateTimeGroup(), last.getDateTimeGroup());
+          if (period.contains(dtg))
+          {
+            TrackSegment match = seg;
 
-				// and drop out of the loop
-				break;
-			}
-		}
-	}
+            // ok, get the first item on/after the required time
+            Enumeration<Editable> ele = match.elements();
+            while (ele.hasMoreElements())
+            {
+              FixWrapper fix = (FixWrapper) ele.nextElement();
 
-	public SWTPlotHighlighter getCurrentPrimaryHighlighter()
-	{
-		return new SWTPlotHighlighter.RectangleHighlight();
-	}
+              if (fix.getDateTimeGroup().greaterThanOrEqualTo(dtg))
+              {
+                return new Watchable[]
+                {fix};
+              }
+            }
+          }
+        }
+      }
+      return null;
+    }
+    else
+    {
+      return list.getNearestTo(dtg);
+    }
+  }
 
-	public String toString()
-	{
-		return NAME;
-	}
+  private void highlightIt(final PlainProjection projection,
+      final CanvasType dest, final WatchableList list, final Watchable watch,
+      final HiResDate newDTG, final Color backgroundColor)
+  {
+    // set the highlight colour
+    dest.setColor(Color.white);
 
-	public String getName()
-	{
-		return toString();
-	}
+    // see if our plotters can plot this type of watchable
+    final Enumeration<drawSWTHighLight> iter = _myHighlightPlotters.elements();
+    while (iter.hasMoreElements())
+    {
+      final drawSWTHighLight plotter = (drawSWTHighLight) iter.nextElement();
 
-	public boolean hasEditor()
-	{
-		return true;
-	}
+      if (plotter.canPlot(watch))
+      {
+        // does this list have a width?
+        if (list instanceof Layer)
+        {
+          final Layer ly = (Layer) list;
+          if (dest instanceof Graphics2D)
+          {
+            final Graphics2D g2 = (Graphics2D) dest;
+            g2.setStroke(new BasicStroke(ly.getLineThickness()));
+          }
+        }
 
-	/**
-	 * NON-STANDARD implementation, we are returning the editor for our snail
-	 * plotter object, not ourself
-	 */
-	public final Editable.EditorType getInfo()
-	{
-		return _mySnailPlotter.getInfo();
-	}
+        plotter.drawMe(projection, dest, list, watch, this, newDTG,
+            backgroundColor);
+
+        // and drop out of the loop
+        break;
+      }
+    }
+  }
+
+  public SWTPlotHighlighter getCurrentPrimaryHighlighter()
+  {
+    return new SWTPlotHighlighter.RectangleHighlight();
+  }
+
+  public String toString()
+  {
+    return NAME;
+  }
+
+  public String getName()
+  {
+    return toString();
+  }
+
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  /**
+   * NON-STANDARD implementation, we are returning the editor for our snail plotter object, not
+   * ourself
+   */
+  public final Editable.EditorType getInfo()
+  {
+    return _mySnailPlotter.getInfo();
+  }
 
 }
