@@ -180,6 +180,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.SteppingListener;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -449,9 +450,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private final org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
-  /** note: the outline page isn't final, since
-   * the user may close the page, after which we will
-   * have a new one
+  /**
+   * note: the outline page isn't final, since the user may close the page, after which we will have
+   * a new one
    */
   private PlotOutlinePage _outlinePage;
 
@@ -460,6 +461,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private PlotPropertySheetPage _propertySheetPage;
 
   private final IPropertyChangeListener _sensorTransparencyListener;
+
+  private CoordinateRecorder _coordinateRecorder;
 
   /**
    * constructor - quite simple really.
@@ -1017,6 +1020,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         }
       });
     }
+
+    // temporarily connect to time updates
+    _coordinateRecorder = new CoordinateRecorder(_myLayers, res.getCanvas()
+        .getProjection());
+    _timeManager.addListener(_coordinateRecorder,
+        TimeManager.TIME_CHANGED_PROPERTY_NAME);
+
     return res;
   }
 
@@ -1078,8 +1088,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               if (currentState != null)
               {
-                final ICommandService service = (ICommandService) getSite().getService(
-                    ICommandService.class);
+                final ICommandService service = (ICommandService) getSite()
+                    .getService(ICommandService.class);
                 final Command command = service.getCommand(RadioHandler.ID);
                 HandlerUtil.updateRadioState(command, currentState);
               }
@@ -1680,6 +1690,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     else if (adapter == TimeProvider.class)
     {
       res = _timeManager;
+    }
+    else if (adapter == SteppingListener.class)
+    {
+      return _coordinateRecorder;
     }
     else if (adapter == IGotoMarker.class)
     {
