@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.editors;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -29,6 +30,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.mwc.debrief.core.gpx.ImportGPX;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -63,37 +65,68 @@ public class CoordinateRecorder implements PropertyChangeListener,
     _projection = plainProjection;
   }
 
-  private Document injectColors(final String initialDoc)
+  /**
+   * ok, inject our colors as extension objects.
+   *
+   * @param doc
+   *          document we're working on.
+   * @return
+   */
+  private void injectColors(final Document doc)
   {
-    // ok, inject our colors as extension objects.
+
+    // get the tracks
+    final NodeList tracks = doc.getElementsByTagName("trk");
+
+    final int len = tracks.getLength();
+    for (int i = 0; i < len; i++)
+    {
+      final Element thisTrack = (Element) tracks.item(i);
+      final String name = thisTrack.getElementsByTagName("name").item(0)
+          .getTextContent();
+
+      final TrackWrapper track = _tracks.get(name);
+      final Color color = track.getColor();
+
+      final Element extensions = doc.createElement("extensions");
+      final Element col = doc.createElement("color");
+      col.setTextContent(color.toString());
+      extensions.appendChild(col);
+      thisTrack.appendChild(extensions);
+    }
+  }
+
+  /**
+   * ok, inject the plot dimensions as an extension object
+   *
+   * @param doc
+   *          document we're working on.
+   * @return
+   */
+  private void injectDimensions(final Document doc, final Dimension dims)
+  {
+
+    // get the tracks
+    final Node tracks = doc.getElementsByTagName("gpx").item(0);
+
+    final Element extensions = doc.createElement("extensions");
+    final Element col = doc.createElement("dimensions");
+    col.setAttribute("width", "" + (int) dims.getWidth());
+    col.setAttribute("height", "" + (int) dims.getHeight());
+    extensions.appendChild(col);
+    tracks.appendChild(extensions);
+  }
+
+  private Document loadDocument(final String initialDoc)
+  {
+    Document doc = null;
     try
     {
       final DocumentBuilder parser = DocumentBuilderFactory.newInstance()
           .newDocumentBuilder();
       final InputStream stream = new ByteArrayInputStream(initialDoc.getBytes(
           StandardCharsets.UTF_8));
-
-      final Document doc = parser.parse(stream);
-      //
-      final NodeList tracks = doc.getElementsByTagName("trk");
-
-      final int len = tracks.getLength();
-      for (int i = 0; i < len; i++)
-      {
-        final Element thisTrack = (Element) tracks.item(i);
-        final String name = thisTrack.getElementsByTagName("name").item(0)
-            .getTextContent();
-
-        final TrackWrapper track = _tracks.get(name);
-        final Color color = track.getColor();
-
-        final Element extensions = doc.createElement("extensions");
-        final Element col = doc.createElement("color");
-        col.setTextContent(color.toString());
-        extensions.appendChild(col);
-        thisTrack.appendChild(extensions);
-      }
-      return doc;
+      doc = parser.parse(stream);
     }
     catch (final ParserConfigurationException e)
     {
@@ -107,7 +140,7 @@ public class CoordinateRecorder implements PropertyChangeListener,
     {
       e.printStackTrace();
     }
-    return null;
+    return doc;
   }
 
   private void outputDocument(final Document doc)
@@ -141,6 +174,8 @@ public class CoordinateRecorder implements PropertyChangeListener,
     if (!_running)
       return;
 
+    final Dimension screen = _projection.getScreenArea();
+
     // get the new time.
     final HiResDate timeNow = (HiResDate) evt.getNewValue();
 
@@ -168,6 +203,10 @@ public class CoordinateRecorder implements PropertyChangeListener,
           }
 
           final Point point = _projection.toScreen(fix.getLocation());
+
+          // swap y axis
+          point.setLocation(point.getX(), screen.getHeight() - point.getY());
+
           final WorldLocation newLoc = new WorldLocation(point.getY(), point
               .getX(), fix.getLocation().getDepth());
           final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
@@ -196,22 +235,36 @@ public class CoordinateRecorder implements PropertyChangeListener,
   {
     _running = false;
 
-    final StringWriter writer = new StringWriter();
-
     final List<TrackWrapper> list = new ArrayList<TrackWrapper>();
     list.addAll(_tracks.values());
 
-    // output tracks object.
+    // for(TrackWrapper t: _tracks.values())
+    // {
+    // System.out.println("=====");
+    // Enumeration<Editable> items = t.getPositionIterator();
+    // while(items.hasMoreElements())
+    // {
+    // FixWrapper fw = (FixWrapper) items.nextElement();
+    // WorldLocation loc = fw.getLocation();
+    // System.out.println(loc.getLong() + ", " + loc.getLat());
+    // }
+    // }
+
+    // output tracks to a string
+    final StringWriter writer = new StringWriter();
     ImportGPX.doExport(list, writer);
 
     final String initialDoc = writer.toString();
 
-    final Document doc = injectColors(initialDoc);
+    // load the data as a DOM
+    final Document doc = loadDocument(initialDoc);
 
     if (doc != null)
     {
+      // put the colors in, as extensions
+      injectColors(doc);
+      injectDimensions(doc, _projection.getScreenArea());
       outputDocument(doc);
     }
-
   }
 }
