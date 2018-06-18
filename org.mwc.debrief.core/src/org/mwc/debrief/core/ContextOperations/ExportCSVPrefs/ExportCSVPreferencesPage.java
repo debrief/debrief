@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations.ExportCSVPrefs;
 
@@ -18,13 +18,14 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -33,7 +34,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
@@ -47,195 +47,207 @@ import org.mwc.cmap.core.CorePlugin;
  * <li>directly by "Update now" button
  * <li>on storing file name to preference store
  * </ul>
- * 
+ *
  */
 public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
-		implements IWorkbenchPreferencePage
+    implements IWorkbenchPreferencePage
 {
-  
+
   /**
    * Constant definitions for plug-in preferences
    */
-  public static class PreferenceConstants {
-    public static final String INCLUDE_COMMAND = "INCLUDE_COMMAND";
-    public static final String PATH_TO_CSV = "CSV_LOCATION";
+  public static class PreferenceConstants
+  {
+    public static final String INCLUDE_COMMAND = "INCLUDE_COMMAND_";
+    public static final String PATH_TO_CSV = "CSV_LOCATION_";
   }
 
-	private static final String CONTEXT_ID = "org.mwc.debrief.help.ExportCSVPrefs";
+  private static final String CONTEXT_ID =
+      "org.mwc.debrief.help.ExportCSVsPrefs";
 
-	/**
-	 * extension filters for file selection dialog
-	 */
-	private static final String[] availableExtensions = new String[]
-	{ "*.csv" };//$NON-NLS-1$
+  /**
+   * extension filters for file selection dialog
+   */
+  private static final String[] availableExtensions = new String[]
+  {"*.csv"};//$NON-NLS-1$
 
-	private FileFieldEditor myFileEditor;
+  private FileFieldEditor myFileEditor;
 
-	public ExportCSVPreferencesPage()
-	{
-		super(GRID);
-		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Preferences related to exporting Tracks to CSV format");
-	}
+  private BooleanFieldEditor enabledEditor;
 
-	public void init(final IWorkbench workbench)
-	{
-	}
+  public ExportCSVPreferencesPage()
+  {
+    super(GRID);
+    setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
+    setDescription("Preferences related to exporting Tracks to CSV format");
+  }
 
-	private void addEnabledButton()
-	{
+  private void addEnabledButton()
+  {
     final Composite parent = getFieldEditorParent();
-    new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND, "Enable command", parent); 
-    new Label(parent, SWT.BOLD);
-    new Label(parent, SWT.BOLD);
-	}
-	
-	@Override
-	protected void createFieldEditors()
-	{
-	  addEnabledButton();
-		addFileEditor();
-		addOpenFileHyperlink();
-		addReloadButton();
-		addOpenHelpHyperlink();
+    enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
+        "Enable command", parent);
+    addField(enabledEditor);
+  }
 
-		// and the context-sensitive help
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), CONTEXT_ID);
-	}
+  private void addFileEditor()
+  {
+    final Composite parent = getFieldEditorParent();
+    myFileEditor = new FileFieldEditor(PreferenceConstants.PATH_TO_CSV,
+        Messages.ExportCSVsLookupPreferencesPage_FileLabel, true,
+        StringFieldEditor.VALIDATE_ON_KEY_STROKE, parent)
+    {
 
-	private void addFileEditor()
-	{
-		final Composite parent = getFieldEditorParent();
-		myFileEditor = new FileFieldEditor(PreferenceConstants.PATH_TO_CSV,
-				Messages.LengthsLookupPreferencesPage_FileLabel, true,
-				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent)
-		{
+      @Override
+      protected void doStore()
+      {
+        super.doStore();
+        reloadDataFromFile();
+      }
+    };
+    myFileEditor.setErrorMessage(
+        Messages.ExportCSVsLookupPreferencesPage_InvalidFileName);
+    myFileEditor.setFileExtensions(availableExtensions);
+    addField(myFileEditor);
+  }
 
-			@Override
-			protected void doStore()
-			{
-				super.doStore();
-				reloadDataFromFile();
-			}
-		};
-		myFileEditor
-				.setErrorMessage(Messages.LengthsLookupPreferencesPage_InvalidFileName);
-		myFileEditor.setFileExtensions(availableExtensions);
-		addField(myFileEditor);
-	}
+  private void addOpenFileHyperlink()
+  {
+    final Composite parent = getFieldEditorParent();
 
-	private void addReloadButton()
-	{
-		final Composite parent = getFieldEditorParent();
-		final Button reloadButton = new Button(parent, SWT.PUSH);
-		reloadButton.setText(Messages.LengthsLookupPreferencesPage_UpdateNow);
-		reloadButton.addSelectionListener(new SelectionListener()
-		{
+    final Link link = new Link(parent, SWT.NONE);
+    link.setText(Messages.ExportCSVsLookupPreferencesPage_OpenFileLabel);
+    link.addListener(SWT.Selection, new Listener()
+    {
 
-			public void widgetSelected(final SelectionEvent e)
-			{
-				reloadDataFromFile();
-			}
+      @Override
+      public void handleEvent(final Event event)
+      {
+        openSystemEditor();
+      }
+    });
 
-			public void widgetDefaultSelected(final SelectionEvent e)
-			{
-				// nothing
-			}
-		});
+    int numColumns = ((GridLayout) parent.getLayout()).numColumns;
+    // skip last cell for 'reload' button
+    if (numColumns > 1)
+    {
+      numColumns--;
+    }
+    GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
+        SWT.CENTER).applyTo(link);
+  }
 
-		int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-		widthHint = Math.max(widthHint, reloadButton.computeSize(SWT.DEFAULT,
-				SWT.DEFAULT, true).x);
+  private void addOpenHelpHyperlink()
+  {
+    final Composite parent = getFieldEditorParent();
 
-		GridDataFactory.fillDefaults().hint(widthHint, SWT.DEFAULT).align(SWT.FILL,
-				SWT.CENTER).applyTo(reloadButton);
-	}
+    final Button helpBtn = new Button(parent, SWT.NONE);
+    helpBtn.setText("Find out more about sensor offsets");
+    helpBtn.addListener(SWT.Selection, new Listener()
+    {
 
-	private void reloadDataFromFile()
-	{
-		CSVExportDropdownRegistry.getRegistry().setFileName(getFileName());
-		CSVExportDropdownRegistry.getRegistry().reload();
-	}
+      @Override
+      public void handleEvent(final Event event)
+      {
+        PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
+      }
+    });
 
-	private void addOpenFileHyperlink()
-	{
-		final Composite parent = getFieldEditorParent();
+    int numColumns = ((GridLayout) parent.getLayout()).numColumns;
+    // skip last cell for 'reload' button
+    if (numColumns > 1)
+    {
+      numColumns--;
+    }
+    GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
+        SWT.CENTER).applyTo(helpBtn);
+  }
 
-		final Link link = new Link(parent, SWT.NONE);
-		link.setText(Messages.LengthsLookupPreferencesPage_OpenFileLabel);
-		link.addListener(SWT.Selection, new Listener()
-		{
+  private void addReloadButton()
+  {
+    final Composite parent = getFieldEditorParent();
+    final Button reloadButton = new Button(parent, SWT.PUSH);
+    reloadButton.setText(Messages.ExportCSVsLookupPreferencesPage_UpdateNow);
+    reloadButton.addSelectionListener(new SelectionListener()
+    {
 
-			public void handleEvent(final Event event)
-			{
-				openSystemEditor();
-			}
-		});
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e)
+      {
+        // nothing
+      }
 
-		int numColumns = ((GridLayout) parent.getLayout()).numColumns;
-		// skip last cell for 'reload' button
-		if (numColumns > 1)
-		{
-			numColumns--;
-		}
-		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
-				SWT.CENTER).applyTo(link);
-	}
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        reloadDataFromFile();
+      }
+    });
 
-	private void addOpenHelpHyperlink()
-	{
-		final Composite parent = getFieldEditorParent();
+    int widthHint = convertHorizontalDLUsToPixels(
+        IDialogConstants.BUTTON_WIDTH);
+    widthHint = Math.max(widthHint, reloadButton.computeSize(SWT.DEFAULT,
+        SWT.DEFAULT, true).x);
 
-		final Button helpBtn = new Button(parent, SWT.NONE);
-		helpBtn.setText("Find out more about sensor offsets");
-		helpBtn.addListener(SWT.Selection, new Listener()
-		{
+    GridDataFactory.fillDefaults().hint(widthHint, SWT.DEFAULT).align(SWT.FILL,
+        SWT.CENTER).applyTo(reloadButton);
+  }
 
-			public void handleEvent(final Event event)
-			{
-				PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
-			}
-		});
+  @Override
+  protected void createFieldEditors()
+  {
+    addEnabledButton();
+    addFileEditor();
+    addOpenFileHyperlink();
+    addReloadButton();
+    addOpenHelpHyperlink();
 
-		int numColumns = ((GridLayout) parent.getLayout()).numColumns;
-		// skip last cell for 'reload' button
-		if (numColumns > 1)
-		{
-			numColumns--;
-		}
-		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
-				SWT.CENTER).applyTo(helpBtn);
-	}
+    // and the context-sensitive help
+    PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), CONTEXT_ID);
+  }
 
-	/** if we have a file specified, open it - else throw error
-	 * 
-	 */
-	private void openSystemEditor()
-	{
-		final String fileName = getFileName();
-		if ((fileName == null)||(fileName.length() == 0))
-		{
-			MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "Edit Array Offsets file",
-					"Array offsets file not assigned, \nplease create file as descried in Debrief help (link button below)," +
-					"\nand select it using the above Browse button");
-		}
-		else
-		{
-			final File file = new File(fileName);
-			try
-			{
-				Desktop.getDesktop().open(file);
-			}
-			catch (final IOException e)
-			{
-				CorePlugin.logError(Status.ERROR,
-						Messages.LengthsLookupPreferencesPage_ErrorOnOpenFileEditor, e);
-			}
-		}
-	}
+  private String getFileName()
+  {
+    return myFileEditor.getStringValue();
+  }
 
-	private String getFileName()
-	{
-		return myFileEditor.getStringValue();
-	}
+  @Override
+  public void init(final IWorkbench workbench)
+  {
+  }
+
+  /**
+   * if we have a file specified, open it - else throw error
+   * 
+   */
+  private void openSystemEditor()
+  {
+    final String fileName = getFileName();
+    if ((fileName == null) || (fileName.length() == 0))
+    {
+      MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+          "Edit CSV Dropdowns file",
+          "CSV Dropdowns file not assigned, \nplease create file as descried in Debrief help (link button below),"
+              + "\nand select it using the above Browse button");
+    }
+    else
+    {
+      final File file = new File(fileName);
+      try
+      {
+        Desktop.getDesktop().open(file);
+      }
+      catch (final IOException e)
+      {
+        CorePlugin.logError(IStatus.ERROR,
+            Messages.ExportCSVsLookupPreferencesPage_ErrorOnOpenFileEditor, e);
+      }
+    }
+  }
+
+  private void reloadDataFromFile()
+  {
+    CSVExportDropdownRegistry.getRegistry().setFileName(getFileName());
+    CSVExportDropdownRegistry.getRegistry().reload();
+  }
 }

@@ -53,8 +53,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     final IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
     final boolean isEnabled = store.getBoolean(ExportCSVPreferencesPage.PreferenceConstants.INCLUDE_COMMAND);
     
-    System.out.println("Enabled:" + isEnabled);
-    
     if(!isEnabled)
       return;
     

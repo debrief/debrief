@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations.ExportCSVPrefs;
 
@@ -25,10 +25,11 @@ public class ExportCSVPreferenceInitializer extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#
    * initializeDefaultPreferences()
    */
+  @Override
   public void initializeDefaultPreferences()
   {
     // and store the default location
