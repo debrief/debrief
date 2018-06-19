@@ -94,7 +94,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     final Composite parent = getFieldEditorParent();
     myFileEditor = new FileFieldEditor(PreferenceConstants.PATH_TO_CSV,
-        Messages.ExportCSVsLookupPreferencesPage_FileLabel, true,
+        Messages.ExportCSVLookupPreferencesPage_FileLabel, true,
         StringFieldEditor.VALIDATE_ON_KEY_STROKE, parent)
     {
 
@@ -106,7 +106,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
       }
     };
     myFileEditor.setErrorMessage(
-        Messages.ExportCSVsLookupPreferencesPage_InvalidFileName);
+        Messages.ExportCSVLookupPreferencesPage_InvalidFileName);
     myFileEditor.setFileExtensions(availableExtensions);
     addField(myFileEditor);
   }
@@ -116,7 +116,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
     final Composite parent = getFieldEditorParent();
 
     final Link link = new Link(parent, SWT.NONE);
-    link.setText(Messages.ExportCSVsLookupPreferencesPage_OpenFileLabel);
+    link.setText(Messages.ExportCSVLookupPreferencesPage_OpenFileLabel);
     link.addListener(SWT.Selection, new Listener()
     {
 
@@ -167,7 +167,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     final Composite parent = getFieldEditorParent();
     final Button reloadButton = new Button(parent, SWT.PUSH);
-    reloadButton.setText(Messages.ExportCSVsLookupPreferencesPage_UpdateNow);
+    reloadButton.setText(Messages.ExportCSVLookupPreferencesPage_UpdateNow);
     reloadButton.addSelectionListener(new SelectionListener()
     {
 
@@ -218,7 +218,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
 
   /**
    * if we have a file specified, open it - else throw error
-   * 
+   *
    */
   private void openSystemEditor()
   {
@@ -240,7 +240,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
       catch (final IOException e)
       {
         CorePlugin.logError(IStatus.ERROR,
-            Messages.ExportCSVsLookupPreferencesPage_ErrorOnOpenFileEditor, e);
+            Messages.ExportCSVLookupPreferencesPage_ErrorOnOpenFileEditor, e);
       }
     }
   }

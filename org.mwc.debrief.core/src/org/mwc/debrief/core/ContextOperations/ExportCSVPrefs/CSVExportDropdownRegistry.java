@@ -15,24 +15,106 @@
 package org.mwc.debrief.core.ContextOperations.ExportCSVPrefs;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.lengtheditor.Messages;
 
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import junit.framework.TestCase;
 
-public class CSVExportDropdownRegistry
+public class CSVExportDropdownRegistry implements DropdownProvider
 {
+  public static class TestMe extends TestCase
+  {
+    public void testBadines()
+    {
+      final List<String> list = new ArrayList<String>();
 
-  private static final String DELIMITER = ",";//$NON-NLS-1$
+      list.add("//// comment line");
+      list.add("a-one");
+      list.add("a-two");
+      list.add("// SectionB");
+      list.add("b-one");
+      list.add("//SectionC");
+      list.add("c-one");
+      list.add("c-two");
+      list.add("c-three");
 
-  static final String FILE_NAME = "fileName";//$NON-NLS-1$
+      final Map<String, ArrayList<String>> fields =
+          new HashMap<String, ArrayList<String>>();
+
+      assertTrue("should not be empty", fields.keySet().isEmpty());
+
+      processLines(list, fields);
+
+      assertFalse("should not be empty", fields.keySet().isEmpty());
+
+      assertEquals("has 3 sections", 3, fields.keySet().size(), 3);
+      assertEquals("section two empty", null, fields.get("SectionA"));
+      assertEquals("has 3 lines", 3, fields.get("SectionC").size());
+    }
+
+    public void testLines()
+    {
+      final List<String> list = new ArrayList<String>();
+
+      list.add("//// comment line");
+      list.add("//SectionA");
+      list.add("a-one");
+      list.add("a-two");
+      list.add("// SectionB");
+      list.add("b-one");
+      list.add("//SectionC");
+      list.add("c-one");
+      list.add("c-two");
+      list.add("c-three");
+
+      final Map<String, ArrayList<String>> fields =
+          new HashMap<String, ArrayList<String>>();
+
+      assertTrue("should not be empty", fields.keySet().isEmpty());
+
+      processLines(list, fields);
+
+      assertFalse("should not be empty", fields.keySet().isEmpty());
+
+      assertEquals("has 3 sections", 3, fields.keySet().size(), 3);
+      assertEquals("has 2 lines", 2, fields.get("SectionA").size());
+      assertEquals("has 1 lines", 1, fields.get("SectionB").size());
+      assertEquals("has 3 lines", 3, fields.get("SectionC").size());
+    }
+
+    public void testLoad()
+    {
+      final String filename =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/ExportWizard.csv";
+
+      // check it exists
+      assertTrue("can't find test data-file", new File(filename).exists());
+
+      final CSVExportDropdownRegistry reg = new CSVExportDropdownRegistry(
+          filename);
+
+      // check empty
+      assertTrue("list object should be empty", reg.myFields.keySet()
+          .isEmpty());
+
+      reg.load();
+
+      assertFalse("no longer empty", reg.myFields.keySet().isEmpty());
+      assertEquals("has sections", 11, reg.myFields.keySet().size());
+
+      assertEquals("has 3 classifications", 3, reg.getValuesFor(
+          "CLASSIFICATION").size());
+    }
+  }
 
   private static CSVExportDropdownRegistry ourInstance;
 
@@ -46,16 +128,61 @@ public class CSVExportDropdownRegistry
     return ourInstance;
   }
 
+  private static void processLines(final List<String> lines,
+      final Map<String, ArrayList<String>> myFields)
+  {
+    String thisGroup = null;
+    for (final String nextLine : lines)
+    {
+      if (nextLine.startsWith("////"))
+      {
+        // ok, skip it, it's a comment
+      }
+      else if (nextLine.startsWith("//"))
+      {
+        // new section, store it
+
+        // trim the comment marker
+        thisGroup = nextLine.substring(2, nextLine.length());
+
+        // ditch whitespace
+        thisGroup = thisGroup.trim();
+
+        // and create the new list
+        final ArrayList<String> newGroup = new ArrayList<String>();
+        myFields.put(thisGroup, newGroup);
+      }
+      else
+      {
+        // do we know our group?
+        if (thisGroup != null)
+        {
+          // must be part of the current group
+          final ArrayList<String> group = myFields.get(thisGroup);
+          group.add(nextLine);
+        }
+        else
+        {
+
+        }
+      }
+    }
+  }
+
   private String myFileName;
 
-  private final List<String> myNames = new ArrayList<String>();
-
-  private final List<Double> myLengths = new ArrayList<Double>();
+  private final Map<String, ArrayList<String>> myFields =
+      new HashMap<String, ArrayList<String>>();
 
   public CSVExportDropdownRegistry()
   {
-    setFileName(CorePlugin.getDefault().getPreferenceStore().getString(
+    this(CorePlugin.getDefault().getPreferenceStore().getString(
         ExportCSVPreferencesPage.PreferenceConstants.PATH_TO_CSV));
+  }
+
+  public CSVExportDropdownRegistry(final String filename)
+  {
+    setFileName(filename);
   }
 
   /**
@@ -63,8 +190,7 @@ public class CSVExportDropdownRegistry
    */
   private void clear()
   {
-    getNames().clear();
-    getLengths().clear();
+    myFields.clear();
   }
 
   public String getFileName()
@@ -72,24 +198,10 @@ public class CSVExportDropdownRegistry
     return myFileName;
   }
 
-  public int getItemsCount()
+  @Override
+  public List<String> getValuesFor(final String title)
   {
-    return Math.min(myNames.size(), myLengths.size());
-  }
-
-  public List<Double> getLengths()
-  {
-    return myLengths;
-  }
-
-  public List<String> getNames()
-  {
-    return myNames;
-  }
-
-  private boolean isHeader()
-  {
-    return true;
+    return myFields.get(title);
   }
 
   /**
@@ -99,7 +211,7 @@ public class CSVExportDropdownRegistry
   {
     if (getFileName() == null || getFileName().trim().length() == 0)
     {
-      CorePlugin.logError(IStatus.WARNING, Messages.LengthsRegistry_EmptyFile,
+      CorePlugin.logError(IStatus.WARNING, Messages.ExportCSVRegistry_EmptyFile,
           null);
       return;
     }
@@ -110,58 +222,37 @@ public class CSVExportDropdownRegistry
           getFileName()));
       try
       {
-        String nextLine = null;
-        // skip header
-        if (isHeader())
-        {
-          br.readLine();
-        }
+        // build up list of lines in this file
+        final List<String> lines = new ArrayList<String>();
+
         try
         {
+          String nextLine = null;
           while ((nextLine = br.readLine()) != null)
           {
-            parseLine(nextLine);
+            lines.add(nextLine);
           }
         }
         finally
         {
           br.close();
         }
+
+        // and now process those lines
+        processLines(lines, myFields);
       }
       catch (final IOException e)
       {
         CorePlugin.logError(IStatus.WARNING,
-            Messages.LengthsRegistry_ErrorOnReading, e);
+            Messages.ExportCSVRegistry_ErrorOnReading, e);
       }
     }
     catch (final FileNotFoundException e)
     {
       CorePlugin.logError(IStatus.WARNING,
-          Messages.LengthsRegistry_FileNotFound, null);
+          Messages.ExportCSVRegistry_FileNotFound, null);
     }
 
-  }
-
-  private void parseLine(final String nextLine)
-  {
-    final String[] split = nextLine.split(DELIMITER);
-    if (split.length != 2)
-    {
-      return;
-    }
-
-    final String f = split[0];
-    final String s = split[1];
-    try
-    {
-      final Double value = MWCXMLReader.readThisDouble(s);
-      myNames.add(f);
-      myLengths.add(value);
-    }
-    catch (final Exception e)
-    {
-      // skip
-    }
   }
 
   public void reload()
