@@ -73,8 +73,6 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
 
   private FileFieldEditor myFileEditor;
 
-  private BooleanFieldEditor enabledEditor;
-
   public ExportCSVPreferencesPage()
   {
     super(GRID);
@@ -85,7 +83,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   private void addEnabledButton()
   {
     final Composite parent = getFieldEditorParent();
-    enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
+    final BooleanFieldEditor enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
         "Enable command", parent);
     addField(enabledEditor);
   }
@@ -211,11 +209,6 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
     return myFileEditor.getStringValue();
   }
 
-  @Override
-  public void init(final IWorkbench workbench)
-  {
-  }
-
   /**
    * if we have a file specified, open it - else throw error
    *
@@ -249,5 +242,11 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     CSVExportDropdownRegistry.getRegistry().setFileName(getFileName());
     CSVExportDropdownRegistry.getRegistry().reload();
+  }
+
+  @Override
+  public void init(IWorkbench workbench)
+  {
+    // TODO Auto-generated method stub
   }
 }

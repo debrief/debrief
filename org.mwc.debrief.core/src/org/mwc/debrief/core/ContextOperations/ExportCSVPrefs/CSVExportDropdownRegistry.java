@@ -134,36 +134,32 @@ public class CSVExportDropdownRegistry implements DropdownProvider
     String thisGroup = null;
     for (final String nextLine : lines)
     {
-      if (nextLine.startsWith("////"))
+      // check it's not a comment marker
+      if (!nextLine.startsWith("////"))
       {
-        // ok, skip it, it's a comment
-      }
-      else if (nextLine.startsWith("//"))
-      {
-        // new section, store it
-
-        // trim the comment marker
-        thisGroup = nextLine.substring(2, nextLine.length());
-
-        // ditch whitespace
-        thisGroup = thisGroup.trim();
-
-        // and create the new list
-        final ArrayList<String> newGroup = new ArrayList<String>();
-        myFields.put(thisGroup, newGroup);
-      }
-      else
-      {
-        // do we know our group?
-        if (thisGroup != null)
+        if (nextLine.startsWith("//"))
         {
-          // must be part of the current group
-          final ArrayList<String> group = myFields.get(thisGroup);
-          group.add(nextLine);
+          // new section, store it
+
+          // trim the comment marker
+          thisGroup = nextLine.substring(2, nextLine.length());
+
+          // ditch whitespace
+          thisGroup = thisGroup.trim();
+
+          // and create the new list
+          final ArrayList<String> newGroup = new ArrayList<String>();
+          myFields.put(thisGroup, newGroup);
         }
         else
         {
-
+          // do we know our group?
+          if (thisGroup != null)
+          {
+            // must be part of the current group
+            final ArrayList<String> group = myFields.get(thisGroup);
+            group.add(nextLine);
+          }
         }
       }
     }
