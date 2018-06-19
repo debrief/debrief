@@ -31,7 +31,7 @@ import junit.framework.TestCase;
 
 public class CSVExportDropdownRegistry implements DropdownProvider
 {
-  public static class TestMe extends TestCase
+  public static class TestRegistry extends TestCase
   {
     public void testBadines()
     {
