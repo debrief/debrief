@@ -30,21 +30,21 @@ public final class Messages extends NLS
 
   public static String ExportCSVPropertyDescriptor_NotValid;
 
-  public static String ExportCSVsLookupPreferencesPage_ErrorOnOpenFileEditor;
+  public static String ExportCSVLookupPreferencesPage_ErrorOnOpenFileEditor;
 
-  public static String ExportCSVsLookupPreferencesPage_FileLabel;
+  public static String ExportCSVLookupPreferencesPage_FileLabel;
 
-  public static String ExportCSVsLookupPreferencesPage_InvalidFileName;
+  public static String ExportCSVLookupPreferencesPage_InvalidFileName;
 
-  public static String ExportCSVsLookupPreferencesPage_OpenFileLabel;
+  public static String ExportCSVLookupPreferencesPage_OpenFileLabel;
 
-  public static String ExportCSVsLookupPreferencesPage_UpdateNow;
+  public static String ExportCSVLookupPreferencesPage_UpdateNow;
 
-  public static String ExportCSVsRegistry_EmptyFile;
+  public static String ExportCSVRegistry_EmptyFile;
 
-  public static String ExportCSVsRegistry_ErrorOnReading;
+  public static String ExportCSVRegistry_ErrorOnReading;
 
-  public static String ExportCSVsRegistry_FileNotFound;
+  public static String ExportCSVRegistry_FileNotFound;
 
   static
   {
