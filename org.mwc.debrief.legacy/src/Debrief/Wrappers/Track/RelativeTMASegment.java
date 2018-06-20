@@ -808,7 +808,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   private void identifyReferenceTrack()
   {
     // check we're not looking for ourselves
-    if(this.getWrapper().getName().equals(_referenceTrackName))
+    if(this.getWrapper() != null && this.getWrapper().getName().equals(_referenceTrackName))
     {
       Application.logError2(ErrorLogger.ERROR,
           "Data error - this TMA is trying to reference itself:"
