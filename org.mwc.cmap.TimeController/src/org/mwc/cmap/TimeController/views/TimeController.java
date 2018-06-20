@@ -166,7 +166,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the automatic timer we are using
    */
-  MWC.Utilities.Timer.Timer _myTimer;
+  private MWC.Utilities.Timer.Timer _myTimer;
 
   /**
    * the editor the user is currently working with (assigned alongside the time-provider object)

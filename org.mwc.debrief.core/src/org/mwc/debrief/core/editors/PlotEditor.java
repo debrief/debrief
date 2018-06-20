@@ -1023,7 +1023,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
     // temporarily connect to time updates
     _coordinateRecorder = new CoordinateRecorder(_myLayers, res.getCanvas()
-        .getProjection());
+        .getProjection(), _timePreferences);
     _timeManager.addListener(_coordinateRecorder,
         TimeManager.TIME_CHANGED_PROPERTY_NAME);
 
@@ -1658,6 +1658,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     else if (adapter == TrackManager.class)
     {
       res = _trackDataProvider;
+    }
+    else if (adapter == TimeControlPreferences.class)
+    {
+      res = _timePreferences;
     }
     else if (adapter == TrackDataProvider.class)
     {

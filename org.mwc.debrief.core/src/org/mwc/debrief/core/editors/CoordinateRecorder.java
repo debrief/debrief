@@ -27,6 +27,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.debrief.core.gpx.ImportGPX;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,12 +58,14 @@ public class CoordinateRecorder implements PropertyChangeListener,
       new HashMap<String, TrackWrapper>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
+  final private TimeControlPreferences _timePrefs;
 
   public CoordinateRecorder(final Layers _myLayers,
-      final PlainProjection plainProjection)
+      final PlainProjection plainProjection, TimeControlPreferences timePreferences)
   {
     this._myLayers = _myLayers;
     _projection = plainProjection;
+    _timePrefs = timePreferences;
   }
 
   /**
@@ -101,9 +104,11 @@ public class CoordinateRecorder implements PropertyChangeListener,
    *
    * @param doc
    *          document we're working on.
+   * @param dims the screen dimensions of the Debrief plot
+   * @param interval the interval between auto time steps
    * @return
    */
-  private void injectDimensions(final Document doc, final Dimension dims)
+  private void injectDimensionsAndInterval(final Document doc, final Dimension dims, final long interval)
   {
 
     // get the tracks
@@ -114,6 +119,9 @@ public class CoordinateRecorder implements PropertyChangeListener,
     col.setAttribute("width", "" + (int) dims.getWidth());
     col.setAttribute("height", "" + (int) dims.getHeight());
     extensions.appendChild(col);
+    final Element inter = doc.createElement("interval");
+    inter.setAttribute("millis", "" + interval);
+    extensions.appendChild(inter);
     tracks.appendChild(extensions);
   }
 
@@ -263,7 +271,8 @@ public class CoordinateRecorder implements PropertyChangeListener,
     {
       // put the colors in, as extensions
       injectColors(doc);
-      injectDimensions(doc, _projection.getScreenArea());
+      injectDimensionsAndInterval(doc, _projection.getScreenArea(), _timePrefs.getAutoInterval().getMillis());
+      
       outputDocument(doc);
     }
   }
