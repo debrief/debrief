@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="libs/commons-csv-1.2.jar" sourcepath="/home/snpe/.m2/repository/org/apache/commons/commons-csv/1.2/commons-csv-1.2-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-math3-3.5.jar" sourcepath="libs/commons-math3-3.5-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="libs/si-quantity-0.4-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/si-units-0.4-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/systems-common-0.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/systems-quantity-0.2-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/January.jar" sourcepath="C:/git/january/org.eclipse.january/src"/>
+	<classpathentry kind="lib" path="libs/slf4j-api.jar"/>
+	<classpathentry kind="lib" path="libs/slf4j-simple-1.7.25.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.nebula.visualization.xygraph_2.1.0.201703081533.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/org.eclipse.nebula.visualization.widgets_1.0.0.201703081533.jar" sourcepath="libs/org.eclipse.nebula.visualization.widgets.source_1.0.0.201703081533.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
