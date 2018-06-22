@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Limpet library dependencies
 Bundle-SymbolicName: info.limpet.libs;singleton:=true
-Bundle-Version: 1.0.6.qualifier
+Bundle-Version: 1.0.7
 Bundle-Vendor: MWC
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
