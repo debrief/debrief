@@ -22,8 +22,6 @@
 			</property>
 			<property name="appName" value="AssetNG">
 			</property>
-			<property name="preferenceCustomization" value="plugin_customization.ini">
-			</property>
 		</product>
 	</extension>
 
