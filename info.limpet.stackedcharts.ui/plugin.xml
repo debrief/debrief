@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="dataset_adapter" name="info.limpet.stackedcharts.dataset_adapter" schema="schema/dataset_adapter.exsd"/>
+   <extension-point id="scatterset_adapter" name="info.limpet.stackedcharts.scatterset_adapter" schema="schema/scatterset_adapter.exsd"/>
+   <extension-point id="stacked_time_provider" name="stacked_time_provider" schema="schema/timeProvider.exsd"/>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="info.limpet.ui"
+            class="info.limpet.stackedcharts.ui.view.StackedChartsView"
+            icon="icons/stacked-chart.png"
+            id="info.limpet.StackedChartsView"
+            name="Stacked Charts"
+            restorable="true">
+      </view>
+   </extension>
+</plugin>
