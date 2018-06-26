@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -21,6 +22,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
+import java.util.Locale;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -56,14 +58,44 @@ import MWC.GenericData.WorldLocation;
  */
 public class ExportTrackAsCSV implements RightClickContextItemGenerator
 {
-  public static interface CSVAttributeProvider 
+  public static interface CSVAttributeProvider
   {
-    String getCountry();
+    String getProvenance();
+
+    String getUnitName();
+
+    String getCaseNumber();
+
+    String getInfoCutoffDate();
+
+    String getSuppliedBy();
+
+    String getPurpose();
+
+    String getClassification();
+
+    String getDistributionStatement();
+
     String getType();
+
+    String getFlag();
+
+    String getSensor();
+
+    String getMajorAxis();
+
+    String getSemiMajorAxis();
+
+    String getSemiMinorAxis();
+
+    String getLikelihood();
+
+    String getConfidence();
+
     String getFilePath();
-    Object getProvenance();
+
   }
-  
+
   private static class ExportTrackToCSV extends CMAPOperation
   {
 
@@ -102,7 +134,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
       // WIZARD OPENS HERE
       final CSVExportWizard wizard = new CSVExportWizard(reg);
-      
+
       final WizardDialog dialog = new WizardDialog(Display.getCurrent()
           .getActiveShell(), wizard);
       dialog.create();
@@ -126,58 +158,108 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     {
       // export track, using values in wizard
       System.out.println("doing export");
-      
+
       FileWriter fos = null;
       try
       {
 
         // sort out the destination
-        fos = new FileWriter(provider.getFilePath());
+        File outFile = new File(provider.getFilePath());
+        System.out.println("Writing data to:" + outFile.getAbsolutePath());
+        fos = new FileWriter(outFile);
 
-        // TODO: NEED ISO STRING FORMATTER
-        DateFormat dateFormatter = new SimpleDateFormat("yyMMdd hh:mm:ss");
+        final DateFormat dateFormatter = new SimpleDateFormat(
+            "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
 
         NumberFormat numF = new DecimalFormat("0.0000");
-        
-        // HANDLE TRYING TO SELECT READ_ONLY FILE
-        
-        // CHECK FILE DOESN'T ALREADY EXIST
-        
+
+        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
+
+        // TODO: CHECK FILE DOESN'T ALREADY EXIST
+
+        final String lineBreak = System.getProperty("line.separator");
+
         // capture the constants
-        final String country = provider.getCountry();
-        
+        final String provenance = provider.getProvenance();
+        final String unitName = provider.getUnitName();
+        final String caseNumber = provider.getCaseNumber();
+        final String infoCutoffDate = provider.getInfoCutoffDate();
+        final String suppliedBy = provider.getSuppliedBy();
+        final String purpose = provider.getPurpose();
+        final String classification = provider.getClassification();
+        final String distributionStatement = provider
+            .getDistributionStatement();
+        final String type = provider.getType();
+        final String flag = provider.getFlag();
+        final String sensor = provider.getSensor();
+        final String semiMajorAxis = provider.getSemiMajorAxis();
+        final String semiMinorAxis = provider.getSemiMinorAxis();
+        final String likelihood = provider.getLikelihood();
+        final String confidence = provider.getConfidence();
+
+        // ok, collate the data
+        StringBuffer lineOut = new StringBuffer();
+
         Enumeration<Editable> iter = subject.getPositionIterator();
-        while(iter.hasMoreElements())
+        while (iter.hasMoreElements())
         {
           FixWrapper next = (FixWrapper) iter.nextElement();
-          
-          // ok, collate the data
-          StringBuffer lineOut = new StringBuffer();
-
-          lineOut.append(provider.getProvenance());
-          
-          lineOut.append(write(next.getDTG(), dateFormatter));
+          lineOut.append(provenance);
+          lineOut.append(",");
           lineOut.append(write(next.getLocation()));
           lineOut.append(",");
-          lineOut.append(country);
-          
+          lineOut.append(write(next.getDTG(), dateFormatter));
+          lineOut.append(",");
+          lineOut.append(unitName);
+          lineOut.append(",");
+          lineOut.append(caseNumber);
+          lineOut.append(",");
+          lineOut.append(infoCutoffDate);
+          lineOut.append(",");
+          lineOut.append(suppliedBy);
+          lineOut.append(",");
+          lineOut.append(purpose);
+          lineOut.append(",");
+          lineOut.append(classification);
+          lineOut.append(",");
+          lineOut.append(distributionStatement);
+          lineOut.append(",");
+          lineOut.append(type);
+          lineOut.append(",");
+          lineOut.append(flag);
+          lineOut.append(",");
+          lineOut.append(sensor);
+          lineOut.append(",");
+          lineOut.append(semiMajorAxis);
+          lineOut.append(",");
+          lineOut.append(semiMinorAxis);
+          lineOut.append(",");
+          lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next
+              .getCourse())));
+          lineOut.append(",");
           lineOut.append(numF.format(next.getSpeed()));
-          lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next.getCourse())));
-          
-          
-          // done.
-          fos.write(lineOut.toString());
+          lineOut.append(",");
+          lineOut.append(next.getLocation().getDepth());
+          lineOut.append(",");
+          lineOut.append(likelihood);
+          lineOut.append(",");
+          lineOut.append(confidence);
+
+          // and the newline
+          lineOut.append(lineBreak);
         }
+
+        // done.
+        fos.write(lineOut.toString());
       }
       catch (final IOException e)
       {
-        CorePlugin.logError(Status.ERROR, "Error while writing to CSV exchange file", e);
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        CorePlugin.logError(Status.ERROR,
+            "Error while writing to CSV exchange file", e);
       }
       finally
       {
-        if(fos != null)
+        if (fos != null)
         {
           try
           {
@@ -185,13 +267,12 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           }
           catch (IOException e)
           {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            CorePlugin.logError(Status.ERROR,
+                "Error while closing CSV exchange file", e);
           }
         }
       }
-          
-      
+      System.out.println("File write complete");
     }
 
     private static Object write(WorldLocation location)

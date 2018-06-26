@@ -14,18 +14,15 @@
  */
 package org.mwc.debrief.core.wizards;
 
+import java.util.Date;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.mwc.cmap.core.wizards.CoastWizardPage;
-import org.mwc.cmap.core.wizards.ETOPOWizardPage;
 import org.mwc.cmap.core.wizards.GridWizardPage;
-import org.mwc.cmap.core.wizards.NaturalEarthWizardPage;
-import org.mwc.cmap.core.wizards.NewPlotFilenameWizardPage;
-import org.mwc.cmap.core.wizards.ScaleWizardPage;
 import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
@@ -35,15 +32,10 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAsCSV.CSVAttributeProvider
 {
-  private NewPlotFilenameWizardPage _fileWizard;
-  private ScaleWizardPage _scaleWizard;
-  private CoastWizardPage _coastWizard;
   private GridWizardPage _gridWizard;
-  private ETOPOWizardPage _etopoWizard;
 
   private ISelection selection;
 
-  private NaturalEarthWizardPage _naturalEarthWizard;
   @SuppressWarnings("unused")
   private final DropdownProvider _dropdowns;
 
@@ -66,22 +58,9 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   @Override
   public void addPages()
   {
-    _fileWizard = new NewPlotFilenameWizardPage(selection);
-    _scaleWizard = new ScaleWizardPage(selection);
-    _coastWizard = new CoastWizardPage(selection);
     _gridWizard = new GridWizardPage(selection);
-    // _etopoWizard = new ETOPOWizardPage(selection);
 
-    _naturalEarthWizard = new NaturalEarthWizardPage(selection);
-
-    addPage(_fileWizard);
-    addPage(_naturalEarthWizard);
-    addPage(_scaleWizard);
-    if (_coastWizard != null)
-      addPage(_coastWizard);
     addPage(_gridWizard);
-    if (_etopoWizard != null && _etopoWizard.isAvailable())
-      addPage(_etopoWizard);
   }
 
   /**
@@ -99,32 +78,110 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   @Override
   public boolean performFinish()
   {
-    return false;
+    return true;
   }
 
   @Override
-  public String getCountry()
+  public String getProvenance()
   {
-    return "NARNIA";
+    return "HMS NONSUCH";
+  }
+
+  @Override
+  public String getUnitName()
+  {
+    return "USS ALLIANCE";
+  }
+
+  @Override
+  public String getCaseNumber()
+  {
+    return "D-112/12";
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public String getInfoCutoffDate()
+  {
+    return new Date().toGMTString();
+  }
+
+  @Override
+  public String getSuppliedBy()
+  {
+    return "DEEP BLUE";
+  }
+
+  @Override
+  public String getPurpose()
+  {
+    return "For operational planning";
+  }
+
+  @Override
+  public String getClassification()
+  {
+    return "Private";
+  }
+
+  @Override
+  public String getDistributionStatement()
+  {
+    return "\"Some long phrase, that includes a comma\"";
   }
 
   @Override
   public String getType()
   {
-    return "SHIP";
+    return "FISHER";
+  }
+
+  @Override
+  public String getFlag()
+  {
+    return "AMERICA";
+  }
+
+  @Override
+  public String getSensor()
+  {
+    return "RADAR";
+  }
+
+  @Override
+  public String getMajorAxis()
+  {
+    return "12.2";
+  }
+
+  @Override
+  public String getSemiMajorAxis()
+  {
+    return "4.3";
+  }
+
+  @Override
+  public String getSemiMinorAxis()
+  {
+    return "3.2";
+  }
+
+  @Override
+  public String getLikelihood()
+  {
+    return "Remote";
+  }
+
+  @Override
+  public String getConfidence()
+  {
+    return "Med";
   }
 
   @Override
   public String getFilePath()
   {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Object getProvenance()
-  {
-    return "HMS NONSUCH";
+    return "//Users//ian///test_out.csv";
   }
 
 }
