@@ -58,8 +58,8 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
    */
   public static class PreferenceConstants
   {
-    public static final String INCLUDE_COMMAND = "INCLUDE_COMMAND_";
-    public static final String PATH_TO_CSV = "CSV_LOCATION_";
+    public static final String INCLUDE_COMMAND = "INCLUDE_COMMAND";
+    public static final String PATH_TO_CSV = "CSV_LOCATION";
   }
 
   private static final String CONTEXT_ID =

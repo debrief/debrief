@@ -14,6 +14,14 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Enumeration;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -35,17 +43,27 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreferencesPage;
 import org.mwc.debrief.core.wizards.CSVExportWizard;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
 
 /**
  * @author ian.mayo
  */
 public class ExportTrackAsCSV implements RightClickContextItemGenerator
 {
-
+  public static interface CSVAttributeProvider 
+  {
+    String getCountry();
+    String getType();
+    String getFilePath();
+    Object getProvenance();
+  }
+  
   private static class ExportTrackToCSV extends CMAPOperation
   {
 
@@ -84,7 +102,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
       // WIZARD OPENS HERE
       final CSVExportWizard wizard = new CSVExportWizard(reg);
-
+      
       final WizardDialog dialog = new WizardDialog(Display.getCurrent()
           .getActiveShell(), wizard);
       dialog.create();
@@ -93,13 +111,98 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       // did it work?
       if (dialog.getReturnCode() == Window.OK)
       {
-        // export track, using values in wizard
-        System.out.println("doing export");
+        final CSVAttributeProvider provider = wizard;
+
+        performExport(_subject, provider);
       }
 
       // return CANCEL so this event doesn't get put onto the undo buffer,
       // and unnecessarily block the undo queue
       return Status.CANCEL_STATUS;
+    }
+
+    private static void performExport(final TrackWrapper subject,
+        final CSVAttributeProvider provider)
+    {
+      // export track, using values in wizard
+      System.out.println("doing export");
+      
+      FileWriter fos = null;
+      try
+      {
+
+        // sort out the destination
+        fos = new FileWriter(provider.getFilePath());
+
+        // TODO: NEED ISO STRING FORMATTER
+        DateFormat dateFormatter = new SimpleDateFormat("yyMMdd hh:mm:ss");
+
+        NumberFormat numF = new DecimalFormat("0.0000");
+        
+        // HANDLE TRYING TO SELECT READ_ONLY FILE
+        
+        // CHECK FILE DOESN'T ALREADY EXIST
+        
+        // capture the constants
+        final String country = provider.getCountry();
+        
+        Enumeration<Editable> iter = subject.getPositionIterator();
+        while(iter.hasMoreElements())
+        {
+          FixWrapper next = (FixWrapper) iter.nextElement();
+          
+          // ok, collate the data
+          StringBuffer lineOut = new StringBuffer();
+
+          lineOut.append(provider.getProvenance());
+          
+          lineOut.append(write(next.getDTG(), dateFormatter));
+          lineOut.append(write(next.getLocation()));
+          lineOut.append(",");
+          lineOut.append(country);
+          
+          lineOut.append(numF.format(next.getSpeed()));
+          lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next.getCourse())));
+          
+          
+          // done.
+          fos.write(lineOut.toString());
+        }
+      }
+      catch (final IOException e)
+      {
+        CorePlugin.logError(Status.ERROR, "Error while writing to CSV exchange file", e);
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      finally
+      {
+        if(fos != null)
+        {
+          try
+          {
+            fos.close();
+          }
+          catch (IOException e)
+          {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }
+      }
+          
+      
+    }
+
+    private static Object write(WorldLocation location)
+    {
+      // TODO: NEED TO CONSIDER NUMBER OF D.P.
+      return location.getLong() + ", " + location.getLat();
+    }
+
+    private static String write(HiResDate dtg, DateFormat dateFormat)
+    {
+      return dateFormat.format(dtg.getDate());
     }
 
     @Override

@@ -26,13 +26,14 @@ import org.mwc.cmap.core.wizards.GridWizardPage;
 import org.mwc.cmap.core.wizards.NaturalEarthWizardPage;
 import org.mwc.cmap.core.wizards.NewPlotFilenameWizardPage;
 import org.mwc.cmap.core.wizards.ScaleWizardPage;
+import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 /**
  * Wizard to provide metadata used in exporting a track to the CSV export format
  */
 
-public class CSVExportWizard extends Wizard implements INewWizard
+public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAsCSV.CSVAttributeProvider
 {
   private NewPlotFilenameWizardPage _fileWizard;
   private ScaleWizardPage _scaleWizard;
@@ -99,6 +100,31 @@ public class CSVExportWizard extends Wizard implements INewWizard
   public boolean performFinish()
   {
     return false;
+  }
+
+  @Override
+  public String getCountry()
+  {
+    return "NARNIA";
+  }
+
+  @Override
+  public String getType()
+  {
+    return "SHIP";
+  }
+
+  @Override
+  public String getFilePath()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Object getProvenance()
+  {
+    return "HMS NONSUCH";
   }
 
 }
