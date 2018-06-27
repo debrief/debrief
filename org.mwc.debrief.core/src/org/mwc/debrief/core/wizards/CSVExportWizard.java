@@ -18,11 +18,11 @@ import java.util.Date;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
-import org.mwc.cmap.core.wizards.GridWizardPage;
 import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
@@ -30,9 +30,11 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
  * Wizard to provide metadata used in exporting a track to the CSV export format
  */
 
-public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAsCSV.CSVAttributeProvider
+public class CSVExportWizard extends Wizard implements INewWizard,
+    ExportTrackAsCSV.CSVAttributeProvider
 {
-  private GridWizardPage _gridWizard;
+  private CSVExportPage1 page1;
+  private CSVExportPage2 page2;
 
   private ISelection selection;
 
@@ -58,9 +60,11 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   @Override
   public void addPages()
   {
-    _gridWizard = new GridWizardPage(selection);
+    page1 = new CSVExportPage1(_dropdowns);
+    page2 = new CSVExportPage2(_dropdowns);
 
-    addPage(_gridWizard);
+    addPage(page1);
+    addPage(page2);
   }
 
   /**
@@ -76,9 +80,21 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   }
 
   @Override
+  public boolean canFinish()
+  {
+    IWizardPage currentPage = getContainer().getCurrentPage();
+    return currentPage != page1 && page2.isPageComplete();
+  }
+
+  @Override
   public boolean performFinish()
   {
-    return true;
+
+    page1.readValues();
+    page2.readValues();
+
+    
+    return page1.isPageComplete() && page2.isPageComplete();
   }
 
   @Override
@@ -127,7 +143,7 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   @Override
   public String getDistributionStatement()
   {
-    return "\"Some long phrase, that includes a comma\"";
+    return page2.getStatement();
   }
 
   @Override
@@ -181,7 +197,7 @@ public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAs
   @Override
   public String getFilePath()
   {
-    return "//Users//ian///test_out.csv";
+    return page2.getExportFolder();
   }
 
 }
