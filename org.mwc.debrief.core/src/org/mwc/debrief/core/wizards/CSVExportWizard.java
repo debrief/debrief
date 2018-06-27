@@ -30,8 +30,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
  * Wizard to provide metadata used in exporting a track to the CSV export format
  */
 
-public class CSVExportWizard extends Wizard implements INewWizard,
-    ExportTrackAsCSV.CSVAttributeProvider
+public class CSVExportWizard extends Wizard implements INewWizard, ExportTrackAsCSV.CSVAttributeProvider
 {
   private GridWizardPage _gridWizard;
 
@@ -100,10 +99,11 @@ public class CSVExportWizard extends Wizard implements INewWizard,
     return "D-112/12";
   }
 
+  @SuppressWarnings("deprecation")
   @Override
-  public Date getInfoCutoffDate()
+  public String getInfoCutoffDate()
   {
-    return new Date();
+    return new Date().toGMTString();
   }
 
   @Override
