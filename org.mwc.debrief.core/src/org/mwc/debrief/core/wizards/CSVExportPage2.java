@@ -32,11 +32,14 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportPage2 extends WizardPage
 {
 
-  private DropdownProvider provider;
+  private static final String TITLE = "UK Track Exchange Format - Track Export";
+  private static final String DEC = "TODO";
+
+  private final DropdownProvider provider;
 
   // Data Fields ---- TODO: change default values
   private String purpose = "For operational planning";
-  private String statement = "\"Some long phrase, that includes a comma\"";
+  private String statement;
   private String exportFolder = new File(System.getProperty("user.home"),
       "debrief").getAbsolutePath();
   // ------
@@ -51,7 +54,8 @@ public class CSVExportPage2 extends WizardPage
   public CSVExportPage2(final DropdownProvider provider)
   {
     super("page2");
-    setTitle("UK Track Exchange Format - Track Export");
+    setTitle(TITLE);
+    setDescription(DEC);
     this.provider = provider;
 
   }
@@ -92,15 +96,19 @@ public class CSVExportPage2 extends WizardPage
   private void addStatementField(Composite contents)
   {
 
+    if (statement == null && !provider.getValuesFor("DISTRIBUTION").isEmpty())
+      statement = provider.getValuesFor("DISTRIBUTION").get(0);
     Label lbl = new Label(contents, SWT.NONE);
     lbl.setText("Distribution Statement:");
     lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END| GridData.VERTICAL_ALIGN_BEGINNING));
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
+        | GridData.VERTICAL_ALIGN_BEGINNING));
 
-    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI);
+    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI|SWT.WRAP);
     GridData gridData = new GridData(GridData.GRAB_VERTICAL
         | GridData.FILL_BOTH);
     gridData.horizontalSpan = 2;
+    gridData.widthHint = 200;
     statementTxt.setLayoutData(gridData);
     if (statement != null)
       statementTxt.setText(statement);

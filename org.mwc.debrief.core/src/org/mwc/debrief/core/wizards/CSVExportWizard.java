@@ -38,7 +38,6 @@ public class CSVExportWizard extends Wizard implements INewWizard,
 
   private ISelection selection;
 
-  @SuppressWarnings("unused")
   private final DropdownProvider _dropdowns;
 
   /**
@@ -97,103 +96,92 @@ public class CSVExportWizard extends Wizard implements INewWizard,
     return page1.isPageComplete() && page2.isPageComplete();
   }
 
-  @Override
+
+  
+  
   public String getProvenance()
   {
-    return "HMS NONSUCH";
+    return page1.getProvenance();
   }
 
-  @Override
   public String getUnitName()
   {
-    return "USS ALLIANCE";
+    return page1.getUnitName();
   }
 
-  @Override
   public String getCaseNumber()
   {
-    return "D-112/12";
+    return page1.getCaseNumber();
   }
 
-  @SuppressWarnings("deprecation")
-  @Override
   public String getInfoCutoffDate()
   {
-    return new Date().toGMTString();
+    return page1.getInfoCutoffDate();
   }
 
-  @Override
   public String getSuppliedBy()
   {
-    return "DEEP BLUE";
+    return page1.getSuppliedBy();
   }
 
+  public String getClassification()
+  {
+    return page1.getClassification();
+  }
+
+  public String getType()
+  {
+    return page1.getType();
+  }
+
+  public String getFlag()
+  {
+    return page1.getFlag();
+  }
+
+  public String getSensor()
+  {
+    return page1.getSensor();
+  }
+
+  public String getMajorAxis()
+  {
+    return page1.getMajorAxis();
+  }
+
+  public String getSemiMajorAxis()
+  {
+    return page1.getSemiMajorAxis();
+  }
+
+  public String getSemiMinorAxis()
+  {
+    return page1.getSemiMinorAxis();
+  }
+
+  public String getLikelihood()
+  {
+    return page1.getLikelihood();
+  }
+
+  public String getConfidence()
+  {
+    return page1.getConfidence();
+  }
+
+ 
   @Override
   public String getPurpose()
   {
-    return "For operational planning";
+    return page2.getPurpose();
   }
-
-  @Override
-  public String getClassification()
-  {
-    return "Private";
-  }
-
+  
   @Override
   public String getDistributionStatement()
   {
     return page2.getStatement();
   }
-
-  @Override
-  public String getType()
-  {
-    return "FISHER";
-  }
-
-  @Override
-  public String getFlag()
-  {
-    return "AMERICA";
-  }
-
-  @Override
-  public String getSensor()
-  {
-    return "RADAR";
-  }
-
-  @Override
-  public String getMajorAxis()
-  {
-    return "12.2";
-  }
-
-  @Override
-  public String getSemiMajorAxis()
-  {
-    return "4.3";
-  }
-
-  @Override
-  public String getSemiMinorAxis()
-  {
-    return "3.2";
-  }
-
-  @Override
-  public String getLikelihood()
-  {
-    return "Remote";
-  }
-
-  @Override
-  public String getConfidence()
-  {
-    return "Med";
-  }
-
+  
   @Override
   public String getFilePath()
   {
