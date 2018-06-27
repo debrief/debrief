@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 
@@ -66,7 +67,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
     String getCaseNumber();
 
-    String getInfoCutoffDate();
+    Date getInfoCutoffDate();
 
     String getSuppliedBy();
 
@@ -170,6 +171,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
         final DateFormat dateFormatter = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
+        final DateFormat shortDate = new SimpleDateFormat("yyMMdd",
+            Locale.ENGLISH);
 
         NumberFormat numF = new DecimalFormat("0.0000");
 
@@ -183,7 +186,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String provenance = provider.getProvenance();
         final String unitName = provider.getUnitName();
         final String caseNumber = provider.getCaseNumber();
-        final String infoCutoffDate = provider.getInfoCutoffDate();
+        final String infoCutoffDate = shortDate.format(provider
+            .getInfoCutoffDate());
         final String suppliedBy = provider.getSuppliedBy();
         final String purpose = provider.getPurpose();
         final String classification = provider.getClassification();
