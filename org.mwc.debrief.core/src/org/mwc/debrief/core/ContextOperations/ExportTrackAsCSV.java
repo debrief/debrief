@@ -194,9 +194,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     private static void performExport(final TrackWrapper subject,
         final CSVAttributeProvider provider)
     {
-      // export track, using values in wizard
-      System.out.println("doing export");
-      
       FileWriter fos = null;
       try
       {
@@ -240,6 +237,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String type = provider.getType();
         final String flag = provider.getFlag();
         final String sensor = provider.getSensor();
+        final String majorAxis = provider.getMajorAxis();
         final String semiMajorAxis = provider.getSemiMajorAxis();
         final String semiMinorAxis = provider.getSemiMinorAxis();
         final String likelihood = provider.getLikelihood();
@@ -247,6 +245,19 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
         // ok, collate the data
         StringBuffer lineOut = new StringBuffer();
+
+        // start with the comment markers
+        
+        // first the version num
+        lineOut.append("# UK TRACK EXCHANGE FORMAT, V1.0");
+        lineOut.append(lineBreak);
+
+        // now the fields
+        lineOut.append(
+            "# provenance,Long,lat,DTG,unitName,caseNumber,infoCutoffDate,suppliedBy,purpose,"
+            + "classification,distributionStatement,type,flag,sensor,majorAxis,semiMajorAxis,"
+            + "semiMinorAxis,Course,Speed,Depth,likelihood,confidence");
+        lineOut.append(lineBreak);
 
         Enumeration<Editable> iter = subject.getPositionIterator();
         while (iter.hasMoreElements())
@@ -277,6 +288,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           lineOut.append(flag);
           lineOut.append(",");
           lineOut.append(sensor);
+          lineOut.append(",");
+          lineOut.append(majorAxis);
           lineOut.append(",");
           lineOut.append(semiMajorAxis);
           lineOut.append(",");

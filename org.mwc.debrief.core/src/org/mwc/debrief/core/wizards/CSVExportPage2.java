@@ -145,6 +145,10 @@ public class CSVExportPage2 extends WizardPage
           folderTxt.setText(path);
         }
 
+
+        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
+
+        // TODO: CHECK FILE DOESN'T ALREADY EXIST
       }
     });
 
