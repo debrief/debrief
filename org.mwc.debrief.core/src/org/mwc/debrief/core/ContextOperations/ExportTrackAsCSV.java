@@ -308,7 +308,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             "Export to CSV couldn't find current editor", null);
         return Status.CANCEL_STATUS;
       }
-      final TrackManager trackManager = editor.getAdapter(TrackManager.class);
+      final TrackManager trackManager = (TrackManager) editor.getAdapter(TrackManager.class);
       final String provenance;
       if (trackManager != null)
       {
