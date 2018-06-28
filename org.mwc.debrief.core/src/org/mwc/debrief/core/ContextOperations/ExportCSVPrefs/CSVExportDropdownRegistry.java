@@ -109,7 +109,7 @@ public class CSVExportDropdownRegistry implements DropdownProvider
       reg.load();
 
       assertFalse("no longer empty", reg.myFields.keySet().isEmpty());
-      assertEquals("has sections", 11, reg.myFields.keySet().size());
+      assertEquals("has sections", 9, reg.myFields.keySet().size());
 
       assertEquals("has 3 classifications", 3, reg.getValuesFor(
           "CLASSIFICATION").size());
