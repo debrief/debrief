@@ -21,6 +21,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 
@@ -134,22 +135,25 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
       // the wizard needs some other data
       final String unit = _subject.getName();
-      
+
       // see if we can get the primary track
-      final IEditorPart editor = CorePlugin.getActiveWindow().getActivePage().getActiveEditor();
-      if(editor == null)
+      final IEditorPart editor = CorePlugin.getActiveWindow().getActivePage()
+          .getActiveEditor();
+      if (editor == null)
       {
-        CorePlugin.logError(Status.ERROR, "Export to CSV couldn't find current editor", null);
+        CorePlugin.logError(Status.ERROR,
+            "Export to CSV couldn't find current editor", null);
         return Status.CANCEL_STATUS;
       }
-      TrackManager trackManager = (TrackManager) editor.getAdapter(TrackManager.class);
+      TrackManager trackManager = (TrackManager) editor.getAdapter(
+          TrackManager.class);
       final String provenance;
-      if(trackManager != null)
+      if (trackManager != null)
       {
         WatchableList primary = trackManager.getPrimaryTrack();
-        if(primary != null)
+        if (primary != null)
         {
-          provenance = primary.getName();          
+          provenance = primary.getName();
         }
         else
         {
@@ -160,10 +164,10 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       {
         provenance = null;
       }
-      
+
       // WIZARD OPENS HERE
       final CSVExportWizard wizard = new CSVExportWizard(reg, unit, provenance);
-      
+
       final WizardDialog dialog = new WizardDialog(Display.getCurrent()
           .getActiveShell(), wizard);
       dialog.create();
@@ -173,7 +177,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       if (dialog.getReturnCode() == Window.OK)
       {
         final CSVAttributeProvider provider = wizard;
-        
+
         performExport(_subject, provider);
       }
 
@@ -182,20 +186,37 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       return Status.CANCEL_STATUS;
     }
 
+    private static String tidyMe(final String input)
+    {
+      return input.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", "_");
+    }
+
     private static void performExport(final TrackWrapper subject,
         final CSVAttributeProvider provider)
     {
       // export track, using values in wizard
       System.out.println("doing export");
-
+      
       FileWriter fos = null;
       try
       {
+        final DateFormat fileDateFormat = new SimpleDateFormat(
+            "yyyyMMdd_HHmmss", Locale.ENGLISH);
 
-        // sort out the destination
-        String fileName = "test_out.csv";
-        
-        File outFile = new File(provider.getFilePath(), fileName);
+        // sort out the destination filename
+        StringBuffer fileName = new StringBuffer();
+        fileName.append(tidyMe(provider.getSuppliedBy()));
+        fileName.append("_");
+        fileName.append(tidyMe(fileDateFormat.format(new Date())));
+        fileName.append("_");
+        fileName.append(tidyMe(provider.getUnitName()));
+        fileName.append("_");
+        fileName.append(tidyMe("" + subject.numFixes()));
+        fileName.append("_");
+        fileName.append(tidyMe(provider.getClassification()));
+        fileName.append(".csv");
+
+        File outFile = new File(provider.getFilePath(), fileName.toString());
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
@@ -203,10 +224,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
 
         NumberFormat numF = new DecimalFormat("0.0000");
-
-        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
-
-        // TODO: CHECK FILE DOESN'T ALREADY EXIST
 
         final String lineBreak = System.getProperty("line.separator");
 
