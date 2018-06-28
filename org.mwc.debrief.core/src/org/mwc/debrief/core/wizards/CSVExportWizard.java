@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -33,9 +32,6 @@ public class CSVExportWizard extends Wizard implements INewWizard,
 {
   private CSVExportPage1 page1;
   private CSVExportPage2 page2;
-
-  @SuppressWarnings("unused")
-  private ISelection selection;
 
   private final DropdownProvider _dropdowns;
   private final String _unit;
@@ -190,7 +186,7 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   public void init(final IWorkbench workbench,
       final IStructuredSelection selection1)
   {
-    this.selection = selection1;
+    // this.selection = selection1;
   }
 
   @Override

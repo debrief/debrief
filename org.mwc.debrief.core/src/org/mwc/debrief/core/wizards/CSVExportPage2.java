@@ -169,7 +169,7 @@ public class CSVExportPage2 extends WizardPage
     return statement;
   }
 
-  void readValues()
+  public void readValues()
   {
     if (purposeTxt != null && !purposeTxt.isDisposed())
       purpose = purposeTxt.getText().trim();
