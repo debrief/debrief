@@ -64,132 +64,44 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 {
   public static interface CSVAttributeProvider
   {
-    String getProvenance();
-
-    String getUnitName();
-
     String getCaseNumber();
-
-    String getInfoCutoffDate();
-
-    String getSuppliedBy();
-
-    String getPurpose();
 
     String getClassification();
 
+    String getConfidence();
+
     String getDistributionStatement();
 
-    String getType();
+    String getFilePath();
 
     String getFlag();
 
-    String getSensor();
+    String getInfoCutoffDate();
+
+    String getLikelihood();
 
     String getMajorAxis();
+
+    String getProvenance();
+
+    String getPurpose();
 
     String getSemiMajorAxis();
 
     String getSemiMinorAxis();
 
-    String getLikelihood();
+    String getSensor();
 
-    String getConfidence();
+    String getSuppliedBy();
 
-    String getFilePath();
+    String getType();
+
+    String getUnitName();
 
   }
 
   private static class ExportTrackToCSV extends CMAPOperation
   {
-
-    /**
-     * the parent to update on completion
-     */
-    private final TrackWrapper _subject;
-
-    public ExportTrackToCSV(final String title, final TrackWrapper subject)
-    {
-      super(title);
-      _subject = subject;
-    }
-
-    @Override
-    public boolean canRedo()
-    {
-      return false;
-    }
-
-    @Override
-    public boolean canUndo()
-    {
-      return false;
-    }
-
-    @Override
-    public IStatus execute(final IProgressMonitor monitor,
-        final IAdaptable info) throws ExecutionException
-    {
-      // get the set of fields we need
-      final DropdownProvider reg = CSVExportDropdownRegistry.getRegistry();
-
-      // the wizard needs some other data
-      final String unit = _subject.getName();
-
-      // see if we can get the primary track
-      final IEditorPart editor = CorePlugin.getActiveWindow().getActivePage()
-          .getActiveEditor();
-      if (editor == null)
-      {
-        CorePlugin.logError(Status.ERROR,
-            "Export to CSV couldn't find current editor", null);
-        return Status.CANCEL_STATUS;
-      }
-      TrackManager trackManager = (TrackManager) editor.getAdapter(
-          TrackManager.class);
-      final String provenance;
-      if (trackManager != null)
-      {
-        WatchableList primary = trackManager.getPrimaryTrack();
-        if (primary != null)
-        {
-          provenance = primary.getName();
-        }
-        else
-        {
-          provenance = null;
-        }
-      }
-      else
-      {
-        provenance = null;
-      }
-
-      // WIZARD OPENS HERE
-      final CSVExportWizard wizard = new CSVExportWizard(reg, unit, provenance);
-
-      final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-          .getActiveShell(), wizard);
-      dialog.create();
-      dialog.open();
-
-      // did it work?
-      if (dialog.getReturnCode() == Window.OK)
-      {
-        final CSVAttributeProvider provider = wizard;
-
-        performExport(_subject, provider);
-      }
-
-      // return CANCEL so this event doesn't get put onto the undo buffer,
-      // and unnecessarily block the undo queue
-      return Status.CANCEL_STATUS;
-    }
-
-    private static String tidyMe(final String input)
-    {
-      return input.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", "_");
-    }
 
     private static void performExport(final TrackWrapper subject,
         final CSVAttributeProvider provider)
@@ -201,7 +113,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             "yyyyMMdd_HHmmss", Locale.ENGLISH);
 
         // sort out the destination filename
-        StringBuffer fileName = new StringBuffer();
+        final StringBuffer fileName = new StringBuffer();
         fileName.append(tidyMe(provider.getSuppliedBy()));
         fileName.append("_");
         fileName.append(tidyMe(fileDateFormat.format(new Date())));
@@ -213,14 +125,15 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         fileName.append(tidyMe(provider.getClassification()));
         fileName.append(".csv");
 
-        File outFile = new File(provider.getFilePath(), fileName.toString());
+        final File outFile = new File(provider.getFilePath(), fileName
+            .toString());
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
         final DateFormat dateFormatter = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
 
-        NumberFormat numF = new DecimalFormat("0.0000");
+        final NumberFormat numF = new DecimalFormat("0.0000");
 
         final String lineBreak = System.getProperty("line.separator");
 
@@ -244,10 +157,10 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String confidence = provider.getConfidence();
 
         // ok, collate the data
-        StringBuffer lineOut = new StringBuffer();
+        final StringBuffer lineOut = new StringBuffer();
 
         // start with the comment markers
-        
+
         // first the version num
         lineOut.append("# UK TRACK EXCHANGE FORMAT, V1.0");
         lineOut.append(lineBreak);
@@ -255,14 +168,14 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         // now the fields
         lineOut.append(
             "# provenance,Long,lat,DTG,unitName,caseNumber,infoCutoffDate,suppliedBy,purpose,"
-            + "classification,distributionStatement,type,flag,sensor,majorAxis,semiMajorAxis,"
-            + "semiMinorAxis,Course,Speed,Depth,likelihood,confidence");
+                + "classification,distributionStatement,type,flag,sensor,majorAxis,semiMajorAxis,"
+                + "semiMinorAxis,Course,Speed,Depth,likelihood,confidence");
         lineOut.append(lineBreak);
 
-        Enumeration<Editable> iter = subject.getPositionIterator();
+        final Enumeration<Editable> iter = subject.getPositionIterator();
         while (iter.hasMoreElements())
         {
-          FixWrapper next = (FixWrapper) iter.nextElement();
+          final FixWrapper next = (FixWrapper) iter.nextElement();
           lineOut.append(provenance);
           lineOut.append(",");
           lineOut.append(write(next.getLocation()));
@@ -315,7 +228,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       }
       catch (final IOException e)
       {
-        CorePlugin.logError(Status.ERROR,
+        CorePlugin.logError(IStatus.ERROR,
             "Error while writing to CSV exchange file", e);
       }
       finally
@@ -326,9 +239,9 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           {
             fos.close();
           }
-          catch (IOException e)
+          catch (final IOException e)
           {
-            CorePlugin.logError(Status.ERROR,
+            CorePlugin.logError(IStatus.ERROR,
                 "Error while closing CSV exchange file", e);
           }
         }
@@ -336,15 +249,103 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       System.out.println("File write complete");
     }
 
-    private static Object write(WorldLocation location)
+    private static String tidyMe(final String input)
+    {
+      return input.replaceAll("[^\\p{IsAlphabetic}^\\p{IsDigit}]", "_");
+    }
+
+    private static String write(final HiResDate dtg,
+        final DateFormat dateFormat)
+    {
+      return dateFormat.format(dtg.getDate());
+    }
+
+    private static Object write(final WorldLocation location)
     {
       // TODO: NEED TO CONSIDER NUMBER OF D.P.
       return location.getLong() + ", " + location.getLat();
     }
 
-    private static String write(HiResDate dtg, DateFormat dateFormat)
+    /**
+     * the parent to update on completion
+     */
+    private final TrackWrapper _subject;
+
+    public ExportTrackToCSV(final String title, final TrackWrapper subject)
     {
-      return dateFormat.format(dtg.getDate());
+      super(title);
+      _subject = subject;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+      return false;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return false;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      // get the set of fields we need
+      final DropdownProvider reg = CSVExportDropdownRegistry.getRegistry();
+
+      // the wizard needs some other data
+      final String unit = _subject.getName();
+
+      // see if we can get the primary track
+      final IEditorPart editor = CorePlugin.getActiveWindow().getActivePage()
+          .getActiveEditor();
+      if (editor == null)
+      {
+        CorePlugin.logError(IStatus.ERROR,
+            "Export to CSV couldn't find current editor", null);
+        return Status.CANCEL_STATUS;
+      }
+      final TrackManager trackManager = editor.getAdapter(TrackManager.class);
+      final String provenance;
+      if (trackManager != null)
+      {
+        final WatchableList primary = trackManager.getPrimaryTrack();
+        if (primary != null)
+        {
+          provenance = primary.getName();
+        }
+        else
+        {
+          provenance = null;
+        }
+      }
+      else
+      {
+        provenance = null;
+      }
+
+      // WIZARD OPENS HERE
+      final CSVExportWizard wizard = new CSVExportWizard(reg, unit, provenance);
+
+      final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+          .getActiveShell(), wizard);
+      dialog.create();
+      dialog.open();
+
+      // did it work?
+      if (dialog.getReturnCode() == Window.OK)
+      {
+        final CSVAttributeProvider provider = wizard;
+
+        performExport(_subject, provider);
+      }
+
+      // return CANCEL so this event doesn't get put onto the undo buffer,
+      // and unnecessarily block the undo queue
+      return Status.CANCEL_STATUS;
     }
 
     @Override

@@ -43,12 +43,13 @@ public class CSVExportWizard extends Wizard implements INewWizard,
 
   /**
    * Constructor for NewPlotWizard.
-   * 
+   *
    * @param reg
-   * @param unit 
-   * @param provenance 
+   * @param unit
+   * @param provenance
    */
-  public CSVExportWizard(final DropdownProvider reg, String unit, final String provenance)
+  public CSVExportWizard(final DropdownProvider reg, final String unit,
+      final String provenance)
   {
     super();
 
@@ -71,9 +72,118 @@ public class CSVExportWizard extends Wizard implements INewWizard,
     addPage(page2);
   }
 
+  @Override
+  public boolean canFinish()
+  {
+    final IWizardPage currentPage = getContainer().getCurrentPage();
+    return currentPage != page1 && page2.isPageComplete();
+  }
+
+  @Override
+  public String getCaseNumber()
+  {
+    return page1.getCaseNumber();
+  }
+
+  @Override
+  public String getClassification()
+  {
+    return page1.getClassification();
+  }
+
+  @Override
+  public String getConfidence()
+  {
+    return page1.getConfidence();
+  }
+
+  @Override
+  public String getDistributionStatement()
+  {
+    return page2.getStatement();
+  }
+
+  @Override
+  public String getFilePath()
+  {
+    return page2.getExportFolder();
+  }
+
+  @Override
+  public String getFlag()
+  {
+    return page1.getFlag();
+  }
+
+  @Override
+  public String getInfoCutoffDate()
+  {
+    return page1.getInfoCutoffDate();
+  }
+
+  @Override
+  public String getLikelihood()
+  {
+    return page1.getLikelihood();
+  }
+
+  @Override
+  public String getMajorAxis()
+  {
+    return page1.getMajorAxis();
+  }
+
+  @Override
+  public String getProvenance()
+  {
+    return page1.getProvenance();
+  }
+
+  @Override
+  public String getPurpose()
+  {
+    return page2.getPurpose();
+  }
+
+  @Override
+  public String getSemiMajorAxis()
+  {
+    return page1.getSemiMajorAxis();
+  }
+
+  @Override
+  public String getSemiMinorAxis()
+  {
+    return page1.getSemiMinorAxis();
+  }
+
+  @Override
+  public String getSensor()
+  {
+    return page1.getSensor();
+  }
+
+  @Override
+  public String getSuppliedBy()
+  {
+    return page1.getSuppliedBy();
+  }
+
+  @Override
+  public String getType()
+  {
+    return page1.getType();
+  }
+
+  @Override
+  public String getUnitName()
+  {
+    return page1.getUnitName();
+  }
+
   /**
    * We will accept the selection in the workbench to see if we can initialize from it.
-   * 
+   *
    * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
    */
   @Override
@@ -84,113 +194,13 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   }
 
   @Override
-  public boolean canFinish()
-  {
-    IWizardPage currentPage = getContainer().getCurrentPage();
-    return currentPage != page1 && page2.isPageComplete();
-  }
-
-  @Override
   public boolean performFinish()
   {
 
     page1.readValues();
     page2.readValues();
 
-    
     return page1.isPageComplete() && page2.isPageComplete();
-  }
-
-
-  
-  
-  public String getProvenance()
-  {
-    return page1.getProvenance();
-  }
-
-  public String getUnitName()
-  {
-    return page1.getUnitName();
-  }
-
-  public String getCaseNumber()
-  {
-    return page1.getCaseNumber();
-  }
-
-  public String getInfoCutoffDate()
-  {
-    return page1.getInfoCutoffDate();
-  }
-
-  public String getSuppliedBy()
-  {
-    return page1.getSuppliedBy();
-  }
-
-  public String getClassification()
-  {
-    return page1.getClassification();
-  }
-
-  public String getType()
-  {
-    return page1.getType();
-  }
-
-  public String getFlag()
-  {
-    return page1.getFlag();
-  }
-
-  public String getSensor()
-  {
-    return page1.getSensor();
-  }
-
-  public String getMajorAxis()
-  {
-    return page1.getMajorAxis();
-  }
-
-  public String getSemiMajorAxis()
-  {
-    return page1.getSemiMajorAxis();
-  }
-
-  public String getSemiMinorAxis()
-  {
-    return page1.getSemiMinorAxis();
-  }
-
-  public String getLikelihood()
-  {
-    return page1.getLikelihood();
-  }
-
-  public String getConfidence()
-  {
-    return page1.getConfidence();
-  }
-
- 
-  @Override
-  public String getPurpose()
-  {
-    return page2.getPurpose();
-  }
-  
-  @Override
-  public String getDistributionStatement()
-  {
-    return page2.getStatement();
-  }
-  
-  @Override
-  public String getFilePath()
-  {
-    return page2.getExportFolder();
   }
 
 }

@@ -36,8 +36,30 @@ public class CSVExportPage1 extends WizardPage
   private static final String TITLE = "UK Track Exchange Format - Track Export";
   private static final String DEC = "TODO";
 
-  private final DropdownProvider provider;
+  private static String getCmbVal(final ComboViewer comboViewer, String val)
+  {
+    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
+    {
+      final StructuredSelection selection = (StructuredSelection) comboViewer
+          .getSelection();
+      if (selection.isEmpty())
+      {
+        // ah, it's not one of the drop downs, so
+        // get the value from the combo
+        final String comboText = comboViewer.getCombo().getText();
+        val = comboText == null ? val : comboText;
+      }
+      else
+      {
+        // just get the selected item
+        val = (String) selection.getFirstElement();
+      }
+    }
 
+    return val;
+  }
+
+  private final DropdownProvider provider;
   // Data Fields ---- TODO: change default values
   private String classification;
   private String type;
@@ -52,11 +74,11 @@ public class CSVExportPage1 extends WizardPage
   private String caseNumber = "D-112/12";
   private String suppliedBy;
   private String unitName;
-  private String provenance;
-  // --------
 
   // UI- Fields -------
 
+  private String provenance;
+  // --------
   private Text provenanceTxt;
   private ComboViewer typeCmb;
   private Text unitNameTxt;
@@ -70,28 +92,98 @@ public class CSVExportPage1 extends WizardPage
   private DateTime infoCutoffDateComp;
   private Text majorAxisTxt;
   private Text semiMajorAxisTxt;
-  private Text semiMinorAxisTxt;
 
   // -----------
 
-  public CSVExportPage1(final DropdownProvider provider, String unit,
-      String provenance)
+  private Text semiMinorAxisTxt;
+
+  public CSVExportPage1(final DropdownProvider provider, final String unit,
+      final String provenance)
   {
     super("page1");
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
-    
+
     this.provenance = provenance;
     unitName = unit;
-    
+
+  }
+
+  private Text addCaseNumberField(final Composite contents, final String label,
+      final String initialValue)
+  {
+
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText(label);
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+    final Text textControl = new Text(contents, SWT.BORDER);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.widthHint = 120;
+    textControl.setLayoutData(gridData);
+    if (initialValue != null)
+      textControl.setText(initialValue);
+
+    return textControl;
+
+  }
+
+  private ComboViewer addCmbField(final Composite contents, final String key,
+      final String title, final boolean edit, final String val)
+  {
+
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText(title);
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
+        : SWT.READ_ONLY | SWT.BORDER));
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.widthHint = 120;
+    typeCmb.setContentProvider(new ArrayContentProvider());
+    typeCmb.setInput(provider.getValuesFor(key).toArray());
+    typeCmb.getCombo().setLayoutData(gridData);
+    if (val != null)
+      typeCmb.getCombo().setText(val);
+    else if (typeCmb.getCombo().getItemCount() > 0)
+      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
+
+    return typeCmb;
+
+  }
+
+  private void addInfoCutoffDateField(final Composite contents)
+  {
+
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText("Info Cut-off Date:");
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+    infoCutoffDateComp = new DateTime(contents, SWT.BORDER | SWT.DROP_DOWN
+        | SWT.DATE | SWT.LONG);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.widthHint = 120;
+    infoCutoffDateComp.setLayoutData(gridData);
+    if (caseNumber != null)
+    {
+      final Calendar date = Calendar.getInstance();
+      date.setTime(infoCutoffDate);
+      infoCutoffDateComp.setDate(date.get(Calendar.YEAR), date.get(
+          Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
+
+    }
+
   }
 
   @Override
-  public void createControl(Composite parent)
+  public void createControl(final Composite parent)
   {
 
-    Composite contents = new Composite(parent, SWT.NONE);
+    final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     contents.setLayout(new GridLayout(4, false));
 
@@ -120,59 +212,101 @@ public class CSVExportPage1 extends WizardPage
     // line 7
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
-    semiMajorAxisTxt = addCaseNumberField(contents, "Semi-Major Axis (Nm):", semiMajorAxis);
-    
+    semiMajorAxisTxt = addCaseNumberField(contents, "Semi-Major Axis (Nm):",
+        semiMajorAxis);
+
     // line 8
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
-    semiMinorAxisTxt = addCaseNumberField(contents, "Semi-Minor Axis (Nm):", semiMinorAxis);
+    semiMinorAxisTxt = addCaseNumberField(contents, "Semi-Minor Axis (Nm):",
+        semiMinorAxis);
 
     setControl(contents);
 
   }
 
-  private Text addCaseNumberField(Composite contents, String label,
-      final String initialValue)
+  public String getCaseNumber()
   {
-
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(label);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    Text textControl = new Text(contents, SWT.BORDER);
-    GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    textControl.setLayoutData(gridData);
-    if (initialValue != null)
-      textControl.setText(initialValue);
-
-    return textControl;
-
+    return caseNumber;
   }
 
-  private void addInfoCutoffDateField(Composite contents)
+  public String getClassification()
+  {
+    return classification;
+  }
+
+  public String getConfidence()
+  {
+    return confidence;
+  }
+
+  public String getFlag()
+  {
+    return flag;
+  }
+
+  @SuppressWarnings("deprecation")
+  public String getInfoCutoffDate()
+  {
+    return infoCutoffDate.toGMTString();
+  }
+
+  public String getLikelihood()
+  {
+    return likelihood;
+  }
+
+  public String getMajorAxis()
+  {
+    return majorAxis;
+  }
+
+  public String getProvenance()
+  {
+    return provenance;
+  }
+
+  public String getSemiMajorAxis()
+  {
+    return semiMajorAxis;
+  }
+
+  public String getSemiMinorAxis()
+  {
+    return semiMinorAxis;
+  }
+
+  public String getSensor()
+  {
+    return sensor;
+  }
+
+  public String getSuppliedBy()
+  {
+    return suppliedBy;
+  }
+
+  private String getTxtVal(final Text control, final String val)
+  {
+    if (control != null && !control.isDisposed())
+    {
+      return control.getText().trim();
+    }
+    else
+    {
+      return val;
+    }
+  }
+
+  public String getType()
+  {
+    return type;
+  }
+
+  public String getUnitName()
   {
 
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Info Cut-off Date:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    infoCutoffDateComp = new DateTime(contents, SWT.BORDER | SWT.DROP_DOWN
-        | SWT.DATE | SWT.LONG);
-    GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    infoCutoffDateComp.setLayoutData(gridData);
-    if (caseNumber != null)
-    {
-      Calendar date = Calendar.getInstance();
-      date.setTime(infoCutoffDate);
-      infoCutoffDateComp.setDate(date.get(Calendar.YEAR), date.get(
-          Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
-
-    }
-
+    return unitName;
   }
 
   public void readValues()
@@ -189,14 +323,14 @@ public class CSVExportPage1 extends WizardPage
     provenance = getTxtVal(provenanceTxt, provenance);
     unitName = getTxtVal(unitNameTxt, unitName);
     caseNumber = getTxtVal(caseNumbertxt, caseNumber);
-    
+
     majorAxis = getTxtVal(majorAxisTxt, majorAxis);
     semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
     semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
 
     if (infoCutoffDateComp != null && infoCutoffDateComp.isDisposed())
     {
-      Calendar date = Calendar.getInstance();
+      final Calendar date = Calendar.getInstance();
       date.set(Calendar.YEAR, infoCutoffDateComp.getYear());
       date.set(Calendar.MONTH, infoCutoffDateComp.getMonth());
       date.set(Calendar.DAY_OF_MONTH, infoCutoffDateComp.getDay());
@@ -207,137 +341,5 @@ public class CSVExportPage1 extends WizardPage
       infoCutoffDate = date.getTime();
     }
 
-  }
-
-  private String getTxtVal(Text control, String val)
-  {
-    if (control != null && !control.isDisposed())
-    {
-      return control.getText().trim();
-    }
-    else
-    {
-      return val;
-    }
-  }
-
-  private static String getCmbVal(ComboViewer comboViewer, String val)
-  {
-    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
-    {
-      StructuredSelection selection = (StructuredSelection) comboViewer
-          .getSelection();
-      if(selection.isEmpty())
-      {
-        // ah, it's not one of the drop downs, so
-        // get the value from the combo
-        String comboText = comboViewer.getCombo().getText();
-        val = comboText == null ? val : comboText;
-      }
-      else
-      {
-        // just get the selected item
-        val = (String) selection.getFirstElement();
-      }
-    }
-
-    return val;
-  }
-
-  private ComboViewer addCmbField(Composite contents, String key, String title,
-      boolean edit, String val)
-  {
-
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(title);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
-        : SWT.READ_ONLY | SWT.BORDER));
-    GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    typeCmb.setContentProvider(new ArrayContentProvider());
-    typeCmb.setInput(provider.getValuesFor(key).toArray());
-    typeCmb.getCombo().setLayoutData(gridData);
-    if (val != null)
-      typeCmb.getCombo().setText(val);
-    else if (typeCmb.getCombo().getItemCount() > 0)
-      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
-
-    return typeCmb;
-
-  }
-
-  public String getProvenance()
-  {
-    return provenance;
-  }
-
-  public String getUnitName()
-  {
-
-    return unitName;
-  }
-
-  public String getCaseNumber()
-  {
-    return caseNumber;
-  }
-
-  @SuppressWarnings("deprecation")
-  public String getInfoCutoffDate()
-  {
-    return infoCutoffDate.toGMTString();
-  }
-
-  public String getSuppliedBy()
-  {
-    return suppliedBy;
-  }
-
-  public String getClassification()
-  {
-    return classification;
-  }
-
-  public String getType()
-  {
-    return type;
-  }
-
-  public String getFlag()
-  {
-    return flag;
-  }
-
-  public String getSensor()
-  {
-    return sensor;
-  }
-
-  public String getMajorAxis()
-  {
-    return majorAxis;
-  }
-
-  public String getSemiMajorAxis()
-  {
-    return semiMajorAxis;
-  }
-
-  public String getSemiMinorAxis()
-  {
-    return semiMinorAxis;
-  }
-
-  public String getLikelihood()
-  {
-    return likelihood;
-  }
-
-  public String getConfidence()
-  {
-    return confidence;
   }
 }

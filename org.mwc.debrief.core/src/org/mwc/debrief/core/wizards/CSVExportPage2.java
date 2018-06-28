@@ -40,7 +40,8 @@ public class CSVExportPage2 extends WizardPage
   // Data Fields ---- TODO: change default values
   private String purpose = "For operational planning";
   private String statement;
-  private String exportFolder = new File(System.getProperty("user.home")).getAbsolutePath();
+  private String exportFolder = new File(System.getProperty("user.home"))
+      .getAbsolutePath();
   // ------
 
   // UI - Fields -----
@@ -59,10 +60,90 @@ public class CSVExportPage2 extends WizardPage
 
   }
 
-  @Override
-  public void createControl(Composite parent)
+  private void addFolderField(final Composite contents)
   {
-    Composite contents = new Composite(parent, SWT.NONE);
+
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText("Destination:");
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+    folderTxt = new Text(contents, SWT.BORDER);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL
+        | GridData.GRAB_HORIZONTAL);
+    folderTxt.setLayoutData(gridData);
+    if (exportFolder != null)
+      folderTxt.setText(exportFolder);
+    folderTxt.setEditable(false);
+    final Button browse = new Button(contents, SWT.PUSH);
+    browse.setText("Browse");
+    browse.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        final DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
+        directoryDialog.setFilterPath(folderTxt.getText());
+        directoryDialog.setText("Destination");
+        final String path = directoryDialog.open();
+        if (path != null)
+        {
+          folderTxt.setText(path);
+        }
+
+        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
+
+        // TODO: CHECK FILE DOESN'T ALREADY EXIST
+      }
+    });
+
+  }
+
+  private void addPurposeField(final Composite contents)
+  {
+
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText("Purpose:");
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+
+    purposeTxt = new Text(contents, SWT.BORDER);
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.widthHint = 200;
+    purposeTxt.setLayoutData(gridData);
+    if (purpose != null)
+      purposeTxt.setText(purpose);
+
+    new Label(contents, SWT.NONE);// empty for 3rd col
+
+  }
+
+  private void addStatementField(final Composite contents)
+  {
+
+    if (statement == null && !provider.getValuesFor("DISTRIBUTION").isEmpty())
+      statement = provider.getValuesFor("DISTRIBUTION").get(0);
+    final Label lbl = new Label(contents, SWT.NONE);
+    lbl.setText("Distribution Statement:");
+    lbl.setAlignment(SWT.RIGHT);
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
+        | GridData.VERTICAL_ALIGN_BEGINNING));
+
+    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI | SWT.WRAP);
+    final GridData gridData = new GridData(GridData.GRAB_VERTICAL
+        | GridData.FILL_BOTH);
+    gridData.horizontalSpan = 2;
+    gridData.widthHint = 200;
+    statementTxt.setLayoutData(gridData);
+    if (statement != null)
+      statementTxt.setText(statement);
+
+  }
+
+  @Override
+  public void createControl(final Composite parent)
+  {
+    final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
     contents.setLayout(new GridLayout(3, false));
 
@@ -73,85 +154,9 @@ public class CSVExportPage2 extends WizardPage
     setControl(contents);
   }
 
-  private void addPurposeField(Composite contents)
+  public String getExportFolder()
   {
-
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Purpose:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    purposeTxt = new Text(contents, SWT.BORDER);
-    GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 200;
-    purposeTxt.setLayoutData(gridData);
-    if (purpose != null)
-      purposeTxt.setText(purpose);
-
-    new Label(contents, SWT.NONE);// empty for 3rd col
-
-  }
-
-  private void addStatementField(Composite contents)
-  {
-
-    if (statement == null && !provider.getValuesFor("DISTRIBUTION").isEmpty())
-      statement = provider.getValuesFor("DISTRIBUTION").get(0);
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Distribution Statement:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
-        | GridData.VERTICAL_ALIGN_BEGINNING));
-
-    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI|SWT.WRAP);
-    GridData gridData = new GridData(GridData.GRAB_VERTICAL
-        | GridData.FILL_BOTH);
-    gridData.horizontalSpan = 2;
-    gridData.widthHint = 200;
-    statementTxt.setLayoutData(gridData);
-    if (statement != null)
-      statementTxt.setText(statement);
-
-  }
-
-  private void addFolderField(Composite contents)
-  {
-
-    Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Destination:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    folderTxt = new Text(contents, SWT.BORDER);
-    GridData gridData = new GridData(GridData.FILL_HORIZONTAL
-        | GridData.GRAB_HORIZONTAL);
-    folderTxt.setLayoutData(gridData);
-    if (exportFolder != null)
-      folderTxt.setText(exportFolder);
-    folderTxt.setEditable(false);
-    Button browse = new Button(contents, SWT.PUSH);
-    browse.setText("Browse");
-    browse.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
-        directoryDialog.setFilterPath(folderTxt.getText());
-        directoryDialog.setText("Destination");
-        String path = directoryDialog.open();
-        if (path != null)
-        {
-          folderTxt.setText(path);
-        }
-
-
-        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
-
-        // TODO: CHECK FILE DOESN'T ALREADY EXIST
-      }
-    });
-
+    return exportFolder;
   }
 
   public String getPurpose()
@@ -162,11 +167,6 @@ public class CSVExportPage2 extends WizardPage
   public String getStatement()
   {
     return statement;
-  }
-
-  public String getExportFolder()
-  {
-    return exportFolder;
   }
 
   void readValues()
