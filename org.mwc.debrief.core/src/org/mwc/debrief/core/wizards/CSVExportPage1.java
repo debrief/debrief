@@ -219,7 +219,7 @@ public class CSVExportPage1 extends WizardPage
         confidence);
     // line 6
     suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:", false,
-        flag);
+        suppliedBy);
     majorAxisTxt = addCaseNumberField(contents, "Major Axis (Nm):", majorAxis);
     // line 7
     new Label(contents, SWT.NONE);
