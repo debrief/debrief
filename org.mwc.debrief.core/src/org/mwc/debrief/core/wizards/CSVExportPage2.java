@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage2 extends WizardPage
@@ -57,6 +58,9 @@ public class CSVExportPage2 extends WizardPage
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
+
+    super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
+        "org.mwc.debrief.core", "images/csvexport_wizard.png"));
 
   }
 
@@ -89,11 +93,10 @@ public class CSVExportPage2 extends WizardPage
         if (path != null)
         {
           folderTxt.setText(path);
+          setPageComplete(true);
+
         }
 
-        // TODO: HANDLE TRYING TO SELECT READ_ONLY FILE
-
-        // TODO: CHECK FILE DOESN'T ALREADY EXIST
       }
     });
 
@@ -179,5 +182,35 @@ public class CSVExportPage2 extends WizardPage
 
     if (folderTxt != null && !folderTxt.isDisposed())
       exportFolder = folderTxt.getText().trim();
+    
+    if(exportFolder ==null ||exportFolder.isEmpty())
+    {
+      setErrorMessage("Please select valid Destination folder.");
+
+      return ;
+    }
+    extracted();
+  }
+
+  private void extracted()
+  {
+    if(exportFolder ==null ||exportFolder.isEmpty())
+    {
+      setErrorMessage("Please select valid Destination folder.");
+      
+      setPageComplete(false);
+
+      return ;
+    }
+    else if(!new File(exportFolder).exists() || !new File(exportFolder).isDirectory() || !new File(exportFolder).canWrite())
+    {
+       setErrorMessage("Please select valid Destination folder with write access.");
+      
+      setPageComplete(false);
+
+      return ;
+    }
+    setErrorMessage(null);
+    setPageComplete(true);
   }
 }

@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage1 extends WizardPage
@@ -112,6 +113,9 @@ public class CSVExportPage1 extends WizardPage
 
     this.provenance = provenance;
     unitName = unit;
+
+    super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
+        "org.mwc.debrief.core", "images/csvexport_wizard.png"));
 
   }
 
