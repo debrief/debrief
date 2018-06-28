@@ -1053,6 +1053,19 @@
     </extension>
 
 
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreferencesPage"
+           id="org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreferencesPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="CSV Export Wizard"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreferenceInitializer"/>
+  </extension>
+
     <extension point="org.eclipse.ui.intro">
         <introProductBinding introId="org.eclipse.ui.intro.universal"
             productId="org.mwc.debrief.core.Debrief"> </introProductBinding>
@@ -1124,6 +1137,7 @@
     </extension>
     <extension point="org.mwc.cmap.core.RightClickSupport">
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
+        <helper class="org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV"/>
         <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
         <helper class="org.mwc.debrief.core.ContextOperations.CalculateTrackLength"/>
         <helper class="org.mwc.debrief.core.ContextOperations.SelectAllChildren"/>
