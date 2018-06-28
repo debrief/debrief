@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.editors.painters.snail;
 
@@ -20,11 +20,14 @@ import java.awt.Rectangle;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
@@ -36,20 +39,20 @@ import MWC.GenericData.WorldLocation;
 /**
  * class to draw a 'back-track' of points backwards from the current datapoint for the indicated
  * period.
- * 
+ *
  * Internally, the class retrieves the list of included points from the track itself and stores them
  * in the HashTable indexed by the current fix. So, when we are asked to plot a point, we look in
  * the HashTable first -- if we have a vector of points for this fix we re-plot these and then
  * remove them from the hashtable. If we don't find a vector of points for this Fix then we retrieve
  * the list from the track and then insert the list into our HashTable Ta-Da!
- * 
+ *
  */
 final class SnailDrawSWTTrack
 {
 
   /**
    * calculate the correct color fade for the supplied colors/times
-   * 
+   *
    * @param mainCol
    *          the foreground color
    * @param backColor
@@ -140,9 +143,6 @@ final class SnailDrawSWTTrack
     _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }
 
-  // /////////////////////////////////
-  // member functions
-  // ////////////////////////////////
   public final java.awt.Rectangle drawMe(
       final MWC.Algorithms.PlainProjection proj, final CanvasType dest,
       final Watchable watch, final SnailHighlighter parent, HiResDate dtg,
@@ -171,9 +171,8 @@ final class SnailDrawSWTTrack
     }
     else
     {
-      trail_len =
-          (long) parent.getSnailProperties().getTrailLength().getValueIn(
-              Duration.MICROSECONDS);
+      trail_len = (long) parent.getSnailProperties().getTrailLength()
+          .getValueIn(Duration.MICROSECONDS);
     }
 
     // trim to visible period if its a track
@@ -208,9 +207,8 @@ final class SnailDrawSWTTrack
     else
     {
       // retrieve the points in range
-      dotPoints =
-          trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros() - trail_len),
-              new HiResDate(0, dtg.getMicros() + 2));
+      dotPoints = getUnfilteredItems(trk, new HiResDate(0, dtg.getMicros()
+          - trail_len), new HiResDate(0, dtg.getMicros() + 2));
 
       // note we were using the local _tralLength, but we're switching to the
       // retrieved propery (or custom override)
@@ -312,9 +310,8 @@ final class SnailDrawSWTTrack
           {
             // calculate the color for this point in the track (using the fix
             // color)
-            newCol =
-                getFadedColorFor(gw.getColor(), backColor, trail_len, dtg, gw
-                    .getDateTimeGroup());
+            newCol = getFadedColorFor(gw.getColor(), backColor, trail_len, dtg,
+                gw.getDateTimeGroup());
           }
           else
           {
@@ -440,6 +437,58 @@ final class SnailDrawSWTTrack
   public final Long getTrailLength()
   {
     return new Long(_trailLength);
+  }
+
+  /**
+   * get the set of fixes contained within this time period which haven't been filtered, and which
+   * have valid depths. values
+   *
+   * @param start
+   *          start DTG
+   * @param end
+   *          end DTG
+   * @return series of fixes
+   */
+  public final Collection<Editable> getUnfilteredItems(final TrackWrapper track,
+      final HiResDate start, final HiResDate end)
+  {
+    final Collection<Editable> res = new Vector<Editable>();
+
+    // find the leg containing the end value
+    final SegmentList legs = track.getSegments();
+    final Enumeration<Editable> iter = legs.elements();
+    TrackSegment match = null;
+    while (iter.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) iter.nextElement();
+      final FixWrapper first = (FixWrapper) seg.first();
+      final FixWrapper last = (FixWrapper) seg.last();
+
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(first
+          .getDateTimeGroup(), last.getDateTimeGroup());
+      if (period.contains(end))
+      {
+        match = seg;
+      }
+    }
+
+    if (match != null)
+    {
+      final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+
+      // ok, get matching points in this segment
+      final Enumeration<Editable> iter2 = match.elements();
+      while (iter2.hasMoreElements())
+      {
+        final FixWrapper fw = (FixWrapper) iter2.nextElement();
+        if (period.contains(fw.getDateTimeGroup()))
+        {
+          res.add(fw);
+        }
+      }
+    }
+
+    return res;
   }
 
   public final void setFadePoints(final boolean val)
