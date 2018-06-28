@@ -57,9 +57,9 @@ public class CSVExportPage1 extends WizardPage
 
   // UI- Fields -------
 
-  private ComboViewer provenanceCmb;
+  private Text provenanceTxt;
   private ComboViewer typeCmb;
-  private ComboViewer unitNameCmb;
+  private Text unitNameTxt;
   private ComboViewer flagCmb;
   private ComboViewer sensorCmb;
   private ComboViewer classificationCmb;
@@ -71,13 +71,17 @@ public class CSVExportPage1 extends WizardPage
 
   // -----------
 
-  public CSVExportPage1(final DropdownProvider provider)
+  public CSVExportPage1(final DropdownProvider provider, String unit,
+      String provenance)
   {
     super("page1");
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
-
+    
+    this.provenance = provenance;
+    unitName = unit;
+    
   }
 
   @Override
@@ -89,14 +93,13 @@ public class CSVExportPage1 extends WizardPage
     contents.setLayout(new GridLayout(4, false));
 
     // line 1
-    provenanceCmb = addCmbField(contents, "PROVENANCE", "Provenance:", false,
-        provenance);
+    provenanceTxt = addCaseNumberField(contents, "Provenance:", provenance);
     typeCmb = addCmbField(contents, "TYPE", "Type:", false, type);
     // line 2
-    unitNameCmb = addCmbField(contents, "UNIT", "Unit Name:", false, unitName);
+    unitNameTxt = addCaseNumberField(contents, "Unit Name:", unitName);
     flagCmb = addCmbField(contents, "FLAG", "Flag:", false, flag);
     // line 3
-    addCaseNumberField(contents);
+    caseNumbertxt = addCaseNumberField(contents, "Case Number:", caseNumber);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", true, sensor);
     // line 4
     classificationCmb = addCmbField(contents, "CLASSIFICATION",
@@ -115,20 +118,23 @@ public class CSVExportPage1 extends WizardPage
 
   }
 
-  private void addCaseNumberField(Composite contents)
+  private Text addCaseNumberField(Composite contents, String label,
+      final String initialValue)
   {
 
     Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Case Number:");
+    lbl.setText(label);
     lbl.setAlignment(SWT.RIGHT);
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-    caseNumbertxt = new Text(contents, SWT.BORDER);
+    Text textControl = new Text(contents, SWT.BORDER);
     GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.widthHint = 120;
-    caseNumbertxt.setLayoutData(gridData);
-    if (caseNumber != null)
-      caseNumbertxt.setText(caseNumber);
+    textControl.setLayoutData(gridData);
+    if (initialValue != null)
+      textControl.setText(initialValue);
+
+    return textControl;
 
   }
 
@@ -159,18 +165,17 @@ public class CSVExportPage1 extends WizardPage
   public void readValues()
   {
 
-    provenance = getCmbVal(provenanceCmb, provenance);
     type = getCmbVal(typeCmb, type);
     flag = getCmbVal(flagCmb, flag);
-    unitName = getCmbVal(unitNameCmb, unitName);
     sensor = getCmbVal(sensorCmb, sensor);
     classification = getCmbVal(classificationCmb, classification);
     likelihood = getCmbVal(likelihoodCmb, likelihood);
     confidence = getCmbVal(confidenceCmb, confidence);
     suppliedBy = getCmbVal(suppliedByCmb, suppliedBy);
 
-    if (caseNumbertxt != null && !caseNumbertxt.isDisposed())
-      caseNumber = caseNumbertxt.getText().trim();
+    provenance = getTxtVal(provenanceTxt, provenance);
+    unitName = getTxtVal(unitNameTxt, unitName);
+    caseNumber = getTxtVal(caseNumbertxt, caseNumber);
 
     if (infoCutoffDateComp != null && infoCutoffDateComp.isDisposed())
     {
@@ -185,6 +190,18 @@ public class CSVExportPage1 extends WizardPage
       infoCutoffDate = date.getTime();
     }
 
+  }
+
+  private String getTxtVal(Text control, String val)
+  {
+    if (control != null && !control.isDisposed())
+    {
+      return control.getText().trim();
+    }
+    else
+    {
+      return val;
+    }
   }
 
   private static String getCmbVal(ComboViewer comboViewer, String val)

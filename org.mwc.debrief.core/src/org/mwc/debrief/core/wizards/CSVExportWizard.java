@@ -14,8 +14,6 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.Date;
-
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
@@ -36,20 +34,27 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   private CSVExportPage1 page1;
   private CSVExportPage2 page2;
 
+  @SuppressWarnings("unused")
   private ISelection selection;
 
   private final DropdownProvider _dropdowns;
+  private final String _unit;
+  private final String _provenance;
 
   /**
    * Constructor for NewPlotWizard.
    * 
    * @param reg
+   * @param unit 
+   * @param provenance 
    */
-  public CSVExportWizard(final DropdownProvider reg)
+  public CSVExportWizard(final DropdownProvider reg, String unit, final String provenance)
   {
     super();
 
     _dropdowns = reg;
+    _unit = unit;
+    _provenance = provenance;
   }
 
   /**
@@ -59,7 +64,7 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public void addPages()
   {
-    page1 = new CSVExportPage1(_dropdowns);
+    page1 = new CSVExportPage1(_dropdowns, _unit, _provenance);
     page2 = new CSVExportPage2(_dropdowns);
 
     addPage(page1);

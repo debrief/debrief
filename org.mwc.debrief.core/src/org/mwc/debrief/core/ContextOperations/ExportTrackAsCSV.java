@@ -37,7 +37,9 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry;
@@ -51,6 +53,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -126,15 +129,41 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     public IStatus execute(final IProgressMonitor monitor,
         final IAdaptable info) throws ExecutionException
     {
-      // TODO
-      System.out.println("exporting " + _subject);
-
       // get the set of fields we need
       final DropdownProvider reg = CSVExportDropdownRegistry.getRegistry();
 
+      // the wizard needs some other data
+      final String unit = _subject.getName();
+      
+      // see if we can get the primary track
+      final IEditorPart editor = CorePlugin.getActiveWindow().getActivePage().getActiveEditor();
+      if(editor == null)
+      {
+        CorePlugin.logError(Status.ERROR, "Export to CSV couldn't find current editor", null);
+        return Status.CANCEL_STATUS;
+      }
+      TrackManager trackManager = editor.getAdapter(TrackManager.class);
+      final String provenance;
+      if(trackManager != null)
+      {
+        WatchableList primary = trackManager.getPrimaryTrack();
+        if(primary != null)
+        {
+          provenance = primary.getName();          
+        }
+        else
+        {
+          provenance = null;
+        }
+      }
+      else
+      {
+        provenance = null;
+      }
+      
       // WIZARD OPENS HERE
-      final CSVExportWizard wizard = new CSVExportWizard(reg);
-
+      final CSVExportWizard wizard = new CSVExportWizard(reg, unit, provenance);
+      
       final WizardDialog dialog = new WizardDialog(Display.getCurrent()
           .getActiveShell(), wizard);
       dialog.create();
@@ -144,7 +173,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       if (dialog.getReturnCode() == Window.OK)
       {
         final CSVAttributeProvider provider = wizard;
-
+        
         performExport(_subject, provider);
       }
 
@@ -164,7 +193,9 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       {
 
         // sort out the destination
-        File outFile = new File(provider.getFilePath());
+        String fileName = "test_out.csv";
+        
+        File outFile = new File(provider.getFilePath(), fileName);
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
