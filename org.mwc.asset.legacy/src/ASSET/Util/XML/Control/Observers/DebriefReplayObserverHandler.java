@@ -168,9 +168,9 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       debriefObserver.setSubjectSensor(_subjectSensor);
     }
 
-    if(_parentFolder != null)
+    if(_targetFolder != null)
     {
-      debriefObserver.setParentFolder(_parentFolder);
+      debriefObserver.setTargetFolder(_targetFolder);
     }
     
     setObserver(debriefObserver);
