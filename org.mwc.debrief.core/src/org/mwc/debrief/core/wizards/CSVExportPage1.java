@@ -227,7 +227,18 @@ public class CSVExportPage1 extends WizardPage
     {
       StructuredSelection selection = (StructuredSelection) comboViewer
           .getSelection();
-      val = (String) (selection.isEmpty() ? val : selection.getFirstElement());
+      if(selection.isEmpty())
+      {
+        // ah, it's not one of the drop downs, so
+        // get the value from the combo
+        String comboText = comboViewer.getCombo().getText();
+        val = comboText == null ? val : comboText;
+      }
+      else
+      {
+        // just get the selected item
+        val = (String) selection.getFirstElement();
+      }
     }
 
     return val;
