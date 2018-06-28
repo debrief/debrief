@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="Force Protection Scenario"  xmlns="http://www.mwc.org/asset" StartTime="2010-01-12T12:13:14Z" Created="2010-01-19T12:13:14Z">
-  <StepTime Units="minutes" Value="2"></StepTime><Environment Name="token"
+  <StepTime Units="minutes" Value="5"></StepTime><Environment Name="token"
   	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 	<VisualLookupEnvironment Name="Easy to see">
 		<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001" LightHaze="0.0000001"
