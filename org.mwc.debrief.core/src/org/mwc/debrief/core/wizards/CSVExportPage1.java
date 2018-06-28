@@ -17,6 +17,7 @@ package org.mwc.debrief.core.wizards;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage1 extends WizardPage
@@ -113,6 +115,7 @@ public class CSVExportPage1 extends WizardPage
 
     this.provenance = provenance;
     unitName = unit;
+    readFormPref();
 
     super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
         "org.mwc.debrief.core", "images/csvexport_wizard.png"));
@@ -318,6 +321,68 @@ public class CSVExportPage1 extends WizardPage
     return unitName;
   }
 
+  public void readFormPref()
+  {
+
+    if (provenance == null || provenance.isEmpty())
+    {
+      provenance = getPrefValue("CSV_EXPORT_provenance", provenance);
+    }
+    if (unitName == null || unitName.isEmpty())
+    {
+      unitName = getPrefValue("CSV_EXPORT_unit", unitName);
+    }
+    type = getPrefValue("CSV_EXPORT_type", type);
+    flag = getPrefValue("CSV_EXPORT_flag", flag);
+    sensor = getPrefValue("CSV_EXPORT_sensor", sensor);
+    classification = getPrefValue("CSV_EXPORT_classification", classification);
+    likelihood = getPrefValue("CSV_EXPORT_likelihood", likelihood);
+    confidence = getPrefValue("CSV_EXPORT_confidence", confidence);
+    suppliedBy = getPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
+    caseNumber = getPrefValue("CSV_EXPORT_caseNumber", caseNumber);
+    majorAxis = getPrefValue("CSV_EXPORT_majorAxis", majorAxis);
+    semiMajorAxis = getPrefValue("CSV_EXPORT_semiMajorAxis", semiMajorAxis);
+    semiMinorAxis = getPrefValue("CSV_EXPORT_semiMinorAxis", semiMinorAxis);
+  }
+
+  public void writeToPref()
+  {
+
+    provenance = setPrefValue("CSV_EXPORT_provenance", provenance);
+
+    unitName = setPrefValue("CSV_EXPORT_unit", unitName);
+
+    type = setPrefValue("CSV_EXPORT_type", type);
+    flag = setPrefValue("CSV_EXPORT_flag", flag);
+    sensor = setPrefValue("CSV_EXPORT_sensor", sensor);
+    classification = setPrefValue("CSV_EXPORT_classification", classification);
+    likelihood = setPrefValue("CSV_EXPORT_likelihood", likelihood);
+    confidence = setPrefValue("CSV_EXPORT_confidence", confidence);
+    suppliedBy = setPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
+    caseNumber = setPrefValue("CSV_EXPORT_caseNumber", caseNumber);
+    majorAxis = setPrefValue("CSV_EXPORT_majorAxis", majorAxis);
+    semiMajorAxis = setPrefValue("CSV_EXPORT_semiMajorAxis", semiMajorAxis);
+    semiMinorAxis = setPrefValue("CSV_EXPORT_semiMinorAxis", semiMinorAxis);
+  }
+
+  String getPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+    String newVal = preferenceStore.getString(key);
+
+    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
+  }
+
+  String setPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+
+    preferenceStore.setValue(key, currentVal);
+    return currentVal;
+  }
+
   public void readValues()
   {
 
@@ -349,6 +414,7 @@ public class CSVExportPage1 extends WizardPage
       date.set(Calendar.MILLISECOND, 0);
       infoCutoffDate = date.getTime();
     }
+    writeToPref();
 
   }
 }

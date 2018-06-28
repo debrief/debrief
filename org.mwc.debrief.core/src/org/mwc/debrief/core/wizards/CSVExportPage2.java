@@ -16,6 +16,7 @@ package org.mwc.debrief.core.wizards;
 
 import java.io.File;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage2 extends WizardPage
@@ -58,7 +60,7 @@ public class CSVExportPage2 extends WizardPage
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
-
+    readFormPref();
     super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
         "org.mwc.debrief.core", "images/csvexport_wizard.png"));
 
@@ -157,6 +159,40 @@ public class CSVExportPage2 extends WizardPage
     setControl(contents);
   }
 
+  public void readFormPref()
+  {
+
+    exportFolder = getPrefValue("CSV_EXPORT_exportFolder", exportFolder);
+    purpose = getPrefValue("CSV_EXPORT_purpose", purpose);
+    statement = getPrefValue("CSV_EXPORT_statement", statement);
+  }
+
+  public void writeToPref()
+  {
+
+    exportFolder = setPrefValue("CSV_EXPORT_exportFolder", exportFolder);
+    purpose = setPrefValue("CSV_EXPORT_purpose", purpose);
+    statement = setPrefValue("CSV_EXPORT_statement", statement);
+  }
+
+  String getPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+    String newVal = preferenceStore.getString(key);
+
+    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
+  }
+
+  String setPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+
+    preferenceStore.setValue(key, currentVal);
+    return currentVal;
+  }
+
   public String getExportFolder()
   {
     return exportFolder;
@@ -182,34 +218,37 @@ public class CSVExportPage2 extends WizardPage
 
     if (folderTxt != null && !folderTxt.isDisposed())
       exportFolder = folderTxt.getText().trim();
-    
-    if(exportFolder ==null ||exportFolder.isEmpty())
+
+    if (exportFolder == null || exportFolder.isEmpty())
     {
       setErrorMessage("Please select valid Destination folder.");
 
-      return ;
+      return;
     }
-    extracted();
+    validate();
   }
 
-  private void extracted()
+  private void validate()
   {
-    if(exportFolder ==null ||exportFolder.isEmpty())
+    if (exportFolder == null || exportFolder.isEmpty())
     {
       setErrorMessage("Please select valid Destination folder.");
-      
+
       setPageComplete(false);
 
-      return ;
+      return;
     }
-    else if(!new File(exportFolder).exists() || !new File(exportFolder).isDirectory() || !new File(exportFolder).canWrite())
+    else if (!new File(exportFolder).exists() || !new File(exportFolder)
+        .isDirectory() || !new File(exportFolder).canWrite())
     {
-       setErrorMessage("Please select valid Destination folder with write access.");
-      
+      setErrorMessage(
+          "Please select valid Destination folder with write access.");
+
       setPageComplete(false);
 
-      return ;
+      return;
     }
+    writeToPref();
     setErrorMessage(null);
     setPageComplete(true);
   }
