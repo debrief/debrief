@@ -272,6 +272,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Properties.MyDateFormatPropertyEditor;
+import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
@@ -428,8 +429,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
           System.arraycopy(_coreDescriptors, 0, coreDescriptorsWithComment, 1,
               _coreDescriptors.length);
           coreDescriptorsWithComment[0] =
-              displayProp("DisplayComment", "Show Comment instead of label",
-                  "Show comment, instead of label", OPTIONAL);
+              displayProp("CommentShowing", "Comment showing",
+                  "whether the comment is showing", VISIBILITY);
           res = coreDescriptorsWithComment;
         }
         else
@@ -735,10 +736,16 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * the tactical data item we are storing
    */
   private Fix _theFix;
+
   /**
    * the label describing this fix
    */
   private MWC.GUI.Shapes.TextLabel _theLabel;
+
+  /**
+   * the comment describing this fix
+   */
+  private MWC.GUI.Shapes.TextLabel _theCommentBox;
 
   /**
    * the symbol representing the center of the fix
@@ -749,6 +756,11 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * flag for whether to show the label
    */
   private boolean _showLabel;
+  
+  /** flag for whether to show the comment
+   * 
+   */
+  private boolean _showComment;
 
   /**
    * the font to draw this track in.
@@ -796,12 +808,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * 
    */
   private TrackSegment _parentSegment;
-
-  /**
-   * display the comment instead of the label
-   * 
-   */
-  private boolean _displayComment = false;
 
   /**
    * the track we are a part of (note, we're making it static so that when we serialise it we don't
@@ -990,11 +996,19 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // move the label around a bit
     _theLabel.setFixedOffset(new java.awt.Dimension(4, 4));
 
+    _theCommentBox = new MWC.GUI.Shapes.TextLabel(_theFix.getLocation(), "");
+
+    // move the label around a bit
+    _theCommentBox.setFixedOffset(new java.awt.Dimension(4, 4));
+    _theCommentBox.setRelativeLocation(NullableLocationPropertyEditor.AUTO);
+    
     // orient the label according to the current heading
     resetLabelLocation();
 
     // hide the name, by default
     _showLabel = Boolean.FALSE;
+    _showComment = Boolean.FALSE;
+    
     // declare a duff track
     _trackWrapper = null;
     // start us off with a nice font
@@ -1032,6 +1046,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _myEditor = null;
     _myArea = null;
     _theLabel = null;
+    _theCommentBox = null;
     setFont(null);
     _showLabel = false;
 
@@ -1151,11 +1166,6 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return _theFix.getLocation().getDepth();
   }
 
-  public boolean getDisplayComment()
-  {
-    return _displayComment;
-  }
-
   @Override
   public HiResDate getDTG()
   {
@@ -1224,6 +1234,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public final boolean getLabelShowing()
   {
     return _showLabel;
+  }
+  
+
+  public final boolean getCommentShowing()
+  {
+    return _showComment;
   }
 
   public boolean getLineShowing()
@@ -1342,23 +1358,14 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     // now draw the label
     if (getLabelShowing())
     {
-      _theLabel.setColor(theCol);
-
-      // are we overriding the label with the comment marker
-      if (_displayComment && getComment() != null)
-      {
-        final String oldLbl = _theLabel.getString();
-
-        _theLabel.setString(getComment());
-
-        _theLabel.paint(dest);
-
-        _theLabel.setString(oldLbl);
-      }
-      else
-      {
-        _theLabel.paint(dest);
-      }
+      _theLabel.setColor(theCol);      
+      _theLabel.paint(dest);
+    }
+    
+    if(getCommentShowing() && _theCommentBox != null)
+    {
+      _theCommentBox.setColor(theCol);
+      _theCommentBox.paint(dest);
     }
   }
 
@@ -1430,6 +1437,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
     // override the label location
     _theLabel.setLocation(centre);
+    _theCommentBox.setLocation(centre);
 
     // and paint the label - if we're asked nicely
     paintLabel(dest, theColor);
@@ -1465,6 +1473,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   final public void resetLabelLocation()
   {
     _theLabel.setRelativeLocation(orientationFor(getCourse()));
+    
+    // ok, but the comment opposite the label
+    _theCommentBox.setRelativeLocation(orientationFor(getCourse() + Math.PI));
   }
 
   @FireReformatted
@@ -1538,13 +1549,21 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
   public void setDisplayComment(final boolean displayComment)
   {
-    _displayComment = displayComment;
+    _theCommentBox.setVisible(displayComment);
   }
 
   @Override
   public void setDTG(final HiResDate date)
   {
     _theFix.setTime(date);
+  }
+  
+  @Override
+  public void setComment(final String comment)
+  {
+    _theCommentBox.setString(comment);
+    
+    super.setComment(comment);
   }
 
   /**
@@ -1567,6 +1586,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     _theFix.setLocation(val);
     _theLabel.setLocation(val);
+    _theCommentBox.setLocation(val);
     _theLocationWrapper.setLocation(val);
 
     // try to reduce object allocation, if we can...
@@ -1666,12 +1686,43 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public final void setLabelLocation(final Integer loc)
   {
     _theLabel.setRelativeLocation(loc);
+
+    // if the location is auto, we can handle that
+    final int newLoc;
+    switch (loc)
+    {
+      case NullableLocationPropertyEditor.BOTTOM:
+        newLoc = NullableLocationPropertyEditor.TOP;
+        break;
+      case NullableLocationPropertyEditor.TOP:
+        newLoc = NullableLocationPropertyEditor.BOTTOM;
+        break;
+      case NullableLocationPropertyEditor.LEFT:
+        newLoc = NullableLocationPropertyEditor.RIGHT;
+        break;
+      case NullableLocationPropertyEditor.RIGHT:
+        newLoc = NullableLocationPropertyEditor.LEFT;
+        break;
+      case NullableLocationPropertyEditor.AUTO:
+        newLoc = NullableLocationPropertyEditor.AUTO;
+        break;
+      default:
+        newLoc = NullableLocationPropertyEditor.TOP;
+        break;
+    }
+    _theCommentBox.setRelativeLocation(newLoc);
   }
 
   @FireReformatted
   public final void setLabelShowing(final boolean val)
   {
     _showLabel = val;
+  }
+  
+  @FireReformatted
+  public final void setCommentShowing(final boolean val)
+  {
+    _showComment = val;
   }
 
   public void setLineShowing(final boolean val)
