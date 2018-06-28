@@ -85,16 +85,15 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   private TargetType _targetType = null;
   final private List<String> _formatHelpers = new ArrayList<String>();
   private String _subjectSensor = null;
-
-  protected String _parentFolder;
+  private String _targetFolder = null;
 
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
   private static final String TARGET_TYPE = "SubjectToTrack";
   private static final String SUBJECT_SENSOR = "SubjectSensor";
-  private static final String PARENT_FOLDER = "ParentFolder";
-  
+  private static final String TARGET_FOLDER = "TargetFolder";
+
   public DebriefReplayObserverHandler(String type)
   {
     super(type);
@@ -113,11 +112,11 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
         _subjectSensor = val;
       }
     });
-    addAttributeHandler(new HandleAttribute(PARENT_FOLDER)
+    addAttributeHandler(new HandleAttribute(TARGET_FOLDER)
     {
       public void setValue(String name, final String val)
       {
-        _parentFolder = val;
+        _targetFolder = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
@@ -185,7 +184,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     _recordPositions = true;
     _targetType = null;
     _subjectSensor = null;
-    _parentFolder = null;
+    _targetFolder = null;
     
     // and clear the format helpers
     _formatHelpers.clear();
@@ -223,6 +222,11 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     {
       TargetTypeHandler.exportThis(TARGET_TYPE, bb.getSubjectToTrack(),
           thisPart, doc);
+    }
+    
+    if(bb.getTargetFolder() != null)
+    {
+      thisPart.setAttribute(TARGET_FOLDER, bb.getTargetFolder());
     }
     
     List<String> helpers = bb.getFormatHelpers();

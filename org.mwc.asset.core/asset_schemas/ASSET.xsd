@@ -4120,10 +4120,10 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="ParentFolder" type="xs:string"
+				<xs:attribute name="TargetFolder" type="xs:string"
 					use="optional">
 					<xs:annotation>
-						<xs:documentation>Parent track to store these track(s) under
+						<xs:documentation>Whether to put tracks into a target folder
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>

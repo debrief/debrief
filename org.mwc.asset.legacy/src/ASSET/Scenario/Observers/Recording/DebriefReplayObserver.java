@@ -56,14 +56,17 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   private ArrayList<Integer> _recordedDetections = new ArrayList<Integer>();
 
   private final List<String> _formatHelpers;
+  
+  /** if user wants track to go into a folder (as lightweight tracks).
+   * 
+   */
+  private String _targetFolder;
 
   /**
    * the (optional) type of sensor we listen to
    * 
    */
   private String _subjectSensor;
-
-  private String _parentFolder;
 
   /***************************************************************
    * constructor
@@ -106,16 +109,20 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
         observerName, isActive, null);
   }
 
-  /**
-   * ************************************************************ member methods
-   * *
-   * @param parentFolder ************************************************************
-   */
 
-  static private String writeDetailsToBuffer(
+  /**
+   * 
+   * @param loc
+   * @param stat
+   * @param pt
+   * @param newTime
+   * @param targetFolder (optional) destination for lightweight tracks
+   * @return
+   */
+  static public String writeDetailsToBuffer(
       final MWC.GenericData.WorldLocation loc,
       final ASSET.Participants.Status stat, final NetworkParticipant pt,
-      long newTime, final String parentFolder)
+      long newTime, String targetFolder)
   {
 
     StringBuffer buff = new StringBuffer();
@@ -154,11 +161,12 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // get the symbol type
     String col = hisSymbol + colorFor(force);
     
-    if(parentFolder != null)
+    // do we have a target folder?
+    if(targetFolder != null)
     {
-      col += "[LAYER=" + parentFolder + "]";
+      col += "[LAYER=" + targetFolder + "]";
     }
-    
+
     // wrap the vessel name if we have to
     String theName = wrapName(pt.getName());
 
@@ -188,6 +196,11 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   public void setSubjectSensor(final String subjectSensor)
   {
     this._subjectSensor = subjectSensor;
+  }
+  
+  public void setTargetFolder(final String targetFolder)
+  {
+    _targetFolder = targetFolder;
   }
 
   @Override
@@ -220,7 +233,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // (and are now happy to output sensor data)
     _haveOutputPositions = true;
 
-    String res = writeDetailsToBuffer(loc, stat, pt, newTime, _parentFolder);
+    String res = writeDetailsToBuffer(loc, stat, pt, newTime, _targetFolder);
     writeToFile(res);
   }
 
@@ -726,8 +739,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 
   }
 
-  public void setParentFolder(String parentFolder)
+  public String getTargetFolder()
   {
-    _parentFolder = parentFolder;
+    return _targetFolder;
   }
 }
