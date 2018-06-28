@@ -163,6 +163,8 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
 
   private static final String EARTH_MODEL_PROVIDER =
       "org.mwc.cmap.core.EarthModelProvider";
+  
+  public static final String VIDEO_PLAYER_VIEW="org.mwc.cmap.media.views.VideoPlayerView";
 
   /**
    * preference for detault font size

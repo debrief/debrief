@@ -19,7 +19,7 @@
       <view
             name="Video Player"
             icon="icons/player.gif"
-            category="org.mwc.cmap.media"
+            category="org.mwc.debrief.core.DebriefCategory"
             class="org.mwc.cmap.media.views.VideoPlayerView"
             id="org.mwc.cmap.media.views.VideoPlayerView"            
             allowMultiple="true">
@@ -28,7 +28,7 @@
       <view
             name="Images"
             icon="icons/images16.gif"
-            category="org.mwc.cmap.media"
+            category="org.mwc.debrief.core.DebriefCategory"
             class="org.mwc.cmap.media.views.ImagesView"
             id="org.mwc.cmap.media.views.ImagesView"            
             allowMultiple="true">         
