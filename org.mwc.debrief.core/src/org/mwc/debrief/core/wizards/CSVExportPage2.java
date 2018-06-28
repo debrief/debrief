@@ -40,8 +40,7 @@ public class CSVExportPage2 extends WizardPage
   // Data Fields ---- TODO: change default values
   private String purpose = "For operational planning";
   private String statement;
-  private String exportFolder = new File(System.getProperty("user.home"),
-      "debrief").getAbsolutePath();
+  private String exportFolder = new File(System.getProperty("user.home")).getAbsolutePath();
   // ------
 
   // UI - Fields -----
