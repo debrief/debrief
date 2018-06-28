@@ -1708,6 +1708,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
         break;
       default:
         newLoc = NullableLocationPropertyEditor.TOP;
+        break;
     }
     _theCommentBox.setRelativeLocation(newLoc);
   }
