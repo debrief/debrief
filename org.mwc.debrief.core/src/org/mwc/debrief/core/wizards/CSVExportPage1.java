@@ -42,9 +42,9 @@ public class CSVExportPage1 extends WizardPage
   private String classification;
   private String type;
   private String sensor;
-  private String majorAxis = "12.2";
-  private String semiMajorAxis = "4.3";
-  private String semiMinorAxis = "3.2";
+  private String majorAxis = "1.0";
+  private String semiMajorAxis = "0.5";
+  private String semiMinorAxis = "0.5";
   private String flag;
   private String likelihood;
   private String confidence;
@@ -68,6 +68,9 @@ public class CSVExportPage1 extends WizardPage
   private ComboViewer suppliedByCmb;
   private Text caseNumbertxt;
   private DateTime infoCutoffDateComp;
+  private Text majorAxisTxt;
+  private Text semiMajorAxisTxt;
+  private Text semiMinorAxisTxt;
 
   // -----------
 
@@ -113,6 +116,16 @@ public class CSVExportPage1 extends WizardPage
     // line 6
     suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:", false,
         flag);
+    majorAxisTxt = addCaseNumberField(contents, "Major Axis (Nm):", majorAxis);
+    // line 7
+    new Label(contents, SWT.NONE);
+    new Label(contents, SWT.NONE);
+    semiMajorAxisTxt = addCaseNumberField(contents, "Semi-Major Axis (Nm):", semiMajorAxis);
+    
+    // line 8
+    new Label(contents, SWT.NONE);
+    new Label(contents, SWT.NONE);
+    semiMinorAxisTxt = addCaseNumberField(contents, "Semi-Minor Axis (Nm):", semiMinorAxis);
 
     setControl(contents);
 
@@ -176,6 +189,10 @@ public class CSVExportPage1 extends WizardPage
     provenance = getTxtVal(provenanceTxt, provenance);
     unitName = getTxtVal(unitNameTxt, unitName);
     caseNumber = getTxtVal(caseNumbertxt, caseNumber);
+    
+    majorAxis = getTxtVal(majorAxisTxt, majorAxis);
+    semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
+    semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
 
     if (infoCutoffDateComp != null && infoCutoffDateComp.isDisposed())
     {
