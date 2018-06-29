@@ -19,7 +19,6 @@ import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -30,6 +29,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -38,7 +38,7 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public final class LightweightTrack extends ArrayList<FixWrapper> implements
+public final class LightweightTrack extends Plottables implements
     WatchableList, Plottable, FormattedTrack
 {
 
@@ -55,7 +55,7 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
       {
         final PropertyDescriptor[] res =
         {prop("Visible", "the Layer visibility", VISIBILITY), prop("Name",
-            "the name of the track", FORMAT), prop("ShowName",
+            "the name of the track", FORMAT), prop("NameVisible",
                 "show the name of the track", FORMAT), prop("Color",
                     "color of the track", FORMAT),
           displayExpertLongProp("LineStyle", "Line style",
@@ -176,6 +176,24 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
     return _cachedPeriod;
   }
 
+  public Iterator<FixWrapper> iterator()
+  {
+    final Enumeration<Editable> ele = elements();
+    return new Iterator<FixWrapper>() {
+
+      @Override
+      public boolean hasNext()
+      {
+        return ele.hasMoreElements();
+      }
+
+      @Override
+      public FixWrapper next()
+      {
+        return (FixWrapper) ele.nextElement();
+      }};
+  }
+
   @FireReformatted
   public void setColor(Color color)
   {
@@ -238,20 +256,11 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
     return ((FixWrapper) first()).getTime();
   }
 
-  private FixWrapper first()
-  {
-    return super.get(0);
-  }
 
   @Override
   public HiResDate getEndDTG()
   {
     return ((FixWrapper) last()).getTime();
-  }
-
-  private FixWrapper last()
-  {
-    return super.get(super.size() - 1);
   }
 
   @Override
@@ -260,8 +269,8 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
 
-    FixWrapper myFirst = first();
-    FixWrapper myLast = last();
+    FixWrapper myFirst = (FixWrapper) first();
+    FixWrapper myLast = (FixWrapper) last();
 
     if (DTG.lessThan(myFirst.getTime()) || DTG.greaterThan(myLast.getTime()))
     {
@@ -330,13 +339,12 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
     return null;
   }
 
-  @Override
-  public boolean add(FixWrapper e)
+  public void add(FixWrapper e)
   {
     // forget the bounds
     _bounds = null;
     
-    return super.add(e);
+     super.add(e);
   }
 
   @Override
@@ -361,9 +369,10 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
   {
     if(_bounds == null)
     {
-      for(FixWrapper t: this)
+      Iterator<FixWrapper> itera = iterator();
+      while(itera.hasNext())
       {
-        final WorldLocation loc = t.getLocation();
+        WorldLocation loc = itera.next().getLocation();
         if(_bounds == null)
         {
           _bounds = new WorldArea(loc, loc);
@@ -436,22 +445,7 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
   @Override
   public Enumeration<Editable> getPositionIterator()
   {
-    final Iterator<FixWrapper> iter = iterator();
-    return new Enumeration<Editable>()
-    {
-
-      @Override
-      public boolean hasMoreElements()
-      {
-        return iter.hasNext();
-      }
-
-      @Override
-      public Editable nextElement()
-      {
-        return iter.next();
-      }
-    };
+    return elements();
   }
 
   /**
