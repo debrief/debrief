@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -121,6 +122,7 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.media.views.VideoPlayerView;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
@@ -449,9 +451,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private final org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
-  /** note: the outline page isn't final, since
-   * the user may close the page, after which we will
-   * have a new one
+  /**
+   * note: the outline page isn't final, since the user may close the page, after which we will have
+   * a new one
    */
   private PlotOutlinePage _outlinePage;
 
@@ -1078,8 +1080,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               if (currentState != null)
               {
-                final ICommandService service = (ICommandService) getSite().getService(
-                    ICommandService.class);
+                final ICommandService service = (ICommandService) getSite()
+                    .getService(ICommandService.class);
                 final Command command = service.getCommand(RadioHandler.ID);
                 HandlerUtil.updateRadioState(command, currentState);
               }
@@ -1604,6 +1606,52 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return "";
   }
 
+  /**
+   * utility function to extract filename extension
+   * 
+   * @param fileName
+   *          full file path
+   * @return extension of file
+   */
+  private String getFileNameExtension(final String fileName)
+  {
+    if (fileName == null)
+    {
+      throw new IllegalArgumentException("file name == null");
+    }
+    int pos = fileName.lastIndexOf(".");
+    if (pos > 0 && pos < fileName.length())
+    {
+      return fileName.substring(pos+1, fileName.length());
+    }
+    return "";
+
+  }
+
+  private boolean isVideoFile(final String fileName)
+  {
+    String[] supportedVideoFormats = new String[]
+    {"avi"};
+    for(String format:supportedVideoFormats) {
+      if(format.equalsIgnoreCase(getFileNameExtension(fileName))) {
+        return true;
+      }
+    }
+
+    
+    return false;
+  }
+
+  private void openVideoPlayer(final String fileName)
+  {
+    // CorePlugin.VIDEO_PLAYER_VIEW
+    IViewPart view = CorePlugin.openSecondaryView(CorePlugin.VIDEO_PLAYER_VIEW,fileNamePartOf(fileName),IWorkbenchPage.VIEW_ACTIVATE);
+    if(view instanceof VideoPlayerView) {
+      VideoPlayerView videoView = (VideoPlayerView)view;
+      videoView.open(fileName);
+    }
+  }
+
   @Override
   protected void filesDropped(final String[] fileNames)
   {
@@ -1612,8 +1660,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // ok, iterate through the files
     for (int i = 0; i < fileNames.length; i++)
     {
+
       final String thisFilename = fileNames[i];
-      loadThisFile(thisFilename);
+      if (isVideoFile(thisFilename))
+      {
+        openVideoPlayer(thisFilename);
+      }
+      else
+      {
+        loadThisFile(thisFilename);
+      }
     }
 
     // ok, we're probably done - fire the update
