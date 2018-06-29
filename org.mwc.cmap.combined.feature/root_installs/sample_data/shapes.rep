@@ -104,9 +104,7 @@
 
 
 
-;; date, time, ownship name, symbology, tma lat, tma long, track name, 
-ellipse orientation (deg from north),  maxima (yds), minima (yds), course, 
-speed, depth (m), label string
+;; date, time, ownship name, symbology, tma lat, tma long, track name, ellipse orientation (deg from north),  maxima (yds), minima (yds), course, speed, depth (m), label string
 
 951212 050000.000 NEL_STYLE2   @@@00   22 11 10.63 N 21 31 52.37 W 269.7   2.0      0 
 951212 050100.000 NEL_STYLE2   @@@00   22 11 10.58 N 21 32  2.98 W 269.7   2.0      0 
