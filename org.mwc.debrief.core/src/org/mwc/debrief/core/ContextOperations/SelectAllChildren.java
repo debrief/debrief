@@ -349,8 +349,10 @@ public class SelectAllChildren implements RightClickContextItemGenerator
           // and the new drop-down list of interpolation frequencies
           final MenuManager newMenu = new MenuManager(
               "Select child elements with this interval");
-          newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-              "icons/16/show.png"));
+          
+          // commented out, API not present indigo
+          // newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+          //    "icons/16/show.png"));
 
           
           // ok, generate the operation
