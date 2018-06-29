@@ -57,7 +57,10 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
         {prop("Visible", "the Layer visibility", VISIBILITY), prop("Name",
             "the name of the track", FORMAT), prop("ShowName",
                 "show the name of the track", FORMAT), prop("Color",
-                    "color of the track", FORMAT)};
+                    "color of the track", FORMAT),
+          displayExpertLongProp("LineStyle", "Line style",
+              "the line style used to join track points", TEMPORAL,
+              MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -74,7 +77,7 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
   @Override
   public EditorType getInfo()
   {
-    return new LightweightInfo(this);
+    return new LightweightTrackInfo(this);
   }
 
   @Override
@@ -83,37 +86,7 @@ public final class LightweightTrack extends ArrayList<FixWrapper> implements
     return true;
   }
 
-  public class LightweightInfo extends Editable.EditorType
-  {
-
-    public LightweightInfo(final LightweightTrack data)
-    {
-      super(data, data.getName(), "");
-    }
-
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res =
-        {prop("Visible", "the Layer visibility", VISIBILITY), prop("Color",
-            "color for this track", FORMAT), displayExpertProp("TrackFont",
-                "Track font", "the track label font", FORMAT),
-            displayExpertProp("NameVisible", "Name visible",
-                "show the track label", VISIBILITY), prop("Name",
-                    "the name of the track", FORMAT),
-
-        };
-
-        return res;
-      }
-      catch (final IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
+ 
   /**
    * 
    */
