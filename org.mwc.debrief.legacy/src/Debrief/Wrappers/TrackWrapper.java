@@ -206,7 +206,7 @@ public class TrackWrapper extends MWC.GUI.PlainWrapper implements WatchableList,
                     "to specify a custom snail vector stretch",
                     Editable.EditorType.TEMPORAL, FractionPropertyEditor.class),
             displayExpertLongProp("LineStyle", "Line style",
-                "the line style used to join track points", TEMPORAL,
+                "the line style used to join track points", FORMAT,
                 MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         PropertyDescriptor[] res;
