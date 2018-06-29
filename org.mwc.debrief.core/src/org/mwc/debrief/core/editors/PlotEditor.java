@@ -30,7 +30,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -1645,6 +1644,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private void openVideoPlayer(final String fileName)
   {
     // CorePlugin.VIDEO_PLAYER_VIEW
+    //#2940 #6
+    //now open a dialog box and get the start time
+    
     IViewPart view = CorePlugin.openSecondaryView(CorePlugin.VIDEO_PLAYER_VIEW,fileNamePartOf(fileName),IWorkbenchPage.VIEW_ACTIVATE);
     if(view instanceof VideoPlayerView) {
       VideoPlayerView videoView = (VideoPlayerView)view;
