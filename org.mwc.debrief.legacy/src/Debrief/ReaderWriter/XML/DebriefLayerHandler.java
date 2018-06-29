@@ -37,10 +37,12 @@ import Debrief.ReaderWriter.XML.Shapes.RangeRingsHandler;
 import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
 import Debrief.ReaderWriter.XML.Shapes.VectorHandler;
 import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
+import Debrief.ReaderWriter.XML.Tactical.LightweightTrackHandler;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
 import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
+import Debrief.Wrappers.Track.LightweightTrack;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
@@ -84,6 +86,15 @@ public class DebriefLayerHandler extends
       public void addPlottable(final MWC.GUI.Plottable plottable)
       {
         addThis(plottable);
+      }
+    });
+
+    addHandler(new LightweightTrackHandler()
+    {      
+      @Override
+      public void storeTrack(LightweightTrack track)
+      {
+        addThis(track);
       }
     });
 
@@ -243,6 +254,13 @@ public class DebriefLayerHandler extends
       _myExporters.put(MWC.GUI.Shapes.ArcShape.class, new ArcHandler()
       {
         public void addPlottable(final MWC.GUI.Plottable plottable)
+        {
+        }
+      });
+      _myExporters.put(LightweightTrack.class, new LightweightTrackHandler()
+      {
+        @Override
+        public void storeTrack(LightweightTrack track)
         {
         }
       });
