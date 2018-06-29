@@ -24,6 +24,7 @@ package Debrief.ReaderWriter.XML.Tactical;
  */
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -32,9 +33,12 @@ import org.w3c.dom.Element;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.LightweightTrack;
 import MWC.GUI.Plottable;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+public abstract class LightweightTrackHandler extends
+    MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements PlottableExporter
 {
 
   private static final String NAME = "Name";
@@ -44,23 +48,29 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   private static final String SHOW_NAME = "NameVisible";
   private static final String LINE_STYLE = "LineStyle";
 
-  protected static void exportTrackObject(
-      final LightweightTrack track, final org.w3c.dom.Element parent,
-      final org.w3c.dom.Document doc)
+  
+  public void exportThisPlottable(MWC.GUI.Plottable plottable,
+      org.w3c.dom.Element parent, org.w3c.dom.Document doc)
   {
-
+    LightweightTrack track = (LightweightTrack)plottable;
+    
     Element trk = doc.createElement(MY_NAME);
     trk.setAttribute(NAME, toXML(track.getName()));
     trk.setAttribute(VISIBLE, writeThis(track.getVisible()));
     trk.setAttribute(SHOW_NAME, writeThis(track.getNameVisible()));
     trk.setAttribute(LINE_STYLE, writeThis(track.getLineStyle()));
-    
+
     Color hisColor = track.getCustomColor();
-    if(hisColor != null)
+    if (hisColor != null)
     {
       ColourHandler.exportColour(hisColor, trk, doc, COLOR);
     }
 
+    Font font = track.getTrackFont();
+    if (font != null)
+    {
+      FontHandler.exportFont(font, trk, doc);
+    }
 
     final Iterator<FixWrapper> allItems = track.iterator();
     while (allItems.hasNext())
@@ -68,7 +78,7 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
       final FixWrapper next = (FixWrapper) allItems.next();
       FixHandler.exportFix(next, trk, doc);
     }
-    
+
     parent.appendChild(trk);
   }
 
@@ -78,7 +88,8 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   protected String _name;
   private boolean _nameVisible;
   protected int _lineStyle;
- 
+  protected Font _font;
+
   protected LightweightTrackHandler()
   {
     // inform our parent what type of class we are
@@ -101,12 +112,21 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
         _color = res;
       }
     });
+    addHandler(new FontHandler()
+    {
+
+      @Override
+      public void setFont(Font res)
+      {
+        _font = res;
+      }
+    });
     addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
     {
       @Override
       public void setValue(final String name, final int value)
       {
-        _lineStyle= value;
+        _lineStyle = value;
       }
     });
 
@@ -141,22 +161,28 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   public void elementClosed()
   {
     // ok, generate the object
-    LightweightTrack track = new LightweightTrack(_name, _visible, _nameVisible, _color, _lineStyle);
+    LightweightTrack track = new LightweightTrack(_name, _visible, _nameVisible,
+        _color, _lineStyle);
     track.setVisible(_visible);
     track.setNameVisible(_nameVisible);
-    
-    for(FixWrapper t: _fixes)
+    if (_font != null)
+    {
+      track.setTrackFont(_font);
+    }
+
+    for (FixWrapper t : _fixes)
     {
       track.add(t);
     }
-    
+
     _fixes.clear();
     _color = null;
-    
+    _font = null;
+
     storeTrack(track);
 
   }
-  
+
   public abstract void storeTrack(LightweightTrack track);
 
 }
