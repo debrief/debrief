@@ -24,12 +24,14 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.FormattedTrack;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -112,15 +114,16 @@ public interface SWTPlotHighlighter extends Editable
         if (watch instanceof FixWrapper)
         {
           FixWrapper fw = (FixWrapper) watch;
-          TrackWrapper tw = fw.getTrackWrapper();
-          if (tw != null)
+          WatchableList tw = fw.getTrackWrapper();
+          if (tw != null && tw instanceof FormattedTrack)
           {
+            FormattedTrack tf = (FormattedTrack) tw;
 
             HiResDate dtg = fw.getTime();
 
             // trim to visible period if its a track
-            TimePeriod visP = tw.getVisiblePeriod();
-            if(visP != null && !visP.contains(dtg))
+            TimePeriod visP = tf.getVisiblePeriod();
+            if (visP != null && !visP.contains(dtg))
             {
               // ok, before or after?
               if (visP.getStartDTG().greaterThan(dtg))
@@ -138,11 +141,11 @@ public interface SWTPlotHighlighter extends Editable
         }
 
         // handle empty track
-        if(watch == null)
+        if (watch == null)
         {
           return;
         }
-        
+
         // set the highlight colour
         dest.setColor(_myColor);
         // get the current area of the watchable
@@ -189,60 +192,63 @@ public interface SWTPlotHighlighter extends Editable
       if (watch instanceof FixWrapper)
       {
         FixWrapper fw = (FixWrapper) watch;
-        TrackWrapper tw = fw.getTrackWrapper();
-
-        if (tw != null && tw.getPlotArrayCentre())
+        TrackWrapper wList = (TrackWrapper) fw.getTrackWrapper();
+        if (wList instanceof TrackWrapper)
         {
+          TrackWrapper tw = wList;
 
-          final Enumeration<Editable> enumer = tw.getSensors().elements();
-          while (enumer.hasMoreElements())
+          if (tw != null && tw.getPlotArrayCentre())
           {
-            final SensorWrapper sw = (SensorWrapper) enumer.nextElement();
 
-            // is this sensor visible?
-            if (sw.getVisible())
+            final Enumeration<Editable> enumer = tw.getSensors().elements();
+            while (enumer.hasMoreElements())
             {
-              // ok, use a lighter color
-              if (sensorColor == null)
+              final SensorWrapper sw = (SensorWrapper) enumer.nextElement();
+
+              // is this sensor visible?
+              if (sw.getVisible())
               {
-                sensorColor = fw.getColor().brighter();
-                dest.setColor(sensorColor);
-              }
-
-              final WorldLocation centre =
-                  sw.getArrayCentre(fw.getTime(), watch.getLocation(), tw);
-
-              // have we managed it?
-              if (centre != null)
-              {
-                final Point pt = dest.toScreen(centre);
-                dest.drawLine(pt.x - mySize, pt.y - mySize, pt.x + mySize, pt.y
-                    + mySize);
-                dest.drawLine(pt.x + mySize, pt.y - mySize, pt.x - mySize, pt.y
-                    + mySize);
-
-                // store the new screen update area
-                thisR =
-                    new Rectangle(pt.x - mySize, pt.y - mySize, mySize, mySize);
-                if (areaCovered != null)
+                // ok, use a lighter color
+                if (sensorColor == null)
                 {
-                  areaCovered.add(thisR);
+                  sensorColor = fw.getColor().brighter();
+                  dest.setColor(sensorColor);
                 }
 
-                thisR =
-                    new Rectangle(pt.x + mySize, pt.y - mySize, mySize, mySize);
-                if (areaCovered != null)
+                final WorldLocation centre = sw.getArrayCentre(fw.getTime(),
+                    watch.getLocation(), tw);
+
+                // have we managed it?
+                if (centre != null)
                 {
-                  areaCovered.add(thisR);
+                  final Point pt = dest.toScreen(centre);
+                  dest.drawLine(pt.x - mySize, pt.y - mySize, pt.x + mySize,
+                      pt.y + mySize);
+                  dest.drawLine(pt.x + mySize, pt.y - mySize, pt.x - mySize,
+                      pt.y + mySize);
+
+                  // store the new screen update area
+                  thisR = new Rectangle(pt.x - mySize, pt.y - mySize, mySize,
+                      mySize);
+                  if (areaCovered != null)
+                  {
+                    areaCovered.add(thisR);
+                  }
+
+                  thisR = new Rectangle(pt.x + mySize, pt.y - mySize, mySize,
+                      mySize);
+                  if (areaCovered != null)
+                  {
+                    areaCovered.add(thisR);
+                  }
                 }
-              }
-              else
-              {
-                Application.logStack2(Application.ERROR,
-                    "Unable to determine array centre for:" + sw.getName());
+                else
+                {
+                  Application.logStack2(Application.ERROR,
+                      "Unable to determine array centre for:" + sw.getName());
+                }
               }
             }
-
           }
         }
       }
@@ -372,8 +378,8 @@ public interface SWTPlotHighlighter extends Editable
         try
         {
           final java.beans.PropertyDescriptor[] res =
-              {prop("Color", "Color to paint highlight"),
-                  prop("Size", "size to paint highlight (pixels)"),};
+          {prop("Color", "Color to paint highlight"), prop("Size",
+              "size to paint highlight (pixels)"),};
           return res;
         }
         catch (final Exception e)

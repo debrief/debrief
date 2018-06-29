@@ -163,10 +163,10 @@ public class ConvertLightweightToTrack implements
             track.setColor(DebriefColors.GOLD);
           }
 
-          final Enumeration<Editable> numer = layer.elements();
-          while (numer.hasMoreElements())
+          final Iterator<FixWrapper> numer = layer.iterator();
+          while (numer.hasNext())
           {
-            final FixWrapper fix = (FixWrapper) numer.nextElement();
+            final FixWrapper fix = (FixWrapper) numer.next();
             track.add(fix);
           }
         }

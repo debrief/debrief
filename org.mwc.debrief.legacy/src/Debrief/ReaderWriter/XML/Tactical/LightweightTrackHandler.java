@@ -25,13 +25,12 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.LightweightTrack;
-import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
@@ -41,7 +40,9 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   private static final String NAME = "Name";
   private static final String VISIBLE = "Visible";
   private static final String MY_NAME = "LightweightTrack";
-  private static final String CUSTOM_COLOR = "CustomColor";
+  private static final String COLOR = "Color";
+  private static final String SHOW_NAME = "NameVisible";
+  private static final String LINE_STYLE = "LineStyle";
 
   protected static void exportTrackObject(
       final LightweightTrack track, final org.w3c.dom.Element parent,
@@ -51,18 +52,20 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
     Element trk = doc.createElement(MY_NAME);
     trk.setAttribute(NAME, toXML(track.getName()));
     trk.setAttribute(VISIBLE, writeThis(track.getVisible()));
+    trk.setAttribute(SHOW_NAME, writeThis(track.getNameVisible()));
+    trk.setAttribute(LINE_STYLE, writeThis(track.getLineStyle()));
     
     Color hisColor = track.getCustomColor();
     if(hisColor != null)
     {
-      ColourHandler.exportColour(hisColor, trk, doc, CUSTOM_COLOR);
+      ColourHandler.exportColour(hisColor, trk, doc, COLOR);
     }
 
 
-    final Enumeration<Editable> allItems = track.elements();
-    while (allItems.hasMoreElements())
+    final Iterator<FixWrapper> allItems = track.iterator();
+    while (allItems.hasNext())
     {
-      final FixWrapper next = (FixWrapper) allItems.nextElement();
+      final FixWrapper next = (FixWrapper) allItems.next();
       FixHandler.exportFix(next, trk, doc);
     }
     
@@ -70,10 +73,12 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   }
 
   private ArrayList<FixWrapper> _fixes = new ArrayList<FixWrapper>();
-  protected Color _customColor;
+  protected Color _color;
   protected boolean _visible;
   protected String _name;
-  
+  private boolean _nameVisible;
+  protected int _lineStyle;
+ 
   protected LightweightTrackHandler()
   {
     // inform our parent what type of class we are
@@ -88,12 +93,20 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
       }
     });
 
-    addHandler(new ColourHandler(CUSTOM_COLOR)
+    addHandler(new ColourHandler(COLOR)
     {
       @Override
       public void setColour(final java.awt.Color res)
       {
-        _customColor = res;
+        _color = res;
+      }
+    });
+    addAttributeHandler(new HandleIntegerAttribute(LINE_STYLE)
+    {
+      @Override
+      public void setValue(final String name, final int value)
+      {
+        _lineStyle= value;
       }
     });
 
@@ -103,6 +116,14 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
       public void setValue(final String name, final boolean val)
       {
         _visible = val;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(SHOW_NAME)
+    {
+      @Override
+      public void setValue(final String name, final boolean val)
+      {
+        _nameVisible = val;
       }
     });
     addAttributeHandler(new HandleAttribute(NAME)
@@ -120,13 +141,9 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
   public void elementClosed()
   {
     // ok, generate the object
-    LightweightTrack track = new LightweightTrack(_name);
+    LightweightTrack track = new LightweightTrack(_name, _visible, _nameVisible, _color, _lineStyle);
     track.setVisible(_visible);
-    
-    if(_customColor != null)
-    {
-      track.setCustomColor(_customColor);
-    }
+    track.setNameVisible(_nameVisible);
     
     for(FixWrapper t: _fixes)
     {
@@ -134,7 +151,7 @@ public abstract class LightweightTrackHandler extends MWC.Utilities.ReaderWriter
     }
     
     _fixes.clear();
-    _customColor = null;
+    _color = null;
     
     storeTrack(track);
 

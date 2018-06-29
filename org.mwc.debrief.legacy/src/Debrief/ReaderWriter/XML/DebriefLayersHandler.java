@@ -30,11 +30,9 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler;
-import Debrief.ReaderWriter.XML.Tactical.LightweightFolderHandler;
 import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import Debrief.ReaderWriter.XML.Tactical.PatternHandler;
 import Debrief.ReaderWriter.XML.Tactical.TrackHandler;
-import Debrief.Wrappers.Track.LightweightTrackFolder;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.ChartFolio;
@@ -61,7 +59,6 @@ public final class DebriefLayersHandler extends MWCXMLReader
 		addHandler(new ETOPOHandler(theLayers));
 		addHandler(new TOPOHandler(theLayers));
 		addHandler(new ExternallyManagedLayerHandler(theLayers));
-		addHandler(new LightweightFolderHandler(theLayers));
 	}
 
 	public static void exportThis(final Debrief.GUI.Frames.Session session,
@@ -131,11 +128,6 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				{
 					ChartFolioHandler.exportThisFolio((ChartFolio) ly, layers, doc);
 				}
-        else if (ly instanceof LightweightTrackFolder)
-        {
-          LightweightFolderHandler.exportThisFolder(doc, layers,
-              (LightweightTrackFolder) ly);
-        }
 				else if (ly instanceof Debrief.Wrappers.BuoyPatternWrapper)
 				{
 					Debrief.ReaderWriter.XML.Tactical.PatternHandler.exportTrack(
