@@ -14,32 +14,38 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
-public class CSVExportPage1 extends WizardPage
+public class CSVExportPage1 extends CustomWizardPage
 {
 
   private static final String TITLE = "UK Track Exchange Format - Track Export";
-  private static final String DEC = "TODO";
+  private static final String DEC =
+      "This wizard is used to provide the extra metadata\r\n"
+          + "necessary for exporting tracks to other UK agencies.";
 
-  private static String getCmbVal(final ComboViewer comboViewer, String val)
+  @Override
+  protected List<String> getPageNames()
+  {
+    return CSVExportWizard.PAGE_NAMES;
+  }
+
+  protected static String getCmbVal(final ComboViewer comboViewer, String val)
   {
     final String res;
     if (comboViewer != null && !comboViewer.getCombo().isDisposed())
@@ -69,18 +75,11 @@ public class CSVExportPage1 extends WizardPage
 
   private final DropdownProvider provider;
   // Data Fields ---- TODO: change default values
-  private String classification;
+
   private String type;
   private String sensor;
-  private String majorAxis = "1.0";
-  private String semiMajorAxis = "0.5";
-  private String semiMinorAxis = "0.5";
   private String flag;
-  private String likelihood;
-  private String confidence;
   private Date infoCutoffDate = new Date();
-  private String caseNumber = "D-112/12";
-  private String suppliedBy;
   private String unitName;
 
   // UI- Fields -------
@@ -92,23 +91,11 @@ public class CSVExportPage1 extends WizardPage
   private Text unitNameTxt;
   private ComboViewer flagCmb;
   private ComboViewer sensorCmb;
-  private ComboViewer classificationCmb;
-  private ComboViewer likelihoodCmb;
-  private ComboViewer confidenceCmb;
-  private ComboViewer suppliedByCmb;
-  private Text caseNumbertxt;
-  private DateTime infoCutoffDateComp;
-  private Text majorAxisTxt;
-  private Text semiMajorAxisTxt;
-
-  // -----------
-
-  private Text semiMinorAxisTxt;
 
   public CSVExportPage1(final DropdownProvider provider, final String unit,
       final String provenance)
   {
-    super("page1");
+    super(CSVExportWizard.PAGE_NAMES.get(0));
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
@@ -123,11 +110,12 @@ public class CSVExportPage1 extends WizardPage
   }
 
   private Text addCaseNumberField(final Composite contents, final String label,
-      final String initialValue)
+      String tooltip, final String initialValue)
   {
 
     final Label lbl = new Label(contents, SWT.NONE);
     lbl.setText(label);
+    lbl.setToolTipText(tooltip);
     lbl.setAlignment(SWT.RIGHT);
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
@@ -143,11 +131,12 @@ public class CSVExportPage1 extends WizardPage
   }
 
   private ComboViewer addCmbField(final Composite contents, final String key,
-      final String title, final boolean edit, final String val)
+      final String title, String tooltip, final boolean edit, final String val)
   {
 
     final Label lbl = new Label(contents, SWT.NONE);
     lbl.setText(title);
+    lbl.setToolTipText(tooltip);
     lbl.setAlignment(SWT.RIGHT);
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
@@ -167,89 +156,30 @@ public class CSVExportPage1 extends WizardPage
 
   }
 
-  private void addInfoCutoffDateField(final Composite contents)
-  {
-
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Info Cut-off Date:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    infoCutoffDateComp = new DateTime(contents, SWT.BORDER | SWT.DROP_DOWN
-        | SWT.DATE | SWT.LONG);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    infoCutoffDateComp.setLayoutData(gridData);
-    if (caseNumber != null)
-    {
-      final Calendar date = Calendar.getInstance();
-      date.setTime(infoCutoffDate);
-      infoCutoffDateComp.setDate(date.get(Calendar.YEAR), date.get(
-          Calendar.MONTH), date.get(Calendar.DAY_OF_MONTH));
-
-    }
-
-  }
-
   @Override
-  public void createControl(final Composite parent)
+  protected Composite createDataSection(Composite parent)
   {
-
     final Composite contents = new Composite(parent, SWT.NONE);
-    contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    contents.setLayout(new GridLayout(4, false));
+    contents.setLayout(new GridLayout(2, false));
 
-    // line 1
-    provenanceTxt = addCaseNumberField(contents, "Provenance:", provenance);
-    typeCmb = addCmbField(contents, "TYPE", "Type:", false, type);
-    // line 2
-    unitNameTxt = addCaseNumberField(contents, "Unit Name:", unitName);
-    flagCmb = addCmbField(contents, "FLAG", "Flag:", false, flag);
-    // line 3
-    caseNumbertxt = addCaseNumberField(contents, "Case Number:", caseNumber);
-    sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", true, sensor);
-    // line 4
-    classificationCmb = addCmbField(contents, "CLASSIFICATION",
-        "Classification:", false, classification);
-    likelihoodCmb = addCmbField(contents, "LIKELIHOOD", "Likelihood:", false,
-        likelihood);
-    // line 5
-    addInfoCutoffDateField(contents);
-    confidenceCmb = addCmbField(contents, "CONFIDENCE", "Confidence:", false,
-        confidence);
-    // line 6
-    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:", false,
-        suppliedBy);
-    majorAxisTxt = addCaseNumberField(contents, "Major Axis (Nm):", majorAxis);
-    // line 7
+    provenanceTxt = addCaseNumberField(contents, "Provenance:",
+        "Source platform, \n" + "Eg: HMS Nelson", provenance);
+    sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
+        true, sensor);
+
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
-    semiMajorAxisTxt = addCaseNumberField(contents, "Semi-Major Axis (Nm):",
-        semiMajorAxis);
+    unitNameTxt = addCaseNumberField(contents, "Unit Name:", "Subject platform",
+        unitName);
 
-    // line 8
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
-    semiMinorAxisTxt = addCaseNumberField(contents, "Semi-Minor Axis (Nm):",
-        semiMinorAxis);
+    flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
+        false, flag);
+    typeCmb = addCmbField(contents, "TYPE", "Type:", "Subject platform type",
+        false, type);
 
-    setControl(contents);
-
-  }
-
-  public String getCaseNumber()
-  {
-    return caseNumber;
-  }
-
-  public String getClassification()
-  {
-    return classification;
-  }
-
-  public String getConfidence()
-  {
-    return confidence;
+    return contents;
   }
 
   public String getFlag()
@@ -263,39 +193,14 @@ public class CSVExportPage1 extends WizardPage
     return infoCutoffDate.toGMTString();
   }
 
-  public String getLikelihood()
-  {
-    return likelihood;
-  }
-
-  public String getMajorAxis()
-  {
-    return majorAxis;
-  }
-
   public String getProvenance()
   {
     return provenance;
   }
 
-  public String getSemiMajorAxis()
-  {
-    return semiMajorAxis;
-  }
-
-  public String getSemiMinorAxis()
-  {
-    return semiMinorAxis;
-  }
-
   public String getSensor()
   {
     return sensor;
-  }
-
-  public String getSuppliedBy()
-  {
-    return suppliedBy;
   }
 
   private String getTxtVal(final Text control, final String val)
@@ -335,14 +240,6 @@ public class CSVExportPage1 extends WizardPage
     type = getPrefValue("CSV_EXPORT_type", type);
     flag = getPrefValue("CSV_EXPORT_flag", flag);
     sensor = getPrefValue("CSV_EXPORT_sensor", sensor);
-    classification = getPrefValue("CSV_EXPORT_classification", classification);
-    likelihood = getPrefValue("CSV_EXPORT_likelihood", likelihood);
-    confidence = getPrefValue("CSV_EXPORT_confidence", confidence);
-    suppliedBy = getPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
-    caseNumber = getPrefValue("CSV_EXPORT_caseNumber", caseNumber);
-    majorAxis = getPrefValue("CSV_EXPORT_majorAxis", majorAxis);
-    semiMajorAxis = getPrefValue("CSV_EXPORT_semiMajorAxis", semiMajorAxis);
-    semiMinorAxis = getPrefValue("CSV_EXPORT_semiMinorAxis", semiMinorAxis);
   }
 
   public void writeToPref()
@@ -355,14 +252,6 @@ public class CSVExportPage1 extends WizardPage
     type = setPrefValue("CSV_EXPORT_type", type);
     flag = setPrefValue("CSV_EXPORT_flag", flag);
     sensor = setPrefValue("CSV_EXPORT_sensor", sensor);
-    classification = setPrefValue("CSV_EXPORT_classification", classification);
-    likelihood = setPrefValue("CSV_EXPORT_likelihood", likelihood);
-    confidence = setPrefValue("CSV_EXPORT_confidence", confidence);
-    suppliedBy = setPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
-    caseNumber = setPrefValue("CSV_EXPORT_caseNumber", caseNumber);
-    majorAxis = setPrefValue("CSV_EXPORT_majorAxis", majorAxis);
-    semiMajorAxis = setPrefValue("CSV_EXPORT_semiMajorAxis", semiMajorAxis);
-    semiMinorAxis = setPrefValue("CSV_EXPORT_semiMinorAxis", semiMinorAxis);
   }
 
   String getPrefValue(String key, String currentVal)
@@ -389,31 +278,10 @@ public class CSVExportPage1 extends WizardPage
     type = getCmbVal(typeCmb, type);
     flag = getCmbVal(flagCmb, flag);
     sensor = getCmbVal(sensorCmb, sensor);
-    classification = getCmbVal(classificationCmb, classification);
-    likelihood = getCmbVal(likelihoodCmb, likelihood);
-    confidence = getCmbVal(confidenceCmb, confidence);
-    suppliedBy = getCmbVal(suppliedByCmb, suppliedBy);
 
     provenance = getTxtVal(provenanceTxt, provenance);
     unitName = getTxtVal(unitNameTxt, unitName);
-    caseNumber = getTxtVal(caseNumbertxt, caseNumber);
 
-    majorAxis = getTxtVal(majorAxisTxt, majorAxis);
-    semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
-    semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
-
-    if (infoCutoffDateComp != null && infoCutoffDateComp.isDisposed())
-    {
-      final Calendar date = Calendar.getInstance();
-      date.set(Calendar.YEAR, infoCutoffDateComp.getYear());
-      date.set(Calendar.MONTH, infoCutoffDateComp.getMonth());
-      date.set(Calendar.DAY_OF_MONTH, infoCutoffDateComp.getDay());
-      date.set(Calendar.HOUR_OF_DAY, 0);
-      date.set(Calendar.MINUTE, 0);
-      date.set(Calendar.SECOND, 0);
-      date.set(Calendar.MILLISECOND, 0);
-      infoCutoffDate = date.getTime();
-    }
     writeToPref();
 
   }

@@ -14,6 +14,9 @@
  */
 package org.mwc.debrief.core.wizards;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
@@ -32,6 +35,10 @@ public class CSVExportWizard extends Wizard implements INewWizard,
 {
   private CSVExportPage1 page1;
   private CSVExportPage2 page2;
+  private CSVExportPage3 page3;
+  
+  public static final List<String> PAGE_NAMES  =  Arrays.asList("Subject", "Background", "Release");
+
 
   private final DropdownProvider _dropdowns;
   private final String _unit;
@@ -63,9 +70,11 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   {
     page1 = new CSVExportPage1(_dropdowns, _unit, _provenance);
     page2 = new CSVExportPage2(_dropdowns);
+    page3 = new CSVExportPage3(_dropdowns);
 
     addPage(page1);
     addPage(page2);
+    addPage(page3);
   }
 
   @Override
@@ -78,31 +87,31 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public String getCaseNumber()
   {
-    return page1.getCaseNumber();
+    return page2.getCaseNumber();
   }
 
   @Override
   public String getClassification()
   {
-    return page1.getClassification();
+    return page2.getClassification();
   }
 
   @Override
   public String getConfidence()
   {
-    return page1.getConfidence();
+    return page2.getConfidence();
   }
 
   @Override
   public String getDistributionStatement()
   {
-    return page2.getStatement();
+    return page3.getStatement();
   }
 
   @Override
   public String getFilePath()
   {
-    return page2.getExportFolder();
+    return page3.getExportFolder();
   }
 
   @Override
@@ -120,13 +129,13 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public String getLikelihood()
   {
-    return page1.getLikelihood();
+    return page2.getLikelihood();
   }
 
   @Override
   public String getMajorAxis()
   {
-    return page1.getMajorAxis();
+    return "1";
   }
 
   @Override
@@ -138,19 +147,19 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public String getPurpose()
   {
-    return page2.getPurpose();
+    return page3.getPurpose();
   }
 
   @Override
   public String getSemiMajorAxis()
   {
-    return page1.getSemiMajorAxis();
+    return "0.5";
   }
 
   @Override
   public String getSemiMinorAxis()
   {
-    return page1.getSemiMinorAxis();
+    return "0.5";
   }
 
   @Override
@@ -162,7 +171,7 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public String getSuppliedBy()
   {
-    return page1.getSuppliedBy();
+    return page2.getSuppliedBy();
   }
 
   @Override

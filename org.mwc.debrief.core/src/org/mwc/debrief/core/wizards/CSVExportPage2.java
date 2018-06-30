@@ -14,165 +14,248 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.io.File;
+import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.WizardPage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
-public class CSVExportPage2 extends WizardPage
+public class CSVExportPage2 extends CustomWizardPage
 {
 
   private static final String TITLE = "UK Track Exchange Format - Track Export";
-  private static final String DEC = "TODO";
+  private static final String DEC = "This wizard is used to provide the extra metadata\r\n" + 
+      "necessary for exporting tracks to other UK agencies.";
 
+  
+  @Override
+  protected List<String> getPageNames()
+  {
+    return CSVExportWizard.PAGE_NAMES;
+  }
+  
+  protected static String getCmbVal(final ComboViewer comboViewer, String val)
+  {
+    final String res;
+    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
+    {
+      final StructuredSelection selection = (StructuredSelection) comboViewer
+          .getSelection();
+      if (selection.isEmpty())
+      {
+        // ah, it's not one of the drop downs, so
+        // get the value from the combo
+        final String comboText = comboViewer.getCombo().getText();
+        res = comboText == null ? val : comboText;
+      }
+      else
+      {
+        // just get the selected item
+        res = (String) selection.getFirstElement();
+      }
+    }
+    else
+    {
+      res = val;
+    }
+
+    return res;
+  }
+
+  
   private final DropdownProvider provider;
-
   // Data Fields ---- TODO: change default values
-  private String purpose = "For operational planning";
-  private String statement;
-  private String exportFolder = new File(System.getProperty("user.home"))
-      .getAbsolutePath();
-  // ------
+  private String caseNumber = "D-112/12";
 
-  // UI - Fields -----
-  private Text purposeTxt;
-  private Text statementTxt;
-  private Text folderTxt;
+  private String classification;
+  private String likelihood;
+  private String confidence;
+  private Date infoCutoffDate = new Date();
+  private String suppliedBy;
+ 
+  // UI- Fields -------
 
-  // ------
+  // --------
+  private ComboViewer classificationCmb;
+  private ComboViewer likelihoodCmb;
+  private ComboViewer confidenceCmb;
+  private ComboViewer suppliedByCmb;
+  private Text caseNumbertxt;
+
+
 
   public CSVExportPage2(final DropdownProvider provider)
   {
-    super("page2");
+    super(CSVExportWizard.PAGE_NAMES.get(1));
     setTitle(TITLE);
     setDescription(DEC);
     this.provider = provider;
+
     readFormPref();
+
     super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
         "org.mwc.debrief.core", "images/csvexport_wizard.png"));
 
   }
 
-  private void addFolderField(final Composite contents)
+  private Text addCaseNumberField(final Composite contents, final String label, String tooltip,
+      final String initialValue)
   {
 
     final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Destination:");
+    lbl.setText(label);
+    lbl.setText(tooltip);
     lbl.setAlignment(SWT.RIGHT);
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-    folderTxt = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL
-        | GridData.GRAB_HORIZONTAL);
-    folderTxt.setLayoutData(gridData);
-    if (exportFolder != null)
-      folderTxt.setText(exportFolder);
-    folderTxt.setEditable(false);
-    final Button browse = new Button(contents, SWT.PUSH);
-    browse.setText("Browse");
-    browse.addSelectionListener(new SelectionAdapter()
-    {
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        final DirectoryDialog directoryDialog = new DirectoryDialog(getShell());
-        directoryDialog.setFilterPath(folderTxt.getText());
-        directoryDialog.setText("Destination");
-        final String path = directoryDialog.open();
-        if (path != null)
-        {
-          folderTxt.setText(path);
-          setPageComplete(true);
-
-        }
-
-      }
-    });
-
-  }
-
-  private void addPurposeField(final Composite contents)
-  {
-
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Purpose:");
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    purposeTxt = new Text(contents, SWT.BORDER);
+    final Text textControl = new Text(contents, SWT.BORDER);
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 200;
-    purposeTxt.setLayoutData(gridData);
-    if (purpose != null)
-      purposeTxt.setText(purpose);
+    gridData.widthHint = 120;
+    textControl.setLayoutData(gridData);
+    if (initialValue != null)
+      textControl.setText(initialValue);
 
-    new Label(contents, SWT.NONE);// empty for 3rd col
+    return textControl;
 
   }
 
-  private void addStatementField(final Composite contents)
+  private ComboViewer addCmbField(final Composite contents, final String key,
+      final String title, String tooltip, final boolean edit, final String val)
   {
 
-    if (statement == null && !provider.getValuesFor("DISTRIBUTION").isEmpty())
-      statement = provider.getValuesFor("DISTRIBUTION").get(0);
     final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText("Distribution Statement:");
+    lbl.setText(title);
+    lbl.setToolTipText(tooltip);
     lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
-        | GridData.VERTICAL_ALIGN_BEGINNING));
+    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
-    statementTxt = new Text(contents, SWT.BORDER | SWT.MULTI | SWT.WRAP);
-    final GridData gridData = new GridData(GridData.GRAB_VERTICAL
-        | GridData.FILL_BOTH);
-    gridData.horizontalSpan = 2;
-    gridData.widthHint = 200;
-    statementTxt.setLayoutData(gridData);
-    if (statement != null)
-      statementTxt.setText(statement);
+    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
+        : SWT.READ_ONLY | SWT.BORDER));
+    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    gridData.widthHint = 120;
+    typeCmb.setContentProvider(new ArrayContentProvider());
+    typeCmb.setInput(provider.getValuesFor(key).toArray());
+    typeCmb.getCombo().setLayoutData(gridData);
+    if (val != null)
+      typeCmb.getCombo().setText(val);
+    else if (typeCmb.getCombo().getItemCount() > 0)
+      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
+
+    return typeCmb;
 
   }
 
+
+  
+  
   @Override
-  public void createControl(final Composite parent)
+  protected Composite createDataSection(Composite parent)
   {
     final Composite contents = new Composite(parent, SWT.NONE);
-    contents.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-    contents.setLayout(new GridLayout(3, false));
+    contents.setLayout(new GridLayout(2, false));
 
-    addPurposeField(contents);
-    addStatementField(contents);
-    addFolderField(contents);
+    caseNumbertxt = addCaseNumberField(contents, "Case Number:","Case number", caseNumber);
 
-    setControl(contents);
+    classificationCmb = addCmbField(contents, "CLASSIFICATION",
+        "Classification:","Protective marking for this data", false, classification);
+
+    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:","Supplier organisation", false,
+        suppliedBy);
+    
+    likelihoodCmb = addCmbField(contents, "LIKELIHOOD", "Likelihood:","Likelihood of subject identification", false,
+        likelihood);
+    
+    confidenceCmb = addCmbField(contents, "CONFIDENCE", "Confidence:","Confidence in subject track", false,
+        confidence);
+    
+
+
+    return contents;
   }
+
+
+  
+
+  public String getCaseNumber()
+  {
+    return caseNumber;
+  }
+
+  public String getClassification()
+  {
+    return classification;
+  }
+
+  public String getConfidence()
+  {
+    return confidence;
+  }
+
+  
+
+  @SuppressWarnings("deprecation")
+  public String getInfoCutoffDate()
+  {
+    return infoCutoffDate.toGMTString();
+  }
+
+  public String getLikelihood()
+  {
+    return likelihood;
+  }
+
+
+
+  public String getSuppliedBy()
+  {
+    return suppliedBy;
+  }
+
+  private String getTxtVal(final Text control, final String val)
+  {
+    if (control != null && !control.isDisposed())
+    {
+      return control.getText().trim();
+    }
+    else
+    {
+      return val;
+    }
+  }
+
+
 
   public void readFormPref()
   {
 
-    exportFolder = getPrefValue("CSV_EXPORT_exportFolder", exportFolder);
-    purpose = getPrefValue("CSV_EXPORT_purpose", purpose);
-    statement = getPrefValue("CSV_EXPORT_statement", statement);
+    
+    classification = getPrefValue("CSV_EXPORT_classification", classification);
+    likelihood = getPrefValue("CSV_EXPORT_likelihood", likelihood);
+    confidence = getPrefValue("CSV_EXPORT_confidence", confidence);
+    suppliedBy = getPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
+    caseNumber = getPrefValue("CSV_EXPORT_caseNumber", caseNumber);
   }
 
   public void writeToPref()
   {
 
-    exportFolder = setPrefValue("CSV_EXPORT_exportFolder", exportFolder);
-    purpose = setPrefValue("CSV_EXPORT_purpose", purpose);
-    statement = setPrefValue("CSV_EXPORT_statement", statement);
+
+    classification = setPrefValue("CSV_EXPORT_classification", classification);
+    likelihood = setPrefValue("CSV_EXPORT_likelihood", likelihood);
+    confidence = setPrefValue("CSV_EXPORT_confidence", confidence);
+    suppliedBy = setPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
+    caseNumber = setPrefValue("CSV_EXPORT_caseNumber", caseNumber);
   }
 
   String getPrefValue(String key, String currentVal)
@@ -193,63 +276,19 @@ public class CSVExportPage2 extends WizardPage
     return currentVal;
   }
 
-  public String getExportFolder()
-  {
-    return exportFolder;
-  }
-
-  public String getPurpose()
-  {
-    return purpose;
-  }
-
-  public String getStatement()
-  {
-    return statement;
-  }
-
   public void readValues()
   {
-    if (purposeTxt != null && !purposeTxt.isDisposed())
-      purpose = purposeTxt.getText().trim();
 
-    if (statementTxt != null && !statementTxt.isDisposed())
-      statement = statementTxt.getText().trim();
+    classification = getCmbVal(classificationCmb, classification);
+    likelihood = getCmbVal(likelihoodCmb, likelihood);
+    confidence = getCmbVal(confidenceCmb, confidence);
+    suppliedBy = getCmbVal(suppliedByCmb, suppliedBy);
 
-    if (folderTxt != null && !folderTxt.isDisposed())
-      exportFolder = folderTxt.getText().trim();
+    caseNumber = getTxtVal(caseNumbertxt, caseNumber);
 
-    if (exportFolder == null || exportFolder.isEmpty())
-    {
-      setErrorMessage("Please select valid Destination folder.");
 
-      return;
-    }
-    validate();
-  }
-
-  private void validate()
-  {
-    if (exportFolder == null || exportFolder.isEmpty())
-    {
-      setErrorMessage("Please select valid Destination folder.");
-
-      setPageComplete(false);
-
-      return;
-    }
-    else if (!new File(exportFolder).exists() || !new File(exportFolder)
-        .isDirectory() || !new File(exportFolder).canWrite())
-    {
-      setErrorMessage(
-          "Please select valid Destination folder with write access.");
-
-      setPageComplete(false);
-
-      return;
-    }
+    
     writeToPref();
-    setErrorMessage(null);
-    setPageComplete(true);
+
   }
 }
