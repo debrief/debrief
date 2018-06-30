@@ -92,7 +92,7 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   public boolean canFinish()
   {
     final IWizardPage currentPage = getContainer().getCurrentPage();
-    return currentPage != page1 && page2.isPageComplete();
+    return currentPage == page3 && page3.isPageComplete() ;
   }
 
   @Override
@@ -215,8 +215,9 @@ public class CSVExportWizard extends Wizard implements INewWizard,
 
     page1.readValues();
     page2.readValues();
+    page3.readValues();
 
-    return page1.isPageComplete() && page2.isPageComplete();
+    return page1.isPageComplete() && page2.isPageComplete() && page3.isPageComplete();
   }
 
 }
