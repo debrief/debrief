@@ -114,8 +114,8 @@ public class CSVExportPage1 extends CustomWizardPage
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
     final Text textControl = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
+    final GridData gridData = new GridData(GridData.BEGINNING);
+    gridData.widthHint = 150;
     textControl.setLayoutData(gridData);
     if (initialValue != null)
       textControl.setText(initialValue);
@@ -136,8 +136,8 @@ public class CSVExportPage1 extends CustomWizardPage
 
     final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
         : SWT.READ_ONLY | SWT.BORDER));
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
+    final GridData gridData = new GridData(GridData.BEGINNING);
+    gridData.widthHint = 150;
     typeCmb.setContentProvider(new ArrayContentProvider());
     typeCmb.setInput(provider.getValuesFor(key).toArray());
     typeCmb.getCombo().setLayoutData(gridData);

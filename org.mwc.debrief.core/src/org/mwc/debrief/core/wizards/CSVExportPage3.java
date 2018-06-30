@@ -117,7 +117,7 @@ public class CSVExportPage3 extends CustomWizardPage
     lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
 
     purposeTxt = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
+    final GridData gridData = new GridData(GridData.BEGINNING);
     gridData.widthHint = 200;
     purposeTxt.setLayoutData(gridData);
     if (purpose != null)
@@ -143,7 +143,7 @@ public class CSVExportPage3 extends CustomWizardPage
     final GridData gridData = new GridData(GridData.GRAB_VERTICAL
         | GridData.FILL_BOTH);
     gridData.horizontalSpan = 2;
-    gridData.widthHint = 200;
+    gridData.widthHint = 150;
     statementTxt.setLayoutData(gridData);
     if (statement != null)
       statementTxt.setText(statement);
