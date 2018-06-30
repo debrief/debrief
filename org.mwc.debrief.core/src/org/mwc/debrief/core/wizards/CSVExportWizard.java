@@ -17,12 +17,14 @@ package org.mwc.debrief.core.wizards;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.INewWizard;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchWizard;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
@@ -36,9 +38,18 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   private CSVExportPage1 page1;
   private CSVExportPage2 page2;
   private CSVExportPage3 page3;
-  
-  public static final List<String> PAGE_NAMES  =  Arrays.asList("Subject", "Background", "Release");
 
+  public static final String TITLE = "UK Track Exchange Format - Track Export";
+  public static final String DEC =
+      "This wizard is used to provide the extra metadata\r\n"
+          + "necessary for exporting tracks to other UK agencies.";
+
+  public static final ImageDescriptor WIZ_IMG = AbstractUIPlugin
+      .imageDescriptorFromPlugin("org.mwc.debrief.core",
+          "images/csvexport_wizard.png");
+
+  public static final List<String> PAGE_NAMES = Arrays.asList("Subject",
+      "Background", "Release");
 
   private final DropdownProvider _dropdowns;
   private final String _unit;

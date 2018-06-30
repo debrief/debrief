@@ -28,17 +28,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage3 extends CustomWizardPage
 {
 
-  private static final String TITLE = "UK Track Exchange Format - Track Export";
-  private static final String DEC =
-      "This wizard is used to provide the extra metadata\r\n"
-          + "necessary for exporting tracks to other UK agencies.";
 
   private final DropdownProvider provider;
 
@@ -59,12 +54,11 @@ public class CSVExportPage3 extends CustomWizardPage
   public CSVExportPage3(final DropdownProvider provider)
   {
     super(CSVExportWizard.PAGE_NAMES.get(2));
-    setTitle(TITLE);
-    setDescription(DEC);
+    setTitle(CSVExportWizard.TITLE);
+    setDescription(CSVExportWizard.DEC);
     this.provider = provider;
     readFormPref();
-    super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-        "org.mwc.debrief.core", "images/csvexport_wizard.png"));
+    super.setImageDescriptor(CSVExportWizard.WIZ_IMG);
 
   }
 
