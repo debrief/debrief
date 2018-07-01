@@ -4120,6 +4120,13 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="TargetFolder" type="xs:string"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to put tracks into a target folder
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

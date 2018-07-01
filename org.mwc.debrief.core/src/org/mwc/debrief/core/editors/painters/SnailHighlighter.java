@@ -302,14 +302,17 @@ public class SnailHighlighter implements TemporalLayerPainter
 
       // ok, clear the nearest items
       final Watchable[] wList = getNearestTo(list, newDTG);
-      for (int i = 0; i < wList.length; i++)
+      if (wList != null)
       {
-        final Watchable watch = wList[i];
-        if (watch != null)
+        for (int i = 0; i < wList.length; i++)
         {
-          // plot it
-          highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest
-              .getBackgroundColor());
+          final Watchable watch = wList[i];
+          if (watch != null)
+          {
+            // plot it
+            highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest
+                .getBackgroundColor());
+          }
         }
       }
     }

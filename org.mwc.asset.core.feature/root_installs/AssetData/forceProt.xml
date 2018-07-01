@@ -23,13 +23,24 @@
 	
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
-			<Duration Value="12" Units="hours" ></Duration>
+			<Duration Value="8" Units="hours" ></Duration>
 		</TimeObserver>
 		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
 			<GridDelta Value="4" Units="nm" ></GridDelta>
 		</TrackPlotObserver>
-		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
-			record_positions="true" Active="true" record_decisions="true">
+		<DebriefReplayObserver Name="Red_tracks"
+			record_detections="false" record_positions="true" Active="true"
+			record_decisions="false" TargetFolder="RED_FORCES" file_name="RED_TRACKS">
+			<SubjectToTrack>
+				<Type Name="RED" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<DebriefReplayObserver Name="Red_tracks"
+			record_detections="false" record_positions="true" Active="true"
+			record_decisions="false" file_name="BLUE_TRACKS">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
 		</DebriefReplayObserver>
 		<RemoveDetectedObserver Name="Ditch reds as they are detected" Active="false">
 			<Target>
