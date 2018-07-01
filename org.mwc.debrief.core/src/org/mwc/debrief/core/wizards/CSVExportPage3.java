@@ -34,7 +34,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportPage3 extends CustomWizardPage
 {
 
-  public static final String PAGE_ID = "Release";
+  public static final String PAGE_ID = "3. Release";
 
   private final DropdownProvider provider;
 

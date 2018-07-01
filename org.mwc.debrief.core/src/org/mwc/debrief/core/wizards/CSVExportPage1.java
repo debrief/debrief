@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -33,7 +32,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportPage1 extends CustomWizardPage
 {
 
-  public static final String PAGE_ID = "Subject";
+  public static final String PAGE_ID = "1. Subject";
 
   @Override
   protected List<String> getPageNames()
@@ -75,7 +74,6 @@ public class CSVExportPage1 extends CustomWizardPage
   private String type;
   private String sensor;
   private String flag;
-  private Date infoCutoffDate = new Date();
   private String unitName;
 
   // UI- Fields -------
@@ -104,7 +102,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  private Text addCaseNumberField(final Composite contents, final String label,
+  private Text addTextField(final Composite contents, final String label,
       String tooltip, final String initialValue)
   {
 
@@ -157,18 +155,12 @@ public class CSVExportPage1 extends CustomWizardPage
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
 
-    provenanceTxt = addCaseNumberField(contents, "Provenance:",
+    provenanceTxt = addTextField(contents, "Provenance:",
         "Source platform, \n" + "Eg: HMS Nelson", provenance);
+    unitNameTxt = addTextField(contents, "Unit Name:", "Subject platform",
+        unitName);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
         true, sensor);
-
-    new Label(contents, SWT.NONE);
-    new Label(contents, SWT.NONE);
-    unitNameTxt = addCaseNumberField(contents, "Unit Name:", "Subject platform",
-        unitName);
-
-    new Label(contents, SWT.NONE);
-    new Label(contents, SWT.NONE);
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
         false, flag);
     typeCmb = addCmbField(contents, "TYPE", "Type:", "Subject platform type",
@@ -180,12 +172,6 @@ public class CSVExportPage1 extends CustomWizardPage
   public String getFlag()
   {
     return flag;
-  }
-
-  @SuppressWarnings("deprecation")
-  public String getInfoCutoffDate()
-  {
-    return infoCutoffDate.toGMTString();
   }
 
   public String getProvenance()

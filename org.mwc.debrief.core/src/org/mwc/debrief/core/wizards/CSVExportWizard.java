@@ -133,12 +133,6 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   }
 
   @Override
-  public String getInfoCutoffDate()
-  {
-    return page1.getInfoCutoffDate();
-  }
-
-  @Override
   public String getLikelihood()
   {
     return page2.getLikelihood();
