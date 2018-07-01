@@ -17,7 +17,6 @@ package org.mwc.debrief.core.wizards;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -27,12 +26,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage2 extends CustomWizardPage
 {
 
+  private static final String CSV_EXPORT_CASE_NUMBER = "CSV_EXPORT_caseNumber";
+  private static final String CSV_EXPORT_SUPPLIED_BY = "CSV_EXPORT_suppliedBy";
+  private static final String CSV_EXPORT_CONFIDENCE = "CSV_EXPORT_confidence";
+  private static final String CSV_EXPORT_LIKELIHOOD = "CSV_EXPORT_likelihood";
+  private static final String CSV_EXPORT_CLASSIFICATION = "CSV_EXPORT_classification";
   public static final String PAGE_ID = "2. Background";
   
   @Override
@@ -233,55 +236,29 @@ public class CSVExportPage2 extends CustomWizardPage
 
   public void readFormPref()
   {
-
-    
-    classification = getPrefValue("CSV_EXPORT_classification", classification);
-    likelihood = getPrefValue("CSV_EXPORT_likelihood", likelihood);
-    confidence = getPrefValue("CSV_EXPORT_confidence", confidence);
-    suppliedBy = getPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
-    caseNumber = getPrefValue("CSV_EXPORT_caseNumber", caseNumber);
+    classification = getPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
+    likelihood = getPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);
+    confidence = getPrefValue(CSV_EXPORT_CONFIDENCE, confidence);
+    suppliedBy = getPrefValue(CSV_EXPORT_SUPPLIED_BY, suppliedBy);
+    caseNumber = getPrefValue(CSV_EXPORT_CASE_NUMBER, caseNumber);
   }
 
   public void writeToPref()
   {
-
-
-    classification = setPrefValue("CSV_EXPORT_classification", classification);
-    likelihood = setPrefValue("CSV_EXPORT_likelihood", likelihood);
-    confidence = setPrefValue("CSV_EXPORT_confidence", confidence);
-    suppliedBy = setPrefValue("CSV_EXPORT_suppliedBy", suppliedBy);
-    caseNumber = setPrefValue("CSV_EXPORT_caseNumber", caseNumber);
-  }
-
-  String getPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-    String newVal = preferenceStore.getString(key);
-
-    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
-  }
-
-  String setPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-
-    preferenceStore.setValue(key, currentVal);
-    return currentVal;
+    classification = setPrefValue(CSV_EXPORT_CLASSIFICATION, classification);
+    likelihood = setPrefValue(CSV_EXPORT_LIKELIHOOD, likelihood);
+    confidence = setPrefValue(CSV_EXPORT_CONFIDENCE, confidence);
+    suppliedBy = setPrefValue(CSV_EXPORT_SUPPLIED_BY, suppliedBy);
+    caseNumber = setPrefValue(CSV_EXPORT_CASE_NUMBER, caseNumber);
   }
 
   public void readValues()
   {
-
     classification = getCmbVal(classificationCmb, classification);
     likelihood = getCmbVal(likelihoodCmb, likelihood);
     confidence = getCmbVal(confidenceCmb, confidence);
     suppliedBy = getCmbVal(suppliedByCmb, suppliedBy);
-
     caseNumber = getTxtVal(caseNumbertxt, caseNumber);
-
-
     
     writeToPref();
 
