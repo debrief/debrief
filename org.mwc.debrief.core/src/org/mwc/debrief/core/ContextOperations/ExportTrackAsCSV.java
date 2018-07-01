@@ -101,30 +101,34 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
   private static class ExportTrackToCSV extends CMAPOperation
   {
 
+    public static String getFileName(TrackWrapper subject,
+        CSVAttributeProvider provider)
+    {
+      final DateFormat fileDateFormat = new GMTDateFormat(
+          "yyyyMMdd_HHmmss", Locale.ENGLISH);
+
+      final StringBuffer fileName = new StringBuffer();
+      fileName.append(tidyMe(provider.getSuppliedBy()));
+      fileName.append("_");
+      fileName.append(tidyMe(fileDateFormat.format(new Date())));
+      fileName.append("_");
+      fileName.append(tidyMe(provider.getUnitName()));
+      fileName.append("_");
+      fileName.append(tidyMe("" + subject.numFixes()));
+      fileName.append("_");
+      fileName.append(tidyMe(provider.getClassification()));
+      fileName.append(".csv");
+      return fileName.toString();
+    }
+    
     private static void performExport(final TrackWrapper subject,
         final CSVAttributeProvider provider)
     {
       FileWriter fos = null;
       try
       {
-        final DateFormat fileDateFormat = new GMTDateFormat(
-            "yyyyMMdd_HHmmss", Locale.ENGLISH);
-
         // sort out the destination filename
-        final StringBuffer fileName = new StringBuffer();
-        fileName.append(tidyMe(provider.getSuppliedBy()));
-        fileName.append("_");
-        fileName.append(tidyMe(fileDateFormat.format(new Date())));
-        fileName.append("_");
-        fileName.append(tidyMe(provider.getUnitName()));
-        fileName.append("_");
-        fileName.append(tidyMe("" + subject.numFixes()));
-        fileName.append("_");
-        fileName.append(tidyMe(provider.getClassification()));
-        fileName.append(".csv");
-
-        final File outFile = new File(provider.getFilePath(), fileName
-            .toString());
+        final File outFile = new File(provider.getFilePath(), getFileName(subject, provider));
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
@@ -416,5 +420,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       parent.add(doExport);
     }
   }
+
 
 }
