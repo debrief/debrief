@@ -33,6 +33,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportPage1 extends CustomWizardPage
 {
 
+  public static final String PAGE_ID = "Subject";
 
   @Override
   protected List<String> getPageNames()
@@ -90,7 +91,7 @@ public class CSVExportPage1 extends CustomWizardPage
   public CSVExportPage1(final DropdownProvider provider, final String unit,
       final String provenance)
   {
-    super(CSVExportWizard.PAGE_NAMES.get(0));
+    super(PAGE_ID);
     setTitle(CSVExportWizard.TITLE);
     setDescription(CSVExportWizard.DEC);
     this.provider = provider;
