@@ -16,7 +16,6 @@ package org.mwc.debrief.core.wizards;
 
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -26,11 +25,20 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage1 extends CustomWizardPage
 {
+
+  private static final String CSV_EXPORT_SENSOR = "CSV_EXPORT_sensor";
+
+  private static final String CSV_EXPORT_FLAG = "CSV_EXPORT_flag";
+
+  private static final String CSV_EXPORT_TYPE = "CSV_EXPORT_type";
+
+  private static final String CSV_EXPORT_UNIT = "CSV_EXPORT_unit";
+
+  private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
 
   public static final String PAGE_ID = "1. Subject";
 
@@ -212,46 +220,29 @@ public class CSVExportPage1 extends CustomWizardPage
 
     if (provenance == null || provenance.isEmpty())
     {
-      provenance = getPrefValue("CSV_EXPORT_provenance", provenance);
+      provenance = getPrefValue(CSV_EXPORT_PROVENANCE, provenance);
     }
     if (unitName == null || unitName.isEmpty())
     {
-      unitName = getPrefValue("CSV_EXPORT_unit", unitName);
+      unitName = getPrefValue(CSV_EXPORT_UNIT, unitName);
     }
-    type = getPrefValue("CSV_EXPORT_type", type);
-    flag = getPrefValue("CSV_EXPORT_flag", flag);
-    sensor = getPrefValue("CSV_EXPORT_sensor", sensor);
+    type = getPrefValue(CSV_EXPORT_TYPE, type);
+    flag = getPrefValue(CSV_EXPORT_FLAG, flag);
+    sensor = getPrefValue(CSV_EXPORT_SENSOR, sensor);
   }
 
   public void writeToPref()
   {
 
-    provenance = setPrefValue("CSV_EXPORT_provenance", provenance);
+    provenance = setPrefValue(CSV_EXPORT_PROVENANCE, provenance);
 
-    unitName = setPrefValue("CSV_EXPORT_unit", unitName);
+    unitName = setPrefValue(CSV_EXPORT_UNIT, unitName);
 
-    type = setPrefValue("CSV_EXPORT_type", type);
-    flag = setPrefValue("CSV_EXPORT_flag", flag);
-    sensor = setPrefValue("CSV_EXPORT_sensor", sensor);
+    type = setPrefValue(CSV_EXPORT_TYPE, type);
+    flag = setPrefValue(CSV_EXPORT_FLAG, flag);
+    sensor = setPrefValue(CSV_EXPORT_SENSOR, sensor);
   }
 
-  String getPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-    String newVal = preferenceStore.getString(key);
-
-    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
-  }
-
-  String setPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-
-    preferenceStore.setValue(key, currentVal);
-    return currentVal;
-  }
 
   public void readValues()
   {
