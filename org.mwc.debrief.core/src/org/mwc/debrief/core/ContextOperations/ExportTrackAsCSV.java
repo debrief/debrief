@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
@@ -56,6 +55,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * @author ian.mayo
@@ -75,8 +75,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     String getFilePath();
 
     String getFlag();
-
-    String getInfoCutoffDate();
 
     String getLikelihood();
 
@@ -109,7 +107,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       FileWriter fos = null;
       try
       {
-        final DateFormat fileDateFormat = new SimpleDateFormat(
+        final DateFormat fileDateFormat = new GMTDateFormat(
             "yyyyMMdd_HHmmss", Locale.ENGLISH);
 
         // sort out the destination filename
@@ -130,18 +128,23 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
-        final DateFormat dateFormatter = new SimpleDateFormat(
+        final DateFormat dateFormatter = new GMTDateFormat(
             "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
+        final DateFormat cutOffFormatter = new GMTDateFormat(
+            "yyyyMMdd", Locale.ENGLISH);
 
         final NumberFormat numF = new DecimalFormat("0.0000");
 
         final String lineBreak = System.getProperty("line.separator");
+        
+        // find the last time on the track
+        Date lastDTG = subject.getEndDTG().getDate();
+        final String infoCutoffDate = cutOffFormatter.format(lastDTG);
 
         // capture the constants
         final String provenance = provider.getProvenance();
         final String unitName = provider.getUnitName();
         final String caseNumber = provider.getCaseNumber();
-        final String infoCutoffDate = provider.getInfoCutoffDate();
         final String suppliedBy = provider.getSuppliedBy();
         final String purpose = provider.getPurpose();
         final String classification = provider.getClassification();
