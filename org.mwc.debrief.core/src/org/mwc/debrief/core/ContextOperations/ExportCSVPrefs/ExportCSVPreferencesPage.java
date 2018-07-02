@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
@@ -77,14 +78,14 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     super(GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-    setDescription("Preferences related to exporting Tracks to CSV format");
+    setDescription("Preferences related to exporting Tracks to in UK Track Exchange format (CSV)");
   }
 
   private void addEnabledButton()
   {
     final Composite parent = getFieldEditorParent();
     final BooleanFieldEditor enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
-        "Enable command", parent);
+        "Include 'Export track to CSV Text format' in Track drop-down menu", parent);
     addField(enabledEditor);
   }
 
@@ -169,6 +170,13 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   protected void createFieldEditors()
   {
     addEnabledButton();
+    
+    final Composite parent = getFieldEditorParent();
+    new Label(parent, SWT.NONE);
+    Label lbl = new Label(parent, SWT.NONE);
+    new Label(parent, SWT.NONE);
+    lbl.setText("Specify location of spreadsheet containing drop-down menu items:");
+    
     addFileEditor();
     addOpenFileHyperlink();
     addReloadButton();
