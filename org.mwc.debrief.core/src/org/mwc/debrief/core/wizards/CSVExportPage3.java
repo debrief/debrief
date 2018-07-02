@@ -43,7 +43,7 @@ public class CSVExportPage3 extends CustomWizardPage
   private final DropdownProvider provider;
 
   // Data Fields ---- TODO: change default values
-  private String purpose = "For operational planning";
+  private String purpose;
   private String statement;
   private String exportFolder = new File(System.getProperty("user.home"))
       .getAbsolutePath();
@@ -114,6 +114,8 @@ public class CSVExportPage3 extends CustomWizardPage
 
   private void addPurposeField(final Composite contents)
   {
+    if (purpose == null && !provider.getValuesFor("PURPOSE").isEmpty())
+      purpose = provider.getValuesFor("PURPOSE").get(0);
 
     final Label lbl = new Label(contents, SWT.NONE);
     lbl.setText("Purpose:");
@@ -170,7 +172,6 @@ public class CSVExportPage3 extends CustomWizardPage
 
   public void readFormPref()
   {
-
     exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
     purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
     statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
@@ -178,7 +179,6 @@ public class CSVExportPage3 extends CustomWizardPage
 
   public void writeToPref()
   {
-
     exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
     purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
     statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
