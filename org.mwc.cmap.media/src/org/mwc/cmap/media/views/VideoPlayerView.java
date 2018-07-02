@@ -25,6 +25,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.window.Window;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -52,6 +53,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -59,6 +61,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.cmap.media.PlanetmayoImages;
+import org.mwc.cmap.media.dialog.VideoPlayerStartTimeDialog;
 import org.mwc.cmap.media.time.ITimeListener;
 import org.mwc.cmap.media.utility.DateUtils;
 import org.mwc.cmap.media.xuggle.PlayerAdapter;
@@ -72,6 +75,8 @@ public class VideoPlayerView extends ViewPart {
 	private static final String STATE_POSITION = "position";
 	private static final String STATE_START_TIME = "startTime";
 	private static final String STATE_STRETCH = "stretch";
+	
+	public static final String LAST_VIDEO_START_TIME = "lastVideoStartTime";
 
 	public static final String ID = "org.mwc.cmap.media.views.VideoPlayerView";
 	
@@ -143,6 +148,11 @@ public class VideoPlayerView extends ViewPart {
 	public VideoPlayerView() {
 	}
 
+	public void setVideoStartTime(Date date) {
+	  startTime.setValue(date);
+	  PlatformUI.getPreferenceStore().setValue(LAST_VIDEO_START_TIME, date.getTime());
+	  fireNewTime(new HiResDate(date));
+	}
 	public void fireNewTime(final HiResDate dtg)
 	{
 		if (_controllableTime == null) {
@@ -280,7 +290,7 @@ public class VideoPlayerView extends ViewPart {
 							}
 							if (supported && !fileName.equals(_selected))
 							{
-								open(fileName);
+							  initializePlayer(fileName);
 							}
 						}
 
@@ -289,7 +299,26 @@ public class VideoPlayerView extends ViewPart {
 			}
 		});
 	}
-
+	private void initializePlayer(final String fileName)
+  {
+    //#2940 #6
+    //if we cannot get the start time from filename open the dialog
+    Date start = PlanetmayoFormats.getInstance().parseDateFromFileName(new File(fileName).getName());
+    if(start==null) {
+      //try to get the start time from last video start time.
+      long startTime = PlatformUI.getPreferenceStore().getLong(VideoPlayerView.LAST_VIDEO_START_TIME);
+      VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
+      dialog.setStartTime(startTime>0?new Date(startTime):null);
+      dialog.setBlockOnOpen(true);
+      if(dialog.open()==Window.OK) {
+        open(fileName,dialog.getStartTime());
+      }
+    }
+    else {
+      open(fileName, start);
+    }
+  }
+  
 	private void setupListeners()
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
@@ -555,7 +584,7 @@ public class VideoPlayerView extends ViewPart {
 		        String[] filterExt = { "*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3", "*.wma", "*.*" };
 		        fd.setFilterExtensions(filterExt);
 		        String selected = fd.open();
-		        VideoPlayerView.this.open(selected);
+		        VideoPlayerView.this.open(selected,new Date());
 			}
 		};
 		open.setText("Open");
@@ -701,17 +730,19 @@ public class VideoPlayerView extends ViewPart {
 		return _selected;
 	}
 
-	public void open(String selected)
+	public void open(String selected,Date videoStartTime)
 	{
 		if (selected != null) {
 			if (! player.open(selected)) {
 				movieOpened(null, null);
+				setVideoStartTime(videoStartTime);
 				MessageBox message = new MessageBox(getSite().getShell(), SWT.ICON_WARNING | SWT.OK);
 				message.setText("Video player: " + new File(selected).getName());
 				message.setMessage("This file format isn't supported.");
 				message.open();
 			} else {
 				_selected = selected;
+				setVideoStartTime(videoStartTime);
 			}
 		}
 	}

@@ -121,6 +121,8 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.media.PlanetmayoFormats;
+import org.mwc.cmap.media.dialog.VideoPlayerStartTimeDialog;
 import org.mwc.cmap.media.views.VideoPlayerView;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
@@ -1643,14 +1645,32 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private void openVideoPlayer(final String fileName)
   {
-    // CorePlugin.VIDEO_PLAYER_VIEW
     //#2940 #6
-    //now open a dialog box and get the start time
-    
+    //if we cannot get the start time from filename open the dialog
+    Date start = PlanetmayoFormats.getInstance().parseDateFromFileName(new File(fileName).getName());
+    if(start==null) {
+      //try to get the start time from last video start time.
+      long startTime = PlatformUI.getPreferenceStore().getLong(VideoPlayerView.LAST_VIDEO_START_TIME);
+      if(startTime>0) {
+        start = new Date(startTime);
+      }
+      VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
+      dialog.setStartTime(start);
+      dialog.setBlockOnOpen(true);
+      if(dialog.open()==Window.OK) {
+        showVideoPlayer(fileName,dialog.getStartTime());
+      }
+    }
+    else {
+      showVideoPlayer(fileName, start);
+    }
+  }
+  
+  private void showVideoPlayer(final String fileName,final Date start) {
     IViewPart view = CorePlugin.openSecondaryView(CorePlugin.VIDEO_PLAYER_VIEW,fileNamePartOf(fileName),IWorkbenchPage.VIEW_ACTIVATE);
     if(view instanceof VideoPlayerView) {
       VideoPlayerView videoView = (VideoPlayerView)view;
-      videoView.open(fileName);
+      videoView.open(fileName,start);
     }
   }
 
@@ -1660,16 +1680,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     super.filesDropped(fileNames);
 
     // ok, iterate through the files
-    for (int i = 0; i < fileNames.length; i++)
+    if(fileNames.length==1 && isVideoFile(fileNames[0]))
     {
-
-      final String thisFilename = fileNames[i];
-      if (isVideoFile(thisFilename))
+      openVideoPlayer(fileNames[0]);
+    }
+    else {
+      for (int i = 0; i < fileNames.length; i++)
       {
-        openVideoPlayer(thisFilename);
-      }
-      else
-      {
+  
+        final String thisFilename = fileNames[i];
         loadThisFile(thisFilename);
       }
     }
