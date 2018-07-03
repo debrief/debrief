@@ -127,8 +127,16 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
     // forget the bounds
     _bounds = null;
     
+    // tell it who's the boss
     e.setTrackWrapper(this);
+    
+    // check the label
+    if(e.getLabel() == null || e.getLabel().length() == 0)
+    {
+      e.resetName();
+    }
 
+    // finally, store it.
     _thePositions.add(e);
   }
 
