@@ -15,7 +15,6 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Collection;
@@ -27,7 +26,7 @@ import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.FormattedTrack;
+import Debrief.Wrappers.Track.LightweightTrack;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
@@ -189,9 +188,9 @@ final class SnailDrawSWTTrack
 
     // trim to visible period if its a track
     final TimePeriod visP;
-    if(trk instanceof FormattedTrack)
+    if(trk instanceof LightweightTrack)
     {
-      FormattedTrack ft = (FormattedTrack) trk;
+      LightweightTrack ft = (LightweightTrack) trk;
       visP = ft.getVisiblePeriod();
     }
     else
@@ -269,10 +268,10 @@ final class SnailDrawSWTTrack
 
         boolean titlePlotted = false;
 
-        final FormattedTrack format;    
-        if (trk instanceof FormattedTrack)
+        final LightweightTrack format;    
+        if (trk instanceof LightweightTrack)
         {
-          format = (FormattedTrack) trk;
+          format = (LightweightTrack) trk;
         }
         else
         {

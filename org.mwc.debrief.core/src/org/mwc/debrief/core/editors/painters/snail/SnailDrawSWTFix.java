@@ -42,7 +42,7 @@ import org.mwc.debrief.core.editors.painters.highlighters.SWTSymbolHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.FormattedTrack;
+import Debrief.Wrappers.Track.LightweightTrack;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -120,9 +120,9 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		
     // trim to visible period if its a track
     final TimePeriod visP;
-    if(trk instanceof FormattedTrack)
+    if(trk instanceof LightweightTrack)
     {
-      FormattedTrack ft = (FormattedTrack) trk;
+      LightweightTrack ft = (LightweightTrack) trk;
       visP = ft.getVisiblePeriod();
     }
     else

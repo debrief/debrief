@@ -14,14 +14,21 @@
  */
 package Debrief.GUI.Tote.Painters;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Collection;
+import java.util.Iterator;
 
-import Debrief.Wrappers.*;
-import Debrief.Wrappers.Track.FormattedTrack;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.Track.LightweightTrack;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldLocation;
 
 /**
  * class to draw a 'back-track' of points backwards from the current datapoint for the indicated
@@ -173,9 +180,9 @@ final class SnailDrawTrack
     else
     {
       // retrieve the points in range
-      if (trk instanceof FormattedTrack)
+      if (trk instanceof LightweightTrack)
       {
-        FormattedTrack track = (FormattedTrack) trk;
+        LightweightTrack track = (LightweightTrack) trk;
         dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
             - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
       }
