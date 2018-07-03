@@ -317,34 +317,6 @@ public class ConvertLightweightTrackToTrack implements
   }
 
   /**
-   * find out if this item is suitable for use as a track item
-   *
-   * @param thisP
-   * @return
-   */
-  static boolean isSuitableAsTrackPoint(final Plottable thisP)
-  {
-    boolean res = false;
-
-    // ok - is it a label? Converting that to a track point is quite easy
-    if (thisP instanceof LabelWrapper)
-    {
-      res = true;
-    }
-
-    // next, see if it's a line, because the pretend track could have been
-    // drawn up as a series of lines
-    if (thisP instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) thisP;
-      final PlainShape shp = sw.getShape();
-      if (shp instanceof LineShape)
-        res = true;
-    }
-    return res;
-  }
-
-  /**
    * @param parent
    * @param theLayers
    * @param parentLayers

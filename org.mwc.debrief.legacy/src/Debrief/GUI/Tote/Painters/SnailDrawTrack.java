@@ -134,7 +134,7 @@ final class SnailDrawTrack
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-  public final java.awt.Rectangle drawMe(
+  public final Rectangle drawMe(
       final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
       final Watchable watch, final SnailPainter parent, final HiResDate dtg,
       final Color backColor)

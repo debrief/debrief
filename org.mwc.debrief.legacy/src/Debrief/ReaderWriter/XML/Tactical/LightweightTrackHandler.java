@@ -28,6 +28,7 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.FixWrapper;
@@ -49,8 +50,8 @@ public abstract class LightweightTrackHandler extends
   private static final String LINE_STYLE = "LineStyle";
 
   
-  public void exportThisPlottable(MWC.GUI.Plottable plottable,
-      org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  public void exportThisPlottable(Plottable plottable,
+      Element parent, Document doc)
   {
     LightweightTrackWrapper track = (LightweightTrackWrapper)plottable;
     
@@ -107,7 +108,7 @@ public abstract class LightweightTrackHandler extends
     addHandler(new ColourHandler(COLOR)
     {
       @Override
-      public void setColour(final java.awt.Color res)
+      public void setColour(final Color res)
       {
         _color = res;
       }

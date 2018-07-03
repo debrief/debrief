@@ -393,34 +393,6 @@ public class ConvertTrackToLightweightTrack implements
   }
 
   /**
-   * find out if this item is suitable for use as a track item
-   *
-   * @param thisP
-   * @return
-   */
-  static boolean isSuitableAsTrackPoint(final Plottable thisP)
-  {
-    boolean res = false;
-
-    // ok - is it a label? Converting that to a track point is quite easy
-    if (thisP instanceof LabelWrapper)
-    {
-      res = true;
-    }
-
-    // next, see if it's a line, because the pretend track could have been
-    // drawn up as a series of lines
-    if (thisP instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) thisP;
-      final PlainShape shp = sw.getShape();
-      if (shp instanceof LineShape)
-        res = true;
-    }
-    return res;
-  }
-
-  /**
    * @param parent
    * @param theLayers
    * @param parentLayers
@@ -493,37 +465,7 @@ public class ConvertTrackToLightweightTrack implements
       }
 
       // and a spare one, which creates a new layer
-      final Action convertToTrackInNewLayer = new Action("New layer...")
-      {
-        @Override
-        public void run()
-        {
-          // get the name
-          final NameDialog dialog = new NameDialog(new Shell());
-          dialog.open();
-          final String name = dialog.getName();
-          if (name != null)
-          {
-            final String tName = name.trim();
-
-            // create the layer
-            final BaseLayer layer = new BaseLayer();
-            layer.setName(tName);
-
-            // store it
-            theLayers.addThisLayer(layer);
-
-            // ok, go for it.
-            // sort it out as an operation
-            final IUndoableOperation convertToTrack1 = new ConvertIt(title,
-                theLayers, subjects, layer);
-
-            // ok, stick it on the buffer
-            runIt(convertToTrack1);
-          }
-
-        }
-      };
+      final Action convertToTrackInNewLayer = toNewLayer(theLayers, subjects, title);
 
       // ok - flash up the menu item
       listing.add(convertToTrackInNewLayer);
@@ -533,6 +475,42 @@ public class ConvertTrackToLightweightTrack implements
 
     }
 
+  }
+
+  private Action toNewLayer(final Layers theLayers, final Editable[] subjects,
+      final String title)
+  {
+    return new Action("New layer...")
+    {
+      @Override
+      public void run()
+      {
+        // get the name
+        final NameDialog dialog = new NameDialog(new Shell());
+        dialog.open();
+        final String name = dialog.getName();
+        if (name != null)
+        {
+          final String tName = name.trim();
+
+          // create the layer
+          final BaseLayer layer = new BaseLayer();
+          layer.setName(tName);
+
+          // store it
+          theLayers.addThisLayer(layer);
+
+          // ok, go for it.
+          // sort it out as an operation
+          final IUndoableOperation convertToTrack1 = new ConvertIt(title,
+              theLayers, subjects, layer);
+
+          // ok, stick it on the buffer
+          runIt(convertToTrack1);
+        }
+
+      }
+    };
   }
 
   /**

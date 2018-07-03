@@ -148,7 +148,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
    *          the point to add
    */
   @Override
-  public void add(final MWC.GUI.Editable point)
+  public void add(final Editable point)
   {
     // see what type of object this is
     if (point instanceof FixWrapper)
@@ -172,7 +172,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
         || (other instanceof LightweightTrackWrapper))
     {
       // yes, break it down.
-      final java.util.Enumeration<Editable> iter = other.elements();
+      final Enumeration<Editable> iter = other.elements();
       while (iter.hasMoreElements())
       {
         final Editable nextItem = iter.nextElement();
@@ -415,7 +415,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
    *
    * @return the font to use for the label
    */
-  public final java.awt.Font getTrackFont()
+  public final Font getTrackFont()
   {
     return _theLabel.getFont();
   }
@@ -445,7 +445,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
       return null;
     }
 
-    if (this.getVisible() == false)
+    if (!this.getVisible())
     {
       return null;
     }
@@ -461,14 +461,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     while (iter.hasMoreElements())
     {
       final FixWrapper fw = (FixWrapper) iter.nextElement();
-      if (fw.getVisible())
+      if (fw.getVisible() && thePeriod.contains(fw.getTime()))
       {
-        // is it visible?
-        if (thePeriod.contains(fw.getTime()))
-        {
-          // hey, it's valid - continue
-          res.add(fw);
-        }
+        // hey, it's valid - continue
+        res.add(fw);
       }
     }
     return res;

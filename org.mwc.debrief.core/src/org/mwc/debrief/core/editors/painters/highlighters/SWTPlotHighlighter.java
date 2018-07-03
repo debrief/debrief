@@ -31,6 +31,7 @@ import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -57,7 +58,7 @@ public interface SWTPlotHighlighter extends Editable
    *          whether this is the primary track
    */
   void highlightIt(MWC.Algorithms.PlainProjection proj, CanvasType dest,
-      MWC.GenericData.WatchableList list, MWC.GenericData.Watchable watch,
+      WatchableList list, Watchable watch,
       boolean isPrimary);
 
   // ////////////////////////////////////////////////////////////////////
