@@ -158,7 +158,7 @@ final class SnailDrawSWTTrack
     final WatchableList trk = theFix.getTrackWrapper();
 
     // does this object return a track?
-    if (trk == null)
+    if (trk == null || !trk.getVisible())
     {
       return thisR;
     }

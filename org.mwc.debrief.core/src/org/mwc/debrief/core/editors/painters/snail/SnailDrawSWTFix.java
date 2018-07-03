@@ -118,6 +118,11 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		FixWrapper fix = (FixWrapper)watch;
 		final WatchableList trk = fix.getTrackWrapper();
 		
+		if(!trk.getVisible())
+		{
+		  return thisR;
+		}
+		
     // trim to visible period if its a track
     final TimePeriod visP;
     if(trk instanceof LightweightTrack)
