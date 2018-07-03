@@ -26,7 +26,7 @@ import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
@@ -188,9 +188,9 @@ final class SnailDrawSWTTrack
 
     // trim to visible period if its a track
     final TimePeriod visP;
-    if(trk instanceof LightweightTrack)
+    if(trk instanceof LightweightTrackWrapper)
     {
-      LightweightTrack ft = (LightweightTrack) trk;
+      LightweightTrackWrapper ft = (LightweightTrackWrapper) trk;
       visP = ft.getVisiblePeriod();
     }
     else
@@ -268,10 +268,10 @@ final class SnailDrawSWTTrack
 
         boolean titlePlotted = false;
 
-        final LightweightTrack format;    
-        if (trk instanceof LightweightTrack)
+        final LightweightTrackWrapper format;    
+        if (trk instanceof LightweightTrackWrapper)
         {
-          format = (LightweightTrack) trk;
+          format = (LightweightTrackWrapper) trk;
         }
         else
         {

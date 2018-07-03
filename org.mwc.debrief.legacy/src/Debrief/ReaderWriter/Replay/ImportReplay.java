@@ -48,7 +48,7 @@ import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -1557,16 +1557,16 @@ public class ImportReplay extends PlainImporterBase
       }
       
       // ok, does it contain the track
-      final LightweightTrack track;
+      final LightweightTrackWrapper track;
       Editable found = folder.find(rf.theTrackName);
-      if(found != null && found instanceof LightweightTrack)
+      if(found != null && found instanceof LightweightTrackWrapper)
       {
-        track = (LightweightTrack) found;
+        track = (LightweightTrackWrapper) found;
       }
       else
       {
         final Color thisColor = replayColorFor(rf.theSymbology);
-        track = new LightweightTrack(rf.theTrackName, true, true, thisColor,
+        track = new LightweightTrackWrapper(rf.theTrackName, true, true, thisColor,
             LineStylePropertyEditor.SOLID);
         folder.add(track);
       }

@@ -26,7 +26,7 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
 import Debrief.Wrappers.*;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.*;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.*;
@@ -56,7 +56,7 @@ public class ConvertLightweightToTrack implements
     for (int i = 0; i < subjects.length; i++)
     {
       final Editable thisE = subjects[i];
-      if (thisE instanceof LightweightTrack)
+      if (thisE instanceof LightweightTrackWrapper)
       {
         // ok, we've started...
         layersValidForConvertToTrack++;
@@ -118,7 +118,7 @@ public class ConvertLightweightToTrack implements
     private final Editable[] _subjects;
 
     private Vector<TrackWrapper> _newTracks;
-    private Vector<LightweightTrack> _oldLightweights;
+    private Vector<LightweightTrackWrapper> _oldLightweights;
 
     public ConvertIt(final String title, final Layers layers,
         final Editable[] subjects)
@@ -133,15 +133,15 @@ public class ConvertLightweightToTrack implements
             throws ExecutionException
     {
       _newTracks = new Vector<TrackWrapper>();
-      _oldLightweights = new Vector<LightweightTrack>();
+      _oldLightweights = new Vector<LightweightTrackWrapper>();
       
       // right, get going through the track
       for (int i = 0; i < _subjects.length; i++)
       {
         final Editable thisE = _subjects[i];
-        if (thisE instanceof LightweightTrack)
+        if (thisE instanceof LightweightTrackWrapper)
         {
-          final LightweightTrack layer = (LightweightTrack) thisE;
+          final LightweightTrackWrapper layer = (LightweightTrackWrapper) thisE;
           
           // switch off the layer
           layer.setVisible(false);
@@ -189,7 +189,7 @@ public class ConvertLightweightToTrack implements
         _layers.removeThisLayer(trk);
       }
 
-      for(LightweightTrack t: _oldLightweights)
+      for(LightweightTrackWrapper t: _oldLightweights)
       {
         t.setVisible(true);
       }

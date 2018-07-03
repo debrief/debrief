@@ -34,6 +34,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
@@ -41,13 +42,13 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class LightweightTrack extends PlainWrapper implements WatchableList,
-    Plottable, Layer
+public class LightweightTrackWrapper extends PlainWrapper implements WatchableList,
+    Plottable, Layer, IsTransientForChildren
 {
 
   public class LightweightTrackInfo extends Editable.EditorType
   {
-    public LightweightTrackInfo(final LightweightTrack data)
+    public LightweightTrackInfo(final LightweightTrackWrapper data)
     {
       super(data, data.getName(), "");
     }
@@ -101,7 +102,7 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
    */
   private final MWC.GUI.Shapes.TextLabel _theLabel;
 
-  public LightweightTrack()
+  public LightweightTrackWrapper()
   {
     // no-op constructor
     _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
@@ -110,7 +111,7 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
 
   }
 
-  public LightweightTrack(final String name, final boolean visible,
+  public LightweightTrackWrapper(final String name, final boolean visible,
       final boolean nameVisible, final Color color, final int lineStyle)
   {
     this();
@@ -168,8 +169,8 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
   public void append(final Layer other)
   {
     // is it a track?
-    if ((other instanceof LightweightTrack)
-        || (other instanceof LightweightTrack))
+    if ((other instanceof LightweightTrackWrapper)
+        || (other instanceof LightweightTrackWrapper))
     {
       // yes, break it down.
       final java.util.Enumeration<Editable> iter = other.elements();
@@ -760,5 +761,17 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
   public String toString()
   {
     return getName();
+  }
+
+  @Override
+  public void reconnectChildObjects(Object clonedObject)
+  {
+    LightweightTrackWrapper clonedTrack = (LightweightTrackWrapper) clonedObject;
+    Enumeration<Editable> ele = clonedTrack.getPositionIterator();
+    while(ele.hasMoreElements())
+    {
+      FixWrapper fw = (FixWrapper) ele.nextElement();
+      fw.setTrackWrapper(clonedTrack);
+    }
   }
 }

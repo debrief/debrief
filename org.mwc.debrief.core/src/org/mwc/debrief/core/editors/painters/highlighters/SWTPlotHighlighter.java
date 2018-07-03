@@ -24,7 +24,7 @@ import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.MetafileCanvas;
@@ -115,9 +115,9 @@ public interface SWTPlotHighlighter extends Editable
         {
           FixWrapper fw = (FixWrapper) watch;
           WatchableList tw = fw.getTrackWrapper();
-          if (tw != null && tw instanceof LightweightTrack)
+          if (tw != null && tw instanceof LightweightTrackWrapper)
           {
-            LightweightTrack tf = (LightweightTrack) tw;
+            LightweightTrackWrapper tf = (LightweightTrackWrapper) tw;
 
             HiResDate dtg = fw.getTime();
 

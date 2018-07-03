@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -434,7 +434,7 @@ public class TrackManager implements TrackDataProvider
 			{
 				if (w.getVisible())
 					if ((!onlyAssignTracks) || (onlyAssignTracks)
-							&& (w instanceof LightweightTrack))
+							&& (w instanceof LightweightTrackWrapper))
 						setPrimary(w);
 			}
 			else

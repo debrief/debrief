@@ -43,7 +43,7 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.SplittableLayer;
@@ -101,7 +101,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the TrackWrapper maintains the GUI and data attributes of the whole track iteself, but the
  * responsibility for the fixes within the track are demoted to the FixWrapper
  */
-public class TrackWrapper extends LightweightTrack implements WatchableList,
+public class TrackWrapper extends LightweightTrackWrapper implements WatchableList,
     DraggableItem, HasDraggableComponents, ProvidesContiguousElements,
     ISecondaryTrack, DynamicPlottable
 {

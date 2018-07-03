@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GenericData.HiResDate;
@@ -180,9 +180,9 @@ final class SnailDrawTrack
     else
     {
       // retrieve the points in range
-      if (trk instanceof LightweightTrack)
+      if (trk instanceof LightweightTrackWrapper)
       {
-        LightweightTrack track = (LightweightTrack) trk;
+        LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
         dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
             - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
       }

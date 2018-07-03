@@ -31,7 +31,7 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Plottable;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -52,7 +52,7 @@ public abstract class LightweightTrackHandler extends
   public void exportThisPlottable(MWC.GUI.Plottable plottable,
       org.w3c.dom.Element parent, org.w3c.dom.Document doc)
   {
-    LightweightTrack track = (LightweightTrack)plottable;
+    LightweightTrackWrapper track = (LightweightTrackWrapper)plottable;
     
     Element trk = doc.createElement(MY_NAME);
     trk.setAttribute(NAME, toXML(track.getName()));
@@ -161,7 +161,7 @@ public abstract class LightweightTrackHandler extends
   public void elementClosed()
   {
     // ok, generate the object
-    LightweightTrack track = new LightweightTrack(_name, _visible, _nameVisible,
+    LightweightTrackWrapper track = new LightweightTrackWrapper(_name, _visible, _nameVisible,
         _color, _lineStyle);
     track.setVisible(_visible);
     track.setNameVisible(_nameVisible);
@@ -183,6 +183,6 @@ public abstract class LightweightTrackHandler extends
 
   }
 
-  public abstract void storeTrack(LightweightTrack track);
+  public abstract void storeTrack(LightweightTrackWrapper track);
 
 }

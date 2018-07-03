@@ -42,7 +42,7 @@ import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.Formatters.CoreFormatItemListener;
 import Debrief.Wrappers.Formatters.HideLayerFormatListener;
 import Debrief.Wrappers.Formatters.TrackNameAtEndFormatListener;
-import Debrief.Wrappers.Track.LightweightTrack;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers.INewItemListener;
 import MWC.GUI.Plottable;
@@ -92,7 +92,7 @@ public class DebriefLayerHandler extends
     addHandler(new LightweightTrackHandler()
     {      
       @Override
-      public void storeTrack(LightweightTrack track)
+      public void storeTrack(LightweightTrackWrapper track)
       {
         addThis(track);
       }
@@ -257,10 +257,10 @@ public class DebriefLayerHandler extends
         {
         }
       });
-      _myExporters.put(LightweightTrack.class, new LightweightTrackHandler()
+      _myExporters.put(LightweightTrackWrapper.class, new LightweightTrackHandler()
       {
         @Override
-        public void storeTrack(LightweightTrack track)
+        public void storeTrack(LightweightTrackWrapper track)
         {
         }
       });
