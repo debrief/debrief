@@ -167,11 +167,12 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     {
       debriefObserver.setSubjectSensor(_subjectSensor);
     }
+
     if(_targetFolder != null)
     {
       debriefObserver.setTargetFolder(_targetFolder);
     }
-
+    
     setObserver(debriefObserver);
 
     // close the parenet

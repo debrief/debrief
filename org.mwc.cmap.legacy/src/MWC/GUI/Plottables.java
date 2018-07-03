@@ -158,7 +158,6 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
-import junit.framework.Assert;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
@@ -705,23 +704,23 @@ public class Plottables implements Plottable, Serializable, PlottablesType,
 		public void testAddRemove()
 		{
 			final Plottables pl = new Plottables();
-			Assert.assertEquals("Empty list", pl.size(), 0);
+			assertEquals("Empty list", pl.size(), 0);
 			final GridPainter cp = new GridPainter();
 			pl.add(cp);
-			Assert.assertEquals("non-empty list", pl.size(), 1);
+			assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(cp);
-			Assert.assertEquals("list", pl.size(), 0);
+			assertEquals("list", pl.size(), 0);
 
 			final ScalePainter sp = new ScalePainter();
 			pl.add(sp);
-			Assert.assertEquals("non-empty list", pl.size(), 1);
+			assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(sp);
-			Assert.assertEquals("list empty", pl.size(), 0);
+			assertEquals("list empty", pl.size(), 0);
 			final Grid4WPainter c4p = new Grid4WPainter(null);
 			pl.add(c4p);
-			Assert.assertEquals("non-empty list", pl.size(), 1);
+			assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(c4p);
-			Assert.assertEquals("list", pl.size(), 0);
+			assertEquals("list", pl.size(), 0);
 		}
 
 	}

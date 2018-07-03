@@ -26,6 +26,7 @@ import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
@@ -34,6 +35,7 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -153,21 +155,30 @@ final class SnailDrawSWTTrack
 
     // get the fix and the track
     FixWrapper theFix = (FixWrapper) watch;
-    final TrackWrapper trk = theFix.getTrackWrapper();
+    final WatchableList trk = theFix.getTrackWrapper();
 
     // does this object return a track?
-    if (trk == null)
+    if (trk == null || !trk.getVisible())
     {
       return thisR;
     }
 
     // does this track have a custom trail length
-    final Duration customTrail = trk.getCustomTrailLength();
-
     final long trail_len;
-    if (customTrail != null)
+    if (trk instanceof TrackWrapper)
     {
-      trail_len = (long) customTrail.getValueIn(Duration.MICROSECONDS);
+      TrackWrapper track = (TrackWrapper) trk;
+      final Duration customTrail = track.getCustomTrailLength();
+
+      if (customTrail != null)
+      {
+        trail_len = (long) customTrail.getValueIn(Duration.MICROSECONDS);
+      }
+      else
+      {
+        trail_len = (long) parent.getSnailProperties().getTrailLength()
+            .getValueIn(Duration.MICROSECONDS);
+      }
     }
     else
     {
@@ -176,8 +187,18 @@ final class SnailDrawSWTTrack
     }
 
     // trim to visible period if its a track
-    final TimePeriod visP = trk.getVisiblePeriod();
-    if (!visP.contains(dtg))
+    final TimePeriod visP;
+    if(trk instanceof LightweightTrackWrapper)
+    {
+      LightweightTrackWrapper ft = (LightweightTrackWrapper) trk;
+      visP = ft.getVisiblePeriod();
+    }
+    else
+    {
+      visP = null;
+    }
+    
+    if (visP != null && !visP.contains(dtg))
     {
       // ok, before or after?
       if (visP.getStartDTG().greaterThan(dtg))
@@ -242,46 +263,24 @@ final class SnailDrawSWTTrack
     {
       if (!dotPoints.isEmpty())
       {
-
-        // NOTE: no, don't. We're getting a duplicate set of array centre markers
-        // // have a go at plotting the array sensor
-        // if (trk.getPlotArrayCentre()) {
-        // final Enumeration<Editable> enumer = trk.getSensors()
-        // .elements();
-        // while (enumer.hasMoreElements()) {
-        // final SensorWrapper sw = (SensorWrapper) enumer
-        // .nextElement();
-        // final int _mySize = 5;
-        //
-        // // is this sensor visible?
-        // if (sw.getVisible())
-        // {
-        // final WorldLocation centre =
-        // sw.getArrayCentre(dtg, watch.getLocation(), trk);
-        // if (centre != null)
-        // {
-        // final Point pt = dest.toScreen(centre);
-        // dest.drawLine(pt.x - _mySize, pt.y - _mySize, pt.x + _mySize,
-        // pt.y + _mySize);
-        // dest.drawLine(pt.x + _mySize, pt.y - _mySize, pt.x - _mySize,
-        // pt.y + _mySize);
-        // }
-        // else
-        // {
-        // Application.logStack2(Application.ERROR,
-        // "Unable to determine array centre for:" + sw.getName());
-        // }
-        // }
-        // }
-        // }
-
         // remember the last location
         Point lastLoc = null;
 
         boolean titlePlotted = false;
 
+        final LightweightTrackWrapper format;    
+        if (trk instanceof LightweightTrackWrapper)
+        {
+          format = (LightweightTrackWrapper) trk;
+        }
+        else
+        {
+          // ok, drop out - we can't paint it.
+          return null;
+        }
+
         // set the line style
-        dest.setLineStyle(trk.getLineStyle());
+        dest.setLineStyle(format.getLineStyle());
 
         final Iterator<Editable> iter = dotPoints.iterator();
         while (iter.hasNext())
@@ -320,10 +319,9 @@ final class SnailDrawSWTTrack
           }
 
           // should the track name be visible?
-          if (trk.getNameVisible() && !titlePlotted)
+          if (format.getNameVisible() && !titlePlotted)
           {
-
-            final Enumeration<Editable> numer = trk.getPositionIterator();
+            Enumeration<Editable> numer = format.getPositionIterator();
             if (numer.hasMoreElements())
             {
               // is this the first fix of the track?
@@ -332,7 +330,7 @@ final class SnailDrawSWTTrack
                 titlePlotted = true;
 
                 // set the correct font
-                dest.setFont(trk.getTrackFont());
+                dest.setFont(format.getTrackFont());
 
                 final String msg = trk.getName();
 
@@ -362,17 +360,6 @@ final class SnailDrawSWTTrack
                 copyPt = new Point(screenP);
                 copyPt.translate(sWid, -20);
                 thisR.add(copyPt);
-
-                //
-                // LabelWrapper label = new LabelWrapper(trk.getName(), gw
-                // .getLocation(), trk.getColor());
-                // label.paint(dest);
-                //
-                // // add a phony area thingy, to include the track name
-                // Point p1 = new Point(screenP);
-                // p1.translate(-40, -20);
-                // Rectangle labelRect = new Rectangle(p1,new Dimension(80,40));
-                // thisR.add(labelRect);
               }
             }
           }
@@ -449,43 +436,51 @@ final class SnailDrawSWTTrack
    *          end DTG
    * @return series of fixes
    */
-  public final Collection<Editable> getUnfilteredItems(final TrackWrapper track,
+  public final Collection<Editable> getUnfilteredItems(final WatchableList list,
       final HiResDate start, final HiResDate end)
   {
     final Collection<Editable> res = new Vector<Editable>();
 
-    // find the leg containing the end value
-    final SegmentList legs = track.getSegments();
-    final Enumeration<Editable> iter = legs.elements();
-    TrackSegment match = null;
-    while (iter.hasMoreElements())
+    if (list instanceof TrackWrapper)
     {
-      final TrackSegment seg = (TrackSegment) iter.nextElement();
-      final FixWrapper first = (FixWrapper) seg.first();
-      final FixWrapper last = (FixWrapper) seg.last();
-
-      final TimePeriod period = new TimePeriod.BaseTimePeriod(first
-          .getDateTimeGroup(), last.getDateTimeGroup());
-      if (period.contains(end))
+      // ok, optimised track handling
+      TrackWrapper track = (TrackWrapper) list;
+      // find the leg containing the end value
+      final SegmentList legs = track.getSegments();
+      final Enumeration<Editable> iter = legs.elements();
+      TrackSegment match = null;
+      while (iter.hasMoreElements())
       {
-        match = seg;
-      }
-    }
+        final TrackSegment seg = (TrackSegment) iter.nextElement();
+        final FixWrapper first = (FixWrapper) seg.first();
+        final FixWrapper last = (FixWrapper) seg.last();
 
-    if (match != null)
-    {
-      final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-
-      // ok, get matching points in this segment
-      final Enumeration<Editable> iter2 = match.elements();
-      while (iter2.hasMoreElements())
-      {
-        final FixWrapper fw = (FixWrapper) iter2.nextElement();
-        if (period.contains(fw.getDateTimeGroup()))
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(first
+            .getDateTimeGroup(), last.getDateTimeGroup());
+        if (period.contains(end))
         {
-          res.add(fw);
+          match = seg;
         }
       }
+      if (match != null)
+      {
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+
+        // ok, get matching points in this segment
+        final Enumeration<Editable> iter2 = match.elements();
+        while (iter2.hasMoreElements())
+        {
+          final FixWrapper fw = (FixWrapper) iter2.nextElement();
+          if (period.contains(fw.getDateTimeGroup()))
+          {
+            res.add(fw);
+          }
+        }
+      }
+    }
+    else
+    {
+      res.addAll(list.getItemsBetween(start, end));
     }
 
     return res;

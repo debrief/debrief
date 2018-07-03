@@ -921,8 +921,8 @@ public class ImportNarrativeDocument
       final Fix fx1 = new Fix(hd1, loc1, 12d, 5);
       final Fix fx2 = new Fix(hd2, loc2, 12d, 5);
 
-      nonsuch.add(new FixWrapper(fx1));
-      nonsuch.add(new FixWrapper(fx2));
+      nonsuch.addFix(new FixWrapper(fx1));
+      nonsuch.addFix(new FixWrapper(fx2));
 
       target.addThisLayer(nonsuch);
 
