@@ -1279,8 +1279,6 @@ public class ImportReplay extends PlainImporterBase
         {
           // keep line counter
           lineCounter++;
-          
-          System.out.println(lineCounter + " // " + thisLine);
 
           // catch import problems
           readLine(thisLine);
