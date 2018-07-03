@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Wrappers.Track;
 
@@ -28,8 +28,11 @@ import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -38,8 +41,8 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public final class LightweightTrack extends Plottables implements
-    WatchableList, Plottable, FormattedTrack
+public class LightweightTrack extends PlainWrapper implements WatchableList,
+    Plottable, Layer
 {
 
   public class LightweightTrackInfo extends Editable.EditorType
@@ -49,6 +52,7 @@ public final class LightweightTrack extends Plottables implements
       super(data, data.getName(), "");
     }
 
+    @Override
     public PropertyDescriptor[] getPropertyDescriptors()
     {
       try
@@ -57,10 +61,10 @@ public final class LightweightTrack extends Plottables implements
         {prop("Visible", "the Layer visibility", VISIBILITY), prop("Name",
             "the name of the track", FORMAT), prop("NameVisible",
                 "show the name of the track", FORMAT), prop("Color",
-                    "color of the track", FORMAT),
-          displayExpertLongProp("LineStyle", "Line style",
-              "the line style used to join track points", TEMPORAL,
-              MWC.GUI.Properties.LineStylePropertyEditor.class)};
+                    "color of the track", FORMAT), displayExpertLongProp(
+                        "LineStyle", "Line style",
+                        "the line style used to join track points", TEMPORAL,
+                        MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -72,176 +76,184 @@ public final class LightweightTrack extends Plottables implements
     }
   }
 
-  private Color _color = null;
-
-  @Override
-  public EditorType getInfo()
-  {
-    return new LightweightTrackInfo(this);
-  }
-
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
- 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
-
-  private String _name;
-
-  private boolean _visible;
 
   private TimePeriod _cachedPeriod;
 
   private long _timeCachedPeriodCalculated;
 
-  private Font _trackFont;
-
-  private boolean _nameVisible;
-
   private int _lineStyle;
-  
+
   private WorldArea _bounds = null;
 
-  public LightweightTrack(String name, boolean visible, boolean nameVisible, Color color, int lineStyle)
+  private final Plottables _thePositions = new Plottables();
+
+  /**
+   * the width of this track
+   */
+  private int _lineWidth = 3;
+
+  /**
+   * the label describing this track
+   */
+  private final MWC.GUI.Shapes.TextLabel _theLabel;
+
+  public LightweightTrack()
   {
+    // no-op constructor
+    _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
+    // set an initial location for the label
+    setNameLocation(NullableLocationPropertyEditor.AUTO);
+
+  }
+
+  public LightweightTrack(final String name, final boolean visible,
+      final boolean nameVisible, final Color color, final int lineStyle)
+  {
+    this();
+
     setName(name);
-    
     setVisible(visible);
     setNameVisible(nameVisible);
     setColor(color);
-    setLineStyle(lineStyle);    
+    setLineStyle(lineStyle);
   }
 
-  public void setName(String name)
+  public void add(final FixWrapper e)
   {
-    _name = name;
-  }
+    // forget the bounds
+    _bounds = null;
 
-  public Color getCustomColor()
-  {
-    return _color;
+    _thePositions.add(e);
   }
 
   /**
-   * Determine the time period for which we have visible locations
-   * 
-   * @return
+   * add the indicated point to the track
+   *
+   * @param point
+   *          the point to add
    */
-  public TimePeriod getVisiblePeriod()
+  @Override
+  public void add(final MWC.GUI.Editable point)
   {
-    // ok, have we determined the visible period recently?
-    final long tNow = System.currentTimeMillis();
-
-    // how long does the cached value remain valid for?
-    final long ALLOWABLE_PERIOD = 500;
-    if (_cachedPeriod != null && tNow
-        - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
+    // see what type of object this is
+    if (point instanceof FixWrapper)
     {
-      // still in date, use the last calculated period
+      final FixWrapper fw = (FixWrapper) point;
+      fw.setTrackWrapper(this);
+      _thePositions.add(fw);
+    }
+  }
+
+  /**
+   * append this other layer to ourselves (although we don't really bother with it)
+   *
+   * @param other
+   *          the layer to add to ourselves
+   */
+  @Override
+  public void append(final Layer other)
+  {
+    // is it a track?
+    if ((other instanceof LightweightTrack)
+        || (other instanceof LightweightTrack))
+    {
+      // yes, break it down.
+      final java.util.Enumeration<Editable> iter = other.elements();
+      while (iter.hasMoreElements())
+      {
+        final Editable nextItem = iter.nextElement();
+        if (nextItem instanceof Layer)
+        {
+          append((Layer) nextItem);
+        }
+        else
+        {
+          add(nextItem);
+        }
+      }
     }
     else
     {
-      // ok, calculate a new one
-      TimePeriod res = null;
-      final Iterator<FixWrapper> pos = iterator();
-      while (pos.hasNext())
+      // nope, just add it to us.
+      add(other);
+    }
+  }
+
+  @Override
+  public int compareTo(final Plottable o)
+  {
+    return this.getName().compareTo(o.getName());
+  }
+
+  @Override
+  public Enumeration<Editable> elements()
+  {
+    return _thePositions.elements();
+  }
+
+  /**
+   * export this track to REPLAY file
+   */
+  @Override
+  public final void exportShape()
+  {
+    // call the method in PlainWrapper
+    this.exportThis();
+  }
+
+  @Override
+  public void filterListTo(final HiResDate start, final HiResDate end)
+  {
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    final Iterator<FixWrapper> fIter = iterator();
+    while (fIter.hasNext())
+    {
+      final FixWrapper fix = fIter.next();
+      if (period.contains(fix.getDateTimeGroup()))
       {
-        final FixWrapper editable = (FixWrapper) pos.next();
-        if (editable.getVisible())
+        fix.setVisible(true);
+      }
+      else
+      {
+        fix.setVisible(false);
+      }
+    }
+  }
+
+  /**
+   * ensure the cached set of raw positions gets cleared
+   *
+   */
+  public void flushPeriodCache()
+  {
+    _cachedPeriod = null;
+  }
+
+  @Override
+  public WorldArea getBounds()
+  {
+    if (_bounds == null)
+    {
+      final Iterator<FixWrapper> itera = iterator();
+      while (itera.hasNext())
+      {
+        final WorldLocation loc = itera.next().getLocation();
+        if (_bounds == null)
         {
-          final HiResDate thisT = editable.getTime();
-          if (res == null)
-          {
-            res = new TimePeriod.BaseTimePeriod(thisT, thisT);
-          }
-          else
-          {
-            res.extend(thisT);
-          }
+          _bounds = new WorldArea(loc, loc);
+        }
+        else
+        {
+          _bounds.extend(loc);
         }
       }
-      // ok, store the new time period
-      _cachedPeriod = res;
-
-      // remember when it was calculated
-      _timeCachedPeriodCalculated = tNow;
     }
 
-    return _cachedPeriod;
-  }
-
-  public Iterator<FixWrapper> iterator()
-  {
-    final Enumeration<Editable> ele = elements();
-    return new Iterator<FixWrapper>() {
-
-      @Override
-      public boolean hasNext()
-      {
-        return ele.hasMoreElements();
-      }
-
-      @Override
-      public FixWrapper next()
-      {
-        return (FixWrapper) ele.nextElement();
-      }};
-  }
-
-  @FireReformatted
-  public void setColor(Color color)
-  {
-    this._color = color;
-  }
-
-  public synchronized void paint(CanvasType dest)
-  {
-    if (!getVisible())
-    {
-      return;
-    }
-
-    final Color myColor = getColor();
-
-    dest.setColor(myColor);
-
-    final int len = super.size();
-    Iterator<FixWrapper> iter = iterator();
-    int ctr = 0;
-    final int[] xPoints = new int[len];
-    final int[] yPoints = new int[len];
-
-    WorldLocation firstLoc = null;
-
-    // build up polyline
-    while (iter.hasNext())
-    {
-      FixWrapper fw = (FixWrapper) iter.next();
-      if (firstLoc == null)
-      {
-        firstLoc = fw.getLocation();
-      }
-      Point loc = dest.toScreen(fw.getLocation());
-      xPoints[ctr] = (int) loc.getX();
-      yPoints[ctr] = (int) loc.getY();
-      ctr++;
-    }
-
-    // draw the line
-    dest.drawPolyline(xPoints, yPoints, len);
-
-    // and the track name?
-    if (getNameVisible() && firstLoc != null)
-    {
-      Point loc = dest.toScreen(firstLoc);
-      dest.drawText(getName(), loc.x + 5, loc.y);
-    }
+    return _bounds;
   }
 
   @Override
@@ -250,27 +262,101 @@ public final class LightweightTrack extends Plottables implements
     return getCustomColor();
   }
 
-  @Override
-  public HiResDate getStartDTG()
+  public Color getCustomColor()
   {
-    return ((FixWrapper) first()).getTime();
+    return _theLabel.getColor();
   }
-
 
   @Override
   public HiResDate getEndDTG()
   {
-    return ((FixWrapper) last()).getTime();
+    return ((FixWrapper) _thePositions.last()).getTime();
   }
 
   @Override
-  public Watchable[] getNearestTo(HiResDate DTG)
+  public EditorType getInfo()
+  {
+    return new LightweightTrackInfo(this);
+  }
+
+  @Override
+  public Collection<Editable> getItemsBetween(final HiResDate start,
+      final HiResDate end)
+  {
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    final Collection<Editable> items = new Vector<Editable>();
+    final Iterator<FixWrapper> iter = iterator();
+    while (iter.hasNext())
+    {
+      final FixWrapper fix = iter.next();
+      if (period.contains(fix.getDateTimeGroup()))
+      {
+        items.add(fix);
+      }
+    }
+    return items;
+  }
+
+  protected final WorldLocation getLabelLocation()
+  {
+    return _theLabel.getLocation();
+  }
+
+  public int getLineStyle()
+  {
+    return _lineStyle;
+  }
+
+  /**
+   * the line thickness (convenience wrapper around width)
+   *
+   * @return
+   */
+  @Override
+  public int getLineThickness()
+  {
+    return _lineWidth;
+  }
+
+  /**
+   * name of this Track (normally the vessel name)
+   *
+   * @return the name
+   */
+  @Override
+  public final String getName()
+  {
+    return _theLabel.getString();
+  }
+
+  /**
+   * the relative location of the label
+   *
+   * @return the relative location
+   */
+  public final Integer getNameLocation()
+  {
+    return _theLabel.getRelativeLocation();
+  }
+
+  /**
+   * whether the track label is visible or not
+   *
+   * @return yes/no
+   */
+  public final boolean getNameVisible()
+  {
+    return _theLabel.getVisible();
+  }
+
+  @Override
+  public Watchable[] getNearestTo(final HiResDate DTG)
   {
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
 
-    FixWrapper myFirst = (FixWrapper) first();
-    FixWrapper myLast = (FixWrapper) last();
+    final FixWrapper myFirst = (FixWrapper) _thePositions.first();
+    final FixWrapper myLast = (FixWrapper) _thePositions.last();
 
     if (DTG.lessThan(myFirst.getTime()) || DTG.greaterThan(myLast.getTime()))
     {
@@ -279,10 +365,10 @@ public final class LightweightTrack extends Plottables implements
     else
     {
       long distance = Long.MAX_VALUE;
-      Iterator<FixWrapper> fIter = iterator();
+      final Iterator<FixWrapper> fIter = iterator();
       while (fIter.hasNext())
       {
-        FixWrapper fix = fIter.next();
+        final FixWrapper fix = fIter.next();
         final long dist = Math.abs(fix.getDateTimeGroup().getDate().getTime()
             - dtg);
         if (dist < distance)
@@ -297,40 +383,9 @@ public final class LightweightTrack extends Plottables implements
     {nearest};
   }
 
-  @Override
-  public void filterListTo(HiResDate start, HiResDate end)
+  public Enumeration<Editable> getPositionIterator()
   {
-    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-    Iterator<FixWrapper> fIter = iterator();
-    while (fIter.hasNext())
-    {
-      FixWrapper fix = fIter.next();
-      if (period.contains(fix.getDateTimeGroup()))
-      {
-        fix.setVisible(true);
-      }
-      else
-      {
-        fix.setVisible(false);
-      }
-    }
-  }
-
-  @Override
-  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
-  {
-    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-    Collection<Editable> items = new Vector<Editable>();
-    Iterator<FixWrapper> iter = iterator();
-    while (iter.hasNext())
-    {
-      FixWrapper fix = (FixWrapper) iter.next();
-      if (period.contains(fix.getDateTimeGroup()))
-      {
-        items.add(fix);
-      }
-    }
-    return items;
+    return _thePositions.elements();
   }
 
   @Override
@@ -339,113 +394,20 @@ public final class LightweightTrack extends Plottables implements
     return null;
   }
 
-  public void add(FixWrapper e)
-  {
-    // forget the bounds
-    _bounds = null;
-    
-     super.add(e);
-  }
-
   @Override
-  public String getName()
+  public HiResDate getStartDTG()
   {
-    return _name;
-  }
-  
-  public String toString()
-  {
-    return getName();
+    return ((FixWrapper) _thePositions.first()).getTime();
   }
 
-  @Override
-  public boolean getVisible()
+  /**
+   * font handler
+   *
+   * @return the font to use for the label
+   */
+  public final java.awt.Font getTrackFont()
   {
-    return _visible;
-  }
-
-  @Override
-  public WorldArea getBounds()
-  {
-    if(_bounds == null)
-    {
-      Iterator<FixWrapper> itera = iterator();
-      while(itera.hasNext())
-      {
-        WorldLocation loc = itera.next().getLocation();
-        if(_bounds == null)
-        {
-          _bounds = new WorldArea(loc, loc);
-        }
-        else
-        {
-          _bounds.extend(loc);
-        }
-      }
-    }
-    
-    return _bounds;
-  }
-
-  @Override
-  public int compareTo(Plottable o)
-  {
-    return this.getName().compareTo(o.getName());
-  }
-
-  @Override
-  public void setVisible(boolean val)
-  {
-    _visible = val;
-  }
-
-  @Override
-  public double rangeFrom(WorldLocation other)
-  {
-    // TODO Auto-generated method stub
-    return 0;
-  }
-
-  @Override
-  public int getLineStyle()
-  {
-    return _lineStyle;
-  }
-
-  @FireReformatted
-  public void setLineStyle(int style)
-  {
-    _lineStyle = style;
-  }
-
-  @Override
-  public boolean getNameVisible()
-  {
-    return _nameVisible;
-  }
-
-  @FireReformatted
-  public void setNameVisible(boolean visible)
-  {
-    _nameVisible = visible;
-  }
-
-  @Override
-  public Font getTrackFont()
-  {
-    return _trackFont;
-  }
-
-  @FireReformatted
-  public void setTrackFont(Font font)
-  {
-    _trackFont = font;
-  }
-
-  @Override
-  public Enumeration<Editable> getPositionIterator()
-  {
-    return elements();
+    return _theLabel.getFont();
   }
 
   /**
@@ -456,7 +418,7 @@ public final class LightweightTrack extends Plottables implements
    * <p/>
    * We don't have to worry about a valid depth, since 3d doesn't show points with invalid depth
    * values
-   * 
+   *
    * @param start
    *          start DTG
    * @param end
@@ -502,4 +464,291 @@ public final class LightweightTrack extends Plottables implements
     return res;
   }
 
+  /**
+   * Determine the time period for which we have visible locations
+   *
+   * @return
+   */
+  public TimePeriod getVisiblePeriod()
+  {
+    // ok, have we determined the visible period recently?
+    final long tNow = System.currentTimeMillis();
+
+    // how long does the cached value remain valid for?
+    final long ALLOWABLE_PERIOD = 500;
+    if (_cachedPeriod != null && tNow
+        - _timeCachedPeriodCalculated < ALLOWABLE_PERIOD)
+    {
+      // still in date, use the last calculated period
+    }
+    else
+    {
+      // ok, calculate a new one
+      TimePeriod res = null;
+      final Enumeration<Editable> pos = getPositionIterator();
+      while (pos.hasMoreElements())
+      {
+        final FixWrapper editable = (FixWrapper) pos.nextElement();
+        if (editable.getVisible())
+        {
+          final HiResDate thisT = editable.getTime();
+          if (res == null)
+          {
+            res = new TimePeriod.BaseTimePeriod(thisT, thisT);
+          }
+          else
+          {
+            res.extend(thisT);
+          }
+        }
+      }
+      // ok, store the new time period
+      _cachedPeriod = res;
+
+      // remember when it was calculated
+      _timeCachedPeriodCalculated = tNow;
+    }
+
+    return _cachedPeriod;
+  }
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean hasOrderedChildren()
+  {
+    return false;
+  }
+
+  /**
+   * whether this is single point track. Single point tracks get special processing.
+   *
+   * @return
+   */
+  public boolean isSinglePointTrack()
+  {
+    // we want to avoid getting the size() of the list.
+    // So, do fancy trick to check the first element is non-null,
+    // and the second is null
+    final boolean res;
+    final Enumeration<Editable> elems = _thePositions.elements();
+    if (elems != null && elems.hasMoreElements() && elems.nextElement() != null
+        && !elems.hasMoreElements())
+    {
+      res = true;
+    }
+    else
+    {
+      res = false;
+    }
+
+    return res;
+  }
+
+  public boolean isVisibleAt(final HiResDate dtg)
+  {
+    boolean res = false;
+
+    // special case - single track
+    if (isSinglePointTrack())
+    {
+      // we'll assume it's never ending.
+      res = true;
+    }
+    else
+    {
+      final TimePeriod visiblePeriod = getVisiblePeriod();
+      if (visiblePeriod != null)
+      {
+        res = visiblePeriod.contains(dtg);
+      }
+    }
+
+    return res;
+  }
+
+  public Iterator<FixWrapper> iterator()
+  {
+    final Enumeration<Editable> ele = _thePositions.elements();
+    return new Iterator<FixWrapper>()
+    {
+
+      @Override
+      public boolean hasNext()
+      {
+        return ele.hasMoreElements();
+      }
+
+      @Override
+      public FixWrapper next()
+      {
+        return (FixWrapper) ele.nextElement();
+      }
+    };
+  }
+
+  @Override
+  public synchronized void paint(final CanvasType dest)
+  {
+    if (!getVisible())
+    {
+      return;
+    }
+
+    final Color myColor = getColor();
+
+    dest.setColor(myColor);
+
+    final int len = _thePositions.size();
+    final Iterator<FixWrapper> iter = iterator();
+    int ctr = 0;
+    final int[] xPoints = new int[len];
+    final int[] yPoints = new int[len];
+
+    WorldLocation firstLoc = null;
+
+    // build up polyline
+    while (iter.hasNext())
+    {
+      final FixWrapper fw = iter.next();
+      if (firstLoc == null)
+      {
+        firstLoc = fw.getLocation();
+      }
+      final Point loc = dest.toScreen(fw.getLocation());
+      xPoints[ctr] = (int) loc.getX();
+      yPoints[ctr] = (int) loc.getY();
+      ctr++;
+    }
+
+    // draw the line
+    dest.drawPolyline(xPoints, yPoints, len);
+
+    // and the track name?
+    if (getNameVisible() && firstLoc != null)
+    {
+      final Point loc = dest.toScreen(firstLoc);
+      dest.drawText(getName(), loc.x + 5, loc.y);
+    }
+  }
+
+  /**
+   * get the label to paint itself
+   *
+   */
+  protected void paintLabel(final CanvasType dest)
+  {
+    _theLabel.paint(dest);
+  }
+
+  @Override
+  public double rangeFrom(final WorldLocation other)
+  {
+    // TODO Auto-generated method stub
+    return 0;
+  }
+
+  @Override
+  public void removeElement(final Editable point)
+  {
+    // see what type of object this is
+    if (point instanceof FixWrapper)
+    {
+      final FixWrapper fw = (FixWrapper) point;
+      fw.setTrackWrapper(null);
+      _thePositions.removeElement(fw);
+    }
+  }
+
+  /**
+   * set the colour of this track label
+   *
+   * @param theCol
+   *          the colour
+   */
+  @Override
+  @FireReformatted
+  public final void setColor(final Color theCol)
+  {
+    // do the parent
+    super.setColor(theCol);
+
+    // now do our processing
+    _theLabel.setColor(theCol);
+  }
+
+  protected final void setLabelLocation(final WorldLocation loc)
+  {
+    _theLabel.setLocation(loc);
+  }
+
+  @FireReformatted
+  public void setLineStyle(final int style)
+  {
+    _lineStyle = style;
+  }
+
+  /**
+   * the line thickness (convenience wrapper around width)
+   */
+  public void setLineThickness(final int val)
+  {
+    _lineWidth = val;
+  }
+
+  /**
+   * set the name of this track (normally the name of the vessel
+   *
+   * @param theName
+   *          the name as a String
+   */
+  @Override
+  @FireReformatted
+  public final void setName(final String theName)
+  {
+    _theLabel.setString(theName);
+  }
+
+  /**
+   * the relative location of the label
+   *
+   * @param val
+   *          the relative location
+   */
+  public final void setNameLocation(final Integer val)
+  {
+    _theLabel.setRelativeLocation(val);
+  }
+
+  /**
+   * whether to show the track name
+   *
+   * @param val
+   *          yes/no
+   */
+  public final void setNameVisible(final boolean val)
+  {
+    _theLabel.setVisible(val);
+  }
+
+  /**
+   * font handler
+   *
+   * @param font
+   *          the font to use for the label
+   */
+  public final void setTrackFont(final Font font)
+  {
+    _theLabel.setFont(font);
+  }
+
+  @Override
+  public String toString()
+  {
+    return getName();
+  }
 }
