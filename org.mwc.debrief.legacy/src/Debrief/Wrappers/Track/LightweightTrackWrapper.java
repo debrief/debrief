@@ -154,8 +154,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     if (point instanceof FixWrapper)
     {
       final FixWrapper fw = (FixWrapper) point;
-      fw.setTrackWrapper(this);
-      _thePositions.add(fw);
+      addFix(fw);
     }
   }
 
