@@ -161,7 +161,7 @@ public class VideoPlayerView extends ViewPart
   public void setVideoStartTime(Date date)
   {
     startTime.setValue(date);
-    PlatformUI.getPreferenceStore().setValue(LAST_VIDEO_START_TIME, date
+    PlatformUI.getPreferenceStore().setValue(_selected, date
         .getTime());
     fireNewTime(new HiResDate(date));
   }
@@ -340,7 +340,7 @@ public class VideoPlayerView extends ViewPart
     {
       // try to get the start time from last video start time.
       long startTime = PlatformUI.getPreferenceStore().getLong(
-          VideoPlayerView.LAST_VIDEO_START_TIME);
+          _selected);
       VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
       dialog.setStartTime(startTime > 0 ? new Date(startTime) : null);
       dialog.setBlockOnOpen(true);
