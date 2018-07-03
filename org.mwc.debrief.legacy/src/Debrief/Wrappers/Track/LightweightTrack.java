@@ -126,6 +126,8 @@ public class LightweightTrack extends PlainWrapper implements WatchableList,
   {
     // forget the bounds
     _bounds = null;
+    
+    e.setTrackWrapper(this);
 
     _thePositions.add(e);
   }
