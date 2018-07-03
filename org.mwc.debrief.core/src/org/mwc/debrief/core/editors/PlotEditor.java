@@ -363,6 +363,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
             }
           }
+          else if (nextP instanceof WatchableList)
+          {
+            WatchableList wl = (WatchableList) nextP;
+            res = extend(res, wl.getStartDTG());
+            res = extend(res, wl.getEndDTG());
+          }
         }
       }
     }
