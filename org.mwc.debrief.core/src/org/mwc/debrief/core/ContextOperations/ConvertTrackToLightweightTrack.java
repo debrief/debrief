@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -62,186 +62,11 @@ import MWC.TacticalData.Fix;
 
 /**
  * @author ian.mayo
- * 
+ *
  */
 public class ConvertTrackToLightweightTrack implements
     RightClickContextItemGenerator
 {
-
-  /**
-   * @param parent
-   * @param theLayers
-   * @param parentLayers
-   * @param subjects
-   */
-  public void generate(final IMenuManager parent, final Layers theLayers,
-      final Layer[] parentLayers, final Editable[] subjects)
-  {
-    int layersValidForConvertToLightweight = 0;
-
-    // right, work through the subjects
-    for (int i = 0; i < subjects.length; i++)
-    {
-      final Editable thisE = subjects[i];
-      if (thisE instanceof TrackWrapper)
-      {
-        // ok, we've started...
-        layersValidForConvertToLightweight++;
-      }
-      else
-      {
-        return;
-      }
-    }
-
-    // ok, is it worth going for?
-    if (layersValidForConvertToLightweight > 0)
-    {
-      final String title;
-      if (layersValidForConvertToLightweight > 1)
-        title = "tracks";
-      else
-        title = "track";
-
-      // right,stick in a separator
-      parent.add(new Separator());
-
-      MenuManager listing = new MenuManager("Convert to lightweight " + title
-          + " in...");
-
-      // ok, determine list of suitable targets
-      Enumeration<Editable> ele = theLayers.elements();
-      while (ele.hasMoreElements())
-      {
-        Editable ed = ele.nextElement();
-        if (ed instanceof BaseLayer)
-        {
-          final BaseLayer target = (BaseLayer) ed;
-
-          // yes, create the action
-          final Action convertToTrack = new Action(target.getName())
-          {
-            public void run()
-            {
-              // ok, go for it.
-              // sort it out as an operation
-              final IUndoableOperation convertToTrack1 = new ConvertIt(title,
-                  theLayers, subjects, target);
-
-              // ok, stick it on the buffer
-              runIt(convertToTrack1);
-            }
-          };
-
-          // ok - flash up the menu item
-          listing.add(convertToTrack);
-        }
-      }
-      
-      // and a spare one, which creates a new layer
-      final Action convertToTrackInNewLayer = new Action("New layer...")
-      {
-        public void run()
-        {
-          // get the name
-          NameDialog dialog = new NameDialog(new Shell());
-          dialog.open();
-          String name = dialog.getName();
-          if(name != null)
-          {
-            String tName = name.trim();
-            
-            // create the layer
-            BaseLayer layer = new BaseLayer();
-            layer.setName(tName);
-            
-            // store it 
-            theLayers.addThisLayer(layer);
-            
-            // ok, go for it.
-            // sort it out as an operation
-            final IUndoableOperation convertToTrack1 = new ConvertIt(title,
-                theLayers, subjects, layer);
-
-            // ok, stick it on the buffer
-            runIt(convertToTrack1);
-          }
-          
-        }        
-      };
-
-      // ok - flash up the menu item
-      listing.add(convertToTrackInNewLayer);
-      
-      // done
-      parent.add(listing);
-
-    }
-
-  }
-  
-  private static class NameDialog extends Dialog {
-    private Text nameField;
-    private String nameString;
-
-    public NameDialog(Shell parentShell) {
-        super(parentShell);
-    }
-
-    @Override
-    protected void configureShell(Shell newShell)
-    {
-        super.configureShell(newShell);
-        newShell.setText("Please provide layer name");
-    }
-
-    @Override
-    protected Control createDialogArea(Composite parent) {
-        Composite comp = (Composite) super.createDialogArea(parent);
-
-        GridLayout layout = (GridLayout) comp.getLayout();
-        layout.numColumns = 2;
-
-        Label nameLabel = new Label(comp, SWT.RIGHT);
-        nameLabel.setText("Layer name:");
-        nameField = new Text(comp, SWT.SINGLE | SWT.BORDER);
-
-        GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
-        nameField.setLayoutData(data);
-
-        return comp;
-    }
-
-    @Override
-    protected void okPressed()
-    {
-        nameString = nameField.getText();
-        super.okPressed();
-    }
-
-    @Override
-    protected void cancelPressed()
-    {
-        nameField.setText("");
-        super.cancelPressed();
-    }
-
-    public String getName()
-    {
-        return nameString;
-    }
-}
-
-  /**
-   * put the operation firer onto the undo history. We've refactored this into a separate method so
-   * testing classes don't have to simulate the CorePlugin
-   * 
-   * @param operation
-   */
-  protected void runIt(final IUndoableOperation operation)
-  {
-    CorePlugin.run(operation);
-  }
 
   private static class ConvertIt extends CMAPOperation
   {
@@ -251,10 +76,10 @@ public class ConvertTrackToLightweightTrack implements
 
     private Vector<LightweightTrackWrapper> _newLightweights;
     private Vector<TrackWrapper> _oldTracks;
-    private BaseLayer _targetLayer;
+    private final BaseLayer _targetLayer;
 
     public ConvertIt(final String title, final Layers layers,
-        final Editable[] subjects, BaseLayer target)
+        final Editable[] subjects, final BaseLayer target)
     {
       super(title);
       _layers = layers;
@@ -262,6 +87,7 @@ public class ConvertTrackToLightweightTrack implements
       _targetLayer = target;
     }
 
+    @Override
     public IStatus execute(final IProgressMonitor monitor,
         final IAdaptable info) throws ExecutionException
     {
@@ -276,9 +102,7 @@ public class ConvertTrackToLightweightTrack implements
         {
           final TrackWrapper oldTrack = (TrackWrapper) thisE;
 
-          // switch off the layer
-          oldTrack.setVisible(false);
-
+          // generate the new object
           final LightweightTrackWrapper newTrack = new LightweightTrackWrapper(
               oldTrack.getName(), oldTrack.getVisible(), oldTrack
                   .getNameVisible(), oldTrack.getColor(), oldTrack
@@ -286,7 +110,10 @@ public class ConvertTrackToLightweightTrack implements
 
           _newLightweights.add(newTrack);
           _oldTracks.add(oldTrack);
-          
+
+          // switch off the old layer
+          oldTrack.setVisible(false);
+
           // put it into the layer
           _targetLayer.add(newTrack);
 
@@ -307,7 +134,7 @@ public class ConvertTrackToLightweightTrack implements
             final FixWrapper fix = (FixWrapper) numer.nextElement();
             newTrack.add(fix);
           }
-          
+
           // actually, ditch the old track
           _layers.removeThisLayer(oldTrack);
         }
@@ -319,6 +146,7 @@ public class ConvertTrackToLightweightTrack implements
       return Status.OK_STATUS;
     }
 
+    @Override
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
@@ -326,14 +154,14 @@ public class ConvertTrackToLightweightTrack implements
       for (final Iterator<LightweightTrackWrapper> iter = _newLightweights
           .iterator(); iter.hasNext();)
       {
-        final LightweightTrackWrapper trk = (LightweightTrackWrapper) iter.next();
+        final LightweightTrackWrapper trk = iter.next();
         _targetLayer.removeElement(trk);
       }
 
-      for (TrackWrapper t : _oldTracks)
+      for (final TrackWrapper t : _oldTracks)
       {
         t.setVisible(true);
-        
+
         _layers.addThisLayer(t);
       }
 
@@ -343,38 +171,133 @@ public class ConvertTrackToLightweightTrack implements
 
       _oldTracks.removeAllElements();
       _oldTracks = null;
-      
+
       return Status.OK_STATUS;
     }
 
   }
 
-  /**
-   * find out if this item is suitable for use as a track item
-   * 
-   * @param thisP
-   * @return
-   */
-  static boolean isSuitableAsTrackPoint(final Plottable thisP)
+  private static class NameDialog extends Dialog
   {
-    boolean res = false;
+    private Text nameField;
+    private String nameString;
 
-    // ok - is it a label? Converting that to a track point is quite easy
-    if (thisP instanceof LabelWrapper)
+    public NameDialog(final Shell parentShell)
     {
-      res = true;
+      super(parentShell);
     }
 
-    // next, see if it's a line, because the pretend track could have been
-    // drawn up as a series of lines
-    if (thisP instanceof ShapeWrapper)
+    @Override
+    protected void cancelPressed()
     {
-      final ShapeWrapper sw = (ShapeWrapper) thisP;
-      final PlainShape shp = sw.getShape();
-      if (shp instanceof LineShape)
-        res = true;
+      nameField.setText("");
+      super.cancelPressed();
     }
-    return res;
+
+    @Override
+    protected void configureShell(final Shell newShell)
+    {
+      super.configureShell(newShell);
+      newShell.setText("Please provide layer name");
+    }
+
+    @Override
+    protected Control createDialogArea(final Composite parent)
+    {
+      final Composite comp = (Composite) super.createDialogArea(parent);
+
+      final GridLayout layout = (GridLayout) comp.getLayout();
+      layout.numColumns = 2;
+
+      final Label nameLabel = new Label(comp, SWT.RIGHT);
+      nameLabel.setText("Layer name:");
+      nameField = new Text(comp, SWT.SINGLE | SWT.BORDER);
+
+      final GridData data = new GridData(SWT.FILL, SWT.CENTER, true, false);
+      nameField.setLayoutData(data);
+
+      return comp;
+    }
+
+    public String getName()
+    {
+      return nameString;
+    }
+
+    @Override
+    protected void okPressed()
+    {
+      nameString = nameField.getText();
+      super.okPressed();
+    }
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public testMe(final String val)
+    {
+      super(val);
+    }
+
+    public final void testIWork()
+    {
+      final Layers theLayers = new Layers();
+      final BaseLayer holder = new BaseLayer();
+      holder.setName("Trk");
+      theLayers.addThisLayer(holder);
+
+      WorldLocation lastLoc = null;
+      for (int i = 0; i < 4; i++)
+      {
+        final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
+            'W', 0);
+        if (lastLoc != null)
+        {
+          // ok, add the line
+          final LineShape ls = new LineShape(lastLoc, thisLoc);
+
+          final long theDate1 = 20000000 + i * 60000;
+          final long theDate2 = 20000000 + i * 61000;
+
+          final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red,
+              new HiResDate(theDate1));
+          sw.setTime_Start(new HiResDate(theDate1));
+          sw.setTimeEnd(new HiResDate(theDate2));
+          holder.add(sw);
+        }
+
+        // and remember the last location
+        lastLoc = thisLoc;
+      }
+
+      // ok, now do the interpolation
+      final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[]
+      {holder}, null);
+
+      try
+      {
+        ct.execute(null, null);
+      }
+      catch (final ExecutionException e)
+      {
+        fail("Exception thrown");
+      }
+
+      // check the track got generated
+      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+
+      // did we find it?
+      assertNotNull("track generated", tw);
+
+      // check we've got the right number of fixes
+      assertEquals("right num of fixes generated", tw.numFixes(), 4);
+
+    }
   }
 
   public static TrackWrapper generateTrackFor(final BaseLayer layer)
@@ -469,71 +392,157 @@ public class ConvertTrackToLightweightTrack implements
     return res;
   }
 
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  // ////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
+  /**
+   * find out if this item is suitable for use as a track item
+   *
+   * @param thisP
+   * @return
+   */
+  static boolean isSuitableAsTrackPoint(final Plottable thisP)
   {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+    boolean res = false;
 
-    public testMe(final String val)
+    // ok - is it a label? Converting that to a track point is quite easy
+    if (thisP instanceof LabelWrapper)
     {
-      super(val);
+      res = true;
     }
 
-    public final void testIWork()
+    // next, see if it's a line, because the pretend track could have been
+    // drawn up as a series of lines
+    if (thisP instanceof ShapeWrapper)
     {
-      final Layers theLayers = new Layers();
-      final BaseLayer holder = new BaseLayer();
-      holder.setName("Trk");
-      theLayers.addThisLayer(holder);
+      final ShapeWrapper sw = (ShapeWrapper) thisP;
+      final PlainShape shp = sw.getShape();
+      if (shp instanceof LineShape)
+        res = true;
+    }
+    return res;
+  }
 
-      WorldLocation lastLoc = null;
-      for (int i = 0; i < 4; i++)
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  @Override
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    int layersValidForConvertToLightweight = 0;
+
+    // right, work through the subjects
+    for (int i = 0; i < subjects.length; i++)
+    {
+      final Editable thisE = subjects[i];
+      if (thisE instanceof TrackWrapper)
       {
-        final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
-            'W', 0);
-        if (lastLoc != null)
+        // ok, we've started...
+        layersValidForConvertToLightweight++;
+      }
+      else
+      {
+        return;
+      }
+    }
+
+    // ok, is it worth going for?
+    if (layersValidForConvertToLightweight > 0)
+    {
+      final String title;
+      if (layersValidForConvertToLightweight > 1)
+        title = "tracks";
+      else
+        title = "track";
+
+      // right,stick in a separator
+      parent.add(new Separator());
+
+      final MenuManager listing = new MenuManager("Convert to lightweight "
+          + title + " in...");
+
+      // ok, determine list of suitable targets
+      final Enumeration<Editable> ele = theLayers.elements();
+      while (ele.hasMoreElements())
+      {
+        final Editable ed = ele.nextElement();
+        if (ed instanceof BaseLayer)
         {
-          // ok, add the line
-          final LineShape ls = new LineShape(lastLoc, thisLoc);
+          final BaseLayer target = (BaseLayer) ed;
 
-          final long theDate1 = 20000000 + i * 60000;
-          final long theDate2 = 20000000 + i * 61000;
+          // yes, create the action
+          final Action convertToTrack = new Action(target.getName())
+          {
+            @Override
+            public void run()
+            {
+              // ok, go for it.
+              // sort it out as an operation
+              final IUndoableOperation convertToTrack1 = new ConvertIt(title,
+                  theLayers, subjects, target);
 
-          final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red,
-              new HiResDate(theDate1));
-          sw.setTime_Start(new HiResDate(theDate1));
-          sw.setTimeEnd(new HiResDate(theDate2));
-          holder.add(sw);
+              // ok, stick it on the buffer
+              runIt(convertToTrack1);
+            }
+          };
+
+          // ok - flash up the menu item
+          listing.add(convertToTrack);
         }
-
-        // and remember the last location
-        lastLoc = thisLoc;
       }
 
-      // ok, now do the interpolation
-      final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[]
-      {holder}, null);
-
-      try
+      // and a spare one, which creates a new layer
+      final Action convertToTrackInNewLayer = new Action("New layer...")
       {
-        ct.execute(null, null);
-      }
-      catch (final ExecutionException e)
-      {
-        fail("Exception thrown");
-      }
+        @Override
+        public void run()
+        {
+          // get the name
+          final NameDialog dialog = new NameDialog(new Shell());
+          dialog.open();
+          final String name = dialog.getName();
+          if (name != null)
+          {
+            final String tName = name.trim();
 
-      // check the track got generated
-      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+            // create the layer
+            final BaseLayer layer = new BaseLayer();
+            layer.setName(tName);
 
-      // did we find it?
-      assertNotNull("track generated", tw);
+            // store it
+            theLayers.addThisLayer(layer);
 
-      // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", tw.numFixes(), 4);
+            // ok, go for it.
+            // sort it out as an operation
+            final IUndoableOperation convertToTrack1 = new ConvertIt(title,
+                theLayers, subjects, layer);
+
+            // ok, stick it on the buffer
+            runIt(convertToTrack1);
+          }
+
+        }
+      };
+
+      // ok - flash up the menu item
+      listing.add(convertToTrackInNewLayer);
+
+      // done
+      parent.add(listing);
 
     }
+
+  }
+
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   *
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
+  {
+    CorePlugin.run(operation);
   }
 }
