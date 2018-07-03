@@ -1019,7 +1019,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _showComment = Boolean.FALSE;
     
     // declare a duff track
-    _trackWrapper = null;
+    setTrackWrapper(null);
     // start us off with a nice font
     setFont(Defaults.getFont());
     // whether to show symbol
@@ -1049,7 +1049,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     super.closeMe();
 
     // forget the track
-    _trackWrapper = null;
+    setTrackWrapper(null);
     _theLocationWrapper = null;
     _theFix = null;
     _myEditor = null;
@@ -1803,5 +1803,4 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     return ((this.getTime().greaterThan(start)) && (getTime().lessThan(end)));
   }
-
 }
