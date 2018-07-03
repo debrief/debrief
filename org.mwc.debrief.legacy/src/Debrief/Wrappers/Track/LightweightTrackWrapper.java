@@ -123,7 +123,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     setLineStyle(lineStyle);
   }
 
-  public void add(final FixWrapper e)
+  public void addFix(final FixWrapper e)
   {
     // forget the bounds
     _bounds = null;
