@@ -82,8 +82,6 @@ public class VideoPlayerView extends ViewPart
   public static final String ID = "org.mwc.cmap.media.views.VideoPlayerView";
 
   private IMemento memento;
-  private ITimeListener timeListener;
-
   private XugglePlayer player;
   private Scale scale;
   private FormattedText startTime;
@@ -193,31 +191,6 @@ public class VideoPlayerView extends ViewPart
     super.init(site, memento);
     this.memento = memento;
     timeFormat = PlanetmayoFormats.getInstance().getTimeFormat();
-    timeListener = new ITimeListener()
-    {
-
-      @Override
-      public void newTime(Object src, long millis)
-      {
-        millis -= ((Date) startTime.getValue()).getTime();
-        if (millis < 0)
-        {
-          millis = 0;
-        }
-        if (millis > player.getDuration())
-        {
-          millis = player.getDuration();
-        }
-        if (src != VideoPlayerView.this && player.isOpened())
-        {
-          if (player.isPlaying())
-          {
-            player.pause();
-          }
-          player.seek(millis);
-        }
-      }
-    };
   }
 
   @Override
@@ -225,7 +198,6 @@ public class VideoPlayerView extends ViewPart
   {
     super.dispose();
     _myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
-    Activator.getDefault().getTimeProvider().removeListener(timeListener);
   }
 
   @Override
@@ -251,7 +223,6 @@ public class VideoPlayerView extends ViewPart
     fillToolbarManager();
     fillMenu();
     restoreSavedState();
-    Activator.getDefault().getTimeProvider().addListener(timeListener);
     // and start listing for any part action
     setupListeners();
 
@@ -576,11 +547,24 @@ public class VideoPlayerView extends ViewPart
 
   private class ModifiedAdapter extends PlayerAdapter
   {
-    boolean ignoreNext = false;
+    long ignoreUntil = 0;
 
     public void setIgnoreNext()
     {
-      ignoreNext = true;
+      ignoreUntil = System.currentTimeMillis() + 100;
+    }
+    
+    @Override
+    public void onSeek(XugglePlayer player, long milli)
+    {
+      updatePlayTime(milli);
+      long dNow = System.currentTimeMillis();
+
+      // check we're not trying to ignore some mistaken event firings
+      if (dNow >= ignoreUntil)
+      {
+        update(player, milli);
+      }
     }
 
     @Override
@@ -620,19 +604,6 @@ public class VideoPlayerView extends ViewPart
       super.onVideoOpened(player, fileName);
     }
 
-    @Override
-    public void onSeek(XugglePlayer player, long milli)
-    {
-      updatePlayTime(milli);
-      if (ignoreNext)
-      {
-        ignoreNext = false;
-      }
-      else
-      {
-        update(player, milli);
-      }
-    }
 
     private void update(XugglePlayer player, long milli)
     {
