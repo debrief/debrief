@@ -1310,7 +1310,23 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
   public Layer checkLayer(Layer layer, final String name)
   {
+    /** if it's a monster layer, we won't bother searching it
+     * 
+     */
+    final long MAX_TO_SEARCH = 1000;
+    
     Layer res = null;
+    // don't search the layer if it's a monster
+    if(layer instanceof BaseLayer)
+    {
+      BaseLayer bl = (BaseLayer) layer;
+      if(bl.size() > MAX_TO_SEARCH)
+      {
+        return null;
+      }
+    }
+    
+    // ok, continue with normal processing
     Enumeration<Editable> iter = layer.elements();
     while(iter.hasMoreElements() && res == null)
     {
