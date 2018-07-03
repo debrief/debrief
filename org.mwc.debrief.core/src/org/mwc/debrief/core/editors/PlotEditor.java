@@ -957,39 +957,43 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             while (watches.hasMoreElements())
             {
               final WatchableList list = (WatchableList) watches.nextElement();
-              // is the primary an instance of layer (with it's
-              // own line
-              // thickness?)
-              if (list instanceof Layer)
+              
+              if (list.getVisible())
               {
-                final Layer ly = (Layer) list;
-                final int thickness = ly.getLineThickness();
-                dest.setLineWidth(thickness);
-              }
-
-              // ok, clear the nearest items
-              if (tNow != null)
-              {
-                final Watchable[] wList = list.getNearestTo(tNow);
-                for (int i = 0; i < wList.length; i++)
+                // is the primary an instance of layer (with it's
+                // own line
+                // thickness?)
+                if (list instanceof Layer)
                 {
-                  final Watchable watch = wList[i];
-                  // if (wList.length > 0)
-                  // watch = wList[0];
-
-                  if (watch != null)
-                  {
-                    // aah, is this the primary?
-                    final boolean isPrimary = (list == _trackDataProvider
-                        .getPrimaryTrack());
-
-                    // plot it
-                    _layerPainterManager.getCurrentHighlighter().highlightIt(
-                        dest.getProjection(), dest, list, watch, isPrimary);
-                  }
-
+                  final Layer ly = (Layer) list;
+                  final int thickness = ly.getLineThickness();
+                  dest.setLineWidth(thickness);
                 }
-              } // whether we have a current time...
+
+                // ok, clear the nearest items
+                if (tNow != null)
+                {
+                  final Watchable[] wList = list.getNearestTo(tNow);
+                  for (int i = 0; i < wList.length; i++)
+                  {
+                    final Watchable watch = wList[i];
+                    // if (wList.length > 0)
+                    // watch = wList[0];
+
+                    if (watch != null)
+                    {
+                      // aah, is this the primary?
+                      final boolean isPrimary = (list == _trackDataProvider
+                          .getPrimaryTrack());
+
+                      // plot it
+                      _layerPainterManager.getCurrentHighlighter().highlightIt(
+                          dest.getProjection(), dest, list, watch, isPrimary);
+                    }
+
+                  }
+                } // whether we have a current time...
+              }
             }
 
           }
