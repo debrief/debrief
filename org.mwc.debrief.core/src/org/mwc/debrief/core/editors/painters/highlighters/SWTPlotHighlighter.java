@@ -192,10 +192,10 @@ public interface SWTPlotHighlighter extends Editable
       if (watch instanceof FixWrapper)
       {
         FixWrapper fw = (FixWrapper) watch;
-        TrackWrapper wList = (TrackWrapper) fw.getTrackWrapper();
+        WatchableList wList = fw.getTrackWrapper();
         if (wList instanceof TrackWrapper)
         {
-          TrackWrapper tw = wList;
+          TrackWrapper tw = (TrackWrapper) wList;
 
           if (tw != null && tw.getPlotArrayCentre())
           {
