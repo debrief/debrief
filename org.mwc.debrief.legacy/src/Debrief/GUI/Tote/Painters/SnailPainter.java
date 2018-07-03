@@ -242,6 +242,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrack;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.PlainProjection;
@@ -509,6 +510,7 @@ public class SnailPainter extends TotePainter
 				res.addElement(thisLayer);
 			}
 			else if ((thisLayer instanceof FixWrapper)
+          || (thisLayer instanceof LightweightTrack)
 					|| (thisLayer instanceof TrackWrapper)
 					|| (thisLayer instanceof BuoyPatternWrapper)
 					|| (thisLayer instanceof SensorWrapper)
@@ -562,6 +564,10 @@ public class SnailPainter extends TotePainter
 							// will
 							// get caught elsewhere
 						}
+					}
+					else if (thisPlottable instanceof LightweightTrack)
+					{
+					  // ok, ignore it. it's tactical
 					}
 					else
 					{
