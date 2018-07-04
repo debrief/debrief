@@ -92,6 +92,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(DebriefPlugin.TIME_BAR);
 		layout.addShowViewShortcut(DebriefPlugin.SATC_MAINTAIN_CONTRIBUTIONS);
 		layout.addShowViewShortcut(CorePlugin.VIDEO_PLAYER_VIEW);
+    layout.addShowViewShortcut(CorePlugin.IMAGE_VIEWER_VIEW);
 		
 		// it via action (so we can populate it)  
 

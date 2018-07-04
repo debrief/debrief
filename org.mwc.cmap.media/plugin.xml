@@ -2,33 +2,20 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="org.eclipse.ui.perspectives">
-      <perspective
-            class="org.mwc.cmap.media.perspective.PlanetmayoPerspective"
-            icon="icons/video_camera.gif"
-            id="org.mwc.cmap.media.perspective.PlanetmayoPerspective"
-            name="Media player">
-      </perspective>
-   </extension>
-   <extension
          point="org.eclipse.ui.views">
-      <category
-            name="Media Player"
-            id="org.mwc.cmap.media">
-      </category>
       <view
             name="Video Player"
             icon="icons/player.gif"
-            category="org.mwc.debrief.core.DebriefCategory"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.VideoPlayerView"
             id="org.mwc.cmap.media.views.VideoPlayerView"            
             allowMultiple="true">
             
       </view>
       <view
-            name="Images"
+            name="Image Viewer"
             icon="icons/images16.gif"
-            category="org.mwc.debrief.core.DebriefCategory"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.ImagesView"
             id="org.mwc.cmap.media.views.ImagesView"            
             allowMultiple="true">         
