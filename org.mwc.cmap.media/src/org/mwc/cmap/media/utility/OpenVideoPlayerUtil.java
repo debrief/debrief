@@ -21,7 +21,7 @@ public class OpenVideoPlayerUtil
     Date start = PlanetmayoFormats.getInstance().parseDateFromFileName(new File(fileName).getName());
     if(start==null) {
       //try to get the start time from last video start time.
-      long startTime = PlatformUI.getPreferenceStore().getLong(VideoPlayerView.LAST_VIDEO_START_TIME);
+      long startTime = PlatformUI.getPreferenceStore().getLong(new File(fileName).getName());
       if(startTime>0) {
         start = new Date(startTime);
       }
