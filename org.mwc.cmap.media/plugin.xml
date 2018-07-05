@@ -5,7 +5,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Video Player"
-            icon="icons/16/player.png"
+            icon="icons/16/video.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.VideoPlayerView"
             id="org.mwc.cmap.media.views.VideoPlayerView"            
