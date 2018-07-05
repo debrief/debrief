@@ -17,7 +17,6 @@ package org.mwc.cmap.media;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
 
 import org.eclipse.nebula.widgets.formattedtext.DateTimeFormatter;
 import org.mwc.cmap.media.utility.DateUtils;

@@ -187,7 +187,8 @@ public class VideoPlayerView extends ViewPart {
 		};		
 	}
 	
-	@Override
+	@SuppressWarnings("deprecation")
+  @Override
 	public void dispose() {
 		super.dispose();
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
@@ -442,7 +443,7 @@ public class VideoPlayerView extends ViewPart {
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent event) {
-				
+			  // accept default behaviour
 			}
 		});
 		scale.addMouseListener(new MouseListener() {
