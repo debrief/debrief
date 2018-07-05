@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.media.views;
 
@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.window.Window;
@@ -71,26 +72,98 @@ import MWC.GenericData.HiResDate;
 
 public class VideoPlayerView extends ViewPart
 {
+  private class ModifiedAdapter extends PlayerAdapter
+  {
+    private long ignoreUntil = 0;
+
+    @Override
+    public void onPlaying(final XugglePlayer player, final long milli)
+    {
+      updatePlayTime(milli);
+      if ((getViewSite().getPage().getActivePart() == VideoPlayerView.this
+          && fireNewTime) || player.isPlaying())
+      {
+        final Date start = new Date(startTime.getTime());
+        DateUtils.removeMilliSeconds(start);
+        final long time = milli + start.getTime();
+        Activator.getDefault().getTimeProvider().fireNewTime(
+            VideoPlayerView.this, time);
+      }
+      if (player.isPlaying())
+      {
+        update(player, milli);
+      }
+    }
+
+    @Override
+    public void onSeek(final XugglePlayer player, final long milli)
+    {
+      updatePlayTime(milli);
+      final long dNow = System.currentTimeMillis();
+
+      // check we're not trying to ignore some mistaken event firings
+      if (dNow >= ignoreUntil)
+      {
+        update(player, milli);
+      }
+    }
+
+    @Override
+    public void onStop(final XugglePlayer player)
+    {
+      super.onStop(player);
+      fireNewTime(new HiResDate(startTime));
+    }
+
+    @Override
+    public void onVideoOpened(final XugglePlayer player, final String fileName)
+    {
+      super.onVideoOpened(player, fileName);
+    }
+
+    public void setIgnoreNext()
+    {
+      ignoreUntil = System.currentTimeMillis() + 100;
+    }
+
+    private void update(final XugglePlayer player, final long milli)
+    {
+      scale.setSelection((int) (milli / 1000));
+      if (_timeProvider != null && _timeProvider.getPeriod() != null && player
+          .isOpened())
+      {
+        final Date start = new Date(startTime.getTime());
+        final long step = milli + start.getTime();
+        final HiResDate newDTG = new HiResDate(step);
+        if (_timeProvider.getPeriod().contains(newDTG))
+        {
+          fireNewTime(newDTG);
+        }
+      }
+    }
+  }
+
   private static final String STATE_VIDEO_FILE = "filename";
   private static final String STATE_POSITION = "position";
   private static final String STATE_START_TIME = "startTime";
+
   private static final String STATE_STRETCH = "stretch";
 
   public static final String LAST_VIDEO_START_TIME = "lastVideoStartTime";
 
   public static final String ID = "org.mwc.cmap.media.views.VideoPlayerView";
-
   private IMemento memento;
   private XugglePlayer player;
   private Scale scale;
   private Date startTime;
   private Label playTime;
-  private Label playTimeLeft;
 
+  private Label playTimeLeft;
   private Action open;
   private Action editStartTime;
   private Button play;
   private Button stop;
+
   private Action stretch;
 
   private boolean fireNewTime;
@@ -106,13 +179,12 @@ public class VideoPlayerView extends ViewPart
   private PartMonitor _myPartMonitor;
 
   private String _selected;
-
-  private PropertyChangeListener _propertyChangeListener =
+  private final PropertyChangeListener _propertyChangeListener =
       new PropertyChangeListener()
       {
 
         @Override
-        public void propertyChange(PropertyChangeEvent evt)
+        public void propertyChange(final PropertyChangeEvent evt)
         {
           if (!player.isOpened() || _firingNewTime || _timeProvider == null
               || _timeProvider.getPeriod() == null || _timeProvider
@@ -120,14 +192,14 @@ public class VideoPlayerView extends ViewPart
           {
             return;
           }
-          Object newValue = evt.getNewValue();
+          final Object newValue = evt.getNewValue();
           if (newValue instanceof HiResDate)
           {
-            HiResDate now = (HiResDate) newValue;
+            final HiResDate now = (HiResDate) newValue;
             if (now != null)
             {
-              Date startDate = new Date(startTime.getTime());
-              Date date = now.getDate();
+              final Date startDate = new Date(startTime.getTime());
+              final Date date = now.getDate();
               DateUtils.removeMilliSeconds(date);
               long millis = date.getTime() - startDate.getTime();
               if (millis < 0)
@@ -142,32 +214,303 @@ public class VideoPlayerView extends ViewPart
               {
                 player.pause();
               }
-              
+
               // tell the player listener not to fire the next update
               _modifiedAdapter.setIgnoreNext();
-              
+
               player.seek(millis);
             }
           }
         }
       };
-      private final PlayerListener playerScaleListener = new PlayerAdapter()
-      {
+  private final PlayerListener playerScaleListener = new PlayerAdapter()
+  {
 
-        @Override
-        public void onPlaying(XugglePlayer player, long milli)
-        {
-          scale.setSelection((int) Math.round(milli / 1000.0));
-        }
-      };
+    @Override
+    public void onPlaying(final XugglePlayer player, final long milli)
+    {
+      scale.setSelection((int) Math.round(milli / 1000.0));
+    }
+  };
+
   private ModifiedAdapter _modifiedAdapter;
 
-  public void setVideoStartTime(Date date)
+  private void createActions()
   {
-    startTime = date;
-    PlatformUI.getPreferenceStore().setValue(_selected, date
-        .getTime());
-    fireNewTime(new HiResDate(date));
+    open = new Action()
+    {
+
+      @Override
+      public void run()
+      {
+        fireNewTime = true;
+        final FileDialog fd = new FileDialog(getViewSite().getShell(),
+            SWT.OPEN);
+        fd.setText("Open Movie");
+        final String[] filterExt =
+        {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
+            "*.wma", "*.*"};
+        fd.setFilterExtensions(filterExt);
+        final String selected = fd.open();
+        VideoPlayerView.this.open(selected, new Date());
+      }
+    };
+    open.setText("Open");
+    open.setImageDescriptor(PlanetmayoImages.OPEN.getImage());
+
+    editStartTime = new Action()
+    {
+      @Override
+      public void run()
+      {
+        openEditStartTimeDialog();
+      }
+    };
+    editStartTime.setText("Edit Start time");
+    editStartTime.setImageDescriptor(PlanetmayoImages.CONTROL_TIME.getImage());
+    stretch = new Action("Stretch", IAction.AS_CHECK_BOX)
+    {
+
+      @Override
+      public void run()
+      {
+        player.setStretchMode(isChecked());
+        final Point size = player.getSize();
+        player.redraw(0, 0, size.x, size.y, true);
+      }
+    };
+    stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
+    stretch.setChecked(true);
+
+    player.addPlayerListener(new PlayerAdapter()
+    {
+
+      @Override
+      public void onPause(final XugglePlayer player)
+      {
+        onStop(player);
+      }
+
+      @Override
+      public void onPlay(final XugglePlayer player)
+      {
+        play.setImage(PlanetmayoImages.PAUSE.getImage().createImage());
+        play.setToolTipText("Pause");
+      }
+
+      @Override
+      public void onStop(final XugglePlayer player)
+      {
+        play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
+        play.setToolTipText("Play");
+      }
+
+      @Override
+      public void onVideoOpened(final XugglePlayer player,
+          final String fileName)
+      {
+        movieOpened(new File(fileName).getName(), player);
+      }
+
+    });
+  }
+
+  private Composite createMainWindow(final Composite parent)
+  {
+    final Composite composite = new Composite(parent, SWT.NONE);
+    composite.setLayout(new GridLayout());
+
+    final Composite control = new Composite(composite, SWT.RIGHT);
+    final GridLayout layout = new GridLayout(2, false);
+    layout.marginBottom = 0;
+    layout.marginLeft = 0;
+    layout.marginRight = 0;
+    layout.marginTop = 0;
+    GridData data = new GridData();
+    data.grabExcessHorizontalSpace = true;
+    data.verticalAlignment = SWT.TOP;
+    data.horizontalAlignment = SWT.FILL;
+    control.setLayout(layout);
+    control.setLayoutData(data);
+
+    player = new XugglePlayer(composite, this);
+    data = new GridData();
+    data.grabExcessHorizontalSpace = true;
+    data.grabExcessVerticalSpace = true;
+    data.verticalAlignment = SWT.FILL;
+    data.horizontalAlignment = SWT.FILL;
+    data.horizontalSpan = 2;
+    player.setLayoutData(data);
+    player.addPlayerListener(playerScaleListener);
+    _modifiedAdapter = new ModifiedAdapter();
+    player.addPlayerListener(_modifiedAdapter);
+    return composite;
+  }
+
+  @Override
+  public void createPartControl(final Composite parent)
+  {
+    initDrop(parent);
+    final Composite composite = createMainWindow(parent);
+    createVideoScaleActions(composite);
+    createActions();
+    fillToolbarManager();
+    restoreSavedState();
+    // and start listing for any part action
+    setupListeners();
+
+    // ok we're all ready now. just try and see if the current part is valid
+    _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+        .getActivePage());
+  }
+
+  private void createVideoScaleActions(final Composite composite)
+  {
+    final Composite parent = new Composite(composite, SWT.NULL);
+    parent.setLayout(new GridLayout(5, false));
+    parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+
+    play = new Button(parent, SWT.NONE);
+    play.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+    play.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        fireNewTime = true;
+        if (!player.isPlaying())
+        {
+          player.play();
+        }
+        else
+        {
+          player.pause();
+        }
+      }
+    });
+    play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
+    play.setToolTipText("Play");
+    play.setEnabled(false);
+    stop = new Button(parent, SWT.TRANSPARENT);
+    stop.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        fireNewTime = true;
+        player.reopen();
+
+      }
+    });
+    stop.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+    stop.setImage(PlanetmayoImages.STOP.getImage().createImage());
+    stop.setToolTipText("Stop");
+    stop.setEnabled(false);
+    playTime = new Label(parent, SWT.LEFT);
+    playTime.setText("00:00:00");
+    scale = new Scale(parent, SWT.HORIZONTAL | SWT.NULL);
+    final GridData data = new GridData();
+    data.grabExcessHorizontalSpace = true;
+    data.minimumWidth = 100;
+    data.horizontalAlignment = SWT.FILL;
+    scale.setMinimum(0);
+    scale.setMaximum(3600 * 5);
+    scale.setIncrement(1);
+    scale.setPageIncrement(3600 * 5);
+    scale.addKeyListener(new KeyListener()
+    {
+
+      @Override
+      public void keyPressed(final KeyEvent event)
+      {
+        if (event.keyCode == SWT.PAGE_DOWN || event.keyCode == SWT.PAGE_UP)
+        {
+          event.doit = false;
+        }
+      }
+
+      @Override
+      public void keyReleased(final KeyEvent event)
+      {
+        // ignore
+      }
+    });
+    scale.setCapture(true);
+    scale.setLayoutData(data);
+    scale.addSelectionListener(new SelectionListener()
+    {
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent event)
+      {
+
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent event)
+      {
+        fireNewTime = true;
+        if (player.hasVideo())
+        {
+          player.seek(scale.getSelection() * 1000);
+        }
+      }
+    });
+    scale.addMouseListener(new MouseListener()
+    {
+
+      @Override
+      public void mouseDoubleClick(final MouseEvent event)
+      {
+      }
+
+      @Override
+      public void mouseDown(final MouseEvent event)
+      {
+        player.removePlayerListener(playerScaleListener);
+      }
+
+      @Override
+      public void mouseUp(final MouseEvent event)
+      {
+        if (!player.hasVideo())
+        {
+          final boolean wasPlaying = player.isPlaying();
+          player.pause();
+          player.seek(scale.getSelection() * 1000);
+          if (wasPlaying)
+          {
+            player.play();
+          }
+        }
+        player.addPlayerListener(playerScaleListener);
+      }
+    });
+    scale.setEnabled(false);
+    playTimeLeft = new Label(parent, SWT.LEFT);
+    playTimeLeft.setText("00:00:00.000");
+
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void dispose()
+  {
+    super.dispose();
+    _myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+  }
+
+  private void fillToolbarManager()
+  {
+    final IToolBarManager toolbar = getViewSite().getActionBars()
+        .getToolBarManager();
+    toolbar.add(stretch);
+    toolbar.add(new Separator());
+    toolbar.add(open);
+    toolbar.add(new Separator());
+    toolbar.add(editStartTime);
   }
 
   public void fireNewTime(final HiResDate dtg)
@@ -190,8 +533,13 @@ public class VideoPlayerView extends ViewPart
     }
   }
 
+  public String getSelected()
+  {
+    return _selected;
+  }
+
   @Override
-  public void init(final IViewSite site, IMemento memento)
+  public void init(final IViewSite site, final IMemento memento)
       throws PartInitException
   {
     super.init(site, memento);
@@ -199,186 +547,17 @@ public class VideoPlayerView extends ViewPart
     timeFormat = PlanetmayoFormats.getInstance().getTimeFormat();
   }
 
-  
-  @SuppressWarnings("deprecation")
-  @Override
-  public void dispose()
-  {
-    super.dispose();
-    _myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
-  }
-
-  @Override
-  public void saveState(IMemento memento)
-  {
-    super.saveState(memento);
-    if (player.isOpened())
-    {
-      memento.putString(STATE_VIDEO_FILE, player.getFileName());
-      memento.putString(STATE_START_TIME, Long.toString(startTime.getTime()));
-      memento.putString(STATE_POSITION, Long.toString(player
-          .getCurrentPosition()));
-      memento.putBoolean(STATE_STRETCH, player.isStretchMode());
-    }
-  }
-
-  public void createPartControl(Composite parent)
-  {
-    initDrop(parent);
-    Composite composite = createMainWindow(parent);
-    createVideoScaleActions(composite);
-    createActions();
-    fillToolbarManager();
-    restoreSavedState();
-    // and start listing for any part action
-    setupListeners();
-
-    // ok we're all ready now. just try and see if the current part is valid
-    _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-        .getActivePage());
-  }
-  
-  private void createVideoScaleActions(Composite composite) {
-    Composite parent = new Composite(composite,SWT.NULL);
-    parent.setLayout(new GridLayout(5,false));
-    parent.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-    
-    play = new Button(parent,SWT.NONE);
-    play.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-    play.addSelectionListener(new SelectionAdapter()
-    {
-      
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        fireNewTime = true;
-        if (!player.isPlaying())
-        {
-          player.play();
-        }
-        else
-        {
-          player.pause();
-        }
-      }
-    });
-    play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
-    play.setToolTipText("Play");
-    play.setEnabled(false);
-    stop = new Button(parent,SWT.TRANSPARENT);
-    stop.addSelectionListener(new SelectionAdapter()
-    {
-      
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        fireNewTime = true;
-        player.reopen();
-        
-      }
-    });
-    stop.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-    stop.setImage(PlanetmayoImages.STOP.getImage().createImage());
-    stop.setToolTipText("Stop");
-    stop.setEnabled(false);
-    playTime = new Label(parent, SWT.LEFT);
-    playTime.setText("00:00:00");
-    scale = new Scale(parent, SWT.HORIZONTAL|SWT.NULL);
-    GridData data = new GridData();
-    data.grabExcessHorizontalSpace = true;
-    data.minimumWidth = 100;
-    data.horizontalAlignment = SWT.FILL;
-    scale.setMinimum(0);
-    scale.setMaximum(3600 * 5);
-    scale.setIncrement(1);
-    scale.setPageIncrement(3600 * 5);
-    scale.addKeyListener(new KeyListener()
-    {
-
-      @Override
-      public void keyReleased(KeyEvent event)
-      {
-        // ignore
-      }
-
-      @Override
-      public void keyPressed(KeyEvent event)
-      {
-        if (event.keyCode == SWT.PAGE_DOWN || event.keyCode == SWT.PAGE_UP)
-        {
-          event.doit = false;
-        }
-      }
-    });
-    scale.setCapture(true);
-    scale.setLayoutData(data);
-    scale.addSelectionListener(new SelectionListener()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent event)
-      {
-        fireNewTime = true;
-        if (player.hasVideo())
-        {
-          player.seek(scale.getSelection() * 1000);
-        }
-      }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent event)
-      {
-
-      }
-    });
-    scale.addMouseListener(new MouseListener()
-    {
-
-      @Override
-      public void mouseUp(MouseEvent event)
-      {
-        if (!player.hasVideo())
-        {
-          boolean wasPlaying = player.isPlaying();
-          player.pause();
-          player.seek(scale.getSelection() * 1000);
-          if (wasPlaying)
-          {
-            player.play();
-          }
-        }
-        player.addPlayerListener(playerScaleListener);
-      }
-
-      @Override
-      public void mouseDown(MouseEvent event)
-      {
-        player.removePlayerListener(playerScaleListener);
-      }
-
-      @Override
-      public void mouseDoubleClick(MouseEvent event)
-      {
-      }
-    });
-    scale.setEnabled(false);
-    playTimeLeft = new Label(parent, SWT.LEFT);
-    playTimeLeft.setText("00:00:00.000");
-    
-
-  }
-
-  private void initDrop(Control control)
+  private void initDrop(final Control control)
   {
     final DropTarget target = new DropTarget(control, DND.DROP_MOVE
         | DND.DROP_COPY | DND.DROP_LINK);
-    Transfer[] transfers = new Transfer[]
+    final Transfer[] transfers = new Transfer[]
     {FileTransfer.getInstance()};
     target.setTransfer(transfers);
     target.addDropListener(new DropTargetAdapter()
     {
       @Override
-      public void dragEnter(DropTargetEvent e)
+      public void dragEnter(final DropTargetEvent e)
       {
         if (e.detail == DND.DROP_NONE)
         {
@@ -387,7 +566,7 @@ public class VideoPlayerView extends ViewPart
       }
 
       @Override
-      public void dragOperationChanged(DropTargetEvent e)
+      public void dragOperationChanged(final DropTargetEvent e)
       {
         if (e.detail == DND.DROP_NONE)
         {
@@ -396,7 +575,7 @@ public class VideoPlayerView extends ViewPart
       }
 
       @Override
-      public void drop(DropTargetEvent e)
+      public void drop(final DropTargetEvent e)
       {
         if (e.data == null)
         {
@@ -405,20 +584,20 @@ public class VideoPlayerView extends ViewPart
         }
         if (e.data instanceof String[])
         {
-          String[] fileNames = (String[]) e.data;
+          final String[] fileNames = (String[]) e.data;
           if (fileNames.length > 0 && fileNames[0] != null && !fileNames[0]
               .isEmpty())
           {
-            String fileName = fileNames[0];
+            final String fileName = fileNames[0];
 
-            int index = fileName.lastIndexOf(".");
+            final int index = fileName.lastIndexOf(".");
             if (index >= 0 && new File(fileName).isFile())
             {
-              String extension = fileName.substring(index + 1);
-              String[] supportedExtensions =
+              final String extension = fileName.substring(index + 1);
+              final String[] supportedExtensions =
               {"avi", "vob", "mp4", "mov", "mpeg", "flv", "mp3", "wma", "wav"};
               boolean supported = false;
-              for (String ext : supportedExtensions)
+              for (final String ext : supportedExtensions)
               {
                 if (ext.equalsIgnoreCase(extension))
                 {
@@ -442,14 +621,15 @@ public class VideoPlayerView extends ViewPart
   {
     // #2940 #6
     // if we cannot get the start time from filename open the dialog
-    Date start = PlanetmayoFormats.getInstance().parseDateFromFileName(new File(
-        fileName).getName());
+    final Date start = PlanetmayoFormats.getInstance().parseDateFromFileName(
+        new File(fileName).getName());
     if (start == null)
     {
       // try to get the start time from last video start time.
-      long lastStartTime = PlatformUI.getPreferenceStore().getLong(
+      final long lastStartTime = PlatformUI.getPreferenceStore().getLong(
           _selected);
-      VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
+      final VideoPlayerStartTimeDialog dialog =
+          new VideoPlayerStartTimeDialog();
       dialog.setStartTime(lastStartTime > 0 ? new Date(lastStartTime) : null);
       dialog.setBlockOnOpen(true);
       if (dialog.open() == Window.OK)
@@ -463,280 +643,9 @@ public class VideoPlayerView extends ViewPart
     }
   }
 
-  private void setupListeners()
+  private void movieOpened(final String videoName, final XugglePlayer player)
   {
-    _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-        .getPartService());
-
-    _myPartMonitor.addPartListener(ControllableTime.class,
-        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-
-            if (_controllableTime != part)
-            {
-              // implementation here.
-              final ControllableTime ct = (ControllableTime) part;
-              _controllableTime = ct;
-            }
-          }
-
-        });
-    _myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            if (part == _controllableTime)
-            {
-              _controllableTime = null;
-            }
-          }
-        });
-
-    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-
-            if (_timeProvider != part)
-            {
-              // implementation here.
-              final TimeProvider tp = (TimeProvider) part;
-              _timeProvider = tp;
-              _timeProvider.addListener(_propertyChangeListener,
-                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-            }
-          }
-
-        });
-    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          public void eventTriggered(final String type, final Object part,
-              final IWorkbenchPart parentPart)
-          {
-            if (part == _timeProvider)
-            {
-              _timeProvider.removeListener(_propertyChangeListener,
-                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-              _timeProvider = null;
-            }
-          }
-        });
-  }
-
-  private void updatePlayTime(long milli)
-  {
-    long curPlayTime = milli-TimeZone.getDefault().getOffset(0);
-    playTime.setText(timeFormat.format(new Date(startTime.getTime()+curPlayTime)));
-    playTimeLeft.setText(timeFormat.format(new Date(player.getDuration()-curPlayTime)));
-  }
-
-  private Composite createMainWindow(Composite parent)
-  {
-    Composite composite = new Composite(parent, SWT.NONE);
-    composite.setLayout(new GridLayout());
-
-    Composite control = new Composite(composite, SWT.RIGHT);
-    GridLayout layout = new GridLayout(2, false);
-    layout.marginBottom = 0;
-    layout.marginLeft = 0;
-    layout.marginRight = 0;
-    layout.marginTop = 0;
-    GridData data = new GridData();
-    data.grabExcessHorizontalSpace = true;
-    data.verticalAlignment = SWT.TOP;
-    data.horizontalAlignment = SWT.FILL;
-    control.setLayout(layout);
-    control.setLayoutData(data);
-
-    player = new XugglePlayer(composite, this);
-    data = new GridData();
-    data.grabExcessHorizontalSpace = true;
-    data.grabExcessVerticalSpace = true;
-    data.verticalAlignment = SWT.FILL;
-    data.horizontalAlignment = SWT.FILL;
-    data.horizontalSpan=2;
-    player.setLayoutData(data);
-    player.addPlayerListener(playerScaleListener);
-    _modifiedAdapter = new ModifiedAdapter();
-    player.addPlayerListener(_modifiedAdapter);
-    return composite;
-  }
-
-  private class ModifiedAdapter extends PlayerAdapter
-  {
-    private long ignoreUntil = 0;
-
-    public void setIgnoreNext()
-    {
-      ignoreUntil = System.currentTimeMillis() + 100;
-    }
-    
-    @Override
-    public void onSeek(XugglePlayer player, long milli)
-    {
-      updatePlayTime(milli);
-      long dNow = System.currentTimeMillis();
-
-      // check we're not trying to ignore some mistaken event firings
-      if (dNow >= ignoreUntil)
-      {
-        update(player, milli);
-      }
-    }
-
-    @Override
-    public void onPlaying(XugglePlayer player, long milli)
-    {
-      updatePlayTime(milli);
-      if ((getViewSite().getPage().getActivePart() == VideoPlayerView.this
-          && fireNewTime) || player.isPlaying())
-      {
-        Date start = new Date(startTime.getTime());
-        DateUtils.removeMilliSeconds(start);
-        long time = milli + start.getTime();
-        Activator.getDefault().getTimeProvider().fireNewTime(
-            VideoPlayerView.this, time);
-      }
-      if (player.isPlaying())
-      {
-        update(player, milli);
-      }
-    }
-
-    @Override
-    public void onStop(XugglePlayer player)
-    {
-      super.onStop(player);
-      fireNewTime(new HiResDate(startTime));
-    }
-
-    @Override
-    public void onVideoOpened(XugglePlayer player, String fileName)
-    {
-      super.onVideoOpened(player, fileName);
-    }
-
-
-    private void update(XugglePlayer player, long milli)
-    {
-      scale.setSelection((int) (milli / 1000));
-      if (_timeProvider != null && _timeProvider.getPeriod() != null && player
-          .isOpened())
-      {
-        Date start = new Date(startTime.getTime());
-        long step = milli + start.getTime();
-        HiResDate newDTG = new HiResDate(step);
-        if (_timeProvider.getPeriod().contains(newDTG))
-        {
-          fireNewTime(newDTG);
-        }
-      }
-    }
-  }
-
-  public void setFocus()
-  {
-    player.setFocus();
-    this.fireNewTime = false;
-  }
-  
-  private void openEditStartTimeDialog() {
-    VideoPlayerStartTimeDialog startTimeDialog = new VideoPlayerStartTimeDialog(getViewSite().getShell());
-    startTimeDialog.setStartTime(new Date(startTime.getTime()));
-    startTimeDialog.setBlockOnOpen(true);
-    if(startTimeDialog.open()==Window.OK) {
-      setVideoStartTime(startTimeDialog.getStartTime());
-    }
-  }
-
-  private void createActions()
-  {
-    open = new Action()
-    {
-
-      @Override
-      public void run()
-      {
-        fireNewTime = true;
-        FileDialog fd = new FileDialog(getViewSite().getShell(), SWT.OPEN);
-        fd.setText("Open Movie");
-        String[] filterExt =
-        {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
-            "*.wma", "*.*"};
-        fd.setFilterExtensions(filterExt);
-        String selected = fd.open();
-        VideoPlayerView.this.open(selected, new Date());
-      }
-    };
-    open.setText("Open");
-    open.setImageDescriptor(PlanetmayoImages.OPEN.getImage());
-    
-    editStartTime = new Action() {
-      @Override
-      public void run()
-      {
-        openEditStartTimeDialog();
-      }
-    };
-    editStartTime.setText("Edit Start time");
-    editStartTime.setImageDescriptor(PlanetmayoImages.CONTROL_TIME.getImage());
-    stretch = new Action("Stretch", Action.AS_CHECK_BOX)
-    {
-
-      @Override
-      public void run()
-      {
-        player.setStretchMode(isChecked());
-        Point size = player.getSize();
-        player.redraw(0, 0, size.x, size.y, true);
-      }
-    };
-    stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
-    stretch.setChecked(true);
-
-    player.addPlayerListener(new PlayerAdapter()
-    {
-
-      @Override
-      public void onPlay(XugglePlayer player)
-      {
-        play.setImage(PlanetmayoImages.PAUSE.getImage().createImage());
-        play.setToolTipText("Pause");
-      }
-
-      @Override
-      public void onStop(XugglePlayer player)
-      {
-        play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
-        play.setToolTipText("Play");
-      }
-
-      @Override
-      public void onPause(XugglePlayer player)
-      {
-        onStop(player);
-      }
-
-      @Override
-      public void onVideoOpened(XugglePlayer player, String fileName)
-      {
-        movieOpened(new File(fileName).getName(), player);
-      }
-
-    });
-  }
-
-  private void movieOpened(String videoName, XugglePlayer player)
-  {
-    boolean enabled = videoName != null;
+    final boolean enabled = videoName != null;
     play.setEnabled(enabled);
     stop.setEnabled(enabled);
     scale.setEnabled(enabled);
@@ -765,14 +674,38 @@ public class VideoPlayerView extends ViewPart
     }
   }
 
-  private void fillToolbarManager()
+  public void open(final String selected, final Date videoStartTime)
   {
-    IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
-    toolbar.add(stretch);
-    toolbar.add(new Separator());
-    toolbar.add(open);
-    toolbar.add(new Separator());
-    toolbar.add(editStartTime);
+    if (selected != null)
+    {
+      if (!player.open(selected))
+      {
+        movieOpened(null, null);
+        setVideoStartTime(videoStartTime);
+        final MessageBox message = new MessageBox(getSite().getShell(),
+            SWT.ICON_WARNING | SWT.OK);
+        message.setText("Video player: " + new File(selected).getName());
+        message.setMessage("This file format isn't supported.");
+        message.open();
+      }
+      else
+      {
+        _selected = selected;
+        setVideoStartTime(videoStartTime);
+      }
+    }
+  }
+
+  private void openEditStartTimeDialog()
+  {
+    final VideoPlayerStartTimeDialog startTimeDialog =
+        new VideoPlayerStartTimeDialog(getViewSite().getShell());
+    startTimeDialog.setStartTime(new Date(startTime.getTime()));
+    startTimeDialog.setBlockOnOpen(true);
+    if (startTimeDialog.open() == Window.OK)
+    {
+      setVideoStartTime(startTimeDialog.getStartTime());
+    }
   }
 
   private void restoreSavedState()
@@ -783,7 +716,7 @@ public class VideoPlayerView extends ViewPart
     }
     if (memento.getString(STATE_VIDEO_FILE) != null)
     {
-      Boolean stretchBool = memento.getBoolean(STATE_STRETCH);
+      final Boolean stretchBool = memento.getBoolean(STATE_STRETCH);
       if (stretchBool != null)
       {
         player.setStretchMode(stretchBool);
@@ -799,7 +732,7 @@ public class VideoPlayerView extends ViewPart
           startTime = (new Date(Long.parseLong(memento.getString(
               STATE_START_TIME))));
         }
-        catch (NumberFormatException ex)
+        catch (final NumberFormatException ex)
         {
           // can't restore state
           Activator.log(ex);
@@ -808,30 +741,112 @@ public class VideoPlayerView extends ViewPart
     }
   }
 
-  public String getSelected()
+  @Override
+  public void saveState(final IMemento memento)
   {
-    return _selected;
+    super.saveState(memento);
+    if (player.isOpened())
+    {
+      memento.putString(STATE_VIDEO_FILE, player.getFileName());
+      memento.putString(STATE_START_TIME, Long.toString(startTime.getTime()));
+      memento.putString(STATE_POSITION, Long.toString(player
+          .getCurrentPosition()));
+      memento.putBoolean(STATE_STRETCH, player.isStretchMode());
+    }
   }
 
-  public void open(String selected, Date videoStartTime)
+  @Override
+  public void setFocus()
   {
-    if (selected != null)
-    {
-      if (!player.open(selected))
-      {
-        movieOpened(null, null);
-        setVideoStartTime(videoStartTime);
-        MessageBox message = new MessageBox(getSite().getShell(),
-            SWT.ICON_WARNING | SWT.OK);
-        message.setText("Video player: " + new File(selected).getName());
-        message.setMessage("This file format isn't supported.");
-        message.open();
-      }
-      else
-      {
-        _selected = selected;
-        setVideoStartTime(videoStartTime);
-      }
-    }
+    player.setFocus();
+    this.fireNewTime = false;
+  }
+
+  private void setupListeners()
+  {
+    _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+        .getPartService());
+
+    _myPartMonitor.addPartListener(ControllableTime.class,
+        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+
+            if (_controllableTime != part)
+            {
+              // implementation here.
+              final ControllableTime ct = (ControllableTime) part;
+              _controllableTime = ct;
+            }
+          }
+
+        });
+    _myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            if (part == _controllableTime)
+            {
+              _controllableTime = null;
+            }
+          }
+        });
+
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+
+            if (_timeProvider != part)
+            {
+              // implementation here.
+              final TimeProvider tp = (TimeProvider) part;
+              _timeProvider = tp;
+              _timeProvider.addListener(_propertyChangeListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+            }
+          }
+
+        });
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            if (part == _timeProvider)
+            {
+              _timeProvider.removeListener(_propertyChangeListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              _timeProvider = null;
+            }
+          }
+        });
+  }
+
+  public void setVideoStartTime(final Date date)
+  {
+    startTime = date;
+    PlatformUI.getPreferenceStore().setValue(_selected, date.getTime());
+    fireNewTime(new HiResDate(date));
+  }
+
+  private void updatePlayTime(final long milli)
+  {
+    final long curPlayTime = milli - TimeZone.getDefault().getOffset(0);
+    playTime.setText(timeFormat.format(new Date(startTime.getTime()
+        + curPlayTime)));
+    playTimeLeft.setText(timeFormat.format(new Date(player.getDuration()
+        - curPlayTime)));
   }
 }
