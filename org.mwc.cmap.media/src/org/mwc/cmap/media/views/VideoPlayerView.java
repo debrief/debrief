@@ -36,7 +36,6 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -237,7 +236,6 @@ public class VideoPlayerView extends ViewPart
     createVideoScaleActions(composite);
     createActions();
     fillToolbarManager();
-    //fillMenu();
     restoreSavedState();
     // and start listing for any part action
     setupListeners();
@@ -561,7 +559,7 @@ public class VideoPlayerView extends ViewPart
     GridData data = new GridData();
     data.grabExcessHorizontalSpace = true;
     data.verticalAlignment = SWT.TOP;
-    data.horizontalAlignment = SWT.RIGHT|SWT.FILL;
+    data.horizontalAlignment = SWT.FILL;
     control.setLayout(layout);
     control.setLayoutData(data);
 
@@ -811,16 +809,6 @@ public class VideoPlayerView extends ViewPart
     toolbar.add(new Separator());
     toolbar.add(editStartTime);
   }
-
-  /*private void fillMenu()
-  {
-    IMenuManager menu = getViewSite().getActionBars().getMenuManager();
-    menu.add(stretch);
-    menu.add(new Separator());
-    menu.add(open);
-    menu.add(new Separator());
-    menu.add(editStartTime);
-  }*/
 
   private void restoreSavedState()
   {
