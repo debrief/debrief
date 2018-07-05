@@ -57,6 +57,19 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   }
 
 
+  /**
+   * marker interface for objects that have to reconnect
+   * to their child objects after copy/paste operation.  An example of this is 
+   * FixWrapper
+   * 
+   * @author ian
+   *
+   */
+  public static interface IsTransientForChildren
+  {
+    public void reconnectChildObjects(Object clonedObject);
+  }
+
   ///////////////////////////////////
   // nested classes
   //////////////////////////////////

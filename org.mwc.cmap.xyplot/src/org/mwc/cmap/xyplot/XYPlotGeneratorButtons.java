@@ -65,7 +65,7 @@ import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.TacticalDataWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -718,9 +718,9 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
     for (WatchableList thisTrack : theTracks)
     {
       // check it's not a singleton
-      if (thisTrack instanceof TrackWrapper)
+      if (thisTrack instanceof LightweightTrackWrapper)
       {
-        TrackWrapper track = (TrackWrapper) thisTrack;
+        LightweightTrackWrapper track = (LightweightTrackWrapper) thisTrack;
         if (track.isSinglePointTrack())
         {
           // ok, ignore the time bounds, move on to the next one

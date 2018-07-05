@@ -25,6 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -49,6 +50,8 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -786,20 +789,24 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 8, tLayers.size());
+      assertEquals("got new tracks", 3, tLayers.size());
 
-      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
-          1);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
+          ImportReplay.NARRATIVE_LAYER);
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
+      
+      BaseLayer fcsLayer = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+
+      final Object[] solutions = fcsLayer.getData().toArray();
 
       // hey, let's have a look them
-      TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
+      LightweightTrackWrapper tw = (LightweightTrackWrapper) solutions[5];
       assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
       // hey, let's have a look them
-      tw = (TrackWrapper) tLayers.elementAt(6);
+      tw = (LightweightTrackWrapper) solutions[2];
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 5, tw.numFixes());
 
@@ -816,7 +823,11 @@ public class ImportNarrativeDocument
           bounds.toString());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(7);
+      
+      BaseLayer fcsNarr = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      Object[] data = fcsNarr.getData().toArray();
+      
+      tw = (LightweightTrackWrapper) data[3];
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
@@ -851,20 +862,25 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 8, tLayers.size());
+      assertEquals("got new tracks", 3, tLayers.size());
+      
+      
 
-      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.elementAt(
-          1);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
+      
+      BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      Object[] data = sols.getData().toArray();
 
       // hey, let's have a look them
-      TrackWrapper tw = (TrackWrapper) tLayers.elementAt(4);
+      LightweightTrackWrapper tw = (LightweightTrackWrapper) data[5];
       assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
       // hey, let's have a look them
-      tw = (TrackWrapper) tLayers.elementAt(6);
+      tw = (LightweightTrackWrapper) data[2];
       assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 5, tw.numFixes());
 
@@ -881,7 +897,7 @@ public class ImportNarrativeDocument
           bounds.toString());
 
       // hey, let's have a look tthem
-      tw = (TrackWrapper) tLayers.elementAt(7);
+      tw = (LightweightTrackWrapper) data[3];
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
@@ -921,8 +937,8 @@ public class ImportNarrativeDocument
       final Fix fx1 = new Fix(hd1, loc1, 12d, 5);
       final Fix fx2 = new Fix(hd2, loc2, 12d, 5);
 
-      nonsuch.add(new FixWrapper(fx1));
-      nonsuch.add(new FixWrapper(fx2));
+      nonsuch.addFix(new FixWrapper(fx1));
+      nonsuch.addFix(new FixWrapper(fx2));
 
       target.addThisLayer(nonsuch);
 
@@ -934,14 +950,21 @@ public class ImportNarrativeDocument
       importer.processThese(strList);
 
       // check we have two tracks
-      assertEquals("all tracks", 4, target.size());
+      assertEquals("all tracks", 3, target.size());
 
       // check the size
-      final Layer t1 = target.elementAt(2);
-      final Layer t2 = target.elementAt(3);
-
-      assertEquals("correct name", "023_SOURCE_A FCS", t1.getName());
-      assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", t2.getName());
+      final Layer t0 = target.elementAt(0);
+      final Layer t1 = target.elementAt(1);
+      final Layer t2 = target.elementAt(2);
+      
+      // check t2 is narratives
+      assertEquals("correct name", NARR_LAYER, t2.getName());
+      BaseLayer layer = (BaseLayer) t2;
+      Editable sol1 = layer.first();
+      assertEquals("correct name", "023_SOURCE_A FCS", sol1.getName());
+      Editable sol2 = layer.last();
+      assertEquals("correct name", "023_SOURCE_A FCS", sol1.getName());
+      assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", sol2.getName());
     }
 
     public void testAdvancedParseFCS() throws ParseException
@@ -1208,11 +1231,14 @@ public class ImportNarrativeDocument
       importer.processThese(strList);
 
       // check we have two tracks
-      assertEquals("all tracks", 4, target.size());
+      assertEquals("all tracks", 3, target.size());
 
+      BaseLayer narrs = (BaseLayer) target.findLayer(NARR_LAYER);
+      
+      
       // check the size
-      final TrackWrapper t1 = (TrackWrapper) target.elementAt(2);
-      final TrackWrapper t2 = (TrackWrapper) target.elementAt(3);
+      final LightweightTrackWrapper t1 = (LightweightTrackWrapper)narrs.first();
+      final LightweightTrackWrapper t2 = (LightweightTrackWrapper)narrs.last();
 
       assertEquals("correct name", "023_SOURCE_A FCS", t1.getName());
       assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", t2.getName());
@@ -1294,6 +1320,8 @@ public class ImportNarrativeDocument
   static final String DATE_MATCH_SIX = "(\\d{6})";
 
   static final String DATE_MATCH_FOUR = "(\\d{4})";
+  
+  private static final String NARR_LAYER = "Narrative FCSs";
 
   private static String existingWECDISTrack(final Layers layers,
       final String dataName)
@@ -1481,19 +1509,28 @@ public class ImportNarrativeDocument
         }
 
         // find the track for this solution
-        TrackWrapper hisTrack = (TrackWrapper) _layers.findLayer(trackName);
+        LightweightTrackWrapper hisTrack = (LightweightTrackWrapper) _layers.findLayer(trackName, true);
         if (hisTrack == null)
         {
-          hisTrack = new TrackWrapper();
+          hisTrack = new LightweightTrackWrapper();
           hisTrack.setName(trackName);
 
           // get a custom color for this contact number (tracks from different
           // will share the same color if they're from the same contact number)
           final Color customColor = colorFor(fe.contact);
           hisTrack.setColor(customColor);
-
+          
+          // do we have narratives folder?
+          Layer narrLayer = _layers.findLayer(NARR_LAYER);
+          if(narrLayer == null)
+          {
+            narrLayer = new BaseLayer();
+            narrLayer.setName(NARR_LAYER);
+            _layers.addThisLayer(narrLayer);
+          }
+          
           // store this new track
-          _layers.addThisLayer(hisTrack);
+          narrLayer.add(hisTrack);
         }
 
         // ok, now create the fix
@@ -1512,11 +1549,14 @@ public class ImportNarrativeDocument
         newFw.setLabelShowing(true);
 
         // ok, we may have multiple fixes at the same time
-        final Watchable[] hisNearest = hisTrack.getNearestTo(thisN.dtg, false);
-        if (hisNearest != null && hisNearest.length > 0)
+        final Watchable[] hisNearest = hisTrack.getNearestTo(thisN.dtg);
+        if (hisNearest != null && hisNearest.length > 0 && hisNearest[0] != null)
         {
           // ok, have a look at it.
-          while (hisNearest[0].getTime().equals(newF.getTime()))
+          final Watchable nearestW = hisNearest[0];
+          System.out.println("nearest:" + nearestW);
+          System.out.println("newF:" + newF);
+          while (nearestW.getTime().equals(newF.getTime()))
           {
             newF.setTime(new HiResDate(newF.getTime().getDate().getTime()
                 + 1000));
