@@ -99,7 +99,7 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 		}
     else if (editable instanceof LightweightTrackWrapper)
     {
-      res = DebriefPlugin.getImageDescriptor("icons/16/track.png");      
+      res = DebriefPlugin.getImageDescriptor("icons/16/light_track.png");      
     }		 
 		return res;
 	}
