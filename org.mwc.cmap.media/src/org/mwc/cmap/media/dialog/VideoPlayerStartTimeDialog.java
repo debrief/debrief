@@ -21,7 +21,8 @@ package org.mwc.cmap.media.dialog;
 import java.util.Date;
 
 import org.eclipse.jface.dialogs.TitleAreaDialog;
-import org.eclipse.nebula.widgets.formattedtext.FormattedText;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,7 +40,7 @@ import org.mwc.cmap.media.PlanetmayoFormats;
 public class VideoPlayerStartTimeDialog extends TitleAreaDialog
 {
 
-  private FormattedText startTime;
+  private CDateTime startTime;
   private Date _startTime;
   public VideoPlayerStartTimeDialog() {
     this(Display.getDefault().getActiveShell());
@@ -55,7 +56,7 @@ public class VideoPlayerStartTimeDialog extends TitleAreaDialog
   {
     super.create();
     setTitle("Video Start Time");
-    setMessage("Please specify the actual start date and time of the video");
+    setMessage("Specify the actual start date and time of the video");
   }
   
   @Override
@@ -65,17 +66,19 @@ public class VideoPlayerStartTimeDialog extends TitleAreaDialog
     final Composite composite = new Composite(base, SWT.NONE);
     composite.setLayoutData(new GridData(GridData.FILL_BOTH
         | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL));
-    composite.setLayout(new GridLayout(2, false));
+    composite.setLayout(new GridLayout(3, false));
     {
-      new Label(composite,SWT.NONE).setText("Video Start Time:");
-      startTime = new FormattedText(composite);
-      startTime.setFormatter(PlanetmayoFormats.getInstance().getDateTimeFormatter());
+      new Label(composite,SWT.NONE).setText("Start Time:");
+      startTime = new CDateTime(composite,CDT.BORDER);
+      startTime.setPattern(PlanetmayoFormats.getInstance().getDateFormat().toPattern());
       if(_startTime == null) {
-        startTime.setValue(new Date());
+        startTime.setSelection(new Date());
       }
       else {
-        startTime.setValue(_startTime);
+        startTime.setSelection(_startTime);
       }
+     // startTime.setToolTipText("Actual recording start time in YYYY-MM-DD HH:mm:ss format, Eg:1995-12-12 10:38:56");
+      
     }
     return composite;
   }
@@ -92,7 +95,7 @@ public class VideoPlayerStartTimeDialog extends TitleAreaDialog
   @Override
   protected void okPressed()
   {
-    _startTime = ((Date)startTime.getValue());
+    _startTime = ((Date)startTime.getSelection());
     super.okPressed();
   }
 
