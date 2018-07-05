@@ -36,8 +36,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 
-import MWC.Utilities.TextFormatting.GMTDateFormat;
-
 /**
  * This class provides formatting of <code>Date</code> values in a
  * <code>FormattedText</code>. Supports a subset of date and time patterns
@@ -241,7 +239,7 @@ public class DateTimeFormatter extends AbstractFormatter {
 		if ( displayPattern == null ) {
 			displayPattern = editPattern;
 		}
-    sdfDisplay = new GMTDateFormat(displayPattern, loc);
+    sdfDisplay = new SimpleDateFormat(displayPattern, loc);
     locale		 = loc;
 
     // Set the default value

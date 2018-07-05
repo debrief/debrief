@@ -136,6 +136,7 @@ package Debrief.ReaderWriter.Replay;
 import java.awt.Color;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 

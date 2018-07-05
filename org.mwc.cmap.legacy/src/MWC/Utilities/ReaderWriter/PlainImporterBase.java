@@ -164,23 +164,9 @@ public abstract class PlainImporterBase implements PlainImporter
    */
   public Layer getLayerFor(final String theName)
   {
-    return getLayerFor(theName, true);
-  }
-  
-  public Layer getLayerFor(final String theName, final boolean recursive)
-  {
-    if(recursive)
-    {
-      final Layer theLayer = _theLayers.findLayer(theName, true);
-      return theLayer;
-    }
-    else
-    {
-      final Layer theLayer = _theLayers.findLayer(theName);
-      return theLayer;
-    }
-    
-    
+    final Layer theLayer = _theLayers.findLayer(theName);
+
+    return theLayer;
   }
 
   /**

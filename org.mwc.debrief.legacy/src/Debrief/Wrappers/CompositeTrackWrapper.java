@@ -762,7 +762,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
      * just return the track segments, we don't contain any other data...
      * 
      */
-    return _theSegments.elements();
+    return _thePositions.elements();
   }
 
   @Override

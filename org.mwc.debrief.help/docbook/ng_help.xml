@@ -8829,10 +8829,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>[LAYER=Other_Target_Layer]</para>
                     </entry>
                     <entry>
-                      <para>Put this annotation into the layer named "Other_Target_Layer". Note: spaces not allowed.  
-                        Use this mechanism to load a track as a high performing <glossterm linkend="g_lightweight">Lightweight Track.</glossterm><indexterm>
-                          <primary>Lightweight Track</primary></indexterm><indexterm>
-                            <primary>Track Data</primary><secondary>Lightweight tracks</secondary></indexterm></para>
+                      <para>Put this annotation into the layer named "Other_Target_Layer". Note: spaces not allowed</para>
                     </entry>
                   </row>
                 </tbody>
@@ -8994,9 +8991,9 @@ and entry type can be multi-word if surrounded by quotes (").
         <sect2 xml:id="entry_comments">
           <title>Entry comments</title>
           <para><indexterm>
-              <primary>Replay File Format</primary>
-              <secondary>Entry comment</secondary>
-            </indexterm> Note: some entry types allow an additional comment to be appended to the end of an entry. The comment follows a <emphasis>//</emphasis> separator.</para>
+            <primary>Replay File Format</primary><secondary>Entry comment</secondary></indexterm>
+            Note: some entry types allow a non-plotted comment to be appended to the end of an entry. 
+            The comment follows  a <emphasis>//</emphasis> separator.</para>
           <screen width="70"><markup>
 951212 050100.000 NONSUCH @A@00 22 12 10.51 N 21 32 14.81 W 269.9 2.0 0
 ;; label is normal DTG value, comment is empty (legacy behaviour)
@@ -9014,7 +9011,6 @@ and entry type can be multi-word if surrounded by quotes (").
 ;; label is "SENSOR LABEL", comment is "COMMENT"
           </markup>
           </screen>
-          <para>For track positions, it's possible to indicate whether the comment should be shown, using the <guibutton>Comment Showing</guibutton> attribute of the position. The comment is always placed opposite the label, even if the label isn't shown</para>
         </sect2>
         <sect2 xml:id="towed_array_annotations">
           <title>Towed Array Extensions</title>
@@ -12493,19 +12489,7 @@ range = Range to target from ownship (yds)</markup>
             an example of this is in the VPF best-practice, <xref linkend="vpf_how_to"/>)</para>
         </glossdef>
       </glossentry>
-      <glossentry xml:id="g_lightweight">
-        <glossterm>Lightweight Tracks</glossterm>
-        
-        <glossdef>
-          <para>
-            A simpler, faster version of a conventional track.  These are quicker to render in Debrief
-            and can be placed into Layers - unlike normal tracks, which all sit at the top level. Fewer
-            formatting and manipulation operations are available for lightweight tracks, particularly
-            those relating to TMA.
-          </para>
-        </glossdef>
-      </glossentry>
-      
+
       <glossentry xml:id="g_MWC">
         <glossterm>MWC</glossterm>
 

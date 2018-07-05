@@ -26,7 +26,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class PlanetmayoFormats {
 	private static final String DATE_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	private static final String TIME_FORMAT_PATTERN = "HH:mm:ss";
-	private static final String FILE_NAME_FORMAT_PATTERN = "yyyy_MM_dd_HH_mm_ss";
+	private static final String FILE_NAME_FORMAT_PATTERN = "yyyyMMdd_HHmmss";
 	
 	private static SimpleDateFormat DATE_FORMAT = new GMTDateFormat(DATE_FORMAT_PATTERN);
 	private static SimpleDateFormat TIME_FORMAT = new GMTDateFormat(TIME_FORMAT_PATTERN);
@@ -89,7 +89,15 @@ public class PlanetmayoFormats {
 			fileName = fileName.substring(0, extensionIndex);
     	}
 		try {
-			Date result = getFilenameFormat().parse(fileName);
+		  StringBuilder fileNameFinal = new StringBuilder();
+		  String[] dateTime = fileName.split("_");
+		  if(dateTime.length>2) {
+		    fileNameFinal.append(dateTime[0]).append("_").append(dateTime[1]);
+		  }
+		  else {
+		    fileNameFinal.append(fileName);
+		  }
+			Date result = getFilenameFormat().parse(fileNameFinal.toString());
 			DateUtils.removeMilliSeconds(result);
 			return result;
 		} catch (ParseException ex) {

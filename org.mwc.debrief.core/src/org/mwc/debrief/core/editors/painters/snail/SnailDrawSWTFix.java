@@ -42,7 +42,6 @@ import org.mwc.debrief.core.editors.painters.highlighters.SWTSymbolHighlighter;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -116,31 +115,11 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
     
     // get a pointer to the fix
 		FixWrapper fix = (FixWrapper)watch;
-		final WatchableList trk = fix.getTrackWrapper();
-		
-		if(trk == null)
-		{
-		  System.out.println("here");
-		}
-		
-		if(!trk.getVisible())
-		{
-		  return thisR;
-		}
+		final TrackWrapper trk = fix.getTrackWrapper();
 		
     // trim to visible period if its a track
-    final TimePeriod visP;
-    if(trk instanceof LightweightTrackWrapper)
-    {
-      LightweightTrackWrapper ft = (LightweightTrackWrapper) trk;
-      visP = ft.getVisiblePeriod();
-    }
-    else
-    {
-      visP = null;
-    }
-    
-    if (visP != null && !visP.contains(dtg))
+    TimePeriod visP = trk.getVisiblePeriod();
+    if (!visP.contains(dtg))
     {
       // ok, before or after?
       if (visP.getStartDTG().greaterThan(dtg))
@@ -153,7 +132,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
         dtg = visP.getEndDTG();
         fix = (FixWrapper) trk.getNearestTo(dtg)[0];
       }
-    } 
+    }   
 
 		// get the colour of the track
 		final Color col = fix.getColor();
@@ -220,18 +199,10 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
       // see if there is a custom override for this track
       final double vectorStretch;
       
-      if(trk instanceof TrackWrapper)
+      final double trackStretch = trk.getCustomVectorStretch();
+      if(trackStretch != 0)
       {
-        TrackWrapper tw = (TrackWrapper) trk;
-            final double trackStretch = tw.getCustomVectorStretch();
-        if(trackStretch != 0)
-        {
-          vectorStretch = trackStretch;
-        }
-        else
-        {
-          vectorStretch = getVectorStretch();
-        }
+        vectorStretch = trackStretch;
       }
       else
       {
@@ -284,13 +255,8 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 			final TextLabel trkName = new TextLabel(fixLoc, msg);
 			trkName.setColor(col);
 			// position the track name according to how it's specified in the parent track
-			WatchableList wList = fix.getTrackWrapper();
-			if(wList instanceof TrackWrapper)
-			{
-			  TrackWrapper parentT = (TrackWrapper) wList;
-	      trkName.setRelativeLocation(parentT.getNameLocation());
-	      trkName.paint(dest);
-			}
+			trkName.setRelativeLocation(fix.getTrackWrapper().getNameLocation());
+			trkName.paint(dest);
 
 			// use the coordinates to indicate how much of the plot has been repainted
 			final Point p2 = dest.toScreen(trkName.getAnchor());

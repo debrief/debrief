@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -318,7 +317,7 @@ public class TrackManager implements TrackDataProvider
 		// do we have a primary?
 		if (_thePrimary != null)
 		{
-			Layer found = _theLayers.findLayer(_thePrimary.getName(), true);
+			Layer found = _theLayers.findLayer(_thePrimary.getName());
 
 			// did we find it?
 			if (found == null)
@@ -362,7 +361,7 @@ public class TrackManager implements TrackDataProvider
 				final WatchableList thisSec = _theSecondaries[i];
 				
 				// check it's still present
-				if(_theLayers.findLayer(thisSec.getName(), true) != null)
+				if(_theLayers.findLayer(thisSec.getName()) != null)
 				{
 				  secsFound.add(thisSec);
 				}
@@ -434,7 +433,7 @@ public class TrackManager implements TrackDataProvider
 			{
 				if (w.getVisible())
 					if ((!onlyAssignTracks) || (onlyAssignTracks)
-							&& (w instanceof LightweightTrackWrapper))
+							&& (w instanceof TrackWrapper))
 						setPrimary(w);
 			}
 			else

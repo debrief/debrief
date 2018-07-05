@@ -350,17 +350,12 @@ public class SelectAllChildren implements RightClickContextItemGenerator
           final MenuManager newMenu = new MenuManager(
               "Select child elements with this interval");
           
-          // commented out, API not present indigo
-          // newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-          //    "icons/16/show.png"));
-
-          
           // ok, generate the operation
           final IUndoableOperation action = getOperation(theLayers,
               (HasEditables) selected);
 
           // and now wrap it in an action
-          final Action doIt = new Action("Select all Children")
+          final Action doIt = new Action("All")
           {
             @Override
             public void run()
@@ -372,7 +367,7 @@ public class SelectAllChildren implements RightClickContextItemGenerator
               "icons/16/show.png"));
 
           // ok, go for it
-          parent.add(doIt);
+          newMenu.add(doIt);
           
 
           for (int i = 0; i < _freqs.length; i++)
@@ -395,6 +390,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
               };
 
               newMenu.add(selectItem);
+              selectItem.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+                  "icons/16/show.png"));
             }
           }
           parent.add(newMenu);

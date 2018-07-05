@@ -14,62 +14,54 @@
  */
 package Debrief.GUI.Tote.Painters;
 
-import java.awt.Color;
-import java.awt.FontMetrics;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.util.Collection;
-import java.util.Iterator;
+import java.awt.*;
+import java.util.*;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.*;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
-import MWC.GenericData.WatchableList;
-import MWC.GenericData.WorldLocation;
+import MWC.GenericData.*;
 
-/**
- * class to draw a 'back-track' of points backwards from the current datapoint for the indicated
- * period.
+/** class to draw a 'back-track' of points backwards from the current
+ * datapoint for the indicated period.
  *
- * Internally, the class retrieves the list of included points from the track itself and stores them
- * in the HashTable indexed by the current fix. So, when we are asked to plot a point, we look in
- * the HashTable first -- if we have a vector of points for this fix we re-plot these and then
- * remove them from the hashtable. If we don't find a vector of points for this Fix then we retrieve
- * the list from the track and then insert the list into our HashTable Ta-Da!
+ * Internally, the class retrieves the list of included points from the
+ * track itself and stores them in the HashTable indexed by the current fix.
+ * So, when we are asked to plot a point, we look in the HashTable first --
+ * if we have a vector of points for this fix we re-plot these and then
+ * remove them from the hashtable.
+ * If we don't find a vector of points for this Fix then we retrieve
+ * the list from the track and then insert the list into our HashTable
+ * Ta-Da!
  *
  */
 final class SnailDrawTrack
 {
 
-  /**
-   * helper class that assists in the production of a graduated colors that blend into the
-   * background
-   * 
-   * @author ian
-   *
-   */
-  public static class PhasedColorDef
-  {
-    public final float deltaRed;
-    public final float deltaGreen;
-    public final float deltaBlue;
-    public final int startRed;
-    public final int startGreen;
-    public final int startBlue;
+	/** helper class that assists in the production of a graduated colors that blend into the background
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static class PhasedColorDef
+	{
+		public final float deltaRed;
+		public final float deltaGreen;
+		public final float deltaBlue;
+		public final int startRed;
+		public final int startGreen;
+		public final int startBlue;
 
-    public PhasedColorDef(final Color mainCol, final Color backColor,
-        final int numShades)
-    {
+		public PhasedColorDef(final Color mainCol, final Color backColor, final int numShades)
+		{
 
       // get the colour of the track
-      /**
-       * NOTE that we are working in floats for all of the color stuff - if we were to work in ints,
-       * then when we want more than 255 shades, the deltas become zero and the track dissappears.
-       * By working in floats we can provide very fine deltas, allowing very large numbers of points
-       * to be tidily plotted in the track
+      /** NOTE that we are working in floats for all of the color
+       * stuff - if we were to work in ints, then when we
+       * want more than 255 shades, the deltas become zero
+       * and the track dissappears.  By working in floats we
+       * can provide very fine deltas, allowing very large numbers
+       * of points to be tidily plotted in the track
        */
       float red, green, blue;
       red = mainCol.getRed();
@@ -90,31 +82,26 @@ final class SnailDrawTrack
       deltaRed = red / numShades;
       deltaGreen = green / numShades;
       deltaBlue = blue / numShades;
-    }
-  }
-
-  /**
-   * the size of points to draw
+		}
+	}
+	
+  /** the size of points to draw
    */
   private int _pointSize;
 
-  /**
-   * the length of trail to draw (microseconds)
+  /** the length of trail to draw (microseconds)
    */
   private long _trailLength;
 
-  /**
-   * whether to join fixes
+  /** whether to join fixes
    */
   private boolean _joinPoints;
 
-  /**
-   * our list of Vectors of points
+  /** our list of Vectors of points
    */
   private final java.util.Hashtable<FixWrapper, Collection<Editable>> _fixLists;
 
-  /**
-   * whether to fade out the track and symbols
+  /** whether to fade out the track and symbols
    */
   private boolean _fadePoints;
 
@@ -125,30 +112,33 @@ final class SnailDrawTrack
   {
     setJoinPositions(true);
     setFadePoints(true);
-    setTrailLength(new Long(15 * 1000 * 1000 * 60)); // 15 minutes
+    setTrailLength(new Long(15 * 1000 * 1000* 60 )); // 15 minutes
     setPointSize(5);
 
     _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }
 
+
   ///////////////////////////////////
   // member functions
   //////////////////////////////////
-  public final Rectangle drawMe(
-      final MWC.Algorithms.PlainProjection proj, final java.awt.Graphics dest,
-      final Watchable watch, final SnailPainter parent, final HiResDate dtg,
-      final Color backColor)
+  public final java.awt.Rectangle drawMe(final MWC.Algorithms.PlainProjection proj,
+                                         final java.awt.Graphics dest,
+                                         final Watchable watch,
+                                         final SnailPainter parent,
+                                         final HiResDate dtg,
+                                         final Color backColor)
   {
 
-    // dest.setPaintMode();
+    //dest.setPaintMode();
     dest.setXORMode(backColor);
 
     // represent this area as a rectangle
-    java.awt.Rectangle thisR = null;
+    java.awt.Rectangle thisR  = null;
 
     // get the fix and the track
-    final FixWrapper theFix = (FixWrapper) watch;
-    final WatchableList trk = theFix.getTrackWrapper();
+    final FixWrapper theFix = (FixWrapper)watch;
+    final TrackWrapper trk = theFix.getTrackWrapper();
 
     // declare the Vector of track points we are using
     final Collection<Editable> dotPoints;
@@ -157,14 +147,14 @@ final class SnailDrawTrack
     final Collection<Editable> myList = _fixLists.get(theFix);
 
     // did we find it?
-    if (myList != null)
+    if(myList != null)
     {
       // cast it back to the vector
       dotPoints = myList;
 
       // we only remove this list from our hashtable if
       // we are not in a repaint operation
-      if (!parent.isRepainting())
+      if(!parent.isRepainting())
       {
 
         // and remove it from the list
@@ -180,55 +170,47 @@ final class SnailDrawTrack
     else
     {
       // retrieve the points in range
-      if (trk instanceof LightweightTrackWrapper)
-      {
-        LightweightTrackWrapper track = (LightweightTrackWrapper) trk;
-        dotPoints = track.getUnfilteredItems(new HiResDate(0, dtg.getMicros()
-            - _trailLength), new HiResDate(0, dtg.getMicros() + 2));
-      }
-      else
-      {
-        dotPoints = null;
-      }
+      dotPoints = trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros() - _trailLength), new HiResDate(0, dtg.getMicros()+2));
 
       // check that we found some points for this track
-      if (dotPoints != null)
+      if(dotPoints != null)
       {
         // and put them into the list
         _fixLists.put(theFix, dotPoints);
       }
     }
 
+
+
     // see if there are any points
-    if (dotPoints != null)
+    if(dotPoints != null)
     {
-      if (dotPoints.size() > 0)
+      if(dotPoints.size()>0)
       {
-        final PhasedColorDef def = new PhasedColorDef(trk.getColor(), backColor,
-            dotPoints.size() + 1);
-        float red, green, blue;
-        red = def.startRed;
-        green = def.startGreen;
-        blue = def.startBlue;
+      	final PhasedColorDef def = new PhasedColorDef(trk.getColor(), backColor,dotPoints.size()+1 );
+      	float red, green, blue;
+      	red = def.startRed;
+      	green = def.startGreen;
+      	blue = def.startBlue;
 
         // remember the last location
-        Point lastLoc = null;
+        Point lastLoc=null;
 
         final Iterator<Editable> iter = dotPoints.iterator();
-        while (iter.hasNext())
+        while(iter.hasNext())
         {
 
           final Color newCol;
 
           // see if we are fading to black
-          if (_fadePoints)
+          if(_fadePoints)
           {
             // produce the next colour
             red += def.deltaRed;
             green += def.deltaGreen;
             blue += def.deltaBlue;
 
-            newCol = new Color((int) red, (int) green, (int) blue);
+            newCol = new  Color((int)red, (int)green, (int) blue);
           }
           else
           {
@@ -236,11 +218,12 @@ final class SnailDrawTrack
             newCol = trk.getColor();
           }
 
+
           // update the colour for this segment
           dest.setColor(newCol);
 
           // get this fix
-          final FixWrapper gw = (FixWrapper) iter.next();
+          final FixWrapper gw = (FixWrapper)iter.next();
 
           // get the location
           final WorldLocation loc = gw.getLocation();
@@ -249,26 +232,29 @@ final class SnailDrawTrack
           final Point screenP = new Point(proj.toScreen(loc));
 
           // initialise the area, if we have to
-          if (thisR == null)
+          if(thisR == null)
             thisR = new Rectangle(screenP);
 
           // see if this fix is visible
-          if (gw.getSymbolShowing())
+          if(gw.getSymbolShowing())
           {
 
             // and draw the dot
-            drawDot(screenP, dest, _pointSize, thisR);
+            drawDot(screenP,
+                    dest,
+                    _pointSize,
+                    thisR);
           }
 
           // see if we are joining them
-          if (lastLoc == null)
+          if(lastLoc == null)
           {
             lastLoc = screenP;
           }
           else
           {
             // see if we are joining the points
-            if (_joinPoints)
+            if(_joinPoints)
             {
               dest.drawLine(lastLoc.x, lastLoc.y, screenP.x, screenP.y);
             }
@@ -277,7 +263,7 @@ final class SnailDrawTrack
           }
 
           // see if we are plotting the DTG
-          if (gw.getLabelShowing())
+          if(gw.getLabelShowing())
           {
             // set the font to the current font for the fix (so that we get the metrics right)
             dest.setFont(gw.getFont());
@@ -315,8 +301,11 @@ final class SnailDrawTrack
     return thisR;
   }
 
-  private static void drawDot(final Point loc, final java.awt.Graphics dest,
-      final int size, final Rectangle area)
+
+  private static void drawDot(final Point loc,
+                              final java.awt.Graphics dest,
+                              final int size,
+                              final Rectangle area)
   {
     final int wid = size / 2;
     dest.fillOval(loc.x - wid, loc.y - wid, size, size);
@@ -324,17 +313,17 @@ final class SnailDrawTrack
     area.add(loc.x + size + 2, loc.y + size + 2);
   }
 
-  // public boolean canPlot(Watchable wt)
-  // {
-  // boolean res = false;
-  //
-  // if((wt instanceof Debrief.Wrappers.TrackWrapper)||(wt instanceof
-  // Debrief.Wrappers.BuoyPatternWrapper))
-  // {
-  // res = true;
-  // }
-  // return res;
-  // }
+
+//	public boolean canPlot(Watchable wt)
+//	{
+//		boolean res = false;
+//
+//		if((wt instanceof Debrief.Wrappers.TrackWrapper)||(wt instanceof Debrief.Wrappers.BuoyPatternWrapper))
+//		{
+//			res = true;
+//		}
+//		return res;
+//	}
 
   public final void setJoinPositions(final boolean val)
   {
@@ -356,40 +345,38 @@ final class SnailDrawTrack
     return _fadePoints;
   }
 
-  /**
-   * point size of symbols (pixels)
+  /** point size of symbols (pixels)
    */
   public final int getPointSize()
   {
     return _pointSize;
   }
 
-  /**
-   * length of trail to plot (micros)
+  /** length of trail to plot (micros)
    */
   public final Long getTrailLength()
   {
     return new Long(_trailLength);
   }
 
-  /**
-   * size of points to draw (pixels)
+  /** size of points to draw (pixels)
    */
   public final void setPointSize(final int val)
   {
     _pointSize = val;
   }
 
-  /**
-   * length of trail to draw (micros)
+  /** length of trail to draw (micros)
    */
   public final void setTrailLength(final Long len)
   {
     _trailLength = len.longValue();
 
     // and clear the lists of fixes we are using, so that they are re-calculated
-    if (_fixLists != null)
+    if(_fixLists != null)
       _fixLists.clear();
   }
 
+
 }
+

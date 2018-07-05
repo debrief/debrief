@@ -295,13 +295,6 @@
 		<xs:attribute name="LineStyle" default="1" type="xs:integer" />
 		<xs:attribute name="LinkPositions" default="true" type="xs:boolean" />
 		<xs:attribute name="Name" use="required" type="xs:string" />
-		<xs:attribute name="ColorMode" use="required" type="xs:string" >
-			<xs:annotation>
-				<xs:documentation>
-					Method in which track points are shaded (per-fix, or taken from data)
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="NameAtStart" default="true" type="xs:boolean" />
 		<xs:attribute name="NameLocation" default="Right" type="xs:string" />
 		<xs:attribute name="NameVisible" default="true" type="xs:boolean" />
@@ -329,18 +322,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-	</xs:complexType>
-	
-	<xs:complexType name="LightweightTrackType">
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="fix" type="fix" />
-			<xs:element name="Color" type="colourType" />
-			<xs:element name="font" type="font" />
-		</xs:choice>
-		<xs:attribute name="LineStyle" default="1" type="xs:integer" />
-		<xs:attribute name="Name" use="required" type="xs:string" />
-		<xs:attribute name="NameVisible" default="true" type="xs:boolean" />
-		<xs:attribute name="Visible" default="true" type="xs:boolean" />
 	</xs:complexType>
 
 	<xs:complexType name="composite_track">
@@ -846,7 +827,6 @@
 			<xs:element name="circle" type="circle" />
 			<xs:element name="Arc" type="Arc" />
 			<xs:element name="wheel" type="wheel" />
-			<xs:element name="LightweightTrack" type="LightweightTrackType" />
 		</xs:choice>
 		<xs:attribute name="LineThickness" default="1" type="xs:integer" />
 		<xs:attribute name="Name" use="required" type="xs:string" />

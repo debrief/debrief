@@ -542,27 +542,4 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 	{
 	  getProperties().removePropertyChangeListener(property, listener);
 	}
-	
-
-  /** find the named object in this layer
-   * 
-   * @param theTrackName
-   * @return
-   */
-  public Editable find(final String subject)
-  {
-    final Enumeration<Editable> ele = elements();
-    while(ele.hasMoreElements())
-    {
-      final Editable next = ele.nextElement();
-      if(next.getName().equals(subject))
-      {
-        return next;
-      }
-    }
-    
-    return null;
-  }
 }
-
-

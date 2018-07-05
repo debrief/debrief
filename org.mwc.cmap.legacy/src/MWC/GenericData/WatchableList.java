@@ -116,7 +116,7 @@ import java.util.Collection;
 
 import junit.framework.TestCase;
 
-public interface WatchableList extends ColoredWatchable, Editable
+public interface WatchableList extends ColoredWatchable
 {
 	/**
 	 * the name of the property change event to fire should this object get
@@ -335,4 +335,5 @@ public interface WatchableList extends ColoredWatchable, Editable
 					.getTime());
 		}
 	}
+
 }

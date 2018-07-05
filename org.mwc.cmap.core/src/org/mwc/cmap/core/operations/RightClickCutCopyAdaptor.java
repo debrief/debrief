@@ -62,7 +62,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.NeedsToBeInformedOfRemove;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottablesType;
-import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -1110,7 +1109,6 @@ public class RightClickCutCopyAdaptor
     return res;
   }
 
-  
   /**
    * duplicate this item
    * 
@@ -1122,7 +1120,6 @@ public class RightClickCutCopyAdaptor
     Editable res = null;
     try
     {
-      
       final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
       final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
       oos.writeObject(item);
@@ -1166,12 +1163,6 @@ public class RightClickCutCopyAdaptor
       if (oj instanceof Editable)
       {
         res = (Editable) oj;
-        
-        if(item instanceof IsTransientForChildren)
-        {
-          IsTransientForChildren par = (IsTransientForChildren) item;
-          par.reconnectChildObjects(res);
-        }
       }
     }
     catch (final Exception e)

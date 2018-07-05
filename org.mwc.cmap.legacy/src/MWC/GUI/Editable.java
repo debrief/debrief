@@ -178,17 +178,16 @@ import java.beans.SimpleBeanInfo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
-import MWC.GUI.Tools.SubjectAction;
 import junit.framework.Assert;
 import junit.framework.TestCase;
+import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
+import MWC.GUI.Tools.SubjectAction;
 
 /**
  * Interface defining behaviour for a screen item which should be editable by
  * the user (using Bean properties) <p/> The file also contains an abstract
  * which implements the required behaviour
  */
-@SuppressWarnings("deprecation")
 public interface Editable
 {
 
