@@ -370,56 +370,30 @@ public class VideoPlayerView extends ViewPart
     parent.setLayout(new GridLayout(5, false));
     parent.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
 
-    play = new Button(parent, SWT.NONE);
-    play.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-    play.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        fireNewTime = true;
-        if (!player.isPlaying())
-        {
-          player.play();
-        }
-        else
-        {
-          player.pause();
-        }
-      }
-    });
-    play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
-    play.setToolTipText("Play");
-    play.setEnabled(false);
-    stop = new Button(parent, SWT.TRANSPARENT);
-    stop.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(final SelectionEvent e)
-      {
-        fireNewTime = true;
-        player.reopen();
-
-      }
-    });
-    stop.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-    stop.setImage(PlanetmayoImages.STOP.getImage().createImage());
-    stop.setToolTipText("Stop");
-    stop.setEnabled(false);
+    play = createPlayButton(composite, parent);
+    stop = createStopButton(composite, parent);
+    
     playTime = new Label(parent, SWT.LEFT);
     playTime.setText("00:00:00");
-    scale = new Scale(parent, SWT.HORIZONTAL | SWT.NULL);
+    
+    scale = createScaleBar(parent);
+    
+    playTimeLeft = new Label(parent, SWT.LEFT);
+    playTimeLeft.setText("00:00:00.000");
+  }
+
+  private Scale createScaleBar(final Composite parent)
+  {
+    final Scale scaleCtrl = new Scale(parent, SWT.HORIZONTAL | SWT.NULL);
     final GridData data = new GridData();
     data.grabExcessHorizontalSpace = true;
     data.minimumWidth = 100;
     data.horizontalAlignment = SWT.FILL;
-    scale.setMinimum(0);
-    scale.setMaximum(3600 * 5);
-    scale.setIncrement(1);
-    scale.setPageIncrement(3600 * 5);
-    scale.addKeyListener(new KeyListener()
+    scaleCtrl.setMinimum(0);
+    scaleCtrl.setMaximum(3600 * 5);
+    scaleCtrl.setIncrement(1);
+    scaleCtrl.setPageIncrement(3600 * 5);
+    scaleCtrl.addKeyListener(new KeyListener()
     {
 
       @Override
@@ -437,15 +411,15 @@ public class VideoPlayerView extends ViewPart
         // ignore
       }
     });
-    scale.setCapture(true);
-    scale.setLayoutData(data);
-    scale.addSelectionListener(new SelectionListener()
+    scaleCtrl.setCapture(true);
+    scaleCtrl.setLayoutData(data);
+    scaleCtrl.addSelectionListener(new SelectionListener()
     {
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent event)
       {
-
+        // ignore this action.
       }
 
       @Override
@@ -454,11 +428,11 @@ public class VideoPlayerView extends ViewPart
         fireNewTime = true;
         if (player.hasVideo())
         {
-          player.seek(scale.getSelection() * 1000);
+          player.seek(scaleCtrl.getSelection() * 1000);
         }
       }
     });
-    scale.addMouseListener(new MouseListener()
+    scaleCtrl.addMouseListener(new MouseListener()
     {
 
       @Override
@@ -479,7 +453,7 @@ public class VideoPlayerView extends ViewPart
         {
           final boolean wasPlaying = player.isPlaying();
           player.pause();
-          player.seek(scale.getSelection() * 1000);
+          player.seek(scaleCtrl.getSelection() * 1000);
           if (wasPlaying)
           {
             player.play();
@@ -488,10 +462,59 @@ public class VideoPlayerView extends ViewPart
         player.addPlayerListener(playerScaleListener);
       }
     });
-    scale.setEnabled(false);
-    playTimeLeft = new Label(parent, SWT.LEFT);
-    playTimeLeft.setText("00:00:00.000");
+    scaleCtrl.setEnabled(false);
+    return scaleCtrl;
+  }
 
+  private Button createStopButton(final Composite composite,
+      final Composite parent)
+  {
+    Button stopBtn = new Button(parent, SWT.TRANSPARENT);
+    stopBtn.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        fireNewTime = true;
+        player.reopen();
+
+      }
+    });
+    stopBtn.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+    stopBtn.setImage(PlanetmayoImages.STOP.getImage().createImage());
+    stopBtn.setToolTipText("Stop");
+    stopBtn.setEnabled(false);
+    
+    return stopBtn;
+  }
+
+  private Button createPlayButton(final Composite composite,
+      final Composite parent)
+  {
+    Button playBtn = new Button(parent, SWT.NONE);
+    playBtn.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+    playBtn.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
+        fireNewTime = true;
+        if (!player.isPlaying())
+        {
+          player.play();
+        }
+        else
+        {
+          player.pause();
+        }
+      }
+    });
+    playBtn.setImage(PlanetmayoImages.PLAY.getImage().createImage());
+    playBtn.setToolTipText("Play");
+    playBtn.setEnabled(false);
+    return playBtn;
   }
 
   @SuppressWarnings("deprecation")
