@@ -68,6 +68,7 @@ import org.mwc.cmap.media.xuggle.XugglePlayer;
 import MWC.GenericData.HiResDate;
 
 public class VideoPlayerView extends ViewPart {
+
   private static final String STATE_VIDEO_FILE = "filename";
   private static final String STATE_POSITION = "position";
   private static final String STATE_START_TIME = "startTime";
