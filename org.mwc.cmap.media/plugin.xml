@@ -5,7 +5,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Video Player"
-            icon="icons/player.gif"
+            icon="icons/16/player.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.VideoPlayerView"
             id="org.mwc.cmap.media.views.VideoPlayerView"            
@@ -14,18 +14,11 @@
       </view>
       <view
             name="Image Viewer"
-            icon="icons/images16.gif"
+            icon="icons/16/images16.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.ImagesView"
             id="org.mwc.cmap.media.views.ImagesView"            
             allowMultiple="true">         
-      </view>
-      <view
-            name="Test-harness View"
-            icon="icons/openbrwsr.gif"
-            category="org.mwc.cmap.media"
-            class="org.mwc.cmap.media.views.TestHarnessView"
-            id="org.mwc.cmap.media.views.TestHarnessView">            
       </view>
    </extension>   
    <!--<extension
@@ -83,6 +76,7 @@
    -->
    
    <extension point="org.eclipse.ui.menus">
+   <!--
         <menuContribution locationURI="menu:org.eclipse.ui.main.menu?after=additions"> 
             <menu id="org.mwc.cmap.media.menu" label="Media"/>
         </menuContribution>
@@ -107,6 +101,7 @@
               id="org.mwc.cmap.media.actions.OpenTestHarnessAction">
             </command>
         </menuContribution>
+        -->
         <menuContribution locationURI="popup:org.eclipse.ui.popup.any?after=additions"> 
             <command
               commandId="org.mwc.cmap.media.actions.OpenVideoPlayerAction"
@@ -156,6 +151,7 @@
          </menuContribution>      
    </extension>
    
+ 
    <extension
           point="org.eclipse.ui.commands">
        <command
