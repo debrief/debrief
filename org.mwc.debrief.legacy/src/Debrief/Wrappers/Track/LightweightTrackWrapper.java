@@ -32,6 +32,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
@@ -108,7 +109,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
     // set an initial location for the label
     setNameLocation(NullableLocationPropertyEditor.AUTO);
-
+    
+    // set default line-style
+    setLineStyle(LineStylePropertyEditor.SOLID);
   }
 
   public LightweightTrackWrapper(final String name, final boolean visible,
@@ -364,6 +367,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
   {
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
+    
+    if(_thePositions.isEmpty())
+    {
+      return null;
+    }
 
     final FixWrapper myFirst = (FixWrapper) _thePositions.first();
     final FixWrapper myLast = (FixWrapper) _thePositions.last();
@@ -768,5 +776,14 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
       FixWrapper fw = (FixWrapper) ele.nextElement();
       fw.setTrackWrapper(clonedTrack);
     }
+  }
+
+  /** find the number of fixes in this track
+   * 
+   * @return
+   */
+  public int numFixes()
+  {
+    return _thePositions.size();
   }
 }
