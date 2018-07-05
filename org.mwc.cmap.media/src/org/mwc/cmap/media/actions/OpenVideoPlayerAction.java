@@ -16,6 +16,7 @@ package org.mwc.cmap.media.actions;
 
 import java.io.File;
 import java.net.URI;
+import java.util.Date;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -90,13 +91,13 @@ public class OpenVideoPlayerAction extends AbstractHandler
 					} else if (emptyVpv != null)
 					{
 						page.activate(emptyVpv);
-						emptyVpv.open(fileName);
+						emptyVpv.open(fileName, new Date());
 					} else
 					{
 						Object o = new NewVideoPlayerAction().execute(null);
 						if (o instanceof VideoPlayerView)
 						{
-							((VideoPlayerView) o).open(fileName);
+							((VideoPlayerView) o).open(fileName,new Date());
 						}
 					}
 				} catch (CoreException e)

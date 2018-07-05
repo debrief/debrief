@@ -121,6 +121,7 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.media.utility.OpenVideoPlayerUtil;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
@@ -455,9 +456,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private final org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
-  /** note: the outline page isn't final, since
-   * the user may close the page, after which we will
-   * have a new one
+  /**
+   * note: the outline page isn't final, since the user may close the page, after which we will have
+   * a new one
    */
   private PlotOutlinePage _outlinePage;
 
@@ -1088,8 +1089,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
               }
               if (currentState != null)
               {
-                final ICommandService service = (ICommandService) getSite().getService(
-                    ICommandService.class);
+                final ICommandService service = (ICommandService) getSite()
+                    .getService(ICommandService.class);
                 final Command command = service.getCommand(RadioHandler.ID);
                 HandlerUtil.updateRadioState(command, currentState);
               }
@@ -1614,16 +1615,60 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return "";
   }
 
+  /**
+   * utility function to extract filename extension
+   * 
+   * @param fileName
+   *          full file path
+   * @return extension of file
+   */
+  private String getFileNameExtension(final String fileName)
+  {
+    if (fileName == null)
+    {
+      throw new IllegalArgumentException("file name == null");
+    }
+    int pos = fileName.lastIndexOf(".");
+    if (pos > 0 && pos < fileName.length())
+    {
+      return fileName.substring(pos+1, fileName.length());
+    }
+    return "";
+
+  }
+
+  private boolean isVideoFile(final String fileName)
+  {
+    String[] supportedVideoFormats = new String[]
+    {"avi"};
+    for(String format:supportedVideoFormats) {
+      if(format.equalsIgnoreCase(getFileNameExtension(fileName))) {
+        return true;
+      }
+    }
+
+    
+    return false;
+  }
+
+
   @Override
   protected void filesDropped(final String[] fileNames)
   {
     super.filesDropped(fileNames);
 
     // ok, iterate through the files
-    for (int i = 0; i < fileNames.length; i++)
+    if(fileNames.length==1 && isVideoFile(fileNames[0]))
     {
-      final String thisFilename = fileNames[i];
-      loadThisFile(thisFilename);
+      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0]);
+    }
+    else {
+      for (int i = 0; i < fileNames.length; i++)
+      {
+  
+        final String thisFilename = fileNames[i];
+        loadThisFile(thisFilename);
+      }
     }
 
     // ok, we're probably done - fire the update
