@@ -25,8 +25,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.window.Window;
-import org.eclipse.nebula.widgets.cdatetime.CDT;
-import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -85,7 +83,7 @@ public class VideoPlayerView extends ViewPart
   private IMemento memento;
   private XugglePlayer player;
   private Scale scale;
-  private CDateTime startTime;
+  private Date startTime;
   private Label playTime;
   private Label playTimeLeft;
 
@@ -128,7 +126,7 @@ public class VideoPlayerView extends ViewPart
             HiResDate now = (HiResDate) newValue;
             if (now != null)
             {
-              Date startDate = (Date) startTime.getSelection();
+              Date startDate = new Date(startTime.getTime());
               Date date = now.getDate();
               DateUtils.removeMilliSeconds(date);
               long millis = date.getTime() - startDate.getTime();
@@ -170,7 +168,7 @@ public class VideoPlayerView extends ViewPart
 
   public void setVideoStartTime(Date date)
   {
-    startTime.setSelection(date);
+    startTime = date;
     PlatformUI.getPreferenceStore().setValue(_selected, date
         .getTime());
     fireNewTime(new HiResDate(date));
@@ -220,9 +218,8 @@ public class VideoPlayerView extends ViewPart
     super.saveState(memento);
     if (player.isOpened())
     {
-      Date start = (Date) startTime.getSelection();
       memento.putString(STATE_VIDEO_FILE, player.getFileName());
-      memento.putString(STATE_START_TIME, Long.toString(start.getTime()));
+      memento.putString(STATE_START_TIME, Long.toString(startTime.getTime()));
       memento.putString(STATE_POSITION, Long.toString(player
           .getCurrentPosition()));
       memento.putBoolean(STATE_STRETCH, player.isStretchMode());
@@ -249,8 +246,7 @@ public class VideoPlayerView extends ViewPart
     Composite parent = new Composite(composite,SWT.NULL);
     parent.setLayout(new GridLayout(5,false));
     parent.setLayoutData(new GridData(SWT.FILL,SWT.FILL,true,false));
-    playTime = new Label(parent, SWT.LEFT);
-    playTime.setText("00:00:00.000");
+    
     play = new Button(parent,SWT.NONE);
     play.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
     play.addSelectionListener(new SelectionAdapter()
@@ -289,7 +285,8 @@ public class VideoPlayerView extends ViewPart
     stop.setImage(PlanetmayoImages.STOP.getImage().createImage());
     stop.setToolTipText("Stop");
     stop.setEnabled(false);
-
+    playTime = new Label(parent, SWT.LEFT);
+    playTime.setText("00:00:00");
     scale = new Scale(parent, SWT.HORIZONTAL|SWT.NULL);
     GridData data = new GridData();
     data.grabExcessHorizontalSpace = true;
@@ -541,7 +538,7 @@ public class VideoPlayerView extends ViewPart
   private void updatePlayTime(long milli)
   {
     long curPlayTime = milli-TimeZone.getDefault().getOffset(0);
-    playTime.setText(timeFormat.format(new Date(curPlayTime)));
+    playTime.setText(timeFormat.format(new Date(startTime.getTime()+curPlayTime)));
     playTimeLeft.setText(timeFormat.format(new Date(player.getDuration()-curPlayTime)));
   }
 
@@ -563,28 +560,6 @@ public class VideoPlayerView extends ViewPart
     control.setLayout(layout);
     control.setLayoutData(data);
 
-    new Label(control, SWT.LEFT).setText("Start time: ");
-    startTime = new CDateTime(control,CDT.BORDER);
-    startTime.setPattern(PlanetmayoFormats.getInstance()
-        .getDateFormat().toPattern());
-    startTime.setSelection(new Date());
-    startTime.setEnabled(false);
-    startTime.addKeyListener(new KeyListener()
-    {
-
-      @Override
-      public void keyReleased(KeyEvent arg0)
-      {
-        updatePlayTime(player.getCurrentPosition());
-      }
-
-      @Override
-      public void keyPressed(KeyEvent arg0)
-      {
-      }
-    });
-
-    
     player = new XugglePlayer(composite, this);
     data = new GridData();
     data.grabExcessHorizontalSpace = true;
@@ -628,7 +603,7 @@ public class VideoPlayerView extends ViewPart
       if ((getViewSite().getPage().getActivePart() == VideoPlayerView.this
           && fireNewTime) || player.isPlaying())
       {
-        Date start = (Date) startTime.getSelection();
+        Date start = new Date(startTime.getTime());
         DateUtils.removeMilliSeconds(start);
         long time = milli + start.getTime();
         Activator.getDefault().getTimeProvider().fireNewTime(
@@ -644,12 +619,7 @@ public class VideoPlayerView extends ViewPart
     public void onStop(XugglePlayer player)
     {
       super.onStop(player);
-      if (startTime != null && startTime != null && !startTime
-          .isDisposed())
-      {
-        Date startDate = (Date) startTime.getSelection();
-        fireNewTime(new HiResDate(startDate));
-      }
+      fireNewTime(new HiResDate(startTime));
     }
 
     @Override
@@ -665,7 +635,7 @@ public class VideoPlayerView extends ViewPart
       if (_timeProvider != null && _timeProvider.getPeriod() != null && player
           .isOpened())
       {
-        Date start = (Date) startTime.getSelection();
+        Date start = new Date(startTime.getTime());
         long step = milli + start.getTime();
         HiResDate newDTG = new HiResDate(step);
         if (_timeProvider.getPeriod().contains(newDTG))
@@ -684,7 +654,7 @@ public class VideoPlayerView extends ViewPart
   
   private void openEditStartTimeDialog() {
     VideoPlayerStartTimeDialog startTimeDialog = new VideoPlayerStartTimeDialog(getViewSite().getShell());
-    startTimeDialog.setStartTime(startTime.getSelection());
+    startTimeDialog.setStartTime(new Date(startTime.getTime()));
     startTimeDialog.setBlockOnOpen(true);
     if(startTimeDialog.open()==Window.OK) {
       setVideoStartTime(startTimeDialog.getStartTime());
@@ -774,7 +744,6 @@ public class VideoPlayerView extends ViewPart
     play.setEnabled(enabled);
     stop.setEnabled(enabled);
     scale.setEnabled(enabled);
-    //startTime.setEnabled(enabled);
 
     if (videoName != null)
     {
@@ -796,7 +765,7 @@ public class VideoPlayerView extends ViewPart
       {
         start = new Date();
       }
-      startTime.setSelection(start);
+      startTime = start;
     }
   }
 
@@ -831,7 +800,7 @@ public class VideoPlayerView extends ViewPart
         {
           // Issue #545 - We don't need set position
           // player.seek(Long.parseLong(memento.getString(STATE_POSITION)));
-          startTime.setSelection(new Date(Long.parseLong(memento.getString(
+          startTime = (new Date(Long.parseLong(memento.getString(
               STATE_START_TIME))));
         }
         catch (NumberFormatException ex)
