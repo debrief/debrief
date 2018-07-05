@@ -438,6 +438,7 @@ public class VideoPlayerView extends ViewPart
       @Override
       public void mouseDoubleClick(final MouseEvent event)
       {
+        // ignore event
       }
 
       @Override
