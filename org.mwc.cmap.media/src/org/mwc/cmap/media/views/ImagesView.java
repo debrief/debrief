@@ -135,7 +135,8 @@ public class ImagesView extends ViewPart {
 		};		
 	}
 	
-	@Override
+	@SuppressWarnings("deprecation")
+  @Override
 	public void dispose() {
 		Activator.getDefault().getTimeProvider().removeListener(timeListener);
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
