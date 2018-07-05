@@ -302,7 +302,7 @@ public class VideoPlayerView extends ViewPart
       @Override
       public void widgetDefaultSelected(SelectionEvent event)
       {
-
+        // ignore event
       }
     });
     scaleCtrl.addMouseListener(new MouseListener()
