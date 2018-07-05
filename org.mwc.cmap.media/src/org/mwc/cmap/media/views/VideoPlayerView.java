@@ -151,7 +151,7 @@ public class VideoPlayerView extends ViewPart
           }
         }
       };
-      final PlayerListener playerScaleListener = new PlayerAdapter()
+      private final PlayerListener playerScaleListener = new PlayerAdapter()
       {
 
         @Override
@@ -161,10 +161,6 @@ public class VideoPlayerView extends ViewPart
         }
       };
   private ModifiedAdapter _modifiedAdapter;
-
-  public VideoPlayerView()
-  {
-  }
 
   public void setVideoStartTime(Date date)
   {
@@ -302,7 +298,7 @@ public class VideoPlayerView extends ViewPart
       @Override
       public void keyReleased(KeyEvent event)
       {
-
+        // ignore
       }
 
       @Override
@@ -576,7 +572,7 @@ public class VideoPlayerView extends ViewPart
 
   private class ModifiedAdapter extends PlayerAdapter
   {
-    long ignoreUntil = 0;
+    private long ignoreUntil = 0;
 
     public void setIgnoreNext()
     {
