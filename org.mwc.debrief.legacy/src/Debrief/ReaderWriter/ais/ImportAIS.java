@@ -14,7 +14,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -27,6 +28,8 @@ import junit.framework.TestCase;
 public class ImportAIS
 {
 
+  private final static String LAYER_NAME = "WECDIS Tracks";
+  
   /**
    * where we write our data
    * 
@@ -254,10 +257,26 @@ public class ImportAIS
 
       // ok, find the track
       final String parentName = nameFor(Integer.valueOf(fix.getLabel()));
-      final Layer parent = _layers.findLayer(parentName);
+      
+      BaseLayer parent = (BaseLayer) _layers.findLayer(LAYER_NAME);
+      if(parent == null)
+      {
+        parent = new BaseLayer();
+        parent.setName(LAYER_NAME);
+        _layers.addThisLayer(parent);
+      }
+      
+      LightweightTrackWrapper track = (LightweightTrackWrapper) parent.find(parentName);
+      if(track == null)
+      {
+        track = new LightweightTrackWrapper();
+        track.setName(parentName);
+        track.setColor(new Color(188, 93, 6));
+        parent.add(track);
+      }
 
       // cool, now store it
-      parent.add(fix);
+      track.add(fix);
 
       // ok, we've used the name value that was sneaked into
       // the label, now we can override it
@@ -276,16 +295,23 @@ public class ImportAIS
     // try to do a name lookup
     final String layerName = nameFor(mmsi);
 
+    // do we have WECDIS layer?
+    BaseLayer wLayer = (BaseLayer) _layers.findLayer(LAYER_NAME);
+    if(wLayer == null)
+    {
+      wLayer = new BaseLayer();
+      wLayer.setName(LAYER_NAME);
+    }
+    
     // does this track exist?
-    Layer layer = _layers.findLayer(layerName);
-    if (layer == null)
+    LightweightTrackWrapper track =  (LightweightTrackWrapper) wLayer.find(layerName);
+    if (track == null)
     {
       // nope, better create it then
-      final TrackWrapper tw = new TrackWrapper();
-      tw.setColor(new Color(188, 93, 6));
-      layer = tw;
-      layer.setName(layerName);
-      _layers.addThisLayer(layer);
+      track= new LightweightTrackWrapper();
+      track.setColor(new Color(188, 93, 6));
+      track.setName(layerName);
+      wLayer.add(track);
     }
 
     // determine what date value to use for this new position
@@ -345,7 +371,7 @@ public class ImportAIS
       fixWrapper.resetName();
 
       // and store it in the parent.
-      layer.add(fixWrapper);
+      track.add(fixWrapper);
     }
 
   }
@@ -390,9 +416,13 @@ public class ImportAIS
       importer.importThis(testFile, is);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", len, tLayers.size());
+      assertEquals("got track folder", 1, tLayers.size());
+      
+      BaseLayer parent = (BaseLayer) tLayers.findLayer(LAYER_NAME);
+      assertEquals("got new tracks", 7, parent.size());
+      
 
-      final TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("BW LIONESS");
+      final LightweightTrackWrapper thisT = (LightweightTrackWrapper) parent.find("BW LIONESS");
       final Enumeration<Editable> fixes = thisT.getPositionIterator();
       while (fixes.hasMoreElements())
       {
@@ -439,7 +469,8 @@ public class ImportAIS
       assertEquals("queue present", 0, ia._queuedFixes.size());
 
       // check order of points
-      TrackWrapper tw = (TrackWrapper) layers.findLayer("" + mmsi);
+      BaseLayer parent = (BaseLayer) layers.findLayer(LAYER_NAME);
+      LightweightTrackWrapper tw = (LightweightTrackWrapper) parent.find("" + mmsi);
 
       // check the start time
       assertEquals("start time correct", 5, tw.getStartDTG().getDate()
@@ -470,7 +501,8 @@ public class ImportAIS
       assertEquals("queue present", 0, ia._queuedFixes.size());
 
       // check order of points
-      tw = (TrackWrapper) layers.findLayer("" + mmsi);
+      BaseLayer parentL = (BaseLayer) layers.findLayer(LAYER_NAME);
+      tw = (LightweightTrackWrapper) parentL.find("" + mmsi);
 
       // check the start time
       System.out.println("start time:" + tw.getStartDTG().getDate());
@@ -507,9 +539,13 @@ public class ImportAIS
       importer.importThis(testFile, is);
 
       // hmmm, how many tracks
-      assertEquals("got new tracks", 15, tLayers.size());
+      assertEquals("got new tracks", 1, tLayers.size());
 
-      final TrackWrapper thisT = (TrackWrapper) tLayers.findLayer("LOLLAND");
+      // hmmm, how many tracks
+      BaseLayer parent = (BaseLayer) tLayers.findLayer(LAYER_NAME);
+      assertEquals("got new tracks", 22, parent.size());
+
+      final LightweightTrackWrapper thisT = (LightweightTrackWrapper) parent.find("LOLLAND");
       final Enumeration<Editable> fixes = thisT.getPositionIterator();
       while (fixes.hasMoreElements())
       {
