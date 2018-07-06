@@ -77,6 +77,8 @@ public class CSVExportPage1 extends CustomWizardPage
   private String flag;
   private Date infoCutoffDate = new Date();
   private String unitName;
+  private String semiMajorAxis = "0.5";
+  private String semiMinorAxis = "0.5";
 
   // UI- Fields -------
 
@@ -85,6 +87,8 @@ public class CSVExportPage1 extends CustomWizardPage
   private Text provenanceTxt;
   private ComboViewer typeCmb;
   private Text unitNameTxt;
+  private Text semiMajorAxisTxt;
+  private Text semiMinorAxisTxt;
   private ComboViewer flagCmb;
   private ComboViewer sensorCmb;
 
@@ -104,7 +108,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  private Text addCaseNumberField(final Composite contents, final String label,
+  private Text addTxtField(final Composite contents, final String label,
       String tooltip, final String initialValue)
   {
 
@@ -157,14 +161,14 @@ public class CSVExportPage1 extends CustomWizardPage
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
 
-    provenanceTxt = addCaseNumberField(contents, "Provenance:",
+    provenanceTxt = addTxtField(contents, "Provenance:",
         "Source platform, \n" + "Eg: HMS Nelson", provenance);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
         true, sensor);
 
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
-    unitNameTxt = addCaseNumberField(contents, "Unit Name:", "Subject platform",
+    unitNameTxt = addTxtField(contents, "Unit Name:", "Subject platform",
         unitName);
 
     new Label(contents, SWT.NONE);
@@ -173,6 +177,12 @@ public class CSVExportPage1 extends CustomWizardPage
         false, flag);
     typeCmb = addCmbField(contents, "TYPE", "Type:", "Subject platform type",
         false, type);
+    
+    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):","",
+        semiMajorAxis);
+
+    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):",""
+        ,semiMinorAxis);
 
     return contents;
   }
@@ -220,7 +230,17 @@ public class CSVExportPage1 extends CustomWizardPage
 
     return unitName;
   }
+  
+  public String getSemiMajorAxis()
+  {
+    return semiMajorAxis;
+  }
 
+  public String getSemiMinorAxis()
+  {
+    return semiMinorAxis;
+  }
+  
   public void readFormPref()
   {
 
@@ -235,6 +255,7 @@ public class CSVExportPage1 extends CustomWizardPage
     type = getPrefValue("CSV_EXPORT_type", type);
     flag = getPrefValue("CSV_EXPORT_flag", flag);
     sensor = getPrefValue("CSV_EXPORT_sensor", sensor);
+    
   }
 
   public void writeToPref()
@@ -247,6 +268,9 @@ public class CSVExportPage1 extends CustomWizardPage
     type = setPrefValue("CSV_EXPORT_type", type);
     flag = setPrefValue("CSV_EXPORT_flag", flag);
     sensor = setPrefValue("CSV_EXPORT_sensor", sensor);
+    semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
+    semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
+
   }
 
   String getPrefValue(String key, String currentVal)
