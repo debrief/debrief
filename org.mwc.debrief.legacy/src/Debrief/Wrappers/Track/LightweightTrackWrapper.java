@@ -19,14 +19,17 @@ import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
@@ -34,6 +37,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
+import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
 import MWC.GenericData.HiResDate;
@@ -43,8 +47,8 @@ import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class LightweightTrackWrapper extends PlainWrapper implements WatchableList,
-    Plottable, Layer, IsTransientForChildren
+public class LightweightTrackWrapper extends PlainWrapper implements
+    WatchableList, Plottable, Layer, IsTransientForChildren
 {
 
   public class LightweightTrackInfo extends Editable.EditorType
@@ -64,9 +68,13 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
             "the name of the track", FORMAT), prop("NameVisible",
                 "show the name of the track", FORMAT), prop("Color",
                     "color of the track", FORMAT), displayExpertLongProp(
-                        "LineStyle", "Line style",
-                        "the line style used to join track points", TEMPORAL,
-                        MWC.GUI.Properties.LineStylePropertyEditor.class)};
+                        "ResampleDataAt", "Resample data at",
+                        "the data sample rate", TEMPORAL,
+                        MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+
+            displayExpertLongProp("LineStyle", "Line style",
+                "the line style used to join track points", TEMPORAL,
+                MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -86,6 +94,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
   private TimePeriod _cachedPeriod;
 
   private long _timeCachedPeriodCalculated;
+
+  protected HiResDate _lastDataFrequency = new HiResDate(0,
+      TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
   private int _lineStyle;
 
@@ -109,7 +120,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
     // set an initial location for the label
     setNameLocation(NullableLocationPropertyEditor.AUTO);
-    
+
     // set default line-style
     setLineStyle(LineStylePropertyEditor.SOLID);
   }
@@ -128,20 +139,25 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
 
   public void addFix(final FixWrapper e)
   {
-    // forget the bounds
-    _bounds = null;
-    
+    flushBounds();
+
     // tell it who's the boss
     e.setTrackWrapper(this);
-    
+
     // check the label
-    if(e.getLabel() == null || e.getLabel().length() == 0)
+    if (e.getLabel() == null || e.getLabel().length() == 0)
     {
       e.resetName();
     }
 
     // finally, store it.
     _thePositions.add(e);
+  }
+
+  private void flushBounds()
+  {
+    // forget the bounds
+    _bounds = null;
   }
 
   /**
@@ -367,8 +383,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
   {
     final long dtg = DTG.getDate().getTime();
     FixWrapper nearest = null;
-    
-    if(_thePositions.isEmpty())
+
+    if (_thePositions.isEmpty())
     {
       return null;
     }
@@ -629,18 +645,21 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
     while (iter.hasNext())
     {
       final FixWrapper fw = iter.next();
-      if (firstLoc == null)
+      if (fw.getVisible())
       {
-        firstLoc = fw.getLocation();
+        if (firstLoc == null)
+        {
+          firstLoc = fw.getLocation();
+        }
+        final Point loc = dest.toScreen(fw.getLocation());
+        xPoints[ctr] = (int) loc.getX();
+        yPoints[ctr] = (int) loc.getY();
+        ctr++;
       }
-      final Point loc = dest.toScreen(fw.getLocation());
-      xPoints[ctr] = (int) loc.getX();
-      yPoints[ctr] = (int) loc.getY();
-      ctr++;
     }
 
     // draw the line
-    dest.drawPolyline(xPoints, yPoints, len);
+    dest.drawPolyline(xPoints, yPoints, ctr);
 
     // and the track name?
     if (getNameVisible() && firstLoc != null)
@@ -724,6 +743,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
   @FireReformatted
   public final void setName(final String theName)
   {
+    _thePositions.setName(theName);
     _theLabel.setString(theName);
   }
 
@@ -763,27 +783,87 @@ public class LightweightTrackWrapper extends PlainWrapper implements WatchableLi
   @Override
   public String toString()
   {
-    return getName();
+    return _thePositions.toString();
   }
 
   @Override
   public void reconnectChildObjects(Object clonedObject)
   {
-    LightweightTrackWrapper clonedTrack = (LightweightTrackWrapper) clonedObject;
+    LightweightTrackWrapper clonedTrack =
+        (LightweightTrackWrapper) clonedObject;
     Enumeration<Editable> ele = clonedTrack.getPositionIterator();
-    while(ele.hasMoreElements())
+    while (ele.hasMoreElements())
     {
       FixWrapper fw = (FixWrapper) ele.nextElement();
       fw.setTrackWrapper(clonedTrack);
     }
   }
 
-  /** find the number of fixes in this track
+  /**
+   * find the number of fixes in this track
    * 
    * @return
    */
   public int numFixes()
   {
     return _thePositions.size();
+  }
+
+  @FireExtended
+  public void setResampleDataAt(HiResDate theVal)
+  {
+    this._lastDataFrequency = theVal;
+
+    // have a go at trimming the start time to a whole number of intervals
+    final long interval = theVal.getMicros();
+
+    // do we have a start time (we may just be being tested...)
+    if (this.getStartDTG() == null)
+    {
+      return;
+    }
+
+    // just check it's not a barking frequency
+    if (theVal.getDate().getTime() <= 0)
+    {
+      // ignore, we don't need to do anything for a zero or a -1
+    }
+    else
+    {
+      List<Editable> newItems = new ArrayList<Editable>();
+
+      Enumeration<Editable> pIter = getPositionIterator();
+      long nextTime = getStartDTG().getMicros();
+      while (pIter.hasMoreElements())
+      {
+        FixWrapper next = (FixWrapper) pIter.nextElement();
+        long thisTime = next.getDateTimeGroup().getMicros();
+
+        if (thisTime >= nextTime)
+        {
+          newItems.add(next);
+          nextTime += interval;
+        }
+      }
+
+      // ok, clear existing items
+      _thePositions.removeAllElements();
+
+      // and store the new ones
+      _thePositions.getData().addAll(newItems);
+      
+      // ok, we have to clear the bounds
+      flushBounds();
+    }
+  }
+
+  /**
+   * method to allow the setting of data sampling frequencies for the track & sensor data
+   *
+   * @return frequency to use
+   */
+  public final HiResDate getResampleDataAt()
+  {
+    return this._lastDataFrequency;
   }
 }
