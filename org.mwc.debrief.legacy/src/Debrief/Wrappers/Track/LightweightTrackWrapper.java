@@ -70,7 +70,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                     "color of the track", FORMAT), displayExpertLongProp(
                         "ResampleDataAt", "Resample data at",
                         "the data sample rate", TEMPORAL,
-                        MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                        TimeFrequencyPropertyEditor.class),
 
             displayExpertLongProp("LineStyle", "Line style",
                 "the line style used to join track points", TEMPORAL,
