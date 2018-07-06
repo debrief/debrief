@@ -166,7 +166,7 @@ public class CSVExportPage2 extends CustomWizardPage
     caseNumbertxt = addCaseNumberField(contents, "Case Number:","Case number", caseNumber);
 
     classificationCmb = addCmbField(contents, "CLASSIFICATION",
-        "Classification:","Protective marking for this data", false, classification);
+        "Classification:","Protective marking for this data", true, classification);
 
     suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:","Supplier organisation", false,
         suppliedBy);

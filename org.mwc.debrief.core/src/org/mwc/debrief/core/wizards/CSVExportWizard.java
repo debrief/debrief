@@ -139,12 +139,6 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   }
 
   @Override
-  public String getMajorAxis()
-  {
-    return "1";
-  }
-
-  @Override
   public String getProvenance()
   {
     return page1.getProvenance();
@@ -159,13 +153,13 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   @Override
   public String getSemiMajorAxis()
   {
-    return "0.5";
+    return page1.getSemiMajorAxis();
   }
 
   @Override
   public String getSemiMinorAxis()
   {
-    return "0.5";
+    return page1.getSemiMinorAxis();
   }
 
   @Override
