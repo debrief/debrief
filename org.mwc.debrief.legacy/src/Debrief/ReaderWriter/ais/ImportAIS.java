@@ -448,26 +448,7 @@ public class ImportAIS
       // ok, find the track
       final String parentName = nameFor(Integer.valueOf(fix.getLabel()));
 
-      BaseLayer parent = (BaseLayer) _layers.findLayer(LAYER_NAME);
-      if (parent == null)
-      {
-        parent = new BaseLayer();
-        parent.setName(LAYER_NAME);
-        _layers.addThisLayer(parent);
-      }
-
-      LightweightTrackWrapper track = (LightweightTrackWrapper) parent.find(
-          parentName);
-      if (track == null)
-      {
-        track = new LightweightTrackWrapper();
-        track.setName(parentName);
-        track.setColor(new Color(188, 93, 6));
-        parent.add(track);
-      }
-
-      // cool, now store it
-      track.add(fix);
+      storeFix(fix, parentName);
 
       // ok, we've used the name value that was sneaked into
       // the label, now we can override it
@@ -478,6 +459,33 @@ public class ImportAIS
     _queuedFixes.clear();
   }
 
+  private void storeFix(final FixWrapper fix, final String parentName)
+  {
+    BaseLayer parent = (BaseLayer) _layers.findLayer(LAYER_NAME);
+    if (parent == null)
+    {
+      parent = new BaseLayer();
+      parent.setName(LAYER_NAME);
+      _layers.addThisLayer(parent);
+    }
+
+    LightweightTrackWrapper track = (LightweightTrackWrapper) parent.find(
+        parentName);
+    if (track == null)
+    {
+      track = new LightweightTrackWrapper();
+      track.setName(parentName);
+      track.setColor(new Color(188, 93, 6));
+      parent.add(track);
+    }
+
+    // cool, now store it
+    track.add(fix);
+    
+    // that's all easy then. Remember to reset the time label
+    fix.resetName();
+  }
+
   @SuppressWarnings("deprecation")
   private void storeThis(final double latitude, final double longitude,
       final double cog, final double sog, final int mmsi, final int secs,
@@ -485,26 +493,6 @@ public class ImportAIS
   {
     // try to do a name lookup
     final String layerName = nameFor(mmsi);
-
-    // do we have WECDIS layer?
-    BaseLayer wLayer = (BaseLayer) _layers.findLayer(LAYER_NAME);
-    if (wLayer == null)
-    {
-      wLayer = new BaseLayer();
-      wLayer.setName(LAYER_NAME);
-    }
-
-    // does this track exist?
-    LightweightTrackWrapper track = (LightweightTrackWrapper) wLayer.find(
-        layerName);
-    if (track == null)
-    {
-      // nope, better create it then
-      track = new LightweightTrackWrapper();
-      track.setColor(new Color(188, 93, 6));
-      track.setName(layerName);
-      wLayer.add(track);
-    }
 
     // determine what date value to use for this new position
     final Date newDate;
@@ -559,11 +547,7 @@ public class ImportAIS
     }
     else
     {
-      // that's all easy then. Remember to reset the time label
-      fixWrapper.resetName();
-
-      // and store it in the parent.
-      track.add(fixWrapper);
+      storeFix(fixWrapper, layerName);
     }
 
   }
