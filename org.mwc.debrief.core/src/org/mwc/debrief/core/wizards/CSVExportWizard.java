@@ -93,7 +93,7 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   public boolean canFinish()
   {
     final IWizardPage currentPage = getContainer().getCurrentPage();
-    return currentPage == page3 && page3.isPageComplete();
+    return currentPage.equals(page3) && page3.isPageComplete();
   }
 
   @Override
@@ -130,12 +130,6 @@ public class CSVExportWizard extends Wizard implements INewWizard,
   public String getFlag()
   {
     return page1.getFlag();
-  }
-
-  @Override
-  public String getInfoCutoffDate()
-  {
-    return page1.getInfoCutoffDate();
   }
 
   @Override

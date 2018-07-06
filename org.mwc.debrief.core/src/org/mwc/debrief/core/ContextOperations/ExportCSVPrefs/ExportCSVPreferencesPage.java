@@ -135,32 +135,6 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
         SWT.CENTER).applyTo(link);
   }
 
-  private void addOpenHelpHyperlink()
-  {
-    final Composite parent = getFieldEditorParent();
-
-    final Button helpBtn = new Button(parent, SWT.NONE);
-    helpBtn.setText("Find out more about sensor offsets");
-    helpBtn.addListener(SWT.Selection, new Listener()
-    {
-
-      @Override
-      public void handleEvent(final Event event)
-      {
-        PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
-      }
-    });
-
-    int numColumns = ((GridLayout) parent.getLayout()).numColumns;
-    // skip last cell for 'reload' button
-    if (numColumns > 1)
-    {
-      numColumns--;
-    }
-    GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
-        SWT.CENTER).applyTo(helpBtn);
-  }
-
   private void addReloadButton()
   {
     final Composite parent = getFieldEditorParent();
@@ -198,7 +172,6 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
     addFileEditor();
     addOpenFileHyperlink();
     addReloadButton();
-    addOpenHelpHyperlink();
 
     // and the context-sensitive help
     PlatformUI.getWorkbench().getHelpSystem().setHelp(getControl(), CONTEXT_ID);

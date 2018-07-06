@@ -61,7 +61,7 @@ abstract public class FixHandler extends MWCXMLReader
     if (fix.getComment() != null)
     {
       eFix.setAttribute("Comment", toXML(fix.getComment()));
-      eFix.setAttribute("DisplayComment", writeThis(fix.getDisplayComment()));
+      eFix.setAttribute("CommentShowing", writeThis(fix.getCommentShowing()));
     }
     eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
     eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
@@ -138,7 +138,16 @@ abstract public class FixHandler extends MWCXMLReader
       @Override
       public void setValue(final String name, final boolean value)
       {
-        _theFixWrapper.setDisplayComment(value);
+        // note this is the legacy attribute
+        _theFixWrapper.setCommentShowing(value);
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute("CommentShowing")
+    {
+      @Override
+      public void setValue(final String name, final boolean value)
+      {
+        _theFixWrapper.setCommentShowing(value);
       }
     });
     addHandler(new FontHandler()

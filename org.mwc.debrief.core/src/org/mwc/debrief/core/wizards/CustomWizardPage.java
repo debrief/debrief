@@ -2,6 +2,7 @@ package org.mwc.debrief.core.wizards;
 
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -15,6 +16,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.mwc.cmap.core.CorePlugin;
 
 public abstract class CustomWizardPage extends WizardPage
 {
@@ -31,6 +33,25 @@ public abstract class CustomWizardPage extends WizardPage
   public CustomWizardPage(String pageName)
   {
     super(pageName);
+  }
+  
+
+  final protected String getPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+    String newVal = preferenceStore.getString(key);
+
+    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
+  }
+
+  final protected String setPrefValue(String key, String currentVal)
+  {
+    IPreferenceStore preferenceStore = CorePlugin.getDefault()
+        .getPreferenceStore();
+
+    preferenceStore.setValue(key, currentVal);
+    return currentVal;
   }
 
   @Override

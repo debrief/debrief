@@ -17,7 +17,6 @@ package org.mwc.debrief.core.wizards;
 import java.io.File;
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,13 +27,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage3 extends CustomWizardPage
 {
 
-  public static final String PAGE_ID = "Release";
+  private static final String CSV_EXPORT_STATEMENT = "CSV_EXPORT_statement";
+
+  private static final String CSV_EXPORT_PURPOSE = "CSV_EXPORT_purpose";
+
+  private static final String CSV_EXPORT_EXPORT_FOLDER = "CSV_EXPORT_exportFolder";
+
+  public static final String PAGE_ID = "3. Release";
 
   private final DropdownProvider provider;
 
@@ -167,35 +171,17 @@ public class CSVExportPage3 extends CustomWizardPage
   public void readFormPref()
   {
 
-    exportFolder = getPrefValue("CSV_EXPORT_exportFolder", exportFolder);
-    purpose = getPrefValue("CSV_EXPORT_purpose", purpose);
-    statement = getPrefValue("CSV_EXPORT_statement", statement);
+    exportFolder = getPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+    purpose = getPrefValue(CSV_EXPORT_PURPOSE, purpose);
+    statement = getPrefValue(CSV_EXPORT_STATEMENT, statement);
   }
 
   public void writeToPref()
   {
 
-    exportFolder = setPrefValue("CSV_EXPORT_exportFolder", exportFolder);
-    purpose = setPrefValue("CSV_EXPORT_purpose", purpose);
-    statement = setPrefValue("CSV_EXPORT_statement", statement);
-  }
-
-  String getPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-    String newVal = preferenceStore.getString(key);
-
-    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
-  }
-
-  String setPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-
-    preferenceStore.setValue(key, currentVal);
-    return currentVal;
+    exportFolder = setPrefValue(CSV_EXPORT_EXPORT_FOLDER, exportFolder);
+    purpose = setPrefValue(CSV_EXPORT_PURPOSE, purpose);
+    statement = setPrefValue(CSV_EXPORT_STATEMENT, statement);
   }
 
   public String getExportFolder()

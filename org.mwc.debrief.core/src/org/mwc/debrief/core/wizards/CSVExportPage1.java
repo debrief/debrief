@@ -85,7 +85,7 @@ public class CSVExportPage1 extends CustomWizardPage
   private String provenance;
   // --------
   private Text provenanceTxt;
-  private ComboViewer typeCmb;
+  private Text typeTxt;
   private Text unitNameTxt;
   private Text semiMajorAxisTxt;
   private Text semiMinorAxisTxt;
@@ -174,14 +174,14 @@ public class CSVExportPage1 extends CustomWizardPage
     new Label(contents, SWT.NONE);
     new Label(contents, SWT.NONE);
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
-        false, flag);
-    typeCmb = addCmbField(contents, "TYPE", "Type:", "Subject platform type",
-        false, type);
+        true, flag);
+    typeTxt = addTxtField(contents,  "Type:", "Subject platform type",
+         type);
     
-    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):","",
+    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):","½ ellipse length",
         semiMajorAxis);
 
-    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):",""
+    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):","½ ellipse length"
         ,semiMinorAxis);
 
     return contents;
@@ -273,28 +273,12 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  String getPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-    String newVal = preferenceStore.getString(key);
-
-    return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
-  }
-
-  String setPrefValue(String key, String currentVal)
-  {
-    IPreferenceStore preferenceStore = CorePlugin.getDefault()
-        .getPreferenceStore();
-
-    preferenceStore.setValue(key, currentVal);
-    return currentVal;
-  }
+ 
 
   public void readValues()
   {
 
-    type = getCmbVal(typeCmb, type);
+    type = getTxtVal(typeTxt, type);
     flag = getCmbVal(flagCmb, flag);
     sensor = getCmbVal(sensorCmb, sensor);
 

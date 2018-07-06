@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.combined.feature"
       label="%featureName"
-      version="1.0.335"
+      version="1.0.336"
       provider-name="MWC"
       plugin="org.mwc.cmap.core">
 
@@ -320,6 +320,13 @@ Library.
 
    <plugin
          id="org.mwc.cmap.NaturalEarth"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.cmap.media"
          download-size="0"
          install-size="0"
          version="0.0.0"
