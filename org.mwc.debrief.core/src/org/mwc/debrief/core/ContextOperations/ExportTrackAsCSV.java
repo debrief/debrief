@@ -78,8 +78,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
     String getLikelihood();
 
-    String getMajorAxis();
-
     String getProvenance();
 
     String getPurpose();
@@ -157,8 +155,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String type = provider.getType();
         final String flag = provider.getFlag();
         final String sensor = provider.getSensor();
-        final String majorAxis = provider.getMajorAxis();
         final String semiMajorAxis = provider.getSemiMajorAxis();
+        final String majorAxis =  "" + Double.valueOf(semiMajorAxis) * 2d;
         final String semiMinorAxis = provider.getSemiMinorAxis();
         final String likelihood = provider.getLikelihood();
         final String confidence = provider.getConfidence();
