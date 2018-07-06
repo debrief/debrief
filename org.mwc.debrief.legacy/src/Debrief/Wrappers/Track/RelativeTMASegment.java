@@ -807,13 +807,22 @@ public class RelativeTMASegment extends CoreTMASegment implements
    */
   private void identifyReferenceTrack()
   {
+    // check we're not looking for ourselves
+    if(this.getWrapper() != null && this.getWrapper().getName().equals(_referenceTrackName))
+    {
+      Application.logError2(ErrorLogger.ERROR,
+          "Data error - this TMA is trying to reference itself:"
+              + _referenceTrackName, null);
+
+      // ok - something bad has gone down. Drop out.
+      return;
+    }
+    
     final TrackWrapper theTrack = (TrackWrapper) _theLayers.findLayer(
         _referenceTrackName);
 
     if (theTrack == null)
     {
-      Application.logError2(ErrorLogger.ERROR,
-          "Unable to find host track named:" + _referenceTrackName, null);
     }
 
     // ok, we can't work, we'll delete ourselves

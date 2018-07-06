@@ -121,6 +121,7 @@ import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperat
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.media.utility.OpenVideoPlayerUtil;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
@@ -363,6 +364,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
                 }
               }
             }
+          }
+          else if (nextP instanceof WatchableList)
+          {
+            WatchableList wl = (WatchableList) nextP;
+            res = extend(res, wl.getStartDTG());
+            res = extend(res, wl.getEndDTG());
           }
         }
       }
@@ -960,39 +967,43 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             while (watches.hasMoreElements())
             {
               final WatchableList list = (WatchableList) watches.nextElement();
-              // is the primary an instance of layer (with it's
-              // own line
-              // thickness?)
-              if (list instanceof Layer)
+              
+              if (list.getVisible())
               {
-                final Layer ly = (Layer) list;
-                final int thickness = ly.getLineThickness();
-                dest.setLineWidth(thickness);
-              }
-
-              // ok, clear the nearest items
-              if (tNow != null)
-              {
-                final Watchable[] wList = list.getNearestTo(tNow);
-                for (int i = 0; i < wList.length; i++)
+                // is the primary an instance of layer (with it's
+                // own line
+                // thickness?)
+                if (list instanceof Layer)
                 {
-                  final Watchable watch = wList[i];
-                  // if (wList.length > 0)
-                  // watch = wList[0];
-
-                  if (watch != null)
-                  {
-                    // aah, is this the primary?
-                    final boolean isPrimary = (list == _trackDataProvider
-                        .getPrimaryTrack());
-
-                    // plot it
-                    _layerPainterManager.getCurrentHighlighter().highlightIt(
-                        dest.getProjection(), dest, list, watch, isPrimary);
-                  }
-
+                  final Layer ly = (Layer) list;
+                  final int thickness = ly.getLineThickness();
+                  dest.setLineWidth(thickness);
                 }
-              } // whether we have a current time...
+
+                // ok, clear the nearest items
+                if (tNow != null)
+                {
+                  final Watchable[] wList = list.getNearestTo(tNow);
+                  for (int i = 0; i < wList.length; i++)
+                  {
+                    final Watchable watch = wList[i];
+                    // if (wList.length > 0)
+                    // watch = wList[0];
+
+                    if (watch != null)
+                    {
+                      // aah, is this the primary?
+                      final boolean isPrimary = (list == _trackDataProvider
+                          .getPrimaryTrack());
+
+                      // plot it
+                      _layerPainterManager.getCurrentHighlighter().highlightIt(
+                          dest.getProjection(), dest, list, watch, isPrimary);
+                    }
+
+                  }
+                } // whether we have a current time...
+              }
             }
 
           }
@@ -1614,16 +1625,60 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return "";
   }
 
+  /**
+   * utility function to extract filename extension
+   * 
+   * @param fileName
+   *          full file path
+   * @return extension of file
+   */
+  private String getFileNameExtension(final String fileName)
+  {
+    if (fileName == null)
+    {
+      throw new IllegalArgumentException("file name == null");
+    }
+    int pos = fileName.lastIndexOf(".");
+    if (pos > 0 && pos < fileName.length())
+    {
+      return fileName.substring(pos+1, fileName.length());
+    }
+    return "";
+
+  }
+
+  private boolean isVideoFile(final String fileName)
+  {
+    String[] supportedVideoFormats = new String[]
+    {"avi"};
+    for(String format:supportedVideoFormats) {
+      if(format.equalsIgnoreCase(getFileNameExtension(fileName))) {
+        return true;
+      }
+    }
+
+    
+    return false;
+  }
+
+
   @Override
   protected void filesDropped(final String[] fileNames)
   {
     super.filesDropped(fileNames);
 
     // ok, iterate through the files
-    for (int i = 0; i < fileNames.length; i++)
+    if(fileNames.length==1 && isVideoFile(fileNames[0]))
     {
-      final String thisFilename = fileNames[i];
-      loadThisFile(thisFilename);
+      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0]);
+    }
+    else {
+      for (int i = 0; i < fileNames.length; i++)
+      {
+  
+        final String thisFilename = fileNames[i];
+        loadThisFile(thisFilename);
+      }
     }
 
     // ok, we're probably done - fire the update

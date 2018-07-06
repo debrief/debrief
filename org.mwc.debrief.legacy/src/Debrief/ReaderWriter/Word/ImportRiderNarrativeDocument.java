@@ -30,9 +30,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
-
-import junit.framework.TestCase;
 
 import org.apache.poi.hwpf.HWPFDocument;
 import org.apache.poi.hwpf.usermodel.Range;
@@ -64,6 +61,7 @@ import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 public class ImportRiderNarrativeDocument
 {

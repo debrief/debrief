@@ -45,6 +45,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -56,272 +57,275 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * 
  */
 public class GenerateTMASegmentFromOwnshipPositions implements
-		RightClickContextItemGenerator
+    RightClickContextItemGenerator
 {
 
-	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
-			WorldSpeed.Kts);
-	private static final double DEFAULT_TARGET_COURSE = 120d;
+  private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12,
+      WorldSpeed.Kts);
+  private static final double DEFAULT_TARGET_COURSE = 120d;
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testMe(final String val)
-		{
-			super(val);
-		}
+    public testMe(final String val)
+    {
+      super(val);
+    }
 
-		public final void testIWork()
-		{
+    public final void testIWork()
+    {
 
-		}
-	}
+    }
+  }
 
-	private static class TMAfromPositions extends CMAPOperation
-	{
+  private static class TMAfromPositions extends CMAPOperation
+  {
 
-		private final Layers _layers;
-		private final FixWrapper[] _items;
-		private TrackWrapper _newTrack;
-		private final double _courseDegs;
-		private final WorldSpeed _speed;
-		private final WorldVector _offset;
+    private final Layers _layers;
+    private final FixWrapper[] _items;
+    private TrackWrapper _newTrack;
+    private final double _courseDegs;
+    private final WorldSpeed _speed;
+    private final WorldVector _offset;
 
-		public TMAfromPositions(final FixWrapper[] items, WorldVector offset,
-				final Layers theLayers, final double courseDegs, final WorldSpeed speed)
-		{
-			super("Create TMA solution from ownship position times");
-			_items = items;
-			_layers = theLayers;
-			_courseDegs = courseDegs;
-			_speed = speed;
-			_offset = offset;
-		}
+    public TMAfromPositions(final FixWrapper[] items, WorldVector offset,
+        final Layers theLayers, final double courseDegs, final WorldSpeed speed)
+    {
+      super("Create TMA solution from ownship position times");
+      _items = items;
+      _layers = theLayers;
+      _courseDegs = courseDegs;
+      _speed = speed;
+      _offset = offset;
+    }
 
-		@Override
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			HiResDate startTime = _items[0].getDTG();
-			HiResDate endTime = _items[_items.length - 1].getDTG();
-			WorldLocation startPoint = _items[0].getLocation().add(_offset);
-			final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
-					startPoint, startTime, endTime);
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      HiResDate startTime = _items[0].getDTG();
+      HiResDate endTime = _items[_items.length - 1].getDTG();
+      WorldLocation startPoint = _items[0].getLocation().add(_offset);
+      final TrackSegment seg = new AbsoluteTMASegment(_courseDegs, _speed,
+          startPoint, startTime, endTime);
 
-			// _items, _offset, _speed,
-			// _courseDegs, _layers);
+      // _items, _offset, _speed,
+      // _courseDegs, _layers);
 
-			// now wrap it
-			_newTrack = new TrackWrapper();
-			_newTrack.setColor(Color.red);
-			_newTrack.add(seg);
-			final String tNow = TrackSegment.TMA_LEADER
-					+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate()
-							.getTime());
-			_newTrack.setName(tNow);
+      // now wrap it
+      _newTrack = new TrackWrapper();
+      _newTrack.setColor(Color.red);
+      _newTrack.add(seg);
+      final String tNow = TrackSegment.TMA_LEADER + FormatRNDateTime.toString(
+          _newTrack.getStartDTG().getDate().getTime());
+      _newTrack.setName(tNow);
 
-			_layers.addThisLayerAllowDuplication(_newTrack);
+      _layers.addThisLayerAllowDuplication(_newTrack);
 
-			// sorted, do the update
-			_layers.fireExtended();
+      // sorted, do the update
+      _layers.fireExtended();
 
-			return Status.OK_STATUS;
-		}
+      return Status.OK_STATUS;
+    }
 
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			// forget about the new tracks
-			_layers.removeThisLayer(_newTrack);
-			_layers.fireExtended();
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      // forget about the new tracks
+      _layers.removeThisLayer(_newTrack);
+      _layers.fireExtended();
 
-			return Status.OK_STATUS;
-		}
+      return Status.OK_STATUS;
+    }
 
-		@Override
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+    @Override
+    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
 
-			_layers.addThisLayerAllowDuplication(_newTrack);
+      _layers.addThisLayerAllowDuplication(_newTrack);
 
-			// sorted, do the update
-			_layers.fireExtended();
+      // sorted, do the update
+      _layers.fireExtended();
 
-			return Status.OK_STATUS;
-		}
+      return Status.OK_STATUS;
+    }
 
-		@Override
-		public boolean canExecute()
-		{
-			return true;
-		}
+    @Override
+    public boolean canExecute()
+    {
+      return true;
+    }
 
-		@Override
-		public boolean canRedo()
-		{
-			return true;
-		}
+    @Override
+    public boolean canRedo()
+    {
+      return true;
+    }
 
-		@Override
-		public boolean canUndo()
-		{
-			return true;
-		}
+    @Override
+    public boolean canUndo()
+    {
+      return true;
+    }
 
-	}
+  }
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		//
-		Action _myAction = null;
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    //
+    Action _myAction = null;
 
-		// so, see if it's something we can do business with
-		if (subjects.length == 1 || subjects.length > 1000)
-		{
-			// hmm, let's not allow it for just one item, or more than a thousand,
-		  // since this is an expensive operation to calculate
-			// see the equivalent part of RelativeTMASegment if we wish to support
-			// this
-		}
-		else
-		{
-			// so, it's a number of items, Are they all sensor contact wrappers
-			boolean allGood = true;
-			final FixWrapper[] items = new FixWrapper[subjects.length];
-			for (int i = 0; i < subjects.length; i++)
-			{
-				final Editable editable = subjects[i];
-				if (editable instanceof FixWrapper)
-				{
-					// hmm, we need to check if this fix is part of a solution. have a
-					// look at the parent
-					FixWrapper fix = (FixWrapper) editable;
-					TrackWrapper track = fix.getTrackWrapper();
-					SegmentList segments = track.getSegments();
-					TrackSegment parentSegment = segments.getSegmentFor(fix
-							.getDateTimeGroup().getDate().getTime());
+    // so, see if it's something we can do business with
+    if (subjects.length == 1 || subjects.length > 1000)
+    {
+      // hmm, let's not allow it for just one item, or more than a thousand,
+      // since this is an expensive operation to calculate
+      // see the equivalent part of RelativeTMASegment if we wish to support
+      // this
+    }
+    else
+    {
+      // so, it's a number of items, Are they all sensor contact wrappers
+      boolean allGood = true;
+      final FixWrapper[] items = new FixWrapper[subjects.length];
+      for (int i = 0; i < subjects.length; i++)
+      {
+        final Editable editable = subjects[i];
+        if (editable instanceof FixWrapper)
+        {
+          // hmm, we need to check if this fix is part of a solution. have a
+          // look at the parent
+          FixWrapper fix = (FixWrapper) editable;
+          WatchableList wList = fix.getTrackWrapper();
+          if (wList instanceof TrackWrapper)
+          {
+            TrackWrapper track = (TrackWrapper) wList;
+            SegmentList segments = track.getSegments();
+            TrackSegment parentSegment = segments.getSegmentFor(fix
+                .getDateTimeGroup().getDate().getTime());
 
-					// is this first leg a TMA segment?
-					if (parentSegment instanceof CoreTMASegment
-							|| parentSegment instanceof DynamicInfillSegment)
-					{
-						// yes = in which case we won't offer to
-						// generate a track based upon it
-						allGood = false;
-					}
-					else
-					{
-						// cool, stick with it
-						items[i] = (FixWrapper) editable;
-					}
-				}
-				else
-				{
-					allGood = false;
-					break;
-				}
+            // is this first leg a TMA segment?
+            if (parentSegment instanceof CoreTMASegment
+                || parentSegment instanceof DynamicInfillSegment)
+            {
+              // yes = in which case we won't offer to
+              // generate a track based upon it
+              allGood = false;
+            }
+            else
+            {
+              // cool, stick with it
+              items[i] = (FixWrapper) editable;
+            }
+          }
+        }
+        else
+        {
+          allGood = false;
+          break;
+        }
 
-				// are we good to go?
-				if (allGood)
-				{
-					// cool wrap it in an action.
-					_myAction = new Action(
-							"Generate TMA solution from selected positions")
-					{
+        // are we good to go?
+        if (allGood)
+        {
+          // cool wrap it in an action.
+          _myAction = new Action(
+              "Generate TMA solution from selected positions")
+          {
 
-						@Override
-						public void run()
-						{
+            @Override
+            public void run()
+            {
 
-							// get the supporting data
-							final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
-									new WorldDistance(5, WorldDistance.NM),
-									DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED, null);
-							final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-									.getActiveShell(), wizard);
-							dialog.create();
-							dialog.open();
+              // get the supporting data
+              final TMAFromSensorWizard wizard = new TMAFromSensorWizard(45d,
+                  new WorldDistance(5, WorldDistance.NM), DEFAULT_TARGET_COURSE,
+                  DEFAULT_TARGET_SPEED, null);
+              final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+                  .getActiveShell(), wizard);
+              dialog.create();
+              dialog.open();
 
-							// did it work?
-							if (dialog.getReturnCode() == WizardDialog.OK)
-							{
-								WorldVector res = new WorldVector(0, new WorldDistance(5,
-										WorldDistance.NM), null);
-								double courseDegs = 0;
-								WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+              // did it work?
+              if (dialog.getReturnCode() == WizardDialog.OK)
+              {
+                WorldVector res = new WorldVector(0, new WorldDistance(5,
+                    WorldDistance.NM), null);
+                double courseDegs = 0;
+                WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
-								final RangeBearingPage offsetPage = (RangeBearingPage) wizard
-										.getPage(RangeBearingPage.NAME);
-								if (offsetPage != null)
-								{
-									if (offsetPage.isPageComplete())
-									{
-										res = new WorldVector(
-												MWC.Algorithms.Conversions.Degs2Rads(offsetPage
-														.getBearingDegs()), offsetPage.getRange(), null);
-									}
-								}
+                final RangeBearingPage offsetPage = (RangeBearingPage) wizard
+                    .getPage(RangeBearingPage.NAME);
+                if (offsetPage != null)
+                {
+                  if (offsetPage.isPageComplete())
+                  {
+                    res = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+                        offsetPage.getBearingDegs()), offsetPage.getRange(),
+                        null);
+                  }
+                }
 
-								final EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
-										.getPage(EnterSolutionPage.NAME);
-								if (solutionPage != null)
-								{
-									if (solutionPage.isPageComplete())
-									{
-										final EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
-												.getEditable();
-										courseDegs = item.getCourse();
-										speed = item.getSpeed();
-									}
-								}
+                final EnterSolutionPage solutionPage =
+                    (EnterSolutionPage) wizard.getPage(EnterSolutionPage.NAME);
+                if (solutionPage != null)
+                {
+                  if (solutionPage.isPageComplete())
+                  {
+                    final EnterSolutionPage.SolutionDataItem item =
+                        (SolutionDataItem) solutionPage.getEditable();
+                    courseDegs = item.getCourse();
+                    speed = item.getSpeed();
+                  }
+                }
 
-								// ok, go for it.
-								// sort it out as an operation
-								final IUndoableOperation convertToTrack1 = new TMAfromPositions(
-										items, res, theLayers, courseDegs, speed);
+                // ok, go for it.
+                // sort it out as an operation
+                final IUndoableOperation convertToTrack1 = new TMAfromPositions(
+                    items, res, theLayers, courseDegs, speed);
 
-								// ok, stick it on the buffer
-								runIt(convertToTrack1);
+                // ok, stick it on the buffer
+                runIt(convertToTrack1);
 
-							}
-							else
-								System.err.println("user cancelled");
+              }
+              else
+                System.err.println("user cancelled");
 
-						}
-					};
-				}
+            }
+          };
+        }
 
-			}
+      }
 
-		}
+    }
 
-		// go for it, or not...
-		if (_myAction != null)
-			parent.add(_myAction);
+    // go for it, or not...
+    if (_myAction != null)
+      parent.add(_myAction);
 
-	}
+  }
 
-	/**
-	 * put the operation firer onto the undo history. We've refactored this into a
-	 * separate method so testing classes don't have to simulate the CorePlugin
-	 * 
-	 * @param operation
-	 */
-	protected void runIt(final IUndoableOperation operation)
-	{
-		CorePlugin.run(operation);
-	}
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   * 
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
+  {
+    CorePlugin.run(operation);
+  }
 }

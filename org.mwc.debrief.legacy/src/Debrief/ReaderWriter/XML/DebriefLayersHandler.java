@@ -59,7 +59,6 @@ public final class DebriefLayersHandler extends MWCXMLReader
 		addHandler(new ETOPOHandler(theLayers));
 		addHandler(new TOPOHandler(theLayers));
 		addHandler(new ExternallyManagedLayerHandler(theLayers));
-
 	}
 
 	public static void exportThis(final Debrief.GUI.Frames.Session session,

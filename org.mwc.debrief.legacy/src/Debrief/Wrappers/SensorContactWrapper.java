@@ -156,6 +156,7 @@ import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.Wrappers.Track.ArrayOffsetHelper;
 import Debrief.Wrappers.Track.ArrayOffsetHelper.LegacyArrayOffsetModes;
 import Debrief.Wrappers.Track.Doublet;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -1340,9 +1341,9 @@ public final class SensorContactWrapper extends
     }
 
     // check that the parent track is visible at this time
-    if (track instanceof TrackWrapper)
+    if (track instanceof LightweightTrackWrapper)
     {
-      final TrackWrapper tw = (TrackWrapper) track;
+      final LightweightTrackWrapper tw = (LightweightTrackWrapper) track;
       if (!tw.isVisibleAt(this.getDTG()))
       {
         return;

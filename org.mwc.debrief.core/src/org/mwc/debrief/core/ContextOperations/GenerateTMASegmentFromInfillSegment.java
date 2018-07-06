@@ -42,6 +42,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -206,43 +207,49 @@ public class GenerateTMASegmentFromInfillSegment implements
 					// hmm, we need to check if this fix is part of a solution. have a
 					// look at the parent
 					FixWrapper fix = (FixWrapper) editable;
-					TrackWrapper track = fix.getTrackWrapper();
-					SegmentList segments = track.getSegments();
-
-					TrackSegment parentSegment = segments.getSegmentFor(fix
-							.getDateTimeGroup().getDate().getTime());
-
-					// is this first leg a TMA segment?
-					if (parentSegment instanceof DynamicInfillSegment)
+					WatchableList parentW = fix.getTrackWrapper();
+					if(parentW instanceof TrackWrapper)
 					{
-						// initialise ourselves
-						if (requestedPeriod == null)
-						{
-							requestedPeriod = new TimePeriod.BaseTimePeriod(
-									fix.getDateTimeGroup(), fix.getDateTimeGroup());
-							hostTrack = parentSegment.getWrapper();
-						}
-						else
-						{
-							requestedPeriod.extend(fix.getDateTimeGroup());
-						}
+					  TrackWrapper track = (TrackWrapper) parentW;
+					  
+		         SegmentList segments = track.getSegments();
 
-						// have we already found an infill?
-						if (infill == null)
-						{
-							infill = (DynamicInfillSegment) parentSegment;
-						}
-						else
-						{
-							// yes, is it the same one as this new one?
-							if (infill != parentSegment)
-							{
-								CorePlugin.logError(Status.WARNING,
-										"We need all positions to be in the same infill", null);
-								return;
-							}
-						}
+		          TrackSegment parentSegment = segments.getSegmentFor(fix
+		              .getDateTimeGroup().getDate().getTime());
+
+		          // is this first leg a TMA segment?
+		          if (parentSegment instanceof DynamicInfillSegment)
+		          {
+		            // initialise ourselves
+		            if (requestedPeriod == null)
+		            {
+		              requestedPeriod = new TimePeriod.BaseTimePeriod(
+		                  fix.getDateTimeGroup(), fix.getDateTimeGroup());
+		              hostTrack = parentSegment.getWrapper();
+		            }
+		            else
+		            {
+		              requestedPeriod.extend(fix.getDateTimeGroup());
+		            }
+
+		            // have we already found an infill?
+		            if (infill == null)
+		            {
+		              infill = (DynamicInfillSegment) parentSegment;
+		            }
+		            else
+		            {
+		              // yes, is it the same one as this new one?
+		              if (infill != parentSegment)
+		              {
+		                CorePlugin.logError(Status.WARNING,
+		                    "We need all positions to be in the same infill", null);
+		                return;
+		              }
+		            }
+		          }
 					}
+
 				}
 				else
 				{

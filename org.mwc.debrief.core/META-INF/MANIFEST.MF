@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Core
 Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
-Bundle-Version: 1.0.330
+Bundle-Version: 1.0.332
 Bundle-ClassPath: debrief_core.jar,
  libs/jdom-1.0.jar,
  libs/eclipselink.jar
@@ -21,6 +21,7 @@ Export-Package: com.topografix.gpx.v10,
  org.jdom.xpath,
  org.mwc.debrief.core,
  org.mwc.debrief.core.ContextOperations,
+ org.mwc.debrief.core.ContextOperations.ExportCSVPrefs,
  org.mwc.debrief.core.ContextOperations.tests,
  org.mwc.debrief.core.actions,
  org.mwc.debrief.core.actions.drag,
@@ -48,6 +49,7 @@ Require-Bundle: org.mwc.cmap.core,
  org.mwc.cmap.legacy,
  org.mwc.debrief.legacy,
  org.mwc.cmap.xyplot,
+ org.mwc.cmap.media;bundle-version="1.0.6",
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui,
