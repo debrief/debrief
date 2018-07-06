@@ -137,29 +137,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     setLineStyle(lineStyle);
   }
 
-  public void addFix(final FixWrapper e)
-  {
-    flushBounds();
-
-    // tell it who's the boss
-    e.setTrackWrapper(this);
-
-    // check the label
-    if (e.getLabel() == null || e.getLabel().length() == 0)
-    {
-      e.resetName();
-    }
-
-    // finally, store it.
-    _thePositions.add(e);
-  }
-
-  private void flushBounds()
-  {
-    // forget the bounds
-    _bounds = null;
-  }
-
   /**
    * add the indicated point to the track
    *
@@ -175,6 +152,23 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final FixWrapper fw = (FixWrapper) point;
       addFix(fw);
     }
+  }
+
+  public void addFix(final FixWrapper e)
+  {
+    flushBounds();
+
+    // tell it who's the boss
+    e.setTrackWrapper(this);
+
+    // check the label
+    if (e.getLabel() == null || e.getLabel().length() == 0)
+    {
+      e.resetName();
+    }
+
+    // finally, store it.
+    _thePositions.add(e);
   }
 
   /**
@@ -251,6 +245,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
         fix.setVisible(false);
       }
     }
+  }
+
+  private void flushBounds()
+  {
+    // forget the bounds
+    _bounds = null;
   }
 
   /**
@@ -420,6 +420,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public Enumeration<Editable> getPositionIterator()
   {
     return _thePositions.elements();
+  }
+
+  /**
+   * method to allow the setting of data sampling frequencies for the track & sensor data
+   *
+   * @return frequency to use
+   */
+  public final HiResDate getResampleDataAt()
+  {
+    return this._lastDataFrequency;
   }
 
   @Override
@@ -621,6 +631,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     };
   }
 
+  /**
+   * find the number of fixes in this track
+   *
+   * @return
+   */
+  public int numFixes()
+  {
+    return _thePositions.size();
+  }
+
   @Override
   public synchronized void paint(final CanvasType dest)
   {
@@ -683,6 +703,19 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     // TODO Auto-generated method stub
     return 0;
+  }
+
+  @Override
+  public void reconnectChildObjects(final Object clonedObject)
+  {
+    final LightweightTrackWrapper clonedTrack =
+        (LightweightTrackWrapper) clonedObject;
+    final Enumeration<Editable> ele = clonedTrack.getPositionIterator();
+    while (ele.hasMoreElements())
+    {
+      final FixWrapper fw = (FixWrapper) ele.nextElement();
+      fw.setTrackWrapper(clonedTrack);
+    }
   }
 
   @Override
@@ -769,48 +802,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     _theLabel.setVisible(val);
   }
 
-  /**
-   * font handler
-   *
-   * @param font
-   *          the font to use for the label
-   */
-  public final void setTrackFont(final Font font)
-  {
-    _theLabel.setFont(font);
-  }
-
-  @Override
-  public String toString()
-  {
-    return _thePositions.toString();
-  }
-
-  @Override
-  public void reconnectChildObjects(Object clonedObject)
-  {
-    LightweightTrackWrapper clonedTrack =
-        (LightweightTrackWrapper) clonedObject;
-    Enumeration<Editable> ele = clonedTrack.getPositionIterator();
-    while (ele.hasMoreElements())
-    {
-      FixWrapper fw = (FixWrapper) ele.nextElement();
-      fw.setTrackWrapper(clonedTrack);
-    }
-  }
-
-  /**
-   * find the number of fixes in this track
-   * 
-   * @return
-   */
-  public int numFixes()
-  {
-    return _thePositions.size();
-  }
-
   @FireExtended
-  public void setResampleDataAt(HiResDate theVal)
+  public void setResampleDataAt(final HiResDate theVal)
   {
     this._lastDataFrequency = theVal;
 
@@ -830,14 +823,14 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
     else
     {
-      List<Editable> newItems = new ArrayList<Editable>();
+      final List<Editable> newItems = new ArrayList<Editable>();
 
-      Enumeration<Editable> pIter = getPositionIterator();
+      final Enumeration<Editable> pIter = getPositionIterator();
       long nextTime = getStartDTG().getMicros();
       while (pIter.hasMoreElements())
       {
-        FixWrapper next = (FixWrapper) pIter.nextElement();
-        long thisTime = next.getDateTimeGroup().getMicros();
+        final FixWrapper next = (FixWrapper) pIter.nextElement();
+        final long thisTime = next.getDateTimeGroup().getMicros();
 
         if (thisTime >= nextTime)
         {
@@ -851,19 +844,26 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
       // and store the new ones
       _thePositions.getData().addAll(newItems);
-      
+
       // ok, we have to clear the bounds
       flushBounds();
     }
   }
 
   /**
-   * method to allow the setting of data sampling frequencies for the track & sensor data
+   * font handler
    *
-   * @return frequency to use
+   * @param font
+   *          the font to use for the label
    */
-  public final HiResDate getResampleDataAt()
+  public final void setTrackFont(final Font font)
   {
-    return this._lastDataFrequency;
+    _theLabel.setFont(font);
+  }
+
+  @Override
+  public String toString()
+  {
+    return _thePositions.toString();
   }
 }
