@@ -397,7 +397,10 @@ public class NatNarrativeViewer
           new ArrayList<INatEntry>(narrativeHistory.length);
       for (final NarrativeEntry narrativeEntry : narrativeHistory)
       {
-        entries.add(new NatEntryProxy(dateFormatter, narrativeEntry));
+        if (narrativeEntry.getVisible())
+        {
+          entries.add(new NatEntryProxy(dateFormatter, narrativeEntry));
+        }
       }
       return entries;
     }
