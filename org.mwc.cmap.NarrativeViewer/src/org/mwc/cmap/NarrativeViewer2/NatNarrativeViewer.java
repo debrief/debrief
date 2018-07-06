@@ -138,8 +138,8 @@ public class NatNarrativeViewer
 
       }
     };
-    filteredNatTable
-        .setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+    filteredNatTable.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true,
+        true));
     container.addDisposeListener(new DisposeListener()
     {
 
@@ -172,12 +172,12 @@ public class NatNarrativeViewer
     propertyToLabelMap.put("type", TYPE_LBL);
     propertyToLabelMap.put("log", "Entry");
 
-    columnPropertyAccessor =
-        new ReflectiveColumnPropertyAccessor<INatEntry>(propertyNames);
+    columnPropertyAccessor = new ReflectiveColumnPropertyAccessor<INatEntry>(
+        propertyNames);
 
     // add filter
-    textMatcherEditor =
-        new TextMatcherEditor<INatEntry>(new TextFilterator<INatEntry>()
+    textMatcherEditor = new TextMatcherEditor<INatEntry>(
+        new TextFilterator<INatEntry>()
         {
 
           @Override
@@ -267,17 +267,16 @@ public class NatNarrativeViewer
     final CompositeLayer compositeLayer = new CompositeLayer(1, 2);
     final List<INatEntry> input = getNatInput();
     bodyLayer = new BodyLayerStack<INatEntry>(input, columnPropertyAccessor);
-    bodyLayer
-        .addConfigLabelAccumulator(new NarrativeEntryConfigLabelAccumulator(
-            bodyLayer.getBodyDataProvider(), configRegistry));
+    bodyLayer.addConfigLabelAccumulator(
+        new NarrativeEntryConfigLabelAccumulator(bodyLayer
+            .getBodyDataProvider(), configRegistry));
 
-    columnHeaderDataProvider =
-        new DefaultColumnHeaderDataProvider(propertyNames, propertyToLabelMap);
-    final DataLayer columnHeaderDataLayer =
-        new DataLayer(columnHeaderDataProvider);
-    final ColumnHeaderLayer columnHeaderLayer =
-        new ColumnHeaderLayer(columnHeaderDataLayer, bodyLayer, bodyLayer
-            .getSelectionLayer());
+    columnHeaderDataProvider = new DefaultColumnHeaderDataProvider(
+        propertyNames, propertyToLabelMap);
+    final DataLayer columnHeaderDataLayer = new DataLayer(
+        columnHeaderDataProvider);
+    final ColumnHeaderLayer columnHeaderLayer = new ColumnHeaderLayer(
+        columnHeaderDataLayer, bodyLayer, bodyLayer.getSelectionLayer());
 
     final SortHeaderLayer<INatEntry> sortHeaderLayer =
         new SortHeaderLayer<INatEntry>(columnHeaderLayer,
@@ -292,12 +291,11 @@ public class NatNarrativeViewer
         new ComboBoxFilterRowHeaderComposite<INatEntry>(bodyLayer
             .getFilterList(), comboBoxDataProvider, columnPropertyAccessor,
             sortHeaderLayer, columnHeaderDataProvider, configRegistry, false);
-    filterRowHeaderLayer
-        .addConfiguration(new NarrativeViewerFilterRowConfiguration(
-            comboBoxDataProvider));
+    filterRowHeaderLayer.addConfiguration(
+        new NarrativeViewerFilterRowConfiguration(comboBoxDataProvider));
 
-    compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER,
-        filterRowHeaderLayer, 0, 0);
+    compositeLayer.setChildLayer(GridRegion.COLUMN_HEADER, filterRowHeaderLayer,
+        0, 0);
     compositeLayer.setChildLayer(GridRegion.BODY, bodyLayer, 0, 1);
     filterRowHeaderLayer.getFilterStrategy().addStaticFilter(textMatcherEditor);
 
@@ -328,8 +326,8 @@ public class NatNarrativeViewer
     //
     // }
     // });
-    natTable.getUiBindingRegistry().registerDoubleClickBinding(
-        MouseEventMatcher.bodyLeftClick(SWT.NONE), new IMouseAction()
+    natTable.getUiBindingRegistry().registerDoubleClickBinding(MouseEventMatcher
+        .bodyLeftClick(SWT.NONE), new IMouseAction()
         {
 
           @Override
@@ -390,11 +388,11 @@ public class NatNarrativeViewer
   {
     if (input != null)
     {
-      final NarrativeEntry[] narrativeHistory =
-          input.getNarrativeHistory(new String[]
+      final NarrativeEntry[] narrativeHistory = input.getNarrativeHistory(
+          new String[]
           {});
-      final List<INatEntry> entries =
-          new ArrayList<INatEntry>(narrativeHistory.length);
+      final List<INatEntry> entries = new ArrayList<INatEntry>(
+          narrativeHistory.length);
       for (final NarrativeEntry narrativeEntry : narrativeHistory)
       {
         if (narrativeEntry.getVisible())
@@ -409,12 +407,12 @@ public class NatNarrativeViewer
 
   public StructuredSelection getSelection()
   {
-    final Set<Range> selectedRowPositions =
-        bodyLayer.getSelectionLayer().getSelectedRowPositions();
+    final Set<Range> selectedRowPositions = bodyLayer.getSelectionLayer()
+        .getSelectedRowPositions();
     for (final Range range : selectedRowPositions)
     {
-      final INatEntry rowObject =
-          bodyLayer.getBodyDataProvider().getRowObject(range.start);
+      final INatEntry rowObject = bodyLayer.getBodyDataProvider().getRowObject(
+          range.start);
       if (rowObject instanceof NatEntryProxy)
       {
         return new StructuredSelection(((NatEntryProxy) rowObject).getEntry());
@@ -425,9 +423,8 @@ public class NatNarrativeViewer
 
   private void loadFont(final IPreferenceStore preferenceStore)
   {
-    final String fontStr =
-        preferenceStore
-            .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+    final String fontStr = preferenceStore.getString(
+        NarrativeViewerPrefsPage.PreferenceConstants.FONT);
     if (fontStr == null)
     {
       if (prefFont != null)
@@ -453,15 +450,13 @@ public class NatNarrativeViewer
       }
     }
     // load font to style
-    final IStyle defaultStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.NORMAL);
-    final IStyle selectionStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.SELECT);
-    final IStyle headerStyle =
-        configRegistry.getConfigAttribute(CellConfigAttributes.CELL_STYLE,
-            DisplayMode.NORMAL, GridRegion.COLUMN_HEADER);
+    final IStyle defaultStyle = configRegistry.getConfigAttribute(
+        CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL);
+    final IStyle selectionStyle = configRegistry.getConfigAttribute(
+        CellConfigAttributes.CELL_STYLE, DisplayMode.SELECT);
+    final IStyle headerStyle = configRegistry.getConfigAttribute(
+        CellConfigAttributes.CELL_STYLE, DisplayMode.NORMAL,
+        GridRegion.COLUMN_HEADER);
 
     defaultStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
     selectionStyle.setAttributeValue(CellStyleAttributes.FONT, prefFont);
@@ -481,8 +476,8 @@ public class NatNarrativeViewer
     NarrativeEntry entry = null;
 
     // retrieve the list of visible rows
-    final List<INatEntry> visEntries =
-        bodyLayer.getBodyDataProvider().getList();
+    final List<INatEntry> visEntries = bodyLayer.getBodyDataProvider()
+        .getList();
 
     // step through them
     for (final INatEntry nEntry : visEntries)
@@ -541,10 +536,11 @@ public class NatNarrativeViewer
     {
       // find 1/2 the number of visible rows, to use as offset
       final int offset = bodyLayer.getViewportLayer().getRowCount() / 2;
-      
+
       // find the currently selected row
-      final int[] cells = bodyLayer.getSelectionLayer().getFullySelectedRowPositions();
-      
+      final int[] cells = bodyLayer.getSelectionLayer()
+          .getFullySelectedRowPositions();
+
       // move the selection back a bit, so we see both sides of it
       int revealRow = indexOf;
       if (cells != null && cells.length == 1)
@@ -567,10 +563,10 @@ public class NatNarrativeViewer
           }
         }
       }
-      
-      bodyLayer.getSelectionLayer().doCommand(
-          new SelectRowsCommand(bodyLayer.getSelectionLayer(), 0, ArrayUtil
-              .asIntArray(indexOf), false, false, revealRow));
+
+      bodyLayer.getSelectionLayer().doCommand(new SelectRowsCommand(bodyLayer
+          .getSelectionLayer(), 0, ArrayUtil.asIntArray(indexOf), false, false,
+          revealRow));
     }
 
   }
@@ -629,8 +625,8 @@ public class NatNarrativeViewer
     int columnCount = natTable.getColumnCount();
     for (int i = 0; i < columnCount; i++)
     {
-      String columnHeaderLabel =
-          columnHeaderDataProvider.getColumnHeaderLabel(i);
+      String columnHeaderLabel = columnHeaderDataProvider.getColumnHeaderLabel(
+          i);
       if (label.equals(columnHeaderLabel))
       {
         return i;
@@ -646,7 +642,8 @@ public class NatNarrativeViewer
     private final String colLabel;
     private boolean visible = true;
 
-    public SwitchColumnVisibilityAction(final String colLabel, final String name)
+    public SwitchColumnVisibilityAction(final String colLabel,
+        final String name)
     {
       this.colLabel = colLabel;
       setText(name);
@@ -688,8 +685,8 @@ public class NatNarrativeViewer
       }
 
       if (hiddenCols.size() > 0)
-        natTable.doCommand(new MultiColumnHideCommand(natTable,
-            toIntArray(hiddenCols)));
+        natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(
+            hiddenCols)));
 
       natTable.layout(true);
 
