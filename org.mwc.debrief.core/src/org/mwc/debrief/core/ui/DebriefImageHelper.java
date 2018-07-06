@@ -27,6 +27,7 @@ import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.DynamicLayer;
@@ -96,7 +97,10 @@ public class DebriefImageHelper implements ViewLabelImageHelper
 			else
 				res = DebriefPlugin.getImageDescriptor("icons/16/track.png");
 		}
-		 
+    else if (editable instanceof LightweightTrackWrapper)
+    {
+      res = DebriefPlugin.getImageDescriptor("icons/16/light_track.png");      
+    }		 
 		return res;
 	}
 

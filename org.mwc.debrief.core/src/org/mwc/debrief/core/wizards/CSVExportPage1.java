@@ -30,17 +30,12 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 public class CSVExportPage1 extends CustomWizardPage
 {
 
-  private static final String CSV_EXPORT_SENSOR = "CSV_EXPORT_sensor";
-
-  private static final String CSV_EXPORT_FLAG = "CSV_EXPORT_flag";
-
-  private static final String CSV_EXPORT_TYPE = "CSV_EXPORT_type";
-
-  private static final String CSV_EXPORT_UNIT = "CSV_EXPORT_unit";
-
-  private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
-
   public static final String PAGE_ID = "1. Subject";
+  private static final String CSV_EXPORT_SENSOR = "CSV_EXPORT_sensor";
+  private static final String CSV_EXPORT_FLAG = "CSV_EXPORT_flag";
+  private static final String CSV_EXPORT_TYPE = "CSV_EXPORT_type";
+  private static final String CSV_EXPORT_UNIT = "CSV_EXPORT_unit";
+  private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
 
   @Override
   protected List<String> getPageNames()
@@ -83,14 +78,18 @@ public class CSVExportPage1 extends CustomWizardPage
   private String sensor;
   private String flag;
   private String unitName;
+  private String semiMajorAxis = "0.5";
+  private String semiMinorAxis = "0.5";
 
   // UI- Fields -------
 
   private String provenance;
   // --------
   private Text provenanceTxt;
-  private ComboViewer typeCmb;
+  private Text typeTxt;
   private Text unitNameTxt;
+  private Text semiMajorAxisTxt;
+  private Text semiMinorAxisTxt;
   private ComboViewer flagCmb;
   private ComboViewer sensorCmb;
 
@@ -110,7 +109,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  private Text addTextField(final Composite contents, final String label,
+  private Text addTxtField(final Composite contents, final String label,
       String tooltip, final String initialValue)
   {
 
@@ -163,16 +162,23 @@ public class CSVExportPage1 extends CustomWizardPage
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
 
-    provenanceTxt = addTextField(contents, "Provenance:",
-        "Source platform, \n" + "Eg: HMS Nelson", provenance);
-    unitNameTxt = addTextField(contents, "Unit Name:", "Subject platform",
-        unitName);
+    provenanceTxt = addTxtField(contents, "Provenance:", "Source platform, \n"
+        + "Eg: HMS Nelson", provenance);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
         true, sensor);
+
+    unitNameTxt = addTxtField(contents, "Unit Name:", "Subject platform",
+        unitName);
+
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
-        false, flag);
-    typeCmb = addCmbField(contents, "TYPE", "Type:", "Subject platform type",
-        false, type);
+        true, flag);
+    typeTxt = addTxtField(contents, "Type:", "Subject platform type", type);
+
+    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):",
+        "½ ellipse length", semiMajorAxis);
+
+    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):",
+        "½ ellipse length", semiMinorAxis);
 
     return contents;
   }
@@ -215,12 +221,22 @@ public class CSVExportPage1 extends CustomWizardPage
     return unitName;
   }
 
+  public String getSemiMajorAxis()
+  {
+    return semiMajorAxis;
+  }
+
+  public String getSemiMinorAxis()
+  {
+    return semiMinorAxis;
+  }
+
   public void readFormPref()
   {
 
     if (provenance == null || provenance.isEmpty())
     {
-      provenance = getPrefValue(CSV_EXPORT_PROVENANCE, provenance);
+      provenance = getPrefValue("CSV_EXPORT_provenance", provenance);
     }
     if (unitName == null || unitName.isEmpty())
     {
@@ -229,6 +245,7 @@ public class CSVExportPage1 extends CustomWizardPage
     type = getPrefValue(CSV_EXPORT_TYPE, type);
     flag = getPrefValue(CSV_EXPORT_FLAG, flag);
     sensor = getPrefValue(CSV_EXPORT_SENSOR, sensor);
+
   }
 
   public void writeToPref()
@@ -241,13 +258,15 @@ public class CSVExportPage1 extends CustomWizardPage
     type = setPrefValue(CSV_EXPORT_TYPE, type);
     flag = setPrefValue(CSV_EXPORT_FLAG, flag);
     sensor = setPrefValue(CSV_EXPORT_SENSOR, sensor);
-  }
+    semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
+    semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
 
+  }
 
   public void readValues()
   {
 
-    type = getCmbVal(typeCmb, type);
+    type = getTxtVal(typeTxt, type);
     flag = getCmbVal(flagCmb, flag);
     sensor = getCmbVal(sensorCmb, sensor);
 

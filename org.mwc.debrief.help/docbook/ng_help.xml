@@ -8829,7 +8829,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>[LAYER=Other_Target_Layer]</para>
                     </entry>
                     <entry>
-                      <para>Put this annotation into the layer named "Other_Target_Layer". Note: spaces not allowed</para>
+                      <para>Put this annotation into the layer named "Other_Target_Layer". Note: spaces not allowed.  
+                        Use this mechanism to load a track as a high performing <glossterm linkend="g_lightweight">Lightweight Track.</glossterm><indexterm>
+                          <primary>Lightweight Track</primary></indexterm><indexterm>
+                            <primary>Track Data</primary><secondary>Lightweight tracks</secondary></indexterm></para>
                     </entry>
                   </row>
                 </tbody>
@@ -12490,7 +12493,19 @@ range = Range to target from ownship (yds)</markup>
             an example of this is in the VPF best-practice, <xref linkend="vpf_how_to"/>)</para>
         </glossdef>
       </glossentry>
-
+      <glossentry xml:id="g_lightweight">
+        <glossterm>Lightweight Tracks</glossterm>
+        
+        <glossdef>
+          <para>
+            A simpler, faster version of a conventional track.  These are quicker to render in Debrief
+            and can be placed into Layers - unlike normal tracks, which all sit at the top level. Fewer
+            formatting and manipulation operations are available for lightweight tracks, particularly
+            those relating to TMA.
+          </para>
+        </glossdef>
+      </glossentry>
+      
       <glossentry xml:id="g_MWC">
         <glossterm>MWC</glossterm>
 

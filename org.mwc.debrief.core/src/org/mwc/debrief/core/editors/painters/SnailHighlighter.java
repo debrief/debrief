@@ -292,26 +292,30 @@ public class SnailHighlighter implements TemporalLayerPainter
     while (watches.hasMoreElements())
     {
       final WatchableList list = (WatchableList) watches.nextElement();
-      // is the primary an instance of layer (with it's own line thickness?)
-      if (list instanceof Layer)
+      
+      if (list != null)
       {
-        final Layer ly = (Layer) list;
-        final int thickness = ly.getLineThickness();
-        dest.setLineWidth(thickness);
-      }
-
-      // ok, clear the nearest items
-      final Watchable[] wList = getNearestTo(list, newDTG);
-      if (wList != null)
-      {
-        for (int i = 0; i < wList.length; i++)
+        // is the primary an instance of layer (with it's own line thickness?)
+        if (list instanceof Layer)
         {
-          final Watchable watch = wList[i];
-          if (watch != null)
+          final Layer ly = (Layer) list;
+          final int thickness = ly.getLineThickness();
+          dest.setLineWidth(thickness);
+        }
+
+        // ok, clear the nearest items
+        final Watchable[] wList = getNearestTo(list, newDTG);
+        if (wList != null)
+        {
+          for (int i = 0; i < wList.length; i++)
           {
-            // plot it
-            highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest
-                .getBackgroundColor());
+            final Watchable watch = wList[i];
+            if (watch != null)
+            {
+              // plot it
+              highlightIt(dest.getProjection(), dest, list, watch, newDTG, dest
+                  .getBackgroundColor());
+            }
           }
         }
       }

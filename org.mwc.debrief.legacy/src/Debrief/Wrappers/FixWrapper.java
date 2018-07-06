@@ -277,6 +277,7 @@ import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -512,8 +513,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     public void execute(final Editable subject)
     {
       final FixWrapper fix = (FixWrapper) subject;
-      final TrackWrapper parent = fix.getTrackWrapper();
-      _splitSections = parent.splitTrack(fix, _splitBefore);
+      final WatchableList parent = fix.getTrackWrapper();
+      if(parent instanceof TrackWrapper)
+      {
+        TrackWrapper track = (TrackWrapper) parent;
+        _splitSections = track.splitTrack(fix, _splitBefore);
+      }
     }
 
     @Override
@@ -538,8 +543,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     public void undo(final Editable subject)
     {
       final FixWrapper fix = (FixWrapper) subject;
-      final TrackWrapper parent = fix.getTrackWrapper();
-      parent.combineSections(_splitSections);
+      final WatchableList parent = fix.getTrackWrapper();
+      if(parent instanceof TrackWrapper)
+      { 
+        TrackWrapper track = (TrackWrapper) parent;
+        track.combineSections(_splitSections);
+      }
     }
 
   }
@@ -814,7 +823,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * store a full copy of the parent track and all it's other fixes. We don't need to store it since
    * it gets set when we add it to a new parent layer
    */
-  private transient TrackWrapper _trackWrapper;
+  private transient WatchableList _trackWrapper;
 
   /**
    * take a static reference for the list of property descriptors for this object, since we
@@ -1010,7 +1019,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _showComment = Boolean.FALSE;
     
     // declare a duff track
-    _trackWrapper = null;
+    setTrackWrapper(null);
     // start us off with a nice font
     setFont(Defaults.getFont());
     // whether to show symbol
@@ -1040,7 +1049,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     super.closeMe();
 
     // forget the track
-    _trackWrapper = null;
+    setTrackWrapper(null);
     _theLocationWrapper = null;
     _theFix = null;
     _myEditor = null;
@@ -1317,7 +1326,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     return _theFix.getTime();
   }
 
-  public final TrackWrapper getTrackWrapper()
+  public final WatchableList getTrackWrapper()
   {
     return _trackWrapper;
   }
@@ -1764,7 +1773,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     _showSymbol = val;
   }
 
-  public final void setTrackWrapper(final TrackWrapper theTrack)
+  public final void setTrackWrapper(final WatchableList theTrack)
   {
     if (_trackWrapper != theTrack)
     {
@@ -1794,5 +1803,4 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     return ((this.getTime().greaterThan(start)) && (getTime().lessThan(end)));
   }
-
 }

@@ -48,7 +48,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreference
 import org.mwc.debrief.core.wizards.CSVExportWizard;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -78,8 +78,6 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
     String getLikelihood();
 
-    String getMajorAxis();
-
     String getProvenance();
 
     String getPurpose();
@@ -101,11 +99,11 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
   private static class ExportTrackToCSV extends CMAPOperation
   {
 
-    public static String getFileName(TrackWrapper subject,
+    public static String getFileName(LightweightTrackWrapper subject,
         CSVAttributeProvider provider)
     {
-      final DateFormat fileDateFormat = new GMTDateFormat(
-          "yyyyMMdd_HHmmss", Locale.ENGLISH);
+      final DateFormat fileDateFormat = new GMTDateFormat("yyyyMMdd_HHmmss",
+          Locale.ENGLISH);
 
       final StringBuffer fileName = new StringBuffer();
       fileName.append(tidyMe(provider.getSuppliedBy()));
@@ -120,27 +118,28 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       fileName.append(".csv");
       return fileName.toString();
     }
-    
-    private static void performExport(final TrackWrapper subject,
+
+    private static void performExport(final LightweightTrackWrapper subject,
         final CSVAttributeProvider provider)
     {
       FileWriter fos = null;
       try
       {
         // sort out the destination filename
-        final File outFile = new File(provider.getFilePath(), getFileName(subject, provider));
+        final File outFile = new File(provider.getFilePath(), getFileName(
+            subject, provider));
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
 
         final DateFormat dateFormatter = new GMTDateFormat(
-            "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
-        final DateFormat cutOffFormatter = new GMTDateFormat(
-            "yyyyMMdd", Locale.ENGLISH);
+            "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
+        final DateFormat cutOffFormatter = new GMTDateFormat("yyyyMMdd",
+            Locale.ENGLISH);
 
         final NumberFormat numF = new DecimalFormat("0.0000");
 
         final String lineBreak = System.getProperty("line.separator");
-        
+
         // find the last time on the track
         Date lastDTG = subject.getEndDTG().getDate();
         final String infoCutoffDate = cutOffFormatter.format(lastDTG);
@@ -157,8 +156,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String type = provider.getType();
         final String flag = provider.getFlag();
         final String sensor = provider.getSensor();
-        final String majorAxis = provider.getMajorAxis();
         final String semiMajorAxis = provider.getSemiMajorAxis();
+        final String majorAxis = "" + Double.valueOf(semiMajorAxis) * 2d;
         final String semiMinorAxis = provider.getSemiMinorAxis();
         final String likelihood = provider.getLikelihood();
         final String confidence = provider.getConfidence();
@@ -238,6 +237,11 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         CorePlugin.logError(IStatus.ERROR,
             "Error while writing to CSV exchange file", e);
       }
+      catch (final NumberFormatException e)
+      {
+        CorePlugin.logError(IStatus.ERROR, "Error while calculating Major Axis",
+            e);
+      }
       finally
       {
         if (fos != null)
@@ -276,9 +280,10 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     /**
      * the parent to update on completion
      */
-    private final TrackWrapper _subject;
+    private final LightweightTrackWrapper _subject;
 
-    public ExportTrackToCSV(final String title, final TrackWrapper subject)
+    public ExportTrackToCSV(final String title,
+        final LightweightTrackWrapper subject)
     {
       super(title);
       _subject = subject;
@@ -315,7 +320,8 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             "Export to CSV couldn't find current editor", null);
         return Status.CANCEL_STATUS;
       }
-      final TrackManager trackManager = (TrackManager) editor.getAdapter(TrackManager.class);
+      final TrackManager trackManager = (TrackManager) editor.getAdapter(
+          TrackManager.class);
       final String provenance;
       if (trackManager != null)
       {
@@ -383,15 +389,15 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     if (!isEnabled)
       return;
 
-    TrackWrapper subject = null;
+    LightweightTrackWrapper subject = null;
 
     // we're only going to work with two or more items
     if (subjects.length == 1)
     {
       final Editable item = subjects[0];
-      if (item instanceof TrackWrapper)
+      if (item instanceof LightweightTrackWrapper)
       {
-        subject = (TrackWrapper) item;
+        subject = (LightweightTrackWrapper) item;
       }
     }
 
@@ -403,7 +409,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       parent.add(new Separator());
 
       final String theTitle = "Export Track to CSV Text format";
-      final TrackWrapper finalItem = subject;
+      final LightweightTrackWrapper finalItem = subject;
 
       // create this operation
       final Action doExport = new Action(theTitle)
@@ -420,6 +426,5 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       parent.add(doExport);
     }
   }
-
 
 }
