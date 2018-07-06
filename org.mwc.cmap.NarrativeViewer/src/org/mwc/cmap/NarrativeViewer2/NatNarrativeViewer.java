@@ -68,6 +68,64 @@ import ca.odell.glazedlists.matchers.TextMatcherEditor;
 public class NatNarrativeViewer
 {
 
+  private class SwitchColumnVisibilityAction extends AbstractDynamicAction
+  {
+    private final String colLabel;
+    private boolean visible = true;
+
+    public SwitchColumnVisibilityAction(final String colLabel,
+        final String name)
+    {
+      this.colLabel = colLabel;
+      setText(name);
+
+    }
+
+    @Override
+    public void refresh()
+    {
+      setChecked(visible);
+    }
+
+    @Override
+    public void run()
+    {
+      // make sure to do show all to find correct column index
+      natTable.doCommand(new ShowAllColumnsCommand());
+      final int columnPositionBylabel = getColumnPositionBylabel(colLabel);
+      visible = !visible;
+      if (visible)
+      {
+        hiddenCols.remove(Integer.valueOf(columnPositionBylabel));
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
+            columnPositionBylabel, 100);
+      }
+      else
+      {
+        hiddenCols.add(columnPositionBylabel);
+        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
+            columnPositionBylabel, 0);
+      }
+
+      if (hiddenCols.size() > 0)
+        natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(
+            hiddenCols)));
+
+      natTable.layout(true);
+
+    }
+
+    int[] toIntArray(final List<Integer> list)
+    {
+      final int[] ret = new int[list.size()];
+      int i = 0;
+      for (final Integer e : list)
+        ret[i++] = e.intValue();
+      return ret;
+    }
+
+  }
+
   private static final String TYPE_LBL = "Type";
   private static final String SOURCE_LBL = "Source";
   private ConfigRegistry configRegistry;
@@ -78,18 +136,19 @@ public class NatNarrativeViewer
   private ReflectiveColumnPropertyAccessor<INatEntry> columnPropertyAccessor;
   private String[] propertyNames;
   private IRollingNarrativeProvider input;
-  private TextMatcherEditor<INatEntry> textMatcherEditor;
 
+  private TextMatcherEditor<INatEntry> textMatcherEditor;
   private final DateFormatter dateFormatter = new DateFormatter();
   private BodyLayerStack<INatEntry> bodyLayer;
-  private NatDoubleClickListener doubleClickListener;
 
+  private NatDoubleClickListener doubleClickListener;
   private Font prefFont;
   private IPreferenceStore preferenceStore;
   private FilteredNatTable filteredNatTable;
+
   private DefaultColumnHeaderDataProvider columnHeaderDataProvider;
 
-  private List<Integer> hiddenCols = new ArrayList<Integer>();
+  private final List<Integer> hiddenCols = new ArrayList<Integer>();
 
   public NatNarrativeViewer(final Composite parent,
       final IPreferenceStore preferenceStore)
@@ -361,7 +420,7 @@ public class NatNarrativeViewer
 
   public void fillActionBars(final IActionBars actionBars)
   {
-    IMenuManager menu = actionBars.getMenuManager();
+    final IMenuManager menu = actionBars.getMenuManager();
     final SwitchColumnVisibilityAction showSource =
         new SwitchColumnVisibilityAction(SOURCE_LBL, "Show source");
     menu.add(showSource);
@@ -370,6 +429,7 @@ public class NatNarrativeViewer
     menu.add(showType);
     menu.addMenuListener(new IMenuListener()
     {
+      @Override
       public void menuAboutToShow(final IMenuManager manager)
       {
         showSource.refresh();
@@ -377,6 +437,24 @@ public class NatNarrativeViewer
       }
     });
 
+  }
+
+  int getColumnPositionBylabel(final String label)
+  {
+
+    final int columnCount = natTable.getColumnCount();
+    for (int i = 0; i < columnCount; i++)
+    {
+      final String columnHeaderLabel = columnHeaderDataProvider
+          .getColumnHeaderLabel(i);
+      if (label.equals(columnHeaderLabel))
+      {
+        return i;
+      }
+
+    }
+
+    return -1;
   }
 
   public Control getControl()
@@ -529,7 +607,7 @@ public class NatNarrativeViewer
   public void setEntry(final NarrativeEntry entry)
   {
     final List<INatEntry> list = bodyLayer.getBodyDataProvider().getList();
-    int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
+    final int indexOf = list.indexOf(new NatEntryProxy(dateFormatter, entry));
 
     // did we find a row?
     if (indexOf > -1)
@@ -616,81 +694,6 @@ public class NatNarrativeViewer
         ColumnLabelAccumulator.COLUMN_LABEL_PREFIX + 3);
 
     natTable.refresh(false);
-
-  }
-
-  int getColumnPositionBylabel(String label)
-  {
-
-    int columnCount = natTable.getColumnCount();
-    for (int i = 0; i < columnCount; i++)
-    {
-      String columnHeaderLabel = columnHeaderDataProvider.getColumnHeaderLabel(
-          i);
-      if (label.equals(columnHeaderLabel))
-      {
-        return i;
-      }
-
-    }
-
-    return -1;
-  }
-
-  private class SwitchColumnVisibilityAction extends AbstractDynamicAction
-  {
-    private final String colLabel;
-    private boolean visible = true;
-
-    public SwitchColumnVisibilityAction(final String colLabel,
-        final String name)
-    {
-      this.colLabel = colLabel;
-      setText(name);
-
-    }
-
-    public void refresh()
-    {
-      setChecked(visible);
-    }
-
-    int[] toIntArray(List<Integer> list)
-    {
-      int[] ret = new int[list.size()];
-      int i = 0;
-      for (Integer e : list)
-        ret[i++] = e.intValue();
-      return ret;
-    }
-
-    @Override
-    public void run()
-    {
-      // make sure to do show all to find correct column index
-      natTable.doCommand(new ShowAllColumnsCommand());
-      int columnPositionBylabel = getColumnPositionBylabel(colLabel);
-      visible = !visible;
-      if (visible)
-      {
-        hiddenCols.remove((Object) Integer.valueOf(columnPositionBylabel));
-        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
-            columnPositionBylabel, 100);
-      }
-      else
-      {
-        hiddenCols.add(columnPositionBylabel);
-        bodyLayer.getBodyDataLayer().setColumnWidthByPosition(
-            columnPositionBylabel, 0);
-      }
-
-      if (hiddenCols.size() > 0)
-        natTable.doCommand(new MultiColumnHideCommand(natTable, toIntArray(
-            hiddenCols)));
-
-      natTable.layout(true);
-
-    }
 
   }
 
