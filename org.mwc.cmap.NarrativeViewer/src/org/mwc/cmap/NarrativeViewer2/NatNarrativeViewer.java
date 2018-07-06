@@ -115,7 +115,7 @@ public class NatNarrativeViewer
 
     }
 
-    int[] toIntArray(final List<Integer> list)
+    private final int[] toIntArray(final List<Integer> list)
     {
       final int[] ret = new int[list.size()];
       int i = 0;
@@ -439,7 +439,7 @@ public class NatNarrativeViewer
 
   }
 
-  int getColumnPositionBylabel(final String label)
+  private final int getColumnPositionBylabel(final String label)
   {
 
     final int columnCount = natTable.getColumnCount();
