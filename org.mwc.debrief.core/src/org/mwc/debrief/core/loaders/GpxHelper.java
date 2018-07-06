@@ -16,6 +16,8 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Writer;
+import java.util.Collection;
 import java.util.List;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -53,4 +55,14 @@ public interface GpxHelper
 	 *          GPX file to save to.
 	 */
 	void marshall(List<TrackWrapper> tracks, File saveToGpx);
+
+	 /**
+   * Will marshall in gpx 1.0 version only
+   * 
+   * @param from
+   *          tracks to export
+   * @param writer
+   *          string target
+   */
+  void marshall(List<TrackWrapper> tracks, Writer writer);
 }

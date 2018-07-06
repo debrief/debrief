@@ -21,6 +21,7 @@ import static org.mwc.debrief.core.loaders.GpxUtil.isValid;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,13 +38,13 @@ import org.jdom.transform.JDOMSource;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.gpx.mappers.TrackMapper;
 
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Layers;
-
 import com.topografix.gpx.v10.Gpx;
 import com.topografix.gpx.v10.Gpx.Trk;
 import com.topografix.gpx.v10.ObjectFactory;
 import com.topografix.gpx.v11.GpxType;
+
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
 
 /**
  * JAXB based implementation for marhsalling and unmarshalling. EclipseLink is
@@ -198,4 +199,48 @@ public class JaxbGpxHelper implements GpxHelper
 			CorePlugin.errorDialog("Export to GPS", "Problem during the export." + dialogMsg);
 		}
 	}
+	
+
+  @Override
+  public void marshall(final List<TrackWrapper> tracks, final Writer writer)
+  {
+    try
+    {
+      if (tracks.size() > 0)
+      {
+        CorePlugin.logError(Status.INFO, "Exporting " + tracks.size()
+            + " tracks to String destination ", null);
+
+        final Gpx gpxType = GPX_1_0_OBJ_FACTORY.createGpx();
+        gpxType.setVersion("1.0");
+        gpxType.setName("Exported DebriefNG tracks");
+        gpxType.setCreator("DebriefNG");
+
+        final List<Trk> gpxTracks = trackMapper.toGpx10(tracks);
+        gpxType.getTrk().addAll(gpxTracks);
+
+        final Marshaller marshaller = GPX_1_0_JAXB_CTX.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.marshal(gpxType, writer);
+      }
+      else
+      {
+        CorePlugin.logError(Status.INFO, "No tracks vailable to export", null);
+        CorePlugin.infoDialog("Export to GPS", "No tracks vailable to export");
+      }
+    }
+    catch (final Exception e)
+    {
+      CorePlugin.logError(
+          Status.ERROR,
+          "Error while marshalling to  GPX String: ", e);
+      String dialogMsg = "";
+      if (e.getMessage() != null)
+      {
+        dialogMsg = "Reason: " + e.getMessage();
+      }
+      CorePlugin.errorDialog("Export to GPS", "Problem during the export." + dialogMsg);
+    }
+  }
+	
 }

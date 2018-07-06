@@ -16,7 +16,9 @@ package org.mwc.debrief.core.gpx;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -48,7 +50,7 @@ public class ImportGPX
 		final GpxHelper helper = new JaxbGpxHelper();
 		helper.marshall(tracks, outputFile);
 	}
-	
+	 
 	public static List<TrackWrapper> getTracksToMarshall(final Layers from)
 	{
 		final Enumeration<Editable> allLayers = from.elements();
@@ -63,5 +65,12 @@ public class ImportGPX
 		}
 		return tracks;
 	}
+
+  public static void doExport(List<TrackWrapper> tracks,
+      StringWriter writer)
+  {
+    final GpxHelper helper = new JaxbGpxHelper();
+    helper.marshall(tracks, writer);
+  }
 
 }
