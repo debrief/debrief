@@ -14,10 +14,8 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.Date;
 import java.util.List;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
@@ -27,7 +25,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
 public class CSVExportPage1 extends CustomWizardPage
@@ -170,13 +167,9 @@ public class CSVExportPage1 extends CustomWizardPage
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
         true, sensor);
 
-    new Label(contents, SWT.NONE);
-    new Label(contents, SWT.NONE);
     unitNameTxt = addTxtField(contents, "Unit Name:", "Subject platform",
         unitName);
 
-    new Label(contents, SWT.NONE);
-    new Label(contents, SWT.NONE);
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
         true, flag);
     typeTxt = addTxtField(contents, "Type:", "Subject platform type", type);
