@@ -236,6 +236,11 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         CorePlugin.logError(IStatus.ERROR,
             "Error while writing to CSV exchange file", e);
       }
+      catch (final NumberFormatException e)
+      {
+        CorePlugin.logError(IStatus.ERROR,
+            "Error while calculating Major Axis", e);
+      }
       finally
       {
         if (fos != null)
