@@ -133,7 +133,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         fos = new FileWriter(outFile);
 
         final DateFormat dateFormatter = new GMTDateFormat(
-            "yyyy-MM-dd'T'HH:mm'Z'", Locale.ENGLISH);
+            "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
         final DateFormat cutOffFormatter = new GMTDateFormat(
             "yyyyMMdd", Locale.ENGLISH);
 
