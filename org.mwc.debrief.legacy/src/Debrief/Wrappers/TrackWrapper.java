@@ -852,8 +852,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
   private HiResDate _lastArrowFrequency = new HiResDate(0);
 
-  private HiResDate _lastDataFrequency = new HiResDate(0,
-      TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
   /**
    * whether to show a time label at the start/end of the track
@@ -2630,16 +2628,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   }
 
   /**
-   * method to allow the setting of data sampling frequencies for the track & sensor data
-   *
-   * @return frequency to use
-   */
-  public final HiResDate getResampleDataAt()
-  {
-    return this._lastDataFrequency;
-  }
-
-  /**
    * get our child segments
    *
    * @return
@@ -4135,6 +4123,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    *          frequency to use
    */
   @FireExtended
+  @Override
   public final void setResampleDataAt(final HiResDate theVal)
   {
     this._lastDataFrequency = theVal;
