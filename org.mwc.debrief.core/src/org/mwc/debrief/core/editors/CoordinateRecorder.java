@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,37 +37,53 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.SteppingListener;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class CoordinateRecorder implements PropertyChangeListener,
     SteppingListener
 {
-  private final Layers _myLayers;
-  private final PlainProjection _projection;
-  final private Map<String, TrackWrapper> _tracks =
-      new HashMap<String, TrackWrapper>();
-  final private List<String> _times = new ArrayList<String>();
-  private boolean _running = false;
-  final private TimeControlPreferences _timePrefs;
-
-  public CoordinateRecorder(final Layers _myLayers,
-      final PlainProjection plainProjection, TimeControlPreferences timePreferences)
+  private static List<NarrativeEntry> findEntries(final HiResDate startTime,
+      final HiResDate endTime, final Layers layers)
   {
-    this._myLayers = _myLayers;
-    _projection = plainProjection;
-    _timePrefs = timePreferences;
+    final Layer narr = layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+    if (narr != null)
+    {
+      final TimePeriod.BaseTimePeriod period = new TimePeriod.BaseTimePeriod(
+          startTime, endTime);
+      final List<NarrativeEntry> res = new ArrayList<NarrativeEntry>();
+
+      final NarrativeWrapper narrW = (NarrativeWrapper) narr;
+      final Enumeration<Editable> iter = narrW.elements();
+      while (iter.hasMoreElements())
+      {
+        final NarrativeEntry ne = (NarrativeEntry) iter.nextElement();
+        if (period.contains(ne.getDTG()))
+        {
+          res.add(ne);
+        }
+      }
+
+      return res;
+    }
+    return null;
   }
 
   /**
@@ -75,7 +93,8 @@ public class CoordinateRecorder implements PropertyChangeListener,
    *          document we're working on.
    * @return
    */
-  private void injectColors(final Document doc)
+  private static void injectColors(final Document doc,
+      final Map<String, TrackWrapper> trackList)
   {
 
     // get the tracks
@@ -88,7 +107,7 @@ public class CoordinateRecorder implements PropertyChangeListener,
       final String name = thisTrack.getElementsByTagName("name").item(0)
           .getTextContent();
 
-      final TrackWrapper track = _tracks.get(name);
+      final TrackWrapper track = trackList.get(name);
       final Color color = track.getColor();
 
       final Element extensions = doc.createElement("extensions");
@@ -104,17 +123,19 @@ public class CoordinateRecorder implements PropertyChangeListener,
    *
    * @param doc
    *          document we're working on.
-   * @param dims the screen dimensions of the Debrief plot
-   * @param interval the interval between auto time steps
+   * @param dims
+   *          the screen dimensions of the Debrief plot
+   * @param interval
+   *          the interval between auto time steps
    * @return
    */
-  private void injectDimensionsAndInterval(final Document doc, final Dimension dims, final long interval)
+  private static void injectDimensionsAndInterval(final Document doc,
+      final Dimension dims, final long interval, final Element extensions)
   {
 
     // get the tracks
     final Node tracks = doc.getElementsByTagName("gpx").item(0);
 
-    final Element extensions = doc.createElement("extensions");
     final Element col = doc.createElement("dimensions");
     col.setAttribute("width", "" + (int) dims.getWidth());
     col.setAttribute("height", "" + (int) dims.getHeight());
@@ -123,6 +144,69 @@ public class CoordinateRecorder implements PropertyChangeListener,
     inter.setAttribute("millis", "" + interval);
     extensions.appendChild(inter);
     tracks.appendChild(extensions);
+  }
+
+  /**
+   * put the narrative entries into the object
+   *
+   * @param doc
+   * @param entries
+   * @param extensions
+   * @param worldIntervalMillis
+   * @param modelIntervalMillis
+   * @param startTime
+   */
+  private static void injectEntries(final Document doc,
+      final List<NarrativeEntry> entries, final Element extensions,
+      final long startTime, final long modelIntervalMillis,
+      final long worldIntervalMillis)
+  {
+    if (entries != null && !entries.isEmpty())
+    {
+      // sort out a scale factor
+      final double scale = ((double) worldIntervalMillis)
+          / ((double) modelIntervalMillis);
+
+      final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
+      final Element dest = doc.createElement("NarrativeEntries");
+      for (final NarrativeEntry t : entries)
+      {
+        final Element entry = doc.createElement("Entry");
+        final String timeStr = df.format(t.getDTG().getDate());
+        entry.setAttribute("dateStr", timeStr);
+        entry.setAttribute("Text", t.getEntry());
+
+        final double elapsed = t.getDTG().getDate().getTime() - startTime;
+        final double scaled = elapsed * scale;
+
+        entry.setAttribute("elapsed", "" + (long) scaled);
+
+        dest.appendChild(entry);
+      }
+      extensions.appendChild(dest);
+    }
+  }
+
+  private final Layers _myLayers;
+  private final PlainProjection _projection;
+  final private Map<String, TrackWrapper> _tracks =
+      new HashMap<String, TrackWrapper>();
+
+  final private List<String> _times = new ArrayList<String>();
+
+  private boolean _running = false;
+
+  final private TimeControlPreferences _timePrefs;
+
+  private HiResDate _startTime;
+
+  public CoordinateRecorder(final Layers _myLayers,
+      final PlainProjection plainProjection,
+      final TimeControlPreferences timePreferences)
+  {
+    this._myLayers = _myLayers;
+    _projection = plainProjection;
+    _timePrefs = timePreferences;
   }
 
   private Document loadDocument(final String initialDoc)
@@ -236,6 +320,7 @@ public class CoordinateRecorder implements PropertyChangeListener,
     _tracks.clear();
     _times.clear();
     _running = true;
+    _startTime = now;
   }
 
   @Override
@@ -245,18 +330,6 @@ public class CoordinateRecorder implements PropertyChangeListener,
 
     final List<TrackWrapper> list = new ArrayList<TrackWrapper>();
     list.addAll(_tracks.values());
-
-    // for(TrackWrapper t: _tracks.values())
-    // {
-    // System.out.println("=====");
-    // Enumeration<Editable> items = t.getPositionIterator();
-    // while(items.hasMoreElements())
-    // {
-    // FixWrapper fw = (FixWrapper) items.nextElement();
-    // WorldLocation loc = fw.getLocation();
-    // System.out.println(loc.getLong() + ", " + loc.getLat());
-    // }
-    // }
 
     // output tracks to a string
     final StringWriter writer = new StringWriter();
@@ -270,9 +343,25 @@ public class CoordinateRecorder implements PropertyChangeListener,
     if (doc != null)
     {
       // put the colors in, as extensions
-      injectColors(doc);
-      injectDimensionsAndInterval(doc, _projection.getScreenArea(), _timePrefs.getAutoInterval().getMillis());
-      
+      injectColors(doc, _tracks);
+
+      final Element extensions = doc.createElement("extensions");
+
+      // what's the real world time step?
+      final long intervalMillis = _timePrefs.getAutoInterval().getMillis();
+
+      // and the model world time step?
+      final long modelIntervalMillis = _timePrefs.getSmallStep().getMillis();
+
+      injectDimensionsAndInterval(doc, _projection.getScreenArea(),
+          intervalMillis, extensions);
+
+      // also get the narrative entries
+      final List<NarrativeEntry> entries = findEntries(_startTime, now,
+          _myLayers);
+      injectEntries(doc, entries, extensions, _startTime.getDate().getTime(),
+          modelIntervalMillis, intervalMillis);
+
       outputDocument(doc);
     }
   }
