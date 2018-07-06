@@ -291,6 +291,7 @@ public class XugglePlayer extends Composite {
 
 	public void setStretchMode(boolean stretchMode) {
 		this.stretchMode = stretchMode;
+		videoBuffer.repaint();
 	}
 
 	protected void firePlaying(long milli) {
