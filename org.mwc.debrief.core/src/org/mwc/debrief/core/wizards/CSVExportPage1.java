@@ -34,6 +34,11 @@ public class CSVExportPage1 extends CustomWizardPage
 {
 
   public static final String PAGE_ID = "1. Subject";
+  private static final String CSV_EXPORT_SENSOR = "CSV_EXPORT_sensor";
+  private static final String CSV_EXPORT_FLAG = "CSV_EXPORT_flag";
+  private static final String CSV_EXPORT_TYPE = "CSV_EXPORT_type";
+  private static final String CSV_EXPORT_UNIT = "CSV_EXPORT_unit";
+  private static final String CSV_EXPORT_PROVENANCE = "CSV_EXPORT_provenance";
 
   @Override
   protected List<String> getPageNames()
@@ -75,7 +80,6 @@ public class CSVExportPage1 extends CustomWizardPage
   private String type;
   private String sensor;
   private String flag;
-  private Date infoCutoffDate = new Date();
   private String unitName;
   private String semiMajorAxis = "0.5";
   private String semiMinorAxis = "0.5";
@@ -161,8 +165,8 @@ public class CSVExportPage1 extends CustomWizardPage
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
 
-    provenanceTxt = addTxtField(contents, "Provenance:",
-        "Source platform, \n" + "Eg: HMS Nelson", provenance);
+    provenanceTxt = addTxtField(contents, "Provenance:", "Source platform, \n"
+        + "Eg: HMS Nelson", provenance);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
         true, sensor);
 
@@ -175,14 +179,13 @@ public class CSVExportPage1 extends CustomWizardPage
     new Label(contents, SWT.NONE);
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
         true, flag);
-    typeTxt = addTxtField(contents,  "Type:", "Subject platform type",
-         type);
-    
-    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):","½ ellipse length",
-        semiMajorAxis);
+    typeTxt = addTxtField(contents, "Type:", "Subject platform type", type);
 
-    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):","½ ellipse length"
-        ,semiMinorAxis);
+    semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):",
+        "½ ellipse length", semiMajorAxis);
+
+    semiMinorAxisTxt = addTxtField(contents, "Semi-Minor Axis (Nm):",
+        "½ ellipse length", semiMinorAxis);
 
     return contents;
   }
@@ -190,12 +193,6 @@ public class CSVExportPage1 extends CustomWizardPage
   public String getFlag()
   {
     return flag;
-  }
-
-  @SuppressWarnings("deprecation")
-  public String getInfoCutoffDate()
-  {
-    return infoCutoffDate.toGMTString();
   }
 
   public String getProvenance()
@@ -230,7 +227,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
     return unitName;
   }
-  
+
   public String getSemiMajorAxis()
   {
     return semiMajorAxis;
@@ -240,7 +237,7 @@ public class CSVExportPage1 extends CustomWizardPage
   {
     return semiMinorAxis;
   }
-  
+
   public void readFormPref()
   {
 
@@ -250,30 +247,28 @@ public class CSVExportPage1 extends CustomWizardPage
     }
     if (unitName == null || unitName.isEmpty())
     {
-      unitName = getPrefValue("CSV_EXPORT_unit", unitName);
+      unitName = getPrefValue(CSV_EXPORT_UNIT, unitName);
     }
-    type = getPrefValue("CSV_EXPORT_type", type);
-    flag = getPrefValue("CSV_EXPORT_flag", flag);
-    sensor = getPrefValue("CSV_EXPORT_sensor", sensor);
-    
+    type = getPrefValue(CSV_EXPORT_TYPE, type);
+    flag = getPrefValue(CSV_EXPORT_FLAG, flag);
+    sensor = getPrefValue(CSV_EXPORT_SENSOR, sensor);
+
   }
 
   public void writeToPref()
   {
 
-    provenance = setPrefValue("CSV_EXPORT_provenance", provenance);
+    provenance = setPrefValue(CSV_EXPORT_PROVENANCE, provenance);
 
-    unitName = setPrefValue("CSV_EXPORT_unit", unitName);
+    unitName = setPrefValue(CSV_EXPORT_UNIT, unitName);
 
-    type = setPrefValue("CSV_EXPORT_type", type);
-    flag = setPrefValue("CSV_EXPORT_flag", flag);
-    sensor = setPrefValue("CSV_EXPORT_sensor", sensor);
+    type = setPrefValue(CSV_EXPORT_TYPE, type);
+    flag = setPrefValue(CSV_EXPORT_FLAG, flag);
+    sensor = setPrefValue(CSV_EXPORT_SENSOR, sensor);
     semiMajorAxis = getTxtVal(semiMajorAxisTxt, semiMajorAxis);
     semiMinorAxis = getTxtVal(semiMinorAxisTxt, semiMinorAxis);
 
   }
-
- 
 
   public void readValues()
   {
