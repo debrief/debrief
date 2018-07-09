@@ -235,8 +235,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
   public static final String DYNAMIC_FEATURES = "Dynamic Features";
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -322,12 +322,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
    * @author ian
    * 
    */
-  private class ReformatListener implements PropertyChangeListener,
-      Serializable
+  private class ReformatListener implements PropertyChangeListener, Serializable
   {
     /**
-		 * 
-		 */
+     * 
+     */
     private static final long serialVersionUID = 1L;
 
     public void propertyChange(final PropertyChangeEvent evt)
@@ -402,22 +401,22 @@ public class Layers implements Serializable, Plottable, PlottablesType
     {
       res = getDebriefOrigin();
     }
-    else if(res.getHeight() == 0 && res.getWidth() == 0)
+    else if (res.getHeight() == 0 && res.getWidth() == 0)
     {
       // ok, expand it, so we've got some coverage
       final double diagExtendNm = 1d;
       final WorldLocation centre = res.getCentreAtSurface();
-      
+
       // create the new corners
-      final WorldLocation newTL =
-           centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(315),
-              new WorldDistance(diagExtendNm, WorldDistance.NM)
-                  .getValueIn(WorldDistance.DEGS), 0));
-      final WorldLocation newBR =
-           centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(135),
-              new WorldDistance(diagExtendNm, WorldDistance.NM)
-                  .getValueIn(WorldDistance.DEGS), 0));
-      
+      final WorldLocation newTL = centre.add(new WorldVector(
+          MWC.Algorithms.Conversions.Degs2Rads(315), new WorldDistance(
+              diagExtendNm, WorldDistance.NM).getValueIn(WorldDistance.DEGS),
+          0));
+      final WorldLocation newBR = centre.add(new WorldVector(
+          MWC.Algorithms.Conversions.Degs2Rads(135), new WorldDistance(
+              diagExtendNm, WorldDistance.NM).getValueIn(WorldDistance.DEGS),
+          0));
+
       // and extend the area to include the new corners
       res.extend(newTL);
       res.extend(newBR);
@@ -557,8 +556,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
     return -1;
   }
 
-  /** create a version of the supplied layer name
-   * that doesn't exist, by appending a counter
+  /**
+   * create a version of the supplied layer name that doesn't exist, by appending a counter
+   * 
    * @param prefix
    * @return
    */
@@ -807,8 +807,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     if (!_suspendFiringExtended)
     {
-      final Enumeration<DataListener> enumer =
-          _dataExtendedListeners.elements();
+      final Enumeration<DataListener> enumer = _dataExtendedListeners
+          .elements();
       while (enumer.hasMoreElements())
       {
         final DataListener thisOne = (DataListener) enumer.nextElement();
@@ -824,8 +824,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     if (!_suspendFiringExtended)
     {
-      final Enumeration<DataListener> enumer =
-          _dataExtendedListeners.elements();
+      final Enumeration<DataListener> enumer = _dataExtendedListeners
+          .elements();
       while (enumer.hasMoreElements())
       {
         final DataListener thisOne = (DataListener) enumer.nextElement();
@@ -861,8 +861,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public void fireReformatted(final Layer changedLayer)
   {
-    final Enumeration<DataListener> enumer =
-        _dataReformattedListeners.elements();
+    final Enumeration<DataListener> enumer = _dataReformattedListeners
+        .elements();
     while (enumer.hasMoreElements())
     {
       final DataListener thisOne = (DataListener) enumer.nextElement();
@@ -1248,9 +1248,8 @@ public class Layers implements Serializable, Plottable, PlottablesType
      */
     public BeanDescriptor getBeanDescriptor()
     {
-      final BeanDescriptor bp =
-          new BeanDescriptor(Layers.class,
-              MWC.GUI.LayerManager.Swing.SwingLayerManager.class);
+      final BeanDescriptor bp = new BeanDescriptor(Layers.class,
+          MWC.GUI.LayerManager.Swing.SwingLayerManager.class);
       bp.setDisplayName("Layer Manager");
       return bp;
     }
@@ -1310,31 +1309,32 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
   public Layer checkLayer(Layer layer, final String name)
   {
-    /** if it's a monster layer, we won't bother searching it
+    /**
+     * if it's a monster layer, we won't bother searching it
      * 
      */
     final long MAX_TO_SEARCH = 1000;
-    
+
     Layer res = null;
     // don't search the layer if it's a monster
-    if(layer instanceof BaseLayer)
+    if (layer instanceof BaseLayer)
     {
       BaseLayer bl = (BaseLayer) layer;
-      if(bl.size() > MAX_TO_SEARCH)
+      if (bl.size() > MAX_TO_SEARCH)
       {
         return null;
       }
     }
-    
+
     // ok, continue with normal processing
     Enumeration<Editable> iter = layer.elements();
-    while(iter.hasMoreElements() && res == null)
+    while (iter.hasMoreElements() && res == null)
     {
       Editable ele = iter.nextElement();
-      if(ele instanceof Layer)
+      if (ele instanceof Layer)
       {
         Layer l = (Layer) ele;
-        if(l.getName() != null && l.getName().equals(name))
+        if (l.getName() != null && l.getName().equals(name))
         {
           return l;
         }
@@ -1346,12 +1346,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
     return res;
   }
-  
+
   public Layer findLayer(final String theName, final boolean recursive)
   {
     Layer res = null;
-    
-    if(recursive)
+
+    if (recursive)
     {
       // step through our layers
       final Enumeration<Editable> enumer = _theLayers.elements();
@@ -1360,10 +1360,10 @@ public class Layers implements Serializable, Plottable, PlottablesType
         final Layer thisL = (Layer) enumer.nextElement();
         final String layerName = thisL.getName();
         if (layerName != null && layerName.equalsIgnoreCase(theName))
-          {
-            res = thisL;
-            break;
-          }
+        {
+          res = thisL;
+          break;
+        }
         else
         {
           res = checkLayer(thisL, theName);
@@ -1377,8 +1377,57 @@ public class Layers implements Serializable, Plottable, PlottablesType
     {
       res = findLayer(theName);
     }
-      
-    
+
     return res;
+  }
+
+  /**
+   * walk the object tree, to find this item. Then delete it
+   * 
+   * @param item
+   */
+  public boolean removeThisEditable(final Layer parent, final Editable item)
+  {
+    boolean found = false;
+
+    if(parent != null)
+    {
+      // ok, search inside this layer
+      final Enumeration<Editable> iter = parent.elements();
+      while(iter.hasMoreElements() && found == false)
+      {
+        final Editable editable = iter.nextElement();
+        if(item.equals(editable))
+        {
+          parent.removeElement(item);
+          return true;
+        }
+        else if(editable instanceof Layer)
+        {
+          Layer thisP = (Layer) editable;
+          found = removeThisEditable(thisP, item);
+        }
+      }
+    }
+    else
+    {
+      // ok, walk the layers
+      // step through our layers
+      final Enumeration<Editable> enumer = elements();
+      while (enumer.hasMoreElements() && found == false)
+      {
+        final Layer thisL = (Layer) enumer.nextElement();
+        if(item.equals(thisL))
+        {
+          removeThisLayer(thisL);
+          return true;
+        }
+        else
+        {
+          found = removeThisEditable(thisL, item);
+        }
+      }
+    }
+    return found;
   }
 }

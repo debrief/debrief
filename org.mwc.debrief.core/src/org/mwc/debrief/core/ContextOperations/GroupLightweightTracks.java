@@ -32,18 +32,88 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
-public class GroupTracks implements RightClickContextItemGenerator
+public class GroupLightweightTracks implements RightClickContextItemGenerator
 {
 
+  public static class TestMe extends TestCase
+  {
+    public void testGroup() throws ExecutionException {
+      Layers theLayers = new Layers();
+      
+      TrackWrapper tw = new TrackWrapper();
+      tw.setName("tw1");
+      tw.addFix(create(2,3,4000));
+      tw.addFix(create(2,2,5000));
+      tw.addFix(create(2,4,6000));
+      tw.addFix(create(2,6,7000));
+      
+      LightweightTrackWrapper l1 = new LightweightTrackWrapper();
+      l1.setName("l1");
+      l1.addFix(create(2,3,14000));
+      l1.addFix(create(2,2,15000));
+      l1.addFix(create(2,4,16000));
+      l1.addFix(create(2,6,17000));
+
+
+      LightweightTrackWrapper l2 = new LightweightTrackWrapper();
+      l2.setName("l2");
+      l2.addFix(create(2,3,24000));
+      l2.addFix(create(2,2,25000));
+      l2.addFix(create(2,4,26000));
+      l2.addFix(create(2,6,27000));
+      
+      LightweightTrackWrapper l3 = new LightweightTrackWrapper();
+      l3.setName("l3");
+      l3.addFix(create(2,3,34000));
+      l3.addFix(create(2,2,35000));
+      l3.addFix(create(2,4,36000));
+      l3.addFix(create(2,6,37000));
+      
+      BaseLayer holder = new BaseLayer();
+      holder.setName("Light tracks");
+      
+      holder.add(l1);
+      holder.add(l2);
+      holder.add(l3);
+      
+      theLayers.addThisLayer(holder);
+      theLayers.addThisLayer(tw);
+      
+      // check layers looks how we think
+      assertEquals("right num layers", 2, theLayers.size());
+      assertEquals("right num in holder", 3, holder.size());
+      
+      Editable[] selection = new Editable[] {l3, l1, tw};
+      GroupLightTracksOperation oper = new GroupLightTracksOperation("Do generate", l2, theLayers, selection);
+      
+      oper.execute(null, null);
+      
+      // check layers looks how we think
+      assertEquals("right num layers", 1, theLayers.size());
+      assertEquals("right num in holder", 1, holder.size());
+    }
+    
+    private FixWrapper create(double lat, double lon, long date)
+    {
+      return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat, lon, 0d), 2d, 4d ));
+    }
+  }
+  
 	/**
 	 * @param parent
 	 * @param theLayers
@@ -55,7 +125,7 @@ public class GroupTracks implements RightClickContextItemGenerator
 	{
 		boolean goForIt = false;
 
-		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+		final List<LightweightTrackWrapper> tracks = new ArrayList<LightweightTrackWrapper>();
 		
 		// we're only going to work with two or more items, and we only put them into a track wrapper
 		if (subjects.length > 1)
@@ -64,29 +134,22 @@ public class GroupTracks implements RightClickContextItemGenerator
 			for (int i = 0; i < subjects.length; i++)
 			{
 				final Editable thisE = subjects[i];
-				if (thisE instanceof TrackWrapper)
+				if (thisE instanceof LightweightTrackWrapper)
 				{
 					goForIt = true;
-					tracks.add((TrackWrapper) thisE);
-				}
-				else if (thisE instanceof TrackSegment)
-				{
-					goForIt = true;
+					tracks.add((LightweightTrackWrapper) thisE);
 				}
 				
 				if(!goForIt)
 				{
-					// don't bother showing this logging, it was just of value during development phase
-					// CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
-					
 					// may as well drop out - this item wasn't compliant
 					continue;
 				}
 			}
 		}
 
-		// check we got more than one to group
-		if(tracks.size() <= 1)
+		// check we got some
+		if(tracks.size() == 0)
 			goForIt = false;
 				
 		// ok, is it worth going for?
@@ -96,59 +159,55 @@ public class GroupTracks implements RightClickContextItemGenerator
 			parent.add(new Separator());
 
 			// put the tracks into chronological order
-			Collections.sort(tracks, new Comparator<TrackWrapper>() {
+			Collections.sort(tracks, new Comparator<LightweightTrackWrapper>() {
 
         @Override
-        public int compare(TrackWrapper o1, TrackWrapper o2)
+        public int compare(LightweightTrackWrapper o1, LightweightTrackWrapper o2)
         {
           return o1.getStartDTG().compareTo(o2.getStartDTG());
         }});
 
       // find the first track
-      final TrackWrapper editable = tracks.get(0);
-      final String title = "Group tracks into " + editable.getName();
+      final LightweightTrackWrapper editable = tracks.get(0);
+      final String title = "Group lightweight tracks into " + editable.getName();
       // create this operation
       final Action doMerge = new Action(title){
         public void run()
         {
-          final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);              
+          final IUndoableOperation theAction = new GroupLightTracksOperation(title, editable, theLayers, subjects);              
           CorePlugin.run(theAction );
         }};
       parent.add(doMerge);
 		}
 	}
 
-	private static class GroupTracksOperation extends CMAPOperation
+	private static class GroupLightTracksOperation extends CMAPOperation
 	{
 
 		/**
 		 * the parent to update on completion
 		 */
 		private final Layers _layers;
-		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private final TrackWrapper wrapper;
+		private final LightweightTrackWrapper _target;
 
 
-		public GroupTracksOperation(final String title, final TrackWrapper receiver, final Layers theLayers, final Layer[] parentLayers,
+		public GroupLightTracksOperation(final String title, final LightweightTrackWrapper target, final Layers theLayers,
 				final Editable[] subjects)
 		{
 			super(title);
-			wrapper = receiver;
+			_target = target;
 			_layers = theLayers;
-			_parents = parentLayers;
 			_subjects = subjects;
 		}
 
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			TrackWrapper.groupTracks(wrapper, _layers, _parents, _subjects);
+			LightweightTrackWrapper.groupTracks(_target, _layers, _subjects);
 			fireModified();
 			return Status.OK_STATUS;
 		}
-
-		
 		
 		@Override
 		public boolean canRedo()
