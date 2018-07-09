@@ -37,6 +37,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Properties.LineStylePropertyEditor;
+import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -72,10 +73,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                         "ResampleDataAt", "Resample data at",
                         "the data sample rate", TEMPORAL,
                         TimeFrequencyPropertyEditor.class),
-
-            displayExpertLongProp("LineStyle", "Line style",
-                "the line style used to join track points", TEMPORAL,
-                MWC.GUI.Properties.LineStylePropertyEditor.class)};
+            displayExpertLongProp("LineThickness", "Line thickness",
+                "the width to draw this track", FORMAT,
+                LineWidthPropertyEditor.class), displayExpertLongProp(
+                    "LineStyle", "Line style",
+                    "the line style used to join track points", TEMPORAL,
+                    MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -146,6 +149,21 @@ public class LightweightTrackWrapper extends PlainWrapper implements
    * the width of this track
    */
   private int _lineWidth = 3;
+  
+  /** how frequently we plot labels
+   * 
+   */
+  private long _labelFreqMillis = 0;
+  
+  /** how frequently we plot arrows
+   * 
+   */
+  private long _arrowFreqMillis = Long.MAX_VALUE /2;
+  
+  /** how frequently we plot symbols
+   * 
+   */
+  private long _symbolFreqMillis = 0;
 
   /**
    * the label describing this track
@@ -690,6 +708,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final Color myColor = getColor();
 
     dest.setColor(myColor);
+    
+    float oldWid = dest.getLineWidth();
+    dest.setLineWidth(getLineThickness());
 
     final int len = _thePositions.size();
     final Iterator<FixWrapper> iter = iterator();
@@ -698,6 +719,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final int[] yPoints = new int[len];
 
     WorldLocation firstLoc = null;
+    
+    long lastSymTime = 0;
+    long lastArrowTime = 0;
+    long lastLabelTime = 0;
 
     // build up polyline
     while (iter.hasNext())
@@ -705,14 +730,61 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final FixWrapper fw = iter.next();
       if (fw.getVisible())
       {
+        final WorldLocation thisLoc = fw.getLocation();
+        final long thisT = fw.getDateTimeGroup().getDate().getTime();
         if (firstLoc == null)
         {
-          firstLoc = fw.getLocation();
+          firstLoc = thisLoc;
+          lastSymTime = thisT;
+          lastArrowTime = thisT;
+          lastLabelTime = thisT;
         }
-        final Point loc = dest.toScreen(fw.getLocation());
+        final Point loc = dest.toScreen(thisLoc);
         xPoints[ctr] = (int) loc.getX();
         yPoints[ctr] = (int) loc.getY();
         ctr++;
+        
+        // draw the symbol
+        final boolean showSym;
+        if(thisT > lastSymTime +  _symbolFreqMillis)
+        {
+          lastSymTime = thisT;
+          showSym = true;
+        }
+        else
+        {
+          showSym = false;
+        }
+        fw.setSymbolShowing(showSym);
+        
+
+        // draw the symbol
+        final boolean showLabel;
+        if(thisT > lastLabelTime +  _labelFreqMillis)
+        {
+          lastLabelTime = thisT;
+          showLabel = true;
+        }
+        else
+        {
+          showLabel = false;
+        }
+        fw.setLabelShowing(showLabel);       
+
+        // draw the symbol
+        final boolean showArrow;
+        if(thisT > lastArrowTime +  _arrowFreqMillis)
+        {
+          lastArrowTime = thisT;
+          showArrow = true;
+        }
+        else
+        {
+          showArrow = false;
+        }
+        fw.setArrowShowing(showArrow);
+        
+        fw.paintMe(dest, thisLoc, myColor);
       }
     }
 
@@ -725,6 +797,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final Point loc = dest.toScreen(firstLoc);
       dest.drawText(getName(), loc.x + 5, loc.y);
     }
+    
+    dest.setLineWidth(oldWid);
   }
 
   /**
