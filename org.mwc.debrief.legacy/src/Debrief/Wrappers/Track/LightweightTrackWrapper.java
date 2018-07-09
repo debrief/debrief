@@ -149,6 +149,21 @@ public class LightweightTrackWrapper extends PlainWrapper implements
    * the width of this track
    */
   private int _lineWidth = 3;
+  
+  /** how frequently we plot labels
+   * 
+   */
+  private long _labelFreqMillis = 0;
+  
+  /** how frequently we plot arrows
+   * 
+   */
+  private long _arrowFreqMillis = Long.MAX_VALUE /2;
+  
+  /** how frequently we plot symbols
+   * 
+   */
+  private long _symbolFreqMillis = 0;
 
   /**
    * the label describing this track
@@ -704,6 +719,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final int[] yPoints = new int[len];
 
     WorldLocation firstLoc = null;
+    
+    long lastSymTime = 0;
+    long lastArrowTime = 0;
+    long lastLabelTime = 0;
 
     // build up polyline
     while (iter.hasNext())
@@ -711,14 +730,61 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final FixWrapper fw = iter.next();
       if (fw.getVisible())
       {
+        final WorldLocation thisLoc = fw.getLocation();
+        final long thisT = fw.getDateTimeGroup().getDate().getTime();
         if (firstLoc == null)
         {
-          firstLoc = fw.getLocation();
+          firstLoc = thisLoc;
+          lastSymTime = thisT;
+          lastArrowTime = thisT;
+          lastLabelTime = thisT;
         }
-        final Point loc = dest.toScreen(fw.getLocation());
+        final Point loc = dest.toScreen(thisLoc);
         xPoints[ctr] = (int) loc.getX();
         yPoints[ctr] = (int) loc.getY();
         ctr++;
+        
+        // draw the symbol
+        final boolean showSym;
+        if(thisT > lastSymTime +  _symbolFreqMillis)
+        {
+          lastSymTime = thisT;
+          showSym = true;
+        }
+        else
+        {
+          showSym = false;
+        }
+        fw.setSymbolShowing(showSym);
+        
+
+        // draw the symbol
+        final boolean showLabel;
+        if(thisT > lastLabelTime +  _labelFreqMillis)
+        {
+          lastLabelTime = thisT;
+          showLabel = true;
+        }
+        else
+        {
+          showLabel = false;
+        }
+        fw.setLabelShowing(showLabel);       
+
+        // draw the symbol
+        final boolean showArrow;
+        if(thisT > lastArrowTime +  _arrowFreqMillis)
+        {
+          lastArrowTime = thisT;
+          showArrow = true;
+        }
+        else
+        {
+          showArrow = false;
+        }
+        fw.setArrowShowing(showArrow);
+        
+        fw.paintMe(dest, thisLoc, myColor);
       }
     }
 
