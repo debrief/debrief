@@ -25,7 +25,6 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -1496,6 +1495,9 @@ public class ImportNarrativeDocument
             new WorldDistance(fe.rangYds, WorldDistance.YARDS),
             new WorldDistance(0, WorldDistance.METRES));
         final WorldLocation loc = fix.getLocation().add(vec);
+        
+        // overwrite the depth, to put contact at surface (since we really don't know depth)
+        loc.setDepth(0);
 
         // build the track name
         final String trackName;
