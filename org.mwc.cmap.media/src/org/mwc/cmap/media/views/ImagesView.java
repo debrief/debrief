@@ -304,8 +304,7 @@ public class ImagesView extends ViewPart {
 			@SuppressWarnings("unchecked")
 			public void mouseDoubleClick(MouseEvent event) {
 				ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label = (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
-				/*ShowImageDialog dialog = new ShowImageDialog(getSite().getShell(), label.getImageMeta().getFileName(), stretch.isChecked());
-				dialog.show();*/
+				//#2965 - 8, maximize image instead of opening in showimagedialog 
 				setFullSize(true);
 				
 			}
@@ -451,7 +450,7 @@ public class ImagesView extends ViewPart {
 		return true;
 	}
 	
-	private void selectImage(int index) {
+	private void selectImage(final int index) {
 	  //run this in a ui thread.
 	  Display.getDefault().syncExec(new Runnable()
     {
