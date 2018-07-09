@@ -952,8 +952,6 @@ public class ImportNarrativeDocument
       assertEquals("all tracks", 3, target.size());
 
       // check the size
-      final Layer t0 = target.elementAt(0);
-      final Layer t1 = target.elementAt(1);
       final Layer t2 = target.elementAt(2);
       
       // check t2 is narratives
@@ -964,6 +962,11 @@ public class ImportNarrativeDocument
       Editable sol2 = layer.last();
       assertEquals("correct name", "023_SOURCE_A FCS", sol1.getName());
       assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", sol2.getName());
+      
+      // check zero depth in target track
+      LightweightTrackWrapper light = (LightweightTrackWrapper) sol2;
+      FixWrapper first = (FixWrapper) light.getPositionIterator().nextElement();
+      assertEquals("fix has zero depth", 0d, first.getDepth(), 0.0001);
     }
 
     public void testAdvancedParseFCS() throws ParseException
