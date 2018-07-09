@@ -304,8 +304,10 @@ public class ImagesView extends ViewPart {
 			@SuppressWarnings("unchecked")
 			public void mouseDoubleClick(MouseEvent event) {
 				ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label = (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
-				ShowImageDialog dialog = new ShowImageDialog(getSite().getShell(), label.getImageMeta().getFileName(), stretch.isChecked());
-				dialog.show();
+				/*ShowImageDialog dialog = new ShowImageDialog(getSite().getShell(), label.getImageMeta().getFileName(), stretch.isChecked());
+				dialog.show();*/
+				setFullSize(true);
+				
 			}
 		});
 		modeLayout.topControl = gallery.getMainComposite();
@@ -380,6 +382,8 @@ public class ImagesView extends ViewPart {
 			}
 		};
 	}
+	
+	
 	
 	private void fillToolbarManager() {
 		IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
