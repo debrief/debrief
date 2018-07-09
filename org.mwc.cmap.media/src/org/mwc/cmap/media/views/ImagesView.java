@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
@@ -447,13 +448,23 @@ public class ImagesView extends ViewPart {
 	}
 	
 	private void selectImage(int index) {
-		ImageMetaData current = images.get(index);		
-		gallery.selectImage(current, true);
-		imagePanel.setCurrentImage(current.getFileName(), null, false);
-		if (index != images.size() - 1) {
-			imagePanel.setNextImage(images.get(index + 1).getFileName(), null);
-		}
-		ImageLoader.getInstance().load(imagePanel);
+	  //run this in a ui thread.
+	  Display.getDefault().syncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        ImageMetaData current = images.get(index);    
+        gallery.selectImage(current, true);
+        imagePanel.setCurrentImage(current.getFileName(), null, false);
+        if (index != images.size() - 1) {
+          imagePanel.setNextImage(images.get(index + 1).getFileName(), null);
+        }
+        ImageLoader.getInstance().load(imagePanel);    
+      }
+    });
+		
 	}
 	
 	private void setFullSize(boolean fullSize) {
