@@ -48,6 +48,7 @@ public abstract class LightweightTrackHandler extends
   private static final String COLOR = "Color";
   private static final String SHOW_NAME = "NameVisible";
   private static final String LINE_STYLE = "LineStyle";
+  private static final String LINE_THICKNESS = "LineThickness";
 
   
   public void exportThisPlottable(Plottable plottable,
@@ -60,6 +61,7 @@ public abstract class LightweightTrackHandler extends
     trk.setAttribute(VISIBLE, writeThis(track.getVisible()));
     trk.setAttribute(SHOW_NAME, writeThis(track.getNameVisible()));
     trk.setAttribute(LINE_STYLE, writeThis(track.getLineStyle()));
+    trk.setAttribute(LINE_THICKNESS, writeThis(track.getLineThickness()));
 
     Color hisColor = track.getCustomColor();
     if (hisColor != null)
@@ -89,6 +91,7 @@ public abstract class LightweightTrackHandler extends
   protected String _name;
   private boolean _nameVisible;
   protected int _lineStyle;
+  protected Integer _lineWidth;
   protected Font _font;
 
   protected LightweightTrackHandler()
@@ -102,6 +105,14 @@ public abstract class LightweightTrackHandler extends
       public void addPlottable(Plottable plottable)
       {
         _fixes.add((FixWrapper) plottable);
+      }
+    });
+    addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
+    {
+      @Override
+      public void setValue(final String name, final int value)
+      {
+        _lineWidth = value;
       }
     });
 
@@ -175,10 +186,16 @@ public abstract class LightweightTrackHandler extends
     {
       track.add(t);
     }
-
+    
+    if(_lineWidth != null)
+    {
+      track.setLineThickness(_lineWidth);
+    }
+    
     _fixes.clear();
     _color = null;
     _font = null;
+    _lineWidth = null;
 
     storeTrack(track);
 
