@@ -37,6 +37,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GUI.Properties.LineStylePropertyEditor;
+import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -72,10 +73,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                         "ResampleDataAt", "Resample data at",
                         "the data sample rate", TEMPORAL,
                         TimeFrequencyPropertyEditor.class),
-
-            displayExpertLongProp("LineStyle", "Line style",
-                "the line style used to join track points", TEMPORAL,
-                MWC.GUI.Properties.LineStylePropertyEditor.class)};
+            displayExpertLongProp("LineThickness", "Line thickness",
+                "the width to draw this track", FORMAT,
+                LineWidthPropertyEditor.class), displayExpertLongProp(
+                    "LineStyle", "Line style",
+                    "the line style used to join track points", TEMPORAL,
+                    MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -690,6 +693,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final Color myColor = getColor();
 
     dest.setColor(myColor);
+    
+    float oldWid = dest.getLineWidth();
+    dest.setLineWidth(getLineThickness());
 
     final int len = _thePositions.size();
     final Iterator<FixWrapper> iter = iterator();
@@ -725,6 +731,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final Point loc = dest.toScreen(firstLoc);
       dest.drawText(getName(), loc.x + 5, loc.y);
     }
+    
+    dest.setLineWidth(oldWid);
   }
 
   /**
