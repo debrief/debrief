@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.ContextOperations;
 
@@ -44,135 +44,143 @@ import MWC.GUI.Layers;
 public class GroupTracks implements RightClickContextItemGenerator
 {
 
-	/**
-	 * @param parent
-	 * @param theLayers
-	 * @param parentLayers
-	 * @param subjects
-	 */
-	public void generate(final IMenuManager parent, final Layers theLayers,
-			final Layer[] parentLayers, final Editable[] subjects)
-	{
-		boolean goForIt = false;
+  private static class GroupTracksOperation extends CMAPOperation
+  {
 
-		final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
-		
-		// we're only going to work with two or more items, and we only put them into a track wrapper
-		if (subjects.length > 1)
-		{
-			// are they tracks, or track segments
-			for (int i = 0; i < subjects.length; i++)
-			{
-				final Editable thisE = subjects[i];
-				if (thisE instanceof TrackWrapper)
-				{
-					goForIt = true;
-					tracks.add((TrackWrapper) thisE);
-				}
-				else if (thisE instanceof TrackSegment)
-				{
-					goForIt = true;
-				}
-				
-				if(!goForIt)
-				{
-					// don't bother showing this logging, it was just of value during development phase
-					// CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
-					
-					// may as well drop out - this item wasn't compliant
-					continue;
-				}
-			}
-		}
+    /**
+     * the parent to update on completion
+     */
+    private final Layers _layers;
+    private final Layer[] _parents;
+    private final Editable[] _subjects;
+    private final TrackWrapper wrapper;
 
-		// check we got more than one to group
-		if(tracks.size() <= 1)
-			goForIt = false;
-				
-		// ok, is it worth going for?
-		if (goForIt)
-		{
-			// right,stick in a separator
-			parent.add(new Separator());
+    public GroupTracksOperation(final String title, final TrackWrapper receiver,
+        final Layers theLayers, final Layer[] parentLayers,
+        final Editable[] subjects)
+    {
+      super(title);
+      wrapper = receiver;
+      _layers = theLayers;
+      _parents = parentLayers;
+      _subjects = subjects;
+    }
 
-			// put the tracks into chronological order
-			Collections.sort(tracks, new Comparator<TrackWrapper>() {
+    @Override
+    public boolean canRedo()
+    {
+      return false;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return false;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      TrackWrapper.groupTracks(wrapper, _layers, _parents, _subjects);
+      fireModified();
+      return Status.OK_STATUS;
+    }
+
+    private void fireModified()
+    {
+      _layers.fireExtended();
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      CorePlugin.logError(IStatus.INFO,
+          "Undo not permitted for merge operation", null);
+      return null;
+    }
+  }
+
+  /**
+   * @param parent
+   * @param theLayers
+   * @param parentLayers
+   * @param subjects
+   */
+  @Override
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    boolean goForIt = false;
+
+    final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
+
+    // we're only going to work with two or more items, and we only put them into a track wrapper
+    if (subjects.length > 1)
+    {
+      // are they tracks, or track segments
+      for (int i = 0; i < subjects.length; i++)
+      {
+        final Editable thisE = subjects[i];
+        if (thisE instanceof TrackWrapper)
+        {
+          goForIt = true;
+          tracks.add((TrackWrapper) thisE);
+        }
+        else if (thisE instanceof TrackSegment)
+        {
+          goForIt = true;
+        }
+
+        if (!goForIt)
+        {
+          // don't bother showing this logging, it was just of value during development phase
+          // CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry",
+          // null);
+
+          // may as well drop out - this item wasn't compliant
+          continue;
+        }
+      }
+    }
+
+    // check we got more than one to group
+    if (tracks.size() <= 1)
+      goForIt = false;
+
+    // ok, is it worth going for?
+    if (goForIt)
+    {
+      // right,stick in a separator
+      parent.add(new Separator());
+
+      // put the tracks into chronological order
+      Collections.sort(tracks, new Comparator<TrackWrapper>()
+      {
 
         @Override
-        public int compare(TrackWrapper o1, TrackWrapper o2)
+        public int compare(final TrackWrapper o1, final TrackWrapper o2)
         {
           return o1.getStartDTG().compareTo(o2.getStartDTG());
-        }});
+        }
+      });
 
       // find the first track
       final TrackWrapper editable = tracks.get(0);
       final String title = "Group tracks into " + editable.getName();
       // create this operation
-      final Action doMerge = new Action(title){
+      final Action doMerge = new Action(title)
+      {
+        @Override
         public void run()
         {
-          final IUndoableOperation theAction = new GroupTracksOperation(title, editable, theLayers, parentLayers, subjects);              
-          CorePlugin.run(theAction );
-        }};
+          final IUndoableOperation theAction = new GroupTracksOperation(title,
+              editable, theLayers, parentLayers, subjects);
+          CorePlugin.run(theAction);
+        }
+      };
       parent.add(doMerge);
-		}
-	}
-
-	private static class GroupTracksOperation extends CMAPOperation
-	{
-
-		/**
-		 * the parent to update on completion
-		 */
-		private final Layers _layers;
-		private final Layer[] _parents;
-		private final Editable[] _subjects;
-		private final TrackWrapper wrapper;
-
-
-		public GroupTracksOperation(final String title, final TrackWrapper receiver, final Layers theLayers, final Layer[] parentLayers,
-				final Editable[] subjects)
-		{
-			super(title);
-			wrapper = receiver;
-			_layers = theLayers;
-			_parents = parentLayers;
-			_subjects = subjects;
-		}
-
-		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			TrackWrapper.groupTracks(wrapper, _layers, _parents, _subjects);
-			fireModified();
-			return Status.OK_STATUS;
-		}
-
-		
-		
-		@Override
-		public boolean canRedo()
-		{
-			return false;
-		}
-
-		@Override
-		public boolean canUndo()
-		{
-			return false;
-		}
-		
-		private void fireModified()
-		{
-			_layers.fireExtended();
-		}
-
-		@Override
-		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
-				throws ExecutionException
-		{
-			CorePlugin.logError(Status.INFO, "Undo not permitted for merge operation", null);
-			return null;
-		}
-	}
+    }
+  }
 }

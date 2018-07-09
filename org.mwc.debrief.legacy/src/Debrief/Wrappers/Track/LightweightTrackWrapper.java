@@ -92,6 +92,43 @@ public class LightweightTrackWrapper extends PlainWrapper implements
    */
   private static final long serialVersionUID = 1L;
 
+  /**
+   * group these track objects into this LightWeight track
+   *
+   * @param target
+   * @param layers
+   * @param subjects
+   */
+  public static void groupTracks(final LightweightTrackWrapper target,
+      final Layers layers, final Editable[] subjects)
+  {
+    // ok, loop through the subjects, adding them onto the target
+    for (int i = 0; i < subjects.length; i++)
+    {
+      final LightweightTrackWrapper source =
+          (LightweightTrackWrapper) subjects[i];
+      if (source != target)
+      {
+        final Collection<FixWrapper> deleted = new ArrayList<FixWrapper>();
+
+        final Enumeration<Editable> pIter = source.getPositionIterator();
+        while (pIter.hasMoreElements())
+        {
+          deleted.add((FixWrapper) pIter.nextElement());
+        }
+
+        for (final FixWrapper t : deleted)
+        {
+          source.removeElement(t);
+          target.addFix(t);
+        }
+
+        // and remove the object
+        layers.removeThisEditable(null, source);
+      }
+    }
+  }
+
   private TimePeriod _cachedPeriod;
 
   private long _timeCachedPeriodCalculated;
@@ -866,41 +903,5 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public String toString()
   {
     return _thePositions.toString();
-  }
-
-  /** group these track objects into this LightWeight track
-   * 
-   * @param target
-   * @param layers
-   * @param subjects
-   */
-  public static void groupTracks(LightweightTrackWrapper target, Layers layers,
-      Editable[] subjects)
-  {
-    // ok, loop through the subjects, adding them onto the target
-    for (int i = 0; i < subjects.length; i++)
-    {
-      final LightweightTrackWrapper source =
-          (LightweightTrackWrapper) subjects[i];
-      if (source != target)
-      {
-        Collection<FixWrapper> deleted = new ArrayList<FixWrapper>();
-
-        Enumeration<Editable> pIter = source.getPositionIterator();
-        while (pIter.hasMoreElements())
-        {
-          deleted.add((FixWrapper) pIter.nextElement());
-        }
-
-        for (FixWrapper t : deleted)
-        {
-          source.removeElement(t);
-          target.addFix(t);
-        }
-        
-        // and remove the object
-        layers.removeThisEditable(null, source);
-      }
-    }
   }
 }
