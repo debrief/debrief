@@ -1519,12 +1519,15 @@ public class ImportNarrativeDocument
         {
           hisTrack = new LightweightTrackWrapper();
           hisTrack.setName(trackName);
-
+          
           // get a custom color for this contact number (tracks from different
           // will share the same color if they're from the same contact number)
           final Color customColor = colorFor(fe.contact);
           hisTrack.setColor(customColor);
-          
+
+          // other formatting
+          hisTrack.setLineThickness(3);
+
           // do we have narratives folder?
           Layer narrLayer = _layers.findLayer(NARR_LAYER);
           if(narrLayer == null)
