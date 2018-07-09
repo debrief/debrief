@@ -145,14 +145,14 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
         final String infoCutoffDate = cutOffFormatter.format(lastDTG);
 
         // capture the constants
-        final String provenance = provider.getProvenance();
-        final String unitName = provider.getUnitName();
+        final String provenance = cleanPlatform(provider.getProvenance());
+        final String unitName = cleanPlatform(provider.getUnitName());
         final String caseNumber = provider.getCaseNumber();
         final String suppliedBy = provider.getSuppliedBy();
         final String purpose = provider.getPurpose();
         final String classification = provider.getClassification();
-        final String distributionStatement = provider
-            .getDistributionStatement();
+        final String distributionStatement = "\"" + cleanPhrase(provider
+            .getDistributionStatement()) + "\"";
         final String type = provider.getType();
         final String flag = provider.getFlag();
         final String sensor = provider.getSensor();
@@ -425,6 +425,18 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       };
       parent.add(doExport);
     }
+  }
+
+  private static String cleanPhrase(String statement)
+  {
+    final String res = statement.replace(",", "");
+    return res;
+  }
+
+  private static String cleanPlatform(String provenance)
+  {
+    final String res = provenance.replace(".", "_");
+    return res;
   }
 
 }
