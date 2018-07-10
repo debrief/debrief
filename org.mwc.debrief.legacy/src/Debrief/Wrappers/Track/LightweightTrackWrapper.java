@@ -49,10 +49,131 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper implements
     WatchableList, Plottable, Layer, IsTransientForChildren
 {
+
+  public static class TestLightweight extends TestCase
+  {
+    public void testResample()
+    {
+
+    }
+
+    private static interface IsValid
+    {
+      boolean isValid(FixWrapper fix);
+    }
+
+    public void testSetFreq()
+    {
+      LightweightTrackWrapper track = getTrack();
+
+      final IsValid aTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(FixWrapper fix)
+        {
+          return fix.getArrowShowing();
+        }
+      };
+      final IsValid lTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(FixWrapper fix)
+        {
+          return fix.getLabelShowing();
+        }
+      };
+      final IsValid sTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(FixWrapper fix)
+        {
+          return fix.getSymbolShowing();
+        }
+      };
+
+      track.setArrowFrequency(new HiResDate(20000));
+      int ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 5, ctr);
+      
+      track.setArrowFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 10, ctr);
+
+      track.setArrowFrequency(new HiResDate(15000));
+      ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 6, ctr);
+
+      track.setSymbolFrequency(new HiResDate(10000));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 10, ctr);
+      
+      track.setSymbolFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 10, ctr);
+
+      track.setSymbolFrequency(new HiResDate(20000));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 5, ctr);
+
+      track.setLabelFrequency(new HiResDate(12000));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 8, ctr);
+      
+      track.setLabelFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 10, ctr);
+
+      track.setLabelFrequency(new HiResDate(20000));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 5, ctr);
+
+
+    }
+
+    private int doCount(LightweightTrackWrapper track, final IsValid aTest)
+    {
+      int ctr = 0;
+      Enumeration<Editable> pIter = track.getPositionIterator();
+      while (pIter.hasMoreElements())
+      {
+        FixWrapper fix = (FixWrapper) pIter.nextElement();
+        if (aTest.isValid(fix))
+        {
+          ctr++;
+        }
+      }
+      return ctr;
+    }
+
+    private LightweightTrackWrapper getTrack()
+    {
+      LightweightTrackWrapper track = new LightweightTrackWrapper();
+      track.setName("light");
+      track.addFix(create(10000, 2d, 2d));
+      track.addFix(create(20000, 2d, 2d));
+      track.addFix(create(30000, 2d, 2d));
+      track.addFix(create(40000, 2d, 2d));
+      track.addFix(create(50000, 2d, 2d));
+      track.addFix(create(60000, 2d, 2d));
+      track.addFix(create(70000, 2d, 2d));
+      track.addFix(create(80000, 2d, 2d));
+      track.addFix(create(90000, 2d, 2d));
+      track.addFix(create(100000, 2d, 2d));
+      return track;
+    }
+
+    private FixWrapper create(long date, double lat, double lon)
+    {
+      return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat,
+          lon, 0), 0d, 0d));
+    }
+  }
 
   public class LightweightTrackInfo extends Editable.EditorType
   {
@@ -77,7 +198,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
             displayExpertLongProp("LineThickness", "Line thickness",
                 "the width to draw this track", FORMAT,
                 LineWidthPropertyEditor.class),
-            
+
             displayExpertLongProp("LabelFrequency", "Label frequency",
                 "the label frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
@@ -88,10 +209,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                 "the direction marker frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 
-            displayExpertLongProp(
-                    "LineStyle", "Line style",
-                    "the line style used to join track points", TEMPORAL,
-                    MWC.GUI.Properties.LineStylePropertyEditor.class)};
+            displayExpertLongProp("LineStyle", "Line style",
+                "the line style used to join track points", TEMPORAL,
+                MWC.GUI.Properties.LineStylePropertyEditor.class)};
 
         return res;
 
@@ -161,7 +281,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   /**
    * the width of this track
    */
-  private int _lineWidth = 3; 
+  private int _lineWidth = 3;
 
   /**
    * whether or not to show the Positions
@@ -172,7 +292,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
    * the label describing this track
    */
   private final MWC.GUI.Shapes.TextLabel _theLabel;
-  
 
   private HiResDate _lastLabelFrequency = new HiResDate(0);
 
@@ -202,7 +321,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     setColor(color);
     setLineStyle(lineStyle);
   }
-  
 
   /**
    * set the label frequency (in seconds)
@@ -740,7 +858,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final Color myColor = getColor();
 
     dest.setColor(myColor);
-    
+
     float oldWid = dest.getLineWidth();
     dest.setLineWidth(getLineThickness());
 
@@ -751,7 +869,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final int[] yPoints = new int[len];
 
     WorldLocation firstLoc = null;
-    
+
     // build up polyline
     while (iter.hasNext())
     {
@@ -767,7 +885,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
         xPoints[ctr] = (int) loc.getX();
         yPoints[ctr] = (int) loc.getY();
         ctr++;
-        
+
         // draw the fix (including symbols)
         fw.paintMe(dest, thisLoc, myColor);
       }
@@ -782,7 +900,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final Point loc = dest.toScreen(firstLoc);
       dest.drawText(getName(), loc.x + 5, loc.y);
     }
-    
+
     dest.setLineWidth(oldWid);
   }
 
@@ -963,7 +1081,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     return _thePositions.toString();
   }
-  
+
   /**
    * the setter function which passes through the track
    */
@@ -974,7 +1092,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return;
     }
     // do we have any positions?
-    if (! getPositionIterator().hasMoreElements())
+    if (!getPositionIterator().hasMoreElements())
     {
       return;
     }
@@ -1080,8 +1198,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       }
     }
   }
-  
-  
 
   /**
    * how frequently symbols are placed on the track
@@ -1121,7 +1237,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     return _lastSymbolFrequency;
   }
-  
 
   /**
    * method to allow the setting of label frequencies for the track
@@ -1175,7 +1290,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     setFixes(setSymbols, theVal);
   }
-  
 
   /**
    * whether to show the position fixes
