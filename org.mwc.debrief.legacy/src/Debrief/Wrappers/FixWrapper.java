@@ -1391,6 +1391,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
         !getCommentShowing())
     {
       // ok, they're all off. ignore
+      return;
     }
     
     // take a copy of the color
