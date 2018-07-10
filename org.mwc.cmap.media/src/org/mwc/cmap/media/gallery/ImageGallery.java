@@ -294,6 +294,7 @@ public class ImageGallery<T, I> implements IDisposable {
 	public void dispose() {
 		backgroundImages.dispose();
 		imagesTable.dispose();
+		removeAll();
 		mainComposite.dispose();
 		if (defaultImage != null) {
 			defaultImage.dispose();

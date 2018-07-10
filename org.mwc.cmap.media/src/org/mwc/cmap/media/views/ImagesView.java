@@ -54,7 +54,6 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.cmap.media.PlanetmayoImages;
-import org.mwc.cmap.media.dialog.ShowImageDialog;
 import org.mwc.cmap.media.gallery.ImageGallery;
 import org.mwc.cmap.media.gallery.ImageGalleryElementsBuilder;
 import org.mwc.cmap.media.time.ITimeListener;
@@ -141,6 +140,7 @@ public class ImagesView extends ViewPart {
 	public void dispose() {
 		Activator.getDefault().getTimeProvider().removeListener(timeListener);
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+		_timeProvider.removeListener(_propertyChangeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 		gallery.dispose();
 		super.dispose();
 	}
@@ -682,5 +682,7 @@ public class ImagesView extends ViewPart {
 					}
 				});
 	}
+	
+	
 
 }
