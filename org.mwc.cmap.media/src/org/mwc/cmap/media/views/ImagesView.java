@@ -596,25 +596,31 @@ public class ImagesView extends ViewPart {
 	 */
 	private void selectImage(long millis)
 	{
-		ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
-		int result = Collections.binarySearch(images, toSelect, IMAGES_COMPARATOR);
-		if (result >= 0) {
-			selectImage(result);
-			return;
-		}
-		result = (- (result + 1)) + 1;
-		long nearest = Long.MAX_VALUE;
-		int nearestImage = -1;
-		for (int i = result - 2; i <= result; i++) {
-			if (i >= 0 && i < images.size()) {
-				long distance = toSelect.distance(images.get(i));
-				if (distance < nearest) {
-					nearest = distance;
-					nearestImage = i;
-				}
-			}					
-		}
-		selectImage(nearestImage);
+	  if(images != null)
+	  {
+  		ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
+  		int result = Collections.binarySearch(images, toSelect, IMAGES_COMPARATOR);
+  		if (result >= 0) {
+  			selectImage(result);
+  			return;
+  		}
+  		result = (- (result + 1)) + 1;
+  		long nearest = Long.MAX_VALUE;
+  		int nearestImage = -1;
+  		for (int i = result - 2; i <= result; i++) {
+  			if (i >= 0 && i < images.size()) {
+  				long distance = toSelect.distance(images.get(i));
+  				if (distance < nearest) {
+  					nearest = distance;
+  					nearestImage = i;
+  				}
+  			}					
+  		}
+  		if(nearestImage >= 0)
+  		{
+  		  selectImage(nearestImage);
+  		}
+	  }
 	}
 	
 	private void setupListeners()
