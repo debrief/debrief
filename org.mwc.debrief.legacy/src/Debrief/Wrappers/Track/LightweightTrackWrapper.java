@@ -78,21 +78,18 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                         TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("LineThickness", "Line thickness",
                 "the width to draw this track", FORMAT,
-                LineWidthPropertyEditor.class),
-
-            displayExpertLongProp("LabelFrequency", "Label frequency",
-                "the label frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+                LineWidthPropertyEditor.class), displayExpertLongProp(
+                    "LabelFrequency", "Label frequency", "the label frequency",
+                    TEMPORAL, TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("SymbolFrequency", "Symbol frequency",
                 "the symbol frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-            displayExpertLongProp("ArrowFrequency", "Arrow frequency",
-                "the direction marker frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-
-            displayExpertLongProp("LineStyle", "Line style",
-                "the line style used to join track points", TEMPORAL,
-                MWC.GUI.Properties.LineStylePropertyEditor.class)};
+                TimeFrequencyPropertyEditor.class), displayExpertLongProp(
+                    "ArrowFrequency", "Arrow frequency",
+                    "the direction marker frequency", TEMPORAL,
+                    TimeFrequencyPropertyEditor.class), displayExpertLongProp(
+                        "LineStyle", "Line style",
+                        "the line style used to join track points", TEMPORAL,
+                        LineStylePropertyEditor.class)};
 
         return res;
 
