@@ -1387,7 +1387,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {
-
+    if(!getLabelShowing() && !getArrowShowing() && !getSymbolShowing() &&
+        !getCommentShowing())
+    {
+      // ok, they're all off. ignore
+    }
+    
     // take a copy of the color
     final Color safeColor = getColor();
 
