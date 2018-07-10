@@ -140,7 +140,9 @@ public class ImagesView extends ViewPart {
 	public void dispose() {
 		Activator.getDefault().getTimeProvider().removeListener(timeListener);
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
-		_timeProvider.removeListener(_propertyChangeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		if(_timeProvider!=null) {
+		  _timeProvider.removeListener(_propertyChangeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		}
 		gallery.dispose();
 		super.dispose();
 	}
