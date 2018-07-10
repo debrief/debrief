@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
@@ -48,6 +49,8 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper implements
     WatchableList, Plottable, Layer, IsTransientForChildren
@@ -76,9 +79,17 @@ public class LightweightTrackWrapper extends PlainWrapper implements
             displayExpertLongProp("LineThickness", "Line thickness",
                 "the width to draw this track", FORMAT,
                 LineWidthPropertyEditor.class), displayExpertLongProp(
-                    "LineStyle", "Line style",
-                    "the line style used to join track points", TEMPORAL,
-                    MWC.GUI.Properties.LineStylePropertyEditor.class)};
+                    "LabelFrequency", "Label frequency", "the label frequency",
+                    TEMPORAL, TimeFrequencyPropertyEditor.class),
+            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                "the symbol frequency", TEMPORAL,
+                TimeFrequencyPropertyEditor.class), displayExpertLongProp(
+                    "ArrowFrequency", "Arrow frequency",
+                    "the direction marker frequency", TEMPORAL,
+                    TimeFrequencyPropertyEditor.class), displayExpertLongProp(
+                        "LineStyle", "Line style",
+                        "the line style used to join track points", TEMPORAL,
+                        LineStylePropertyEditor.class)};
 
         return res;
 
@@ -87,6 +98,128 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       {
         return super.getPropertyDescriptors();
       }
+    }
+  }
+
+  public static class TestLightweight extends TestCase
+  {
+    private static interface IsValid
+    {
+      boolean isValid(FixWrapper fix);
+    }
+
+    private FixWrapper create(final long date, final double lat,
+        final double lon)
+    {
+      return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat,
+          lon, 0), 0d, 0d));
+    }
+
+    private int doCount(final LightweightTrackWrapper track,
+        final IsValid aTest)
+    {
+      int ctr = 0;
+      final Enumeration<Editable> pIter = track.getPositionIterator();
+      while (pIter.hasMoreElements())
+      {
+        final FixWrapper fix = (FixWrapper) pIter.nextElement();
+        if (aTest.isValid(fix))
+        {
+          ctr++;
+        }
+      }
+      return ctr;
+    }
+
+    private LightweightTrackWrapper getTrack()
+    {
+      final LightweightTrackWrapper track = new LightweightTrackWrapper();
+      track.setName("light");
+      track.addFix(create(10000, 2d, 2d));
+      track.addFix(create(20000, 2d, 2d));
+      track.addFix(create(30000, 2d, 2d));
+      track.addFix(create(40000, 2d, 2d));
+      track.addFix(create(50000, 2d, 2d));
+      track.addFix(create(60000, 2d, 2d));
+      track.addFix(create(70000, 2d, 2d));
+      track.addFix(create(80000, 2d, 2d));
+      track.addFix(create(90000, 2d, 2d));
+      track.addFix(create(100000, 2d, 2d));
+      return track;
+    }
+
+    public void testResample()
+    {
+      LightweightTrackWrapper track = getTrack();
+      track.setResampleDataAt(new HiResDate(20000));
+      assertEquals("correct size", 5, track._thePositions.size());
+    }
+
+    public void testSetFreq()
+    {
+      final LightweightTrackWrapper track = getTrack();
+
+      final IsValid aTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(final FixWrapper fix)
+        {
+          return fix.getArrowShowing();
+        }
+      };
+      final IsValid lTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(final FixWrapper fix)
+        {
+          return fix.getLabelShowing();
+        }
+      };
+      final IsValid sTest = new IsValid()
+      {
+        @Override
+        public boolean isValid(final FixWrapper fix)
+        {
+          return fix.getSymbolShowing();
+        }
+      };
+
+      track.setArrowFrequency(new HiResDate(20000));
+      int ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 5, ctr);
+
+      track.setArrowFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 10, ctr);
+
+      track.setArrowFrequency(new HiResDate(15000));
+      ctr = doCount(track, aTest);
+      assertEquals("correct arrows", 6, ctr);
+
+      track.setSymbolFrequency(new HiResDate(10000));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 10, ctr);
+
+      track.setSymbolFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 10, ctr);
+
+      track.setSymbolFrequency(new HiResDate(20000));
+      ctr = doCount(track, sTest);
+      assertEquals("correct symbols", 5, ctr);
+
+      track.setLabelFrequency(new HiResDate(12000));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 8, ctr);
+
+      track.setLabelFrequency(new HiResDate(0, TimePeriod.INVALID_TIME));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 10, ctr);
+
+      track.setLabelFrequency(new HiResDate(20000));
+      ctr = doCount(track, lTest);
+      assertEquals("correct labels", 5, ctr);
+
     }
   }
 
@@ -149,26 +282,22 @@ public class LightweightTrackWrapper extends PlainWrapper implements
    * the width of this track
    */
   private int _lineWidth = 3;
-  
-  /** how frequently we plot labels
-   * 
+
+  /**
+   * whether or not to show the Positions
    */
-  private long _labelFreqMillis = 0;
-  
-  /** how frequently we plot arrows
-   * 
-   */
-  private long _arrowFreqMillis = Long.MAX_VALUE /2;
-  
-  /** how frequently we plot symbols
-   * 
-   */
-  private long _symbolFreqMillis = 0;
+  protected boolean _showPositions;
 
   /**
    * the label describing this track
    */
   private final MWC.GUI.Shapes.TextLabel _theLabel;
+
+  private HiResDate _lastLabelFrequency = new HiResDate(0);
+
+  private HiResDate _lastSymbolFrequency = new HiResDate(0);
+
+  private HiResDate _lastArrowFrequency = new HiResDate(0);
 
   public LightweightTrackWrapper()
   {
@@ -318,6 +447,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     _cachedPeriod = null;
   }
 
+  /**
+   * return the arrow frequencies for the track
+   *
+   * @return frequency in seconds
+   */
+  public final HiResDate getArrowFrequency()
+  {
+    return _lastArrowFrequency;
+  }
+
   @Override
   public WorldArea getBounds()
   {
@@ -380,6 +519,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       }
     }
     return items;
+  }
+
+  /**
+   * method to allow the setting of label frequencies for the track
+   *
+   * @return frequency to use
+   */
+  public final HiResDate getLabelFrequency()
+  {
+    return this._lastLabelFrequency;
   }
 
   protected final WorldLocation getLabelLocation()
@@ -498,6 +647,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   public HiResDate getStartDTG()
   {
     return ((FixWrapper) _thePositions.first()).getTime();
+  }
+
+  /**
+   * return the symbol frequencies for the track
+   *
+   * @return frequency in seconds
+   */
+  public final HiResDate getSymbolFrequency()
+  {
+    return _lastSymbolFrequency;
   }
 
   /**
@@ -708,8 +867,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final Color myColor = getColor();
 
     dest.setColor(myColor);
-    
-    float oldWid = dest.getLineWidth();
+
+    final float oldWid = dest.getLineWidth();
     dest.setLineWidth(getLineThickness());
 
     final int len = _thePositions.size();
@@ -719,10 +878,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     final int[] yPoints = new int[len];
 
     WorldLocation firstLoc = null;
-    
-    long lastSymTime = 0;
-    long lastArrowTime = 0;
-    long lastLabelTime = 0;
 
     // build up polyline
     while (iter.hasNext())
@@ -731,59 +886,16 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       if (fw.getVisible())
       {
         final WorldLocation thisLoc = fw.getLocation();
-        final long thisT = fw.getDateTimeGroup().getDate().getTime();
         if (firstLoc == null)
         {
           firstLoc = thisLoc;
-          lastSymTime = thisT;
-          lastArrowTime = thisT;
-          lastLabelTime = thisT;
         }
         final Point loc = dest.toScreen(thisLoc);
         xPoints[ctr] = (int) loc.getX();
         yPoints[ctr] = (int) loc.getY();
         ctr++;
-        
-        // draw the symbol
-        final boolean showSym;
-        if(thisT > lastSymTime +  _symbolFreqMillis)
-        {
-          lastSymTime = thisT;
-          showSym = true;
-        }
-        else
-        {
-          showSym = false;
-        }
-        fw.setSymbolShowing(showSym);
-        
 
-        // draw the symbol
-        final boolean showLabel;
-        if(thisT > lastLabelTime +  _labelFreqMillis)
-        {
-          lastLabelTime = thisT;
-          showLabel = true;
-        }
-        else
-        {
-          showLabel = false;
-        }
-        fw.setLabelShowing(showLabel);       
-
-        // draw the symbol
-        final boolean showArrow;
-        if(thisT > lastArrowTime +  _arrowFreqMillis)
-        {
-          lastArrowTime = thisT;
-          showArrow = true;
-        }
-        else
-        {
-          showArrow = false;
-        }
-        fw.setArrowShowing(showArrow);
-        
+        // draw the fix (including symbols)
         fw.paintMe(dest, thisLoc, myColor);
       }
     }
@@ -797,7 +909,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       final Point loc = dest.toScreen(firstLoc);
       dest.drawText(getName(), loc.x + 5, loc.y);
     }
-    
+
     dest.setLineWidth(oldWid);
   }
 
@@ -843,6 +955,35 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   }
 
   /**
+   * how frequently symbols are placed on the track
+   *
+   * @param theVal
+   *          frequency in seconds
+   */
+  public final void setArrowFrequency(final HiResDate theVal)
+  {
+    this._lastArrowFrequency = theVal;
+
+    // set the "showPositions" parameter, as long as we are
+    // not setting the symbols off
+    if (theVal.getMicros() != 0.0)
+    {
+      this.setPositionsVisible(true);
+    }
+
+    final FixSetter setSymbols = new FixSetter()
+    {
+      @Override
+      public void execute(final FixWrapper fix, final boolean val)
+      {
+        fix.setArrowShowing(val);
+      }
+    };
+
+    setFixes(setSymbols, theVal);
+  }
+
+  /**
    * set the colour of this track label
    *
    * @param theCol
@@ -857,6 +998,144 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // now do our processing
     _theLabel.setColor(theCol);
+  }
+
+  /**
+   * the setter function which passes through the track
+   */
+  private void setFixes(final FixSetter setter, final HiResDate theVal)
+  {
+    if (theVal == null)
+    {
+      return;
+    }
+    // do we have any positions?
+    if (!getPositionIterator().hasMoreElements())
+    {
+      return;
+    }
+
+    final long freq = theVal.getMicros();
+
+    // briefly check if we are revealing/hiding all times (ie if freq is 1
+    // or 0)
+    if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
+    {
+      // show all of the labels
+      final Enumeration<Editable> iter = getPositionIterator();
+      while (iter.hasMoreElements())
+      {
+        final FixWrapper fw = (FixWrapper) iter.nextElement();
+        setter.execute(fw, true);
+      }
+    }
+    else
+    {
+      // no, we're not just blindly doing all of them. do them at the
+      // correct
+      // frequency
+
+      // hide all of the labels/symbols first
+      final Enumeration<Editable> enumA = getPositionIterator();
+      while (enumA.hasMoreElements())
+      {
+        final FixWrapper fw = (FixWrapper) enumA.nextElement();
+        setter.execute(fw, false);
+      }
+      if (freq == 0)
+      {
+        // we can ignore this, since we have just hidden all of the
+        // points
+      }
+      else
+      {
+        if (getStartDTG() != null)
+        {
+          // pass through the track setting the values
+
+          // sort out the start and finish times
+          long start_time = getStartDTG().getMicros();
+          final long end_time = getEndDTG().getMicros();
+
+          // first check that there is a valid time period between start
+          // time
+          // and end time
+          if (start_time + freq < end_time)
+          {
+            long num = start_time / freq;
+
+            // we need to add one to the quotient if it has rounded down
+            if (start_time % freq == 0)
+            {
+              // start is at our freq, so we don't need to increment
+              // it
+            }
+            else
+            {
+              num++;
+            }
+
+            // calculate new start time
+            start_time = num * freq;
+          }
+          else
+          {
+            // there is not one of our 'intervals' between the start and
+            // the end,
+            // so use the start time
+          }
+
+          long nextMarker = start_time / 1000L;
+          final long freqMillis = freq / 1000L;
+          final Enumeration<Editable> iter = this.getPositionIterator();
+          while (iter.hasMoreElements())
+          {
+            final FixWrapper nextF = (FixWrapper) iter.nextElement();
+            final long hisDate = nextF.getDTG().getDate().getTime();
+            if (hisDate >= nextMarker)
+            {
+              // hmm, has there been a large jump?
+              if (hisDate - nextMarker <= freqMillis)
+              {
+                // no. Ok, show this item. If there's a larger
+                // jump, we don't automatically show this item,
+                // it's better to find the next marker time.
+                setter.execute(nextF, true);
+              }
+
+              // hmm, if we've just passed a huge gap, we may need to add
+              // a few intervals
+              while (nextMarker <= hisDate)
+              {
+                // carry on moving the next marker right
+                nextMarker += freqMillis;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * set the label frequency (in seconds)
+   *
+   * @param theVal
+   *          frequency to use
+   */
+  public final void setLabelFrequency(final HiResDate theVal)
+  {
+    this._lastLabelFrequency = theVal;
+
+    final FixSetter setLabel = new FixSetter()
+    {
+      @Override
+      public void execute(final FixWrapper fix, final boolean val)
+      {
+        fix.setLabelShowing(val);
+      }
+    };
+    setFixes(setLabel, theVal);
   }
 
   protected final void setLabelLocation(final WorldLocation loc)
@@ -914,6 +1193,17 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     _theLabel.setVisible(val);
   }
 
+  /**
+   * whether to show the position fixes
+   *
+   * @param val
+   *          yes/no
+   */
+  public final void setPositionsVisible(final boolean val)
+  {
+    _showPositions = val;
+  }
+
   @FireExtended
   public void setResampleDataAt(final HiResDate theVal)
   {
@@ -960,6 +1250,39 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       // ok, we have to clear the bounds
       flushBounds();
     }
+  }
+
+  /**
+   * how frequently symbols are placed on the track
+   *
+   * @param theVal
+   *          frequency in seconds
+   */
+  public final void setSymbolFrequency(final HiResDate theVal)
+  {
+    this._lastSymbolFrequency = theVal;
+
+    // set the "showPositions" parameter, as long as we are
+    // not setting the symbols off
+    if (theVal == null)
+    {
+      return;
+    }
+    if (theVal.getMicros() != 0.0)
+    {
+      this.setPositionsVisible(true);
+    }
+
+    final FixSetter setSymbols = new FixSetter()
+    {
+      @Override
+      public void execute(final FixWrapper fix, final boolean val)
+      {
+        fix.setSymbolShowing(val);
+      }
+    };
+
+    setFixes(setSymbols, theVal);
   }
 
   /**

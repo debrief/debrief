@@ -52,7 +52,6 @@ import Debrief.Wrappers.Track.TrackColorModeHelper.DeferredDatasetColorMode;
 import Debrief.Wrappers.Track.TrackColorModeHelper.TrackColorMode;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
-import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import Debrief.Wrappers.Track.WormInHoleOffset;
@@ -77,7 +76,6 @@ import MWC.GUI.Properties.LabelLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
-import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.TextLabel;
@@ -846,12 +844,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    */
   private boolean _LabelAtStart = true;
 
-  private HiResDate _lastLabelFrequency = new HiResDate(0);
-
-  private HiResDate _lastSymbolFrequency = new HiResDate(0);
-
-  private HiResDate _lastArrowFrequency = new HiResDate(0);
-
 
   /**
    * whether to show a time label at the start/end of the track
@@ -908,10 +900,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    */
   transient private int _ptCtr = 0;
 
-  /**
-   * whether or not to show the Positions
-   */
-  private boolean _showPositions;
 
   /**
    * the list of wrappers we hold
@@ -1900,15 +1888,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   {
   }
 
-  /**
-   * return the arrow frequencies for the track
-   *
-   * @return frequency in seconds
-   */
-  public final HiResDate getArrowFrequency()
-  {
-    return _lastArrowFrequency;
-  }
 
   /**
    * calculate a position the specified distance back along the ownship track (note, we always
@@ -2345,15 +2324,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return set;
   }
 
-  /**
-   * method to allow the setting of label frequencies for the track
-   *
-   * @return frequency to use
-   */
-  public final HiResDate getLabelFrequency()
-  {
-    return this._lastLabelFrequency;
-  }
 
   /**
    * what is the style used for plotting this track?
@@ -2693,15 +2663,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return _theSnailShape.getColor();
   }
 
-  /**
-   * return the symbol frequencies for the track
-   *
-   * @return frequency in seconds
-   */
-  public final HiResDate getSymbolFrequency()
-  {
-    return _lastSymbolFrequency;
-  }
 
   public WorldDistance getSymbolLength()
   {
@@ -3846,34 +3807,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
 
-  /**
-   * how frequently symbols are placed on the track
-   *
-   * @param theVal
-   *          frequency in seconds
-   */
-  public final void setArrowFrequency(final HiResDate theVal)
-  {
-    this._lastArrowFrequency = theVal;
-
-    // set the "showPositions" parameter, as long as we are
-    // not setting the symbols off
-    if (theVal.getMicros() != 0.0)
-    {
-      this.setPositionsVisible(true);
-    }
-
-    final FixSetter setSymbols = new FixSetter()
-    {
-      @Override
-      public void execute(final FixWrapper fix, final boolean val)
-      {
-        fix.setArrowShowing(val);
-      }
-    };
-
-    setFixes(setSymbols, theVal);
-  }
 
   /**
    * length of trail to draw
@@ -3915,121 +3848,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     this._endTimeLabels = endTimeLabels;
   }
 
-  /**
-   * the setter function which passes through the track
-   */
-  private void setFixes(final FixSetter setter, final HiResDate theVal)
-  {
-    if (theVal == null)
-    {
-      return;
-    }
-    if (_theSegments.size() == 0)
-    {
-      return;
-    }
 
-    final long freq = theVal.getMicros();
-
-    // briefly check if we are revealing/hiding all times (ie if freq is 1
-    // or 0)
-    if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
-    {
-      // show all of the labels
-      final Enumeration<Editable> iter = getPositionIterator();
-      while (iter.hasMoreElements())
-      {
-        final FixWrapper fw = (FixWrapper) iter.nextElement();
-        setter.execute(fw, true);
-      }
-    }
-    else
-    {
-      // no, we're not just blindly doing all of them. do them at the
-      // correct
-      // frequency
-
-      // hide all of the labels/symbols first
-      final Enumeration<Editable> enumA = getPositionIterator();
-      while (enumA.hasMoreElements())
-      {
-        final FixWrapper fw = (FixWrapper) enumA.nextElement();
-        setter.execute(fw, false);
-      }
-      if (freq == 0)
-      {
-        // we can ignore this, since we have just hidden all of the
-        // points
-      }
-      else
-      {
-        if (getStartDTG() != null)
-        {
-          // pass through the track setting the values
-
-          // sort out the start and finish times
-          long start_time = getStartDTG().getMicros();
-          final long end_time = getEndDTG().getMicros();
-
-          // first check that there is a valid time period between start
-          // time
-          // and end time
-          if (start_time + freq < end_time)
-          {
-            long num = start_time / freq;
-
-            // we need to add one to the quotient if it has rounded down
-            if (start_time % freq == 0)
-            {
-              // start is at our freq, so we don't need to increment
-              // it
-            }
-            else
-            {
-              num++;
-            }
-
-            // calculate new start time
-            start_time = num * freq;
-          }
-          else
-          {
-            // there is not one of our 'intervals' between the start and
-            // the end,
-            // so use the start time
-          }
-
-          long nextMarker = start_time / 1000L;
-          final long freqMillis = freq / 1000L;
-          final Enumeration<Editable> iter = this.getPositionIterator();
-          while (iter.hasMoreElements())
-          {
-            final FixWrapper nextF = (FixWrapper) iter.nextElement();
-            final long hisDate = nextF.getDTG().getDate().getTime();
-            if (hisDate >= nextMarker)
-            {
-              // hmm, has there been a large jump?
-              if (hisDate - nextMarker <= freqMillis)
-              {
-                // no. Ok, show this item. If there's a larger
-                // jump, we don't automatically show this item,
-                // it's better to find the next marker time.
-                setter.execute(nextF, true);
-              }
-
-              // hmm, if we've just passed a huge gap, we may need to add
-              // a few intervals
-              while (nextMarker <= hisDate)
-              {
-                // carry on moving the next marker right
-                nextMarker += freqMillis;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   @Override
   public final void setInterpolatePoints(final boolean val)
@@ -4042,26 +3861,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     _lastFix = null;
   }
 
-  /**
-   * set the label frequency (in seconds)
-   *
-   * @param theVal
-   *          frequency to use
-   */
-  public final void setLabelFrequency(final HiResDate theVal)
-  {
-    this._lastLabelFrequency = theVal;
-
-    final FixSetter setLabel = new FixSetter()
-    {
-      @Override
-      public void execute(final FixWrapper fix, final boolean val)
-      {
-        fix.setLabelShowing(val);
-      }
-    };
-    setFixes(setLabel, theVal);
-  }
 
   /**
    * set the style used for plotting the lines for this track
@@ -4100,16 +3899,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     _plotArrayCentre = plotArrayCentre;
   }
 
-  /**
-   * whether to show the position fixes
-   *
-   * @param val
-   *          yes/no
-   */
-  public final void setPositionsVisible(final boolean val)
-  {
-    _showPositions = val;
-  }
 
   private void setRelativePending()
   {
@@ -4208,38 +3997,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     _theSnailShape.setColor(col);
   }
 
-  /**
-   * how frequently symbols are placed on the track
-   *
-   * @param theVal
-   *          frequency in seconds
-   */
-  public final void setSymbolFrequency(final HiResDate theVal)
-  {
-    this._lastSymbolFrequency = theVal;
-
-    // set the "showPositions" parameter, as long as we are
-    // not setting the symbols off
-    if (theVal == null)
-    {
-      return;
-    }
-    if (theVal.getMicros() != 0.0)
-    {
-      this.setPositionsVisible(true);
-    }
-
-    final FixSetter setSymbols = new FixSetter()
-    {
-      @Override
-      public void execute(final FixWrapper fix, final boolean val)
-      {
-        fix.setSymbolShowing(val);
-      }
-    };
-
-    setFixes(setSymbols, theVal);
-  }
 
   public void setSymbolLength(final WorldDistance symbolLength)
   {
