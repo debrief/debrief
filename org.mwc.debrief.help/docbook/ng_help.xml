@@ -4037,7 +4037,40 @@ and so on....</programlisting></para>
 
       <sect1 xml:id="more_Exporting_data">
         <title>Exporting images</title>
-
+        <sect2 xml:id="resize_for_export">
+          <title>Resizing, ready for export</title>
+          <para><indexterm>
+            <primary>Export</primary>
+            <secondary>Resize, in preparation for export</secondary>
+          </indexterm>
+            It&apos;s common for Debrief users to capture still images or captured video screen recordings when they wish
+            to share analysis findings with another audience, either within a document or a presentation.
+          </para>
+          <para>When Debrief plots are exported in WMF format, elements of the captured image resize, to make 
+          sure they&apos;re still legible.  But, when bitmap images get rescaled, they can either become
+          pixelated (blocky) or some pixels can disappear.  When a line is only 1 pixel wide there is a 
+          chance that parts of it will disappear.</para>
+          <para>The solution to this is to adjust the Debrief plot to the same size as the target 
+          device. For example, if an analyst knows that his screencast is going to be shown
+          on a projector with a resolution of 1024px by 768px, then if the plot is resized to
+          exactly that size she will know the video will be shown at the greatest possible
+          level of detail.</para>
+          <para>Sadly, the technologies involved in Debrief don't (currently) allow a user to
+          type the width and height.  But, Debrief is able to inform the analyst of the 
+          current size as the plot editor is resized.  To do this, double-click on an empty
+          area of a Debrief plot.  The plot background settings will be shown in the 
+          properties editor.  One of the properties is a read-only one, titled
+            <guibutton>Dimension</guibutton>.  As the editor is resized, this property 
+          will give live feedback on the current size.
+            <figure xml:id="current_plot_size">
+              <title>Property for current plot size</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="figures/ScreenDimensions.png" scalefit="1" width="100%"/>
+                </imageobject>
+              </mediaobject>
+            </figure></para>
+        </sect2>
         <sect2 xml:id="more_export_images">
           <title>Exporting to WMF</title>
           <para>In addition to <indexterm>
@@ -4045,7 +4078,6 @@ and so on....</programlisting></para>
             <secondary>Images</secondary>
           </indexterm><indexterm>
               <primary>WMF</primary>
-
               <secondary>Writing to File</secondary>
             </indexterm>conducting tactical analysis, <application>Debrief</application> allows the
             analyst user to create plots for insertion into <application>Microsoft
