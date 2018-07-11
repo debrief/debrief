@@ -582,13 +582,13 @@ Naval Undersea Warfare Center (NUWC)
           <emphasis>Getting Started </emphasis>with <application>Debrief</application> right from
         the installation through to more advanced topics such as creating custom sets of layers for
         annotation fresh plots.</para>
-      <para>If this is your first time using the User Guide and you haven't installed
+      <para>If this is your first time using the User Guide and you haven&apos;t installed
           <application>Debrief</application> yet, then we would recommend reading the chapters and
         sections in the order that they appear. This way you know what you need to do before
         installing <application>Debrief</application>, how to perform the installation, configure
         the data, etc.</para>
-      <para>Also, don't forget that we have a series of tutorials and videos to help you get up to
-        speed quickly. These don't take long to read or watch, and are probably the quickest way of
+      <para>Also, don&apos;t forget that we have a series of tutorials and videos to help you get up to
+        speed quickly. These don&apos;t take long to read or watch, and are probably the quickest way of
         getting to grips and up to speed with <application>Debrief</application>; you can follow
         these at your own pace. </para>
     </partintro>
@@ -618,7 +618,7 @@ Naval Undersea Warfare Center (NUWC)
           </listitem>
           <listitem>
             <para>Moving around the view.</para>
-            <para>Once you've completed these, you can then move onto Part B - Using
+            <para>Once you&apos;ve completed these, you can then move onto Part B - Using
                 <application>Debrief</application> (<xref linkend="UsingDebrief"/>).</para>
           </listitem>
         </orderedlist>
@@ -627,7 +627,7 @@ Naval Undersea Warfare Center (NUWC)
       <sect1 xml:id="pre_install_debrief">
         <title>Before Installing Debrief</title>
         <para>In this section, we will look at obtaining <application>Debrief</application>, via
-          download or CD-Rom, and where you can get help on Debrief. Then, we'll look at installing
+          download or CD-Rom, and where you can get help on Debrief. Then, we&apos;ll look at installing
           Debrief.</para>
        <sect2 xml:id="obtainingDebrief">
           <title>Obtaining Debrief</title>
@@ -714,9 +714,9 @@ Naval Undersea Warfare Center (NUWC)
             <guibutton>Start</guibutton> menu.</para>
         </warning>
 
-        <para>Once you've done this, just unzip the downloaded application zip file, and you&apos;re
+        <para>Once you&apos;ve done this, just unzip the downloaded application zip file, and you&apos;re
           ready to go!  Debrief NG needs no installer. <tip>
-            <para> You don't have to but if you wish to follow MS Windows conventions you can copy
+            <para> You don&apos;t have to but if you wish to follow MS Windows conventions you can copy
               the unzipped folder into your Programs folder. </para>
           </tip>
         </para>
@@ -732,7 +732,7 @@ Naval Undersea Warfare Center (NUWC)
           below). Note, due to their size, the datasets probably aren&apos;t present in your Debrief
           installation, so you will have to request and then load them separately. In 2015 Debrief
           added support for the Natural Earth dataset, superceding the VPF and ETOPO datasets - so
-          you probably won't need to configure them.<itemizedlist>
+          you probably won&apos;t need to configure them.<itemizedlist>
             <listitem>
               <para>Natural Earth instructions are in <xref linkend="ne_use"/></para>
             </listitem>
@@ -769,7 +769,7 @@ Naval Undersea Warfare Center (NUWC)
           <para>When Debrief is opened for the very first time you will see the Welcome page (shown
             above). This page includes a series of links to high-level introductory information.
             Though we do have a quick summary of each below, we do recommend that you go through
-            each of these links and familiarise yourself with what's there.</para>
+            each of these links and familiarise yourself with what&apos;s there.</para>
           <para>The Overview page contains guidance for new-adopters of Debrief, whereas the
             Tutorials page leads users through more specific tasks through the use of <glossterm
               linkend="g_cheat">tutorials</glossterm> - small pages breaking a task down into a
@@ -779,7 +779,7 @@ Naval Undersea Warfare Center (NUWC)
         </sect2>
         <sect2 xml:id="debrief_walkthrough">
           <title>A Debrief Walkthrough</title>
-          <para>It's a good idea to let Debrief itself lead you through your first session</para>
+          <para>It&apos;s a good idea to let Debrief itself lead you through your first session</para>
           <para>Starting any of the tutorials will shrink the Welcome guidance to a smaller pane
             exposing the rest of Debrief NG as shown in the following diagram.</para>
           <figure xml:id="defaultView">
@@ -799,7 +799,7 @@ Naval Undersea Warfare Center (NUWC)
                 <primary>New Project Wizard</primary>
               </indexterm>
 	    Debrief New Project Wizard will invite you to create a project folder.
-	    Debrief will also offer to copy in some sample data - it's a good idea to do this.</para>
+	    Debrief will also offer to copy in some sample data - it&apos;s a good idea to do this.</para>
           <para>The Debrief user-interface follows the Workbench convention, whereby a users edits
             individual files in an <emphasis>Editor</emphasis> assisted by a series of supporting
             information panes called <emphasis>Views</emphasis>. The specific arrangement of editors
@@ -891,7 +891,7 @@ Naval Undersea Warfare Center (NUWC)
               and droppign with the mouse.</para>
 
             <para>There are also <emphasis role="bold">individual view toolbars</emphasis>, these
-              appear in the title bar of a view. It's important to note that actions in a
+              appear in the title bar of a view. It&apos;s important to note that actions in a
               view&apos;s toolbar apply only to the view in which they appear. Some view toolbars
               also include a Menu button, shown as an inverted triangle, that contain actions for
               that view.</para>
@@ -1118,7 +1118,7 @@ and so on....</programlisting></para>
           <para>If you want to set a different default import mode, then use the Maritime Analysis
             Preferences dialog located in Windows > Preferences:</para>
           <figure>
-            <title>Debrief's Preferences</title>
+            <title>Debrief&apos;s Preferences</title>
             <screenshot>
               <mediaobject>
                 <imageobject>
@@ -1201,7 +1201,7 @@ and so on....</programlisting></para>
           <para>For most of Debrief&apos;s operations (such as adding drawing features) it needs
             to have an area to work with. When re-opening an existing plot file, or importing
             data, Debrief determines the area covered by the plot from the given data. However,
-            when starting a new, blank session, Debrief doesn't know what area to use and defaults
+            when starting a new, blank session, Debrief doesn&apos;t know what area to use and defaults
             to its own origin at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom: the
             plot will be centred on 50 degrees 49 minutes North, 1 degree 19 minutes West
             (approx).</para>
@@ -1330,7 +1330,7 @@ and so on....</programlisting></para>
         <title>Click buttons</title>
         
         <para>The remaining buttons on the View toolbar differ from the previous ones in that they
-          don't involve mouse interaction with the plot, and selecting one of these doesn't
+          don&apos;t involve mouse interaction with the plot, and selecting one of these doesn&apos;t
           deselect the already selected mouse mode button. <variablelist>
             <varlistentry>
               <term><guiicon>
@@ -1343,7 +1343,7 @@ and so on....</programlisting></para>
                 <para>If you click on the Zoom out button, you will "zoom out" of the <glossterm
                   linkend="g_plt">plot</glossterm> (surprise, surprise). However, as mentioned
                   in the brief introduction (above), if the Zoom in button is already selected,
-                  selecting Zoom out doesn't deselect it - they're designed to work in conjunction
+                  selecting Zoom out doesn&apos;t deselect it - they&apos;re designed to work in conjunction
                   with each other. You click on Zoom out as many times as is required and, as soon
                   as you stop, you can then drag an area to zoom in on and work. If you have a
                   wheel-mouse, holding the Ctrl key down allows you to zoom in or out, as
@@ -1361,9 +1361,9 @@ and so on....</programlisting></para>
               <listitem>
                 <para>Clicking on Fit to Window will display all currently visible plot data
                   within the confines of the <glossterm linkend="g_plt">plot</glossterm>  area.
-                  This is good if you're zoomed in too far and need to see all the data, a single
+                  This is good if you&apos;re zoomed in too far and need to see all the data, a single
                   click will zoom out so you can see all visible information; conversely, if
-                  you've zoomed out too far, and the plot shapes are mere pin-pricks, a single
+                  you&apos;ve zoomed out too far, and the plot shapes are mere pin-pricks, a single
                   click will zoom in, fill your plot, and allow you to see exactly what you have
                   displayed. Note, this operation only applies to visible data, not that there may
                   be data on the plot which is not visible (hidden layers). In addition, this
@@ -1394,8 +1394,8 @@ and so on....</programlisting></para>
         
         <para>The Chart Overview view provides an large scale view of the entire exercise area.
           This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show
-            View...</guimenuitem> drop down list (if you can't see it in the drop-down list, click
-          on 'Other' at the bottom of the Show View list, and a dialog will open where you can
+            View...</guimenuitem> drop down list (if you can&apos;t see it in the drop-down list, click
+          on &apos;Other&apos; at the bottom of the Show View list, and a dialog will open where you can
           select from unlisted views). Using it is quite simple: drag a region in the overview and
           the current plot will quickly zoom to show that area. A highlight rectangle shows the
           current plot view. Once you&apos;ve zoomed in a little you can double-click in the
@@ -1420,12 +1420,12 @@ and so on....</programlisting></para>
           operations which are only cleared when the current session is closed. Most changes to
           the <application>Debrief</application> plot are undoable, whether they be creating a new
           feature, changing an attribute of a feature (such as color), changing the current
-          perspective, etc. If something doesn&apos;t undo, then the changes are it's something
+          perspective, etc. If something doesn&apos;t undo, then the changes are it&apos;s something
           we&apos;ve overlooked, so please let us know about it using the procedure in <xref
             linkend="debrief_bugs"/> and we&apos;ll correct it as soon as possible.</para>
         
         <para>Each open Debrief plot has its own undo buffer, so if the undo button is disabled on
-          a particular plot you must first make sure it's active (single click on it to do that).
+          a particular plot you must first make sure it&apos;s active (single click on it to do that).
           Furthermore, even though you may have made the edit via the Outline View, you must still
           click on the plot before conducting an undo operation.</para>
       </sect1>
@@ -1438,7 +1438,7 @@ and so on....</programlisting></para>
             <primary>Formatting</primary>
             <secondary>Plot (background color)</secondary>
           </indexterm>changed to suit different projection/printing mediums, or just to suit the
-          analysts' personal choice. Another way is by changing the line widths of tactical
+          analysts&apos; personal choice. Another way is by changing the line widths of tactical
           objects which are displayed. Either of these options are easily accessible by
           right-clicking on the plot and selecting <emphasis>Edit base chart</emphasis>. A
           properties panel will then appear, and you can use the drop-down list to change the
@@ -2803,7 +2803,7 @@ and so on....</programlisting></para>
           <para>Sometimes single-sided reconstruction is performed at a range of fidelities. A DR
             reconstruction may be used to get maximum accuracy over a couple of
             hours. In parallel, an OTG reconstruction may be considering the route of a platform
-            over several days. The track segment generated for the first can't be cut/pasted onto
+            over several days. The track segment generated for the first can&apos;t be cut/pasted onto
             the second, because the ownship platform will have followed a different route (DR vs
             OTG). The following procedure can be used to solve this issue</para>
           <para>The track segment from the DR reconstruction can be considered as a set of
@@ -4055,7 +4055,7 @@ and so on....</programlisting></para>
           on a projector with a resolution of 1024px by 768px, then if the plot is resized to
           exactly that size she will know the video will be shown at the greatest possible
           level of detail.</para>
-          <para>Sadly, the technologies involved in Debrief don't (currently) allow a user to
+          <para>Sadly, the technologies involved in Debrief don&apos;t (currently) allow a user to
           type the width and height.  But, Debrief is able to inform the analyst of the 
           current size as the plot editor is resized.  To do this, double-click on an empty
           area of a Debrief plot.  The plot background settings will be shown in the 
@@ -5324,7 +5324,7 @@ and so on....</programlisting></para>
             </screenshot>
           </figure></para>
         <para>Next we must specify the starting date/time for the track:<figure>
-            <title>Specifying the track's DTG</title>
+            <title>Specifying the track&apos;s DTG</title>
             <screenshot>
               <mediaobject>
                 <imageobject>
@@ -5908,9 +5908,9 @@ frequency accuracy (Hz) [or the single word NULL], range(yds)
             <para><indexterm>
               <primary>Sensor data</primary>              
               <secondary>Track name missing in REP</secondary>
-            </indexterm>It&apos;s quite common to produce a DSF file where the track name doesn't exactly
+            </indexterm>It&apos;s quite common to produce a DSF file where the track name doesn&apos;t exactly
               match the tracks already loaded. So, if, when importing a REP file the track name
-              doesn't match any existing tracks, Debrief will invite you to choose the track to add
+              doesn&apos;t match any existing tracks, Debrief will invite you to choose the track to add
               the sensor to.<screenshot>
                 <mediaobject>
                   <imageobject>
@@ -7224,7 +7224,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <title>Filtering DIS traffic</title>
           <para>It is possible for multiple DIS simulations to simultaneously run on a single
             network. Common-sense would suggest that these multiple simulations should use unique
-            network address and port, but this isn't mandatory. If multiple simulations are being
+            network address and port, but this isn&apos;t mandatory. If multiple simulations are being
             run on the same network address and port, it is possible to control which simulations
             Debrief listens to:<variablelist>
               <varlistentry>
@@ -8681,7 +8681,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                   </row>
                 </tbody>
               </tgroup>
-            </table>Here's an illustration of how the new colors appear against the range of Debrief
+            </table>Here&apos;s an illustration of how the new colors appear against the range of Debrief
             background colors:<figure xml:id="shades_2015">
               <title>2015 Debrief shades</title>
               <screenshot>
@@ -9046,7 +9046,7 @@ and entry type can be multi-word if surrounded by quotes (").
 ;; label is "SENSOR LABEL", comment is "COMMENT"
           </markup>
           </screen>
-          <para>For track positions, it's possible to indicate whether the comment should be shown, using the <guibutton>Comment Showing</guibutton> attribute of the position. The comment is always placed opposite the label, even if the label isn't shown</para>
+          <para>For track positions, it&apos;s possible to indicate whether the comment should be shown, using the <guibutton>Comment Showing</guibutton> attribute of the position. The comment is always placed opposite the label, even if the label isn&apos;t shown</para>
         </sect2>
         <sect2 xml:id="towed_array_annotations">
           <title>Towed Array Extensions</title>
@@ -9065,7 +9065,7 @@ and entry type can be multi-word if surrounded by quotes (").
 ;; 12 sets of depth/heading data from module sensors. Either first 4, or last 8 will be populated
 ;; the other pairs should have zero values
 ;; date-time, platform, sensor, pairs of depth &amp; heading data, to the end of line.
-;; But, if you're not interested in the spec at all, you could just include four NULL values.
+;; But, if you&apos;re not interested in the spec at all, you could just include four NULL values.
 
 ;TA_COG_ABS: YYMMDD HHMMSS AAAAAA BBBBBB LAT.Y LONG.X DD.D
 ;; absolute measurement of towed array aperture Centre of Gravity
@@ -9195,7 +9195,7 @@ and entry type can be multi-word if surrounded by quotes (").
             <markup>
 ;FORMAT_FIX: 30_min_lab LABEL NULL NULL TRUE 1800000
 ;; 30_min_lab - name for this formatter (shown in outline view) 
-;; LABEL - what we're applying to (SYMBOL, LABEL, ARROW)
+;; LABEL - what we&apos;re applying to (SYMBOL, LABEL, ARROW)
 ;; NULL - track name we apply to (or null for all tracks)
 ;; NULL - symbology we apply to (e.g. @A) (or null for all tracks) 
 ;; TRUE - whether interval should fall on regular interval or start
