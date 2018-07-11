@@ -741,6 +741,29 @@ public interface Editable
       p.setDisplayName(displayName);
     	return p;
     }
+    
+    /**
+     * convenience class to create a property
+     * 
+     * @param name
+     *          name of this property
+     * @param description
+     *          description of this property
+     * @param displayName
+     *          display name
+     * @return property description
+     * @throws IntrospectionException
+     *           if the methods can't be found
+     */
+    protected final PropertyDescriptor displayReadOnlyProp(final String name,
+        final String displayName, final String description) throws IntrospectionException
+    {
+      final PropertyDescriptor p = new PropertyDescriptor(name, _class, "get" + name, null);
+      p.setShortDescription(description);
+      p.setDisplayName(displayName);
+      
+      return p;
+    }
 
     /**
      * convenience class to create a property
