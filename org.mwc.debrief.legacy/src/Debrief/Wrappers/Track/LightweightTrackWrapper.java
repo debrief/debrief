@@ -281,7 +281,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   /**
    * the width of this track
    */
-  private int _lineWidth = 3;
+  private int _lineWidth = 0;
 
   /**
    * whether or not to show the Positions
@@ -925,8 +925,15 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public double rangeFrom(final WorldLocation other)
   {
-    // TODO Auto-generated method stub
-    return 0;
+    double nearest = Double.MAX_VALUE;
+    Enumeration<Editable> pIter = getPositionIterator();
+    while(pIter.hasMoreElements())
+    {
+      final FixWrapper next = (FixWrapper) pIter.nextElement();
+      final double dist = next.rangeFrom(other);
+      nearest = Math.min(dist, nearest);
+    }
+    return nearest;
   }
 
   @Override
