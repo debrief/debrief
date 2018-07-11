@@ -32,6 +32,7 @@ import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -522,7 +523,8 @@ public class EditableWrapper implements IPropertySource
   final public IPropertyDescriptor[] getPropertyDescriptors()
   {
     // right, does this object have dynamic descriptors?
-    if (_editable.getInfo() instanceof Editable.DynamicDescriptors)
+    final EditorType info = _editable.getInfo();
+    if (info instanceof Editable.DynamicDescriptors)
     {
       // yes - reset our list, we'll regenerate them
       _myDescriptors = null;
@@ -534,7 +536,7 @@ public class EditableWrapper implements IPropertySource
           new Vector<IPropertyDescriptor>(0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
-      final Editable.EditorType editor = _editable.getInfo();
+      final Editable.EditorType editor = info;
       if (editor != null)
       {
         final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
