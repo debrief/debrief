@@ -539,69 +539,11 @@ public class EditableWrapper implements IPropertySource
       final Editable.EditorType editor = info;
       if (editor != null)
       {
-        final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
-        // _myDescriptors = new IPropertyDescriptor[properties.length];
-
-        if (properties != null)
-        {
-          for (int i = 0; i < properties.length; i++)
-          {
-            final PropertyDescriptor thisProp = properties[i];
-
-            // hmm, is it a legacy property?
-            if (thisProp instanceof DeprecatedPropertyDescriptor)
-            {
-              // right, just give it a stiff ignoring, it's deprecated
-            }
-            else
-            {
-              // ok, wrap it, and add it to our list.
-              final IPropertyDescriptor newProp =
-                  new DebriefProperty(thisProp, (Editable) editor.getData(),
-                      null);
-              list.add(newProp);
-            }
-          }
-        }
+        // add the normal editors to our list
+        addPropertyEditors(list, editor);
 
         // hmm, are there any "supplemental" editors?
-        final BeanInfo[] others = editor.getAdditionalBeanInfo();
-        if (others != null)
-        {
-          // adding more editors
-          for (int i = 0; i < others.length; i++)
-          {
-            final BeanInfo bn = others[i];
-            if (bn instanceof MWC.GUI.Editable.EditorType)
-            {
-              final Editable.EditorType et = (Editable.EditorType) bn;
-              final Editable obj = (Editable) et.getData();
-              final PropertyDescriptor[] pds = et.getPropertyDescriptors();
-              if (pds != null)
-              {
-                for (int j = 0; j < pds.length; j++)
-                {
-                  final PropertyDescriptor pd = pds[j];
-
-                  // is this an 'expert' property which
-                  // should not appear in here as an additional?
-                  if (pd.isExpert())
-                  {
-                    // do nothing, we don't want to show this
-                  }
-                  else
-                  {
-                    // ok, add this editor
-                    final IPropertyDescriptor newProp =
-                        new DebriefProperty(pd, obj, null);
-
-                    list.add(newProp);
-                  }
-                }
-              }
-            }
-          }
-        }
+        addAdditionalPropertyEditors(list, editor);
       }
 
       // hmm, did we find any
@@ -609,7 +551,6 @@ public class EditableWrapper implements IPropertySource
       {
         _myDescriptors = list.toArray(res);
       }
-
     }
 
     // just make sure we aren't returning a null...
@@ -620,6 +561,74 @@ public class EditableWrapper implements IPropertySource
     }
 
     return _myDescriptors;
+  }
+
+  private void addPropertyEditors(final Vector<IPropertyDescriptor> list,
+      final EditorType editor)
+  {
+    final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
+    if (properties != null)
+    {
+      for (int i = 0; i < properties.length; i++)
+      {
+        final PropertyDescriptor thisProp = properties[i];
+
+        // hmm, is it a legacy property?
+        if (thisProp instanceof DeprecatedPropertyDescriptor)
+        {
+          // right, just give it a stiff ignoring, it's deprecated
+        }
+        else
+        {
+          // ok, wrap it, and add it to our list.
+          final IPropertyDescriptor newProp =
+              new DebriefProperty(thisProp, (Editable) editor.getData(),
+                  null);
+          list.add(newProp);
+        }
+      }
+    }
+  }
+
+  private void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
+  {
+    final BeanInfo[] others = editor.getAdditionalBeanInfo();
+    if (others != null)
+    {
+      // adding more editors
+      for (int i = 0; i < others.length; i++)
+      {
+        final BeanInfo bn = others[i];
+        if (bn instanceof MWC.GUI.Editable.EditorType)
+        {
+          final Editable.EditorType et = (Editable.EditorType) bn;
+          final Editable obj = (Editable) et.getData();
+          final PropertyDescriptor[] pds = et.getPropertyDescriptors();
+          if (pds != null)
+          {
+            for (int j = 0; j < pds.length; j++)
+            {
+              final PropertyDescriptor pd = pds[j];
+
+              // is this an 'expert' property which
+              // should not appear in here as an additional?
+              if (pd.isExpert())
+              {
+                // do nothing, we don't want to show this
+              }
+              else
+              {
+                // ok, add this editor
+                final IPropertyDescriptor newProp =
+                    new DebriefProperty(pd, obj, null);
+
+                list.add(newProp);
+              }
+            }
+          }
+        }
+      }
+    }    
   }
 
   /*

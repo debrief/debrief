@@ -180,13 +180,10 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   public CellEditor createPropertyEditor(final Composite parent)
   {
     CellEditor res = null;
-    if (_myHelper != null)
+    // only create an editor control if it's not a read-only property
+    if (_myHelper != null && _thisProp.getWriteMethod() != null)
     {
-      // only create an editor control if it's not a read-only property
-      if(_thisProp.getWriteMethod() != null)
-      {
-        res = _myHelper.getCellEditorFor(parent);
-      }
+      res = _myHelper.getCellEditorFor(parent);
     }
     return res;
   }
