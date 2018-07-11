@@ -142,8 +142,12 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
@@ -253,6 +257,9 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
         final Point pt = _myCanvas.getSize();
         final Dimension dim = new Dimension(pt.x, pt.y);
         setScreenSize(dim);
+        
+        // also update the property sheet
+        updatePropertySheet();
       }
     });
 
@@ -291,6 +298,47 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
       }
 
     });
+  }
+
+  /** we've got an issue whereby if it's "us" that's currently displayed in the 
+   * property editor, then we want to refresh the property editor
+   * when the screen resizes.  The properties infrastructure doesn't
+   * listen out for property changes.  So, this is a workaround.
+   */
+  protected void updatePropertySheet()
+  {
+    final PropertySheet propertiesView =
+        (PropertySheet) CorePlugin
+            .findView(IPageLayout.ID_PROP_SHEET);
+    if (propertiesView != null)
+    {
+      final PropertySheetPage propertySheetPage =
+          (PropertySheetPage) propertiesView.getCurrentPage();
+      if (propertySheetPage != null
+          && !propertySheetPage.getControl().isDisposed())
+      {
+        Control control = propertySheetPage.getControl();
+        if(control instanceof Composite)
+        {
+          Composite comp = (Composite) control;
+          Control[] children = comp.getChildren();
+          if(children.length > 0)
+          {
+            Control first = children[0];
+            if(first instanceof Label)
+            {
+              Label topLabel = (Label) first;
+              String text = topLabel.getText();
+              if(text.equals(EDITOR_LABEL))
+              {
+                // ok - we're being shown. refresh the property sheet
+                propertySheetPage.refresh();
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -463,6 +511,7 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
   /**
    * handler for a screen resize - inform our projection of the resize then inform the painters.
    */
+  @Override
   public void setScreenSize(final java.awt.Dimension p1)
   {
     super.setScreenSize(p1);
