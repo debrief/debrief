@@ -1006,6 +1006,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     // declare our arrays
     _theSegments = new TrackWrapper_Support.SegmentList();
     _theSegments.setWrapper(this);
+
+    // tracks are plotted bolder than lightweight tracks, give them some depth
+    setLineThickness(3);
   }
 
   /**
