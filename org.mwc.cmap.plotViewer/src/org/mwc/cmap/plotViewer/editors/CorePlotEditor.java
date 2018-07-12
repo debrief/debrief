@@ -1365,7 +1365,7 @@ public abstract class CorePlotEditor extends EditorPart implements
             }
           }
         });
-      };
+      }
     }
   }
 
