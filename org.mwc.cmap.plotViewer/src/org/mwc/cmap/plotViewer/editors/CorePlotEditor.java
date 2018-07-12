@@ -1358,12 +1358,14 @@ public abstract class CorePlotEditor extends EditorPart implements
             {
               firePropertyChange(PROP_DIRTY);
               final PropertySheetPage propsPage = (PropertySheetPage)getAdapter(IPropertySheetPage.class);
-              propsPage.refresh();
+              if(propsPage != null && !propsPage.getControl().isDisposed())
+              {
+                propsPage.refresh();
+              }
             }
           }
         });
-      }
-      ;
+      };
     }
   }
 
