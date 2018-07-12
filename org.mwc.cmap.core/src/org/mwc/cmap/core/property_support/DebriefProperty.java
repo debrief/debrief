@@ -168,7 +168,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   public Control createEditor(final Composite parent)
   {
     Control res = null;
-    if (_myHelper != null)
+    // only create an editor control if it's not a read-only property
+    if (_myHelper != null && _thisProp.getWriteMethod() != null)
     {
       res = _myHelper.getEditorControlFor(parent, this);
     }
@@ -179,7 +180,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   public CellEditor createPropertyEditor(final Composite parent)
   {
     CellEditor res = null;
-    if (_myHelper != null)
+    // only create an editor control if it's not a read-only property
+    if (_myHelper != null && _thisProp.getWriteMethod() != null)
     {
       res = _myHelper.getCellEditorFor(parent);
     }
@@ -260,7 +262,17 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   {
     // find out the type of the editor
     final Method write = _thisProp.getWriteMethod();
-    return write.getAnnotations();
+    final Annotation[] res;
+    if(write != null)
+    {
+      res = write.getAnnotations();      
+    }
+    else
+    {
+      res = null;
+    }
+    
+    return res;
   }
 
   @Override
@@ -405,8 +417,11 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
     final Method write = _thisProp.getWriteMethod();
     try
     {
-      write.invoke(_subject, new Object[]
-      {theValue});
+      if (write != null)
+      {
+        write.invoke(_subject, new Object[]
+        {theValue});
+      }
     }
     catch (final IllegalArgumentException e)
     {

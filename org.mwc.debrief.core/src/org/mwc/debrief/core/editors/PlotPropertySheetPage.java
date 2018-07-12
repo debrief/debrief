@@ -14,6 +14,9 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -38,11 +41,29 @@ public class PlotPropertySheetPage extends PropertySheetPage
   private final PlotEditor _plotEditor;
   private Composite _base;
   private Label context;
+  
+  /** listen out for property changes on the selected
+   * items
+   */
+  final private PropertyChangeListener _propListener;
+  
+  /** remember the current selection, so we can
+   * remove listeners on a new selection
+   */
+  private Object[] _curSelection;
 
   public PlotPropertySheetPage(final PlotEditor plotEditor)
   {
     this._plotEditor = plotEditor;
-
+    _propListener = new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        // ok, refresh.
+        refresh();
+      }
+    };
   }
 
   @Override
@@ -92,6 +113,17 @@ public class PlotPropertySheetPage extends PropertySheetPage
   {
     return _base;
   }
+  
+  
+
+  @Override
+  public void dispose()
+  {
+    // de-register any existing listeners
+    removePropertyChangeListenersFor(_curSelection, _propListener);
+    
+    super.dispose();
+  }
 
   @Override
   public void selectionChanged(final IWorkbenchPart part,
@@ -105,6 +137,13 @@ public class PlotPropertySheetPage extends PropertySheetPage
       final Object[] objs = treeSelection.toArray();
       if (objs.length > 0)
       {
+        
+        // do we have a previous selection?
+        removePropertyChangeListenersFor(_curSelection, _propListener);
+        
+        // store the new selection
+        _curSelection = objs;
+        
         final StringBuilder builder = new StringBuilder();
         boolean addSep = false;
         final int MAX_SIZE = 5;
@@ -119,8 +158,12 @@ public class PlotPropertySheetPage extends PropertySheetPage
             }
             final EditableWrapper wrapper = (EditableWrapper) object;
             builder.append(wrapper.getEditable().toString());
-
+            
             addSep = true;
+            
+            // listen for any property changes
+            wrapper.getEditable().getInfo().addPropertyChangeListener(
+                _propListener);
           }
         }
 
@@ -137,6 +180,24 @@ public class PlotPropertySheetPage extends PropertySheetPage
     }
     context.setText("<pending>");
     context.setToolTipText("");
+  }
+
+  private static void removePropertyChangeListenersFor(Object[] curSelection, PropertyChangeListener propListener)
+  {
+    if(curSelection != null)
+    {
+      for(Object obj: curSelection)
+      {
+        // was it an editable?
+        if(obj instanceof EditableWrapper)
+        {
+          EditableWrapper ed = (EditableWrapper) obj;
+          // ok, de-register
+          ed.getEditable().getInfo().removePropertyChangeListener(
+              propListener);
+        }
+      }
+    }
   }
 
   @Override
