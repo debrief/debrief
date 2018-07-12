@@ -14,8 +14,6 @@
  */
 package org.mwc.cmap.plotViewer.editors;
 
-import interfaces.INameablePart;
-
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -77,7 +75,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPart;
@@ -89,7 +86,7 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
@@ -127,6 +124,7 @@ import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import interfaces.INameablePart;
 
 public abstract class CorePlotEditor extends EditorPart implements
     IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
@@ -1359,19 +1357,8 @@ public abstract class CorePlotEditor extends EditorPart implements
             if (isPending)
             {
               firePropertyChange(PROP_DIRTY);
-              final PropertySheet propertiesView =
-                  (PropertySheet) CorePlugin
-                      .findView(IPageLayout.ID_PROP_SHEET);
-              if (propertiesView != null)
-              {
-                final PropertySheetPage propertySheetPage =
-                    (PropertySheetPage) propertiesView.getCurrentPage();
-                if (propertySheetPage != null
-                    && !propertySheetPage.getControl().isDisposed())
-                {
-                  propertySheetPage.refresh();
-                }
-              }
+              final PropertySheetPage propsPage = (PropertySheetPage)getAdapter(IPropertySheetPage.class);
+              propsPage.refresh();
             }
           }
         });
