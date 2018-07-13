@@ -344,6 +344,15 @@
 				working
 			</xs:documentation>
 		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SensorOffset" type="WorldDistanceType">
+				<xs:annotation>
+					<xs:documentation>
+						Offset for this sensor from tactical datum
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 		<xs:attribute name="Name" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>The name of this sensor</xs:documentation>
