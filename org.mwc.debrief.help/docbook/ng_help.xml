@@ -4060,7 +4060,8 @@ and so on....</programlisting></para>
           current size as the plot editor is resized.  To do this, double-click on an empty
           area of a Debrief plot.  The plot background settings will be shown in the 
           properties editor.  One of the properties is a read-only one, titled
-            <guibutton>Dimension</guibutton>.  As the editor is resized, this property 
+            <guibutton>Dimension</guibutton>.  As the editor is resized (by dragging the 
+            vertical/horizontal sashes that separate the Debrief panels), this property 
           will give live feedback on the current size.
             <figure xml:id="current_plot_size">
               <title>Property for current plot size</title>
