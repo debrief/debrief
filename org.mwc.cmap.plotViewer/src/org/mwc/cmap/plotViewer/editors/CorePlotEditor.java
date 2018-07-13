@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
@@ -86,8 +85,6 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.views.properties.IPropertySheetPage;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.interfaces.IPlotGUI;
@@ -181,12 +178,6 @@ public abstract class CorePlotEditor extends EditorPart implements
    * keep track of whether the current plot is dirty...
    */
   public boolean _plotIsDirty = false;
-
-  /**
-   * keep track of if we need to update the property sheet
-   * 
-   */
-  private AtomicBoolean _propsNeedsRefresh = new AtomicBoolean(false);
 
   // ///////////////////////////////////////////////
   // dummy bits applicable for our dummy interface
@@ -1335,37 +1326,6 @@ public abstract class CorePlotEditor extends EditorPart implements
     if (!_ignoreDirtyCalls)
     {
       _plotIsDirty = true;
-
-      // ok, are we already updating?
-      if (_propsNeedsRefresh.get())
-      {
-        // ok, we've already got an update event pending
-      }
-      else
-      {
-        // clear the flag
-        _propsNeedsRefresh.set(true);
-
-        // ok, submit the async refresh job
-        Display.getDefault().asyncExec(new Runnable()
-        {
-
-          public void run()
-          {
-            final boolean isPending = _propsNeedsRefresh.getAndSet(false);
-
-            if (isPending)
-            {
-              firePropertyChange(PROP_DIRTY);
-              final PropertySheetPage propsPage = (PropertySheetPage)getAdapter(IPropertySheetPage.class);
-              if(propsPage != null && !propsPage.getControl().isDisposed())
-              {
-                propsPage.refresh();
-              }
-            }
-          }
-        });
-      }
     }
   }
 
