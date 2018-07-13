@@ -121,7 +121,8 @@ public class PlotPropertySheetPage extends PropertySheetPage
   {
     // de-register any existing listeners
     removePropertyChangeListenersFor(_curSelection, _propListener);
-    
+    //fix bug - 2998, reset the cached propertysheetpage in editor.
+    _plotEditor.disposePlotPropertySheetPage();
     super.dispose();
   }
 
