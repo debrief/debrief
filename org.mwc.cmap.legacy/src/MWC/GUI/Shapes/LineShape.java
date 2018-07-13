@@ -139,6 +139,8 @@ package MWC.GUI.Shapes;
 import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 
 //import org.mwc.cmap.core.CorePlugin;
@@ -328,8 +330,20 @@ public class LineShape extends PlainShape implements Editable,
 	public Editable.EditorType getInfo()
 	{
 		if (_myEditor == null)
+		{
 			_myEditor = new LineInfo(this, getName());
-
+			
+			// also, propagate any events up from our info object
+			_myEditor.addPropertyChangeListener(new PropertyChangeListener()
+      {
+        
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          firePropertyChange(evt.getPropertyName(), evt.getOldValue(), evt.getNewValue());
+        }
+      });
+		}
 		return _myEditor;
 	}
 

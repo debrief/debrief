@@ -299,6 +299,8 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private HiResDate _lastArrowFrequency = new HiResDate(0);
 
+  private EditorType _myEditor;
+
   public LightweightTrackWrapper()
   {
     // no-op constructor
@@ -500,7 +502,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public EditorType getInfo()
   {
-    return new LightweightTrackInfo(this);
+    if(_myEditor == null)
+    {
+      _myEditor = new LightweightTrackInfo(this);
+    }
+    return _myEditor;
   }
 
   @Override
