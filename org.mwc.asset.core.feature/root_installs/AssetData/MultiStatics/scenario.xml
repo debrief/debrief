@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="RB_mini_scenario" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="false" ShowName="false" StartTime="2014-12-12T12:00:00">
-	<StepTime Units="seconds" Value="5" />
+	<StepTime Units="seconds" Value="20" />
 	<Participants>
 		<SSN Name="Contact">
 			<Category Type="SUBMARINE" Force="RED" Environment="SUBSURFACE" />
@@ -59,7 +59,7 @@
 				</Move>
 			</Sequence>
 			<RadiatedCharacteristics>
-				<Narrowband BaseNoiseLevel="180" Frequency="170" />
+				<Narrowband BaseNoiseLevel="78" Frequency="170" />
 			</RadiatedCharacteristics>
 			<SSMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
@@ -78,7 +78,7 @@
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX1_Reflected" Working="true" />
-				<NarrowbandSensor Name="RX1_Direct" Working="true"
+				<NarrowbandSensor Name="RX1_Direct" Working="false"
 					HasBearing="true">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
@@ -115,7 +115,7 @@
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX2_Reflected" Working="true" />
-				<NarrowbandSensor Name="RX2_Direct" Working="true"
+				<NarrowbandSensor Name="RX2_Direct" Working="false"
 					HasBearing="true">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
@@ -152,7 +152,7 @@
 			<Category Type="BUOY" Force="BLUE" Environment="SUBSURFACE" />
 			<SensorFit>
 				<BistaticReceiver Name="RX3_Reflected" Working="true" />
-				<NarrowbandSensor Name="RX3_Direct" Working="true"
+				<NarrowbandSensor Name="RX3_Direct" Working="false"
 					HasBearing="true">
 					<SteadyTime Value="0.0" Units="millis" />
 				</NarrowbandSensor>
