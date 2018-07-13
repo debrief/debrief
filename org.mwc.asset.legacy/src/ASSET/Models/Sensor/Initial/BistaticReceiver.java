@@ -2,7 +2,6 @@ package ASSET.Models.Sensor.Initial;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import ASSET.NetworkParticipant;
@@ -53,6 +52,11 @@ public class BistaticReceiver extends CoreSensor
    * whether to suppress bistatic hits when they would be obscured by direct path
    */
   private boolean _suppressDirect = true;
+
+  /** the angle either side (Degs) that we suppress
+   * direct path bearings
+   */
+  private double _obscureAngle;
 
   @Override
   public WorldDistance getEstimatedRange()
@@ -258,11 +262,7 @@ public class BistaticReceiver extends CoreSensor
                 brgDelta += 360d;
               }
                 
-//              
-//              System.out.println(new Date(time).toString() + " bearing:"
-//                  + (int) trimmedBearing + " to tgt:" + (int) bearingToTxDegs
-//                  + " delta: " + (int) brgDelta);
-              if (Math.abs(brgDelta) < 7)
+              if (Math.abs(brgDelta) < _obscureAngle)
               {
                 obscured = true;
               }
@@ -474,4 +474,23 @@ public class BistaticReceiver extends CoreSensor
     // don't bother...
   }
 
+  public boolean isSuppressDirect()
+  {
+    return _suppressDirect;
+  }
+
+  public void setSuppressDirect(boolean suppressDirect)
+  {
+    this._suppressDirect = suppressDirect;
+  }
+
+  public double getObscureAngle()
+  {
+    return _obscureAngle;
+  }
+
+  public void setObscureAngle(double obscureAngle)
+  {
+    this._obscureAngle = obscureAngle;
+  }
 }

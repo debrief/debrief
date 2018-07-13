@@ -30,12 +30,35 @@ public abstract class BistaticReceiverHandler extends CoreSensorHandler
 {
 
   private final static String type = "BistaticReceiver";
+  
+  private final static String SUPPRESS = "Suppress";
+  private final static String SUPPRESS_ANGLE = "SuppressAngle";
 
+  Boolean _suppress = null;
+  Double _suppressAngle = null;
 
   public BistaticReceiverHandler(String myType)
   {
     super(myType);
 
+    addAttributeHandler(new HandleBooleanAttribute(SUPPRESS)
+    {
+      @Override
+      public void setValue(String name, boolean value)
+      {
+        _suppress = value;
+      }
+    });
+    
+    addAttributeHandler(new HandleDoubleAttribute(SUPPRESS_ANGLE)
+    {
+      @Override
+      public void setValue(String name, double value)
+      {
+        _suppressAngle = value;
+      }
+    });
+    
   }
 
   public BistaticReceiverHandler()
@@ -54,7 +77,21 @@ public abstract class BistaticReceiverHandler extends CoreSensorHandler
   protected SensorType getSensor(int myId)
   {
     // get this instance
-    final SensorType bb = new BistaticReceiver(myId);
+    final BistaticReceiver bb = new BistaticReceiver(myId);
+    
+    if(_suppress != null)
+    {
+      bb.setSuppressDirect(_suppress);
+    }
+    
+    if(_suppressAngle != null) 
+    {
+      bb.setObscureAngle(_suppressAngle);
+    }
+    
+    _suppress = null;
+    _suppressAngle = null;
+    
     return bb;
   }
 
@@ -70,6 +107,9 @@ public abstract class BistaticReceiverHandler extends CoreSensorHandler
 
     // insert the parent bits first
     CoreSensorHandler.exportCoreSensorBits(thisPart, bb);
+    
+    thisPart.setAttribute(SUPPRESS, writeThis(bb.isSuppressDirect()));
+    thisPart.setAttribute(SUPPRESS_ANGLE, writeThis(bb.getObscureAngle()));
     
     parent.appendChild(thisPart);
   }
