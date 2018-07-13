@@ -1047,11 +1047,14 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				updateLabelLocation();
 
-				if (_theShape != null)
-					if (_theShape.getBounds() != null)
-						this.getInfo().fireChanged(this, LOCATION_CHANGED, null,
-								_theShape.getBounds().getCentre());
-
+        if (_theShape != null)
+        {
+          if (_theShape.getBounds() != null)
+          {
+            this.getInfo().fireChanged(this, LOCATION_CHANGED, null, _theShape
+                .getBounds().getCentre());
+          }
+        }
 			}
 		}
 	}
