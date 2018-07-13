@@ -207,16 +207,18 @@ public class NarrowbandSensor extends InitialSensor
 						.getRadiatedChars().getMedium(1);
 				if (nbNoise != null)
 				{
-					// do we have a detecftion event yet?
-					if (res == null)
-					{
-						// nope, better create one.
-						res = new DetectionEvent(time, host.getId(), host.getStatus()
-								.getLocation(), this, null, null, null, null, null,
-								target.getCategory(), new Float(target.getStatus().getSpeed()
-										.getValueIn(WorldSpeed.Kts)), new Float(target.getStatus()
-										.getCourse()), target);
-					}
+          // do we have a detecftion event yet?
+          if (res == null)
+          {
+            final WorldLocation hostLoc = getHostLocationFor(host);
+
+            // nope, better create one.
+            res = new DetectionEvent(time, host.getId(), hostLoc, this, null,
+                null, null, null, null, target.getCategory(), new Float(target
+                    .getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
+                new Float(target.getStatus().getCourse()), target);
+          }
+					
 					// get the f-nought
 					final double f0;
 					if(_tracksSecondHarmonic)
