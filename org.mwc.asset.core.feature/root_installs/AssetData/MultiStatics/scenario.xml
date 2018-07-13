@@ -17,7 +17,7 @@
 			</Status>
 			<Sequence Name="Turns">
 				<Move Name="Travel North" Course="0.0">
-					<Vector Value="4800" Units="m" />
+					<Vector Value="4500" Units="m" />
 				</Move>
 				<Move Name="turn east" Course="090"></Move>
 				<Move Name="turn south" Course="180"></Move>
@@ -59,7 +59,7 @@
 				</Move>
 			</Sequence>
 			<RadiatedCharacteristics>
-				<Narrowband BaseNoiseLevel="78" Frequency="170" />
+				<Narrowband BaseNoiseLevel="74" Frequency="170" />
 			</RadiatedCharacteristics>
 			<SSMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
