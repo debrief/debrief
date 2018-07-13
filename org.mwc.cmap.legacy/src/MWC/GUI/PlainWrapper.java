@@ -153,6 +153,7 @@ package MWC.GUI;
 
 import java.awt.Color;
 import java.io.Serializable;
+import java.lang.annotation.Annotation;
 
 import MWC.GenericData.WorldArea;
 
@@ -260,6 +261,47 @@ abstract public class PlainWrapper implements Plottable, Serializable,
       getSupport().firePropertyChange(propertyChanged, oldValue, newValue);
 		}
 
+
+    /** convenience function, for determining if object has fire reformatted
+     * annotation
+     * @param ann set of annotations for an object
+     * @return yes/no
+     */
+    public static boolean hasFireReformattedAnnotation(final Annotation[] ann)
+    {
+      if (ann != null)
+      {
+        for (final Annotation thisA : ann)
+        {
+          if (thisA.annotationType().equals(FireReformatted.class))
+          {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    
+    /** convenience function, for determining if object has fire extended
+     * annotation
+     * @param ann set of annotations for an object
+     * @return yes/no
+     */
+    public static boolean hasFireExtendedAnnotation(final Annotation[] ann)
+    {
+      if (ann != null)
+      {
+        for (final Annotation thisA : ann)
+        {
+          if (thisA.annotationType().equals(FireExtended.class))
+          {
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    
 		/* (non-Javadoc)
 		 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.PropertyChangeListener)
 		 */
