@@ -31,7 +31,9 @@ import ASSET.Models.*;
 import ASSET.Models.Detection.*;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Participants.*;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * base implementation of a sensor
@@ -73,6 +75,11 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    * our property change support
    */
   protected java.beans.PropertyChangeSupport _pSupport;
+  
+  /** (optional) offset for sensor (-ve = behind)
+   * 
+   */
+  protected WorldDistance _sensorOffset;
 
   /**
    * whether this sensor is active
@@ -530,6 +537,31 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     return participant.getStatus().getLocation();
   }
 
+  
+  /**
+   * get the target location
+   * 
+   * @param participant
+   * @return
+   */
+  protected WorldLocation getHostLocationFor(ASSET.ParticipantType participant)
+  {
+    final WorldLocation sensorLoc = participant.getStatus().getLocation();
+    final WorldLocation res;
+    final WorldDistance offset = getSensorOffset();
+    if(offset != null)
+    {
+      final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(participant.getStatus().getCourse());
+      res = sensorLoc.add(new WorldVector(courseRads, offset, new WorldDistance(0, WorldDistance.FT)));      
+    }
+    else
+    {
+      res = sensorLoc;
+    }
+    
+    return res;
+  }
+
   /**
    * handle the demanded change in sensor lineup
    * 
@@ -567,6 +599,18 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
   {
     return bearing - course;
   }
+
+  public WorldDistance getSensorOffset()
+  {
+    return _sensorOffset;
+  }
+
+  public void setSensorOffset(WorldDistance sensorOffset)
+  {
+    this._sensorOffset = sensorOffset;
+  }
+
+
 
   // //////////////////////////////////////////////////
   // the editor object
@@ -626,7 +670,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
       return res;
     }
   }
-
+  
   /**
    * ************************************************* utility class
    * *************************************************
