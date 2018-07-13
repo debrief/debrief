@@ -709,35 +709,42 @@ public class EditableWrapper implements IPropertySource
 
   }
   
-  private static boolean fontHasChanged(final Font oldFont, final Font newFont)
+  /**
+   * determine if the font objects are effectively equal
+   * 
+   * @param fontOne
+   *          first font
+   * @param fontTwo
+   *          second font
+   * @return if they can be treated as equal
+   */
+  private static boolean fontsAreEqual(final Font fontOne, final Font fontTwo)
   {
     final boolean res;
-    if(oldFont == null)
+    if (fontOne == null)
     {
-      res = true;
+      res = false;
     }
     else
     {
-      final FontData[] newD = newFont.getFontData();
-      final FontData[] oldD = oldFont.getFontData();
-      
+      final FontData[] newD = fontTwo.getFontData();
+      final FontData[] oldD = fontOne.getFontData();
+
       // compare all the font definitions
-      for(FontData newData: newD)
+      for (FontData newData : newD)
       {
-        for(FontData oldData: oldD)
+        for (FontData oldData : oldD)
         {
           // ok - it's a match!
-          if(newData.equals(oldData))
+          if (newData.equals(oldData))
           {
             // ok, we can drop out.
-            return false;
+            return true;
           }
         }
       }
-      
-      res = true;
+      res = false;
     }
-    
     return res;
   }
   
@@ -768,11 +775,11 @@ public class EditableWrapper implements IPropertySource
       // special handling for fonts.  This is because, within some Debiref
       // objects the font is stored as an AWT font.  But, it's converted to an
       // SWT font.  This round trip means that identical fonts can appear to be different
-      valueChanged = fontHasChanged((Font) value, (Font) oldVal);
+      valueChanged = !fontsAreEqual((Font) value, (Font) oldVal);
     }
     else
     {
-      valueChanged = value != null && !value.equals(oldVal) || value != oldVal;
+      valueChanged = value != null && !value.equals(oldVal);
     }
 
     if (valueChanged)
