@@ -26,6 +26,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
@@ -41,6 +43,7 @@ import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other bits
@@ -159,21 +162,13 @@ public class EditableWrapper implements IPropertySource
       {
         // right, we can fire a change if we like. have a look
         final Annotation[] ann = _property.getAnnotationsForSetter();
-        if ((ann != null) && (ann.length > 0))
+        if(PlainWrapper.hasFireExtendedAnnotation(ann))
         {
-          for (int i = 0; i < ann.length; i++)
-          {
-            final Annotation thisA = ann[i];
-            if (thisA.annotationType().equals(FireExtended.class))
-            {
-              _wholeLayers.fireExtended(null, _topLevelLayer);
-            }
-            else if (thisA.annotationType().equals(FireReformatted.class))
-            {
-              _wholeLayers.fireReformatted(_topLevelLayer);
-            }
-          }
-
+          _wholeLayers.fireExtended(null, _topLevelLayer);
+        }
+        else if(PlainWrapper.hasFireReformattedAnnotation(ann))
+        {
+          _wholeLayers.fireReformatted(_topLevelLayer);
         }
         else
         {
@@ -713,7 +708,39 @@ public class EditableWrapper implements IPropertySource
   {
 
   }
-
+  
+  private static boolean fontHasChanged(final Font oldFont, final Font newFont)
+  {
+    final boolean res;
+    if(oldFont == null)
+    {
+      res = true;
+    }
+    else
+    {
+      final FontData[] newD = newFont.getFontData();
+      final FontData[] oldD = oldFont.getFontData();
+      
+      // compare all the font definitions
+      for(FontData newData: newD)
+      {
+        for(FontData oldData: oldD)
+        {
+          // ok - it's a match!
+          if(newData.equals(oldData))
+          {
+            // ok, we can drop out.
+            return false;
+          }
+        }
+      }
+      
+      res = true;
+    }
+    
+    return res;
+  }
+  
   /*
    * (non-Javadoc)
    * 
@@ -733,12 +760,29 @@ public class EditableWrapper implements IPropertySource
     // and find the existing value
     final Object oldVal = thisProp.getValue();
 
-    // ok, create the action
-    final PropertyChangeAction pca =
-        new PropertyChangeAction(oldVal, value, thisProp, getEditable()
-            .getName(), getLayers(), getTopLevelLayer());
+    // only apply change if it's a new value
 
-    // and sort it out with the history
-    CorePlugin.run(pca);
+    final boolean valueChanged;
+    if (value instanceof Font)
+    {
+      // special handling for fonts.  This is because, within some Debiref
+      // objects the font is stored as an AWT font.  But, it's converted to an
+      // SWT font.  This round trip means that identical fonts can appear to be different
+      valueChanged = fontHasChanged((Font) value, (Font) oldVal);
+    }
+    else
+    {
+      valueChanged = value != null && !value.equals(oldVal) || value != oldVal;
+    }
+
+    if (valueChanged)
+    {
+      // ok, create the action
+      final PropertyChangeAction pca = new PropertyChangeAction(oldVal, value,
+          thisProp, getEditable().getName(), getLayers(), getTopLevelLayer());
+
+      // and sort it out with the history
+      CorePlugin.run(pca);
+    }
   }
 }
