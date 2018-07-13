@@ -93,9 +93,11 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GenericData.WatchableList;
 
@@ -427,6 +429,13 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     {
       final Plottable pl = (Plottable) item;
       pl.setVisible(on);
+      
+      // and update property
+      EditorType info = item.getInfo();
+      if (info != null)
+      {
+        info.fireChanged(item, PlainWrapper.VISIBILITY_CHANGED, !on, on);
+      }
     }
   }
 
@@ -1546,15 +1555,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
               }
             }, _treeViewer, _myLayers);
         CorePlugin.run(doIt);
-
-        applyOperationToSelection(new IOperateOn()
-        {
-          @Override
-          public void doItTo(final Editable item)
-          {
-          }
-        });
-
       }
     };
     _makePrimary.setText("Make Primary");

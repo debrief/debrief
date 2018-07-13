@@ -39,9 +39,11 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.HasDraggableComponents;
@@ -435,6 +437,16 @@ public class DragComponent extends DragFeature
 
 				// and add it to the clipboard
 				CorePlugin.run(daw);
+
+				if(_hoverTarget instanceof Editable)
+				{
+				  Editable editable = (Editable) _hoverTarget;
+				  EditorType info = editable.getInfo();
+				  if(info != null)
+				  {
+				    info.fireChanged(this, PlainWrapper.LOCATION_CHANGED, null, _hoverComponent);
+				  }
+				}
 
 			}
 
