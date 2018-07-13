@@ -130,7 +130,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 
     }
 
-    public final void testImport_WithSpaces()
+    public final void testImportWithSpaces()
     {
       // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
       // YYYY CCC SSS DDD xx.xx
