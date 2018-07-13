@@ -171,6 +171,8 @@ public class NarrowbandSensor extends InitialSensor
 		// unsteady bits
 		Status curStatus = host.getStatus();
 		double course = curStatus.getCourse();
+		
+    final WorldLocation hostLoc = getHostLocationFor(host);
 
 		// is this the first time we've examined the course?
 		if (_oldCourse == INVALID_COURSE)
@@ -210,8 +212,6 @@ public class NarrowbandSensor extends InitialSensor
           // do we have a detecftion event yet?
           if (res == null)
           {
-            final WorldLocation hostLoc = getHostLocationFor(host);
-
             // nope, better create one.
             res = new DetectionEvent(time, host.getId(), hostLoc, this, null,
                 null, null, null, null, target.getCategory(), new Float(target
@@ -245,7 +245,7 @@ public class NarrowbandSensor extends InitialSensor
 					double txCourseDegs = tS.getCourse();
 
 					double bearingDegs = Math.toDegrees(target.getStatus().getLocation()
-							.bearingFrom(host.getStatus().getLocation()));
+							.bearingFrom(hostLoc));
 
 					// what's the observed freq?
 					double freq = FrequencyCalcs.getPredictedFreq(f0, speedOfSoundKts,

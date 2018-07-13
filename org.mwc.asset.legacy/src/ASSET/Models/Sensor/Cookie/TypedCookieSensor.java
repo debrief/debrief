@@ -204,6 +204,8 @@ public class TypedCookieSensor extends CoreSensor
 		// right, what's the distance?
 		WorldDistance range = null; // defer calculation until we need it
 		WorldVector sep = null;
+		
+    final WorldLocation hostLoc = getHostLocationFor(host);
 
 		// loop through our detection types
 		for (Iterator<TypedRangeDoublet> iterator = _rangeDoublets.iterator(); iterator
@@ -272,7 +274,6 @@ public class TypedCookieSensor extends CoreSensor
 					if (detected)
 					{
 						// calculate the separation - so we can plot a bearing
-					  WorldLocation hostLoc = getHostLocationFor(host);
 						sep = target.getStatus().getLocation()
 								.subtract(hostLoc);
 

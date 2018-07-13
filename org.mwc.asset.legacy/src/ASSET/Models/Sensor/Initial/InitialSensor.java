@@ -133,7 +133,7 @@ abstract public class InitialSensor extends CoreSensor
       
       res = new DetectionEvent(time,
                                host.getId(),
-                               host.getStatus().getLocation(),
+                               hostLocation,
                                this,
                                Rng,
                                estimatedRange,

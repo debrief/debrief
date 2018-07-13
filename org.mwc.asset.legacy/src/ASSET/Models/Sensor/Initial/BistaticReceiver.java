@@ -151,7 +151,7 @@ public class BistaticReceiver extends CoreSensor
           // sort out the locations
           WorldLocation txLoc = transmitter.getStatus().getLocation();
           WorldLocation contactLoc = target.getStatus().getLocation();
-          WorldLocation myLoc = host.getStatus().getLocation();
+          WorldLocation myLoc = getHostLocationFor(host);
 
           // what's the bearing to the tx from ux?
           double bearingToTxDegs = MWC.Algorithms.Conversions.Rads2Degs(txLoc.bearingFrom(myLoc));
