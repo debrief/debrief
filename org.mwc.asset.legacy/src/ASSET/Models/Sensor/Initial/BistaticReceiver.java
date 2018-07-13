@@ -111,57 +111,6 @@ public class BistaticReceiver extends CoreSensor
     if (Category.Type.BUOY.equals(target.getCategory().getType()))
     {
       // ok, we don't produce detections of buoys
-
-      // // and is it active?
-      // if(false == true)
-      //// if (target.radiatesThisNoise(EnvironmentType.NARROWBAND))
-      // {
-      // // yes - ok, provide a direct path detection
-      //
-      // // sort out the locations
-      // WorldLocation contactLoc = target.getStatus().getLocation();
-      // WorldLocation myLoc = host.getStatus().getLocation();
-      //
-      // // use the environment to determine the loss
-      // double legTwoLoss = environment.getLossBetween(
-      // EnvironmentType.NARROWBAND, contactLoc, myLoc);
-      //
-      // // ok, now the remaining value
-      // RadiatedCharacteristics txChars = target.getRadiatedChars();
-      // NarrowbandRadNoise radNoise = (NarrowbandRadNoise) txChars
-      // .getMedium(EnvironmentType.NARROWBAND);
-      // double radLevel = radNoise.getBaseNoiseLevel();
-      // float remainingNoise = (float) (radLevel - legTwoLoss);
-      //
-      // // is this sufficient?
-      // if (remainingNoise > THRESHOLD)
-      // {
-      // // TODO: - sort out the doppler freq & signal strength
-      //
-      // float bearing = (float) MWC.Algorithms.Conversions
-      // .Rads2Degs(contactLoc.subtract(myLoc).getBearing());
-      // res = new DetectionEvent(time, host.getId(), myLoc, this, null, null,
-      // bearing, null, remainingNoise, target.getCategory(), null, null,
-      // target);
-      //
-      // double SpeedOfSound = 1500;
-      // double osHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(host
-      // .getStatus().getCourse());
-      // double tgtHeadingRads = MWC.Algorithms.Conversions.Degs2Rads(target
-      // .getStatus().getCourse());
-      // double osSpeed = host.getStatus().getSpeed()
-      // .getValueIn(WorldSpeed.M_sec);
-      // double tgtSpeed = target.getStatus().getSpeed()
-      // .getValueIn(WorldSpeed.M_sec);
-      // double freq = FrequencyCalcs.calcPredictedFreqSI(SpeedOfSound,
-      // osHeadingRads, tgtHeadingRads, osSpeed, tgtSpeed, bearing,
-      // radNoise.getFrequency());
-      //
-      // res.setFreq((float) freq);
-      //
-      // return res;
-      // }
-      // }
     }
     else
     {
@@ -250,8 +199,7 @@ public class BistaticReceiver extends CoreSensor
             if (_suppressDirect)
             {
               final double trimmedBearing = bearing > 180 ? bearing - 360 : bearing;
-              
-              
+                            
               double brgDelta = trimmedBearing - bearingToTxDegs;
               if(brgDelta > 180)
               {
