@@ -58,6 +58,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class to read in a TMA Solution (incorporating Range and Bearing)
@@ -118,7 +119,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 			rng = MWCXMLReader.readThisDouble(st.nextToken());
 
 			// read in the solution name
-			solutionName = st.nextToken();
+			solutionName = ImportFix.checkForQuotedName(st);
 	
 			// trim the sensor name
 			solutionName = solutionName.trim();
@@ -223,8 +224,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testImportTMA_RngBrg extends
-			junit.framework.TestCase
+  static public final class testImportTMA_RngBrg extends TestCase
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
@@ -283,6 +283,37 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 
 		}
 
+
+    public final void testImport_WithSpaces()
+    {
+      // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
+      // YYYY CCC SSS DDD xx.xx
+      // ;; date, time, ownship name, symbology, bearing (deg), range (yds),
+      // track name, elipse orientation (deg from north), maxima (yds), minima
+      // (yds), course, speed, depth (m), label string
+
+      final String testLine = ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 \"TRACK 060\" 045.0  4000 2000 050 12.4 100 Trial label";
+
+      // ok, create the importer
+      final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
+
+      // see if we can read this type
+      final String theType = importer.getYourType();
+      assertEquals("returned correct type", theType, ";TMA_RB:");
+
+      // now read the line
+      final Object res = importer.readThisLine(testLine);
+      assertNotNull("managed to read item", res);
+
+      // check it's of the correct type
+      assertEquals("of correct class",
+          "class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
+      final TMAContactWrapper tc = (TMAContactWrapper) res;
+
+      // check the values we've used
+      assertEquals("correct solution name", "TRACK 060", tc.getSolutionName());
+    }
+    
 		public final void testImportNoEllipse()
 		{
 			// ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
