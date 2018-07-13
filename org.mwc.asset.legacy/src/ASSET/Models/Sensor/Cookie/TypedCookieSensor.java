@@ -272,8 +272,9 @@ public class TypedCookieSensor extends CoreSensor
 					if (detected)
 					{
 						// calculate the separation - so we can plot a bearing
+					  WorldLocation hostLoc = getHostLocationFor(host);
 						sep = target.getStatus().getLocation()
-								.subtract(host.getStatus().getLocation());
+								.subtract(hostLoc);
 
 						double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
 								.getBearing());
@@ -294,8 +295,7 @@ public class TypedCookieSensor extends CoreSensor
 							rangeToUse = null;
 
 						// cool, in contact. write it up.
-						res = new DetectionEvent(time, host.getId(), host.getStatus()
-								.getLocation(), this, rangeToUse, rangeToUse,
+						res = new DetectionEvent(time, host.getId(), hostLoc, this, rangeToUse, rangeToUse,
 								new Float(brgDegs), new Float(super.relativeBearing(host
 										.getStatus().getCourse(), brgDegs)), new Float(1),
 								target.getCategory(), new Float(target.getStatus().getSpeed()
