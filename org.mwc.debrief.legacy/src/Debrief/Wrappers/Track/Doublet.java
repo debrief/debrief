@@ -173,8 +173,20 @@ public final class Doublet implements Comparable<Doublet>
       }
       else
       {
-        // nope, we'll have to compare the sensor fix
-        res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+        int val = _sensor.getSensor().compareTo(o._sensor.getSensor());
+
+        if (val == 0)
+        {
+          // same sensor, compare times
+
+          // nope, we'll have to compare the sensor fix
+          res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+        }
+        else
+        {
+          // different sensor. job done
+          res = val;
+        }
       }
     }
     else if (_hostFix != null && o._hostFix != null)
