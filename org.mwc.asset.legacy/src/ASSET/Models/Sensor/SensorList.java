@@ -413,7 +413,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
       {
         // well, we must have done, find out what they are
         DetectionList newCopy = new DetectionList(existingDetections);
-        newCopy.remove(oldDetections);
+        newCopy.removeAll(oldDetections);
 
         // add the new ones to our list
         for (int i = 0; i < newCopy.size(); i++)
