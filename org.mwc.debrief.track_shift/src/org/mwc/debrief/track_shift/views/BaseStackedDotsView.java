@@ -356,6 +356,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   public static final String MEASURED_VALUES = "M_";
+  public static final String ERROR_VALUES = "E_";
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
