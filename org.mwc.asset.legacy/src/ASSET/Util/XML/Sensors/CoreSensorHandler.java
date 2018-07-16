@@ -16,6 +16,8 @@ package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
 import ASSET.Models.Sensor.CoreSensor;
+import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 /**
  * Created by IntelliJ IDEA.
@@ -32,7 +34,9 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   private final static String WORKING = "Working";
   protected Integer _detectionInterval = null;
   private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
+  private final static String SENSOR_OFFSET = "SensorOffset";
   protected boolean _working = true;
+  protected WorldDistance _sensorOffset = null;
   private static final String ID_VAL = "id";
 
   public CoreSensorHandler(final String myType)
@@ -68,6 +72,14 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
         _working = val;
       }
     });
+    addHandler(new WorldDistanceHandler(SENSOR_OFFSET)
+    {
+      @Override
+      public void setWorldDistance(WorldDistance res)
+      {
+        _sensorOffset = res;
+      }
+    });
   }
 
   public void elementClosed()
@@ -83,16 +95,24 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
     // ok - now store it
     addSensor(sensor);
     sensor.setWorking(_working);
-    
-    // TBDO?
-    if(_detectionInterval != null && sensor instanceof CoreSensor)
+
+    if(sensor instanceof CoreSensor)
+    {
+      CoreSensor core = (CoreSensor) sensor;
+      if (_detectionInterval != null)
       {
-        CoreSensor core = (CoreSensor) sensor;
         core.setTimeBetweenDetectionOpportunities(_detectionInterval);
         _detectionInterval = null;
       }
+      
+      if(_sensorOffset != null)
+      {
+        core.setSensorOffset(_sensorOffset);
+      }
+    }
 
     // and clear the data
+    _sensorOffset = null;
     _myName = null;
     _myId = -1;
     _working = true;

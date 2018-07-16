@@ -344,6 +344,15 @@
 				working
 			</xs:documentation>
 		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SensorOffset" type="WorldDistanceType">
+				<xs:annotation>
+					<xs:documentation>
+						Offset for this sensor from tactical datum
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 		<xs:attribute name="Name" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>The name of this sensor</xs:documentation>
@@ -722,14 +731,21 @@
 	<xs:complexType name="BistaticReceiverType">
 		<xs:annotation>
 			<xs:documentation>Active intercept sensor</xs:documentation>
-			<xs:documentation source="http://asset.info/ui">Visible: inherited
-				Editable:
-				inherited
-			</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited Editable: inherited </xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
-				<xs:sequence />
+				<xs:sequence/>
+				<xs:attribute name="Suppress" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to suppress bearings when obscured by direct path</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="SuppressAngle" type="xs:double" use="optional">
+					<xs:annotation>
+						<xs:documentation>The angle (either side) of the direct path that gets obscured (degs)</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

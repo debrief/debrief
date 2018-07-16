@@ -146,6 +146,8 @@ public abstract class LookupSensor extends CoreSensor
 
 		// store the range for later on, if we want to.
 		WorldDistance actualRange = null;
+		
+		final WorldLocation hostLoc = getHostLocationFor(ownship);
 
 		// //////////////////////////////////////////////////////////
 		// LOOK FOR ANY EXISTING CONTACT WITH THIS PARTICIPANT
@@ -209,11 +211,11 @@ public abstract class LookupSensor extends CoreSensor
 		// //////////////////////////////////////////////////////////
 
 		// ok, now calculate the slant range
-		actualRange = calculateSlantRangeFor(ownship.getStatus().getLocation(), target
+		actualRange = calculateSlantRangeFor(hostLoc, target
 				.getStatus().getLocation());
 
 		WorldVector offset = target.getStatus().getLocation().subtract(
-				ownship.getStatus().getLocation());
+				hostLoc);
 		double bearing = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 		double relBearing = bearing - ownship.getStatus().getCourse();
 
@@ -277,7 +279,7 @@ public abstract class LookupSensor extends CoreSensor
 			}
 
 			// and create the detection
-			res = new DetectionEvent(time, ownship.getId(), ownship.getStatus().getLocation(),
+			res = new DetectionEvent(time, ownship.getId(), hostLoc,
 					this, theRange, null, bearingVal, relBearingVal, null, target.getCategory(),
 					target.getStatus().getSpeed(), new Float(target.getStatus().getCourse()),
 					target, newParameters.getDetectionState());
