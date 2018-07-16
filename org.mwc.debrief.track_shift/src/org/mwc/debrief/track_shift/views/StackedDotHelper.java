@@ -492,6 +492,7 @@ public final class StackedDotHelper
         } // if sensor is visible
       } // loop through sensors
     }// if there are sensors
+
     return res;
   }
 
@@ -499,26 +500,20 @@ public final class StackedDotHelper
   {
     if(targetTrack instanceof TrackWrapper)
     {
-      TrackWrapper target = (TrackWrapper) targetTrack;
+      final TrackWrapper target = (TrackWrapper) targetTrack;
 
       // ok - we may have registered some interpolation listeners on the track
       // delete them if necessary
-      PropertyChangeListener[] list = target.getPropertyChangeListeners(
+      final PropertyChangeListener[] list = target.getPropertyChangeListeners(
           PlainWrapper.LOCATION_CHANGED);
-//      List<PropertyChangeListener> tmpList = new ArrayList<PropertyChangeListener>();
       for(PropertyChangeListener t: list)
       {
         if(t instanceof PrivatePropertyChangeListener)
         {
-          PrivatePropertyChangeListener prop = (PrivatePropertyChangeListener) t;
+          final PrivatePropertyChangeListener prop = (PrivatePropertyChangeListener) t;
           prop.detach();
-//          tmpList.add(t);
         }
       }
-//      for(PropertyChangeListener t: tmpList)
-//      {
-//        target.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, t);
-//      }
     }
   }
 
@@ -1101,6 +1096,8 @@ public final class StackedDotHelper
       for (final TimeSeriesCollection series : tList)
       {
         series.setNotify(false);
+        
+        measuredValuesColl.removeAllSeries();
       }
       for (final TimeSeries series : sList)
       {
@@ -1174,10 +1171,11 @@ public final class StackedDotHelper
           
           // find the series for this sensor
           final SensorWrapper sensor = thisD.getSensorCut().getSensor();
-          TimeSeries thisSensorSeries = measuredValuesColl.getSeries(sensor.getName());
+          final String seriesName = BaseStackedDotsView.MEASURED_VALUES + sensor.getName();
+          TimeSeries thisSensorSeries = measuredValuesColl.getSeries(seriesName);
           if(thisSensorSeries == null)
           {
-            thisSensorSeries = new TimeSeries(sensor.getName());
+            thisSensorSeries = new TimeSeries(seriesName);
             measuredValuesColl.addSeries(thisSensorSeries);
           }
 
