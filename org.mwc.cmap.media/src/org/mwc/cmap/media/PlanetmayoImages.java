@@ -21,7 +21,7 @@ public enum PlanetmayoImages {
 	STOP("icons/24/media_stop.png"),
 	PLAY("icons/24/media_play.png"),
 	PAUSE("icons/24/media_pause.png"),
-	OPEN("icons/16/save.png"),
+	OPEN("icons/16/folder.png"),
 	REFRESH("icons/16/repaint.png"),
 	TRANSPARENT("icons/transparent.gif"),
 	HIGHLIGHTED_IMAGE("icons/image-highlight.png"),
