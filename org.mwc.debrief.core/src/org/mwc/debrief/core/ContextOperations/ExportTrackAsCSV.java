@@ -423,6 +423,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
           CorePlugin.run(theAction);
         }
       };
+      doExport.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/export-csv.png"));
       parent.add(doExport);
     }
   }
