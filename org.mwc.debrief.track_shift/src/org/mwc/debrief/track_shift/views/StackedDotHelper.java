@@ -407,7 +407,14 @@ public final class StackedDotHelper
                * Plus, there is greater variance in bearing angle - so it's more important to get
                * the right data item.
                */
-              final boolean interpFix = needFrequency;
+              
+              /** Note:  CANCEL THE ABOVE.
+               * Since the contact is travelling in a straight, on steady
+               * speed when on a leg, it's perfectly OK to interpolate a target position 
+               * for any sensor time.
+               */
+              final boolean interpFix = true ;// needFrequency;
+              
 
               /**
                * for frequency data we don't generate a double for dynamic infills, since we have
