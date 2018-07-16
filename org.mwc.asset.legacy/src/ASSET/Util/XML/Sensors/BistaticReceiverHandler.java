@@ -34,8 +34,8 @@ public abstract class BistaticReceiverHandler extends CoreSensorHandler
   private final static String SUPPRESS = "Suppress";
   private final static String SUPPRESS_ANGLE = "SuppressAngle";
 
-  Boolean _suppress = null;
-  Double _suppressAngle = null;
+  private Boolean _suppress = null;
+  private Double _suppressAngle = null;
 
   public BistaticReceiverHandler(String myType)
   {

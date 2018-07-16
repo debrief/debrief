@@ -332,8 +332,7 @@ public class BistaticReceiver extends CoreSensor
       Status otherStat = new Status(theStat);
       otherStat.setLocation(l2);
       otherStat.setSpeed(new WorldSpeed(12, WorldSpeed.Kts));
-      ASSET.Models.Vessels.Radiated.RadiatedCharacteristics rc =
-          new ASSET.Models.Vessels.Radiated.RadiatedCharacteristics();
+      RadiatedCharacteristics rc = new RadiatedCharacteristics();
       Optic opticRadNoise = new Optic(2, new WorldDistance(2,
           WorldDistance.METRES));
       rc.add(EnvironmentType.VISUAL, opticRadNoise);
@@ -355,8 +354,7 @@ public class BistaticReceiver extends CoreSensor
       txStat.setSpeed(new WorldSpeed(0, WorldSpeed.Kts));
       NarrowbandSensor noiseSource = new NarrowbandSensor(55);
       NarrowbandRadNoise nrn = new NarrowbandRadNoise(150, 150);
-      ASSET.Models.Vessels.Radiated.RadiatedCharacteristics txRadChars =
-          new ASSET.Models.Vessels.Radiated.RadiatedCharacteristics();
+      RadiatedCharacteristics txRadChars = new RadiatedCharacteristics();
       txRadChars.add(EnvironmentType.NARROWBAND, nrn);
       tx.setRadiatedChars(txRadChars);
       tx.getSensorFit().add(noiseSource);

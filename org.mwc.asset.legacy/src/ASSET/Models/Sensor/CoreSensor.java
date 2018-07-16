@@ -544,7 +544,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    * @param participant
    * @return
    */
-  protected WorldLocation getHostLocationFor(ASSET.ParticipantType participant)
+  protected WorldLocation getHostLocationFor(ParticipantType participant)
   {
     final WorldLocation sensorLoc = participant.getStatus().getLocation();
     final WorldLocation res;
