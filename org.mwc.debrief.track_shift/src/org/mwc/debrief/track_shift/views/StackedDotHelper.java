@@ -1057,7 +1057,7 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries errorValues = new TimeSeries(CALCULATED_VALUES);
+ //   final TimeSeries errorValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
     final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
@@ -1068,7 +1068,7 @@ public final class StackedDotHelper
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(errorValues);
+ //   sList.add(errorValues);
     sList.add(ambigErrorValues);
     sList.add(ambigValues);
     sList.add(calculatedValues);
@@ -1097,7 +1097,7 @@ public final class StackedDotHelper
       {
         series.setNotify(false);
         
-        measuredValuesColl.removeAllSeries();
+        series.removeAllSeries();
       }
       for (final TimeSeries series : sList)
       {
@@ -1265,7 +1265,18 @@ public final class StackedDotHelper
                   new ColouredDataItem(thisMilli, calculatedBearing, brgColor,
                       true, null, true, parentIsNotDynamic, thisD.getTarget());
 
-              errorValues.addOrUpdate(newTrueError);
+              // ok, get this error
+              final String errorName = BaseStackedDotsView.ERROR_VALUES + thisD.getSensorCut().getSensorName();
+              TimeSeries thisError = errorSeries.getSeries(errorName);
+              if(thisError == null)
+              {
+                System.out.println("creating " + errorName);
+                thisError = new TimeSeries(errorName);
+                errorSeries.addSeries(thisError);
+              }
+              
+              thisError.addOrUpdate(newTrueError);
+              
               calculatedValues.addOrUpdate(cBearing);
 
               // and the ambiguous error, if it hasn't been resolved
@@ -1611,10 +1622,10 @@ public final class StackedDotHelper
       }
 
       // ok, add these new series
-      if (errorValues.getItemCount() > 0)
-      {
-        errorSeries.addSeries(errorValues);
-      }
+//      if (errorValues.getItemCount() > 0)
+//      {
+//        errorSeries.addSeries(errorValues);
+//      }
       if (ambigErrorValues.getItemCount() > 0)
       {
         errorSeries.addSeries(ambigErrorValues);
