@@ -677,7 +677,7 @@ public class MaintainContributionsView extends ViewPart
     {
       courseData.add(new FixedMillisecond(timeArr[i]), courseArr[i]);
     }
-    final TimeSeries[] otherSeries = null;
+    final TimeSeriesCollection[] otherSeries = null;
     
     
     final ZoneChart zoneChart =

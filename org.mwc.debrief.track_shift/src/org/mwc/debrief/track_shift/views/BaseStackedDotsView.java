@@ -541,6 +541,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       "Calculated Bearing");
 
   final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
+  final protected TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
+
+  final protected TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
 
   final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
@@ -582,7 +585,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // the
     // interface is shown
     makeActions();
+    
+    measuredValuesColl.addSeries(measuredValues);
+    ambigValuesColl.addSeries(ambigValues);
 
+    
     // declare the listeners
     _myShiftListener = new TrackShiftListener()
     {
@@ -735,6 +742,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         ownshipZoneChart.clearZones();
       }
 
+      clearCollection(measuredValuesColl);
+      
       measuredValues.clear();
       ambigValues.clear();
       ambigScores.clear();
@@ -754,6 +763,22 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         targetZoneChart.clearZones();
       }
     }
+  }
+
+  /** empty out this collection
+   * 
+   * @param coll
+   */
+  private void clearCollection(final TimeSeriesCollection coll)
+  {
+    final Iterator<?> iter = coll.getSeries().iterator();
+    while(iter.hasNext())
+    {
+      final TimeSeries series = (TimeSeries) iter.next();
+      series.clear();
+    }
+    
+    coll.removeAllSeries();
   }
 
   private void contributeToActionBars()
@@ -1153,7 +1178,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
-    final TimeSeries[] ambigCuts = getAmbiguousCutData();
+    final TimeSeriesCollection[] ambigCuts = getAmbiguousCutData();
 
     // let's stop outputting the score series for O/S cutting.
     // We're past that now
@@ -1189,8 +1214,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     final ZoneChartConfig tZoneConfig = new ZoneChart.ZoneChartConfig(
         "Target Legs", "Bearing", DebriefColors.RED, false);
-    final TimeSeries[] otherSeries = new TimeSeries[]
-    {targetCalculatedSeries};
+    TimeSeriesCollection calcColl = new TimeSeriesCollection();
+    calcColl.addSeries(targetCalculatedSeries);
+    final TimeSeriesCollection[] otherSeries = new TimeSeriesCollection[]
+    {calcColl};
     targetZoneChart = ZoneChart.create(tZoneConfig, undoRedoProvider, sashForm,
         tgtZones, targetBearingSeries, otherSeries, null, randomProv,
         targetLegSlicer, null, null);
@@ -2074,10 +2101,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   abstract protected String formatValue(final double value);
 
-  private TimeSeries[] getAmbiguousCutData()
+  private TimeSeriesCollection[] getAmbiguousCutData()
   {
-    return new TimeSeries[]
-    {measuredValues, ambigValues};
+    return new TimeSeriesCollection[]
+    {measuredValuesColl, ambigValuesColl};
   }
 
   private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
