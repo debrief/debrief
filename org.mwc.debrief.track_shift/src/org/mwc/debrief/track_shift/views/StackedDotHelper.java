@@ -906,7 +906,7 @@ public final class StackedDotHelper
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
-      final TimeSeries measuredValues, final TimeSeries ambigValues,
+      final TimeSeriesCollection measuredValuesColl, final TimeSeries ambigValues,
       final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
@@ -976,7 +976,6 @@ public final class StackedDotHelper
     final List<TimeSeries> sList = new Vector<TimeSeries>();
     sList.add(errorValues);
     sList.add(ambigErrorValues);
-    sList.add(measuredValues);
     sList.add(ambigValues);
     sList.add(calculatedValues);
     sList.add(osCourseValues);
@@ -988,6 +987,7 @@ public final class StackedDotHelper
     sList.add(ownshipCourseSeries);
 
     final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(measuredValuesColl);
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
     tList.add(errorSeries);
@@ -1072,9 +1072,19 @@ public final class StackedDotHelper
           final ColouredDataItem mBearing =
               new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
                   false, null, true, parentIsNotDynamic, thisD.getSensorCut());
+          
+          // find the series for this sensor
+          final SensorWrapper sensor = thisD.getSensorCut().getSensor();
+          TimeSeries thisSensorSeries = measuredValuesColl.getSeries(sensor.getName());
+          if(thisSensorSeries == null)
+          {
+            thisSensorSeries = new TimeSeries(sensor.getName());
+            measuredValuesColl.addSeries(thisSensorSeries);
+          }
 
+          
           // and add them to the series
-          measuredValues.addOrUpdate(mBearing);
+          thisSensorSeries.addOrUpdate(mBearing);
 
           if (hasAmbiguous)
           {
@@ -1513,7 +1523,12 @@ public final class StackedDotHelper
         errorSeries.addSeries(ambigErrorValues);
       }
 
-      actualSeries.addSeries(measuredValues);
+      Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
+      while(mIter.hasNext())
+      {
+        TimeSeries series = (TimeSeries) mIter.next();
+        actualSeries.addSeries(series);
+      }
 
       if (ambigValues.getItemCount() > 0)
       {
