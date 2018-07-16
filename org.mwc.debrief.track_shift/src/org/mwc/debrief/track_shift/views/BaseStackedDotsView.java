@@ -355,7 +355,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
-  private static final String MEASURED_VALUES = "Measured";
+  public static final String MEASURED_VALUES = "M_";
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
@@ -540,7 +540,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
 
-  final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
+//  final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
   final protected TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
 
   final protected TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
@@ -586,7 +586,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // interface is shown
     makeActions();
     
-    measuredValuesColl.addSeries(measuredValues);
+//    measuredValuesColl.addSeries(measuredValues);
     ambigValuesColl.addSeries(ambigValues);
 
     
@@ -744,7 +744,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       clearCollection(measuredValuesColl);
       
-      measuredValues.clear();
+//      measuredValues.clear();
       ambigValues.clear();
       ambigScores.clear();
     }
