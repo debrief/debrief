@@ -17,6 +17,8 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -62,6 +64,7 @@ import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
@@ -352,6 +355,13 @@ public final class StackedDotHelper
     // friendly fix-wrapper to save us repeatedly creating it
     final FixWrapper index =
         new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
+    
+    
+    // note - we have to inject some listeners, so that
+    // interpolated fixes know when their parent has updated.
+    // each time we come in here, we delete existing ones,
+    // as housekeeping.
+    clearPrivateListeners(targetTrack);
 
     final Vector<TrackSegment> theSegments;
     if (targetTrack != null)
@@ -413,7 +423,7 @@ public final class StackedDotHelper
                * speed when on a leg, it's perfectly OK to interpolate a target position 
                * for any sensor time.
                */
-              final boolean interpFix = true ;// needFrequency;
+              final boolean interpFix = true;// needFrequency;
               
 
               /**
@@ -421,7 +431,7 @@ public final class StackedDotHelper
                * low confidence in the target course/speed
                */
               final boolean allowInfill = !needFrequency;
-
+    
               final TargetDoublet doublet =
                   getTargetDoublet(index, theSegments, scw.getDTG(), interpFix,
                       allowInfill);
@@ -483,6 +493,33 @@ public final class StackedDotHelper
       } // loop through sensors
     }// if there are sensors
     return res;
+  }
+
+  private static void clearPrivateListeners(final ISecondaryTrack targetTrack)
+  {
+    if(targetTrack instanceof TrackWrapper)
+    {
+      TrackWrapper target = (TrackWrapper) targetTrack;
+
+      // ok - we may have registered some interpolation listeners on the track
+      // delete them if necessary
+      PropertyChangeListener[] list = target.getPropertyChangeListeners(
+          PlainWrapper.LOCATION_CHANGED);
+//      List<PropertyChangeListener> tmpList = new ArrayList<PropertyChangeListener>();
+      for(PropertyChangeListener t: list)
+      {
+        if(t instanceof PrivatePropertyChangeListener)
+        {
+          PrivatePropertyChangeListener prop = (PrivatePropertyChangeListener) t;
+          prop.detach();
+//          tmpList.add(t);
+        }
+      }
+//      for(PropertyChangeListener t: tmpList)
+//      {
+//        target.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, t);
+//      }
+    }
   }
 
   /**
@@ -600,11 +637,66 @@ public final class StackedDotHelper
       }
     }
 
-    // ok, we've now boxed the required value
-    final FixWrapper interp =
-        FixWrapper.interpolateFix(before, after, requiredTime);
-    doublet.targetFix = interp;
+    // just check if we're on one of the values
+    final FixWrapper toUse;
+    if(before != null && before.getDTG().equals(requiredTime))
+    {
+      toUse = before;
+    }
+    else if(after != null && after.getDTG().equals(requiredTime))
+    {
+      toUse = after;
+    }
+    else
+    {
+      // ok, we've now boxed the required value
+      toUse = FixWrapper.interpolateFix(before, after, requiredTime);
+      
+      final FixWrapper beforeF = before;
+      final FixWrapper afterF = after;
+      
+      // note. the interpolated fix needs to move, if the segments moves
+      final PropertyChangeListener newListener =
+          new PrivatePropertyChangeListener(segment.getWrapper(),
+              PlainWrapper.LOCATION_CHANGED)
+          {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt)
+            {
+              FixWrapper tmpFix = FixWrapper.interpolateFix(beforeF, afterF,
+                  requiredTime);
+              toUse.setLocation(tmpFix.getLocation());
+            }
+          };
+      segment.getWrapper().addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, newListener);
+    }
+        
+    doublet.targetFix = toUse;
     doublet.targetParent = segment;
+  }
+  
+  /** special listener, that knows how to detatch itself
+   * 
+   * @author ian
+   *
+   */
+  private abstract static class PrivatePropertyChangeListener implements PropertyChangeListener
+  {
+    private final TrackWrapper _track;
+    private final String _property;
+
+    public PrivatePropertyChangeListener(final TrackWrapper track,
+        final String property)
+    {
+      _track = track;
+      _property = property;
+    }
+    
+    public void detach()
+    {
+      _track.removePropertyChangeListener(_property, this);
+    }
+    
   }
 
   private static void handleDynamicInfill(final FixWrapper workingFix,
