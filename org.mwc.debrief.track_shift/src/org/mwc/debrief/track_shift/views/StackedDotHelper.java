@@ -1173,7 +1173,7 @@ public final class StackedDotHelper
           }
 
           // and add them to the series
-          measuredBearings.addOrUpdate(mBearing);
+          measuredBearings.add(mBearing);
 
           if (hasAmbiguous)
           {
@@ -1222,7 +1222,8 @@ public final class StackedDotHelper
               
               // note:  now that we're allowing multi-sensor TMA, we should color the
               // errors acccording to the sensor color (not the target color)
-              final Color errorColor = thisD.getColor();
+              final Color error = thisD.getColor();
+              final Color calcColor = thisD.getTarget().getColor();
               final double thisTrueError = thisD.calculateBearingError(
                   measuredBearing, calculatedBearing);
 
@@ -1244,11 +1245,11 @@ public final class StackedDotHelper
               final Color brgColor;
               if (bearingToPort)
               {
-                brgColor = errorColor;
+                brgColor = error;
               }
               else
               {
-                brgColor = errorColor.darker();
+                brgColor = error.darker();
               }
 
               final ColouredDataItem newTrueError = new ColouredDataItem(
@@ -1256,7 +1257,7 @@ public final class StackedDotHelper
                   parentIsNotDynamic, thisD.getTarget());
 
               final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
-                  calculatedBearing, brgColor, true, null, true,
+                  calculatedBearing, calcColor, true, null, true,
                   parentIsNotDynamic, thisD.getTarget());
 
               final String sensorName = thisD.getSensorCut().getSensorName();
@@ -1270,7 +1271,7 @@ public final class StackedDotHelper
                 errorSeries.addSeries(thisError);
               }
 
-              thisError.addOrUpdate(newTrueError);
+              thisError.add(newTrueError);
               
               // get the calc series for this one
               TimeSeries calculatedValues = calculatedSeries.getSeries(sensorName);
@@ -1280,7 +1281,7 @@ public final class StackedDotHelper
                 calculatedSeries.addSeries(calculatedValues);
               }
 
-              calculatedValues.addOrUpdate(cBearing);
+              calculatedValues.add(cBearing);
 
               // and the ambiguous error, if it hasn't been resolved
               if (!thisD.getHasBeenResolved())
@@ -1296,11 +1297,11 @@ public final class StackedDotHelper
                 final Color ambigColor;
                 if (bearingToPort)
                 {
-                  ambigColor = errorColor.darker();
+                  ambigColor = error.darker();
                 }
                 else
                 {
-                  ambigColor = errorColor;
+                  ambigColor = error;
                 }
 
                 final double thisAmnigError = thisD.calculateBearingError(
@@ -1401,7 +1402,6 @@ public final class StackedDotHelper
                   true);
               osCourseValues.addOrUpdate(crseBearing);
             }
-
           }
         }
       }
@@ -1454,7 +1454,7 @@ public final class StackedDotHelper
 
             final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
                 ownshipCourse, fw.getColor(), true, null, true, true);
-            osCourseValues.addOrUpdate(crseBearing);
+            osCourseValues.add(crseBearing);
           }
         }
 
@@ -1559,11 +1559,11 @@ public final class StackedDotHelper
                   final ColouredDataItem crseBearingItem = new ColouredDataItem(
                       thisMilli, tgtCourse, courseColor, isInfill, null, true,
                       true);
-                  tgtCourseValues.addOrUpdate(crseBearingItem);
+                  tgtCourseValues.add(crseBearingItem);
                   final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
                       thisMilli, tgtSpeed, speedColor, isInfill, null, true,
                       true);
-                  tgtSpeedValues.addOrUpdate(tgtSpeedItem);
+                  tgtSpeedValues.add(tgtSpeedItem);
                 }
               }
             }
