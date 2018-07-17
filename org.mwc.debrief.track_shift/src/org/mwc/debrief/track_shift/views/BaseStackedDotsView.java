@@ -1754,21 +1754,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES) ? _linePlot
-                : _dotPlot;
-            
+            final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES)
+                ? _linePlot : _dotPlot;
+
             // remember we need to select a new item
             _seriesToSearch = seriesName;
-  
-            if(_seriesToSearch != null)
-            {
-              // ok, show the hightlight
-              plotToUse.setDomainCrosshairVisible(true);
-              plotToUse.setRangeCrosshairVisible(true);
 
-              plotToUse.setDomainCrosshairValue(dateMillis);
-              plotToUse.setRangeCrosshairValue(dateMillis);
-            }
+            // ok, show the hightlight
+            plotToUse.setDomainCrosshairVisible(true);
+            plotToUse.setRangeCrosshairVisible(true);
+
+            plotToUse.setDomainCrosshairValue(dateMillis);
+            plotToUse.setRangeCrosshairValue(dateMillis);
           }
         }
       }
