@@ -517,8 +517,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // return;
 
     // use NULL as the location, so it's calculated from parent
-    String locStr =
-        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    String locStr ="NULL"; //  MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
 
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
@@ -601,7 +600,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
       Category hostCategory, Float bearing, Float ambigBearing,
       WorldDistance range, String sensor_name, String label, Float freq)
   {
-    final String locStr = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    final String locStr = "NULL";// MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
     
     final String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
