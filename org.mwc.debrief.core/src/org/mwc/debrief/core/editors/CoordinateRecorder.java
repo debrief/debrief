@@ -281,6 +281,9 @@ public class CoordinateRecorder implements PropertyChangeListener,
       {
         final TrackWrapper track = (TrackWrapper) item;
         final Watchable[] items = track.getNearestTo(timeNow);
+        
+        final Dimension bounds = _projection.getScreenArea();
+        
         if (items != null && items.length > 0)
         {
           final FixWrapper fix = (FixWrapper) items[0];
@@ -295,19 +298,30 @@ public class CoordinateRecorder implements PropertyChangeListener,
           }
 
           final Point point = _projection.toScreen(fix.getLocation());
-
-          // swap y axis
-          point.setLocation(point.getX(), screen.getHeight() - point.getY());
-
-          final WorldLocation newLoc = new WorldLocation(point.getY(), point
-              .getX(), fix.getLocation().getDepth());
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
-              .getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
-              .getValueIn(WorldSpeed.ft_sec) / 3;
-          final Fix fix2 = new Fix(timeNow, newLoc, courseRads, speedYps);
-          final FixWrapper fw2 = new FixWrapper(fix2);
-          match.addFix(fw2);
+          
+          // check the point is visible in the current viewport
+          if(point.x > 0 && point.x < bounds.width && point.y > 0 && point.y < bounds.height)
+          {          
+            // swap y axis
+            point.setLocation(point.getX(), screen.getHeight() - point.getY());
+  
+            // store the location
+            final WorldLocation newLoc = new WorldLocation(point.getY(), point
+                .getX(), fix.getLocation().getDepth());
+            
+            // calculate course
+            final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
+                .getCourseDegs());
+            
+            // calculate speed, in yards/sec
+            final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
+                .getValueIn(WorldSpeed.ft_sec) / 3;
+            final Fix fix2 = new Fix(timeNow, newLoc, courseRads, speedYps);
+            final FixWrapper fw2 = new FixWrapper(fix2);
+            
+            // store new item
+            match.addFix(fw2);
+          }
         }
       }
     };
