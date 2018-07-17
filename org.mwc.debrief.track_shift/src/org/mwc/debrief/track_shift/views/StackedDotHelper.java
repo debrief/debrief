@@ -372,7 +372,7 @@ public final class StackedDotHelper
     {
       theSegments = null;
     }
-
+    
     // loop through our sensor data
     final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
     if (sensors != null)
@@ -1057,7 +1057,6 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
- //   final TimeSeries errorValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries ambigErrorValues =
         new TimeSeries(_primaryTrack.getName() + "(A)");
     final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
@@ -1068,7 +1067,6 @@ public final class StackedDotHelper
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
- //   sList.add(errorValues);
     sList.add(ambigErrorValues);
     sList.add(ambigValues);
     sList.add(calculatedValues);
@@ -1106,10 +1104,6 @@ public final class StackedDotHelper
         // and clear the list
         series.clear();
       }
-
-      // clear the existing target datasets
-      targetCourseSeries.removeAllSeries();
-      targetSpeedSeries.removeAllSeries();
 
       // create the color for resolved ambig data
       final Color grayShade = new Color(155, 155, 155, 50);
@@ -1270,7 +1264,6 @@ public final class StackedDotHelper
               TimeSeries thisError = errorSeries.getSeries(errorName);
               if(thisError == null)
               {
-                System.out.println("creating " + errorName);
                 thisError = new TimeSeries(errorName);
                 errorSeries.addSeries(thisError);
               }
