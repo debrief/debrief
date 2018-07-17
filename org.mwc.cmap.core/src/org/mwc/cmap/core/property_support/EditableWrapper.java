@@ -754,6 +754,7 @@ public class EditableWrapper implements IPropertySource
    * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang .Object,
    * java.lang.Object)
    */
+  @SuppressWarnings("unused")
   @Override
   final public void setPropertyValue(final Object id, final Object value)
   {
@@ -776,6 +777,24 @@ public class EditableWrapper implements IPropertySource
       // objects the font is stored as an AWT font.  But, it's converted to an
       // SWT font.  This round trip means that identical fonts can appear to be different
       valueChanged = !fontsAreEqual((Font) value, (Font) oldVal);
+    }
+    else if (thisProp != null)
+    {
+      // see if the helpers can help
+      EditorHelper helper = thisProp.getHelper();
+      
+      // do a round trip of the new value, to ensure they're of the
+      // correct type
+      Object newVal = helper.translateFromSWT(value);
+      Object toSWT = helper.translateToSWT(newVal);
+      if (toSWT != null && !toSWT.equals(oldVal))
+      {
+        valueChanged = true;
+      }
+      else
+      {
+        valueChanged = false;
+      }
     }
     else
     {

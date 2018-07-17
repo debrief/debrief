@@ -82,7 +82,7 @@ public class LatLongHelper extends EditorHelper
 		return (target == WorldLocation.class);
 	}
 
-	public Object translateToSWT(final Object orig)
+  public Object translateToSWT(final Object orig)
 	{
 		final WorldLocation value = (WorldLocation) orig;
     
@@ -451,7 +451,26 @@ public class LatLongHelper extends EditorHelper
 
 			firePropertyChanged((String) propName);
 		}
+	  
 
+	  @Override
+	  public boolean equals(Object obj)
+	  {
+      final boolean res;
+	    if(obj instanceof LatLongPropertySource)
+	    {
+	      LatLongPropertySource o = (LatLongPropertySource) obj;
+
+	      // compare locations
+	      res = this.getValue().equals(o.getValue());
+	    }
+	    else
+	    {
+	      res = false;
+	    }
+	    return res;
+	  }
+		
 		public String toString()
 		{
 			String res;
