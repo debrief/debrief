@@ -17,7 +17,6 @@ package org.mwc.debrief.core.loaders;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.List;
 
 import Debrief.Wrappers.TrackWrapper;

@@ -1527,7 +1527,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            if (_layerPainterManager == part)
+            if (part.equals(_layerPainterManager))
             {
               _layerPainterManager = null;
             }
