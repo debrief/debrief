@@ -101,11 +101,11 @@ public final class Doublet implements Comparable<Doublet>
   // ////////////////////////////////////////////////
   // working variables to help us along.
   // ////////////////////////////////////////////////
-  private static final WorldLocation _workingSensorLocation =
-      new WorldLocation(0.0, 0.0, 0.0);
+  private static final WorldLocation _workingSensorLocation = new WorldLocation(
+      0.0, 0.0, 0.0);
 
-  private static final WorldLocation _workingTargetLocation =
-      new WorldLocation(0.0, 0.0, 0.0);
+  private static final WorldLocation _workingTargetLocation = new WorldLocation(
+      0.0, 0.0, 0.0);
 
   // ////////////////////////////////////////////////
   // constructor
@@ -159,23 +159,49 @@ public final class Doublet implements Comparable<Doublet>
     final int res;
 
     // hmm, do they have the same host DTG?
-    if (_hostFix == null || o._hostFix == null
-        || _hostFix.getDTG().equals(o._hostFix.getDTG()))
+    if (_hostFix == null || o._hostFix == null || _hostFix.getDTG().equals(
+        o._hostFix.getDTG()))
     {
       // yes, then lets compare the target fixes. This happens
       // when the sensor cuts are more frequent than the
       // sensor platform positions
 
-      // do we have a target fix?
+      // do we have a target fix
       if (_targetFix != null && o._targetFix != null)
       {
-        res = _targetFix.getDTG().compareTo(o._targetFix.getDTG());
+        // are the times unequal?
+        final int timeDiff = _targetFix.getDTG().compareTo(o._targetFix
+            .getDTG());
+        if (timeDiff != 0)
+        {
+          res = timeDiff;
+        }
+        else
+        {
+          final int sensorDiff = _sensor.getSensor().compareTo(o._sensor
+              .getSensor());
+
+          if (sensorDiff == 0)
+          {
+            // same sensor, compare times
+
+            // nope, we'll have to compare the sensor fix
+            res = _sensor.getDTG().compareTo(o._sensor.getDTG());
+          }
+          else
+          {
+            // different sensor. job done
+            res = sensorDiff;
+          }
+        }
       }
       else
       {
-        int val = _sensor.getSensor().compareTo(o._sensor.getSensor());
+        // target fix missing. Compare sensor, then time
+        final int sensorDiff = _sensor.getSensor().compareTo(o._sensor
+            .getSensor());
 
-        if (val == 0)
+        if (sensorDiff == 0)
         {
           // same sensor, compare times
 
@@ -185,7 +211,7 @@ public final class Doublet implements Comparable<Doublet>
         else
         {
           // different sensor. job done
-          res = val;
+          res = sensorDiff;
         }
       }
     }
@@ -232,8 +258,8 @@ public final class Doublet implements Comparable<Doublet>
       _workingTargetLocation.addToMe(targetOffset);
 
     // calculate the current bearing
-    final WorldVector error =
-        _workingTargetLocation.subtract(_workingSensorLocation);
+    final WorldVector error = _workingTargetLocation.subtract(
+        _workingSensorLocation);
     double calcBearing = error.getBearing();
     calcBearing = Conversions.Rads2Degs(calcBearing);
 
@@ -266,9 +292,8 @@ public final class Doublet implements Comparable<Doublet>
 
     final double mySpeedKts = _hostFix.getSpeed();
     final double observedFreq = _sensor.getFrequency();
-    final double dopplerComponent =
-        FrequencyCalcs.calcDopplerComponent(theBearingRads, myCourseRads,
-            mySpeedKts, observedFreq);
+    final double dopplerComponent = FrequencyCalcs.calcDopplerComponent(
+        theBearingRads, myCourseRads, mySpeedKts, observedFreq);
 
     correctedFreq = observedFreq + dopplerComponent;
 
@@ -329,10 +354,8 @@ public final class Doublet implements Comparable<Doublet>
       final double mySpeedKts = _hostFix.getSpeed();
       final double hisSpeedKts = _targetFix.getSpeed();
 
-      predictedFreq =
-          FrequencyCalcs.getPredictedFreq(baseFreq, speedOfSoundKts,
-              mySpeedKts, myCourseDegs, hisSpeedKts, hisCourseDegs,
-              theBearingDegs);
+      predictedFreq = FrequencyCalcs.getPredictedFreq(baseFreq, speedOfSoundKts,
+          mySpeedKts, myCourseDegs, hisSpeedKts, hisCourseDegs, theBearingDegs);
     }
     return predictedFreq;
   }
