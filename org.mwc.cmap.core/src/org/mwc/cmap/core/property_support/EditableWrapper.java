@@ -754,6 +754,7 @@ public class EditableWrapper implements IPropertySource
    * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang .Object,
    * java.lang.Object)
    */
+  @SuppressWarnings("unused")
   @Override
   final public void setPropertyValue(final Object id, final Object value)
   {
