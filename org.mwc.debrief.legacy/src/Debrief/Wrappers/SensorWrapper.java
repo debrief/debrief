@@ -742,15 +742,18 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
   public void setSensorOffset(final WorldDistance.ArrayLength sensorOffset)
   {
-    _sensorOffset = sensorOffset;
-
-    if (_sensorOffset != null)
+    if (sensorOffset != null && !sensorOffset.equals(_sensorOffset))
     {
-      clearChildOffsets();
-    }
+      _sensorOffset = sensorOffset;
 
-    // ok, fire the property change
-    firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, sensorOffset);
+      if (_sensorOffset != null)
+      {
+        clearChildOffsets();
+      }
+
+      // ok, fire the property change
+      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, sensorOffset);
+    }
   }
 
   /**
