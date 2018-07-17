@@ -1046,6 +1046,7 @@ public final class StackedDotHelper
     // create the collection of series
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+    final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -1057,7 +1058,6 @@ public final class StackedDotHelper
     // produce a dataset for each track
     final TimeSeries ambigErrorValues = new TimeSeries(_primaryTrack.getName()
         + "(A)");
-    final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
@@ -1067,7 +1067,6 @@ public final class StackedDotHelper
     final List<TimeSeries> sList = new Vector<TimeSeries>();
     sList.add(ambigErrorValues);
     sList.add(ambigValues);
-    sList.add(calculatedValues);
     sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
@@ -1082,6 +1081,7 @@ public final class StackedDotHelper
     tList.add(targetSpeedSeries);
     tList.add(errorSeries);
     tList.add(actualSeries);
+    tList.add(calculatedSeries);
 
     // ok, wrap the switching on/off of notify in try/catch,
     // to be sure to switch notify back on at end
@@ -1164,16 +1164,16 @@ public final class StackedDotHelper
           final SensorWrapper sensor = thisD.getSensorCut().getSensor();
           final String seriesName = BaseStackedDotsView.MEASURED_VALUES + sensor
               .getName();
-          TimeSeries thisSensorSeries = measuredValuesColl.getSeries(
+          TimeSeries measuredBearings = measuredValuesColl.getSeries(
               seriesName);
-          if (thisSensorSeries == null)
+          if (measuredBearings == null)
           {
-            thisSensorSeries = new TimeSeries(seriesName);
-            measuredValuesColl.addSeries(thisSensorSeries);
+            measuredBearings = new TimeSeries(seriesName);
+            measuredValuesColl.addSeries(measuredBearings);
           }
 
           // and add them to the series
-          thisSensorSeries.addOrUpdate(mBearing);
+          measuredBearings.addOrUpdate(mBearing);
 
           if (hasAmbiguous)
           {
@@ -1219,7 +1219,10 @@ public final class StackedDotHelper
             if (thisD.getTarget().getFixLocation() != null)
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
-              final Color errorColor = thisD.getTarget().getColor();
+              
+              // note:  now that we're allowing multi-sensor TMA, we should color the
+              // errors acccording to the sensor color (not the target color)
+              final Color errorColor = thisD.getColor();
               final double thisTrueError = thisD.calculateBearingError(
                   measuredBearing, calculatedBearing);
 
@@ -1256,9 +1259,10 @@ public final class StackedDotHelper
                   calculatedBearing, brgColor, true, null, true,
                   parentIsNotDynamic, thisD.getTarget());
 
-              // ok, get this error
-              final String errorName = BaseStackedDotsView.ERROR_VALUES + thisD
-                  .getSensorCut().getSensorName();
+              final String sensorName = thisD.getSensorCut().getSensorName();
+              
+              // ok, get this error              
+              final String errorName = BaseStackedDotsView.ERROR_VALUES + sensorName;
               TimeSeries thisError = errorSeries.getSeries(errorName);
               if (thisError == null)
               {
@@ -1267,6 +1271,14 @@ public final class StackedDotHelper
               }
 
               thisError.addOrUpdate(newTrueError);
+              
+              // get the calc series for this one
+              TimeSeries calculatedValues = calculatedSeries.getSeries(sensorName);
+              if(calculatedValues == null)
+              {
+                calculatedValues = new TimeSeries(sensorName);
+                calculatedSeries.addSeries(calculatedValues);
+              }
 
               calculatedValues.addOrUpdate(cBearing);
 
@@ -1629,9 +1641,11 @@ public final class StackedDotHelper
         actualSeries.addSeries(ambigValues);
       }
 
-      if (calculatedValues.getItemCount() > 0)
+      final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
+      while (cIter.hasNext())
       {
-        actualSeries.addSeries(calculatedValues);
+        final TimeSeries series = (TimeSeries) cIter.next();
+        actualSeries.addSeries(series);
       }
 
       if (tgtCourseValues.getItemCount() > 0)
@@ -1655,10 +1669,12 @@ public final class StackedDotHelper
       {
         targetCourseSeries.addSeries(osCourseValues);
       }
-
-      if (calculatedValues.getItemCount() > 0)
+      
+      final Iterator<?> cIter2 = calculatedSeries.getSeries().iterator();
+      while (cIter2.hasNext())
       {
-        targetCalculatedSeries.addAndOrUpdate(calculatedValues);
+        final TimeSeries series = (TimeSeries) cIter2.next();
+        targetCalculatedSeries.addAndOrUpdate(series);
       }
 
       // and the course data for the zone chart
