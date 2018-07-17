@@ -1688,7 +1688,25 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // the sensor cut. This makes sense, since all sensor
             // cuts are shown on the line plot. Markers are only
             // present on the error plot if TMA points are present
-            seriesName = SENSOR;
+
+            if(entity instanceof XYItemEntity)
+            {
+              // get the data
+              final TimeSeriesCollection coll = (TimeSeriesCollection) _linePlot.getDataset();
+              
+              // get the XY details
+              XYItemEntity xy = (XYItemEntity) entity;
+              
+              // retrieve the subject series
+              TimeSeries ts = coll.getSeries(xy.getSeriesIndex());
+              
+              // and get the series name
+              seriesName = (String) ts.getKey();
+            }
+            else
+            {
+              seriesName = SENSOR;
+            }
           }
           else if (selectedPlot.equals(_dotPlot))
           {
@@ -1713,8 +1731,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       private void highlightDataItemNearest(final long dateMillis,
           final double valueVal, final String seriesName)
       {
-        final boolean findNearest = false;
-        
         // clear the nearest on
         _seriesToSearch = null;
 
@@ -1741,77 +1757,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES) ? _linePlot
                 : _dotPlot;
             
-            final long nearestTime;
-            final double nearestValue;
-
-            if (findNearest)
-            {
-              // Ok - we no longer find the nearest. We now only accept a direct
-              // click. But, should we change strategy, here is the find-nearest code.
-
-              // NOTE: there is a bug in it. We need to check the series name. If it's /
-              // MEASURED - we take the MEASURED series from the LINE plot. If it's CALCULATED then
-              // we take the ERROR series from the ERROR plot.
-
-              // work through, to find the nearest item
-              final List<?> list = t.getItems();
-              TimeSeriesDataItem nearest = null;
-
-              for (final Object item : list)
-              {
-                final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
-                if (nearest == null)
-                {
-                  nearest = thisI;
-                }
-                else
-                {
-                  final long myTimeDelta = Math.abs(nearest.getPeriod()
-                      .getMiddleMillisecond() - dateMillis);
-                  final long hisTimeDelta = Math.abs(thisI.getPeriod()
-                      .getMiddleMillisecond() - dateMillis);
-
-                  // NOTE: we've removed the proximity test for the value
-                  // we just use time.
-                  // final double myValueDelta = Math.abs(nearest.getValue()
-                  // .doubleValue() - valueVal);
-                  // final double hisValueDelta = Math.abs(thisI.getValue()
-                  // .doubleValue() - valueVal);
-
-                  // final double nearestDelta = Math.pow(myValueDelta, 3)
-                  // * myTimeDelta;
-                  // final double thisDelta = Math.pow(hisValueDelta, 3)
-                  // * hisTimeDelta;
-
-                  // ok, take the nearest one
-                  nearest = myTimeDelta < hisTimeDelta ? nearest : thisI;
-                }
-              }
-
-              if (nearest != null)
-              {
-                nearestTime = nearest.getPeriod().getMiddleMillisecond();
-                nearestValue = nearest.getValue().doubleValue();  
-                _seriesToSearch = seriesName;
-              }
-            }
-            else
-            {
-              nearestTime = dateMillis;
-              nearestValue = valueVal;
-
-              // remember we need to select a new item
-              _seriesToSearch = seriesName;
-            }
-            
+            // remember we need to select a new item
+            _seriesToSearch = seriesName;
+  
             if(_seriesToSearch != null)
             {
               // ok, show the hightlight
               plotToUse.setDomainCrosshairVisible(true);
               plotToUse.setRangeCrosshairVisible(true);
 
-              plotToUse.setDomainCrosshairValue(nearestTime);
-              plotToUse.setRangeCrosshairValue(nearestValue);
+              plotToUse.setDomainCrosshairValue(dateMillis);
+              plotToUse.setRangeCrosshairValue(dateMillis);
             }
           }
         }
