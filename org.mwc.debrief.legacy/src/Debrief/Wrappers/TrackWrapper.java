@@ -4622,4 +4622,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return visible;
   }
 
+  public PropertyChangeListener[] getPropertyChangeListeners(final String propertyName)
+  {
+    return getSupport().getPropertyChangeListeners(propertyName);
+  }
+
 }

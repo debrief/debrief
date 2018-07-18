@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -1203,7 +1204,7 @@ public class ZoneChart extends Composite
   public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeries[] otherSeriesArr, final TimeSeries[] otherAxisSeries,
+      final TimeSeriesCollection[] ambigCutsColl, final TimeSeries[] otherAxisSeries,
       final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
       final Runnable deleteOperation, final Runnable resolveAmbiguityOperation)
   {
@@ -1236,11 +1237,16 @@ public class ZoneChart extends Composite
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
-    if (otherSeriesArr != null)
+    if (ambigCutsColl != null)
     {
-      for (final TimeSeries series : otherSeriesArr)
+      for (final TimeSeriesCollection coll : ambigCutsColl)
       {
-        dataset.addSeries(series);
+        Iterator<?> iter = coll.getSeries().iterator();
+        while(iter.hasNext())
+        {
+          TimeSeries series = (TimeSeries) iter.next();
+          dataset.addSeries(series);
+        }
       }
     }
 
