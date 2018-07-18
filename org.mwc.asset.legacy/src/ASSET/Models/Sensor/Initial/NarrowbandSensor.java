@@ -182,7 +182,8 @@ public class NarrowbandSensor extends InitialSensor
 		}
 
 		// right see if we are currently changing course?
-		if (_oldCourse != course)
+		final double courseDelta = Math.abs(_oldCourse - course);
+		if (courseDelta > 0.01)
 		{
 			// yes, update our calculated time when the array will be steady
 			_timeArraySteady = time + getSteadyTime().getMillis();
