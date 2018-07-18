@@ -46,22 +46,12 @@ public class ShearDragMode extends RotateDragMode
 			workingLoc.addToMe(vector);
 
 			final CoreTMASegment seg = (CoreTMASegment) _segment;
-			
-			// undo the previous turn
-			// NO: we don't need to undo the previous operation. we aren't doing an XOR 
-			// paint any more
-//			if (_lastLoc != null)
-//			{
-//				seg.shear(_lastLoc, _origin);
-//			}
 
+			// apply the operation
 			seg.shear(workingLoc, _origin);
 			
 			// tell the segment it's shifted
 			seg.clearBounds();
-
-			// and remember it
-	//		_lastLoc = new WorldLocation(workingLoc);
 
 			// and tell the props view to update itself
 			updatePropsView(seg, _parent, _layers);

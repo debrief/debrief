@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -677,7 +676,7 @@ public class MaintainContributionsView extends ViewPart
     {
       courseData.add(new FixedMillisecond(timeArr[i]), courseArr[i]);
     }
-    final TimeSeries[] otherSeries = null;
+    final TimeSeriesCollection[] otherSeries = null;
     
     
     final ZoneChart zoneChart =

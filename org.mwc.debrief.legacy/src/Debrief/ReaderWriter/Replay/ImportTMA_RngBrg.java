@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: ImportTMA_RngBrg.java,v $
 // @author $Author: Ian.Mayo $
@@ -58,286 +58,327 @@ import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class to read in a TMA Solution (incorporating Range and Bearing)
  */
 public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 {
-	/**
-	 * the type for this string
-	 */
-	private final String _myType = ";TMA_RB:";
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testImportTMA_RngBrg extends TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-	/**
-	 * read in this string and return a Label
-	 */
-	public final Object readThisLine(final String theLine)
-	{
+    public testImportTMA_RngBrg(final String val)
+    {
+      super(val);
+    }
 
-		// ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX YYYY
-		// CCC SSS DDD xx.xx
-		// ;; date, time, ownship name, symbology, bearing (deg), range (yds), track
-		// name, elipse orientation (deg from north), maxima (yds), minima (yds),
-		// course, speed, depth (m), label string
+    public final void testImport()
+    {
+      // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
+      // YYYY CCC SSS DDD xx.xx
+      // ;; date, time, ownship name, symbology, bearing (deg), range (yds),
+      // track name, elipse orientation (deg from north), maxima (yds), minima
+      // (yds), course, speed, depth (m), label string
 
-		// get a stream from the string
-		final StringTokenizer st = new StringTokenizer(theLine);
+      final String testLine =
+          ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 TRACK_060 045.0  4000 2000 050 12.4 100 Trial label";
 
-		// declare local variables
-		String theLabel;
-		String vesselName;
-		String solutionName;
-		HiResDate theDtg = null;
-		double brg, rng;
-		double course, speed, depth;
-		double orientation, maxima, minima;
-		EllipseShape theEllipse = null;
-		java.awt.Color theColor;
+      // ok, create the importer
+      final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
 
-		// skip the comment identifier
-		st.nextToken();
+      // see if we can read this type
+      final String theType = importer.getYourType();
+      assertEquals("returned correct type", theType, ";TMA_RB:");
 
-		// combine the date, a space, and the time
-		final String dateToken = st.nextToken();
-		final String timeToken = st.nextToken();
+      // now read the line
+      final Object res = importer.readThisLine(testLine);
+      assertNotNull("managed to read item", res);
 
-		// and extract the date
-		theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+      // check it's of the correct type
+      assertEquals("of correct class",
+          "class Debrief.Wrappers.TMAContactWrapper", res.getClass()
+              .toString());
+      final TMAContactWrapper tc = (TMAContactWrapper) res;
 
-		// now the vessel name
-		vesselName = ImportFix.checkForQuotedName(st);
+      // check the values we've used
+      final HiResDate theDate = DebriefFormatDateTime.parseThis(
+          "030211 120312.000");
+      assertEquals("correct date", theDate, tc.getDTG());
+      assertEquals("Correct track", "CARPET", tc.getTrackName());
+      assertEquals("correct color", Color.white, tc.getColor());
+      assertEquals("correct symbol", "Submarine", tc.getSymbol());
+      assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
+          tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
+      assertEquals("correct bearing", MWC.Algorithms.Conversions.Degs2Rads(
+          124.5), tc.getBearingRads(), 0.001d);
+      assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
+      assertEquals("correct orientation", 45, tc.getEllipse().getOrientation(),
+          0.0001d);
+      assertEquals("correct maxima", 4000, tc.getEllipse().getMaxima()
+          .getValueIn(WorldDistance.YARDS), 0.0001d);
+      assertEquals("correct minima", 2000, tc.getEllipse().getMinima()
+          .getValueIn(WorldDistance.YARDS), 0.0001d);
+      assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
+      assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
+      assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
+      assertEquals("correct label", "Trial label", tc.getLabel());
 
-		// next with the symbology
-		symbology = st.nextToken(normalDelimiters);
+    }
 
-		try
-		{
-			// now get the range and bearing
-			brg = MWCXMLReader.readThisDouble(st.nextToken());
-			rng = MWCXMLReader.readThisDouble(st.nextToken());
+    public final void testImportWithSpaces()
+    {
+      // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
+      // YYYY CCC SSS DDD xx.xx
+      // ;; date, time, ownship name, symbology, bearing (deg), range (yds),
+      // track name, elipse orientation (deg from north), maxima (yds), minima
+      // (yds), course, speed, depth (m), label string
 
-			// read in the solution name
-			solutionName = st.nextToken();
-	
-			// trim the sensor name
-			solutionName = solutionName.trim();
-	
-			// now the ellipse details (or null)
-			String next = st.nextToken();
-	
-			// let's trim this string aswell, just so we're sure N is the first letter
-			// if that's its destiny
-			next = next.trim();
-	
-			// find out if it's our null value
-			if (next.startsWith("N"))
-			{
-				// ditch it,
-			}
-			else
-			{
-				// now the ellipse details
-				orientation = MWCXMLReader.readThisDouble(next);
-				maxima = MWCXMLReader.readThisDouble(st.nextToken());
-				minima = MWCXMLReader.readThisDouble(st.nextToken());
-	
-				theEllipse = new EllipseShape(null, orientation, new WorldDistance(
-						MWC.Algorithms.Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
-						new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(minima),
-								WorldDistance.DEGS));
-	
-			} // whether the duff ellipse data was entered
+      final String testLine =
+          ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 \"TRACK 060\" 045.0  4000 2000 050 12.4 100 Trial label";
 
-			course = MWCXMLReader.readThisDouble(st.nextToken());
-			speed = MWCXMLReader.readThisDouble(st.nextToken());
-			depth = MWCXMLReader.readThisDouble(st.nextToken());
-	
-			// and lastly read in the message
-			theLabel = st.nextToken("\r");
-			// strip off any gash
-			theLabel = theLabel.trim();
-	
-			theColor = ImportReplay.replayColorFor(symbology);
+      // ok, create the importer
+      final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
 
-			final String theStyle = ImportReplay.replayTrackSymbolFor(symbology);
-	
-			// create the contact object
-			final TMAContactWrapper data = new TMAContactWrapper(solutionName, vesselName,
-					theDtg, rng, brg, course, speed, depth, theColor, theLabel, theEllipse,
-					theStyle);
-	
-			return data;
-		}
-		catch(final ParseException pe)
-		{
-			MWC.Utilities.Errors.Trace.trace(pe,
-					"Whilst import TMA_RngBrg");
-			return null;
-		}
-	}
+      // see if we can read this type
+      final String theType = importer.getYourType();
+      assertEquals("returned correct type", theType, ";TMA_RB:");
 
-	/**
-	 * determine the identifier returning this type of annotation
-	 */
-	public final String getYourType()
-	{
-		return _myType;
-	}
+      // now read the line
+      final Object res = importer.readThisLine(testLine);
+      assertNotNull("managed to read item", res);
 
-	/**
-	 * export the specified shape as a string
-	 * 
-	 * @param theWrapper
-	 *          the thing we are going to export
-	 * @return the shape in String form
-	 */
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		// result value
-		final String line = ";; Export of sensor data not implemented";
-		return line;
+      // check it's of the correct type
+      assertEquals("of correct class",
+          "class Debrief.Wrappers.TMAContactWrapper", res.getClass()
+              .toString());
+      final TMAContactWrapper tc = (TMAContactWrapper) res;
 
-	}
+      // check the values we've used
+      assertEquals("correct solution name", "TRACK 060", tc.getSolutionName());
+    }
 
-	/**
-	 * indicate if you can export this type of object
-	 * 
-	 * @param val
-	 *          the object to test
-	 * @return boolean saying whether you can do it
-	 */
-	public final boolean canExportThis(final Object val)
-	{
-		boolean res = false;
+    public final void testImportNoEllipse()
+    {
+      // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
+      // YYYY CCC SSS DDD xx.xx
+      // ;; date, time, ownship name, symbology, bearing (deg), range (yds),
+      // track name, elipse orientation (deg from north), maxima (yds), minima
+      // (yds), course, speed, depth (m), label string
 
-		if (val instanceof SensorWrapper)
-		{
-			res = true;
-		}
+      final String testLine =
+          ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 TRACK_060 NULL 050 12.4 100 Trial label";
 
-		return res;
+      // ok, create the importer
+      final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
 
-	}
+      // see if we can read this type
+      final String theType = importer.getYourType();
+      assertEquals("returned correct type", theType, ";TMA_RB:");
 
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testImportTMA_RngBrg extends
-			junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+      // now read the line
+      final Object res = importer.readThisLine(testLine);
+      assertNotNull("managed to read item", res);
 
-		public testImportTMA_RngBrg(final String val)
-		{
-			super(val);
-		}
+      // check it's of the correct type
+      assertEquals("of correct class",
+          "class Debrief.Wrappers.TMAContactWrapper", res.getClass()
+              .toString());
+      final TMAContactWrapper tc = (TMAContactWrapper) res;
 
-		public final void testImport()
-		{
-			// ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
-			// YYYY CCC SSS DDD xx.xx
-			// ;; date, time, ownship name, symbology, bearing (deg), range (yds),
-			// track name, elipse orientation (deg from north), maxima (yds), minima
-			// (yds), course, speed, depth (m), label string
+      // check the values we've used
+      final HiResDate theDate = DebriefFormatDateTime.parseThis(
+          "030211 120312.000");
+      assertEquals("correct date", theDate, tc.getDTG());
+      assertEquals("Correct track", "CARPET", tc.getTrackName());
+      assertEquals("correct color", Color.white, tc.getColor());
+      assertEquals("correct symbol", "Submarine", tc.getSymbol());
+      assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
+          tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
+      assertEquals("correct bearing", MWC.Algorithms.Conversions.Degs2Rads(
+          124.5), tc.getBearingRads(), 0.001d);
+      assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
+      assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(),
+          0.0001d);
+      assertEquals("correct maxima", 0, tc.getEllipse().getMaxima().getValueIn(
+          WorldDistance.YARDS), 0.0001d);
+      assertEquals("correct minima", 0, tc.getEllipse().getMinima().getValueIn(
+          WorldDistance.YARDS), 0.0001d);
+      assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
+      assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
+      assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
+      assertEquals("correct label", "Trial label", tc.getLabel());
+    }
+  }
 
-			final String testLine = ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 TRACK_060 045.0  4000 2000 050 12.4 100 Trial label";
+  public static void main(final String[] args)
+  {
+    final testImportTMA_RngBrg tm = new testImportTMA_RngBrg("scrap");
+    tm.testImport();
+    tm.testImportNoEllipse();
+  }
 
-			// ok, create the importer
-			final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
+  /**
+   * the type for this string
+   */
+  private final String _myType = ";TMA_RB:";
 
-			// see if we can read this type
-			final String theType = importer.getYourType();
-			assertEquals("returned correct type", theType, ";TMA_RB:");
+  /**
+   * indicate if you can export this type of object
+   * 
+   * @param val
+   *          the object to test
+   * @return boolean saying whether you can do it
+   */
+  @Override
+  public final boolean canExportThis(final Object val)
+  {
+    boolean res = false;
 
-			// now read the line
-			final Object res = importer.readThisLine(testLine);
-			assertNotNull("managed to read item", res);
+    if (val instanceof SensorWrapper)
+    {
+      res = true;
+    }
 
-			// check it's of the correct type
-			assertEquals("of correct class",
-					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-			final TMAContactWrapper tc = (TMAContactWrapper) res;
+    return res;
 
-			// check the values we've used
-			final HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
-			assertEquals("correct date", theDate, tc.getDTG());
-			assertEquals("Correct track", "CARPET", tc.getTrackName());
-			assertEquals("correct color", Color.white, tc.getColor());
-			assertEquals("correct symbol", "Submarine", tc.getSymbol());
-			assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
-					tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
-			assertEquals("correct bearing", MWC.Algorithms.Conversions
-					.Degs2Rads(124.5), tc.getBearingRads(), 0.001d);
-			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
-			assertEquals("correct orientation", 45, tc.getEllipse().getOrientation(),
-					0.0001d);
-			assertEquals("correct maxima", 4000, tc.getEllipse().getMaxima()
-					.getValueIn(WorldDistance.YARDS), 0.0001d);
-			assertEquals("correct minima", 2000, tc.getEllipse().getMinima()
-					.getValueIn(WorldDistance.YARDS), 0.0001d);
-			assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
-			assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
-			assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
-			assertEquals("correct label", "Trial label", tc.getLabel());
+  }
 
-		}
+  /**
+   * export the specified shape as a string
+   * 
+   * @param theWrapper
+   *          the thing we are going to export
+   * @return the shape in String form
+   */
+  @Override
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
+    // result value
+    final String line = ";; Export of sensor data not implemented";
+    return line;
 
-		public final void testImportNoEllipse()
-		{
-			// ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
-			// YYYY CCC SSS DDD xx.xx
-			// ;; date, time, ownship name, symbology, bearing (deg), range (yds),
-			// track name, elipse orientation (deg from north), maxima (yds), minima
-			// (yds), course, speed, depth (m), label string
+  }
 
-			final String testLine = ";TMA_RB: 030211 120312 CARPET S@ 124.5 12000 TRACK_060 NULL 050 12.4 100 Trial label";
+  /**
+   * determine the identifier returning this type of annotation
+   */
+  @Override
+  public final String getYourType()
+  {
+    return _myType;
+  }
 
-			// ok, create the importer
-			final ImportTMA_RngBrg importer = new ImportTMA_RngBrg();
+  /**
+   * read in this string and return a Label
+   */
+  @Override
+  public final Object readThisLine(final String theLine)
+  {
 
-			// see if we can read this type
-			final String theType = importer.getYourType();
-			assertEquals("returned correct type", theType, ";TMA_RB:");
+    // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX YYYY
+    // CCC SSS DDD xx.xx
+    // ;; date, time, ownship name, symbology, bearing (deg), range (yds), track
+    // name, elipse orientation (deg from north), maxima (yds), minima (yds),
+    // course, speed, depth (m), label string
 
-			// now read the line
-			final Object res = importer.readThisLine(testLine);
-			assertNotNull("managed to read item", res);
+    // get a stream from the string
+    final StringTokenizer st = new StringTokenizer(theLine);
 
-			// check it's of the correct type
-			assertEquals("of correct class",
-					"class Debrief.Wrappers.TMAContactWrapper", res.getClass().toString());
-			final TMAContactWrapper tc = (TMAContactWrapper) res;
+    // declare local variables
+    String theLabel;
+    String vesselName;
+    String solutionName;
+    HiResDate theDtg = null;
+    double brg, rng;
+    double course, speed, depth;
+    double orientation, maxima, minima;
+    EllipseShape theEllipse = null;
+    java.awt.Color theColor;
 
-			// check the values we've used
-			final HiResDate theDate = DebriefFormatDateTime.parseThis("030211 120312.000");
-			assertEquals("correct date", theDate, tc.getDTG());
-			assertEquals("Correct track", "CARPET", tc.getTrackName());
-			assertEquals("correct color", Color.white, tc.getColor());
-			assertEquals("correct symbol", "Submarine", tc.getSymbol());
-			assertEquals("correct range", MWC.Algorithms.Conversions.Yds2Degs(12000),
-					tc.getRange().getValueIn(WorldDistance.DEGS), 0.001d);
-			assertEquals("correct bearing", MWC.Algorithms.Conversions
-					.Degs2Rads(124.5), tc.getBearingRads(), 0.001d);
-			assertEquals("correct solution name", "TRACK_060", tc.getSolutionName());
-			assertEquals("correct orientation", 0, tc.getEllipse().getOrientation(),
-					0.0001d);
-			assertEquals("correct maxima", 0, tc.getEllipse().getMaxima().getValueIn(
-					WorldDistance.YARDS), 0.0001d);
-			assertEquals("correct minima", 0, tc.getEllipse().getMinima().getValueIn(
-					WorldDistance.YARDS), 0.0001d);
-			assertEquals("correct course", 50, tc.getTargetCourse(), 0.001d);
-			assertEquals("correct speed", 12.4, tc.getSpeed(), 0.001d);
-			assertEquals("correct depth", 100, tc.getDepth(), 0.001d);
-			assertEquals("correct label", "Trial label", tc.getLabel());
-		}
-	}
+    // skip the comment identifier
+    st.nextToken();
 
-	public static void main(final String[] args)
-	{
-		final testImportTMA_RngBrg tm = new testImportTMA_RngBrg("scrap");
-		tm.testImport();
-		tm.testImportNoEllipse();
-	}
+    // combine the date, a space, and the time
+    final String dateToken = st.nextToken();
+    final String timeToken = st.nextToken();
+
+    // and extract the date
+    theDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+
+    // now the vessel name
+    vesselName = AbstractPlainLineImporter.checkForQuotedName(st);
+
+    // next with the symbology
+    symbology = st.nextToken(normalDelimiters);
+
+    try
+    {
+      // now get the range and bearing
+      brg = MWCXMLReader.readThisDouble(st.nextToken());
+      rng = MWCXMLReader.readThisDouble(st.nextToken());
+
+      // read in the solution name
+      solutionName = AbstractPlainLineImporter.checkForQuotedName(st);
+
+      // trim the sensor name
+      solutionName = solutionName.trim();
+
+      // now the ellipse details (or null)
+      String next = st.nextToken();
+
+      // let's trim this string aswell, just so we're sure N is the first letter
+      // if that's its destiny
+      next = next.trim();
+
+      // find out if it's our null value
+      if (next.startsWith("N"))
+      {
+        // ditch it,
+      }
+      else
+      {
+        // now the ellipse details
+        orientation = MWCXMLReader.readThisDouble(next);
+        maxima = MWCXMLReader.readThisDouble(st.nextToken());
+        minima = MWCXMLReader.readThisDouble(st.nextToken());
+
+        theEllipse = new EllipseShape(null, orientation, new WorldDistance(
+            MWC.Algorithms.Conversions.Yds2Degs(maxima), WorldDistance.DEGS),
+            new WorldDistance(MWC.Algorithms.Conversions.Yds2Degs(minima),
+                WorldDistance.DEGS));
+
+      } // whether the duff ellipse data was entered
+
+      course = MWCXMLReader.readThisDouble(st.nextToken());
+      speed = MWCXMLReader.readThisDouble(st.nextToken());
+      depth = MWCXMLReader.readThisDouble(st.nextToken());
+
+      // and lastly read in the message
+      theLabel = st.nextToken("\r");
+      // strip off any gash
+      theLabel = theLabel.trim();
+
+      theColor = ImportReplay.replayColorFor(symbology);
+
+      final String theStyle = ImportReplay.replayTrackSymbolFor(symbology);
+
+      // create the contact object
+      final TMAContactWrapper data = new TMAContactWrapper(solutionName,
+          vesselName, theDtg, rng, brg, course, speed, depth, theColor,
+          theLabel, theEllipse, theStyle);
+
+      return data;
+    }
+    catch (final ParseException pe)
+    {
+      MWC.Utilities.Errors.Trace.trace(pe, "Whilst import TMA_RngBrg");
+      return null;
+    }
+  }
 
 }

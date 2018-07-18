@@ -10,13 +10,15 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -62,6 +64,7 @@ import MWC.Algorithms.FrequencyCalcs;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
@@ -77,7 +80,31 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
-  public static final String MEASURED_DATASET = "Measured";
+  /**
+   * special listener, that knows how to detatch itself
+   *
+   * @author ian
+   *
+   */
+  private abstract static class PrivatePropertyChangeListener implements
+      PropertyChangeListener
+  {
+    private final TrackWrapper _track;
+    private final String _property;
+
+    public PrivatePropertyChangeListener(final TrackWrapper track,
+        final String property)
+    {
+      _track = track;
+      _property = property;
+    }
+
+    public void detach()
+    {
+      _track.removePropertyChangeListener(_property, this);
+    }
+
+  }
 
   private static class TargetDoublet
   {
@@ -146,12 +173,11 @@ public final class StackedDotHelper
       for (int i = 0; i < 30; i++)
       {
         final HiResDate thisDTG = new HiResDate(10000 * i);
-        final WorldLocation thisLocation =
-            new WorldLocation(2 + 0.01 * i, 2 + 0.03 * i, 0);
-        final SensorContactWrapper scw =
-            new SensorContactWrapper(host.getName(), thisDTG,
-                new WorldDistance(4, WorldDistance.MINUTES), 25d, thisLocation,
-                Color.RED, "" + i, 0, sensor.getName());
+        final WorldLocation thisLocation = new WorldLocation(2 + 0.01 * i, 2
+            + 0.03 * i, 0);
+        final SensorContactWrapper scw = new SensorContactWrapper(host
+            .getName(), thisDTG, new WorldDistance(4, WorldDistance.MINUTES),
+            25d, thisLocation, Color.RED, "" + i, 0, sensor.getName());
         sensor.add(scw);
         contacts.add(scw);
 
@@ -170,12 +196,12 @@ public final class StackedDotHelper
       theLayers.addThisLayer(host);
       theLayers.addThisLayer(target);
 
-      final SensorContactWrapper[] contactArr =
-          contacts.toArray(new SensorContactWrapper[]
+      final SensorContactWrapper[] contactArr = contacts.toArray(
+          new SensorContactWrapper[]
           {});
-      final RelativeTMASegment newLeg =
-          new RelativeTMASegment(contactArr, new WorldVector(1, 1, 0),
-              new WorldSpeed(12, WorldSpeed.Kts), 12d, theLayers, Color.red);
+      final RelativeTMASegment newLeg = new RelativeTMASegment(contactArr,
+          new WorldVector(1, 1, 0), new WorldSpeed(12, WorldSpeed.Kts), 12d,
+          theLayers, Color.red);
       target.add(newLeg);
 
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
@@ -240,11 +266,13 @@ public final class StackedDotHelper
     }
   }
 
+  public static final String MEASURED_DATASET = "Measured";
+
   public static final String CALCULATED_VALUES = "Calculated";
 
   /**
    * produce a color shade, according to whether the max error is inside 3 degrees or not.
-   * 
+   *
    * @param errorSeries
    * @return
    */
@@ -289,10 +317,32 @@ public final class StackedDotHelper
     return col;
   }
 
+  private static void clearPrivateListeners(final ISecondaryTrack targetTrack)
+  {
+    if (targetTrack instanceof TrackWrapper)
+    {
+      final TrackWrapper target = (TrackWrapper) targetTrack;
+
+      // ok - we may have registered some interpolation listeners on the track
+      // delete them if necessary
+      final PropertyChangeListener[] list = target.getPropertyChangeListeners(
+          PlainWrapper.LOCATION_CHANGED);
+      for (final PropertyChangeListener t : list)
+      {
+        if (t instanceof PrivatePropertyChangeListener)
+        {
+          final PrivatePropertyChangeListener prop =
+              (PrivatePropertyChangeListener) t;
+          prop.detach();
+        }
+      }
+    }
+  }
+
   /**
    * determine if this time series contains many identical values - this is an indicator for data
    * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
-   * 
+   *
    * @param dataset
    * @return
    */
@@ -339,9 +389,71 @@ public final class StackedDotHelper
     return false;
   }
 
+  private static void generateInterpolatedDoublet(final HiResDate requiredTime,
+      final TargetDoublet doublet, final TrackSegment segment)
+  {
+    // ok, we'll interpolate the nearest value
+    FixWrapper before = null;
+    FixWrapper after = null;
+    final Enumeration<Editable> fixes = segment.elements();
+    while (fixes.hasMoreElements() && after == null)
+    {
+      final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+
+      final HiResDate thisTime = thisF.getDTG();
+
+      if (before == null || thisTime.lessThan(requiredTime))
+      {
+        before = thisF;
+      }
+      else if (thisTime.greaterThanOrEqualTo(requiredTime))
+      {
+        after = thisF;
+      }
+    }
+
+    // just check if we're on one of the values
+    final FixWrapper toUse;
+    if (before != null && before.getDTG().equals(requiredTime))
+    {
+      toUse = before;
+    }
+    else if (after != null && after.getDTG().equals(requiredTime))
+    {
+      toUse = after;
+    }
+    else
+    {
+      // ok, we've now boxed the required value
+      toUse = FixWrapper.interpolateFix(before, after, requiredTime);
+
+      final FixWrapper beforeF = before;
+      final FixWrapper afterF = after;
+
+      // note. the interpolated fix needs to move, if the segments moves
+      final PropertyChangeListener newListener =
+          new PrivatePropertyChangeListener(segment.getWrapper(),
+              PlainWrapper.LOCATION_CHANGED)
+          {
+            @Override
+            public void propertyChange(final PropertyChangeEvent evt)
+            {
+              final FixWrapper tmpFix = FixWrapper.interpolateFix(beforeF,
+                  afterF, requiredTime);
+              toUse.setLocation(tmpFix.getLocation());
+            }
+          };
+      segment.getWrapper().addPropertyChangeListener(
+          PlainWrapper.LOCATION_CHANGED, newListener);
+    }
+
+    doublet.targetFix = toUse;
+    doublet.targetParent = segment;
+  }
+
   /**
    * sort out data of interest
-   * 
+   *
    */
   public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
       final ISecondaryTrack targetTrack, final boolean onlyVis,
@@ -350,8 +462,14 @@ public final class StackedDotHelper
     final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
     // friendly fix-wrapper to save us repeatedly creating it
-    final FixWrapper index =
-        new FixWrapper(new Fix(null, new WorldLocation(0, 0, 0), 0.0, 0.0));
+    final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
+        0, 0), 0.0, 0.0));
+
+    // note - we have to inject some listeners, so that
+    // interpolated fixes know when their parent has updated.
+    // each time we come in here, we delete existing ones,
+    // as housekeeping.
+    clearPrivateListeners(targetTrack);
 
     final Vector<TrackSegment> theSegments;
     if (targetTrack != null)
@@ -376,8 +494,8 @@ public final class StackedDotHelper
 
           while (cuts.hasMoreElements())
           {
-            final SensorContactWrapper scw =
-                (SensorContactWrapper) cuts.nextElement();
+            final SensorContactWrapper scw = (SensorContactWrapper) cuts
+                .nextElement();
 
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
@@ -403,11 +521,17 @@ public final class StackedDotHelper
                * note: if this is frequency data then we accept an interpolated fix. This is based
                * upon the working practice that initially legs of target track are created from
                * bearing data.
-               * 
+               *
                * Plus, there is greater variance in bearing angle - so it's more important to get
                * the right data item.
                */
-              final boolean interpFix = needFrequency;
+
+              /**
+               * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
+               * speed when on a leg, it's perfectly OK to interpolate a target position for any
+               * sensor time.
+               */
+              final boolean interpFix = true;// needFrequency;
 
               /**
                * for frequency data we don't generate a double for dynamic infills, since we have
@@ -415,9 +539,8 @@ public final class StackedDotHelper
                */
               final boolean allowInfill = !needFrequency;
 
-              final TargetDoublet doublet =
-                  getTargetDoublet(index, theSegments, scw.getDTG(), interpFix,
-                      allowInfill);
+              final TargetDoublet doublet = getTargetDoublet(index, theSegments,
+                  scw.getDTG(), interpFix, allowInfill);
 
               final Doublet thisDub;
               final FixWrapper hostFix;
@@ -434,9 +557,8 @@ public final class StackedDotHelper
 
               if (doublet.targetFix != null && hostFix != null)
               {
-                thisDub =
-                    new Doublet(scw, doublet.targetFix, doublet.targetParent,
-                        hostFix);
+                thisDub = new Doublet(scw, doublet.targetFix,
+                    doublet.targetParent, hostFix);
 
                 // if we've no target track add all the points
                 if (targetTrack == null)
@@ -460,11 +582,11 @@ public final class StackedDotHelper
 
               } // if we find a match
               // this test used to be the following, but we changed it so we
-              // could see measured data even when we don't have track:              
+              // could see measured data even when we don't have track:
               // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null &&
               // hostFix != null))
-              else if (hostFix != null
-                  && (doublet.targetFix == null || targetTrack == null))
+              else if (hostFix != null && (doublet.targetFix == null
+                  || targetTrack == null))
               {
                 // no target data, just use ownship sensor data
                 thisDub = new Doublet(scw, null, null, hostFix);
@@ -474,12 +596,13 @@ public final class StackedDotHelper
           } // loop through cuts
         } // if sensor is visible
       } // loop through sensors
-    }// if there are sensors
+    } // if there are sensors
+
     return res;
   }
 
   /**
-   * 
+   *
    * @param workingFix
    *          pre-existing fix object, to stop us repeatedly creating it
    * @param theSegments
@@ -513,8 +636,8 @@ public final class StackedDotHelper
           continue;
         }
 
-        final TimePeriod validPeriod =
-            new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
+        final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
+            .startDTG(), ts.endDTG());
         if (validPeriod.contains(requiredTime))
         {
 
@@ -546,9 +669,8 @@ public final class StackedDotHelper
                 // note: workaround. When we've merged the track,
                 // the new legs are actually one millisecond later.
                 // workaround this.
-                final long timeDiffMicros =
-                    Math.abs(thisF.getDTG().getMicros()
-                        - requiredTime.getMicros());
+                final long timeDiffMicros = Math.abs(thisF.getDTG().getMicros()
+                    - requiredTime.getMicros());
 
                 if (timeDiffMicros <= 1000)
                 {
@@ -568,54 +690,6 @@ public final class StackedDotHelper
     }
 
     return doublet;
-  }
-
-  private static void generateInterpolatedDoublet(final HiResDate requiredTime,
-      final TargetDoublet doublet, final TrackSegment segment)
-  {
-    // ok, we'll interpolate the nearest value
-    FixWrapper before = null;
-    FixWrapper after = null;
-    final Enumeration<Editable> fixes = segment.elements();
-    while (fixes.hasMoreElements() && after == null)
-    {
-      final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-
-      final HiResDate thisTime = thisF.getDTG();
-
-      if (before == null || thisTime.lessThan(requiredTime))
-      {
-        before = thisF;
-      }
-      else if (thisTime.greaterThanOrEqualTo(requiredTime))
-      {
-        after = thisF;
-      }
-    }
-
-    // ok, we've now boxed the required value
-    final FixWrapper interp =
-        FixWrapper.interpolateFix(before, after, requiredTime);
-    doublet.targetFix = interp;
-    doublet.targetParent = segment;
-  }
-
-  private static void handleDynamicInfill(final FixWrapper workingFix,
-      final HiResDate requiredTime, final TargetDoublet doublet,
-      final TrackSegment segment)
-  {
-    // sorted. here we go
-    doublet.targetParent = segment;
-
-    // create an object with the right time
-    workingFix.getFix().setTime(requiredTime);
-
-    // and find any matching items
-    final SortedSet<Editable> items = segment.tailSet(workingFix);
-    if (!items.isEmpty())
-    {
-      doublet.targetFix = (FixWrapper) items.first();
-    }
   }
 
   private static Vector<TrackSegment> getTargetLegs(
@@ -650,6 +724,24 @@ public final class StackedDotHelper
     return _theSegments;
   }
 
+  private static void handleDynamicInfill(final FixWrapper workingFix,
+      final HiResDate requiredTime, final TargetDoublet doublet,
+      final TrackSegment segment)
+  {
+    // sorted. here we go
+    doublet.targetParent = segment;
+
+    // create an object with the right time
+    workingFix.getFix().setTime(requiredTime);
+
+    // and find any matching items
+    final SortedSet<Editable> items = segment.tailSet(workingFix);
+    if (!items.isEmpty())
+    {
+      doublet.targetFix = (FixWrapper) items.first();
+    }
+  }
+
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
       final ZoneChart.ColorProvider colorProvider)
   {
@@ -677,14 +769,14 @@ public final class StackedDotHelper
       speeds[ctr] = 0;
       courses[ctr] = (Double) thisItem.getValue();
     }
-    final List<LegOfData> legs =
-        detector.identifyOwnshipLegs(times, speeds, courses, 5, Precision.LOW);
+    final List<LegOfData> legs = detector.identifyOwnshipLegs(times, speeds,
+        courses, 5, Precision.LOW);
     final ArrayList<Zone> res = new ArrayList<Zone>();
 
     for (final LegOfData leg : legs)
     {
-      final Zone newZone =
-          new Zone(leg.getStart(), leg.getEnd(), colorProvider.getZoneColor());
+      final Zone newZone = new Zone(leg.getStart(), leg.getEnd(), colorProvider
+          .getZoneColor());
       res.add(newZone);
     }
 
@@ -713,9 +805,8 @@ public final class StackedDotHelper
    */
   private TreeSet<Doublet> _primaryDoublets;
 
-  public List<SensorContactWrapper> getBearings(
-      final TrackWrapper primaryTrack, final boolean onlyVis,
-      final TimePeriod targetPeriod)
+  public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
+      final boolean onlyVis, final TimePeriod targetPeriod)
   {
     final List<SensorContactWrapper> res =
         new ArrayList<SensorContactWrapper>();
@@ -732,8 +823,8 @@ public final class StackedDotHelper
           final Enumeration<Editable> cuts = wrapper.elements();
           while (cuts.hasMoreElements())
           {
-            final SensorContactWrapper scw =
-                (SensorContactWrapper) cuts.nextElement();
+            final SensorContactWrapper scw = (SensorContactWrapper) cuts
+                .nextElement();
             if (!onlyVis || (onlyVis && scw.getVisible()))
             {
               if (targetPeriod == null || targetPeriod.contains(scw.getDTG()))
@@ -745,7 +836,7 @@ public final class StackedDotHelper
           } // loop through cuts
         } // if sensor is visible
       } // loop through sensors
-    }// if there are sensors
+    } // if there are sensors
 
     return res;
   }
@@ -769,7 +860,7 @@ public final class StackedDotHelper
 
   /**
    * initialise the data, check we've got sensor data & the correct number of visible tracks
-   * 
+   *
    * @param showError
    * @param onlyVis
    * @param holder
@@ -881,7 +972,7 @@ public final class StackedDotHelper
 
   /**
    * ok, our track has been dragged, calculate the new series of offsets
-   * 
+   *
    * @param linePlot
    * @param dotPlot
    * @param onlyVis
@@ -895,7 +986,7 @@ public final class StackedDotHelper
    * @param targetBearingSeries
    * @param overviewSpeedRenderer
    * @param _overviewCourseRenderer
-   * 
+   *
    * @param currentOffset
    *          how far the current track has been dragged
    */
@@ -906,8 +997,8 @@ public final class StackedDotHelper
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
-      final TimeSeries measuredValues, final TimeSeries ambigValues,
-      final TimeSeries ownshipCourseSeries,
+      final TimeSeriesCollection measuredValuesColl,
+      final TimeSeries ambigValues, final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
@@ -927,7 +1018,8 @@ public final class StackedDotHelper
     // ok, find the track wrappers
     if (_secondaryTrack == null)
     {
-      initialise(tracks, false, onlyVis, holder, logger, "Bearing", true, false);
+      initialise(tracks, false, onlyVis, holder, logger, "Bearing", true,
+          false);
     }
 
     // did it work?
@@ -954,6 +1046,7 @@ public final class StackedDotHelper
     // create the collection of series
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+    final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -963,10 +1056,8 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries errorValues = new TimeSeries(CALCULATED_VALUES);
-    final TimeSeries ambigErrorValues =
-        new TimeSeries(_primaryTrack.getName() + "(A)");
-    final TimeSeries calculatedValues = new TimeSeries(CALCULATED_VALUES);
+    final TimeSeries ambigErrorValues = new TimeSeries(_primaryTrack.getName()
+        + "(A)");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
@@ -974,11 +1065,8 @@ public final class StackedDotHelper
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(errorValues);
     sList.add(ambigErrorValues);
-    sList.add(measuredValues);
     sList.add(ambigValues);
-    sList.add(calculatedValues);
     sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
@@ -988,10 +1076,12 @@ public final class StackedDotHelper
     sList.add(ownshipCourseSeries);
 
     final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(measuredValuesColl);
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
     tList.add(errorSeries);
     tList.add(actualSeries);
+    tList.add(calculatedSeries);
 
     // ok, wrap the switching on/off of notify in try/catch,
     // to be sure to switch notify back on at end
@@ -1002,6 +1092,8 @@ public final class StackedDotHelper
       for (final TimeSeriesCollection series : tList)
       {
         series.setNotify(false);
+
+        series.removeAllSeries();
       }
       for (final TimeSeries series : sList)
       {
@@ -1010,10 +1102,6 @@ public final class StackedDotHelper
         // and clear the list
         series.clear();
       }
-
-      // clear the existing target datasets
-      targetCourseSeries.removeAllSeries();
-      targetSpeedSeries.removeAllSeries();
 
       // create the color for resolved ambig data
       final Color grayShade = new Color(155, 155, 155, 50);
@@ -1024,9 +1112,8 @@ public final class StackedDotHelper
       {
         final Doublet thisD = iter.next();
 
-        final boolean parentIsNotDynamic =
-            thisD.getTargetTrack() == null
-                || !(thisD.getTargetTrack() instanceof DynamicInfillSegment);
+        final boolean parentIsNotDynamic = thisD.getTargetTrack() == null
+            || !(thisD.getTargetTrack() instanceof DynamicInfillSegment);
 
         try
         {
@@ -1035,8 +1122,8 @@ public final class StackedDotHelper
           double measuredBearing = thisD.getMeasuredBearing();
           double ambigBearing = thisD.getAmbiguousMeasuredBearing();
           final HiResDate currentTime = thisD.getDTG();
-          final FixedMillisecond thisMilli =
-              new FixedMillisecond(currentTime.getDate().getTime());
+          final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
+              .getDate().getTime());
 
           final boolean hasAmbiguous = !Double.isNaN(ambigBearing);
 
@@ -1069,12 +1156,24 @@ public final class StackedDotHelper
             }
           }
 
-          final ColouredDataItem mBearing =
-              new ColouredDataItem(thisMilli, measuredBearing, bearingColor,
-                  false, null, true, parentIsNotDynamic, thisD.getSensorCut());
+          final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
+              measuredBearing, bearingColor, false, null, true,
+              parentIsNotDynamic, thisD.getSensorCut());
+
+          // find the series for this sensor
+          final SensorWrapper sensor = thisD.getSensorCut().getSensor();
+          final String seriesName = BaseStackedDotsView.MEASURED_VALUES + sensor
+              .getName();
+          TimeSeries measuredBearings = measuredValuesColl.getSeries(
+              seriesName);
+          if (measuredBearings == null)
+          {
+            measuredBearings = new TimeSeries(seriesName);
+            measuredValuesColl.addSeries(measuredBearings);
+          }
 
           // and add them to the series
-          measuredValues.addOrUpdate(mBearing);
+          measuredBearings.add(mBearing);
 
           if (hasAmbiguous)
           {
@@ -1103,12 +1202,12 @@ public final class StackedDotHelper
             // if this cut has been resolved, we don't show a symbol
             // for the ambiguous cut
             final boolean showSymbol = true;
-            final Color color =
-                thisD.getHasBeenResolved() ? grayShade : ambigColor;
+            final Color color = thisD.getHasBeenResolved() ? grayShade
+                : ambigColor;
 
-            final ColouredDataItem amBearing =
-                new ColouredDataItem(thisMilli, ambigBearing, color, false,
-                    null, showSymbol, parentIsNotDynamic, thisD.getSensorCut());
+            final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
+                ambigBearing, color, false, null, showSymbol,
+                parentIsNotDynamic, thisD.getSensorCut());
             ambigValues.addOrUpdate(amBearing);
           }
 
@@ -1120,10 +1219,13 @@ public final class StackedDotHelper
             if (thisD.getTarget().getFixLocation() != null)
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
-              final Color errorColor = thisD.getTarget().getColor();
-              final double thisTrueError =
-                  thisD.calculateBearingError(measuredBearing,
-                      calculatedBearing);
+              
+              // note:  now that we're allowing multi-sensor TMA, we should color the
+              // errors acccording to the sensor color (not the target color)
+              final Color error = thisD.getColor();
+              final Color calcColor = thisD.getTarget().getColor();
+              final double thisTrueError = thisD.calculateBearingError(
+                  measuredBearing, calculatedBearing);
 
               if (flipAxes)
               {
@@ -1143,23 +1245,43 @@ public final class StackedDotHelper
               final Color brgColor;
               if (bearingToPort)
               {
-                brgColor = errorColor;
+                brgColor = error;
               }
               else
               {
-                brgColor = errorColor.darker();
+                brgColor = error.darker();
               }
 
-              final ColouredDataItem newTrueError =
-                  new ColouredDataItem(thisMilli, thisTrueError, brgColor,
-                      false, null, true, parentIsNotDynamic, thisD.getTarget());
+              final ColouredDataItem newTrueError = new ColouredDataItem(
+                  thisMilli, thisTrueError, brgColor, false, null, true,
+                  parentIsNotDynamic, thisD.getTarget());
 
-              final ColouredDataItem cBearing =
-                  new ColouredDataItem(thisMilli, calculatedBearing, brgColor,
-                      true, null, true, parentIsNotDynamic, thisD.getTarget());
+              final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
+                  calculatedBearing, calcColor, true, null, true,
+                  parentIsNotDynamic, thisD.getTarget());
 
-              errorValues.addOrUpdate(newTrueError);
-              calculatedValues.addOrUpdate(cBearing);
+              final String sensorName = thisD.getSensorCut().getSensorName();
+              
+              // ok, get this error              
+              final String errorName = BaseStackedDotsView.ERROR_VALUES + sensorName;
+              TimeSeries thisError = errorSeries.getSeries(errorName);
+              if (thisError == null)
+              {
+                thisError = new TimeSeries(errorName);
+                errorSeries.addSeries(thisError);
+              }
+
+              thisError.add(newTrueError);
+              
+              // get the calc series for this one
+              TimeSeries calculatedValues = calculatedSeries.getSeries(sensorName);
+              if(calculatedValues == null)
+              {
+                calculatedValues = new TimeSeries(sensorName);
+                calculatedSeries.addSeries(calculatedValues);
+              }
+
+              calculatedValues.add(cBearing);
 
               // and the ambiguous error, if it hasn't been resolved
               if (!thisD.getHasBeenResolved())
@@ -1175,19 +1297,18 @@ public final class StackedDotHelper
                 final Color ambigColor;
                 if (bearingToPort)
                 {
-                  ambigColor = errorColor.darker();
+                  ambigColor = error.darker();
                 }
                 else
                 {
-                  ambigColor = errorColor;
+                  ambigColor = error;
                 }
 
-                final double thisAmnigError =
-                    thisD
-                        .calculateBearingError(ambigBearing, calculatedBearing);
-                final ColouredDataItem newAmbigError =
-                    new ColouredDataItem(thisMilli, thisAmnigError, ambigColor,
-                        false, null, true, parentIsNotDynamic);
+                final double thisAmnigError = thisD.calculateBearingError(
+                    ambigBearing, calculatedBearing);
+                final ColouredDataItem newAmbigError = new ColouredDataItem(
+                    thisMilli, thisAmnigError, ambigColor, false, null, true,
+                    parentIsNotDynamic);
                 ambigErrorValues.addOrUpdate(newAmbigError);
               }
 
@@ -1237,8 +1358,8 @@ public final class StackedDotHelper
         // ok, it's a single point. We'll use the sensor cut times for the course data
 
         // get the single location
-        final FixWrapper loc =
-            (FixWrapper) _primaryTrack.getPositionIterator().nextElement();
+        final FixWrapper loc = (FixWrapper) _primaryTrack.getPositionIterator()
+            .nextElement();
 
         final Enumeration<Editable> segments = _secondaryTrack.segments();
         while (segments.hasMoreElements())
@@ -1266,23 +1387,21 @@ public final class StackedDotHelper
             {
               final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
 
-              double ownshipCourse =
-                  MWC.Algorithms.Conversions.Rads2Degs(loc.getCourse());
+              double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
+                  .getCourse());
 
               // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
               if (flipAxes && ownshipCourse > 180)
               {
                 ownshipCourse -= 360;
               }
-              final FixedMillisecond thisMilli =
-                  new FixedMillisecond(thisTgtFix.getDateTimeGroup().getDate()
-                      .getTime());
-              final ColouredDataItem crseBearing =
-                  new ColouredDataItem(thisMilli, ownshipCourse,
-                      loc.getColor(), true, null, true, true);
+              final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
+                  .getDateTimeGroup().getDate().getTime());
+              final ColouredDataItem crseBearing = new ColouredDataItem(
+                  thisMilli, ownshipCourse, loc.getColor(), true, null, true,
+                  true);
               osCourseValues.addOrUpdate(crseBearing);
             }
-
           }
         }
       }
@@ -1291,8 +1410,8 @@ public final class StackedDotHelper
 
         // loop through using the iterator
         final Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
-        final TimePeriod validPeriod =
-            new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+        final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
+            endDTG);
         final List<Editable> validItems = new LinkedList<Editable>();
         while (pIter.hasMoreElements())
         {
@@ -1322,10 +1441,10 @@ public final class StackedDotHelper
           if (ctr++ % freq == 0)
           {
             final FixWrapper fw = (FixWrapper) ed;
-            final FixedMillisecond thisMilli =
-                new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
-            double ownshipCourse =
-                MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+            final FixedMillisecond thisMilli = new FixedMillisecond(fw
+                .getDateTimeGroup().getDate().getTime());
+            double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+                .getCourse());
 
             // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
             if (flipAxes && ownshipCourse > 180)
@@ -1333,10 +1452,9 @@ public final class StackedDotHelper
               ownshipCourse -= 360;
             }
 
-            final ColouredDataItem crseBearing =
-                new ColouredDataItem(thisMilli, ownshipCourse, fw.getColor(),
-                    true, null, true, true);
-            osCourseValues.addOrUpdate(crseBearing);
+            final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+                ownshipCourse, fw.getColor(), true, null, true, true);
+            osCourseValues.add(crseBearing);
           }
         }
 
@@ -1346,8 +1464,8 @@ public final class StackedDotHelper
       {
         // sort out the target course/speed
         final Enumeration<Editable> segments = _secondaryTrack.segments();
-        final TimePeriod period =
-            new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+        final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG,
+            endDTG);
         while (segments.hasMoreElements())
         {
           final Editable nextE = segments.nextElement();
@@ -1395,12 +1513,11 @@ public final class StackedDotHelper
                 if (period.contains(fw.getDateTimeGroup()))
                 {
                   // ok, create a point for it
-                  final FixedMillisecond thisMilli =
-                      new FixedMillisecond(fw.getDateTimeGroup().getDate()
-                          .getTime());
+                  final FixedMillisecond thisMilli = new FixedMillisecond(fw
+                      .getDateTimeGroup().getDate().getTime());
 
-                  double tgtCourse =
-                      MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+                  double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+                      .getCourse());
                   final double tgtSpeed = fw.getSpeed();
 
                   // see if we need to change the domain of the course to match
@@ -1439,14 +1556,14 @@ public final class StackedDotHelper
                     speedColor = fw.getColor().darker();
                   }
 
-                  final ColouredDataItem crseBearingItem =
-                      new ColouredDataItem(thisMilli, tgtCourse, courseColor,
-                          isInfill, null, true, true);
-                  tgtCourseValues.addOrUpdate(crseBearingItem);
-                  final ColouredDataItem tgtSpeedItem =
-                      new ColouredDataItem(thisMilli, tgtSpeed, speedColor,
-                          isInfill, null, true, true);
-                  tgtSpeedValues.addOrUpdate(tgtSpeedItem);
+                  final ColouredDataItem crseBearingItem = new ColouredDataItem(
+                      thisMilli, tgtCourse, courseColor, isInfill, null, true,
+                      true);
+                  tgtCourseValues.add(crseBearingItem);
+                  final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
+                      thisMilli, tgtSpeed, speedColor, isInfill, null, true,
+                      true);
+                  tgtSpeedValues.add(tgtSpeedItem);
                 }
               }
             }
@@ -1458,16 +1575,15 @@ public final class StackedDotHelper
       final TimePeriod sensorPeriod;
       if (_secondaryTrack != null)
       {
-        sensorPeriod =
-            new TimePeriod.BaseTimePeriod(_secondaryTrack.getStartDTG(),
-                _secondaryTrack.getEndDTG());
+        sensorPeriod = new TimePeriod.BaseTimePeriod(_secondaryTrack
+            .getStartDTG(), _secondaryTrack.getEndDTG());
       }
       else
       {
         sensorPeriod = null;
       }
-      final List<SensorContactWrapper> theBearings =
-          getBearings(_primaryTrack, onlyVis, sensorPeriod);
+      final List<SensorContactWrapper> theBearings = getBearings(_primaryTrack,
+          onlyVis, sensorPeriod);
       for (final SensorContactWrapper cut : theBearings)
       {
         double theBearing;
@@ -1504,25 +1620,32 @@ public final class StackedDotHelper
       }
 
       // ok, add these new series
-      if (errorValues.getItemCount() > 0)
-      {
-        errorSeries.addSeries(errorValues);
-      }
+      // if (errorValues.getItemCount() > 0)
+      // {
+      // errorSeries.addSeries(errorValues);
+      // }
       if (ambigErrorValues.getItemCount() > 0)
       {
         errorSeries.addSeries(ambigErrorValues);
       }
 
-      actualSeries.addSeries(measuredValues);
+      final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
+      while (mIter.hasNext())
+      {
+        final TimeSeries series = (TimeSeries) mIter.next();
+        actualSeries.addSeries(series);
+      }
 
       if (ambigValues.getItemCount() > 0)
       {
         actualSeries.addSeries(ambigValues);
       }
 
-      if (calculatedValues.getItemCount() > 0)
+      final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
+      while (cIter.hasNext())
       {
-        actualSeries.addSeries(calculatedValues);
+        final TimeSeries series = (TimeSeries) cIter.next();
+        actualSeries.addSeries(series);
       }
 
       if (tgtCourseValues.getItemCount() > 0)
@@ -1538,18 +1661,20 @@ public final class StackedDotHelper
       {
         targetSpeedSeries.addSeries(tgtSpeedValues);
 
-        overviewSpeedRenderer
-            .setLightweightMode(tgtSpeedValues.getItemCount() > MAX_ITEMS_TO_PLOT);
+        overviewSpeedRenderer.setLightweightMode(tgtSpeedValues
+            .getItemCount() > MAX_ITEMS_TO_PLOT);
       }
 
       if (showCourse)
       {
         targetCourseSeries.addSeries(osCourseValues);
       }
-
-      if (calculatedValues.getItemCount() > 0)
+      
+      final Iterator<?> cIter2 = calculatedSeries.getSeries().iterator();
+      while (cIter2.hasNext())
       {
-        targetCalculatedSeries.addAndOrUpdate(calculatedValues);
+        final TimeSeries series = (TimeSeries) cIter2.next();
+        targetCalculatedSeries.addAndOrUpdate(series);
       }
 
       // and the course data for the zone chart
@@ -1591,10 +1716,10 @@ public final class StackedDotHelper
       {
         // retrieve the cut-off value
         final double cutOffValue;
-        final String prefValue =
-            Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_DEGS);
-        if (prefValue != null && prefValue.length() > 0
-            && Double.valueOf(prefValue) != null)
+        final String prefValue = Application.getThisProperty(
+            RelativeTMASegment.CUT_OFF_VALUE_DEGS);
+        if (prefValue != null && prefValue.length() > 0 && Double.valueOf(
+            prefValue) != null)
         {
           cutOffValue = Double.valueOf(prefValue);
         }
@@ -1603,8 +1728,8 @@ public final class StackedDotHelper
           cutOffValue = 3d;
         }
 
-        final Paint errorColor =
-            calculateErrorShadeFor(errorSeries, cutOffValue);
+        final Paint errorColor = calculateErrorShadeFor(errorSeries,
+            cutOffValue);
         dotPlot.setBackgroundPaint(errorColor);
       }
 
@@ -1630,7 +1755,7 @@ public final class StackedDotHelper
 
   /**
    * go through the tracks, finding the relevant position on the other track.
-   * 
+   *
    */
   private void updateDoublets(final boolean onlyVis, final boolean needBearing,
       final boolean needFreq)
@@ -1640,22 +1765,21 @@ public final class StackedDotHelper
     if (_primaryTrack != null)
     {
       // cool sort out the list of sensor locations for these tracks
-      _primaryDoublets =
-          getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
-              needFreq);
+      _primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis,
+          needBearing, needFreq);
     }
   }
 
   /**
    * ok, our track has been dragged, calculate the new series of offsets
-   * 
+   *
    * @param linePlot
    * @param dotPlot
    * @param onlyVis
    * @param holder
    * @param logger
    * @param fZeroMarker
-   * 
+   *
    * @param currentOffset
    *          how far the current track has been dragged
    */
@@ -1715,9 +1839,8 @@ public final class StackedDotHelper
     SensorWrapper lastSensor = null;
 
     // sort out the speed of sound
-    final String speedStr =
-        CorePlugin.getDefault().getPreferenceStore().getString(
-            FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
+    final String speedStr = CorePlugin.getDefault().getPreferenceStore()
+        .getString(FrequencyCalcs.SPEED_OF_SOUND_KTS_PROPERTY);
     final double speedOfSound;
     if (speedStr != null && speedStr.length() > 0)
     {
@@ -1737,12 +1860,12 @@ public final class StackedDotHelper
         final Color thisColor = thisD.getColor();
         final double measuredFreq = thisD.getMeasuredFrequency();
         final HiResDate currentTime = thisD.getDTG();
-        final FixedMillisecond thisMilli =
-            new FixedMillisecond(currentTime.getDate().getTime());
+        final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
+            .getDate().getTime());
 
-        final ColouredDataItem mFreq =
-            new ColouredDataItem(thisMilli, measuredFreq, thisColor, false,
-                null, true, true, thisD.getSensorCut());
+        final ColouredDataItem mFreq = new ColouredDataItem(thisMilli,
+            measuredFreq, thisColor, false, null, true, true, thisD
+                .getSensorCut());
 
         // final ColouredDataItem corrFreq = new ColouredDataItem(
         // new FixedMillisecond(currentTime.getDate().getTime()),
@@ -1765,9 +1888,8 @@ public final class StackedDotHelper
             newSensor = false;
           }
 
-          final ColouredDataItem bFreq =
-              new ColouredDataItem(thisMilli, baseFreq, thisColor.darker(),
-                  !newSensor, null, true, true);
+          final ColouredDataItem bFreq = new ColouredDataItem(thisMilli,
+              baseFreq, thisColor.darker(), !newSensor, null, true, true);
           baseValues.addOrUpdate(bFreq);
 
           // do we have target data?
@@ -1777,17 +1899,16 @@ public final class StackedDotHelper
 
             // did we get a base frequency? We may have a track
             // with a section of data that doesn't have frequency, you see.
-            final double predictedFreq =
-                thisD.getPredictedFrequency(speedOfSound);
-            final double thisError =
-                thisD.calculateFreqError(measuredFreq, predictedFreq);
-            final ColouredDataItem pFreq =
-                new ColouredDataItem(thisMilli, predictedFreq, calcColor, true,
-                    null, true, true, thisD.getTarget());
+            final double predictedFreq = thisD.getPredictedFrequency(
+                speedOfSound);
+            final double thisError = thisD.calculateFreqError(measuredFreq,
+                predictedFreq);
+            final ColouredDataItem pFreq = new ColouredDataItem(thisMilli,
+                predictedFreq, calcColor, true, null, true, true, thisD
+                    .getTarget());
 
-            final ColouredDataItem eFreq =
-                new ColouredDataItem(thisMilli, thisError, thisColor, false,
-                    null, true, true);
+            final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
+                thisError, thisColor, false, null, true, true);
             predictedValues.addOrUpdate(pFreq);
             errorValues.addOrUpdate(eFreq);
           } // if we have a target
@@ -1813,10 +1934,10 @@ public final class StackedDotHelper
       final double cutOffValue;
 
       // retrieve the cut-off value
-      final String prefValue =
-          Application.getThisProperty(RelativeTMASegment.CUT_OFF_VALUE_HZ);
-      if (prefValue != null && prefValue.length() > 0
-          && Double.valueOf(prefValue) != null)
+      final String prefValue = Application.getThisProperty(
+          RelativeTMASegment.CUT_OFF_VALUE_HZ);
+      if (prefValue != null && prefValue.length() > 0 && Double.valueOf(
+          prefValue) != null)
       {
         cutOffValue = Double.valueOf(prefValue) / 100d;
       }
@@ -1845,8 +1966,8 @@ public final class StackedDotHelper
       final int BaseFreqSeries = 2;
       final ColourStandardXYItemRenderer lineRend =
           (ColourStandardXYItemRenderer) linePlot.getRenderer();
-      lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities
-          .createDiamond(0.2f));
+      lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities.createDiamond(
+          0.2f));
       lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
       lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
