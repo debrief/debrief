@@ -60,7 +60,7 @@
 		<Surface Name="SENSOR">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="true" Name="BOW_BRG"
+				<TypedCookieSensor Working="false" Name="BOW_BRG"
 					ProducesRange="false">
 					<SensorOffset Value="40" Units="m" />
 					<TypedRangeDoublet>
@@ -68,7 +68,7 @@
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
-				<TypedCookieSensor Working="true" Name="TAIL_BRG"
+				<TypedCookieSensor Working="false" Name="TAIL_BRG"
 					ProducesRange="false">
 					<SensorOffset Value="-1000" Units="m" />
 					<TypedRangeDoublet>
@@ -76,6 +76,16 @@
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
+				<NarrowbandSensor HasBearing="true" Name="tail sensor"
+					Working="true" Ambiguous="true" CanProduceRange="false">
+					<SensorOffset Value="-1000" Units="m" />
+					<SteadyTime Value="3" Units="minutes" />
+				</NarrowbandSensor>
+				<NarrowbandSensor HasBearing="true" Name="hull sensor"
+					Working="true" Ambiguous="true" CanProduceRange="false">
+					<SensorOffset Value="20" Units="m" />
+					<SteadyTime Value="0" Units="minutes" />
+				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="200" Fuel="100">
 				<Location>
