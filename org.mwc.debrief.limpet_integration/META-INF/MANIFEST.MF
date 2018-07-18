@@ -6,13 +6,12 @@ Bundle-Version: 1.0.13
 Bundle-Activator: org.mwc.debrief.limpet_integration.LimpetInt_Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.legacy,
  org.mwc.debrief.core;bundle-version="1.0.288",
  org.mwc.cmap.core,
  info.limpet.stackedcharts.model;bundle-version="1.0.0",
  info.limpet.stackedcharts.ui;bundle-version="1.0.0",
- org.mwc.debrief.legacy,
  org.eclipse.core.expressions,
- org.freehep
+ org.freehep,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.limpet_integration.measured_data

@@ -13,6 +13,6 @@ Require-Bundle:
  org.eclipse.core.runtime,
  com.ibm.icu,
  org.mwc.cmap.core,
- org.mwc.cmap.legacy,
- org.eclipse.ui.views
+ org.eclipse.ui.views,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-Activator: org.mwc.cmap.grideditor.GridEditorPlugin

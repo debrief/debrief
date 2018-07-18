@@ -191,7 +191,6 @@ Library.
          version="0.0.0"/>
 
    <requires>
-      <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
@@ -203,7 +202,6 @@ Library.
       <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.hamcrest.core" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.legacy" version="1.0.50" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -218,12 +216,6 @@ Library.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.mwc.cmap.legacy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
    <plugin
          id="org.mwc.cmap.NarrativeViewer"

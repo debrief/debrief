@@ -6,7 +6,6 @@ Bundle-Version: 1.0.30
 Bundle-Activator: org.mwc.asset.scenariocontroller2.Activator
 Require-Bundle: org.mwc.asset.legacy,
  org.mwc.asset.core,
- org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.ui.views,
  org.eclipse.core.resources,
@@ -14,7 +13,9 @@ Require-Bundle: org.mwc.asset.legacy,
  org.eclipse.core.runtime,
  org.eclipse.ui.navigator.resources,
  org.eclipse.ui.navigator,
- org.mwc.asset.NetCore
+ org.mwc.asset.NetCore,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: org.mwc.asset.scenariocontroller2.views
+Bundle-ClassPath: .

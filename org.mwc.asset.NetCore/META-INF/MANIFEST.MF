@@ -4,9 +4,9 @@ Bundle-Name: NetCore
 Bundle-SymbolicName: org.mwc.asset.NetCore
 Bundle-Version: 1.0.4
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.120",
- org.mwc.asset.legacy;bundle-version="1.0.30"
-Export-Package:  com.esotericsoftware.minlog,
+Require-Bundle: org.mwc.asset.legacy;bundle-version="1.0.30",
+ org.mwc.debrief.libs;bundle-version="1.0.0"
+Export-Package: com.esotericsoftware.minlog,
  org.mwc.asset.netCore.common,
  org.mwc.asset.netCore.core,
  org.mwc.asset.netCore.test
