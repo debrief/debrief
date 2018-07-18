@@ -16,6 +16,7 @@ package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
 import ASSET.Models.Sensor.CoreSensor;
+import ASSET.Models.Sensor.Initial.InitialSensor;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
@@ -35,9 +36,14 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
   protected Integer _detectionInterval = null;
   private final static String DETECTION_INTERVAL = "DetectionIntervalMillis";
   private final static String SENSOR_OFFSET = "SensorOffset";
+  private final static String AMBIGUOUS = "Ambiguous";
+  private final static String PRODUCE_RANGE = "CanProduceRange";
   protected boolean _working = true;
   protected WorldDistance _sensorOffset = null;
   private static final String ID_VAL = "id";
+
+  private Boolean _isAmbiguous = null;
+  private Boolean _canProduceRange = null;
 
   public CoreSensorHandler(final String myType)
   {
@@ -80,7 +86,22 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
         _sensorOffset = res;
       }
     });
-  }
+    
+    super.addAttributeHandler(new HandleBooleanAttribute(AMBIGUOUS)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _isAmbiguous  = val;
+      }
+    });
+
+    super.addAttributeHandler(new HandleBooleanAttribute(PRODUCE_RANGE)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _canProduceRange  = val;
+      }
+    });  }
 
   public void elementClosed()
   {
@@ -132,6 +153,29 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
    * @return the new sensor
    */
   abstract protected SensorType getSensor(int myId);
+  
+  /** let the child implementations use our common processing
+   * 
+   * @param sensor
+   */
+  protected void configureSensor(CoreSensor sensor)
+  {
+    if(sensor instanceof InitialSensor)
+    {
+      InitialSensor is = (InitialSensor) sensor;
+      if(_isAmbiguous != null)
+      {
+        is.setAmbiguous(_isAmbiguous);
+      }
+      if(_canProduceRange != null)
+      {
+        is.setCanProduceRange(_canProduceRange);
+      }
+    }
+    
+    _isAmbiguous = false;
+    _canProduceRange = true;
+  }
 
 
   /** export the sensor bits handled by this core class
@@ -145,6 +189,13 @@ public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.M
     sensorElement.setAttribute(WORKING, writeThis(cs.isWorking()));
     sensorElement.setAttribute(NAME, cs.getName());
     sensorElement.setAttribute(ID_VAL, writeThis(cs.getId()));
+    
+    if(cs instanceof InitialSensor)
+    {
+      InitialSensor is = (InitialSensor) cs;
+      sensorElement.setAttribute(AMBIGUOUS, writeThis(is.isAmbiguous()));
+      sensorElement.setAttribute(PRODUCE_RANGE, writeThis(is.canProduceRange()));
+    }
   }
 
 }
