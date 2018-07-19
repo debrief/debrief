@@ -849,6 +849,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       {
         return (FixWrapper) ele.nextElement();
       }
+      @Override
+      public void remove()
+      {
+       
+      }
+      
     };
   }
 

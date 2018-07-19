@@ -9,9 +9,8 @@ Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
- org.mwc.cmap.legacy,
- org.mwc.debrief.legacy,
  org.mwc.debrief.core,
- org.eclipse.ui.views
+ org.eclipse.ui.views,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

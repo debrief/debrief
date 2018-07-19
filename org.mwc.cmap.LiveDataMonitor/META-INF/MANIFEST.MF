@@ -11,7 +11,6 @@ Export-Package: org.mwc.cmap.LiveDataMonitor;uses:="org.eclipse.jface.resource,o
  org.mwc.cmap.LiveDataMonitor.views.mock
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.legacy,
- org.mwc.cmap.jfreechart
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy

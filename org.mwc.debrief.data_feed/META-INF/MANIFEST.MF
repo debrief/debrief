@@ -7,8 +7,7 @@ Bundle-Activator: org.mwc.debrief.data_feed.DataFeedActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
- org.mwc.cmap.legacy,
- org.mwc.debrief.legacy
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.data_feed,
  org.mwc.debrief.data_feed.views

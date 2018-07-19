@@ -11,13 +11,14 @@ Export-Package: org.mwc.cmap.plotViewer,
  org.mwc.cmap.plotViewer.editors.chart
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.ui.views,
  org.mwc.cmap.gt2Plot,
  org.geotools,
- org.mwc.cmap.NaturalEarth
+ org.mwc.cmap.NaturalEarth,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ClassPath: .

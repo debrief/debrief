@@ -7,8 +7,8 @@ Bundle-Activator: org.mwc.cmap.gt2plot.GtActivator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core;bundle-version="1.0.143",
- org.mwc.cmap.legacy;bundle-version="1.0.137",
- org.geotools
+ org.geotools,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ClassPath: .
 Export-Package: org.mwc.cmap.gt2plot,

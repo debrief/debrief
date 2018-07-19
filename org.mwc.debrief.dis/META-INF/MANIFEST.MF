@@ -6,21 +6,19 @@ Bundle-Version: 1.0.14
 Bundle-Activator: org.mwc.debrief.dis.DisActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.mwc.cmap.jfreechart,
- org.junit,
- org.mwc.cmap.legacy,
- org.mwc.debrief.legacy,
  org.mwc.cmap.core,
  org.eclipse.swt,
  org.eclipse.jface,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
  org.eclipse.ui.console,
- org.eclipse.ui, 
+ org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,
- org.eclipse.jface.text, 
+ org.eclipse.jface.text,
  org.eclipse.ui.editors,
- org.eclipse.ui.workbench.texteditor
+ org.eclipse.ui.workbench.texteditor,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.dis,

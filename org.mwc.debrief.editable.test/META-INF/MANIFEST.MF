@@ -6,7 +6,6 @@ Bundle-Version: 1.0.7
 Bundle-Activator: org.mwc.debrief.editable.test.Activator
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.junit,
  org.eclipse.core.resources,
  org.eclipse.ui.ide,
  org.eclipse.help.base,
@@ -20,7 +19,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.grideditor;bundle-version="1.0.22",
  org.mwc.cmap.gt2Plot;bundle-version="1.0.14",
  org.mwc.cmap.jfreechart;bundle-version="1.0.21",
- org.mwc.cmap.legacy;bundle-version="1.0.199",
  org.mwc.cmap.openmap;bundle-version="5.1.8",
  org.mwc.cmap.overview;bundle-version="1.0.19",
  org.mwc.cmap.plotViewer;bundle-version="1.1.81",
@@ -32,7 +30,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.data_feed;bundle-version="1.0.6",
  org.mwc.debrief.data_feed_dummy;bundle-version="1.0.4",
  org.mwc.debrief.help;bundle-version="1.0.128",
- org.mwc.debrief.legacy;bundle-version="1.0.288",
  org.mwc.debrief.multipath2;bundle-version="1.0.17",
  org.mwc.debrief.satc.core;bundle-version="1.0.25",
  org.mwc.debrief.satc.integration;bundle-version="1.0.16",
@@ -58,7 +55,9 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.SensorMonitor,
  org.mwc.asset.VesselMonitor,
  org.mwc.asset.core,
- org.mwc.asset.help
+ org.mwc.asset.help,
+ org.mwc.debrief.libs;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: MWC
+Bundle-ClassPath: .

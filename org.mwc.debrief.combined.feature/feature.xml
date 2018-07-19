@@ -200,12 +200,6 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.mwc.debrief.legacy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
          id="org.mwc.debrief.track_shift"
          download-size="0"
          install-size="0"
