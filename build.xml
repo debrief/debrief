@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="debrief-lite" default="debrief-lite" basedir=".">
+
+	<target name="debrief-lite">
+		<ant antfile="build.xml" dir="org.mwc.debrief.legacy" target="dist"/>
+	</target>
+</project>
