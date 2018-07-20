@@ -287,6 +287,17 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
       // do we have a sensor name specified?
       if (_subjectSensor == null || _subjectSensor.equals(sensorName))
       {
+        // wrap the sensor name, if we have to
+        final String safeSensorName;
+        if(sensorName.contains(" "))
+        {
+          safeSensorName = "\"" + sensorName + "\"";
+        }
+        else
+        {
+          safeSensorName = sensorName;
+        }
+          
 
         // hmm, do we have freq?
         if (de.getFreq() != null || de.isAmbiguous())
@@ -299,7 +310,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
 
           outputThisDetection2(de.getSensorLocation(),
               de.getTime(), pt.getName(), pt.getCategory(), de
-              .getBearing(), ambig, de.getRange(), sensorName, de.toString(),
+              .getBearing(), ambig, de.getRange(), safeSensorName, de.toString(),
               de.getFreq());
 
         }
@@ -307,7 +318,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
         {
           outputThisDetection(de.getSensorLocation(), de.getTime(), pt
               .getName(), pt.getCategory(), de.getBearing(), de.getRange(),
-              sensorName, de.toString());
+              safeSensorName, de.toString());
         }
       }
     }

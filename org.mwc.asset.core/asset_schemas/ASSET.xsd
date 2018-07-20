@@ -305,8 +305,6 @@
 				sensors Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="CoreSensorType">
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element name="BroadbandSensor" type="BroadbandSensorType"
 						minOccurs="0" />
@@ -333,8 +331,6 @@
 					<xs:element name="BistaticReceiver" type="BistaticReceiverType"
 						minOccurs="0" />
 				</xs:choice>
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="CoreSensorType">
 		<xs:annotation>
@@ -345,7 +341,7 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="SensorOffset" type="WorldDistanceType">
+			<xs:element name="SensorOffset" type="WorldDistanceType" minOccurs="0" maxOccurs="1">
 				<xs:annotation>
 					<xs:documentation>
 						Offset for this sensor from tactical datum
@@ -382,6 +378,19 @@
 			<xs:annotation>
 				<xs:documentation>How long to pause between detection
 					opportunities.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Ambiguous" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>Whether this sensor produces ambiguous bearings
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CanProduceRange" type="xs:boolean"
+			use="required">
+			<xs:annotation>
+				<xs:documentation>Whether this sensor produces a range value
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -502,19 +511,6 @@
 						<xs:documentation>The angle of coverage in degrees for this sensor
 							either
 							side (therefore doubled for total aperture)
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="Ambiguous" type="xs:boolean" use="required">
-					<xs:annotation>
-						<xs:documentation>Whether this sensor produces ambiguous bearings
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="CanProduceRange" type="xs:boolean"
-					use="required">
-					<xs:annotation>
-						<xs:documentation>Whether this sensor produces a range value
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
