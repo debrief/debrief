@@ -1044,6 +1044,28 @@ public abstract class Application implements ToolParent, ActionListener,
 		theSuffix = filename.substring(pos, filename.length());
 		return theSuffix.toUpperCase();
 	}
+	
+	private static String getStatusFor(int status)
+	{
+	   final String statusTxt;
+	    switch(status)
+	    {
+	      case OK:
+	        statusTxt = "OK";
+	        break;
+	      case INFO:
+	        statusTxt = "INFO";
+	        break;
+	      case WARNING:
+	        statusTxt = "WARNING";
+	        break;
+	      case ERROR:
+	      default:
+	        statusTxt = "ERROR";
+	        break;
+	    }
+	    return statusTxt;
+	}
 
 	/**
 	 * @param status
@@ -1054,7 +1076,7 @@ public abstract class Application implements ToolParent, ActionListener,
 	{
 		if(_substituteParent != null)
 			_substituteParent.logError(status, text, e);
-		System.err.println("Error:" + text);
+		System.err.println(getStatusFor(status) + ":  " + text);
 	}
 
   @Override
@@ -1063,7 +1085,7 @@ public abstract class Application implements ToolParent, ActionListener,
   {
     if (_substituteParent != null)
       _substituteParent.logError(status, text, e);
-    System.err.println("Error:" + text);
+    System.err.println(getStatusFor(status) + ":  " + text);
   }
 
   public static void
@@ -1071,7 +1093,7 @@ public abstract class Application implements ToolParent, ActionListener,
   {
     if(_substituteParent != null)
       _substituteParent.logError(status, text, e, revealLog);
-    System.err.println("Error:" + text);
+    System.err.println(getStatusFor(status) + ":  " + text);
   }
 	
 	/**
