@@ -94,7 +94,7 @@
 		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
 			<fileset dir="${basedir}/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
-			<fileset dir="../org.mwc.cmap.legacy" includes="cmap_legacy.jar"/>
+			<fileset dir="." includes="cmap_legacy.jar"/>
 		</copy>
 	</target>
 
