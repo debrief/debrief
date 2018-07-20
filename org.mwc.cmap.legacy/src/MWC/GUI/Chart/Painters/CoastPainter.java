@@ -286,9 +286,16 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		}
 		catch (final FileNotFoundException e)
 		{
-			_myParent.logError(ToolParent.ERROR, "Coastline file not found", e);
+		  //try getting the file from classloader path
+      _myParent.logError(ToolParent.ERROR, "Coastline file not found,trying to load from classloader",e);
+		  res = getClass().getClassLoader().getResourceAsStream("/World.dat");
+		  if(res==null) {
+		    _myParent.logError(ToolParent.ERROR,"Coastline file could not be loaded from classloader",null);
+		  }
+		  else {
+		    _myParent.logError(ToolParent.ERROR,"Successfully loaded coastline from classloader",null);
+		  }
 		}
-
 		return res;
 	}
 
