@@ -43,35 +43,10 @@
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<path id="debrief_legacy.jar.classpath">
-			<pathelement path="../org.mwc.cmap.legacy/libs/hamcrest-core-1.2.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/junit-4.12.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/openmap.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/cmap_legacy.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/openmap.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/jmf.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/vrml97.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/flanagan.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/jackson-core-asl-1.9.4.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/jackson-mapper-asl-1.9.4.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/joda-time-2.1.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/javalite-common-1.2-20120312.200900-220.jar"/>
-			<pathelement path="../org.mwc.cmap.legacy/libs/commons-math3-3.3.jar"/>
-			<pathelement path="../org.mwc.cmap.jfreechart/bin/"/>
-			<pathelement path="../org.mwc.cmap.jfreechart/libs/jcommon-1.0.23.jar"/>
-			<pathelement path="../org.mwc.cmap.jfreechart/libs/jfreechart-1.0.19-experimental.jar"/>
-			<pathelement path="../org.mwc.cmap.jfreechart/libs/jfreechart-1.0.19-swt.jar"/>
-			<pathelement path="../org.mwc.cmap.jfreechart/libs/jfreechart-1.0.19.jar"/>
-			<pathelement path="libs/poi-3.14-20160307.jar"/>
-			<pathelement path="libs/poi-scratchpad-3.14-20160307.jar"/>
-			<pathelement path="libs/xmlbeans-2.6.0.jar"/>
-			<pathelement path="libs/poi-ooxml-3.14.jar"/>
-			<pathelement path="libs/poi-ooxml-schemas-3.14.jar"/>
-			<pathelement path="libs/pdfbox-2.0.3.jar"/>
-			<pathelement path="libs/commons-logging-1.2.jar"/>
-			<pathelement path="libs/fontbox-2.0.3.jar"/>
-			<pathelement path="libs/January.jar"/>
-			<pathelement path="libs/slf4j-api.jar"/>
-			<pathelement path="libs/slf4j-simple-1.7.25.jar"/>
+			<pathelement location="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
 		<javac destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">
@@ -96,24 +71,6 @@
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 	</target>
 
-	<target name="debrief_legacysrc.zip" depends="init" unless="debrief_legacysrc.zip">
-		<mkdir dir="${build.result.folder}"/>
-		<antcall target="zip.debrief_legacysrc.zip"/>
-	</target>
-	<target name="zip.debrief_legacysrc.zip">
-		<zip destfile="${build.result.folder}/debrief_legacysrc.zip" filesonly="false" whenempty="skip" update="false">
-			<fileset dir="src/">
-				<include name="**/*.java"/>
-			</fileset>
-		</zip>
-	</target>
-	<target name="copy.debrief_legacysrc.zip">
-		<copy todir="${source.destination.folder}/debrief_legacysrc" failonerror="true" overwrite="true">
-			<fileset dir="src/">
-				<include name="**/*.java"/>
-			</fileset>
-		</copy>
-	</target>
 
 	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.debrief.legacy.">
 		<delete file="${compilation.problem.marker}" quiet="true"/>
@@ -135,19 +92,7 @@
 			</fileset>
 		</copy>
 		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
-			<fileset dir="${basedir}">
-				<include name="libs/poi-3.14-20160307.jar"/>
-				<include name="libs/poi-scratchpad-3.14-20160307.jar"/>
-				<include name="libs/poi-ooxml-3.14.jar"/>
-				<include name="libs/poi-ooxml-schemas-3.14.jar"/>
-				<include name="libs/xmlbeans-2.6.0.jar"/>
-				<include name="libs/pdfbox-2.0.3.jar"/>
-				<include name="libs/commons-logging-1.2.jar"/>
-				<include name="libs/fontbox-2.0.3.jar"/>
-				<include name="libs/January.jar"/>
-				<include name="libs/slf4j-api.jar"/>
-				<include name="libs/slf4j-simple-1.7.25.jar"/>
-			</fileset>
+			<fileset dir="${basedir}/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="cmap_legacy.jar"/>
 		</copy>
@@ -155,11 +100,10 @@
 
 	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.debrief.legacy of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/debrief_legacy.jar"/>
-		<delete file="${build.result.folder}/debrief_legacysrc.zip"/>
+		<delete file="debrief_legacy.jar"/>
 		<delete file="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.jar"/>
 		<delete file="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.zip"/>
 		<delete dir="${temp.folder}"/>
-		<delete file="${compilation.problem.marker}" quiet="true"/>
 		<delete dir="${dist.dir}"/>
 	</target>
 	<target name="makeonejar" depends="generate">
@@ -174,8 +118,6 @@
 				<lib>
 					<fileset dir="${dist.dir}/lib/" includes="**/*.jar" />
 				</lib>
-				<!--fileset dir="src/com/lisletech/athena/firewallgrader/resources/images" includes="*.*">
-				</fileset-->
 			</one-jar>
 			<delete file="${dist.dir}/main.jar"/>
 			<delete dir="${dist.dir}/lib"/>
