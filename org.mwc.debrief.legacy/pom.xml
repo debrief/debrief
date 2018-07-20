@@ -11,4 +11,26 @@
   <artifactId>org.mwc.debrief.legacy</artifactId>
   <version>1.0.377</version>
   <packaging>eclipse-plugin</packaging>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+                <target>
+                  <ant  dir="${basedir}" target="dist" antfile="build.xml" />
+                </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+  </plugins>
+  </build>
 </project>

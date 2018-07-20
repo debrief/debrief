@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cmap_legacy" default="build.jars" basedir=".">
+
+	<property name="javacSource" value="1.7"/>
+	<property name="javacTarget" value="1.7"/>
+	<property name="build.compiler" value="extJavac"/>
+	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
+		<and>
+			<os family="mac"/>
+			<available file="${java.home}/../Classes" type="dir"/>
+		</and>
+	</condition>
+	<property name="dir_bootclasspath" value="${java.home}/lib"/>
+	<path id="path_bootclasspath">
+		<fileset dir="${dir_bootclasspath}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<property name="bootclasspath" refid="path_bootclasspath"/>
+	<condition property="bundleBootClasspath" value="${JavaSE-1.7}"	>
+		<isset property="JavaSE-1.7"/>
+	</condition>
+	<property name="bundleBootClasspath" value="${bootclasspath}"/>
+
+	<target name="init">
+		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.legacy_1.0.377"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="build.result.folder" value="${basedir}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		
+		<property name="pluginTemp" value="${basedir}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+	</target>
+
+	<target name="cmap_legacy.jar" depends="init" unless="cmap_legacy.jar" description="Create jar: org.mwc.cmap.legacy cmap_legacy.jar.">
+		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
+		<mkdir dir="${temp.folder}/cmap_legacy.jar.bin"/>
+		<path id="cmap_legacy.jar.classpath">
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+			<fileset dir="libs" includes="*.jar"></fileset>
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${temp.folder}/cmap_legacy.jar.bin" 
+			failonerror="true"  includeAntRuntime="no" >
+			<classpath refid="cmap_legacy.jar.classpath" />
+			<src path="src/"			/>
+		</javac>
+		<!-- Copy necessary resources -->
+		<copy todir="${temp.folder}/cmap_legacy.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="src/">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.htm*"/>
+			</fileset>
+		</copy>
+		<mkdir dir="${build.result.folder}"/>
+		<jar destfile="${build.result.folder}/cmap_legacy.jar" basedir="${temp.folder}/cmap_legacy.jar.bin"/>
+		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
+	</target>
+
+	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.cmap.legacy.">
+		<delete file="${compilation.problem.marker}" quiet="true"/>
+		<available property="cmap_legacy.jar" file="${build.result.folder}/cmap_legacy.jar"/>
+		<antcall target="cmap_legacy.jar"/>
+	</target>
+
+	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.cmap.legacy of all the zips, jars and logs created.">
+		<delete file="${build.result.folder}/cmap_legacy.jar"/>
+		<delete file="cmap_legacy.jar"/>
+		<delete file="${build.result.folder}/cmap_legacysrc.zip"/>
+		<delete dir="${temp.folder}"/>
+	</target>
+	
+	<target name="cmap_legacy_jar" depends="init,clean">
+		<antcall target="build.jars"/>
+	</target>
+
+</project>
