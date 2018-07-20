@@ -96,7 +96,6 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
 			<fileset dir="." includes="cmap_legacy.jar"/>
-			<fileset dir="." includes="World.dat"/>
 		</copy>
 	</target>
 
