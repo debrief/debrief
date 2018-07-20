@@ -546,7 +546,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   final protected TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
 
-  final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
   private Precision _slicePrecision = Precision.MEDIUM;
@@ -586,10 +585,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // the
     // interface is shown
     makeActions();
-    
-//    measuredValuesColl.addSeries(measuredValues);
-    ambigValuesColl.addSeries(ambigValues);
-
     
     // declare the listeners
     _myShiftListener = new TrackShiftListener()
@@ -745,8 +740,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       clearCollection(measuredValuesColl);
       
-//      measuredValues.clear();
-      ambigValues.clear();
       ambigScores.clear();
     }
 

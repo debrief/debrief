@@ -998,7 +998,7 @@ public final class StackedDotHelper
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
       final TimeSeriesCollection measuredValuesColl,
-      final TimeSeries ambigValues, final TimeSeries ownshipCourseSeries,
+      final TimeSeriesCollection ambigValuesColl, final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
@@ -1047,6 +1047,8 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
+    
+    final TimeSeriesCollection ambigErrorSeries = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -1056,8 +1058,6 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries ambigErrorValues = new TimeSeries(_primaryTrack.getName()
-        + "(A)");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
@@ -1065,8 +1065,6 @@ public final class StackedDotHelper
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(ambigErrorValues);
-    sList.add(ambigValues);
     sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
@@ -1082,6 +1080,8 @@ public final class StackedDotHelper
     tList.add(errorSeries);
     tList.add(actualSeries);
     tList.add(calculatedSeries);
+    tList.add(ambigErrorSeries);
+    tList.add(ambigValuesColl);
 
     // ok, wrap the switching on/off of notify in try/catch,
     // to be sure to switch notify back on at end
@@ -1208,7 +1208,13 @@ public final class StackedDotHelper
             final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
                 ambigBearing, color, false, null, showSymbol,
                 parentIsNotDynamic, thisD.getSensorCut());
-            ambigValues.addOrUpdate(amBearing);
+            TimeSeries ambigValues = ambigValuesColl.getSeries(sensor.getName());
+            if(ambigValues == null)
+            {
+              ambigValues = new TimeSeries(sensor.getName());
+              ambigValuesColl.addSeries(ambigValues);
+            }
+            ambigValues.add(amBearing);
           }
 
           // do we have target data?
@@ -1309,7 +1315,15 @@ public final class StackedDotHelper
                 final ColouredDataItem newAmbigError = new ColouredDataItem(
                     thisMilli, thisAmnigError, ambigColor, false, null, true,
                     parentIsNotDynamic);
-                ambigErrorValues.addOrUpdate(newAmbigError);
+                
+                TimeSeries ambigErrorValues = ambigErrorSeries.getSeries(sensorName);
+                if(ambigErrorValues == null)
+                {
+                  ambigErrorValues = new TimeSeries(sensorName);
+                  ambigErrorSeries.addSeries(ambigErrorValues);
+                }
+                
+                ambigErrorValues.add(newAmbigError);
               }
 
             }
@@ -1624,9 +1638,12 @@ public final class StackedDotHelper
       // {
       // errorSeries.addSeries(errorValues);
       // }
-      if (ambigErrorValues.getItemCount() > 0)
+
+      final Iterator<?> eIter = ambigErrorSeries.getSeries().iterator();
+      while(eIter.hasNext())
       {
-        errorSeries.addSeries(ambigErrorValues);
+        final TimeSeries series = (TimeSeries) eIter.next();
+        errorSeries.addSeries(series);
       }
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
@@ -1636,9 +1653,11 @@ public final class StackedDotHelper
         actualSeries.addSeries(series);
       }
 
-      if (ambigValues.getItemCount() > 0)
+      final Iterator<?> aIter = ambigValuesColl.getSeries().iterator();
+      while(aIter.hasNext())
       {
-        actualSeries.addSeries(ambigValues);
+        final TimeSeries series = (TimeSeries) aIter.next();
+        actualSeries.addSeries(series);
       }
 
       final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
