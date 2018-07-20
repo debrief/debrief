@@ -4,7 +4,6 @@
 	<!-- Compiler settings. -->
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
-	<property name="product.version" value=""/>
 	<property name="build.compiler" value="extJavac"/>
 	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
 		<and>
@@ -23,17 +22,8 @@
 		<isset property="JavaSE-1.7"/>
 	</condition>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
-	
-	<target name="initVersion">
-		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"
-			classpath="conf/xmltask.jar"
-			onerror="report"/>
-		<xmltask source="../org.mwc.debrief.product/debriefng.product">
-				<copy path="/product[@attr='version']" property="product.version"/>
-		</xmltask>
-		<echo>product version is: ${product.version}</echo>
-	</target>
-	
+	<xmlproperty file="pom.xml"/>
+		
 	<target name="init">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
@@ -46,7 +36,7 @@
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
 		<property name="dist.dir" value="dist"/>
 		<property name="dist.lib.dir" value="dist/lib"/>
-		<antcall target="initVersion"/>
+		<property name="product.version" value="${project.version}"/>
 	</target>
 
 	<target name="debrief_legacy.jar" depends="init" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
