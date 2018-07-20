@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="cmap_legacy" default="build.jars" basedir=".">
 
-	<property name="p2.build.repo" value="file:${buildDirectory}/buildRepo"/>
-	<property name="basews" value="${ws}"/>
-	<property name="baseos" value="${os}"/>
-	<property name="basearch" value="${arch}"/>
-	<property name="basenl" value="${nl}"/>
-	<!-- Compiler settings. -->
-	<property name="javacFailOnError" value="false"/>
-	<property name="javacDebugInfo" value="on"/>
-	<property name="javacVerbose" value="false"/>
-	<property name="logExtension" value=".log"/>
-	<property name="compilerArg" value=""/>
-	<property name="compilation.prereq.log" value="${buildDirectory}/prereqErrors.log"/>
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
+	<property name="build.compiler" value="extJavac"/>
 	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
 		<and>
 			<os family="mac"/>
@@ -41,48 +30,15 @@
 	<property name="bundleJavacTarget" value="${javacTarget}"/>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 
-	<target name="init" depends="properties">
+	<target name="init">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
 		<property name="pluginTemp" value="${basedir}"/>
-		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.cmap.legacy_1.0.255"		>
-			<isset property="buildTempFolder"/>
-		</condition>
-		<property name="build.result.folder" value="${basedir}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
-		<property name="plugin.destination" value="${basedir}"/>
-		<condition property="p2.publish.parts" value="true"		>
-			<istrue value="${p2.gathering}"/>
-		</condition>
-		<property name="compilation.problem.marker" value="${build.result.folder}/compilation.problem"/>
-		<condition property="compilation.problem.marker.exists" value="true"		>
-			<and>
-			<available file="${compilation.problem.marker}"/>
-			<isfalse value="${p2.publishonerror}"/>
-			</and>
-		</condition>
 	</target>
 
-	<target name="properties" if="eclipse.running">
-		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-
-	</target>
-
-	<target name="build.update.jar" depends="init" description="Build the plug-in: org.mwc.cmap.legacy for an update site.">
-		<delete dir="${temp.folder}"/>
-		<mkdir dir="${temp.folder}"/>
-		<antcall target="build.jars"/>
-		<antcall target="gather.bin.parts">
-			<param name="destination.temp.folder" value="${temp.folder}/"/>
-		</antcall>
-		<jar destfile="${plugin.destination}/org.mwc.cmap.legacy_1.0.255.jar" basedir="${temp.folder}/org.mwc.cmap.legacy_1.0.255" filesetmanifest="merge"/>
-		<delete dir="${temp.folder}"/>
-	</target>
-
-	<target name="cmap_legacy.jar.nestedJars">
-	</target>
-	<target name="cmap_legacy.jar" depends="init,cmap_legacy.jar.nestedJars" unless="cmap_legacy.jar" description="Create jar: org.mwc.cmap.legacy cmap_legacy.jar.">
+	<target name="cmap_legacy.jar" depends="init" unless="cmap_legacy.jar" description="Create jar: org.mwc.cmap.legacy cmap_legacy.jar.">
 		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/cmap_legacy.jar.bin"/>
 		<path id="cmap_legacy.jar.classpath">
@@ -103,14 +59,11 @@
 			<pathelement path="libs/commons-math3-3.3.jar"/>
 		</path>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/cmap_legacy.jar.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}"		>
-			<compilerarg line="${compilerArg}" compiler="${build.compiler}"/>
+		<javac destdir="${temp.folder}/cmap_legacy.jar.bin" 
+			failonerror="true"  includeAntRuntime="no" >
 			<classpath refid="cmap_legacy.jar.classpath" />
 			<src path="src/"			/>
-			<compilerarg value="@${basedir}/javaCompiler.cmap_legacy.jar.args" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"			/>
-			<compilerarg line="-log &apos;${temp.folder}/cmap_legacy.jar.bin${logExtension}&apos;" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"			/>
 		</javac>
-		<antcall target="checkCompilationResults"/>
 		<!-- Copy necessary resources -->
 		<copy todir="${temp.folder}/cmap_legacy.jar.bin" failonerror="true" overwrite="false">
 			<fileset dir="src/">
@@ -123,76 +76,16 @@
 		<delete dir="${temp.folder}/cmap_legacy.jar.bin"/>
 	</target>
 
-	<target name="cmap_legacysrc.zip" depends="init" unless="cmap_legacysrc.zip">
-		<mkdir dir="${build.result.folder}"/>
-		<antcall target="zip.cmap_legacysrc.zip"/>
-	</target>
-	<target name="zip.cmap_legacysrc.zip">
-		<zip destfile="${build.result.folder}/cmap_legacysrc.zip" filesonly="false" whenempty="skip" update="false">
-			<fileset dir="src/">
-				<include name="**/*.java"/>
-			</fileset>
-		</zip>
-	</target>
-	<target name="copy.cmap_legacysrc.zip">
-		<copy todir="${source.destination.folder}/cmap_legacysrc" failonerror="true" overwrite="true">
-			<fileset dir="src/">
-				<include name="**/*.java"/>
-			</fileset>
-		</copy>
-	</target>
-
 	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.cmap.legacy.">
 		<delete file="${compilation.problem.marker}" quiet="true"/>
 		<available property="cmap_legacy.jar" file="${build.result.folder}/cmap_legacy.jar"/>
 		<antcall target="cmap_legacy.jar"/>
 	</target>
 
-	<target name="checkCompilationResults" if="compilation.error.occured">
-		<echo file="${compilation.problem.marker}" message="org.mwc.cmap.legacy_1.0.255${line.separator}compilation.error.occured=${compilation.error.occured}"/>
-		<eclipse.logCompileError log="${compilation.prereq.log}" bundle="org.mwc.cmap.legacy_1.0.255">
-			<include name="C:/Users/Ayesha/git/debrief-dev/org.mwc.cmap.jfreechart/compilation.problem"/>
-			<include name="${pluginTemp}/org.mwc.cmap.jfreechart_1.0.22/compilation.problem"/>
-		</eclipse.logCompileError>
-	</target>
-
-	<target name="build.sources" depends="init">
-		<available property="cmap_legacysrc.zip" file="${build.result.folder}/cmap_legacysrc.zip"/>
-		<antcall target="cmap_legacysrc.zip"/>
-	</target>
-	<target name="build.zips" depends="init">
-	</target>
-
-	<target name="gather.sources" depends="init" if="destination.temp.folder">
-		<mkdir dir="${destination.temp.folder}/org.mwc.cmap.legacy_1.0.255"/>
-		<copy file="${build.result.folder}/cmap_legacysrc.zip" todir="${destination.temp.folder}/org.mwc.cmap.legacy_1.0.255" failonerror="false" overwrite="false"/>
-		<antcall target="copy.src.includes">
-			<param name="source.destination.folder" value="${destination.temp.folder}/org.mwc.cmap.legacy_1.0.255"/>
-		</antcall>
-	</target>
-
-	<target name="gather.individual.sources" depends="init">
-		<antcall target="copy.cmap_legacysrc.zip">
-			<param name="source.destination.folder" value="${destination.temp.folder}"/>
-		</antcall>
-		<antcall target="copy.src.includes">
-			<param name="source.destination.folder" value="${destination.temp.folder}"/>
-		</antcall>
-	</target>
-
-	<target name="copy.src.includes" depends="init">
-		<copy todir="${source.destination.folder}" failonerror="false" overwrite="false">
-			<fileset dir="${basedir}">
-				<include name="libs/"/>
-			</fileset>
-		</copy>
-	</target>
-
 	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.cmap.legacy of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/cmap_legacy.jar"/>
 		<delete file="${build.result.folder}/cmap_legacysrc.zip"/>
 		<delete dir="${temp.folder}"/>
-		<delete file="${compilation.problem.marker}" quiet="true"/>
 	</target>
 	
 	<target name="cmap_legacy_jar" depends="init,clean">

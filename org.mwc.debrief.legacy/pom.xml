@@ -19,7 +19,7 @@
         <version>1.7</version>
         <executions>
           <execution>
-            <phase>package</phase>
+            <phase>compile</phase>
             <configuration>
                 <target>
                   <ant  dir="${basedir}" target="dist" antfile="build.xml" />

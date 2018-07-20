@@ -1,24 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.debrief.legacy" default="build.jars" basedir=".">
 
-	<property name="p2.build.repo" value="file:${buildDirectory}/buildRepo"/>
-	<property name="basews" value="${ws}"/>
-	<property name="baseos" value="${os}"/>
-	<property name="basearch" value="${arch}"/>
-	<property name="basenl" value="${nl}"/>
-	<property name="bundleId" value="org.mwc.debrief.legacy"/>
-	<property name="bundleVersion" value="1.0.377"/>
-	<property name="p2.publishonerror" value="false"/>
-
 	<!-- Compiler settings. -->
-	<property name="javacFailOnError" value="false"/>
-	<property name="javacDebugInfo" value="on"/>
-	<property name="javacVerbose" value="false"/>
-	<property name="logExtension" value=".log"/>
-	<property name="compilerArg" value=""/>
-	<property name="compilation.prereq.log" value="${buildDirectory}/prereqErrors.log"/>
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
+	<property name="product.version" value=""/>
+	<property name="build.compiler" value="extJavac"/>
 	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
 		<and>
 			<os family="mac"/>
@@ -49,13 +36,13 @@
 		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"
 			classpath="conf/xmltask.jar"
 			onerror="report"/>
-		<xmltask source="../org.mwc.debrief.product/debriefng.product" dest="${temp.folder}/debriefng.product">
+		<xmltask source="../org.mwc.debrief.product/debriefng.product">
 				<copy path="/product[@attr='version']" property="product.version"/>
 		</xmltask>
 		<echo>product version is: ${product.version}</echo>
 	</target>
 	
-	<target name="init" depends="properties">
+	<target name="init">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
 		</condition>
@@ -65,41 +52,12 @@
 		</condition>
 		<property name="build.result.folder" value="${basedir}"/>
 		<property name="temp.folder" value="${basedir}/temp.folder"/>
-		<property name="plugin.destination" value="${basedir}"/>
-		<condition property="p2.publish.parts" value="true"		>
-			<istrue value="${p2.gathering}"/>
-		</condition>
 		<property name="dist.dir" value="dist"/>
 		<property name="dist.lib.dir" value="dist/lib"/>
-		<property name="compilation.problem.marker" value="${build.result.folder}/compilation.problem"/>
-		<condition property="compilation.problem.marker.exists" value="true"		>
-			<and>
-			<available file="${compilation.problem.marker}"/>
-			<isfalse value="${p2.publishonerror}"/>
-			</and>
-		</condition>
 		<antcall target="initVersion"/>
 	</target>
 
-	<target name="properties" if="eclipse.running">
-		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-
-	</target>
-
-	<target name="build.update.jar" depends="init" description="Build the plug-in: org.mwc.debrief.legacy for an update site.">
-		<delete dir="${temp.folder}"/>
-		<mkdir dir="${temp.folder}"/>
-		<antcall target="build.jars"/>
-		<antcall target="generate">
-			<param name="destination.temp.folder" value="${temp.folder}/"/>
-		</antcall>
-		<jar destfile="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.jar" basedir="${temp.folder}/org.mwc.debrief.legacy_1.0.377" filesetmanifest="merge"/>
-		<delete dir="${temp.folder}"/>
-	</target>
-
-	<target name="debrief_legacy.jar.nestedJars">
-	</target>
-	<target name="debrief_legacy.jar" depends="init,debrief_legacy.jar.nestedJars" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
+	<target name="debrief_legacy.jar" depends="init" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<path id="debrief_legacy.jar.classpath">
@@ -134,12 +92,9 @@
 			<pathelement path="libs/slf4j-simple-1.7.25.jar"/>
 		</path>
 		<!-- compile the source code -->
-		<javac destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="${javacFailOnError}" verbose="${javacVerbose}" debug="${javacDebugInfo}" includeAntRuntime="no" bootclasspath="${bundleBootClasspath}" source="${bundleJavacSource}" target="${bundleJavacTarget}"		>
-			<compilerarg line="${compilerArg}" compiler="${build.compiler}"/>
+		<javac destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">
 			<classpath refid="debrief_legacy.jar.classpath" />
 			<src path="src/"			/>
-			<compilerarg value="@${basedir}/javaCompiler.debrief_legacy.jar.args" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"			/>
-			<compilerarg line="-log &apos;${temp.folder}/debrief_legacy.jar.bin${logExtension}&apos;" compiler="org.eclipse.jdt.core.JDTCompilerAdapter"			/>
 		</javac>
 		<!-- Copy necessary resources -->
 		<copy todir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true" overwrite="false">
@@ -151,11 +106,8 @@
 		<jar destfile="${temp.folder}/debrief_legacy.jar" basedir="${temp.folder}/debrief_legacy.jar.bin">
 			<manifest>
 				<attribute name="Main-Class" value="Debrief.GUI.DebriefApp"/>
-				<attribute name="Specification-Title" value="Debrief Lite"/>
-				<attribute name="Specification-Version" value="1.0"/>
-				<attribute name="Specification-Vendor" value="MWC"/>
-				<attribute name="Implementation-Title" value="debriefLite"/>
-				<attribute name="Implementation-Version" value="0.1 ${TODAY}"/>
+				<attribute name="Implementation-Title" value="Debrief Lite"/>
+				<attribute name="Implementation-Version" value="${product.version}"/>
 				<attribute name="Implementation-Vendor" value="DeepBlue C Ltd"/>
 			</manifest>
 		</jar>
@@ -192,8 +144,6 @@
 		<antcall target="debrief_legacysrc.zip"/>
 	</target>
 
-	
-
 	<target name="generate" depends="init,build.jars">
 		<mkdir dir="${dist.dir}"/>
 		<mkdir dir="${dist.lib.dir}"/>
@@ -219,44 +169,6 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy" includes="cmap_legacy.jar"/>
 		</copy>
-		<antcall target="apitools.generation">
-			<param name="projectLocation" value="${basedir}"/>
-			<param name="binary.folders" value="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377/debrief_legacy.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/xmlbeans-2.6.0.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/fontbox-2.0.3.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/poi-ooxml-schemas-3.14.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/slf4j-api.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/poi-scratchpad-3.14-20160307.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/commons-logging-1.2.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/slf4j-simple-1.7.25.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/poi-ooxml-3.14.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/January.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/pdfbox-2.0.3.jar;C:\Users\Ayesha\git\debrief-dev\org.mwc.debrief.legacy/libs/poi-3.14-20160307.jar"/>
-			<param name="projectName" value="${bundleId}_${bundleVersion}"/>
-			<param name="target.folder" value="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377"/>
-		</antcall>
-	</target>
-
-	<target name="build.zips" depends="init">
-	</target>
-
-	<target name="gather.sources" depends="init" if="destination.temp.folder">
-		<mkdir dir="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377"/>
-		<copy file="${build.result.folder}/debrief_legacysrc.zip" todir="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377" failonerror="false" overwrite="false"/>
-		<antcall target="copy.src.includes">
-			<param name="source.destination.folder" value="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377"/>
-		</antcall>
-	</target>
-
-	<target name="gather.individual.sources" depends="init">
-		<antcall target="copy.debrief_legacysrc.zip">
-			<param name="source.destination.folder" value="${destination.temp.folder}"/>
-		</antcall>
-		<antcall target="copy.src.includes">
-			<param name="source.destination.folder" value="${destination.temp.folder}"/>
-		</antcall>
-	</target>
-
-	<target name="copy.src.includes" depends="init">
-	</target>
-
-	<target name="gather.logs" depends="init" if="destination.temp.folder">
-		<mkdir dir="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377"/>
-		<copy todir="${destination.temp.folder}/org.mwc.debrief.legacy_1.0.377" failonerror="false" overwrite="false">
-			<fileset dir="${temp.folder}">
-				<include name="debrief_legacy.jar.bin${logExtension}"/>
-			</fileset>
-		</copy>
 	</target>
 
 	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.debrief.legacy of all the zips, jars and logs created.">
@@ -268,36 +180,6 @@
 		<delete file="${compilation.problem.marker}" quiet="true"/>
 		<delete dir="${dist.dir}"/>
 	</target>
-
-	<target name="refresh" depends="init" if="eclipse.running" description="Refresh this folder.">
-		<eclipse.convertPath fileSystemPath="C:/Users/Ayesha/git/debrief-dev/org.mwc.debrief.legacy" property="resourcePath"/>
-		<eclipse.refreshLocal resource="${resourcePath}" depth="infinite"/>
-	</target>
-
-	<target name="zip.plugin" depends="init" description="Create a zip containing all the elements for the plug-in: org.mwc.debrief.legacy.">
-		<delete dir="${temp.folder}"/>
-		<mkdir dir="${temp.folder}"/>
-		<antcall target="build.jars"/>
-		<antcall target="build.sources"/>
-		<antcall target="gather.bin.parts">
-			<param name="destination.temp.folder" value="${temp.folder}/"/>
-		</antcall>
-		<antcall target="gather.sources">
-			<param name="destination.temp.folder" value="${temp.folder}/"/>
-		</antcall>
-		<delete>
-			<fileset dir="${temp.folder}">
-				<include name="**/*.bin${logExtension}"/>
-			</fileset>
-		</delete>
-		<zip destfile="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.zip" basedir="${temp.folder}" filesonly="true" whenempty="skip" update="false"/>
-		<delete dir="${temp.folder}"/>
-	</target>
-
-	<target name="apitools.generation" if="generateAPIDescription">
-		<apitooling.apigeneration  projectName="${projectName}" project="${projectLocation}" binary="${binary.folders}" target="${target.folder}" extramanifests="${extraManifests}" allownonapiproject="${allowNonApiProject}"		/>
-	</target>
-
 	<target name="makeonejar" depends="generate">
 			<move file="${temp.folder}/debrief_legacy.jar" tofile="${dist.dir}/main.jar"/>
 			<taskdef name="one-jar"
