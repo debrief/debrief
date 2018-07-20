@@ -32,12 +32,13 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 
 	private final static String type = "NarrowbandSensor";
 	protected final static String STEADY_TIME = "SteadyTime";
-	protected final static String HAS_BEARING = "HasBearing";
+  protected final static String AMBIGUOUS = "Ambiguous";
   protected final static String SECOND_HARMONIC = "SecondHarmonic";
 
 	protected Duration _mySteadyTime;
 	protected Boolean _hasBearing = false;
 	protected Boolean _secondHarmonic = null;
+  protected Boolean _isAmbiguous = null;
 
 	public NarrowbandHandler(String myType)
 	{
@@ -50,14 +51,14 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 				_mySteadyTime = res;
 			}
 		});
-		super.addAttributeHandler(new HandleBooleanAttribute(HAS_BEARING)
-		{
-			@Override
-			public void setValue(String name, boolean value)
-			{
-				_hasBearing = value;
-			}
-		});
+    
+    super.addAttributeHandler(new HandleBooleanAttribute(AMBIGUOUS)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _isAmbiguous  = val;
+      }
+    });
     super.addAttributeHandler(new HandleBooleanAttribute(SECOND_HARMONIC)
     {
       @Override
@@ -86,15 +87,15 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 		final ASSET.Models.Sensor.Initial.NarrowbandSensor bb = new ASSET.Models.Sensor.Initial.NarrowbandSensor(
 				myId);
 
+		super.configureSensor(bb);
+		
 		bb.setSteadyTime(_mySteadyTime);
-		bb.setHasBearing(_hasBearing);
 		if(_secondHarmonic != null)
 		{
 		  bb.setSecondHarmonic(_secondHarmonic.booleanValue());
 		}
 
 		_secondHarmonic = null;
-		_hasBearing = false;
 		_mySteadyTime = null;
 		
 		return bb;
@@ -112,7 +113,6 @@ public abstract class NarrowbandHandler extends CoreSensorHandler
 
 		DurationHandler.exportDuration(STEADY_TIME, bb.getSteadyTime(), thisPart,
 				doc);
-		thisPart.setAttribute(HAS_BEARING, writeThis(bb.getHasBearing()));
 
 		parent.appendChild(thisPart);
 

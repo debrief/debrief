@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.debrief.legacy" default="build.jars" basedir=".">
+
+	<!-- Compiler settings. -->
+	<property name="javacSource" value="1.7"/>
+	<property name="javacTarget" value="1.7"/>
+	<property name="build.compiler" value="extJavac"/>
+	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
+		<and>
+			<os family="mac"/>
+			<available file="${java.home}/../Classes" type="dir"/>
+		</and>
+	</condition>
+	<property name="dir_bootclasspath" value="${java.home}/lib"/>
+	<path id="path_bootclasspath">
+		<fileset dir="${dir_bootclasspath}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<property name="bootclasspath" refid="path_bootclasspath"/>
+	<condition property="bundleBootClasspath" value="${JavaSE-1.7}"	>
+		<isset property="JavaSE-1.7"/>
+	</condition>
+	<property name="bundleBootClasspath" value="${bootclasspath}"/>
+	<xmlproperty file="pom.xml"/>
+		
+	<target name="init">
+		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="pluginTemp" value="${basedir}"/>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.legacy_1.0.377"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="build.result.folder" value="${basedir}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="dist.dir" value="dist"/>
+		<property name="dist.lib.dir" value="dist/lib"/>
+		<property name="product.version" value="${project.version}"/>
+	</target>
+
+	<target name="debrief_legacy.jar" depends="init" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
+		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
+		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
+		<path id="debrief_legacy.jar.classpath">
+			<pathelement location="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+			<fileset dir="libs" includes="*.jar"></fileset>
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true">
+			<classpath refid="debrief_legacy.jar.classpath" />
+			<src path="src/"			/>
+		</javac>
+		<!-- Copy necessary resources -->
+		<copy todir="${temp.folder}/debrief_legacy.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="src/">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.htm*"/>
+			</fileset>
+		</copy>
+		<jar destfile="${temp.folder}/debrief_legacy.jar" basedir="${temp.folder}/debrief_legacy.jar.bin">
+			<manifest>
+				<attribute name="Main-Class" value="Debrief.GUI.DebriefApp"/>
+				<attribute name="Implementation-Title" value="Debrief Lite"/>
+				<attribute name="Implementation-Version" value="${product.version}"/>
+				<attribute name="Implementation-Vendor" value="DeepBlue C Ltd"/>
+			</manifest>
+		</jar>
+		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
+	</target>
+
+
+	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.debrief.legacy.">
+		<delete file="${compilation.problem.marker}" quiet="true"/>
+		<available property="debrief_legacy.jar" file="${build.result.folder}/debrief_legacy.jar"/>
+		<antcall target="debrief_legacy.jar"/>
+	</target>
+
+	<target name="build.sources" depends="init">
+		<available property="debrief_legacysrc.zip" file="${build.result.folder}/debrief_legacysrc.zip"/>
+		<antcall target="debrief_legacysrc.zip"/>
+	</target>
+
+	<target name="generate" depends="init,build.jars">
+		<mkdir dir="${dist.dir}"/>
+		<mkdir dir="${dist.lib.dir}"/>
+		<copy todir="${dist.dir}" failonerror="true" overwrite="false">
+			<fileset dir="${build.result.folder}">
+				<include name="debrief_legacy.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${dist.lib.dir}" failonerror="true" overwrite="true">
+			<fileset dir="${basedir}/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
+			<fileset dir="." includes="cmap_legacy.jar"/>
+		</copy>
+	</target>
+
+	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.debrief.legacy of all the zips, jars and logs created.">
+		<delete file="${build.result.folder}/debrief_legacy.jar"/>
+		<delete file="debrief_legacy.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.legacy_1.0.377.zip"/>
+		<delete dir="${temp.folder}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+	<target name="makeonejar" depends="generate">
+			<move file="${temp.folder}/debrief_legacy.jar" tofile="${dist.dir}/main.jar"/>
+			<taskdef name="one-jar"
+				         classname="com.simontuffs.onejar.ant.OneJarTask"
+				         classpath="conf/one-jar-ant-task-0.97.jar"
+				         onerror="report"/>
+			<one-jar destfile="${dist.dir}/DebriefLite-${product.version}.jar">
+				<main jar="${dist.dir}/main.jar">
+				</main>
+				<lib>
+					<fileset dir="${dist.dir}/lib/" includes="**/*.jar" />
+				</lib>
+			</one-jar>
+			<delete file="${dist.dir}/main.jar"/>
+			<delete dir="${dist.dir}/lib"/>
+		</target>
+	<target name="dist" depends="clean">
+		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar"/>
+		<antcall target="makeonejar"/>
+	</target>
+</project>

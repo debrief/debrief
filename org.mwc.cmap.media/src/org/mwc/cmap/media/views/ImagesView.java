@@ -84,7 +84,7 @@ public class ImagesView extends ViewPart {
 	private boolean loadedGallery;
 	
 	private Action open;
-	private Action refresh;
+//	private Action refresh;
 	private Action stretch;
 	private Action viewFullsize;
 	private Action viewThumbnails;
@@ -331,18 +331,18 @@ public class ImagesView extends ViewPart {
 		open.setText("Open");
 		open.setEnabled(true);	
 		
-		refresh = new Action() {
-
-			@Override
-			public void run() {
-				if (openedFolder != null) {
-					openFolder(openedFolder);
-				}
-			}
-		};
-		refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
-		refresh.setText("Refresh");
-		refresh.setEnabled(false);
+//		refresh = new Action() {
+//
+//			@Override
+//			public void run() {
+//				if (openedFolder != null) {
+//					openFolder(openedFolder);
+//				}
+//			}
+//		};
+//		refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
+//		refresh.setText("Refresh");
+//		refresh.setEnabled(false);
 		
 		viewFullsize = new Action() {
 
@@ -378,6 +378,7 @@ public class ImagesView extends ViewPart {
 				imagePanel.redraw(0, 0, size.x, size.y, true);				
 			}
 		};
+		stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
 	}
 	
 	private void fillToolbarManager() {
@@ -387,7 +388,7 @@ public class ImagesView extends ViewPart {
 		toolbar.add(viewFullsize);
 		toolbar.add(viewThumbnails);
 		toolbar.add(new Separator());		
-		toolbar.add(refresh);		
+//		toolbar.add(refresh);		
 		toolbar.add(open);
 	}
 	
@@ -399,7 +400,7 @@ public class ImagesView extends ViewPart {
 		menu.add(viewThumbnails);
 		menu.add(new Separator());			
 		menu.add(open);
-		menu.add(refresh);
+//		menu.add(refresh);
 	}	
 	
 	public boolean openFolder(String folderName) {
@@ -442,7 +443,7 @@ public class ImagesView extends ViewPart {
 			imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
 			ImageLoader.getInstance().load(imagePanel);
 		}		
-		refresh.setEnabled(true);
+//		refresh.setEnabled(true);
 		return true;
 	}
 	

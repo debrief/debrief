@@ -305,8 +305,6 @@
 				sensors Editable: nil
 			</xs:documentation>
 		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="CoreSensorType">
 				<xs:choice minOccurs="0" maxOccurs="unbounded">
 					<xs:element name="BroadbandSensor" type="BroadbandSensorType"
 						minOccurs="0" />
@@ -333,8 +331,6 @@
 					<xs:element name="BistaticReceiver" type="BistaticReceiverType"
 						minOccurs="0" />
 				</xs:choice>
-			</xs:extension>
-		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="CoreSensorType">
 		<xs:annotation>
@@ -344,6 +340,15 @@
 				working
 			</xs:documentation>
 		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="SensorOffset" type="WorldDistanceType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Offset for this sensor from tactical datum
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 		<xs:attribute name="Name" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>The name of this sensor</xs:documentation>
@@ -373,6 +378,19 @@
 			<xs:annotation>
 				<xs:documentation>How long to pause between detection
 					opportunities.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="Ambiguous" type="xs:boolean" use="required">
+			<xs:annotation>
+				<xs:documentation>Whether this sensor produces ambiguous bearings
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="CanProduceRange" type="xs:boolean"
+			use="required">
+			<xs:annotation>
+				<xs:documentation>Whether this sensor produces a range value
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -493,19 +511,6 @@
 						<xs:documentation>The angle of coverage in degrees for this sensor
 							either
 							side (therefore doubled for total aperture)
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="Ambiguous" type="xs:boolean" use="required">
-					<xs:annotation>
-						<xs:documentation>Whether this sensor produces ambiguous bearings
-						</xs:documentation>
-					</xs:annotation>
-				</xs:attribute>
-				<xs:attribute name="CanProduceRange" type="xs:boolean"
-					use="required">
-					<xs:annotation>
-						<xs:documentation>Whether this sensor produces a range value
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -722,14 +727,21 @@
 	<xs:complexType name="BistaticReceiverType">
 		<xs:annotation>
 			<xs:documentation>Active intercept sensor</xs:documentation>
-			<xs:documentation source="http://asset.info/ui">Visible: inherited
-				Editable:
-				inherited
-			</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited Editable: inherited </xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="CoreSensorType">
-				<xs:sequence />
+				<xs:sequence/>
+				<xs:attribute name="Suppress" type="xs:boolean" use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to suppress bearings when obscured by direct path</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="SuppressAngle" type="xs:double" use="optional">
+					<xs:annotation>
+						<xs:documentation>The angle (either side) of the direct path that gets obscured (degs)</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

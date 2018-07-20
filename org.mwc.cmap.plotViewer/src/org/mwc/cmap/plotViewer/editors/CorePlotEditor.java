@@ -14,8 +14,6 @@
  */
 package org.mwc.cmap.plotViewer.editors;
 
-import interfaces.INameablePart;
-
 import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
@@ -34,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.ObjectUndoContext;
@@ -77,7 +74,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
-import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchCommandConstants;
 import org.eclipse.ui.IWorkbenchPart;
@@ -89,8 +85,6 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
-import org.eclipse.ui.views.properties.PropertySheet;
-import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.interfaces.IPlotGUI;
@@ -127,6 +121,7 @@ import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import interfaces.INameablePart;
 
 public abstract class CorePlotEditor extends EditorPart implements
     IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI,
@@ -183,12 +178,6 @@ public abstract class CorePlotEditor extends EditorPart implements
    * keep track of whether the current plot is dirty...
    */
   public boolean _plotIsDirty = false;
-
-  /**
-   * keep track of if we need to update the property sheet
-   * 
-   */
-  private AtomicBoolean _propsNeedsRefresh = new AtomicBoolean(false);
 
   // ///////////////////////////////////////////////
   // dummy bits applicable for our dummy interface
@@ -1337,46 +1326,6 @@ public abstract class CorePlotEditor extends EditorPart implements
     if (!_ignoreDirtyCalls)
     {
       _plotIsDirty = true;
-
-      // ok, are we already updating?
-      if (_propsNeedsRefresh.get())
-      {
-        // ok, we've already got an update event pending
-      }
-      else
-      {
-        // clear the flag
-        _propsNeedsRefresh.set(true);
-
-        // ok, submit the async refresh job
-        Display.getDefault().asyncExec(new Runnable()
-        {
-
-          public void run()
-          {
-            final boolean isPending = _propsNeedsRefresh.getAndSet(false);
-
-            if (isPending)
-            {
-              firePropertyChange(PROP_DIRTY);
-              final PropertySheet propertiesView =
-                  (PropertySheet) CorePlugin
-                      .findView(IPageLayout.ID_PROP_SHEET);
-              if (propertiesView != null)
-              {
-                final PropertySheetPage propertySheetPage =
-                    (PropertySheetPage) propertiesView.getCurrentPage();
-                if (propertySheetPage != null
-                    && !propertySheetPage.getControl().isDisposed())
-                {
-                  propertySheetPage.refresh();
-                }
-              }
-            }
-          }
-        });
-      }
-      ;
     }
   }
 

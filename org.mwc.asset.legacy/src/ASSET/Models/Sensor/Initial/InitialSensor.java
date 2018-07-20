@@ -84,7 +84,7 @@ abstract public class InitialSensor extends CoreSensor
     ASSET.Models.Detection.DetectionEvent res = null;
 
     // take copies of the locations
-    final WorldLocation hostLocation = getLocationFor(host);
+    final WorldLocation hostLocation = getHostLocationFor(host);
     final WorldLocation targetLocation = getLocationFor(target);
     final WorldVector wv = targetLocation.subtract(hostLocation);
 
@@ -133,7 +133,7 @@ abstract public class InitialSensor extends CoreSensor
       
       res = new DetectionEvent(time,
                                host.getId(),
-                               host.getStatus().getLocation(),
+                               hostLocation,
                                this,
                                Rng,
                                estimatedRange,

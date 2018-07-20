@@ -204,6 +204,8 @@ public class TypedCookieSensor extends CoreSensor
 		// right, what's the distance?
 		WorldDistance range = null; // defer calculation until we need it
 		WorldVector sep = null;
+		
+    final WorldLocation hostLoc = getHostLocationFor(host);
 
 		// loop through our detection types
 		for (Iterator<TypedRangeDoublet> iterator = _rangeDoublets.iterator(); iterator
@@ -273,7 +275,7 @@ public class TypedCookieSensor extends CoreSensor
 					{
 						// calculate the separation - so we can plot a bearing
 						sep = target.getStatus().getLocation()
-								.subtract(host.getStatus().getLocation());
+								.subtract(hostLoc);
 
 						double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(sep
 								.getBearing());
@@ -294,8 +296,7 @@ public class TypedCookieSensor extends CoreSensor
 							rangeToUse = null;
 
 						// cool, in contact. write it up.
-						res = new DetectionEvent(time, host.getId(), host.getStatus()
-								.getLocation(), this, rangeToUse, rangeToUse,
+						res = new DetectionEvent(time, host.getId(), hostLoc, this, rangeToUse, rangeToUse,
 								new Float(brgDegs), new Float(super.relativeBearing(host
 										.getStatus().getCourse(), brgDegs)), new Float(1),
 								target.getCategory(), new Float(target.getStatus().getSpeed()
