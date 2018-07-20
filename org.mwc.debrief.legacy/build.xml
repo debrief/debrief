@@ -22,14 +22,6 @@
 	<condition property="bundleBootClasspath" value="${JavaSE-1.7}"	>
 		<isset property="JavaSE-1.7"/>
 	</condition>
-	<condition property="bundleJavacSource" value="1.7"	>
-		<isset property="JavaSE-1.7"/>
-	</condition>
-	<condition property="bundleJavacTarget" value="1.7"	>
-		<isset property="JavaSE-1.7"/>
-	</condition>
-	<property name="bundleJavacSource" value="${javacSource}"/>
-	<property name="bundleJavacTarget" value="${javacTarget}"/>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
 	
 	<target name="initVersion">
