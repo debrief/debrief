@@ -49,6 +49,7 @@ import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.commands.operations.OperationHistoryEvent;
 import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -356,7 +357,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   }
 
   public static final String MEASURED_VALUES = "M_";
-  public static final String ERROR_VALUES = "E_";
+  public static final String ERROR_VALUES = "ERRORS";
   private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
   private static final String SHOW_OVERVIEW = "SHOW_OVERVIEW";
   private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
@@ -546,7 +547,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   final protected TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
 
-  final protected TimeSeries ambigValues = new TimeSeries(AMBIG_NAME);
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
   private Precision _slicePrecision = Precision.MEDIUM;
@@ -586,10 +586,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // the
     // interface is shown
     makeActions();
-    
-//    measuredValuesColl.addSeries(measuredValues);
-    ambigValuesColl.addSeries(ambigValues);
-
     
     // declare the listeners
     _myShiftListener = new TrackShiftListener()
@@ -745,8 +741,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
       clearCollection(measuredValuesColl);
       
-//      measuredValues.clear();
-      ambigValues.clear();
       ambigScores.clear();
     }
 
@@ -1857,25 +1851,32 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TimeSeriesCollection tsc = (TimeSeriesCollection) subjectPlot
         .getDataset();
     final TimeSeries measurements = tsc.getSeries(seriesName);
-
-    final List<?> list = measurements.getItems();
     final List<Editable> toSelect = new ArrayList<Editable>();
-
-    for (final Object item : list)
+    if (measurements == null)
     {
-      final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
-      final long time = thisI.getPeriod().getMiddleMillisecond();
-      final double value = thisI.getValue().doubleValue();
+      CorePlugin.logError(Status.ERROR, "Trying to select fixes/cuts, but can't find them:" + seriesName, null);
+      CorePlugin.showMessage("Select items", "Sorry, not possible to select items when multiple sensors in use");
+    } 
+    else
+    {
+      final List<?> list = measurements.getItems();
 
-      // is this point visible?
-      if (valueRange.contains(value) && timeRange.contains(time)
-          && thisI instanceof ColouredDataItem)
+      for (final Object item : list)
       {
-        // add to list
-        final ColouredDataItem ourItem = (ColouredDataItem) thisI;
-        final Editable payload = ourItem.getPayload();
+        final TimeSeriesDataItem thisI = (TimeSeriesDataItem) item;
+        final long time = thisI.getPeriod().getMiddleMillisecond();
+        final double value = thisI.getValue().doubleValue();
 
-        toSelect.add(payload);
+        // is this point visible?
+        if (valueRange.contains(value) && timeRange.contains(time)
+            && thisI instanceof ColouredDataItem)
+        {
+          // add to list
+          final ColouredDataItem ourItem = (ColouredDataItem) thisI;
+          final Editable payload = ourItem.getPayload();
+
+          toSelect.add(payload);
+        }
       }
     }
 
@@ -1911,12 +1912,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         {
           wrappedItems.add(item);
         }
-
       }
-
       // set selection
       showThisSelectionInOutline(wrappedItems, editor);
-
     }
   }
 
@@ -1927,7 +1925,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected void doSelectPositions()
   {
-    doSelectCore(_dotPlot, StackedDotHelper.CALCULATED_VALUES);
+    doSelectCore(_dotPlot, ERROR_VALUES);
   }
 
   protected void fillLocalPullDown(final IMenuManager manager)

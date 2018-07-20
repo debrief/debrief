@@ -969,6 +969,32 @@ public final class StackedDotHelper
     _primaryTrack = null;
     _secondaryTrack = null;
   }
+  
+  /** is this a multi-sensor dataset?
+   * 
+   * @param doublets
+   * @return
+   */
+  private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
+  {
+    
+    final Iterator<Doublet> iter = doublets.iterator();
+    SensorWrapper lastS = null;
+    while(iter.hasNext())
+    {
+      final Doublet next = iter.next();
+      final SensorWrapper thisS = next.getSensorCut().getSensor();
+      if(lastS == null)
+      {
+        lastS = thisS;
+      }
+      else if(!lastS.equals(thisS))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
    * ok, our track has been dragged, calculate the new series of offsets
@@ -998,7 +1024,7 @@ public final class StackedDotHelper
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
       final TimeSeriesCollection measuredValuesColl,
-      final TimeSeries ambigValues, final TimeSeries ownshipCourseSeries,
+      final TimeSeriesCollection ambigValuesColl, final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
@@ -1031,7 +1057,7 @@ public final class StackedDotHelper
     {
       updateDoublets(onlyVis, true, false);
     }
-
+    
     // aah - but what if we've ditched our doublets?
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
@@ -1042,11 +1068,16 @@ public final class StackedDotHelper
       targetPlot.setDataset(1, null);
       return;
     }
+    
+    // check if we've got multi sensor
+    final boolean multiSensor = isMultiSensor(_primaryDoublets);
 
     // create the collection of series
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
+    
+    final TimeSeriesCollection ambigErrorSeries = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -1056,8 +1087,6 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries ambigErrorValues = new TimeSeries(_primaryTrack.getName()
-        + "(A)");
     final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
@@ -1065,8 +1094,6 @@ public final class StackedDotHelper
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(ambigErrorValues);
-    sList.add(ambigValues);
     sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
@@ -1082,12 +1109,13 @@ public final class StackedDotHelper
     tList.add(errorSeries);
     tList.add(actualSeries);
     tList.add(calculatedSeries);
+    tList.add(ambigErrorSeries);
+    tList.add(ambigValuesColl);
 
     // ok, wrap the switching on/off of notify in try/catch,
     // to be sure to switch notify back on at end
     try
     {
-
       // now switch off updates
       for (final TimeSeriesCollection series : tList)
       {
@@ -1114,7 +1142,6 @@ public final class StackedDotHelper
 
         final boolean parentIsNotDynamic = thisD.getTargetTrack() == null
             || !(thisD.getTargetTrack() instanceof DynamicInfillSegment);
-
         try
         {
           // obvious stuff first (stuff that doesn't need the tgt data)
@@ -1162,8 +1189,8 @@ public final class StackedDotHelper
 
           // find the series for this sensor
           final SensorWrapper sensor = thisD.getSensorCut().getSensor();
-          final String seriesName = BaseStackedDotsView.MEASURED_VALUES + sensor
-              .getName();
+          final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES + sensor
+              .getName() : BaseStackedDotsView.MEASURED_VALUES;
           TimeSeries measuredBearings = measuredValuesColl.getSeries(
               seriesName);
           if (measuredBearings == null)
@@ -1208,7 +1235,13 @@ public final class StackedDotHelper
             final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
                 ambigBearing, color, false, null, showSymbol,
                 parentIsNotDynamic, thisD.getSensorCut());
-            ambigValues.addOrUpdate(amBearing);
+            TimeSeries ambigValues = ambigValuesColl.getSeries(sensor.getName());
+            if(ambigValues == null)
+            {
+              ambigValues = new TimeSeries(sensor.getName());
+              ambigValuesColl.addSeries(ambigValues);
+            }
+            ambigValues.add(amBearing);
           }
 
           // do we have target data?
@@ -1255,15 +1288,19 @@ public final class StackedDotHelper
               final ColouredDataItem newTrueError = new ColouredDataItem(
                   thisMilli, thisTrueError, brgColor, false, null, true,
                   parentIsNotDynamic, thisD.getTarget());
+              
+              final Color halfBearing = halfWayColor(calcColor, brgColor);
 
               final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
-                  calculatedBearing, calcColor, true, null, true,
+                  calculatedBearing, halfBearing, true, null, true,
                   parentIsNotDynamic, thisD.getTarget());
 
               final String sensorName = thisD.getSensorCut().getSensorName();
               
               // ok, get this error              
-              final String errorName = BaseStackedDotsView.ERROR_VALUES + sensorName;
+              final String errorName = multiSensor
+                  ? BaseStackedDotsView.ERROR_VALUES + sensorName
+                  : BaseStackedDotsView.ERROR_VALUES;
               TimeSeries thisError = errorSeries.getSeries(errorName);
               if (thisError == null)
               {
@@ -1274,10 +1311,13 @@ public final class StackedDotHelper
               thisError.add(newTrueError);
               
               // get the calc series for this one
-              TimeSeries calculatedValues = calculatedSeries.getSeries(sensorName);
+              final String calcName = multiSensor
+                  ? StackedDotHelper.CALCULATED_VALUES + sensorName
+                  : StackedDotHelper.CALCULATED_VALUES;
+              TimeSeries calculatedValues = calculatedSeries.getSeries(calcName);
               if(calculatedValues == null)
               {
-                calculatedValues = new TimeSeries(sensorName);
+                calculatedValues = new TimeSeries(calcName);
                 calculatedSeries.addSeries(calculatedValues);
               }
 
@@ -1309,7 +1349,15 @@ public final class StackedDotHelper
                 final ColouredDataItem newAmbigError = new ColouredDataItem(
                     thisMilli, thisAmnigError, ambigColor, false, null, true,
                     parentIsNotDynamic);
-                ambigErrorValues.addOrUpdate(newAmbigError);
+                
+                TimeSeries ambigErrorValues = ambigErrorSeries.getSeries(sensorName);
+                if(ambigErrorValues == null)
+                {
+                  ambigErrorValues = new TimeSeries(sensorName);
+                  ambigErrorSeries.addSeries(ambigErrorValues);
+                }
+                
+                ambigErrorValues.add(newAmbigError);
               }
 
             }
@@ -1624,9 +1672,12 @@ public final class StackedDotHelper
       // {
       // errorSeries.addSeries(errorValues);
       // }
-      if (ambigErrorValues.getItemCount() > 0)
+
+      final Iterator<?> eIter = ambigErrorSeries.getSeries().iterator();
+      while(eIter.hasNext())
       {
-        errorSeries.addSeries(ambigErrorValues);
+        final TimeSeries series = (TimeSeries) eIter.next();
+        errorSeries.addSeries(series);
       }
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
@@ -1636,9 +1687,11 @@ public final class StackedDotHelper
         actualSeries.addSeries(series);
       }
 
-      if (ambigValues.getItemCount() > 0)
+      final Iterator<?> aIter = ambigValuesColl.getSeries().iterator();
+      while(aIter.hasNext())
       {
-        actualSeries.addSeries(ambigValues);
+        final TimeSeries series = (TimeSeries) aIter.next();
+        actualSeries.addSeries(series);
       }
 
       final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
@@ -1769,6 +1822,14 @@ public final class StackedDotHelper
           needBearing, needFreq);
     }
   }
+  
+  private static Color halfWayColor(final Color a, final Color b)
+  {
+    int red = (a.getRed() + b.getRed()) / 2;
+    int blue = (a.getBlue() + b.getBlue())/2;
+    int green = (a.getGreen() + b.getGreen()) / 2;
+    return new Color(red, blue, green);
+  }
 
   /**
    * ok, our track has been dragged, calculate the new series of offsets
@@ -1820,19 +1881,18 @@ public final class StackedDotHelper
     // create the collection of series
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+    final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
+    
 
     if (_primaryTrack == null)
     {
       return;
     }
 
-    // produce a dataset for each track
-    final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
-
-    final TimeSeries measuredValues = new TimeSeries(MEASURED_DATASET);
+    final TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
+    
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
-    final TimeSeries predictedValues = new TimeSeries("Predicted");
-    final TimeSeries baseValues = new TimeSeries("Base");
+    final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -1870,13 +1930,20 @@ public final class StackedDotHelper
         // final ColouredDataItem corrFreq = new ColouredDataItem(
         // new FixedMillisecond(currentTime.getDate().getTime()),
         // correctedFreq, thisColor, false, null);
-        measuredValues.addOrUpdate(mFreq);
+        final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
+        final String sensorName = thisSensor.getName();
+        TimeSeries measuredValues = measuredValuesColl.getSeries(sensorName);
+        if(measuredValues == null)
+        {
+          measuredValues = new TimeSeries(sensorName);
+          measuredValuesColl.addSeries(measuredValues);
+        }
+        measuredValues.add(mFreq);
 
         final double baseFreq = thisD.getBaseFrequency();
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
-          final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
           final boolean newSensor;
           if (thisSensor != null && !thisSensor.equals(lastSensor))
           {
@@ -1890,7 +1957,13 @@ public final class StackedDotHelper
 
           final ColouredDataItem bFreq = new ColouredDataItem(thisMilli,
               baseFreq, thisColor.darker(), !newSensor, null, true, true);
-          baseValues.addOrUpdate(bFreq);
+          TimeSeries baseValues = baseValuesSeries.getSeries(sensorName + "(base)"); 
+          if(baseValues == null)
+          {
+            baseValues = new TimeSeries(sensorName +"(base)");
+            baseValuesSeries.addSeries(baseValues);
+          }
+          baseValues.add(bFreq);
 
           // do we have target data?
           if (thisD.getTarget() != null)
@@ -1903,14 +1976,28 @@ public final class StackedDotHelper
                 speedOfSound);
             final double thisError = thisD.calculateFreqError(measuredFreq,
                 predictedFreq);
+            final Color predictedColor = halfWayColor(calcColor, thisColor);
             final ColouredDataItem pFreq = new ColouredDataItem(thisMilli,
-                predictedFreq, calcColor, true, null, true, true, thisD
+                predictedFreq, predictedColor, true, null, true, true, thisD
                     .getTarget());
 
             final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
                 thisError, thisColor, false, null, true, true);
+            TimeSeries predictedValues = predictedValuesColl.getSeries(sensorName);
+            if(predictedValues == null)
+            {
+              predictedValues = new TimeSeries(sensorName);
+              predictedValuesColl.addSeries(predictedValues);
+            }
             predictedValues.addOrUpdate(pFreq);
-            errorValues.addOrUpdate(eFreq);
+            
+            TimeSeries errorValues = errorSeries.getSeries(thisSensor.getName());
+            if(errorValues == null)
+            {
+              errorValues = new TimeSeries(thisSensor.getName());
+              errorSeries.addSeries(errorValues);
+            }
+            errorValues.add(eFreq);
           } // if we have a target
         } // if we have a base frequency
       }
@@ -1920,12 +2007,6 @@ public final class StackedDotHelper
             "some kind of trip whilst updating frequency plot", e);
       }
 
-    }
-
-    // ok, add these new series
-    if (errorValues.getItemCount() > 0)
-    {
-      errorSeries.addSeries(errorValues);
     }
 
     // find the color for maximum value in the error series, if we have error data
@@ -1950,17 +2031,29 @@ public final class StackedDotHelper
       dotPlot.setBackgroundPaint(errorColor);
     }
 
-    actualSeries.addSeries(measuredValues);
-    // actualSeries.addSeries(correctedValues);
-
-    if (predictedValues.getItemCount() > 0)
+    Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
+    while(mIter.hasNext())
     {
+      TimeSeries series = (TimeSeries) mIter.next();
+      actualSeries.addSeries(series);
+    }
+    
+    // actualSeries.addSeries(correctedValues);
+    Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
+    while(pIter.hasNext())
+    {
+      TimeSeries predictedValues = (TimeSeries) pIter.next();
       actualSeries.addSeries(predictedValues);
     }
-    if (baseValues.getItemCount() > 0)
+    
+    if(baseValuesSeries.getSeries().size() > 0)
     {
-      actualSeries.addSeries(baseValues);
-
+      Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
+      while(bIter.hasNext())
+      {
+        TimeSeries baseValues = (TimeSeries) bIter.next();
+        actualSeries.addSeries(baseValues);
+      }
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
