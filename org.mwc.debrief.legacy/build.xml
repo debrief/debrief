@@ -44,7 +44,17 @@
 	<property name="bundleJavacSource" value="${javacSource}"/>
 	<property name="bundleJavacTarget" value="${javacTarget}"/>
 	<property name="bundleBootClasspath" value="${bootclasspath}"/>
-
+	
+	<target name="initVersion">
+		<taskdef name="xmltask" classname="com.oopsconsultancy.xmltask.ant.XmlTask"
+			classpath="conf/xmltask.jar"
+			onerror="report"/>
+		<xmltask source="../org.mwc.debrief.product/debriefng.product" dest="${temp.folder}/debriefng.product">
+				<copy path="/product[@attr='version']" property="product.version"/>
+		</xmltask>
+		<echo>product version is: ${product.version}</echo>
+	</target>
+	
 	<target name="init" depends="properties">
 		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
 			<isset property="buildTempFolder"/>
@@ -68,6 +78,7 @@
 			<isfalse value="${p2.publishonerror}"/>
 			</and>
 		</condition>
+		<antcall target="initVersion"/>
 	</target>
 
 	<target name="properties" if="eclipse.running">
@@ -293,7 +304,7 @@
 				         classname="com.simontuffs.onejar.ant.OneJarTask"
 				         classpath="conf/one-jar-ant-task-0.96.jar"
 				         onerror="report"/>
-			<one-jar destfile="${dist.dir}/debrief-lite.jar">
+			<one-jar destfile="${dist.dir}/DebriefLite-${product.version}.jar">
 				<main jar="${dist.dir}/main.jar">
 				</main>
 				<lib>
