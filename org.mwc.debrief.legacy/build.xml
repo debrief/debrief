@@ -111,7 +111,7 @@
 			<move file="${temp.folder}/debrief_legacy.jar" tofile="${dist.dir}/main.jar"/>
 			<taskdef name="one-jar"
 				         classname="com.simontuffs.onejar.ant.OneJarTask"
-				         classpath="conf/one-jar-ant-task-0.96.jar"
+				         classpath="conf/one-jar-ant-task-0.97.jar"
 				         onerror="report"/>
 			<one-jar destfile="${dist.dir}/DebriefLite-${product.version}.jar">
 				<main jar="${dist.dir}/main.jar">
