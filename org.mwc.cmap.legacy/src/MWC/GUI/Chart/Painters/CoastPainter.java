@@ -303,7 +303,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
       // not in the normal file-system, see if it's packed into the app jar
       _myParent.logError(ToolParent.INFO,
           "Coastline file not found,trying to load from classloader", null);
-      res = getClass().getClassLoader().getResourceAsStream("/World.dat");
+      res = getClass().getClassLoader().getResourceAsStream("/main/World.dat");
       if (res == null)
       {
         _myParent.logError(ToolParent.ERROR,
