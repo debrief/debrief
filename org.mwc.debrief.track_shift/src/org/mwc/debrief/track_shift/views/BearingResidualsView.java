@@ -1301,11 +1301,10 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected void updateData(final boolean updateDoublets)
   {
-    
-    
+
     SetBackgroundShade backShader = new SetBackgroundShade()
     {
-      
+
       @Override
       public void setShade(Paint errorColor)
       {
@@ -1313,13 +1312,16 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       }
     };
     // update the current datasets
-    
-    TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot.getDataset();
-    TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot.getDataset();
-    
-    _myHelper.updateBearingData(errorData, lineData,  _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
-        relativeAxes.isChecked(), _holder, this, updateDoublets,
-        _targetCourseSeries, _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+
+    TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot
+        .getDataset();
+    TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
+        .getDataset();
+
+    _myHelper.updateBearingData(errorData, lineData, _myTrackDataProvider,
+        _onlyVisible.isChecked(), showCourse.isChecked(), relativeAxes
+            .isChecked(), _holder, this, updateDoublets, _targetCourseSeries,
+        _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
         _overviewSpeedRenderer, _overviewCourseRenderer, backShader);
 

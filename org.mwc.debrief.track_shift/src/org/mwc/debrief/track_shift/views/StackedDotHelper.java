@@ -80,16 +80,16 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
-  
-  /** convenience class, to avoid having to pass plot into 
-   * data helper
+
+  /**
+   * convenience class, to avoid having to pass plot into data helper
    *
    */
   public static interface SetBackgroundShade
   {
     void setShade(final Paint errorColor);
   }
-  
+
   /**
    * special listener, that knows how to detatch itself
    *
@@ -979,26 +979,27 @@ public final class StackedDotHelper
     _primaryTrack = null;
     _secondaryTrack = null;
   }
-  
-  /** is this a multi-sensor dataset?
+
+  /**
+   * is this a multi-sensor dataset?
    * 
    * @param doublets
    * @return
    */
   private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
   {
-    
+
     final Iterator<Doublet> iter = doublets.iterator();
     SensorWrapper lastS = null;
-    while(iter.hasNext())
+    while (iter.hasNext())
     {
       final Doublet next = iter.next();
       final SensorWrapper thisS = next.getSensorCut().getSensor();
-      if(lastS == null)
+      if (lastS == null)
       {
         lastS = thisS;
       }
-      else if(!lastS.equals(thisS))
+      else if (!lastS.equals(thisS))
       {
         return true;
       }
@@ -1026,15 +1027,16 @@ public final class StackedDotHelper
    * @param currentOffset
    *          how far the current track has been dragged
    */
-  public void updateBearingData(final TimeSeriesCollection dotPlotData, final TimeSeriesCollection linePlotData,
-      final TrackDataProvider tracks,
+  public void updateBearingData(final TimeSeriesCollection dotPlotData,
+      final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
       final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
       final Composite holder, final ErrorLogger logger,
       final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
       final TimeSeriesCollection measuredValuesColl,
-      final TimeSeriesCollection ambigValuesColl, final TimeSeries ownshipCourseSeries,
+      final TimeSeriesCollection ambigValuesColl,
+      final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
@@ -1068,7 +1070,7 @@ public final class StackedDotHelper
     {
       updateDoublets(onlyVis, true, false);
     }
-    
+
     // aah - but what if we've ditched our doublets?
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
@@ -1077,13 +1079,13 @@ public final class StackedDotHelper
       linePlotData.removeAllSeries();
       return;
     }
-    
+
     // check if we've got multi sensor
     final boolean multiSensor = isMultiSensor(_primaryDoublets);
 
     // create the collection of series
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
-    
+
     final TimeSeriesCollection ambigErrorSeries = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
@@ -1196,8 +1198,9 @@ public final class StackedDotHelper
 
           // find the series for this sensor
           final SensorWrapper sensor = thisD.getSensorCut().getSensor();
-          final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES + sensor
-              .getName() : BaseStackedDotsView.MEASURED_VALUES;
+          final String seriesName = multiSensor
+              ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName()
+              : BaseStackedDotsView.MEASURED_VALUES;
           TimeSeries measuredBearings = measuredValuesColl.getSeries(
               seriesName);
           if (measuredBearings == null)
@@ -1242,8 +1245,9 @@ public final class StackedDotHelper
             final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
                 ambigBearing, color, false, null, showSymbol,
                 parentIsNotDynamic, thisD.getSensorCut());
-            TimeSeries ambigValues = ambigValuesColl.getSeries(sensor.getName());
-            if(ambigValues == null)
+            TimeSeries ambigValues = ambigValuesColl.getSeries(sensor
+                .getName());
+            if (ambigValues == null)
             {
               ambigValues = new TimeSeries(sensor.getName());
               ambigValuesColl.addSeries(ambigValues);
@@ -1259,8 +1263,8 @@ public final class StackedDotHelper
             if (thisD.getTarget().getFixLocation() != null)
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
-              
-              // note:  now that we're allowing multi-sensor TMA, we should color the
+
+              // note: now that we're allowing multi-sensor TMA, we should color the
               // errors acccording to the sensor color (not the target color)
               final Color error = thisD.getColor();
               final Color calcColor = thisD.getTarget().getColor();
@@ -1295,7 +1299,7 @@ public final class StackedDotHelper
               final ColouredDataItem newTrueError = new ColouredDataItem(
                   thisMilli, thisTrueError, brgColor, false, null, true,
                   parentIsNotDynamic, thisD.getTarget());
-              
+
               final Color halfBearing = halfWayColor(calcColor, brgColor);
 
               final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
@@ -1303,8 +1307,8 @@ public final class StackedDotHelper
                   parentIsNotDynamic, thisD.getTarget());
 
               final String sensorName = thisD.getSensorCut().getSensorName();
-              
-              // ok, get this error              
+
+              // ok, get this error
               final String errorName = multiSensor
                   ? BaseStackedDotsView.ERROR_VALUES + sensorName
                   : BaseStackedDotsView.ERROR_VALUES;
@@ -1316,13 +1320,14 @@ public final class StackedDotHelper
               }
 
               thisError.add(newTrueError);
-              
+
               // get the calc series for this one
               final String calcName = multiSensor
                   ? StackedDotHelper.CALCULATED_VALUES + sensorName
                   : StackedDotHelper.CALCULATED_VALUES;
-              TimeSeries calculatedValues = calculatedSeries.getSeries(calcName);
-              if(calculatedValues == null)
+              TimeSeries calculatedValues = calculatedSeries.getSeries(
+                  calcName);
+              if (calculatedValues == null)
               {
                 calculatedValues = new TimeSeries(calcName);
                 calculatedSeries.addSeries(calculatedValues);
@@ -1356,14 +1361,15 @@ public final class StackedDotHelper
                 final ColouredDataItem newAmbigError = new ColouredDataItem(
                     thisMilli, thisAmnigError, ambigColor, false, null, true,
                     parentIsNotDynamic);
-                
-                TimeSeries ambigErrorValues = ambigErrorSeries.getSeries(sensorName);
-                if(ambigErrorValues == null)
+
+                TimeSeries ambigErrorValues = ambigErrorSeries.getSeries(
+                    sensorName);
+                if (ambigErrorValues == null)
                 {
                   ambigErrorValues = new TimeSeries(sensorName);
                   ambigErrorSeries.addSeries(ambigErrorValues);
                 }
-                
+
                 ambigErrorValues.add(newAmbigError);
               }
 
@@ -1681,7 +1687,7 @@ public final class StackedDotHelper
       // }
 
       final Iterator<?> eIter = ambigErrorSeries.getSeries().iterator();
-      while(eIter.hasNext())
+      while (eIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) eIter.next();
         dotPlotData.addSeries(series);
@@ -1695,7 +1701,7 @@ public final class StackedDotHelper
       }
 
       final Iterator<?> aIter = ambigValuesColl.getSeries().iterator();
-      while(aIter.hasNext())
+      while (aIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) aIter.next();
         linePlotData.addSeries(series);
@@ -1729,7 +1735,7 @@ public final class StackedDotHelper
       {
         targetCourseSeries.addSeries(osCourseValues);
       }
-      
+
       final Iterator<?> cIter2 = calculatedSeries.getSeries().iterator();
       while (cIter2.hasNext())
       {
@@ -1790,13 +1796,13 @@ public final class StackedDotHelper
 
         final Paint errorColor = calculateErrorShadeFor(dotPlotData,
             cutOffValue);
-//        dotPlot.setBackgroundPaint(errorColor);
+        // dotPlot.setBackgroundPaint(errorColor);
         backShader.setShade(errorColor);
       }
 
-     // linePlot.setDataset(actualSeries);
-//      targetPlot.setDataset(0, targetCourseSeries);
- //     targetPlot.setDataset(1, targetSpeedSeries);
+      // linePlot.setDataset(actualSeries);
+      // targetPlot.setDataset(0, targetCourseSeries);
+      // targetPlot.setDataset(1, targetSpeedSeries);
     }
     finally
     {
@@ -1829,11 +1835,11 @@ public final class StackedDotHelper
           needBearing, needFreq);
     }
   }
-  
+
   private static Color halfWayColor(final Color a, final Color b)
   {
     int red = (a.getRed() + b.getRed()) / 2;
-    int blue = (a.getBlue() + b.getBlue())/2;
+    int blue = (a.getBlue() + b.getBlue()) / 2;
     int green = (a.getGreen() + b.getGreen()) / 2;
     return new Color(red, blue, green);
   }
@@ -1889,7 +1895,6 @@ public final class StackedDotHelper
     final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
     final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
-    
 
     if (_primaryTrack == null)
     {
@@ -1897,7 +1902,7 @@ public final class StackedDotHelper
     }
 
     final TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
-    
+
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
@@ -1940,7 +1945,7 @@ public final class StackedDotHelper
         final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
         final String sensorName = thisSensor.getName();
         TimeSeries measuredValues = measuredValuesColl.getSeries(sensorName);
-        if(measuredValues == null)
+        if (measuredValues == null)
         {
           measuredValues = new TimeSeries(sensorName);
           measuredValuesColl.addSeries(measuredValues);
@@ -1964,10 +1969,11 @@ public final class StackedDotHelper
 
           final ColouredDataItem bFreq = new ColouredDataItem(thisMilli,
               baseFreq, thisColor.darker(), !newSensor, null, true, true);
-          TimeSeries baseValues = baseValuesSeries.getSeries(sensorName + "(base)"); 
-          if(baseValues == null)
+          TimeSeries baseValues = baseValuesSeries.getSeries(sensorName
+              + "(base)");
+          if (baseValues == null)
           {
-            baseValues = new TimeSeries(sensorName +"(base)");
+            baseValues = new TimeSeries(sensorName + "(base)");
             baseValuesSeries.addSeries(baseValues);
           }
           baseValues.add(bFreq);
@@ -1990,16 +1996,18 @@ public final class StackedDotHelper
 
             final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
                 thisError, thisColor, false, null, true, true);
-            TimeSeries predictedValues = predictedValuesColl.getSeries(sensorName);
-            if(predictedValues == null)
+            TimeSeries predictedValues = predictedValuesColl.getSeries(
+                sensorName);
+            if (predictedValues == null)
             {
               predictedValues = new TimeSeries(sensorName);
               predictedValuesColl.addSeries(predictedValues);
             }
             predictedValues.addOrUpdate(pFreq);
-            
-            TimeSeries errorValues = errorSeries.getSeries(thisSensor.getName());
-            if(errorValues == null)
+
+            TimeSeries errorValues = errorSeries.getSeries(thisSensor
+                .getName());
+            if (errorValues == null)
             {
               errorValues = new TimeSeries(thisSensor.getName());
               errorSeries.addSeries(errorValues);
@@ -2039,24 +2047,24 @@ public final class StackedDotHelper
     }
 
     Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
-    while(mIter.hasNext())
+    while (mIter.hasNext())
     {
       TimeSeries series = (TimeSeries) mIter.next();
       actualSeries.addSeries(series);
     }
-    
+
     // actualSeries.addSeries(correctedValues);
     Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
-    while(pIter.hasNext())
+    while (pIter.hasNext())
     {
       TimeSeries predictedValues = (TimeSeries) pIter.next();
       actualSeries.addSeries(predictedValues);
     }
-    
-    if(baseValuesSeries.getSeries().size() > 0)
+
+    if (baseValuesSeries.getSeries().size() > 0)
     {
       Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
-      while(bIter.hasNext())
+      while (bIter.hasNext())
       {
         TimeSeries baseValues = (TimeSeries) bIter.next();
         actualSeries.addSeries(baseValues);
