@@ -80,6 +80,16 @@ import MWC.TacticalData.TrackDataProvider;
 
 public final class StackedDotHelper
 {
+  
+  /** convenience class, to avoid having to pass plot into 
+   * data helper
+   *
+   */
+  public static interface SetBackgroundShade
+  {
+    void setShade(final Paint errorColor);
+  }
+  
   /**
    * special listener, that knows how to detatch itself
    *
@@ -1016,8 +1026,8 @@ public final class StackedDotHelper
    * @param currentOffset
    *          how far the current track has been dragged
    */
-  public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
-      final XYPlot targetPlot, final TrackDataProvider tracks,
+  public void updateBearingData(final TimeSeriesCollection dotPlotData, final TimeSeriesCollection linePlotData,
+      final TrackDataProvider tracks,
       final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
       final Composite holder, final ErrorLogger logger,
       final boolean updateDoublets,
@@ -1028,15 +1038,16 @@ public final class StackedDotHelper
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
-      final WrappingResidualRenderer overviewCourseRenderer)
+      final WrappingResidualRenderer overviewCourseRenderer,
+      final SetBackgroundShade backShader)
   {
     // do we even have a primary track
     if (_primaryTrack == null)
     {
       // ok, clear the data
-      linePlot.setDataset(null);
-      dotPlot.setDataset(null);
-      targetPlot.setDataset(null);
+      linePlotData.removeAllSeries();
+      dotPlotData.removeAllSeries();
+      targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
       return;
     }
@@ -1062,10 +1073,8 @@ public final class StackedDotHelper
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
       // better clear the plot
-      dotPlot.setDataset(null);
-      linePlot.setDataset(null);
-      targetPlot.setDataset(null);
-      targetPlot.setDataset(1, null);
+      dotPlotData.removeAllSeries();
+      linePlotData.removeAllSeries();
       return;
     }
     
@@ -1073,8 +1082,6 @@ public final class StackedDotHelper
     final boolean multiSensor = isMultiSensor(_primaryDoublets);
 
     // create the collection of series
-    final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
     
     final TimeSeriesCollection ambigErrorSeries = new TimeSeriesCollection();
@@ -1106,8 +1113,8 @@ public final class StackedDotHelper
     tList.add(measuredValuesColl);
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
-    tList.add(errorSeries);
-    tList.add(actualSeries);
+    tList.add(dotPlotData);
+    tList.add(linePlotData);
     tList.add(calculatedSeries);
     tList.add(ambigErrorSeries);
     tList.add(ambigValuesColl);
@@ -1301,11 +1308,11 @@ public final class StackedDotHelper
               final String errorName = multiSensor
                   ? BaseStackedDotsView.ERROR_VALUES + sensorName
                   : BaseStackedDotsView.ERROR_VALUES;
-              TimeSeries thisError = errorSeries.getSeries(errorName);
+              TimeSeries thisError = dotPlotData.getSeries(errorName);
               if (thisError == null)
               {
                 thisError = new TimeSeries(errorName);
-                errorSeries.addSeries(thisError);
+                dotPlotData.addSeries(thisError);
               }
 
               thisError.add(newTrueError);
@@ -1677,28 +1684,28 @@ public final class StackedDotHelper
       while(eIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) eIter.next();
-        errorSeries.addSeries(series);
+        dotPlotData.addSeries(series);
       }
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
       while (mIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) mIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       final Iterator<?> aIter = ambigValuesColl.getSeries().iterator();
       while(aIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) aIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
       while (cIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) cIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       if (tgtCourseValues.getItemCount() > 0)
@@ -1765,7 +1772,7 @@ public final class StackedDotHelper
       }
 
       // find the color for maximum value in the error series, if we have error data
-      if (errorSeries.getSeriesCount() > 0)
+      if (dotPlotData.getSeriesCount() > 0)
       {
         // retrieve the cut-off value
         final double cutOffValue;
@@ -1781,15 +1788,15 @@ public final class StackedDotHelper
           cutOffValue = 3d;
         }
 
-        final Paint errorColor = calculateErrorShadeFor(errorSeries,
+        final Paint errorColor = calculateErrorShadeFor(dotPlotData,
             cutOffValue);
-        dotPlot.setBackgroundPaint(errorColor);
+//        dotPlot.setBackgroundPaint(errorColor);
+        backShader.setShade(errorColor);
       }
 
-      dotPlot.setDataset(errorSeries);
-      linePlot.setDataset(actualSeries);
-      targetPlot.setDataset(0, targetCourseSeries);
-      targetPlot.setDataset(1, targetSpeedSeries);
+     // linePlot.setDataset(actualSeries);
+//      targetPlot.setDataset(0, targetCourseSeries);
+ //     targetPlot.setDataset(1, targetSpeedSeries);
     }
     finally
     {
