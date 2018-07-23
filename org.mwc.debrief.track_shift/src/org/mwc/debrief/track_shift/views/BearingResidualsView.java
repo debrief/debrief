@@ -1317,10 +1317,16 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         .getDataset();
     TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
         .getDataset();
-
+    
+    // have we been created?
+    if (_holder == null || _holder.isDisposed())
+    {
+      return;
+    }
+    
     _myHelper.updateBearingData(errorData, lineData, _myTrackDataProvider,
         _onlyVisible.isChecked(), showCourse.isChecked(), relativeAxes
-            .isChecked(), _holder, this, updateDoublets, _targetCourseSeries,
+            .isChecked(), this, updateDoublets, _targetCourseSeries,
         _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
         _overviewSpeedRenderer, _overviewCourseRenderer, backShader);

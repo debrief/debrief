@@ -296,9 +296,16 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         _dotPlot.setBackgroundPaint(errorColor);
       }
     };
+    
+    // have we been created?
+    if (_holder == null || _holder.isDisposed())
+    {
+      return;
+    }
+    
     // update the current datasets
     _myHelper.updateFrequencyData(errorData, lineData, _myTrackDataProvider,
-        _onlyVisible.isChecked(), _holder, this, updateDoubletsVal,
+        _onlyVisible.isChecked(), this, updateDoubletsVal,
         backgroundShader, (ColourStandardXYItemRenderer) _linePlot.getRenderer());
   }
 

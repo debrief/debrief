@@ -619,8 +619,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     .getSecondaryTrack() == null);
 
         // ok, have things changed?
-        _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
 
         // clear the zone charts, but maybe not the primary
         clearZoneCharts(!secSame || !primarySame, !secSame, !secSame);
@@ -2629,11 +2636,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _myChart.setTitle("");
 
         // we need to get a fresh set of data pairs - the number may
-        // have
-        // changed
-        _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
-            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
-
+        // have changed
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
         // and a new plot please
         updateStackedDots(true);
       }
@@ -3438,9 +3450,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _myChart.setTitle("");
 
               // ok - fire off the event for the new tracks
-              _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-                  .isChecked(), _holder, logger, getType(), _needBrg,
-                  _needFreq);
+              if (_holder == null || _holder.isDisposed())
+              {
+                return;
+              }
+              else
+              {
+                _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
+                    .isChecked(), logger, getType(), _needBrg, _needFreq);
+              }
 
               // hey - fire a dot update
               updateStackedDots(true);
@@ -3542,12 +3560,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void dataReformatted(final Layers theData,
                     final Layer changedLayer)
                 {
-                  _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-                      .isChecked(), _holder, logger, getType(), _needBrg,
-                      _needFreq);
+                  if (_holder == null || _holder.isDisposed())
+                  {
+                    return;
+                  }
+                  else
+                  {
+                    _myHelper.initialise(_myTrackDataProvider, false,
+                        _onlyVisible.isChecked(), logger, getType(), _needBrg,
+                        _needFreq);
 
-                  updateStackedDots(true);
-
+                    updateStackedDots(true);
+                  }
                 }
               };
             }
