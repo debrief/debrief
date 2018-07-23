@@ -19,7 +19,10 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,8 +31,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.swt.widgets.Composite;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
@@ -38,6 +41,7 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts.TMAfromCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -49,6 +53,7 @@ import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -60,9 +65,11 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.FrequencyCalcs;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.LoggingService;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -71,11 +78,13 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.TrackDataProvider;
+import junit.framework.TestCase;
 
 public final class StackedDotHelper
 {
@@ -123,7 +132,208 @@ public final class StackedDotHelper
 
   }
 
-  public static class TestSlicing extends junit.framework.TestCase
+  public static class TestUpdates extends TestCase
+  {
+    public void testGetData() throws ExecutionException
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+      
+      final BaseLayer sensors = ownship.getSensors();
+      assertEquals("has all sensors", 2, sensors.size());
+
+      // get the tail
+      final SensorWrapper secondSensor = (SensorWrapper) sensors.find("tail sensor");
+      assertNotNull("found tail", secondSensor);
+      
+      // give it it's offset
+      secondSensor.setSensorOffset(new ArrayLength(1000));
+      
+      SensorContactWrapper[] items = getAllCutsFrom(secondSensor);
+      
+      assertEquals("got all cuts", 10, items.length);
+      
+      final String newName = "TMA_LEG";
+      
+      // ok, we also have to generate some target track
+      TMAfromCuts genny = new TMAfromCuts(items,
+          layers, new WorldVector(Math.PI/2, 0.02, 0),
+          45, new WorldSpeed(12, WorldSpeed.Kts), Color.RED) {
+
+            @Override
+            public String getTrackNameFor(TrackWrapper newTrack)
+            {
+              return newName;
+            }
+        
+      };
+      
+      // create the new TMA
+      genny.execute(null,  null);
+      
+      // get the TMA
+      TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+      
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0), new HiResDate(new Date().getTime()));
+      assertEquals("has fixes", 10, fixes.size());
+    }
+    
+    private SensorContactWrapper[] getAllCutsFrom(SensorWrapper secondSensor)
+    {
+      SensorContactWrapper[] res = new SensorContactWrapper[secondSensor.size()];
+      Enumeration<Editable> sIter = secondSensor.elements();
+      int ctr = 0;
+      while(sIter.hasMoreElements())
+      {
+        res[ctr++] = (SensorContactWrapper) sIter.nextElement();
+      }
+      
+      return res;
+    }
+
+    public Layers getData()
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      importer.setLayers(layers);
+
+      try
+      {
+        importer.readLine(
+            "100112 120000 SUBJECT VC 60 06 00.00 N 000 15 00.00 E 320.00  9.00  0.00");
+        importer.readLine(
+            "100112 120000 SENSOR FA 60 10 48.00 N 000 12 00.00 E 200.00  12.00  0.00");
+        importer.readLine(
+            ";SENSOR2: 100112 120000 SENSOR @A NULL 162.64 237.36 150.910 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120000 SENSOR @A NULL 166.15 233.85 150.920 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120020 SUBJECT VC 60 06 02.30 N 000 14 56.13 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120020 SENSOR FA 60 10 44.24 N 000 11 57.25 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120020 SENSOR @A NULL 162.39 237.61 150.909 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120020 SENSOR @A NULL 165.99 234.01 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120040 SUBJECT VC 60 06 04.60 N 000 14 52.26 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120040 SENSOR FA 60 10 40.48 N 000 11 54.50 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120040 SENSOR @A NULL 162.13 237.87 150.908 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120040 SENSOR @A NULL 165.82 234.18 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120100 SUBJECT VC 60 06 06.89 N 000 14 48.39 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120100 SENSOR FA 60 10 36.72 N 000 11 51.75 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120100 SENSOR @A NULL 161.87 238.13 150.907 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120100 SENSOR @A NULL 165.64 234.36 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120120 SUBJECT VC 60 06 09.19 N 000 14 44.53 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120120 SENSOR FA 60 10 32.96 N 000 11 49.00 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120120 SENSOR @A NULL 161.59 238.41 150.906 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120140 SUBJECT VC 60 06 11.49 N 000 14 40.66 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120140 SENSOR FA 60 10 29.21 N 000 11 46.25 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120140 SENSOR @A NULL 165.27 234.73 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120200 SUBJECT VC 60 06 13.79 N 000 14 36.79 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120200 SENSOR FA 60 10 25.45 N 000 11 43.49 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120200 SENSOR @A NULL 160.99 239.01 150.904 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120200 SENSOR @A NULL 165.08 234.92 150.917 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120220 SUBJECT VC 60 06 16.09 N 000 14 32.92 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120220 SENSOR FA 60 10 21.69 N 000 11 40.74 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120220 SENSOR @A NULL 160.67 239.33 150.902 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120220 SENSOR @A NULL 164.87 235.13 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120240 SUBJECT VC 60 06 18.39 N 000 14 29.05 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120240 SENSOR FA 60 10 17.93 N 000 11 37.99 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120240 SENSOR @A NULL 160.33 239.67 150.901 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120240 SENSOR @A NULL 164.66 235.34 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120300 SUBJECT VC 60 06 20.68 N 000 14 25.18 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120300 SENSOR FA 60 10 14.17 N 000 11 35.24 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120300 SENSOR @A NULL 159.98 240.02 150.900 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120300 SENSOR @A NULL 164.44 235.56 150.915 NULL \"tail sensor\" SUBJECT held on tail sensor");
+
+        importer.storePendingSensors();
+        
+      }
+      catch (IOException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      return layers;
+    }
+
+    public void testUpdateBearings()
+    {
+      StackedDotHelper helper = new StackedDotHelper();
+      TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
+      TimeSeriesCollection linePlotData = new TimeSeriesCollection();
+      TrackDataProvider tracks = null;
+      boolean onlyVis = false;
+      boolean showCourse = true;
+      boolean flipAxes = false;
+      ErrorLogger logger = new LoggingService();
+      boolean updateDoublets = true;
+      TimeSeriesCollection targetCourseSeries = new TimeSeriesCollection();
+      TimeSeriesCollection targetSpeedSeries = new TimeSeriesCollection();
+      TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
+      TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
+      TimeSeries ownshipCourseSeries = new TimeSeries("OS Course");
+      TimeSeries targetBearingSeries = new TimeSeries("Tgt Bearing");
+      TimeSeries targetCalculatedSeries = new TimeSeries("target calc");
+      ResidualXYItemRenderer overviewSpeedRenderer = null;
+      WrappingResidualRenderer overviewCourseRenderer = null;
+      SetBackgroundShade backShader = new SetBackgroundShade()
+      {
+        @Override
+        public void setShade(Paint errorColor)
+        {
+        }
+      };
+
+      helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+    }
+  }
+
+  public static class TestSlicing extends TestCase
   {
     public void testOSLegDetector()
     {
@@ -875,21 +1085,9 @@ public final class StackedDotHelper
    * @param holder
    */
   void initialise(final TrackDataProvider tracks, final boolean showError,
-      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
-      final String dataType, final boolean needBrg, final boolean needFreq)
+      final boolean onlyVis, final ErrorLogger logger, final String dataType,
+      final boolean needBrg, final boolean needFreq)
   {
-
-    // have we been created?
-    if (holder == null)
-    {
-      return;
-    }
-
-    // are we visible?
-    if (holder.isDisposed())
-    {
-      return;
-    }
 
     _secondaryTrack = null;
     _primaryTrack = null;
@@ -1029,8 +1227,7 @@ public final class StackedDotHelper
   public void updateBearingData(final TimeSeriesCollection dotPlotData,
       final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
       final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
-      final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets,
+      final ErrorLogger logger, final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
       final TimeSeriesCollection measuredValuesColl,
@@ -1056,8 +1253,7 @@ public final class StackedDotHelper
     // ok, find the track wrappers
     if (_secondaryTrack == null)
     {
-      initialise(tracks, false, onlyVis, holder, logger, "Bearing", true,
-          false);
+      initialise(tracks, false, onlyVis, logger, "Bearing", true, false);
     }
 
     // did it work?
@@ -1858,7 +2054,7 @@ public final class StackedDotHelper
    */
   public void updateFrequencyData(final TimeSeriesCollection dotPlotData,
       final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
-      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
+      final boolean onlyVis, final ErrorLogger logger,
       final boolean updateDoublets, final SetBackgroundShade backShader,
       final ColourStandardXYItemRenderer lineRend)
   {
@@ -1872,8 +2068,7 @@ public final class StackedDotHelper
     // ok, find the track wrappers
     if (_secondaryTrack == null)
     {
-      initialise(tracks, false, onlyVis, holder, logger, "Frequency", false,
-          true);
+      initialise(tracks, false, onlyVis, logger, "Frequency", false, true);
     }
 
     // ok - the tracks have moved. better update the doublets
