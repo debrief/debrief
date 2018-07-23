@@ -418,6 +418,7 @@ public final class StackedDotHelper
         @Override
         public void setShade(Paint errorColor)
         {
+          // just ignore it
         }
       };
 
