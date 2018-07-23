@@ -212,6 +212,7 @@ public final class StackedDotHelper
       @Override
       public void addTrackDataListener(TrackDataListener listener)
       {
+        // don't bother
       }
 
       public void addSecondary(TrackWrapper tma)
@@ -227,26 +228,31 @@ public final class StackedDotHelper
       @Override
       public void removeTrackDataListener(TrackDataListener listener)
       {
+        // don't bother
       }
 
       @Override
       public void addTrackShiftListener(TrackShiftListener listener)
       {
+        // don't bother
       }
 
       @Override
       public void removeTrackShiftListener(TrackShiftListener listener)
       {
+        // don't bother
       }
 
       @Override
       public void fireTrackShift(WatchableList watchableList)
       {
+        // don't bother
       }
 
       @Override
       public void fireTracksChanged()
       {
+        // don't bother
       }
 
       @Override
@@ -762,6 +768,13 @@ public final class StackedDotHelper
 
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
+        
+        @Override
+        protected void makeActions()
+        {
+          // don't make actions, since they rely on Workbench running
+        }
+
         @Override
         protected boolean allowDisplayOfTargetOverview()
         {
