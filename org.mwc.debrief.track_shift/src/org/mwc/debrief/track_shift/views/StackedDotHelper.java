@@ -191,6 +191,7 @@ public final class StackedDotHelper
       assertEquals("has fixes", 8, fixes.size());
 
       FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[] {})[0];
+      @SuppressWarnings("deprecation")
       String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
       assertEquals("valid first time","12 Jan 2010 12:00:15 GMT", toTime);
       
@@ -1955,7 +1956,7 @@ public final class StackedDotHelper
               final ColouredDataItem crseBearing = new ColouredDataItem(
                   thisMilli, ownshipCourse, loc.getColor(), true, null, true,
                   true);
-              osCourseValues.addOrUpdate(crseBearing);
+              osCourseValues.add(crseBearing);
             }
           }
         }
@@ -2173,19 +2174,6 @@ public final class StackedDotHelper
         allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
             .getDTG().getDate().getTime()), theBearing));
       }
-
-      // ok, add these new series
-      // if (errorValues.getItemCount() > 0)
-      // {
-      // errorSeries.addSeries(errorValues);
-      // }
-
-//      final Iterator<?> eIter = ambigErrorSeries.getSeries().iterator();
-//      while (eIter.hasNext())
-//      {
-//        final TimeSeries series = (TimeSeries) eIter.next();
-//        dotPlotData.addSeries(series);
-//      }
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
       while (mIter.hasNext())
