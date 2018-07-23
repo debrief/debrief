@@ -480,7 +480,7 @@ public class GenerateTMASegmentFromCuts implements
       shadeCuts();
 
       // also set it as a secondary track
-      if (Platform.isRunning())
+      if(isRunning())
       {
         final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
         if (editor != null)
@@ -495,11 +495,17 @@ public class GenerateTMASegmentFromCuts implements
           }
         }
       }
+      
       // sorted, do the update
       _layers.fireExtended();
 
       return Status.OK_STATUS;
 
+    }
+    
+    public boolean isRunning()
+    {
+      return Platform.isRunning();
     }
 
     @Override
