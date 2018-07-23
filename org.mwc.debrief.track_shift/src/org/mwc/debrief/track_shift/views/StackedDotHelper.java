@@ -134,7 +134,7 @@ public final class StackedDotHelper
 
   public static class TestUpdates extends TestCase
   {
-    public TrackDataHelper getTrackData() throws ExecutionException
+    public TrackDataProvider getTrackData() 
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -162,7 +162,7 @@ public final class StackedDotHelper
       assertEquals("got all cuts", 9, hullItems.length);
 
       final String newName = "TMA_LEG";
-
+      
       // ok, we also have to generate some target track
       TMAfromCuts genny = new TMAfromCuts(tailItems, layers, new WorldVector(
           Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
@@ -173,10 +173,24 @@ public final class StackedDotHelper
         {
           return newName;
         }
-      };
 
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+      
       // create the new TMA
-      genny.execute(null, null);
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (Exception e)
+      {
+        fail("exception thrown while running command"  + e.getMessage());
+        e.printStackTrace();
+      }
 
       // get the TMA
       final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
@@ -193,7 +207,7 @@ public final class StackedDotHelper
       FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[] {})[0];
       @SuppressWarnings("deprecation")
       String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
-  //    assertEquals("valid first time","12 Jan 2010 12:00:15 GMT", toTime);
+      assertEquals("valid first time","12 Jan 2010 12:00:15 GMT", toTime);
       
       // and now the track data object
       TrackDataHelper prov = new TrackDataHelper();
@@ -395,14 +409,15 @@ public final class StackedDotHelper
 
     public void testUpdateBearings() throws ExecutionException
     {
-      System.err.println("Testing update bearings");
       StackedDotHelper helper = new StackedDotHelper();
       TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
       TimeSeriesCollection linePlotData = new TimeSeriesCollection();
+      
       TrackDataProvider tracks = getTrackData();
       boolean onlyVis = false;
       boolean showCourse = true;
       boolean flipAxes = false;
+      
       ErrorLogger logger = new LoggingService();
       boolean updateDoublets = true;
       TimeSeriesCollection targetCourseSeries = new TimeSeriesCollection();
@@ -422,7 +437,7 @@ public final class StackedDotHelper
           // just ignore it
         }
       };
-
+      
       helper.initialise(tracks, true, onlyVis, logger, "Bearings", true, false);
       helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
@@ -432,8 +447,6 @@ public final class StackedDotHelper
 
       // have a look at what's happened
       
-      System.out.println("call 1 to update complete");
-
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
 
@@ -503,9 +516,6 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
-      System.out.println("call 2 to update complete");
-
-
       // have a look at what's happened
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
@@ -573,9 +583,6 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
-      System.out.println("call 3 to update complete");
-
-
       // have a look at what's happened
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
@@ -627,10 +634,6 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
       
-      System.out.println("call 4 to update complete");
-
-
-
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
 
