@@ -431,6 +431,8 @@ public final class StackedDotHelper
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
       // have a look at what's happened
+      
+      System.out.println("call 1 to update complete");
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
@@ -501,6 +503,9 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
+      System.out.println("call 2 to update complete");
+
+
       // have a look at what's happened
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
@@ -568,6 +573,9 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
+      System.out.println("call 3 to update complete");
+
+
       // have a look at what's happened
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
@@ -618,6 +626,10 @@ public final class StackedDotHelper
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
+      
+      System.out.println("call 4 to update complete");
+
+
 
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
