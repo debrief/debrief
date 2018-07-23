@@ -709,8 +709,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void run()
       {
-        _dotPlot.setDataset(null);
-        _linePlot.setDataset(null);
+        TimeSeriesCollection coll = (TimeSeriesCollection) _dotPlot.getDataset();
+        coll.removeAllSeries();
+        
+        TimeSeriesCollection line = (TimeSeriesCollection) _linePlot.getDataset();
+        line.removeAllSeries();
+        
         _targetOverviewPlot.setDataset(null);
         _targetOverviewPlot.setDataset(1, null);
       }
@@ -1268,6 +1272,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final Stroke theStroke = new BasicStroke(3);
     final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
     _dotPlot.addRangeMarker(zeroMarker);
+    
+    // give the dot plot some data
+    _dotPlot.setDataset(new TimeSeriesCollection());
 
     _linePlot = new XYPlot();
     final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits()
@@ -1281,11 +1288,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         null, null, _linePlot);
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
+    
+    // give it some data
+    _linePlot.setDataset(new TimeSeriesCollection());
 
     formatCrossHair(_linePlot);
     formatCrossHair(_dotPlot);
 
     _targetOverviewPlot = new XYPlot();
+    
+    // give it some data
+    _targetOverviewPlot.setDataset(0, _targetCourseSeries);
+    _targetOverviewPlot.setDataset(1, _targetSpeedSeries);
+    
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
     {
       /**
@@ -3359,7 +3374,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if (_myTrackDataProvider != dataP)
             {
               // ok - let's start off with a clean plot
-              _dotPlot.setDataset(null);
+              TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot.getDataset();
+              errorData.removeAllSeries();
 
               // nope, better stop listening then
               if (_myTrackDataProvider != null)
