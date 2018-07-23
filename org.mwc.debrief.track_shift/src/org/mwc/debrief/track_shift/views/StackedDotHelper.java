@@ -395,6 +395,7 @@ public final class StackedDotHelper
 
     public void testUpdateBearings() throws ExecutionException
     {
+      System.err.println("Testing update bearings");
       StackedDotHelper helper = new StackedDotHelper();
       TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
       TimeSeriesCollection linePlotData = new TimeSeriesCollection();
