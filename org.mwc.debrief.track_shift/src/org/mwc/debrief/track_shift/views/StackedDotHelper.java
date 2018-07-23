@@ -30,7 +30,6 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
@@ -1857,10 +1856,11 @@ public final class StackedDotHelper
    * @param currentOffset
    *          how far the current track has been dragged
    */
-  public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
-      final TrackDataProvider tracks, final boolean onlyVis,
-      final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets)
+  public void updateFrequencyData(final TimeSeriesCollection dotPlotData,
+      final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
+      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
+      final boolean updateDoublets, final SetBackgroundShade backShader,
+      final ColourStandardXYItemRenderer lineRend)
   {
 
     // do we have anything?
@@ -1886,14 +1886,14 @@ public final class StackedDotHelper
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
       // better clear the plot
-      dotPlot.setDataset(null);
-      linePlot.setDataset(null);
+      dotPlotData.removeAllSeries();
+      linePlotData.removeAllSeries();
       return;
     }
 
     // create the collection of series
-    final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+    // final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
+    // final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
 
     if (_primaryTrack == null)
@@ -2005,12 +2005,12 @@ public final class StackedDotHelper
             }
             predictedValues.addOrUpdate(pFreq);
 
-            TimeSeries errorValues = errorSeries.getSeries(thisSensor
+            TimeSeries errorValues = dotPlotData.getSeries(thisSensor
                 .getName());
             if (errorValues == null)
             {
               errorValues = new TimeSeries(thisSensor.getName());
-              errorSeries.addSeries(errorValues);
+              dotPlotData.addSeries(errorValues);
             }
             errorValues.add(eFreq);
           } // if we have a target
@@ -2025,7 +2025,7 @@ public final class StackedDotHelper
     }
 
     // find the color for maximum value in the error series, if we have error data
-    if (errorSeries.getSeriesCount() > 0)
+    if (dotPlotData.getSeriesCount() > 0)
     {
       final double cutOffValue;
 
@@ -2042,15 +2042,15 @@ public final class StackedDotHelper
         cutOffValue = 1d;
       }
 
-      final Paint errorColor = calculateErrorShadeFor(errorSeries, cutOffValue);
-      dotPlot.setBackgroundPaint(errorColor);
+      final Paint errorColor = calculateErrorShadeFor(dotPlotData, cutOffValue);
+      backShader.setShade(errorColor);
     }
 
     Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
     while (mIter.hasNext())
     {
       TimeSeries series = (TimeSeries) mIter.next();
-      actualSeries.addSeries(series);
+      linePlotData.addSeries(series);
     }
 
     // actualSeries.addSeries(correctedValues);
@@ -2058,7 +2058,7 @@ public final class StackedDotHelper
     while (pIter.hasNext())
     {
       TimeSeries predictedValues = (TimeSeries) pIter.next();
-      actualSeries.addSeries(predictedValues);
+      linePlotData.addSeries(predictedValues);
     }
 
     if (baseValuesSeries.getSeries().size() > 0)
@@ -2067,13 +2067,11 @@ public final class StackedDotHelper
       while (bIter.hasNext())
       {
         TimeSeries baseValues = (TimeSeries) bIter.next();
-        actualSeries.addSeries(baseValues);
+        linePlotData.addSeries(baseValues);
       }
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
-      final ColourStandardXYItemRenderer lineRend =
-          (ColourStandardXYItemRenderer) linePlot.getRenderer();
       lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities.createDiamond(
           0.2f));
       lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
@@ -2081,7 +2079,5 @@ public final class StackedDotHelper
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
 
-    dotPlot.setDataset(errorSeries);
-    linePlot.setDataset(actualSeries);
   }
 }

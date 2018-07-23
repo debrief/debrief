@@ -718,9 +718,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         TimeSeriesCollection line = (TimeSeriesCollection) _linePlot
             .getDataset();
         line.removeAllSeries();
-
-        _targetOverviewPlot.setDataset(null);
-        _targetOverviewPlot.setDataset(1, null);
+        
+        _targetCourseSeries.removeAllSeries();
+        _targetSpeedSeries.removeAllSeries();
       }
     };
 
