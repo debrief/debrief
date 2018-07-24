@@ -121,8 +121,10 @@ import org.junit.runners.Suite;
     org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,
     org.mwc.debrief.track_shift.ambiguity.LegOfCuts.TestLegs.class,
     org.mwc.debrief.track_shift.views.BearingResidualsView.TestResiduals.class,
-    org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,
-    Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class})
+    org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,    
+    Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
+    org.mwc.debrief.track_shift.views.StackedDotHelper.TestSlicing.class,
+    org.mwc.debrief.track_shift.views.StackedDotHelper.TestUpdates.class})
 @RunWith(Suite.class)
 public class AllTests
 {

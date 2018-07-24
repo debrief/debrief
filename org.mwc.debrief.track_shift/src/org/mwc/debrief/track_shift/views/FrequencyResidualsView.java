@@ -16,6 +16,7 @@ package org.mwc.debrief.track_shift.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -38,9 +39,11 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.freq.DopplerCurveFinMath;
 import org.mwc.debrief.track_shift.freq.IDopplerCurve;
+import org.mwc.debrief.track_shift.views.StackedDotHelper.SetBackgroundShade;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
@@ -280,10 +283,30 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // regenerate the interpolated fix, to ensure we're using up-to-date
     // values
     final boolean updateDoubletsVal = true;
+    
+    final TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot.getDataset();
+    final TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot.getDataset();
 
+    final SetBackgroundShade backgroundShader = new SetBackgroundShade()
+    {
+      
+      @Override
+      public void setShade(Paint errorColor)
+      {
+        _dotPlot.setBackgroundPaint(errorColor);
+      }
+    };
+    
+    // have we been created?
+    if (_holder == null || _holder.isDisposed())
+    {
+      return;
+    }
+    
     // update the current datasets
-    _myHelper.updateFrequencyData(_dotPlot, _linePlot, _myTrackDataProvider,
-        _onlyVisible.isChecked(), _holder, this, updateDoubletsVal);
+    _myHelper.updateFrequencyData(errorData, lineData, _myTrackDataProvider,
+        _onlyVisible.isChecked(), this, updateDoubletsVal,
+        backgroundShader, (ColourStandardXYItemRenderer) _linePlot.getRenderer());
   }
 
 }

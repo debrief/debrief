@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.Paint;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -66,6 +67,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
+import org.mwc.debrief.track_shift.views.StackedDotHelper.SetBackgroundShade;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -1299,13 +1301,35 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   @Override
   protected void updateData(final boolean updateDoublets)
   {
+
+    SetBackgroundShade backShader = new SetBackgroundShade()
+    {
+
+      @Override
+      public void setShade(Paint errorColor)
+      {
+        _dotPlot.setBackgroundPaint(errorColor);
+      }
+    };
     // update the current datasets
-    _myHelper.updateBearingData(_dotPlot, _linePlot, _targetOverviewPlot,
-        _myTrackDataProvider, _onlyVisible.isChecked(), showCourse.isChecked(),
-        relativeAxes.isChecked(), _holder, this, updateDoublets,
-        _targetCourseSeries, _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+
+    TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot
+        .getDataset();
+    TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
+        .getDataset();
+    
+    // have we been created?
+    if (_holder == null || _holder.isDisposed())
+    {
+      return;
+    }
+    
+    _myHelper.updateBearingData(errorData, lineData, _myTrackDataProvider,
+        _onlyVisible.isChecked(), showCourse.isChecked(), relativeAxes
+            .isChecked(), this, updateDoublets, _targetCourseSeries,
+        _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
         ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
-        _overviewSpeedRenderer, _overviewCourseRenderer);
+        _overviewSpeedRenderer, _overviewCourseRenderer, backShader);
 
     // and tell the O/S zone chart to update it's controls
     if (ownshipZoneChart != null)
