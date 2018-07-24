@@ -1800,7 +1800,7 @@ public final class StackedDotHelper
   {
     return _primaryTracks;
   }
-  
+
   public TrackWrapper getPrimaryTrack()
   {
     return _primaryTrack;
@@ -2005,13 +2005,11 @@ public final class StackedDotHelper
     // produce a dataset for each track
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
-    final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
-    sList.add(allCuts);
     sList.add(targetCalculatedSeries);
     sList.add(targetBearingSeries);
     sList.add(ownshipCourseSeries);
@@ -2284,7 +2282,7 @@ public final class StackedDotHelper
       }
 
       // special case - if the primary track is a single location
-      for(TrackWrapper thisPrimary: getPrimaryTracks())
+      for (TrackWrapper thisPrimary : getPrimaryTracks())
       {
         final TimeSeries osCourseValues;
         if (_primaryTrack.isSinglePointTrack())
@@ -2303,113 +2301,7 @@ public final class StackedDotHelper
 
       if (_secondaryTrack != null)
       {
-        // sort out the target course/speed
-        final Enumeration<Editable> segments = _secondaryTrack.segments();
-        final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG,
-            endDTG);
-        while (segments.hasMoreElements())
-        {
-          final Editable nextE = segments.nextElement();
-          // if there's just one segment - then we need to wrap it
-          final SegmentList segList;
-          if (nextE instanceof SegmentList)
-          {
-            segList = (SegmentList) nextE;
-          }
-          else
-          {
-            segList = new SegmentList();
-            // note: we can only set the wrapper
-            // if we're looking at a real TMA solution
-            if (_secondaryTrack instanceof TrackWrapper)
-            {
-              segList.setWrapper((TrackWrapper) _secondaryTrack);
-            }
-
-            // ok, add this segment to the list
-            segList.addSegment((TrackSegment) nextE);
-          }
-
-          final Enumeration<Editable> segIter = segList.elements();
-          while (segIter.hasMoreElements())
-          {
-            final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-            // is this an infill segment
-            final boolean isInfill = segment instanceof DynamicInfillSegment;
-
-            // check it has values, and is in range
-            if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-                || segment.endDTG().lessThan(startDTG))
-            {
-              // ok, we can skip this one
-            }
-            else
-            {
-              final Enumeration<Editable> points = segment.elements();
-              Double lastCourse = null;
-              while (points.hasMoreElements())
-              {
-                final FixWrapper fw = (FixWrapper) points.nextElement();
-                if (period.contains(fw.getDateTimeGroup()))
-                {
-                  // ok, create a point for it
-                  final FixedMillisecond thisMilli = new FixedMillisecond(fw
-                      .getDateTimeGroup().getDate().getTime());
-
-                  double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-                      .getCourse());
-                  final double tgtSpeed = fw.getSpeed();
-
-                  // see if we need to change the domain of the course to match
-                  // the previous value
-                  if (lastCourse != null)
-                  {
-                    if (tgtCourse - lastCourse > 190)
-                    {
-                      tgtCourse = tgtCourse - 360;
-                    }
-                    else if (tgtCourse - lastCourse < -180)
-                    {
-                      tgtCourse = 360 + tgtCourse;
-                    }
-                  }
-                  lastCourse = tgtCourse;
-
-                  // trim to +/- domain if we're flipping axes
-                  if (flipAxes && tgtCourse > 180)
-                  {
-                    tgtCourse -= 360;
-                  }
-
-                  // we use the raw color for infills, to help find which
-                  // infill we're referring to (esp in random infills)
-                  final Color courseColor;
-                  final Color speedColor;
-                  if (isInfill)
-                  {
-                    courseColor = fw.getColor();
-                    speedColor = fw.getColor();
-                  }
-                  else
-                  {
-                    courseColor = fw.getColor().brighter();
-                    speedColor = fw.getColor().darker();
-                  }
-
-                  final ColouredDataItem crseBearingItem = new ColouredDataItem(
-                      thisMilli, tgtCourse, courseColor, isInfill, null, true,
-                      true);
-                  tgtCourseValues.add(crseBearingItem);
-                  final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
-                      thisMilli, tgtSpeed, speedColor, isInfill, null, true,
-                      true);
-                  tgtSpeedValues.add(tgtSpeedItem);
-                }
-              }
-            }
-          }
-        }
+        storeTargetCourseSpeedData(_secondaryTrack, startDTG, endDTG, flipAxes, tgtCourseValues, tgtSpeedValues);
       }
 
       // sort out the sensor cuts (all of them, not just those when we have target legs)
@@ -2423,42 +2315,9 @@ public final class StackedDotHelper
       {
         sensorPeriod = null;
       }
-      final List<SensorContactWrapper> theBearings = getBearings(_primaryTrack,
-          onlyVis, sensorPeriod);
-      for (final SensorContactWrapper cut : theBearings)
-      {
-        double theBearing;
 
-        // ensure it's in the positive domain
-        if (cut.getBearing() < 0)
-        {
-          theBearing = cut.getBearing() + 360;
-        }
-        else
-        {
-          theBearing = cut.getBearing();
-        }
-
-        // put in the correct domain, if necessary
-        if (flipAxes)
-        {
-          if (theBearing > 180d)
-          {
-            theBearing -= 360d;
-          }
-        }
-        else
-        {
-          if (theBearing < 0)
-          {
-            theBearing += 360;
-          }
-        }
-
-        // ok, store it.
-        allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
-            .getDTG().getDate().getTime()), theBearing));
-      }
+      final TimeSeriesCollection allCutsColl = getAllSensorCuts(onlyVis,
+          flipAxes, sensorPeriod);
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
       while (mIter.hasNext())
@@ -2507,34 +2366,22 @@ public final class StackedDotHelper
       if (showCourse)
       {
         Iterator<?> oIter = ownshipCourseColl.getSeries().iterator();
-        
-        boolean zoneCoursesPending = true;
-        
-        while(oIter.hasNext())
+
+        while (oIter.hasNext())
         {
           final TimeSeries thisOwnshipSeries = (TimeSeries) oIter.next();
           targetCourseSeries.addSeries(thisOwnshipSeries);
-          
+
           // and the course data for the zone chart
-          if(zoneCoursesPending)
+          if (!thisOwnshipSeries.isEmpty())
           {
-            // we only process the first time-series, ignore the rest.
-            zoneCoursesPending = false;
-            
-            if (!thisOwnshipSeries.isEmpty())
+            if (ownshipCourseSeries != null)
             {
-              if (ownshipCourseSeries != null)
+              // is it currently empty?
+              if (ownshipCourseSeries.isEmpty())
               {
-                // is it currently empty?
-                if (ownshipCourseSeries.isEmpty())
-                {
-                  ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
-                }
+                ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
               }
-            }
-            else
-            {
-              // ok, ignore it. we only assign the data in the first pass
             }
           }
         }
@@ -2548,14 +2395,16 @@ public final class StackedDotHelper
       }
 
       // and the bearing data for the zone chart
-      if (!allCuts.isEmpty())
+      Iterator<?> cutsIter = allCutsColl.getSeries().iterator();
+      while (cutsIter.hasNext())
       {
+        TimeSeries thisS = (TimeSeries) cutsIter.next();
         if (targetBearingSeries != null)
         {
           // is it currently empty?
           if (targetBearingSeries.isEmpty())
           {
-            targetBearingSeries.addAndOrUpdate(allCuts);
+            targetBearingSeries.addAndOrUpdate(thisS);
           }
           else
           {
@@ -2600,6 +2449,166 @@ public final class StackedDotHelper
         series.setNotify(true);
       }
     }
+  }
+
+  private static void storeTargetCourseSpeedData(
+      ISecondaryTrack _secondaryTrack, HiResDate startDTG, HiResDate endDTG,
+      boolean flipAxes, TimeSeries tgtCourseValues, TimeSeries tgtSpeedValues)
+  {
+    // sort out the target course/speed
+    final Enumeration<Editable> segments = _secondaryTrack.segments();
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+      // if there's just one segment - then we need to wrap it
+      final SegmentList segList;
+      if (nextE instanceof SegmentList)
+      {
+        segList = (SegmentList) nextE;
+      }
+      else
+      {
+        segList = new SegmentList();
+        // note: we can only set the wrapper
+        // if we're looking at a real TMA solution
+        if (_secondaryTrack instanceof TrackWrapper)
+        {
+          segList.setWrapper((TrackWrapper) _secondaryTrack);
+        }
+
+        // ok, add this segment to the list
+        segList.addSegment((TrackSegment) nextE);
+      }
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        // is this an infill segment
+        final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+        // check it has values, and is in range
+        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG))
+        {
+          // ok, we can skip this one
+        }
+        else
+        {
+          final Enumeration<Editable> points = segment.elements();
+          Double lastCourse = null;
+          while (points.hasMoreElements())
+          {
+            final FixWrapper fw = (FixWrapper) points.nextElement();
+            if (period.contains(fw.getDateTimeGroup()))
+            {
+              // ok, create a point for it
+              final FixedMillisecond thisMilli = new FixedMillisecond(fw
+                  .getDateTimeGroup().getDate().getTime());
+
+              double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+                  .getCourse());
+              final double tgtSpeed = fw.getSpeed();
+
+              // see if we need to change the domain of the course to match
+              // the previous value
+              if (lastCourse != null)
+              {
+                if (tgtCourse - lastCourse > 190)
+                {
+                  tgtCourse = tgtCourse - 360;
+                }
+                else if (tgtCourse - lastCourse < -180)
+                {
+                  tgtCourse = 360 + tgtCourse;
+                }
+              }
+              lastCourse = tgtCourse;
+
+              // trim to +/- domain if we're flipping axes
+              if (flipAxes && tgtCourse > 180)
+              {
+                tgtCourse -= 360;
+              }
+
+              // we use the raw color for infills, to help find which
+              // infill we're referring to (esp in random infills)
+              final Color courseColor;
+              final Color speedColor;
+              if (isInfill)
+              {
+                courseColor = fw.getColor();
+                speedColor = fw.getColor();
+              }
+              else
+              {
+                courseColor = fw.getColor().brighter();
+                speedColor = fw.getColor().darker();
+              }
+
+              final ColouredDataItem crseBearingItem = new ColouredDataItem(
+                  thisMilli, tgtCourse, courseColor, isInfill, null, true,
+                  true);
+              tgtCourseValues.add(crseBearingItem);
+              final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
+                  thisMilli, tgtSpeed, speedColor, isInfill, null, true, true);
+              tgtSpeedValues.add(tgtSpeedItem);
+            }
+          }
+        }
+
+      }
+    }
+  }
+
+  private TimeSeriesCollection getAllSensorCuts(final boolean onlyVis,
+      final boolean flipAxes, final TimePeriod sensorPeriod)
+  {
+    TimeSeriesCollection allCutsColl = new TimeSeriesCollection();
+
+    for (TrackWrapper primaryTrack : getPrimaryTracks())
+    {
+      final String trackName = primaryTrack.getName();
+      final List<SensorContactWrapper> theBearings = getBearings(primaryTrack,
+          onlyVis, sensorPeriod);
+      for (final SensorContactWrapper cut : theBearings)
+      {
+        double theBearing;
+
+        // ensure it's in the positive domain
+        if (cut.getBearing() < 0)
+        {
+          theBearing = cut.getBearing() + 360;
+        }
+        else
+        {
+          theBearing = cut.getBearing();
+        }
+
+        // put in the correct domain, if necessary
+        if (flipAxes)
+        {
+          if (theBearing > 180d)
+          {
+            theBearing -= 360d;
+          }
+        }
+        else
+        {
+          if (theBearing < 0)
+          {
+            theBearing += 360;
+          }
+        }
+
+        final TimeSeriesDataItem item = new TimeSeriesDataItem(
+            new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing);
+        safelyAddItem(allCutsColl, trackName, item);
+      }
+    }
+    return allCutsColl;
   }
 
   /**
