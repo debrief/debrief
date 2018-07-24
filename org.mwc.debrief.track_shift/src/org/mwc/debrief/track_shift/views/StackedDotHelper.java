@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
@@ -2080,66 +2081,21 @@ public final class StackedDotHelper
             bearingColor = thisColor.darker();
           }
 
-          // put the measured bearing back in the positive domain
-          if (measuredBearing < 0)
-          {
-            measuredBearing += 360d;
-          }
+          SensorWrapper sensor = thisD.getSensorCut().getSensor();
 
-          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-          if (flipAxes)
-          {
-            if (measuredBearing > 180)
-            {
-              measuredBearing -= 360;
-            }
-          }
-
-          final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
-              measuredBearing, bearingColor, false, null, true,
-              parentIsNotDynamic, thisD.getSensorCut());
-
-          // find the series for this sensor
-          final SensorWrapper sensor = thisD.getSensorCut().getSensor();
-          final String seriesName = multiSensor
-              ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName()
-              : BaseStackedDotsView.MEASURED_VALUES;
-          safelyAddItem(measuredValuesColl, seriesName, mBearing);
+          storeMeasuredBearing(multiSensor, sensor,
+              measuredBearing, flipAxes, thisMilli,
+              bearingColor, parentIsNotDynamic, thisD,
+              measuredValuesColl);
 
           if (hasAmbiguous)
           {
-            // put the ambig baering into the correct domain
-            while (ambigBearing < 0)
-            {
-              ambigBearing += 360;
-            }
-
-            if (flipAxes && ambigBearing > 180)
-            {
-              ambigBearing -= 360;
-            }
-
-            // make the color darker, if we're on the stbd bearnig
-            final Color ambigColor;
-            if (bearingToPort)
-            {
-              ambigColor = thisColor.darker();
-            }
-            else
-            {
-              ambigColor = thisColor;
-            }
-
-            // if this cut has been resolved, we don't show a symbol
-            // for the ambiguous cut
-            final boolean showSymbol = true;
-            final Color color = thisD.getHasBeenResolved() ? grayShade
-                : ambigColor;
-
-            final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
-                ambigBearing, color, false, null, showSymbol,
-                parentIsNotDynamic, thisD.getSensorCut());
-            safelyAddItem(ambigValuesColl, sensor.getName(), amBearing);
+            final String ambSeriesName = multiSensor
+                ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName() + "(A)"
+                : BaseStackedDotsView.MEASURED_VALUES + "(A)";
+            storeAmbiguousCut(ambigBearing, flipAxes, bearingToPort, thisColor,
+                thisD, grayShade, thisMilli, parentIsNotDynamic,
+                ambigValuesColl, ambSeriesName);
           }
 
           // do we have target data?
@@ -2240,10 +2196,8 @@ public final class StackedDotHelper
 
                 safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
               }
-
             }
           }
-
         }
         catch (final SeriesException e)
         {
@@ -2301,7 +2255,8 @@ public final class StackedDotHelper
 
       if (_secondaryTrack != null)
       {
-        storeTargetCourseSpeedData(_secondaryTrack, startDTG, endDTG, flipAxes, tgtCourseValues, tgtSpeedValues);
+        storeTargetCourseSpeedData(_secondaryTrack, startDTG, endDTG, flipAxes,
+            tgtCourseValues, tgtSpeedValues);
       }
 
       // sort out the sensor cuts (all of them, not just those when we have target legs)
@@ -2449,6 +2404,74 @@ public final class StackedDotHelper
         series.setNotify(true);
       }
     }
+  }
+
+  private static void storeMeasuredBearing(boolean multiSensor, SensorWrapper sensor,
+      double measuredBearing, boolean flipAxes, RegularTimePeriod thisMilli,
+      Color bearingColor, boolean parentIsNotDynamic, Doublet thisD,
+      TimeSeriesCollection measuredValuesColl)
+  {
+    final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES
+        + sensor.getName() : BaseStackedDotsView.MEASURED_VALUES;
+
+    // put the measured bearing back in the positive domain
+    if (measuredBearing < 0)
+    {
+      measuredBearing += 360d;
+    }
+
+    // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+    if (flipAxes)
+    {
+      if (measuredBearing > 180)
+      {
+        measuredBearing -= 360;
+      }
+    }
+
+    final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
+        measuredBearing, bearingColor, false, null, true, parentIsNotDynamic,
+        thisD.getSensorCut());
+    safelyAddItem(measuredValuesColl, seriesName, mBearing);
+
+  }
+
+  private static void storeAmbiguousCut(double ambigBearing, boolean flipAxes,
+      boolean bearingToPort, Color thisColor, Doublet thisD, Color grayShade,
+      RegularTimePeriod thisMilli, boolean parentIsNotDynamic,
+      TimeSeriesCollection ambigValuesColl, String seriesName)
+  {
+    // put the ambig baering into the correct domain
+    while (ambigBearing < 0)
+    {
+      ambigBearing += 360;
+    }
+
+    if (flipAxes && ambigBearing > 180)
+    {
+      ambigBearing -= 360;
+    }
+
+    // make the color darker, if we're on the stbd bearnig
+    final Color ambigColor;
+    if (bearingToPort)
+    {
+      ambigColor = thisColor.darker();
+    }
+    else
+    {
+      ambigColor = thisColor;
+    }
+
+    // if this cut has been resolved, we don't show a symbol
+    // for the ambiguous cut
+    final boolean showSymbol = true;
+    final Color color = thisD.getHasBeenResolved() ? grayShade : ambigColor;
+
+    final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
+        ambigBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
+            .getSensorCut());
+    safelyAddItem(ambigValuesColl, seriesName, amBearing);
   }
 
   private static void storeTargetCourseSpeedData(
