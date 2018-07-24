@@ -1538,7 +1538,7 @@ public final class StackedDotHelper
   /**
    * the maximum number of items we plot as symbols. Above this we just use a line
    */
-  private final int MAX_ITEMS_TO_PLOT = 1000;
+  private final static int MAX_ITEMS_TO_PLOT = 1000;
 
   /**
    * the track being dragged
@@ -2129,108 +2129,13 @@ public final class StackedDotHelper
       if (_primaryTrack.isSinglePointTrack())
       {
         // ok, it's a single point. We'll use the sensor cut times for the course data
-
-        // get the single location
-        final FixWrapper loc = (FixWrapper) _primaryTrack.getPositionIterator()
-            .nextElement();
-
-        final Enumeration<Editable> segments = _secondaryTrack.segments();
-        while (segments.hasMoreElements())
-        {
-          final Editable nextE = segments.nextElement();
-          // if there's just one segment - then we need to wrap it
-          final SegmentList segList;
-          if (nextE instanceof SegmentList)
-          {
-            segList = (SegmentList) nextE;
-          }
-          else
-          {
-            segList = new SegmentList();
-            segList.addSegment((TrackSegment) nextE);
-          }
-
-          final Enumeration<Editable> segIter = segList.elements();
-          while (segIter.hasMoreElements())
-          {
-            final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-            final Enumeration<Editable> enumer = segment.elements();
-            while (enumer.hasMoreElements())
-            {
-              final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
-
-              double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
-                  .getCourse());
-
-              // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-              if (flipAxes && ownshipCourse > 180)
-              {
-                ownshipCourse -= 360;
-              }
-              final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
-                  .getDateTimeGroup().getDate().getTime());
-              final ColouredDataItem crseBearing = new ColouredDataItem(
-                  thisMilli, ownshipCourse, loc.getColor(), true, null, true,
-                  true);
-              osCourseValues.add(crseBearing);
-            }
-          }
-        }
+        getSinglePointCourseData(osCourseValues, _primaryTrack, _secondaryTrack,
+            flipAxes);
       }
       else
       {
-
-        // loop through using the iterator
-        final Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
-        final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
+        getStandardCourseData(osCourseValues, _primaryTrack, flipAxes, startDTG,
             endDTG);
-        final List<Editable> validItems = new LinkedList<Editable>();
-        while (pIter.hasMoreElements())
-        {
-          final FixWrapper fw = (FixWrapper) pIter.nextElement();
-          if (validPeriod.contains(fw.getDateTimeGroup()))
-          {
-            validItems.add(fw);
-          }
-          else
-          {
-            // have we passed the end of the requested period?
-            if (fw.getDateTimeGroup().greaterThan(endDTG))
-            {
-              // ok, drop out
-              break;
-            }
-          }
-        }
-
-        // ok, now go through the list
-        final Iterator<Editable> vIter = validItems.iterator();
-        final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
-        int ctr = 0;
-        while (vIter.hasNext())
-        {
-          final Editable ed = vIter.next();
-          if (ctr++ % freq == 0)
-          {
-            final FixWrapper fw = (FixWrapper) ed;
-            final FixedMillisecond thisMilli = new FixedMillisecond(fw
-                .getDateTimeGroup().getDate().getTime());
-            double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-                .getCourse());
-
-            // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-            if (flipAxes && ownshipCourse > 180)
-            {
-              ownshipCourse -= 360;
-            }
-
-            final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
-                ownshipCourse, fw.getColor(), true, null, true, true);
-            osCourseValues.add(crseBearing);
-          }
-        }
-
       }
 
       if (_secondaryTrack != null)
@@ -2516,6 +2421,115 @@ public final class StackedDotHelper
       for (final TimeSeriesCollection series : tList)
       {
         series.setNotify(true);
+      }
+    }
+  }
+
+  private static void getStandardCourseData(TimeSeries osCourseValues,
+      TrackWrapper primaryTrack, boolean flipAxes, HiResDate startDTG,
+      HiResDate endDTG)
+  {
+
+    // loop through using the iterator
+    final Enumeration<Editable> pIter = primaryTrack.getPositionIterator();
+    final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
+        endDTG);
+    final List<Editable> validItems = new LinkedList<Editable>();
+    while (pIter.hasMoreElements())
+    {
+      final FixWrapper fw = (FixWrapper) pIter.nextElement();
+      if (validPeriod.contains(fw.getDateTimeGroup()))
+      {
+        validItems.add(fw);
+      }
+      else
+      {
+        // have we passed the end of the requested period?
+        if (fw.getDateTimeGroup().greaterThan(endDTG))
+        {
+          // ok, drop out
+          break;
+        }
+      }
+    }
+
+    // ok, now go through the list
+    final Iterator<Editable> vIter = validItems.iterator();
+    final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
+    int ctr = 0;
+    while (vIter.hasNext())
+    {
+      final Editable ed = vIter.next();
+      if (ctr++ % freq == 0)
+      {
+        final FixWrapper fw = (FixWrapper) ed;
+        final FixedMillisecond thisMilli = new FixedMillisecond(fw
+            .getDateTimeGroup().getDate().getTime());
+        double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+            .getCourse());
+
+        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+        if (flipAxes && ownshipCourse > 180)
+        {
+          ownshipCourse -= 360;
+        }
+
+        final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+            ownshipCourse, fw.getColor(), true, null, true, true);
+        osCourseValues.add(crseBearing);
+      }
+    }
+  }
+
+  private static void getSinglePointCourseData(TimeSeries osCourseValues,
+      TrackWrapper primaryTrack, ISecondaryTrack secondaryTrack,
+      boolean flipAxes)
+  {
+
+    // get the single location
+    final FixWrapper loc = (FixWrapper) primaryTrack.getPositionIterator()
+        .nextElement();
+
+    final Enumeration<Editable> segments = secondaryTrack.segments();
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+      // if there's just one segment - then we need to wrap it
+      final SegmentList segList;
+      if (nextE instanceof SegmentList)
+      {
+        segList = (SegmentList) nextE;
+      }
+      else
+      {
+        segList = new SegmentList();
+        segList.addSegment((TrackSegment) nextE);
+      }
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        final Enumeration<Editable> enumer = segment.elements();
+        while (enumer.hasMoreElements())
+        {
+          final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
+
+          double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
+              .getCourse());
+
+          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+          if (flipAxes && ownshipCourse > 180)
+          {
+            ownshipCourse -= 360;
+          }
+          final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
+              .getDateTimeGroup().getDate().getTime());
+          final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+              ownshipCourse, loc.getColor(), true, null, true, true);
+          osCourseValues.add(crseBearing);
+        }
       }
     }
   }
