@@ -304,7 +304,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     }
     
     // update the current datasets
-    _myHelper.updateFrequencyData(errorData, lineData, _myTrackDataProvider,
+    _myHelper.updateFrequencyData(errorData, lineData, _switchableTrackDataProvider,
         _onlyVisible.isChecked(), this, updateDoubletsVal,
         backgroundShader, (ColourStandardXYItemRenderer) _linePlot.getRenderer());
   }

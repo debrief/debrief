@@ -98,13 +98,12 @@ public final class StackedDotHelper
    */
   public static interface SwitchableTrackProvider
   {
-    
-    /** option to indicate that 
-     * multiple secondary tracks should be treated
-     * as multiple primary tracks.
+    /** whether we have any valid data
+     * 
+     * @return yes/no
      */
-    public void setTreatSecondaryAsPrimary(final boolean apply);
-
+    public boolean isPopulated();
+    
     /**
      * find out what the secondary track is
      */
@@ -527,6 +526,36 @@ public final class StackedDotHelper
 
       return layers;
     }
+    
+    private static class SwitchableTrackProviderImpl implements SwitchableTrackProvider
+    {
+
+      private final TrackDataProvider _prov;
+
+      public SwitchableTrackProviderImpl(TrackDataProvider tracks)
+      {
+        _prov = tracks;
+      }
+
+      @Override
+      public boolean isPopulated()
+      {
+        return _prov != null;
+      }
+
+      @Override
+      public WatchableList[] getSecondaryTracks()
+      {
+        return _prov.getSecondaryTracks();
+      }
+
+      @Override
+      public WatchableList[] getPrimaryTracks()
+      {
+        return new WatchableList[] {_prov.getPrimaryTrack()};
+      }
+      
+    }
 
     public void testUpdateBearings() throws ExecutionException
     {
@@ -534,7 +563,11 @@ public final class StackedDotHelper
       TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
       TimeSeriesCollection linePlotData = new TimeSeriesCollection();
       
-      TrackDataProvider tracks = getTrackData();
+      final TrackDataProvider tracks = getTrackData();
+      
+      SwitchableTrackProvider switcher = new SwitchableTrackProviderImpl(tracks);
+ 
+      
       boolean onlyVis = false;
       boolean showCourse = true;
       boolean flipAxes = false;
@@ -559,8 +592,8 @@ public final class StackedDotHelper
         }
       };
       
-      helper.initialise(tracks, true, onlyVis, logger, "Bearings", true, false);
-      helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
+      helper.initialise(switcher, true, onlyVis, logger, "Bearings", true, false);
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
@@ -631,7 +664,7 @@ public final class StackedDotHelper
       
       onlyVis = false;
       
-      helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
@@ -698,7 +731,7 @@ public final class StackedDotHelper
 
       onlyVis = true;
       
-      helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
@@ -749,7 +782,7 @@ public final class StackedDotHelper
         sensor.setVisible(true);
       }
             
-      helper.updateBearingData(dotPlotData, linePlotData, tracks, onlyVis,
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
@@ -1572,7 +1605,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    */
-  void initialise(final TrackDataProvider tracks, final boolean showError,
+  void initialise(final SwitchableTrackProvider provider, final boolean showError,
       final boolean onlyVis, final ErrorLogger logger, final String dataType,
       final boolean needBrg, final boolean needFreq)
   {
@@ -1581,16 +1614,14 @@ public final class StackedDotHelper
     _primaryTrack = null;
 
     // do we have some data?
-    if (tracks == null)
+    if (provider == null)
     {
       // output error message
       logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
       return;
     }
 
-    // check we have a primary track
-    final WatchableList priTrk = tracks.getPrimaryTrack();
-    if (priTrk == null)
+    if(!provider.isPopulated() || provider.getPrimaryTracks() == null || provider.getPrimaryTracks().length == 0)
     {
       logger.logError(IStatus.INFO,
           "A primary track must be placed on the Tote", null);
@@ -1598,20 +1629,24 @@ public final class StackedDotHelper
     }
     else
     {
-      if (!(priTrk instanceof TrackWrapper))
+      WatchableList[] primaryTracks = provider.getPrimaryTracks();
+      for(WatchableList priTrk: primaryTracks)
       {
-        logger.logError(IStatus.INFO,
-            "The primary track must be a vehicle track", null);
-        return;
-      }
-      else
-      {
-        _primaryTrack = (TrackWrapper) priTrk;
+        if (priTrk instanceof TrackWrapper)
+        {
+          _primaryTrack = (TrackWrapper) priTrk;
+        }
+        else
+        {
+          logger.logError(IStatus.INFO,
+              "The primary track must be a vehicle track", null);
+          return;
+        }
       }
     }
 
     // now the sec track
-    final WatchableList[] secs = tracks.getSecondaryTracks();
+    final WatchableList[] secs = provider.getSecondaryTracks();
 
     // any?
     if ((secs == null) || (secs.length == 0))
@@ -1713,7 +1748,7 @@ public final class StackedDotHelper
    *          how far the current track has been dragged
    */
   public void updateBearingData(final TimeSeriesCollection dotPlotData,
-      final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
+      final TimeSeriesCollection linePlotData, final SwitchableTrackProvider tracks,
       final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
       final ErrorLogger logger, final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
@@ -2497,7 +2532,7 @@ public final class StackedDotHelper
    *          how far the current track has been dragged
    */
   public void updateFrequencyData(final TimeSeriesCollection dotPlotData,
-      final TimeSeriesCollection linePlotData, final TrackDataProvider tracks,
+      final TimeSeriesCollection linePlotData, final SwitchableTrackProvider tracks,
       final boolean onlyVis, final ErrorLogger logger,
       final boolean updateDoublets, final SetBackgroundShade backShader,
       final ColourStandardXYItemRenderer lineRend)
