@@ -379,6 +379,7 @@ public class ImagesView extends ViewPart {
     };
     mediumIcons.setEnabled(true);
     mediumIcons.setText("Medium Icons");
+    mediumIcons.setImageDescriptor(PlanetmayoImages.VIEW_MEDIUM.getImage());
     
     largeIcons = new Action() {
       @Override
