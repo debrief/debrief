@@ -53,7 +53,7 @@
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor Working="true"
-					DetectionIntervalMillis="346000" ProducesRange="false">
+					DetectionIntervalMillis="346000" ProducesRange="false" Name="s2_cookie">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
@@ -83,21 +83,21 @@
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
 				<TypedCookieSensor Working="true"
-					DetectionIntervalMillis="552000" ProducesRange="false">
+					DetectionIntervalMillis="552000" ProducesRange="false" Name="s1_cookie">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="25" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 			</SensorFit>
-			<Status Course="225" Fuel="100">
+			<Status Course="220" Fuel="100">
 				<Location>
 					<shortLocation Lat="60.7" Long="0.4"></shortLocation>
 				</Location>
 				<Speed Value="4" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="225">
+				<Move Name="leg one" Course="240">
 					<Vector Value="12" Units="nm" /></Move>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
