@@ -19,6 +19,9 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -88,6 +91,31 @@ import junit.framework.TestCase;
 
 public final class StackedDotHelper
 {
+  
+  /** we have a special multistatics use case where
+   * we need to support multiple primary tracks.  
+   *
+   */
+  public static interface SwitchableTrackProvider
+  {
+    
+    /** option to indicate that 
+     * multiple secondary tracks should be treated
+     * as multiple primary tracks.
+     */
+    public void setTreatSecondaryAsPrimary(final boolean apply);
+
+    /**
+     * find out what the secondary track is
+     */
+    public WatchableList[] getSecondaryTracks();
+    
+    /**
+     * find out what the primary tracks are
+     */
+    public WatchableList[] getPrimaryTracks();
+  }
+  
 
   /**
    * convenience class, to avoid having to pass plot into data helper
@@ -216,6 +244,99 @@ public final class StackedDotHelper
 
       return prov;
     }
+    
+    public void testGetMultiPrimaryTrackData() throws FileNotFoundException 
+    {
+      // get our sample data-file
+      final ImportReplay importer = new ImportReplay();
+      final Layers layers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/MultiStatics/multistatics_buoyfield.rep";
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      importer.importThis(fName, is, layers);
+
+      // sort out the sensors
+      importer.storePendingSensors();
+
+      // get the sensor tracks
+      final TrackWrapper rx_1 = (TrackWrapper) layers.findLayer("RX_1");
+      final TrackWrapper rx_2 = (TrackWrapper) layers.findLayer("RX_2");
+
+      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors().first();
+      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors().first();
+      
+      assertNotNull("found sensor 1", rx_1_sensor);
+      assertNotNull("found sensor 2", rx_2_sensor);
+      
+      // ok, we need to move one sensor
+
+      // get the tail
+
+      SensorContactWrapper[] rx1_cuts = getAllCutsFrom(rx_1_sensor);
+      SensorContactWrapper[] rx2_cuts = getAllCutsFrom(rx_2_sensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 42, rx1_cuts.length);
+      assertEquals("got all cuts", 66, rx2_cuts.length);
+
+      final String newName = "TMA_LEG";
+      
+      // ok, we also have to generate some target track
+      TMAfromCuts genny = new TMAfromCuts(rx1_cuts, layers, new WorldVector(
+          Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
+          Color.RED)
+      {
+        @Override
+        public String getTrackNameFor(TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+      
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (Exception e)
+      {
+        fail("exception thrown while running command"  + e.getMessage());
+        e.printStackTrace();
+      }
+
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+      
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0),
+          new HiResDate(new Date().getTime()));
+
+      assertEquals("has fixes", 42, fixes.size());
+
+      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[] {})[0];
+      @SuppressWarnings("deprecation")
+      String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time","12 Dec 2014 12:03:40 GMT", toTime);
+      
+      // and now the track data object
+      TrackDataHelper prov = new TrackDataHelper();
+      prov.addPrimary(rx_1);
+      prov.addPrimary(rx_2);
+      prov.addSecondary(tma);
+
+    //  return prov;
+    }
+
 
     private static class TrackDataHelper implements TrackDataProvider
     {
