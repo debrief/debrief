@@ -27,8 +27,9 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
@@ -39,6 +40,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -64,30 +66,37 @@ import org.mwc.cmap.media.views.images.ThumbnailPackage;
 import MWC.GenericData.HiResDate;
 
 public class ImagesView extends ViewPart {
-	private static final String STATE_FULLSIZE = "fullSize";
 	private static final String STATE_FOLDER = "folder";
 	private static final String STATE_SELECTED_IMAGE = "selectedImage";
 	private static final String STATE_STRETCH = "stretch";	
+	private static final String STATE_THUMBNAIL_WIDTH="thumbnailWidth";
+	private static final String STATE_THUMBNAIL_HEIGHT="thumbnailHeight";
 	
 	public static final String ID = "org.mwc.cmap.media.views.ImagesView";
 	
 	private static final ImageMetaDataComparator IMAGES_COMPARATOR = new ImageMetaDataComparator();
 	
 	private IMemento memento;
-	
-	private StackLayout modeLayout;
+	public static final int SMALL_ICON_WIDTH=35;
+	public static final int SMALL_ICON_HEIGHT=35;
+  public static final int MEDIUM_ICON_WIDTH=65;
+  public static final int MEDIUM_ICON_HEIGHT=65;
+  public static final int LARGE_ICON_WIDTH=110;
+  public static final int LARGE_ICON_HEIGHT=80;
+	private FillLayout mainLayout;
 	private Composite main;
 	private ImageGallery<ImageMetaData, ThumbnailPackage> gallery;
 	private ImagePanel imagePanel;
+	private SashForm dividerPane;
 	
 	private String openedFolder;
-	private boolean loadedGallery;
 	
 	private Action open;
 	private Action refresh;
 	private Action stretch;
-	private Action viewFullsize;
-	private Action viewThumbnails;
+	private Action smallIcons;
+	private Action largeIcons;
+	private Action mediumIcons;
 	
 	private List<ImageMetaData> images;
 	
@@ -118,7 +127,7 @@ public class ImagesView extends ViewPart {
 		}
 	};
 	private boolean _firingNewTime;
-	
+
 	@Override
 	public void init(IViewSite site, IMemento memento) throws PartInitException {
 		super.init(site, memento);
@@ -169,8 +178,20 @@ public class ImagesView extends ViewPart {
 	@Override
 	public void saveState(IMemento memento) {
 		super.saveState(memento);
-		memento.putBoolean(STATE_FULLSIZE, isFullSize());
 		memento.putBoolean(STATE_STRETCH, stretch.isChecked());
+		if(!largeIcons.isEnabled()) {
+		  memento.putInteger(STATE_THUMBNAIL_WIDTH, LARGE_ICON_WIDTH);
+		  memento.putInteger(STATE_THUMBNAIL_HEIGHT, LARGE_ICON_HEIGHT);
+		}
+		if(!smallIcons.isEnabled()) {
+		  memento.putInteger(STATE_THUMBNAIL_WIDTH, SMALL_ICON_WIDTH);
+      memento.putInteger(STATE_THUMBNAIL_HEIGHT, SMALL_ICON_HEIGHT);
+		}
+		if(!mediumIcons.isEnabled()) {
+		  memento.putInteger(STATE_THUMBNAIL_WIDTH, MEDIUM_ICON_WIDTH);
+      memento.putInteger(STATE_THUMBNAIL_HEIGHT, MEDIUM_ICON_HEIGHT);
+		}
+		
 		if (openedFolder != null) {
 			memento.putString(STATE_FOLDER, openedFolder);
 			ImageMetaData meta = gallery.getSelectedImage();
@@ -251,14 +272,13 @@ public class ImagesView extends ViewPart {
 
 	private void createMainWindow(Composite parent) {
 		main = parent;
-		modeLayout = new StackLayout();
-		main.setLayout(modeLayout);
-		
-		imagePanel = new ImagePanel(parent);
-		
-		gallery = new ImageGallery<ImageMetaData, ThumbnailPackage>(parent);
-		gallery.setThumbnailSize(110, 110);
+	  mainLayout = new FillLayout();
+		main.setLayout(mainLayout);
+		dividerPane = new SashForm(main,SWT.HORIZONTAL);
+		gallery = new ImageGallery<ImageMetaData, ThumbnailPackage>(dividerPane);
+		gallery.setThumbnailSize(LARGE_ICON_WIDTH,LARGE_ICON_HEIGHT);
 		gallery.setDefaultImage(PlanetmayoImages.UNKNOWN.getImage().createImage(gallery.getMainComposite().getDisplay()));
+		imagePanel = new ImagePanel(dividerPane);
 		gallery.setLabelBuilder(new ImageGalleryElementsBuilder<ImageMetaData, ThumbnailPackage>() {
 			
 			@Override
@@ -301,17 +321,13 @@ public class ImagesView extends ViewPart {
 			public void mouseDown(MouseEvent event) {
 				
 			}
-			
 			@Override
-			@SuppressWarnings("unchecked")
-			public void mouseDoubleClick(MouseEvent event) {
-				ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label = (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
-				//#2965 - 8, maximize image instead of opening in showimagedialog 
-				setFullSize(true);
-				
+			public void mouseDoubleClick(MouseEvent e)
+			{
+			  
 			}
+			
 		});
-		modeLayout.topControl = gallery.getMainComposite();
 	}
 	
 	private void createActions() {
@@ -348,28 +364,33 @@ public class ImagesView extends ViewPart {
 		refresh.setText("Refresh");
 		refresh.setEnabled(false);
 		
-		viewFullsize = new Action() {
-
-			@Override
-			public void run() {
-				setFullSize(true);
-			}
+		smallIcons = new Action() {
+		  @Override
+		  public void run() {
+		    setSmallThumbnails();
+		  };
 		};
-		viewFullsize.setEnabled(true);
-		viewFullsize.setImageDescriptor(PlanetmayoImages.VIEW_FULLSIZE.getImage());
-		viewFullsize.setText("Full size");
+		smallIcons.setEnabled(true);
+		smallIcons.setText("SmallIcons");
 		
-		viewThumbnails = new Action() {
-
-			@Override
-			public void run() {
-				setFullSize(false);
-			}
-		};
-		viewThumbnails.setEnabled(false);
-		viewThumbnails.setImageDescriptor(PlanetmayoImages.VIEW_THUMBNAILS.getImage());
-		viewThumbnails.setText("Thumbnails");		
-		
+		mediumIcons = new Action() {
+      @Override
+      public void run() {
+        setMediumThumbnails();
+      };
+    };
+    mediumIcons.setEnabled(true);
+    mediumIcons.setText("Medium Icons");
+    
+    largeIcons = new Action() {
+      @Override
+      public void run() {
+        setLargeThumbnails();
+      };
+    };
+    largeIcons.setEnabled(false);
+    largeIcons.setText("Large Icons");
+    
 		stretch = new Action("Stretch", Action.AS_CHECK_BOX) {
 
 			@Override
@@ -390,19 +411,22 @@ public class ImagesView extends ViewPart {
 		IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
 		toolbar.add(stretch);
 		toolbar.add(new Separator());
-		toolbar.add(viewFullsize);
-		toolbar.add(viewThumbnails);
-		toolbar.add(new Separator());		
+		toolbar.add(largeIcons);
+		toolbar.add(smallIcons);
+		toolbar.add(mediumIcons);
+		toolbar.add(new Separator());
 		toolbar.add(refresh);		
 		toolbar.add(open);
+		
 	}
 	
 	private void fillMenu() {
 		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
 		menu.add(stretch);
 		menu.add(new Separator());
-		menu.add(viewFullsize);
-		menu.add(viewThumbnails);
+		menu.add(largeIcons);
+		menu.add(mediumIcons);
+		menu.add(smallIcons);
 		menu.add(new Separator());			
 		menu.add(open);
 		menu.add(refresh);
@@ -410,7 +434,6 @@ public class ImagesView extends ViewPart {
 	
 	public boolean openFolder(String folderName) {
 		this.openedFolder = folderName;
-		loadedGallery = false;
 		gallery.removeAll();
 		imagePanel.setCurrentImage(null, null, true);
 		imagePanel.setNextImage(null, null);
@@ -437,12 +460,12 @@ public class ImagesView extends ViewPart {
 		}
 		
 		Collections.sort(images, IMAGES_COMPARATOR);
-		loadedGallery = !isFullSize();
+		//loadedGallery =true;
 		for (ImageMetaData image : images) {
 			gallery.addImage(image, null);
-			if (loadedGallery) {
+			//if (loadedGallery) {
 				ImageLoader.getInstance().load(image.getFileName(), image, gallery);
-			}
+			//}
 		}
 		if (! images.isEmpty()) {
 			imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
@@ -472,38 +495,67 @@ public class ImagesView extends ViewPart {
 		
 	}
 	
-	private void setFullSize(boolean fullSize) {
-		viewFullsize.setEnabled(! fullSize);
-		viewThumbnails.setEnabled(fullSize);
-		modeLayout.topControl = fullSize ? imagePanel : gallery.getMainComposite();
-		if (! fullSize && ! loadedGallery && images != null) {
-			loadedGallery = true;
-			for (ImageMetaData image : images) {
-				ImageLoader.getInstance().load(image.getFileName(), image, gallery);
-			}
-		}
-		main.layout();
-	}
-	
-	private boolean isFullSize() {
-		return modeLayout.topControl == imagePanel; 
-	}
 	
 	@Override
 	public void setFocus() {
 		
 	}
 	
+	private void setLargeThumbnails() {
+	  smallIcons.setEnabled(true);
+    largeIcons.setEnabled(false);
+    mediumIcons.setEnabled(true);
+    gallery.setThumbnailSize(LARGE_ICON_WIDTH, LARGE_ICON_HEIGHT);
+    reloadImages();   
+	}
+	private void reloadImages() {
+	  if(images!=null && !images.isEmpty()) {
+	    for (ImageMetaData image : images) {
+	      gallery.addImage(image, null);
+        ImageLoader.getInstance().load(image.getFileName(), image, gallery);
+	    }
+	    if (! images.isEmpty()) {
+	      imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
+	      ImageLoader.getInstance().load(imagePanel);
+	    }
+	    gallery.redrawGallery();
+	  }
+	}
+	
+	private void setMediumThumbnails() {
+	  smallIcons.setEnabled(true);
+    largeIcons.setEnabled(true);
+    mediumIcons.setEnabled(false);
+    gallery.setThumbnailSize(MEDIUM_ICON_WIDTH, MEDIUM_ICON_HEIGHT);
+    reloadImages();
+	}
+	
+	private void setSmallThumbnails() {
+	  smallIcons.setEnabled(false);
+    largeIcons.setEnabled(true);
+    mediumIcons.setEnabled(true);
+    gallery.setThumbnailSize(SMALL_ICON_WIDTH, SMALL_ICON_HEIGHT);
+    reloadImages();
+	}
+	
 	public void restoreSavedState() {
 		if (memento == null) {
 			return;
 		}
-		if (memento.getBoolean(STATE_FULLSIZE) != null) {
-			setFullSize(memento.getBoolean(STATE_FULLSIZE));
-		}
 		if (memento.getBoolean(STATE_STRETCH) != null) {
 			imagePanel.setStretchMode(memento.getBoolean(STATE_STRETCH));
 			stretch.setChecked(memento.getBoolean(STATE_STRETCH));
+		}
+		if(memento.getInteger(STATE_THUMBNAIL_WIDTH)!=null) {
+  		if(memento.getInteger(STATE_THUMBNAIL_WIDTH)==LARGE_ICON_WIDTH) {
+  		  setLargeThumbnails();
+  		}
+  		else if(memento.getInteger(STATE_THUMBNAIL_WIDTH)==MEDIUM_ICON_WIDTH) {
+  		  setMediumThumbnails();
+  		}
+  		else {
+  		  setSmallThumbnails();
+  		}
 		}
 		if (memento.getString(STATE_FOLDER) != null) {
 			openFolder(memento.getString(STATE_FOLDER));

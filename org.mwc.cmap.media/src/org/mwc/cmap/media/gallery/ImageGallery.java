@@ -136,6 +136,7 @@ public class ImageGallery<T, I> implements IDisposable {
 				
 				int labels = imagesTable.getChildren().length;
 				labels = labels / count + (labels % count == 0 ? 0 : 1);
+				imagesTable.layout();
 				mainComposite.layout();
 			}
 		};
@@ -245,7 +246,7 @@ public class ImageGallery<T, I> implements IDisposable {
 	public void setThumbnailSize(int thumbnailWidth, int thumbnailHeight) {
 		this.thumbnailWidth = thumbnailWidth;
 		this.thumbnailHeight = thumbnailHeight;
-		mainComposite.layout();
+		
 	}
 	
 	public ScrolledComposite getMainComposite() {
@@ -290,6 +291,17 @@ public class ImageGallery<T, I> implements IDisposable {
 	public void removeElementMouseMoveListener(MouseMoveListener listener) {
 		elementMouseMoveListeners.remove(listener);
 	}	
+	
+	public void redrawGallery() {
+	  for (ImageLabel label: labels.values())
+    {
+      label.redraw();
+          
+    }
+	  /*imagesTable.layout();
+    mainComposite.layout();
+	  */
+	}
 
 	public void dispose() {
 		backgroundImages.dispose();
@@ -362,6 +374,28 @@ public class ImageGallery<T, I> implements IDisposable {
 			composite.addMouseListener(this);
 			imageLabel.addMouseListener(this);
 			textlabel.addMouseListener(this);			
+		}
+		
+		public void redraw() {
+		  //System.out.println("Redrawing with:<<"+thumbnailWidth+">>");
+		 // imageLabel.setSize(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+  /*    GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
+      data.horizontalIndent = 0;
+      data.horizontalSpan = 0;
+      textlabel.setLayoutData(data);
+      textlabel.setMargins(0, 0, 0, 0);
+      //this will set filename label
+      //setImageMeta(getImageMeta());
+      textlabel.redraw();*/
+      GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+      imageLabel.setLayoutData(data);
+      imageLabel.layout(true);
+      imageLabel.redraw();
+      GridData gd = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+      composite.setLayoutData(gd);
+      
+      composite.layout();
+		  
 		}
 		
 		@Override
