@@ -77,12 +77,12 @@ public class ImagesView extends ViewPart {
 	private static final ImageMetaDataComparator IMAGES_COMPARATOR = new ImageMetaDataComparator();
 	
 	private IMemento memento;
-	public static final int SMALL_ICON_WIDTH=35;
-	public static final int SMALL_ICON_HEIGHT=35;
-  public static final int MEDIUM_ICON_WIDTH=65;
-  public static final int MEDIUM_ICON_HEIGHT=65;
-  public static final int LARGE_ICON_WIDTH=110;
-  public static final int LARGE_ICON_HEIGHT=80;
+  public static final int SMALL_ICON_WIDTH=85;
+  public static final int SMALL_ICON_HEIGHT=45;
+  public static final int MEDIUM_ICON_WIDTH=135;
+  public static final int MEDIUM_ICON_HEIGHT=75;
+  public static final int LARGE_ICON_WIDTH=210;
+  public static final int LARGE_ICON_HEIGHT=140;
 	private FillLayout mainLayout;
 	private Composite main;
 	private ImageGallery<ImageMetaData, ThumbnailPackage> gallery;
@@ -288,9 +288,6 @@ public class ImagesView extends ViewPart {
 
 			@Override
 			public Image buildImage(ThumbnailPackage image) {
-				if (stretch.isChecked()) {
-					return image.getStretched();
-				}
 				return image.getScaled();
 			}
 
