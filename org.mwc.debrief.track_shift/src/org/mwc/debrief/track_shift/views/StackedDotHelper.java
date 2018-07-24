@@ -93,39 +93,6 @@ public final class StackedDotHelper
 {
 
   /**
-   * we have a special multistatics use case where we need to support multiple primary tracks.
-   *
-   */
-  public static interface SwitchableTrackProvider
-  {
-    /**
-     * whether we have any valid data
-     * 
-     * @return yes/no
-     */
-    public boolean isPopulated();
-
-    /**
-     * find out what the secondary track is
-     */
-    public WatchableList[] getSecondaryTracks();
-
-    /**
-     * find out what the primary tracks are
-     */
-    public WatchableList[] getPrimaryTracks();
-  }
-
-  /**
-   * convenience class, to avoid having to pass plot into data helper
-   *
-   */
-  public static interface SetBackgroundShade
-  {
-    void setShade(final Paint errorColor);
-  }
-
-  /**
    * special listener, that knows how to detatch itself
    *
    * @author ian
@@ -151,6 +118,39 @@ public final class StackedDotHelper
 
   }
 
+  /**
+   * convenience class, to avoid having to pass plot into data helper
+   *
+   */
+  public static interface SetBackgroundShade
+  {
+    void setShade(final Paint errorColor);
+  }
+
+  /**
+   * we have a special multistatics use case where we need to support multiple primary tracks.
+   *
+   */
+  public static interface SwitchableTrackProvider
+  {
+    /**
+     * find out what the primary tracks are
+     */
+    public WatchableList[] getPrimaryTracks();
+
+    /**
+     * find out what the secondary track is
+     */
+    public WatchableList[] getSecondaryTracks();
+
+    /**
+     * whether we have any valid data
+     *
+     * @return yes/no
+     */
+    public boolean isPopulated();
+  }
+
   private static class TargetDoublet
   {
 
@@ -159,235 +159,237 @@ public final class StackedDotHelper
 
   }
 
-  public static class TestUpdates extends TestCase
+  public static class TestSlicing extends TestCase
   {
-    public TrackDataProvider getTrackData()
+    public void testOSLegDetector()
     {
-      final Layers layers = getData();
-      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
-      assertNotNull("found ownship", ownship);
+      final TimeSeries osC = new TimeSeries(new FixedMillisecond());
+      long time = 0;
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 22d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
 
-      final BaseLayer sensors = ownship.getSensors();
-      assertEquals("has all sensors", 2, sensors.size());
+      assertFalse(containsIdenticalValues(osC, 3));
 
-      // get the tail
-      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
-          "tail sensor");
-      assertNotNull("found tail", tailSensor);
-      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
-          "hull sensor");
-      assertNotNull("found hull", hullSensor);
+      // inject some more duplicates
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
 
-      // give it it's offset
-      tailSensor.setSensorOffset(new ArrayLength(1000));
+      assertTrue(containsIdenticalValues(osC, 3));
 
-      SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
-      SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
+      osC.clear();
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 21d);
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
 
-      // note: we've commented out some
-      assertEquals("got all cuts", 8, tailItems.length);
-      assertEquals("got all cuts", 9, hullItems.length);
+      assertFalse("check we're verifying single runs of matches",
+          containsIdenticalValues(osC, 3));
 
-      final String newName = "TMA_LEG";
+      osC.add(new FixedMillisecond(time++), 20d);
+      osC.add(new FixedMillisecond(time++), 20d);
 
-      // ok, we also have to generate some target track
-      TMAfromCuts genny = new TMAfromCuts(tailItems, layers, new WorldVector(
-          Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
-          Color.RED)
-      {
-        @Override
-        public String getTrackNameFor(TrackWrapper newTrack)
-        {
-          return newName;
-        }
-
-        @Override
-        public boolean isRunning()
-        {
-          return false;
-        }
-      };
-
-      // create the new TMA
-      try
-      {
-        genny.execute(null, null);
-      }
-      catch (Exception e)
-      {
-        fail("exception thrown while running command" + e.getMessage());
-        e.printStackTrace();
-      }
-
-      // get the TMA
-      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
-      assertNotNull("found it", tma);
-
-      // have a butchers
-      assertEquals("has segments", 1, tma.getSegments().size());
-      Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0),
-          new HiResDate(new Date().getTime()));
-
-      // note: only 8 fixes in leg, since two sensor cut was hidden
-      assertEquals("has fixes", 8, fixes.size());
-
-      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
-      {})[0];
-      @SuppressWarnings("deprecation")
-      String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
-      assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
-
-      // and now the track data object
-      TrackDataHelper prov = new TrackDataHelper();
-      prov.addPrimary(ownship);
-      prov.addSecondary(tma);
-
-      return prov;
+      assertTrue(containsIdenticalValues(osC, 3));
     }
 
-    public void testGetMultiPrimaryTrackData() throws FileNotFoundException
+    public void testSetLeg()
     {
-      // get our sample data-file
-      final ImportReplay importer = new ImportReplay();
-      final Layers layers = new Layers();
-      final String fName =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/MultiStatics/multistatics_buoyfield.rep";
-      final File inFile = new File(fName);
-      assertTrue("input file exists", inFile.exists());
-      final FileInputStream is = new FileInputStream(fName);
-      importer.importThis(fName, is, layers);
+      final TrackWrapper host = new TrackWrapper();
+      host.setName("Host Track");
 
-      // sort out the sensors
-      importer.storePendingSensors();
+      // create a sensor
+      final SensorWrapper sensor = new SensorWrapper("Sensor");
+      sensor.setHost(host);
+      host.add(sensor);
 
-      // get the sensor tracks
-      final TrackWrapper rx_1 = (TrackWrapper) layers.findLayer("RX_1");
-      final TrackWrapper rx_2 = (TrackWrapper) layers.findLayer("RX_2");
-
-      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors()
-          .first();
-      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors()
-          .first();
-
-      assertNotNull("found sensor 1", rx_1_sensor);
-      assertNotNull("found sensor 2", rx_2_sensor);
-
-      // ok, we need to move one sensor
-
-      // get the tail
-
-      SensorContactWrapper[] rx1_cuts = getAllCutsFrom(rx_1_sensor);
-      SensorContactWrapper[] rx2_cuts = getAllCutsFrom(rx_2_sensor);
-
-      // note: we've commented out some
-      assertEquals("got all cuts", 42, rx1_cuts.length);
-      assertEquals("got all cuts", 66, rx2_cuts.length);
-
-      final String newName = "TMA_LEG";
-
-      // ok, we also have to generate some target track
-      TMAfromCuts genny = new TMAfromCuts(rx1_cuts, layers, new WorldVector(
-          Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
-          Color.RED)
+      // add some cuts
+      final ArrayList<SensorContactWrapper> contacts =
+          new ArrayList<SensorContactWrapper>();
+      for (int i = 0; i < 30; i++)
       {
-        @Override
-        public String getTrackNameFor(TrackWrapper newTrack)
-        {
-          return newName;
-        }
+        final HiResDate thisDTG = new HiResDate(10000 * i);
+        final WorldLocation thisLocation = new WorldLocation(2 + 0.01 * i, 2
+            + 0.03 * i, 0);
+        final SensorContactWrapper scw = new SensorContactWrapper(host
+            .getName(), thisDTG, new WorldDistance(4, WorldDistance.MINUTES),
+            25d, thisLocation, Color.RED, "" + i, 0, sensor.getName());
+        sensor.add(scw);
+        contacts.add(scw);
+
+        // also create a host track fix at this DTG
+        final Fix theFix = new Fix(thisDTG, thisLocation, 12d, 3d);
+        final FixWrapper newF = new FixWrapper(theFix);
+        host.add(newF);
+      }
+
+      // produce the target leg
+      final TrackWrapper target = new TrackWrapper();
+      target.setName("Tgt Track");
+
+      // add a TMA leg
+      final Layers theLayers = new Layers();
+      theLayers.addThisLayer(host);
+      theLayers.addThisLayer(target);
+
+      final SensorContactWrapper[] contactArr = contacts.toArray(
+          new SensorContactWrapper[]
+          {});
+      final RelativeTMASegment newLeg = new RelativeTMASegment(contactArr,
+          new WorldVector(1, 1, 0), new WorldSpeed(12, WorldSpeed.Kts), 12d,
+          theLayers, Color.red);
+      target.add(newLeg);
+
+      final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
+      {
 
         @Override
-        public boolean isRunning()
+        protected boolean allowDisplayOfTargetOverview()
         {
           return false;
         }
+
+        @Override
+        protected boolean allowDisplayOfZoneChart()
+        {
+          return false;
+        }
+
+        @Override
+        protected String formatValue(final double value)
+        {
+          return "" + value;
+        }
+
+        @Override
+        protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
+        {
+          return null;
+        }
+
+        @Override
+        protected String getType()
+        {
+          return null;
+        }
+
+        @Override
+        protected String getUnits()
+        {
+          return null;
+        }
+
+        @Override
+        protected void makeActions()
+        {
+          // don't make actions, since they rely on Workbench running
+        }
+
+        @Override
+        protected void updateData(final boolean updateDoublets)
+        {
+          // no, nothing to do.
+        }
       };
 
-      // create the new TMA
-      try
+      // try to set a zone on the track
+      Zone trimmedPeriod = new Zone(150000, 220000, Color.RED);
+      view.setLeg(host, target, trimmedPeriod);
+
+      // ok, check the leg has changed
+      assertEquals("leg start changed", 150000, target.getStartDTG().getDate()
+          .getTime());
+      assertEquals("leg start changed", 220000, target.getEndDTG().getDate()
+          .getTime());
+
+      // ok, also see if we can create a new leg
+      trimmedPeriod = new Zone(250000, 320000, Color.RED);
+      view.setLeg(host, target, trimmedPeriod);
+
+    }
+  }
+
+  public static class TestUpdates extends TestCase
+  {
+    private static class SwitchableTrackProviderImpl implements
+        SwitchableTrackProvider
+    {
+
+      private final TrackDataProvider _prov;
+
+      public SwitchableTrackProviderImpl(final TrackDataProvider tracks)
       {
-        genny.execute(null, null);
+        _prov = tracks;
       }
-      catch (Exception e)
+
+      @Override
+      public WatchableList[] getPrimaryTracks()
       {
-        fail("exception thrown while running command" + e.getMessage());
-        e.printStackTrace();
+        return new WatchableList[]
+        {_prov.getPrimaryTrack()};
       }
 
-      // get the TMA
-      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
-      assertNotNull("found it", tma);
+      @Override
+      public WatchableList[] getSecondaryTracks()
+      {
+        return _prov.getSecondaryTracks();
+      }
 
-      // have a butchers
-      assertEquals("has segments", 1, tma.getSegments().size());
-      Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0),
-          new HiResDate(new Date().getTime()));
+      @Override
+      public boolean isPopulated()
+      {
+        return _prov != null;
+      }
 
-      assertEquals("has fixes", 42, fixes.size());
-
-      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
-      {})[0];
-      @SuppressWarnings("deprecation")
-      String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
-      assertEquals("valid first time", "12 Dec 2014 12:03:40 GMT", toTime);
-
-      // and now the track data object
-      TrackDataHelper prov = new TrackDataHelper();
-      prov.addPrimary(rx_1);
-      prov.addPrimary(rx_2);
-      prov.addSecondary(tma);
-
-      // return prov;
     }
 
     private static class TrackDataHelper implements TrackDataProvider
     {
 
-      private List<TrackWrapper> _primaries = new ArrayList<TrackWrapper>();
-      private List<TrackWrapper> _secondaries = new ArrayList<TrackWrapper>();
+      private final List<TrackWrapper> _primaries =
+          new ArrayList<TrackWrapper>();
+      private final List<TrackWrapper> _secondaries =
+          new ArrayList<TrackWrapper>();
 
-      @Override
-      public void addTrackDataListener(TrackDataListener listener)
-      {
-        // don't bother
-      }
-
-      public void addSecondary(TrackWrapper tma)
-      {
-        _secondaries.add(tma);
-      }
-
-      public void addPrimary(TrackWrapper ownship)
+      public void addPrimary(final TrackWrapper ownship)
       {
         _primaries.add(ownship);
       }
 
+      public void addSecondary(final TrackWrapper tma)
+      {
+        _secondaries.add(tma);
+      }
+
       @Override
-      public void removeTrackDataListener(TrackDataListener listener)
+      public void addTrackDataListener(final TrackDataListener listener)
       {
         // don't bother
       }
 
       @Override
-      public void addTrackShiftListener(TrackShiftListener listener)
-      {
-        // don't bother
-      }
-
-      @Override
-      public void removeTrackShiftListener(TrackShiftListener listener)
-      {
-        // don't bother
-      }
-
-      @Override
-      public void fireTrackShift(WatchableList watchableList)
+      public void addTrackShiftListener(final TrackShiftListener listener)
       {
         // don't bother
       }
 
       @Override
       public void fireTracksChanged()
+      {
+        // don't bother
+      }
+
+      @Override
+      public void fireTrackShift(final WatchableList watchableList)
       {
         // don't bother
       }
@@ -401,9 +403,9 @@ public final class StackedDotHelper
       @Override
       public WatchableList[] getSecondaryTracks()
       {
-        WatchableList[] res = new WatchableList[_secondaries.size()];
+        final WatchableList[] res = new WatchableList[_secondaries.size()];
         int ctr = 0;
-        Iterator<TrackWrapper> sIter = _secondaries.iterator();
+        final Iterator<TrackWrapper> sIter = _secondaries.iterator();
         while (sIter.hasNext())
         {
           res[ctr++] = sIter.next();
@@ -411,13 +413,26 @@ public final class StackedDotHelper
         return res;
       }
 
+      @Override
+      public void removeTrackDataListener(final TrackDataListener listener)
+      {
+        // don't bother
+      }
+
+      @Override
+      public void removeTrackShiftListener(final TrackShiftListener listener)
+      {
+        // don't bother
+      }
+
     }
 
-    private SensorContactWrapper[] getAllCutsFrom(SensorWrapper secondSensor)
+    private SensorContactWrapper[] getAllCutsFrom(
+        final SensorWrapper secondSensor)
     {
-      SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
+      final SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
           .size()];
-      Enumeration<Editable> sIter = secondSensor.elements();
+      final Enumeration<Editable> sIter = secondSensor.elements();
       int ctr = 0;
       while (sIter.hasMoreElements())
       {
@@ -429,8 +444,8 @@ public final class StackedDotHelper
 
     public Layers getData()
     {
-      Layers layers = new Layers();
-      ImportReplay importer = new ImportReplay();
+      final Layers layers = new Layers();
+      final ImportReplay importer = new ImportReplay();
       importer.setLayers(layers);
 
       try
@@ -523,7 +538,7 @@ public final class StackedDotHelper
         importer.storePendingSensors();
 
       }
-      catch (IOException e)
+      catch (final IOException e)
       {
         // TODO Auto-generated catch block
         e.printStackTrace();
@@ -532,68 +547,217 @@ public final class StackedDotHelper
       return layers;
     }
 
-    private static class SwitchableTrackProviderImpl implements
-        SwitchableTrackProvider
+    public TrackDataProvider getTrackData()
     {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
 
-      private final TrackDataProvider _prov;
+      final BaseLayer sensors = ownship.getSensors();
+      assertEquals("has all sensors", 2, sensors.size());
 
-      public SwitchableTrackProviderImpl(TrackDataProvider tracks)
+      // get the tail
+      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
+          "tail sensor");
+      assertNotNull("found tail", tailSensor);
+      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
+          "hull sensor");
+      assertNotNull("found hull", hullSensor);
+
+      // give it it's offset
+      tailSensor.setSensorOffset(new ArrayLength(1000));
+
+      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
+      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 8, tailItems.length);
+      assertEquals("got all cuts", 9, hullItems.length);
+
+      final String newName = "TMA_LEG";
+
+      // ok, we also have to generate some target track
+      final TMAfromCuts genny = new TMAfromCuts(tailItems, layers,
+          new WorldVector(Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12,
+              WorldSpeed.Kts), Color.RED)
       {
-        _prov = tracks;
+        @Override
+        public String getTrackNameFor(final TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (final Exception e)
+      {
+        fail("exception thrown while running command" + e.getMessage());
+        e.printStackTrace();
       }
 
-      @Override
-      public boolean isPopulated()
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      final Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(
+          0), new HiResDate(new Date().getTime()));
+
+      // note: only 8 fixes in leg, since two sensor cut was hidden
+      assertEquals("has fixes", 8, fixes.size());
+
+      final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
+      @SuppressWarnings("deprecation")
+      final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.addPrimary(ownship);
+      prov.addSecondary(tma);
+
+      return prov;
+    }
+
+    public void testGetMultiPrimaryTrackData() throws FileNotFoundException
+    {
+      // get our sample data-file
+      final ImportReplay importer = new ImportReplay();
+      final Layers layers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/MultiStatics/multistatics_buoyfield.rep";
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      importer.importThis(fName, is, layers);
+
+      // sort out the sensors
+      importer.storePendingSensors();
+
+      // get the sensor tracks
+      final TrackWrapper rx_1 = (TrackWrapper) layers.findLayer("RX_1");
+      final TrackWrapper rx_2 = (TrackWrapper) layers.findLayer("RX_2");
+
+      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors()
+          .first();
+      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors()
+          .first();
+
+      assertNotNull("found sensor 1", rx_1_sensor);
+      assertNotNull("found sensor 2", rx_2_sensor);
+
+      // ok, we need to move one sensor
+
+      // get the tail
+
+      final SensorContactWrapper[] rx1_cuts = getAllCutsFrom(rx_1_sensor);
+      final SensorContactWrapper[] rx2_cuts = getAllCutsFrom(rx_2_sensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 42, rx1_cuts.length);
+      assertEquals("got all cuts", 66, rx2_cuts.length);
+
+      final String newName = "TMA_LEG";
+
+      // ok, we also have to generate some target track
+      final TMAfromCuts genny = new TMAfromCuts(rx1_cuts, layers,
+          new WorldVector(Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12,
+              WorldSpeed.Kts), Color.RED)
       {
-        return _prov != null;
+        @Override
+        public String getTrackNameFor(final TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (final Exception e)
+      {
+        fail("exception thrown while running command" + e.getMessage());
+        e.printStackTrace();
       }
 
-      @Override
-      public WatchableList[] getSecondaryTracks()
-      {
-        return _prov.getSecondaryTracks();
-      }
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
 
-      @Override
-      public WatchableList[] getPrimaryTracks()
-      {
-        return new WatchableList[]
-        {_prov.getPrimaryTrack()};
-      }
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      final Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(
+          0), new HiResDate(new Date().getTime()));
 
+      assertEquals("has fixes", 42, fixes.size());
+
+      final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
+      @SuppressWarnings("deprecation")
+      final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time", "12 Dec 2014 12:03:40 GMT", toTime);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.addPrimary(rx_1);
+      prov.addPrimary(rx_2);
+      prov.addSecondary(tma);
+
+      // return prov;
     }
 
     public void testUpdateBearings() throws ExecutionException
     {
-      StackedDotHelper helper = new StackedDotHelper();
-      TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
-      TimeSeriesCollection linePlotData = new TimeSeriesCollection();
+      final StackedDotHelper helper = new StackedDotHelper();
+      final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
+      final TimeSeriesCollection linePlotData = new TimeSeriesCollection();
 
       final TrackDataProvider tracks = getTrackData();
 
-      SwitchableTrackProvider switcher = new SwitchableTrackProviderImpl(
+      final SwitchableTrackProvider switcher = new SwitchableTrackProviderImpl(
           tracks);
 
       boolean onlyVis = false;
-      boolean showCourse = true;
-      boolean flipAxes = false;
+      final boolean showCourse = true;
+      final boolean flipAxes = false;
 
-      ErrorLogger logger = new LoggingService();
-      boolean updateDoublets = true;
-      TimeSeriesCollection targetCourseSeries = new TimeSeriesCollection();
-      TimeSeriesCollection targetSpeedSeries = new TimeSeriesCollection();
-      TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
-      TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
-      TimeSeries ownshipCourseSeries = new TimeSeries("OS Course");
-      TimeSeries targetBearingSeries = new TimeSeries("Tgt Bearing");
-      TimeSeries targetCalculatedSeries = new TimeSeries("target calc");
-      ResidualXYItemRenderer overviewSpeedRenderer = null;
-      WrappingResidualRenderer overviewCourseRenderer = null;
-      SetBackgroundShade backShader = new SetBackgroundShade()
+      final ErrorLogger logger = new LoggingService();
+      final boolean updateDoublets = true;
+      final TimeSeriesCollection targetCourseSeries =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection targetSpeedSeries = new TimeSeriesCollection();
+      final TimeSeriesCollection measuredValuesColl =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
+      final TimeSeries ownshipCourseSeries = new TimeSeries("OS Course");
+      final TimeSeries targetBearingSeries = new TimeSeries("Tgt Bearing");
+      final TimeSeries targetCalculatedSeries = new TimeSeries("target calc");
+      final ResidualXYItemRenderer overviewSpeedRenderer = null;
+      final WrappingResidualRenderer overviewCourseRenderer = null;
+      final SetBackgroundShade backShader = new SetBackgroundShade()
       {
         @Override
-        public void setShade(Paint errorColor)
+        public void setShade(final Paint errorColor)
         {
           // just ignore it
         }
@@ -664,8 +828,8 @@ public final class StackedDotHelper
           .getItemCount());
 
       // ok, hide a sensor, and recalculate
-      TrackWrapper primary = (TrackWrapper) tracks.getPrimaryTrack();
-      SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
+      final TrackWrapper primary = (TrackWrapper) tracks.getPrimaryTrack();
+      final SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
           .elements().nextElement();
       firstSensor.setVisible(true);
 
@@ -778,10 +942,10 @@ public final class StackedDotHelper
           2).getKey());
 
       // and make the second sensor visible
-      Enumeration<Editable> sIter = primary.getSensors().elements();
+      final Enumeration<Editable> sIter = primary.getSensors().elements();
       while (sIter.hasMoreElements())
       {
-        SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
+        final SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
         sensor.setVisible(true);
       }
 
@@ -848,168 +1012,14 @@ public final class StackedDotHelper
     }
   }
 
-  public static class TestSlicing extends TestCase
-  {
-    public void testOSLegDetector()
-    {
-      final TimeSeries osC = new TimeSeries(new FixedMillisecond());
-      long time = 0;
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 22d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertFalse(containsIdenticalValues(osC, 3));
-
-      // inject some more duplicates
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertTrue(containsIdenticalValues(osC, 3));
-
-      osC.clear();
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 21d);
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertFalse("check we're verifying single runs of matches",
-          containsIdenticalValues(osC, 3));
-
-      osC.add(new FixedMillisecond(time++), 20d);
-      osC.add(new FixedMillisecond(time++), 20d);
-
-      assertTrue(containsIdenticalValues(osC, 3));
-    }
-
-    public void testSetLeg()
-    {
-      final TrackWrapper host = new TrackWrapper();
-      host.setName("Host Track");
-
-      // create a sensor
-      final SensorWrapper sensor = new SensorWrapper("Sensor");
-      sensor.setHost(host);
-      host.add(sensor);
-
-      // add some cuts
-      final ArrayList<SensorContactWrapper> contacts =
-          new ArrayList<SensorContactWrapper>();
-      for (int i = 0; i < 30; i++)
-      {
-        final HiResDate thisDTG = new HiResDate(10000 * i);
-        final WorldLocation thisLocation = new WorldLocation(2 + 0.01 * i, 2
-            + 0.03 * i, 0);
-        final SensorContactWrapper scw = new SensorContactWrapper(host
-            .getName(), thisDTG, new WorldDistance(4, WorldDistance.MINUTES),
-            25d, thisLocation, Color.RED, "" + i, 0, sensor.getName());
-        sensor.add(scw);
-        contacts.add(scw);
-
-        // also create a host track fix at this DTG
-        final Fix theFix = new Fix(thisDTG, thisLocation, 12d, 3d);
-        final FixWrapper newF = new FixWrapper(theFix);
-        host.add(newF);
-      }
-
-      // produce the target leg
-      final TrackWrapper target = new TrackWrapper();
-      target.setName("Tgt Track");
-
-      // add a TMA leg
-      final Layers theLayers = new Layers();
-      theLayers.addThisLayer(host);
-      theLayers.addThisLayer(target);
-
-      final SensorContactWrapper[] contactArr = contacts.toArray(
-          new SensorContactWrapper[]
-          {});
-      final RelativeTMASegment newLeg = new RelativeTMASegment(contactArr,
-          new WorldVector(1, 1, 0), new WorldSpeed(12, WorldSpeed.Kts), 12d,
-          theLayers, Color.red);
-      target.add(newLeg);
-
-      final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
-      {
-
-        @Override
-        protected void makeActions()
-        {
-          // don't make actions, since they rely on Workbench running
-        }
-
-        @Override
-        protected boolean allowDisplayOfTargetOverview()
-        {
-          return false;
-        }
-
-        @Override
-        protected boolean allowDisplayOfZoneChart()
-        {
-          return false;
-        }
-
-        @Override
-        protected String formatValue(final double value)
-        {
-          return "" + value;
-        }
-
-        @Override
-        protected ZoneSlicer getOwnshipZoneSlicer(final ColorProvider blueProv)
-        {
-          return null;
-        }
-
-        @Override
-        protected String getType()
-        {
-          return null;
-        }
-
-        @Override
-        protected String getUnits()
-        {
-          return null;
-        }
-
-        @Override
-        protected void updateData(final boolean updateDoublets)
-        {
-          // no, nothing to do.
-        }
-      };
-
-      // try to set a zone on the track
-      Zone trimmedPeriod = new Zone(150000, 220000, Color.RED);
-      view.setLeg(host, target, trimmedPeriod);
-
-      // ok, check the leg has changed
-      assertEquals("leg start changed", 150000, target.getStartDTG().getDate()
-          .getTime());
-      assertEquals("leg start changed", 220000, target.getEndDTG().getDate()
-          .getTime());
-
-      // ok, also see if we can create a new leg
-      trimmedPeriod = new Zone(250000, 320000, Color.RED);
-      view.setLeg(host, target, trimmedPeriod);
-
-    }
-  }
-
   public static final String MEASURED_DATASET = "Measured";
 
   public static final String CALCULATED_VALUES = "Calculated";
+
+  /**
+   * the maximum number of items we plot as symbols. Above this we just use a line
+   */
+  private final static int MAX_ITEMS_TO_PLOT = 1000;
 
   /**
    * produce a color shade, according to whether the max error is inside 3 degrees or not.
@@ -1023,10 +1033,10 @@ public final class StackedDotHelper
     final Paint col;
     double maxError = 0d;
 
-    Iterator<?> sIter = errorSeries.getSeries().iterator();
+    final Iterator<?> sIter = errorSeries.getSeries().iterator();
     while (sIter.hasNext())
     {
-      TimeSeries ts = (TimeSeries) sIter.next();
+      final TimeSeries ts = (TimeSeries) sIter.next();
       final List<?> items = ts.getItems();
       for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
       {
@@ -1227,7 +1237,7 @@ public final class StackedDotHelper
       theSegments = null;
     }
 
-    for (TrackWrapper sensorHost : primaries)
+    for (final TrackWrapper sensorHost : primaries)
     {
 
       // loop through our sensor data
@@ -1353,6 +1363,123 @@ public final class StackedDotHelper
     return res;
   }
 
+  private static TimeSeries getSinglePointCourseData(
+      final TrackWrapper primaryTrack, final ISecondaryTrack secondaryTrack,
+      final boolean flipAxes)
+  {
+
+    final TimeSeries osCourseValues = new TimeSeries(primaryTrack.getName());
+
+    // get the single location
+    final FixWrapper loc = (FixWrapper) primaryTrack.getPositionIterator()
+        .nextElement();
+
+    final Enumeration<Editable> segments = secondaryTrack.segments();
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+      // if there's just one segment - then we need to wrap it
+      final SegmentList segList;
+      if (nextE instanceof SegmentList)
+      {
+        segList = (SegmentList) nextE;
+      }
+      else
+      {
+        segList = new SegmentList();
+        segList.addSegment((TrackSegment) nextE);
+      }
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        final Enumeration<Editable> enumer = segment.elements();
+        while (enumer.hasMoreElements())
+        {
+          final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
+
+          double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
+              .getCourse());
+
+          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+          if (flipAxes && ownshipCourse > 180)
+          {
+            ownshipCourse -= 360;
+          }
+          final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
+              .getDateTimeGroup().getDate().getTime());
+          final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+              ownshipCourse, loc.getColor(), true, null, true, true);
+          osCourseValues.add(crseBearing);
+        }
+      }
+    }
+
+    return osCourseValues;
+  }
+
+  private static TimeSeries getStandardCourseData(
+      final TrackWrapper primaryTrack, final boolean flipAxes,
+      final HiResDate startDTG, final HiResDate endDTG)
+  {
+
+    final TimeSeries osCourseValues = new TimeSeries(primaryTrack.getName());
+
+    // loop through using the iterator
+    final Enumeration<Editable> pIter = primaryTrack.getPositionIterator();
+    final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
+        endDTG);
+    final List<Editable> validItems = new LinkedList<Editable>();
+    while (pIter.hasMoreElements())
+    {
+      final FixWrapper fw = (FixWrapper) pIter.nextElement();
+      if (validPeriod.contains(fw.getDateTimeGroup()))
+      {
+        validItems.add(fw);
+      }
+      else
+      {
+        // have we passed the end of the requested period?
+        if (fw.getDateTimeGroup().greaterThan(endDTG))
+        {
+          // ok, drop out
+          break;
+        }
+      }
+    }
+
+    // ok, now go through the list
+    final Iterator<Editable> vIter = validItems.iterator();
+    final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
+    int ctr = 0;
+    while (vIter.hasNext())
+    {
+      final Editable ed = vIter.next();
+      if (ctr++ % freq == 0)
+      {
+        final FixWrapper fw = (FixWrapper) ed;
+        final FixedMillisecond thisMilli = new FixedMillisecond(fw
+            .getDateTimeGroup().getDate().getTime());
+        double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+            .getCourse());
+
+        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+        if (flipAxes && ownshipCourse > 180)
+        {
+          ownshipCourse -= 360;
+        }
+
+        final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+            ownshipCourse, fw.getColor(), true, null, true, true);
+        osCourseValues.add(crseBearing);
+      }
+    }
+
+    return osCourseValues;
+  }
+
   /**
    *
    * @param workingFix
@@ -1476,6 +1603,14 @@ public final class StackedDotHelper
     return _theSegments;
   }
 
+  private static Color halfWayColor(final Color a, final Color b)
+  {
+    final int red = (a.getRed() + b.getRed()) / 2;
+    final int blue = (a.getBlue() + b.getBlue()) / 2;
+    final int green = (a.getGreen() + b.getGreen()) / 2;
+    return new Color(red, blue, green);
+  }
+
   private static void handleDynamicInfill(final FixWrapper workingFix,
       final HiResDate requiredTime, final TargetDoublet doublet,
       final TrackSegment segment)
@@ -1492,6 +1627,65 @@ public final class StackedDotHelper
     {
       doublet.targetFix = (FixWrapper) items.first();
     }
+  }
+
+  /**
+   * is this a multi-sensor dataset?
+   *
+   * @param doublets
+   * @return
+   */
+  private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
+  {
+
+    final Iterator<Doublet> iter = doublets.iterator();
+    SensorWrapper lastS = null;
+    TrackWrapper lastT = null;
+    while (iter.hasNext())
+    {
+      final Doublet next = iter.next();
+      final SensorWrapper thisS = next.getSensorCut().getSensor();
+      final TrackWrapper thisT = thisS.getHost();
+      if (lastS == null)
+      {
+        lastS = thisS;
+      }
+      else if (!lastS.equals(thisS))
+      {
+        return true;
+      }
+      if (lastT == null)
+      {
+        lastT = thisT;
+      }
+      else if (!lastT.equals(thisT))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * utility method to add a value to a series, calculating the series if necessary
+   *
+   * @param collection
+   *          parent collection
+   * @param seriesName
+   *          name of series of operate on
+   * @param bFreq
+   *          data item to add
+   */
+  static private void safelyAddItem(final TimeSeriesCollection collection,
+      final String seriesName, final TimeSeriesDataItem bFreq)
+  {
+    TimeSeries series = collection.getSeries(seriesName);
+    if (series == null)
+    {
+      series = new TimeSeries(seriesName);
+      collection.addSeries(series);
+    }
+    series.add(bFreq);
   }
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
@@ -1536,20 +1730,16 @@ public final class StackedDotHelper
   }
 
   /**
-   * the maximum number of items we plot as symbols. Above this we just use a line
-   */
-  private final static int MAX_ITEMS_TO_PLOT = 1000;
-
-  /**
    * the track being dragged
    */
   private TrackWrapper _primaryTrack;
 
   /**
    * introduce support for multiple primary tracks
-   * 
+   *
    */
-  private List<TrackWrapper> _primaryTracks = new ArrayList<TrackWrapper>();
+  private final List<TrackWrapper> _primaryTracks =
+      new ArrayList<TrackWrapper>();
 
   /**
    * the secondary track we're monitoring
@@ -1606,6 +1796,11 @@ public final class StackedDotHelper
         needFrequency);
   }
 
+  public List<TrackWrapper> getPrimaryTracks()
+  {
+    return _primaryTracks;
+  }
+  
   public TrackWrapper getPrimaryTrack()
   {
     return _primaryTrack;
@@ -1649,8 +1844,8 @@ public final class StackedDotHelper
     }
     else
     {
-      WatchableList[] primaryTracks = provider.getPrimaryTracks();
-      for (WatchableList priTrk : primaryTracks)
+      final WatchableList[] primaryTracks = provider.getPrimaryTracks();
+      for (final WatchableList priTrk : primaryTracks)
       {
         if (priTrk instanceof TrackWrapper)
         {
@@ -1719,43 +1914,6 @@ public final class StackedDotHelper
     _primaryDoublets = null;
     _primaryTrack = null;
     _secondaryTrack = null;
-  }
-
-  /**
-   * is this a multi-sensor dataset?
-   * 
-   * @param doublets
-   * @return
-   */
-  private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
-  {
-
-    final Iterator<Doublet> iter = doublets.iterator();
-    SensorWrapper lastS = null;
-    TrackWrapper lastT = null;
-    while (iter.hasNext())
-    {
-      final Doublet next = iter.next();
-      final SensorWrapper thisS = next.getSensorCut().getSensor();
-      final TrackWrapper thisT = thisS.getHost();
-      if (lastS == null)
-      {
-        lastS = thisS;
-      }
-      else if (!lastS.equals(thisS))
-      {
-        return true;
-      }
-      if (lastT == null)
-      {
-        lastT = thisT;
-      }
-      else if (!lastT.equals(thisT))
-      {
-        return true;
-      }
-    }
-    return false;
   }
 
   /**
@@ -1835,6 +1993,7 @@ public final class StackedDotHelper
 
     // create the collection of series
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
+    final TimeSeriesCollection ownshipCourseColl = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -1844,14 +2003,12 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
     final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
     sList.add(allCuts);
@@ -1861,6 +2018,7 @@ public final class StackedDotHelper
 
     final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
     tList.add(measuredValuesColl);
+    tList.add(ownshipCourseColl);
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
     tList.add(dotPlotData);
@@ -2126,16 +2284,21 @@ public final class StackedDotHelper
       }
 
       // special case - if the primary track is a single location
-      if (_primaryTrack.isSinglePointTrack())
+      for(TrackWrapper thisPrimary: getPrimaryTracks())
       {
-        // ok, it's a single point. We'll use the sensor cut times for the course data
-        getSinglePointCourseData(osCourseValues, _primaryTrack, _secondaryTrack,
-            flipAxes);
-      }
-      else
-      {
-        getStandardCourseData(osCourseValues, _primaryTrack, flipAxes, startDTG,
-            endDTG);
+        final TimeSeries osCourseValues;
+        if (_primaryTrack.isSinglePointTrack())
+        {
+          // ok, it's a single point. We'll use the sensor cut times for the course data
+          osCourseValues = getSinglePointCourseData(thisPrimary,
+              _secondaryTrack, flipAxes);
+        }
+        else
+        {
+          osCourseValues = getStandardCourseData(thisPrimary, flipAxes,
+              startDTG, endDTG);
+        }
+        ownshipCourseColl.addSeries(osCourseValues);
       }
 
       if (_secondaryTrack != null)
@@ -2343,7 +2506,38 @@ public final class StackedDotHelper
 
       if (showCourse)
       {
-        targetCourseSeries.addSeries(osCourseValues);
+        Iterator<?> oIter = ownshipCourseColl.getSeries().iterator();
+        
+        boolean zoneCoursesPending = true;
+        
+        while(oIter.hasNext())
+        {
+          final TimeSeries thisOwnshipSeries = (TimeSeries) oIter.next();
+          targetCourseSeries.addSeries(thisOwnshipSeries);
+          
+          // and the course data for the zone chart
+          if(zoneCoursesPending)
+          {
+            // we only process the first time-series, ignore the rest.
+            zoneCoursesPending = false;
+            
+            if (!thisOwnshipSeries.isEmpty())
+            {
+              if (ownshipCourseSeries != null)
+              {
+                // is it currently empty?
+                if (ownshipCourseSeries.isEmpty())
+                {
+                  ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
+                }
+              }
+            }
+            else
+            {
+              // ok, ignore it. we only assign the data in the first pass
+            }
+          }
+        }
       }
 
       final Iterator<?> cIter2 = calculatedSeries.getSeries().iterator();
@@ -2351,23 +2545,6 @@ public final class StackedDotHelper
       {
         final TimeSeries series = (TimeSeries) cIter2.next();
         targetCalculatedSeries.addAndOrUpdate(series);
-      }
-
-      // and the course data for the zone chart
-      if (!osCourseValues.isEmpty())
-      {
-        if (ownshipCourseSeries != null)
-        {
-          // is it currently empty?
-          if (ownshipCourseSeries.isEmpty())
-          {
-            ownshipCourseSeries.addAndOrUpdate(osCourseValues);
-          }
-          else
-          {
-            // ok, ignore it. we only assign the data in the first pass
-          }
-        }
       }
 
       // and the bearing data for the zone chart
@@ -2425,115 +2602,6 @@ public final class StackedDotHelper
     }
   }
 
-  private static void getStandardCourseData(TimeSeries osCourseValues,
-      TrackWrapper primaryTrack, boolean flipAxes, HiResDate startDTG,
-      HiResDate endDTG)
-  {
-
-    // loop through using the iterator
-    final Enumeration<Editable> pIter = primaryTrack.getPositionIterator();
-    final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
-        endDTG);
-    final List<Editable> validItems = new LinkedList<Editable>();
-    while (pIter.hasMoreElements())
-    {
-      final FixWrapper fw = (FixWrapper) pIter.nextElement();
-      if (validPeriod.contains(fw.getDateTimeGroup()))
-      {
-        validItems.add(fw);
-      }
-      else
-      {
-        // have we passed the end of the requested period?
-        if (fw.getDateTimeGroup().greaterThan(endDTG))
-        {
-          // ok, drop out
-          break;
-        }
-      }
-    }
-
-    // ok, now go through the list
-    final Iterator<Editable> vIter = validItems.iterator();
-    final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
-    int ctr = 0;
-    while (vIter.hasNext())
-    {
-      final Editable ed = vIter.next();
-      if (ctr++ % freq == 0)
-      {
-        final FixWrapper fw = (FixWrapper) ed;
-        final FixedMillisecond thisMilli = new FixedMillisecond(fw
-            .getDateTimeGroup().getDate().getTime());
-        double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-            .getCourse());
-
-        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-        if (flipAxes && ownshipCourse > 180)
-        {
-          ownshipCourse -= 360;
-        }
-
-        final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
-            ownshipCourse, fw.getColor(), true, null, true, true);
-        osCourseValues.add(crseBearing);
-      }
-    }
-  }
-
-  private static void getSinglePointCourseData(TimeSeries osCourseValues,
-      TrackWrapper primaryTrack, ISecondaryTrack secondaryTrack,
-      boolean flipAxes)
-  {
-
-    // get the single location
-    final FixWrapper loc = (FixWrapper) primaryTrack.getPositionIterator()
-        .nextElement();
-
-    final Enumeration<Editable> segments = secondaryTrack.segments();
-    while (segments.hasMoreElements())
-    {
-      final Editable nextE = segments.nextElement();
-      // if there's just one segment - then we need to wrap it
-      final SegmentList segList;
-      if (nextE instanceof SegmentList)
-      {
-        segList = (SegmentList) nextE;
-      }
-      else
-      {
-        segList = new SegmentList();
-        segList.addSegment((TrackSegment) nextE);
-      }
-
-      final Enumeration<Editable> segIter = segList.elements();
-      while (segIter.hasMoreElements())
-      {
-        final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-        final Enumeration<Editable> enumer = segment.elements();
-        while (enumer.hasMoreElements())
-        {
-          final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
-
-          double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
-              .getCourse());
-
-          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-          if (flipAxes && ownshipCourse > 180)
-          {
-            ownshipCourse -= 360;
-          }
-          final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
-              .getDateTimeGroup().getDate().getTime());
-          final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
-              ownshipCourse, loc.getColor(), true, null, true, true);
-          osCourseValues.add(crseBearing);
-        }
-      }
-    }
-  }
-
   /**
    * go through the tracks, finding the relevant position on the other track.
    *
@@ -2549,14 +2617,6 @@ public final class StackedDotHelper
       _primaryDoublets = getDoublets(_primaryTracks, _secondaryTrack, onlyVis,
           needBearing, needFreq);
     }
-  }
-
-  private static Color halfWayColor(final Color a, final Color b)
-  {
-    int red = (a.getRed() + b.getRed()) / 2;
-    int blue = (a.getBlue() + b.getBlue()) / 2;
-    int green = (a.getGreen() + b.getGreen()) / 2;
-    return new Color(red, blue, green);
   }
 
   /**
@@ -2735,27 +2795,27 @@ public final class StackedDotHelper
       backShader.setShade(errorColor);
     }
 
-    Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
+    final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
     while (mIter.hasNext())
     {
-      TimeSeries series = (TimeSeries) mIter.next();
+      final TimeSeries series = (TimeSeries) mIter.next();
       linePlotData.addSeries(series);
     }
 
     // actualSeries.addSeries(correctedValues);
-    Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
+    final Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
     while (pIter.hasNext())
     {
-      TimeSeries predictedValues = (TimeSeries) pIter.next();
+      final TimeSeries predictedValues = (TimeSeries) pIter.next();
       linePlotData.addSeries(predictedValues);
     }
 
     if (baseValuesSeries.getSeries().size() > 0)
     {
-      Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
+      final Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
       while (bIter.hasNext())
       {
-        TimeSeries baseValues = (TimeSeries) bIter.next();
+        final TimeSeries baseValues = (TimeSeries) bIter.next();
         linePlotData.addSeries(baseValues);
       }
       // sort out the rendering for the BaseFrequencies.
@@ -2768,27 +2828,5 @@ public final class StackedDotHelper
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
 
-  }
-
-  /**
-   * utility method to add a value to a series, calculating the series if necessary
-   * 
-   * @param collection
-   *          parent collection
-   * @param seriesName
-   *          name of series of operate on
-   * @param bFreq
-   *          data item to add
-   */
-  static private void safelyAddItem(final TimeSeriesCollection collection,
-      final String seriesName, TimeSeriesDataItem bFreq)
-  {
-    TimeSeries series = collection.getSeries(seriesName);
-    if (series == null)
-    {
-      series = new TimeSeries(seriesName);
-      collection.addSeries(series);
-    }
-    series.add(bFreq);
   }
 }
