@@ -30,12 +30,8 @@ public abstract class BroadbandHandler extends CoreSensorHandler
 
   private final static String type = "BroadbandSensor";
   protected final static String APERTURE = "Aperture";
-  protected final static String AMBIGUOUS = "Ambiguous";
-  protected final static String PRODUCE_RANGE = "CanProduceRange";
 
   protected double _myAperture;
-	protected boolean _isAmbiguous = false;
-	private boolean _canProduceRange;
 
   public BroadbandHandler(String myType)
   {
@@ -48,23 +44,6 @@ public abstract class BroadbandHandler extends CoreSensorHandler
         _myAperture = val;
       }
     });
-    
-    super.addAttributeHandler(new HandleBooleanAttribute(AMBIGUOUS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _isAmbiguous  = val;
-      }
-    });
-
-    super.addAttributeHandler(new HandleBooleanAttribute(PRODUCE_RANGE)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _canProduceRange  = val;
-      }
-    });
-
   }
 
   public BroadbandHandler()
@@ -85,14 +64,11 @@ public abstract class BroadbandHandler extends CoreSensorHandler
     // get this instance
     final ASSET.Models.Sensor.Initial.BroadbandSensor bb = new ASSET.Models.Sensor.Initial.BroadbandSensor(myId);
 
-    bb.setDetectionAperture(_myAperture);
-    bb.setAmbiguous(_isAmbiguous);
-    bb.setCanProduceRange(_canProduceRange);
+    super.configureSensor(bb);
     
+    bb.setDetectionAperture(_myAperture);
     
     _myAperture = 0;
-    _isAmbiguous = false;
-    _canProduceRange = true;
 
     return bb;
   }
@@ -112,8 +88,6 @@ public abstract class BroadbandHandler extends CoreSensorHandler
 
     // and now our bits
     thisPart.setAttribute(APERTURE, writeThis(bb.getDetectionAperture()));
-    thisPart.setAttribute(AMBIGUOUS, writeThis(bb.isAmbiguous()));
-    thisPart.setAttribute(PRODUCE_RANGE, writeThis(bb.canProduceRange()));
 
     parent.appendChild(thisPart);
   }

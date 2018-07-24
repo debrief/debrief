@@ -2608,4 +2608,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     final ISelection selected = new StructuredSelection(fixW);
     return selected;
   }
+
+  public void disposePlotPropertySheetPage()
+  {
+    _propertySheetPage = null;
+   
+    
+  }
 }

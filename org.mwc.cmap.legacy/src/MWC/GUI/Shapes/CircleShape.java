@@ -365,18 +365,20 @@ public class CircleShape extends PlainShape implements Editable,
 	 * @param centre
 	 *          the WorldLocation marking the centre
 	 */
-	public void setCentre(final WorldLocation centre)
-	{
-		// inform our listeners
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, _theCentre, centre);
-		// make the change
-		_theCentre = centre;
-		// and calc the new summary data
-		calcPoints();
-
-		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-	}
+  public void setCentre(final WorldLocation centre)
+  {
+    // remember the old value of centre
+    final WorldLocation oldCentre = _theCentre;
+    
+    // make the change
+    _theCentre = centre;
+    
+    // and calc the new summary data
+    calcPoints();
+    
+    // inform our listeners, including the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldCentre, centre);
+  }
 
 	/**
 	 * @return the centre of the circle

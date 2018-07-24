@@ -54,6 +54,7 @@ import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromOwnshipPosit
 import org.mwc.debrief.core.ContextOperations.GenerateTUASolution;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GenerateTrackFromActiveCuts;
+import org.mwc.debrief.core.ContextOperations.GroupLightweightTracks;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.ImportAsTrack;
 import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
@@ -294,6 +295,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     RightClickSupport.addRightClickGenerator(new ConvertLightweightTrackToTrack());
     RightClickSupport.addRightClickGenerator(new GenerateTrack());
     RightClickSupport.addRightClickGenerator(new GroupTracks());
+    RightClickSupport.addRightClickGenerator(new GroupLightweightTracks());
     RightClickSupport.addRightClickGenerator(new GenerateInfillSegment());
     RightClickSupport.addRightClickGenerator(new MergeTracks());
     RightClickSupport.addRightClickGenerator(new MergeContacts());

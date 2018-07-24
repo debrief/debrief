@@ -265,8 +265,6 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
       }
     });
 
-    // _myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
-
     _myCanvas.addMouseListener(new MouseAdapter()
     {
 
@@ -463,6 +461,7 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
   /**
    * handler for a screen resize - inform our projection of the resize then inform the painters.
    */
+  @Override
   public void setScreenSize(final java.awt.Dimension p1)
   {
     super.setScreenSize(p1);

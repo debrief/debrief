@@ -157,6 +157,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     ExtendedCanvasType
 {
 
+  protected static final String EDITOR_LABEL = "Appearance";
+
   /**
    * the alpha depth of semi-transparent objects
    * 
@@ -224,7 +226,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    * the current line width.
    */
   private float _lineWidth = UNSET_LINE_WIDTH;
-
+  
   /**
    * flag for whether we have the GDI library availble. The plotting algs will keep on failing if
    * it's not. We should remember when its not avaialble, and not bother calling from there on.
@@ -440,12 +442,17 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     // check if this is a real resize
     if ((_theSize == null) || (!_theSize.equals(p1)))
     {
-
+      
+      final Dimension oldDim = _theSize;
+      
       // ok, now remember it
       _theSize = p1;
 
       // and pass it onto the projection
       _theProjection.setScreenArea(p1);
+      
+      // fire screen size updated
+      this.getInfo().fireChanged(this, DIMENSIONS, oldDim, p1);
     }
   }
 
@@ -1431,8 +1438,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    */
   public final String toString()
   {
-    return "Appearance";
+    return EDITOR_LABEL;
   }
+
+  private static final String DIMENSIONS = "Dimensions";
+
 
   // ////////////////////////////////////////////////////
   // bean info for this class
@@ -1452,13 +1462,17 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
         final PropertyDescriptor[] res =
         {displayProp("BackgroundColor", "Background color",
             "the background color"), displayProp("LineThickness",
-                "Line thickness", "the line thickness"),};
+                "Line thickness", "the line thickness"),
+          displayReadOnlyProp(DIMENSIONS,
+              "Current plot size", "the editor control dimensions (read-only)")
+            };
 
         return res;
 
       }
       catch (final IntrospectionException e)
       {
+        e.printStackTrace();
         return super.getPropertyDescriptors();
       }
     }
@@ -1603,4 +1617,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
     }
   }
 
+  public String getDimensions()
+  {
+    Dimension dims = this.getSize();
+    return (int)dims.getWidth() + "px * " + (int)dims.getHeight() + "px";
+  }
+  
 }

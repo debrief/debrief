@@ -287,6 +287,17 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
       // do we have a sensor name specified?
       if (_subjectSensor == null || _subjectSensor.equals(sensorName))
       {
+        // wrap the sensor name, if we have to
+        final String safeSensorName;
+        if(sensorName.contains(" "))
+        {
+          safeSensorName = "\"" + sensorName + "\"";
+        }
+        else
+        {
+          safeSensorName = sensorName;
+        }
+          
 
         // hmm, do we have freq?
         if (de.getFreq() != null || de.isAmbiguous())
@@ -297,8 +308,9 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
             ambig = (float) de.getAmbiguousBearing();
           }
 
-          outputThisDetection2(de.getTime(), pt.getName(), pt.getCategory(), de
-              .getBearing(), ambig, de.getRange(), sensorName, de.toString(),
+          outputThisDetection2(de.getSensorLocation(),
+              de.getTime(), pt.getName(), pt.getCategory(), de
+              .getBearing(), ambig, de.getRange(), safeSensorName, de.toString(),
               de.getFreq());
 
         }
@@ -306,7 +318,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
         {
           outputThisDetection(de.getSensorLocation(), de.getTime(), pt
               .getName(), pt.getCategory(), de.getBearing(), de.getRange(),
-              sensorName, de.toString());
+              safeSensorName, de.toString());
         }
       }
     }
@@ -516,7 +528,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // return;
 
     // use NULL as the location, so it's calculated from parent
-    String locStr = "NULL";
+    String locStr ="NULL"; //  MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
 
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
@@ -584,6 +596,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   /**
    * note that we only output detections once some positions have been written to file, since
    * Debrief likes to know about tracks before loading sensor data
+   * @param worldLocation 
    * 
    * @param loc
    * @param dtg
@@ -594,12 +607,13 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * @param sensor_name
    * @param label
    */
-  private void outputThisDetection2(long dtg, String hostName,
+  private void outputThisDetection2(WorldLocation loc, long dtg, String hostName,
       Category hostCategory, Float bearing, Float ambigBearing,
       WorldDistance range, String sensor_name, String label, Float freq)
   {
-    String locStr = "NULL";
-    String dateStr =
+    final String locStr = "NULL";// MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    
+    final String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
 
     String force = hostCategory.getForce();

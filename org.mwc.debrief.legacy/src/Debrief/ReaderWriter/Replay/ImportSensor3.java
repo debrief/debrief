@@ -17,13 +17,11 @@ package Debrief.ReaderWriter.Replay;
 
 import java.util.StringTokenizer;
 
-import junit.framework.Assert;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -49,11 +47,6 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
     // bearing (degs) [or the single word NULL], bearing accuracy (degs), frequency(Hz)
     // [or the single word NULL], frequency accuracy (Hz), range(yds)
     // [or the single word NULL], sensor name, label (to end of line)
-
-    Trace
-        .trace(
-            "Note: Full import of Sensor3 data not implemented yet, accuracy ignored",
-            false);
 
     // TODO:
     // 1. produce some sample lines in unit tests, check they import corectly
@@ -285,9 +278,9 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
       final ImportSensor3 is2 = new ImportSensor3();
       final SensorContactWrapper resA =
           (SensorContactWrapper) is2.readThisLine(lineA);
-      Assert.assertEquals("lineA failed", "NULL", resA.getTrackName());
-      Assert.assertEquals("lineA failed", "UNKNOWN", resA.getSensorName());
-      Assert.assertEquals("lineA failed", "\"UNKNOWN\"", resA.getLabel());
+      assertEquals("lineA failed", "NULL", resA.getTrackName());
+      assertEquals("lineA failed", "UNKNOWN", resA.getSensorName());
+      assertEquals("lineA failed", "\"UNKNOWN\"", resA.getLabel());
       assertEquals("correct freq", 155.55, resA.getFrequency(), 0.001);
     }
   }

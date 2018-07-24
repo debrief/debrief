@@ -95,12 +95,15 @@ public class RightClickSupport
 
     private final Object _newValue;
 
+    private final String _propertyName;
+
     public ListPropertyAction(final String propertyName,
         final Editable[] editable, final Method getter, final Method setter,
         final Object newValue, final Layers layers, final Layer parentLayer)
     {
       super(propertyName + " for "
           + (editable.length > 1 ? "multiple items" : editable[0].getName()));
+      _propertyName = propertyName;
       _setter = setter;
       _layers = layers;
       _parentLayer = parentLayer;
@@ -133,6 +136,13 @@ public class RightClickSupport
         {
           _setter.invoke(thisSubject, new Object[]
           {theValue});
+          
+          // and try to fire property change
+          final EditorType info = thisSubject.getInfo();
+          if(info != null)
+          {
+            info.fireChanged(this, _propertyName, null, theValue);
+          }
         }
         catch (final InvocationTargetException e)
         {
@@ -530,7 +540,7 @@ public class RightClickSupport
         try
         {
           _action.execute(thisSubject);
-
+          
         }
         catch (final IllegalArgumentException e)
         {

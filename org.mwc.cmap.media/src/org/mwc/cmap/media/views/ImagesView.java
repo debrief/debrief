@@ -92,7 +92,7 @@ public class ImagesView extends ViewPart {
 	private String openedFolder;
 	
 	private Action open;
-	private Action refresh;
+//	private Action refresh;
 	private Action stretch;
 	private Action smallIcons;
 	private Action largeIcons;
@@ -348,18 +348,18 @@ public class ImagesView extends ViewPart {
 		open.setText("Open");
 		open.setEnabled(true);	
 		
-		refresh = new Action() {
-
-			@Override
-			public void run() {
-				if (openedFolder != null) {
-					openFolder(openedFolder);
-				}
-			}
-		};
-		refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
-		refresh.setText("Refresh");
-		refresh.setEnabled(false);
+//		refresh = new Action() {
+//
+//			@Override
+//			public void run() {
+//				if (openedFolder != null) {
+//					openFolder(openedFolder);
+//				}
+//			}
+//		};
+//		refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
+//		refresh.setText("Refresh");
+//		refresh.setEnabled(false);
 		
 		smallIcons = new Action() {
 		  @Override
@@ -369,6 +369,7 @@ public class ImagesView extends ViewPart {
 		};
 		smallIcons.setEnabled(true);
 		smallIcons.setText("SmallIcons");
+    smallIcons.setImageDescriptor(PlanetmayoImages.VIEW_THUMBNAILS.getImage());
 		
 		mediumIcons = new Action() {
       @Override
@@ -387,6 +388,7 @@ public class ImagesView extends ViewPart {
     };
     largeIcons.setEnabled(false);
     largeIcons.setText("Large Icons");
+    largeIcons.setImageDescriptor(PlanetmayoImages.VIEW_FULLSIZE.getImage());
     
 		stretch = new Action("Stretch", Action.AS_CHECK_BOX) {
 
@@ -409,25 +411,23 @@ public class ImagesView extends ViewPart {
 		IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
 		toolbar.add(stretch);
 		toolbar.add(new Separator());
+    toolbar.add(smallIcons);
+    toolbar.add(mediumIcons);
 		toolbar.add(largeIcons);
-		toolbar.add(smallIcons);
-		toolbar.add(mediumIcons);
 		toolbar.add(new Separator());
-		toolbar.add(refresh);		
 		toolbar.add(open);
-		
 	}
 	
 	private void fillMenu() {
 		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
 		menu.add(stretch);
 		menu.add(new Separator());
-		menu.add(largeIcons);
-		menu.add(mediumIcons);
 		menu.add(smallIcons);
+    menu.add(mediumIcons);
+    menu.add(largeIcons);
 		menu.add(new Separator());			
 		menu.add(open);
-		menu.add(refresh);
+//		menu.add(refresh);
 	}	
 	
 	public boolean openFolder(String folderName) {
@@ -469,7 +469,7 @@ public class ImagesView extends ViewPart {
 			imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
 			ImageLoader.getInstance().load(imagePanel);
 		}		
-		refresh.setEnabled(true);
+//		refresh.setEnabled(true);
 		return true;
 	}
 	

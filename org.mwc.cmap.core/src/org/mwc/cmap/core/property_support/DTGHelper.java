@@ -114,7 +114,25 @@ public class DTGHelper extends EditorHelper
 			_originalTime = _time;
 		}
 
-		protected void firePropertyChanged(final String propName)
+    @Override
+    public boolean equals(Object obj)
+    {
+      final boolean res;
+
+      if (obj instanceof DTGPropertySource)
+      {
+        DTGPropertySource o = (DTGPropertySource) obj;
+        res = this.getValue().compareTo(o.getValue()) == 0;
+      }
+      else
+      {
+        res = false;
+      }
+
+      return res;
+    }
+
+    protected void firePropertyChanged(final String propName)
 		{
 			// Control ctl = (Control)element.getControl();
 			//

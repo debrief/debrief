@@ -82,13 +82,13 @@ public class LatLongHelper extends EditorHelper
 		return (target == WorldLocation.class);
 	}
 
-	public Object translateToSWT(final Object orig)
+  public Object translateToSWT(final Object orig)
 	{
 		final WorldLocation value = (WorldLocation) orig;
-
-		// do we have a list?
-		if (_myLocations == null)
-			_myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
+    
+    // do we have a list?
+    if (_myLocations == null)
+      _myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
 
 		LatLongPropertySource res = null;
 
@@ -99,6 +99,9 @@ public class LatLongHelper extends EditorHelper
 			res = new LatLongPropertySource((WorldLocation) value);
 			_myLocations.put(value, res);
 		}
+		
+		// ok, refresh the extracted values
+		res.refresh();
 
 		// ok, we've received a location. Return our new property source
 		// representing a
@@ -252,29 +255,39 @@ public class LatLongHelper extends EditorHelper
 
 		public LatLongPropertySource(final WorldLocation location)
 		{
-			_originalLocation = location;// new WorldLocation(location);
+			_originalLocation = location;
 
-			final DebriefFormatLocation.brokenDown bLat = new DebriefFormatLocation.brokenDown(
-					location.getLat(), true);
-			final DebriefFormatLocation.brokenDown bLong = new DebriefFormatLocation.brokenDown(
-					location.getLong(), false);
-
-			_latDeg = _origLatDeg = "" + bLat.deg;
-			_latMin = _origLatMin = "" + bLat.min;
-			_latSec = _origLatSec = _floatFormat.format(bLat.sec);
-			_latHem = _origLatHem = "" + bLat.hem;
-
-			_longDeg = _origLongDeg = "" + bLong.deg;
-			_longMin = _origLongMin = "" + bLong.min;
-			_longSec = _origLongSec = _floatFormat.format(bLong.sec);
-			_longHem = _origLongHem = "" + bLong.hem;
-
-			_depth = _origDepth = new WorldDistance(location.getDepth(),
-					WorldDistance.METRES);
-
+			// extract the fields
+			refresh();
+			
+			// sort out property change support
 			_pSupport = new PropertyChangeSupport(this);
-
 		}
+
+		/** convenience function, to initialise (or refresh) the child fields
+		 * 
+		 */
+		public void refresh()
+		{
+		  final DebriefFormatLocation.brokenDown bLat = new DebriefFormatLocation.brokenDown(
+		      _originalLocation.getLat(), true);
+      final DebriefFormatLocation.brokenDown bLong = new DebriefFormatLocation.brokenDown(
+          _originalLocation.getLong(), false);
+
+      _latDeg = _origLatDeg = "" + bLat.deg;
+      _latMin = _origLatMin = "" + bLat.min;
+      _latSec = _origLatSec = _floatFormat.format(bLat.sec);
+      _latHem = _origLatHem = "" + bLat.hem;
+
+      _longDeg = _origLongDeg = "" + bLong.deg;
+      _longMin = _origLongMin = "" + bLong.min;
+      _longSec = _origLongSec = _floatFormat.format(bLong.sec);
+      _longHem = _origLongHem = "" + bLong.hem;
+
+      _depth = _origDepth = new WorldDistance(_originalLocation.getDepth(),
+          WorldDistance.METRES);
+		}
+		
 
 		public void addPropertyChangeListener(final PropertyChangeListener listener)
 		{
@@ -438,7 +451,26 @@ public class LatLongHelper extends EditorHelper
 
 			firePropertyChanged((String) propName);
 		}
+	  
 
+	  @Override
+	  public boolean equals(Object obj)
+	  {
+      final boolean res;
+	    if(obj instanceof LatLongPropertySource)
+	    {
+	      LatLongPropertySource o = (LatLongPropertySource) obj;
+
+	      // compare locations
+	      res = this.getValue().equals(o.getValue());
+	    }
+	    else
+	    {
+	      res = false;
+	    }
+	    return res;
+	  }
+		
 		public String toString()
 		{
 			String res;

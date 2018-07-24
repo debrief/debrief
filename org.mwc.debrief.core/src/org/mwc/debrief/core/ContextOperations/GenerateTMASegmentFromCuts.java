@@ -431,6 +431,12 @@ public class GenerateTMASegmentFromCuts implements
     {
       return true;
     }
+    
+    public String getTrackNameFor(TrackWrapper newTrack)
+    {
+      return TrackSegment.TMA_LEADER + FormatRNDateTime.toString(
+          newTrack.getStartDTG().getDate().getTime());   
+    }
 
     @Override
     public IStatus execute(final IProgressMonitor monitor,
@@ -465,8 +471,7 @@ public class GenerateTMASegmentFromCuts implements
       _newTrack = new TrackWrapper();
       _newTrack.setColor(Color.red);
       _newTrack.add(seg);
-      final String tNow = TrackSegment.TMA_LEADER + FormatRNDateTime.toString(
-          _newTrack.getStartDTG().getDate().getTime());
+      final String tNow = getTrackNameFor(_newTrack);
       _newTrack.setName(tNow);
 
       _layers.addThisLayerAllowDuplication(_newTrack);
@@ -475,7 +480,7 @@ public class GenerateTMASegmentFromCuts implements
       shadeCuts();
 
       // also set it as a secondary track
-      if (Platform.isRunning())
+      if(isRunning())
       {
         final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
         if (editor != null)
@@ -490,11 +495,17 @@ public class GenerateTMASegmentFromCuts implements
           }
         }
       }
+      
       // sorted, do the update
       _layers.fireExtended();
 
       return Status.OK_STATUS;
 
+    }
+    
+    public boolean isRunning()
+    {
+      return Platform.isRunning();
     }
 
     @Override

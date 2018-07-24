@@ -148,6 +148,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -280,16 +281,36 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		if (fProp == null || fProp.equals(""))
 			fProp = FILENAME;
 
-		try
-		{
-			res = new FileInputStream(fProp);
-		}
-		catch (final FileNotFoundException e)
-		{
-			_myParent.logError(ToolParent.ERROR, "Coastline file not found", e);
-		}
-
-		return res;
+    File testFile = new File(fProp);
+    if (testFile.exists())
+    {
+      try
+      {
+        res = new FileInputStream(fProp);
+      }
+      catch (final FileNotFoundException e)
+      {
+        // try getting the file from classloader path
+        if (res == null)
+        {
+          _myParent.logError(ToolParent.ERROR,
+              "Coastline file could not be loaded from file system", null);
+        }
+      }
+    }
+    else
+    {
+      // not in the normal file-system, see if it's packed into the app jar
+      _myParent.logError(ToolParent.INFO,
+          "Coastline file not found,trying to load from classloader", null);
+      res = getClass().getClassLoader().getResourceAsStream("/World.dat");
+      if (res == null)
+      {
+        _myParent.logError(ToolParent.ERROR,
+            "Coastline file could not be loaded from class loader", null);
+      }
+    }
+    return res;
 	}
 
 	/**

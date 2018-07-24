@@ -26,12 +26,15 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
@@ -40,6 +43,7 @@ import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other bits
@@ -158,21 +162,13 @@ public class EditableWrapper implements IPropertySource
       {
         // right, we can fire a change if we like. have a look
         final Annotation[] ann = _property.getAnnotationsForSetter();
-        if ((ann != null) && (ann.length > 0))
+        if(PlainWrapper.hasFireExtendedAnnotation(ann))
         {
-          for (int i = 0; i < ann.length; i++)
-          {
-            final Annotation thisA = ann[i];
-            if (thisA.annotationType().equals(FireExtended.class))
-            {
-              _wholeLayers.fireExtended(null, _topLevelLayer);
-            }
-            else if (thisA.annotationType().equals(FireReformatted.class))
-            {
-              _wholeLayers.fireReformatted(_topLevelLayer);
-            }
-          }
-
+          _wholeLayers.fireExtended(null, _topLevelLayer);
+        }
+        else if(PlainWrapper.hasFireReformattedAnnotation(ann))
+        {
+          _wholeLayers.fireReformatted(_topLevelLayer);
         }
         else
         {
@@ -522,7 +518,8 @@ public class EditableWrapper implements IPropertySource
   final public IPropertyDescriptor[] getPropertyDescriptors()
   {
     // right, does this object have dynamic descriptors?
-    if (_editable.getInfo() instanceof Editable.DynamicDescriptors)
+    final EditorType info = _editable.getInfo();
+    if (info instanceof Editable.DynamicDescriptors)
     {
       // yes - reset our list, we'll regenerate them
       _myDescriptors = null;
@@ -534,72 +531,14 @@ public class EditableWrapper implements IPropertySource
           new Vector<IPropertyDescriptor>(0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
-      final Editable.EditorType editor = _editable.getInfo();
+      final Editable.EditorType editor = info;
       if (editor != null)
       {
-        final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
-        // _myDescriptors = new IPropertyDescriptor[properties.length];
-
-        if (properties != null)
-        {
-          for (int i = 0; i < properties.length; i++)
-          {
-            final PropertyDescriptor thisProp = properties[i];
-
-            // hmm, is it a legacy property?
-            if (thisProp instanceof DeprecatedPropertyDescriptor)
-            {
-              // right, just give it a stiff ignoring, it's deprecated
-            }
-            else
-            {
-              // ok, wrap it, and add it to our list.
-              final IPropertyDescriptor newProp =
-                  new DebriefProperty(thisProp, (Editable) editor.getData(),
-                      null);
-              list.add(newProp);
-            }
-          }
-        }
+        // add the normal editors to our list
+        addPropertyEditors(list, editor);
 
         // hmm, are there any "supplemental" editors?
-        final BeanInfo[] others = editor.getAdditionalBeanInfo();
-        if (others != null)
-        {
-          // adding more editors
-          for (int i = 0; i < others.length; i++)
-          {
-            final BeanInfo bn = others[i];
-            if (bn instanceof MWC.GUI.Editable.EditorType)
-            {
-              final Editable.EditorType et = (Editable.EditorType) bn;
-              final Editable obj = (Editable) et.getData();
-              final PropertyDescriptor[] pds = et.getPropertyDescriptors();
-              if (pds != null)
-              {
-                for (int j = 0; j < pds.length; j++)
-                {
-                  final PropertyDescriptor pd = pds[j];
-
-                  // is this an 'expert' property which
-                  // should not appear in here as an additional?
-                  if (pd.isExpert())
-                  {
-                    // do nothing, we don't want to show this
-                  }
-                  else
-                  {
-                    // ok, add this editor
-                    final IPropertyDescriptor newProp =
-                        new DebriefProperty(pd, obj, null);
-
-                    list.add(newProp);
-                  }
-                }
-              }
-            }
-          }
-        }
+        addAdditionalPropertyEditors(list, editor);
       }
 
       // hmm, did we find any
@@ -607,7 +546,6 @@ public class EditableWrapper implements IPropertySource
       {
         _myDescriptors = list.toArray(res);
       }
-
     }
 
     // just make sure we aren't returning a null...
@@ -618,6 +556,74 @@ public class EditableWrapper implements IPropertySource
     }
 
     return _myDescriptors;
+  }
+
+  private void addPropertyEditors(final Vector<IPropertyDescriptor> list,
+      final EditorType editor)
+  {
+    final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
+    if (properties != null)
+    {
+      for (int i = 0; i < properties.length; i++)
+      {
+        final PropertyDescriptor thisProp = properties[i];
+
+        // hmm, is it a legacy property?
+        if (thisProp instanceof DeprecatedPropertyDescriptor)
+        {
+          // right, just give it a stiff ignoring, it's deprecated
+        }
+        else
+        {
+          // ok, wrap it, and add it to our list.
+          final IPropertyDescriptor newProp =
+              new DebriefProperty(thisProp, (Editable) editor.getData(),
+                  null);
+          list.add(newProp);
+        }
+      }
+    }
+  }
+
+  private void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
+  {
+    final BeanInfo[] others = editor.getAdditionalBeanInfo();
+    if (others != null)
+    {
+      // adding more editors
+      for (int i = 0; i < others.length; i++)
+      {
+        final BeanInfo bn = others[i];
+        if (bn instanceof MWC.GUI.Editable.EditorType)
+        {
+          final Editable.EditorType et = (Editable.EditorType) bn;
+          final Editable obj = (Editable) et.getData();
+          final PropertyDescriptor[] pds = et.getPropertyDescriptors();
+          if (pds != null)
+          {
+            for (int j = 0; j < pds.length; j++)
+            {
+              final PropertyDescriptor pd = pds[j];
+
+              // is this an 'expert' property which
+              // should not appear in here as an additional?
+              if (pd.isExpert())
+              {
+                // do nothing, we don't want to show this
+              }
+              else
+              {
+                // ok, add this editor
+                final IPropertyDescriptor newProp =
+                    new DebriefProperty(pd, obj, null);
+
+                list.add(newProp);
+              }
+            }
+          }
+        }
+      }
+    }    
   }
 
   /*
@@ -702,13 +708,53 @@ public class EditableWrapper implements IPropertySource
   {
 
   }
+  
+  /**
+   * determine if the font objects are effectively equal
+   * 
+   * @param fontOne
+   *          first font
+   * @param fontTwo
+   *          second font
+   * @return if they can be treated as equal
+   */
+  private static boolean fontsAreEqual(final Font fontOne, final Font fontTwo)
+  {
+    final boolean res;
+    if (fontOne == null)
+    {
+      res = false;
+    }
+    else
+    {
+      final FontData[] newD = fontTwo.getFontData();
+      final FontData[] oldD = fontOne.getFontData();
 
+      // compare all the font definitions
+      for (FontData newData : newD)
+      {
+        for (FontData oldData : oldD)
+        {
+          // ok - it's a match!
+          if (newData.equals(oldData))
+          {
+            // ok, we can drop out.
+            return true;
+          }
+        }
+      }
+      res = false;
+    }
+    return res;
+  }
+  
   /*
    * (non-Javadoc)
    * 
    * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang .Object,
    * java.lang.Object)
    */
+  @SuppressWarnings("unused")
   @Override
   final public void setPropertyValue(final Object id, final Object value)
   {
@@ -722,12 +768,47 @@ public class EditableWrapper implements IPropertySource
     // and find the existing value
     final Object oldVal = thisProp.getValue();
 
-    // ok, create the action
-    final PropertyChangeAction pca =
-        new PropertyChangeAction(oldVal, value, thisProp, getEditable()
-            .getName(), getLayers(), getTopLevelLayer());
+    // only apply change if it's a new value
 
-    // and sort it out with the history
-    CorePlugin.run(pca);
+    final boolean valueChanged;
+    if (value instanceof Font)
+    {
+      // special handling for fonts.  This is because, within some Debiref
+      // objects the font is stored as an AWT font.  But, it's converted to an
+      // SWT font.  This round trip means that identical fonts can appear to be different
+      valueChanged = !fontsAreEqual((Font) value, (Font) oldVal);
+    }
+    else if (thisProp != null)
+    {
+      // see if the helpers can help
+      EditorHelper helper = thisProp.getHelper();
+      
+      // do a round trip of the new value, to ensure they're of the
+      // correct type
+      Object newVal = helper.translateFromSWT(value);
+      Object toSWT = helper.translateToSWT(newVal);
+      if (toSWT != null && !toSWT.equals(oldVal))
+      {
+        valueChanged = true;
+      }
+      else
+      {
+        valueChanged = false;
+      }
+    }
+    else
+    {
+      valueChanged = value != null && !value.equals(oldVal);
+    }
+
+    if (valueChanged)
+    {
+      // ok, create the action
+      final PropertyChangeAction pca = new PropertyChangeAction(oldVal, value,
+          thisProp, getEditable().getName(), getLayers(), getTopLevelLayer());
+
+      // and sort it out with the history
+      CorePlugin.run(pca);
+    }
   }
 }

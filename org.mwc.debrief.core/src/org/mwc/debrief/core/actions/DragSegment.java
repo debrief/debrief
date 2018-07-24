@@ -38,8 +38,11 @@ import org.mwc.debrief.core.actions.drag.ShearDragMode;
 import org.mwc.debrief.core.actions.drag.StretchDragMode;
 
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldVector;
@@ -70,6 +73,30 @@ public class DragSegment extends DragFeature
 		public void apply(final DraggableItem item, final WorldVector offset)
 		{
 			item.shift(offset);
+			
+			final Editable subject;
+			if(item instanceof Editable)
+			{
+			  subject = (Editable) item;
+			}
+			else if(item instanceof CoreDragOperation)
+			{
+			  CoreDragOperation oper = (CoreDragOperation) item;
+			  subject = oper.getSegment();
+			}
+			else
+			{
+			  subject = null;
+			}
+			
+			if(subject != null)
+			{
+			  EditorType info = subject.getInfo();
+			  if(info != null)
+			  {
+			    info.fireChanged(this, PlainWrapper.LOCATION_CHANGED, null, offset);
+			  }
+			}
 		}
 
 		/**
