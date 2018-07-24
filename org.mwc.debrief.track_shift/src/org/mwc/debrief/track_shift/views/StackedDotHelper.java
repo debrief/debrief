@@ -91,30 +91,30 @@ import junit.framework.TestCase;
 
 public final class StackedDotHelper
 {
-  
-  /** we have a special multistatics use case where
-   * we need to support multiple primary tracks.  
+
+  /**
+   * we have a special multistatics use case where we need to support multiple primary tracks.
    *
    */
   public static interface SwitchableTrackProvider
   {
-    /** whether we have any valid data
+    /**
+     * whether we have any valid data
      * 
      * @return yes/no
      */
     public boolean isPopulated();
-    
+
     /**
      * find out what the secondary track is
      */
     public WatchableList[] getSecondaryTracks();
-    
+
     /**
      * find out what the primary tracks are
      */
     public WatchableList[] getPrimaryTracks();
   }
-  
 
   /**
    * convenience class, to avoid having to pass plot into data helper
@@ -161,7 +161,7 @@ public final class StackedDotHelper
 
   public static class TestUpdates extends TestCase
   {
-    public TrackDataProvider getTrackData() 
+    public TrackDataProvider getTrackData()
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -189,7 +189,7 @@ public final class StackedDotHelper
       assertEquals("got all cuts", 9, hullItems.length);
 
       final String newName = "TMA_LEG";
-      
+
       // ok, we also have to generate some target track
       TMAfromCuts genny = new TMAfromCuts(tailItems, layers, new WorldVector(
           Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
@@ -207,7 +207,7 @@ public final class StackedDotHelper
           return false;
         }
       };
-      
+
       // create the new TMA
       try
       {
@@ -215,14 +215,14 @@ public final class StackedDotHelper
       }
       catch (Exception e)
       {
-        fail("exception thrown while running command"  + e.getMessage());
+        fail("exception thrown while running command" + e.getMessage());
         e.printStackTrace();
       }
 
       // get the TMA
       final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
       assertNotNull("found it", tma);
-      
+
       // have a butchers
       assertEquals("has segments", 1, tma.getSegments().size());
       Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0),
@@ -231,11 +231,12 @@ public final class StackedDotHelper
       // note: only 8 fixes in leg, since two sensor cut was hidden
       assertEquals("has fixes", 8, fixes.size());
 
-      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[] {})[0];
+      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
       @SuppressWarnings("deprecation")
       String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
-      assertEquals("valid first time","12 Jan 2010 12:00:15 GMT", toTime);
-      
+      assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
+
       // and now the track data object
       TrackDataHelper prov = new TrackDataHelper();
       prov.addPrimary(ownship);
@@ -243,8 +244,8 @@ public final class StackedDotHelper
 
       return prov;
     }
-    
-    public void testGetMultiPrimaryTrackData() throws FileNotFoundException 
+
+    public void testGetMultiPrimaryTrackData() throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -263,12 +264,14 @@ public final class StackedDotHelper
       final TrackWrapper rx_1 = (TrackWrapper) layers.findLayer("RX_1");
       final TrackWrapper rx_2 = (TrackWrapper) layers.findLayer("RX_2");
 
-      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors().first();
-      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors().first();
-      
+      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors()
+          .first();
+      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors()
+          .first();
+
       assertNotNull("found sensor 1", rx_1_sensor);
       assertNotNull("found sensor 2", rx_2_sensor);
-      
+
       // ok, we need to move one sensor
 
       // get the tail
@@ -281,7 +284,7 @@ public final class StackedDotHelper
       assertEquals("got all cuts", 66, rx2_cuts.length);
 
       final String newName = "TMA_LEG";
-      
+
       // ok, we also have to generate some target track
       TMAfromCuts genny = new TMAfromCuts(rx1_cuts, layers, new WorldVector(
           Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12, WorldSpeed.Kts),
@@ -299,7 +302,7 @@ public final class StackedDotHelper
           return false;
         }
       };
-      
+
       // create the new TMA
       try
       {
@@ -307,14 +310,14 @@ public final class StackedDotHelper
       }
       catch (Exception e)
       {
-        fail("exception thrown while running command"  + e.getMessage());
+        fail("exception thrown while running command" + e.getMessage());
         e.printStackTrace();
       }
 
       // get the TMA
       final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
       assertNotNull("found it", tma);
-      
+
       // have a butchers
       assertEquals("has segments", 1, tma.getSegments().size());
       Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(0),
@@ -322,20 +325,20 @@ public final class StackedDotHelper
 
       assertEquals("has fixes", 42, fixes.size());
 
-      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[] {})[0];
+      FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
       @SuppressWarnings("deprecation")
       String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
-      assertEquals("valid first time","12 Dec 2014 12:03:40 GMT", toTime);
-      
+      assertEquals("valid first time", "12 Dec 2014 12:03:40 GMT", toTime);
+
       // and now the track data object
       TrackDataHelper prov = new TrackDataHelper();
       prov.addPrimary(rx_1);
       prov.addPrimary(rx_2);
       prov.addSecondary(tma);
 
-    //  return prov;
+      // return prov;
     }
-
 
     private static class TrackDataHelper implements TrackDataProvider
     {
@@ -472,14 +475,16 @@ public final class StackedDotHelper
             "100112 120120 SENSOR FA 60 10 32.96 N 000 11 49.00 E 200.00  12.00  0.00 ");
         importer.readLine(
             ";SENSOR2: 100112 120120 SENSOR @A NULL 161.59 238.41 150.906 NULL \"hull sensor\" SUBJECT held on hull sensor");
-//        importer.readLine(
-//            ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        // importer.readLine(
+        // ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\"
+        // SUBJECT held on tail sensor");
         importer.readLine(
             "100112 120140 SUBJECT VC 60 06 11.49 N 000 14 40.66 E 320.00  9.00  0.00 ");
         importer.readLine(
             "100112 120140 SENSOR FA 60 10 29.21 N 000 11 46.25 E 200.00  12.00  0.00 ");
-//        importer.readLine(
-//            ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        // importer.readLine(
+        // ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\"
+        // SUBJECT held on hull sensor");
         importer.readLine(
             ";SENSOR2: 100112 120140 SENSOR @A NULL 165.27 234.73 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
         importer.readLine(
@@ -526,8 +531,9 @@ public final class StackedDotHelper
 
       return layers;
     }
-    
-    private static class SwitchableTrackProviderImpl implements SwitchableTrackProvider
+
+    private static class SwitchableTrackProviderImpl implements
+        SwitchableTrackProvider
     {
 
       private final TrackDataProvider _prov;
@@ -552,9 +558,10 @@ public final class StackedDotHelper
       @Override
       public WatchableList[] getPrimaryTracks()
       {
-        return new WatchableList[] {_prov.getPrimaryTrack()};
+        return new WatchableList[]
+        {_prov.getPrimaryTrack()};
       }
-      
+
     }
 
     public void testUpdateBearings() throws ExecutionException
@@ -562,16 +569,16 @@ public final class StackedDotHelper
       StackedDotHelper helper = new StackedDotHelper();
       TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
       TimeSeriesCollection linePlotData = new TimeSeriesCollection();
-      
+
       final TrackDataProvider tracks = getTrackData();
-      
-      SwitchableTrackProvider switcher = new SwitchableTrackProviderImpl(tracks);
- 
-      
+
+      SwitchableTrackProvider switcher = new SwitchableTrackProviderImpl(
+          tracks);
+
       boolean onlyVis = false;
       boolean showCourse = true;
       boolean flipAxes = false;
-      
+
       ErrorLogger logger = new LoggingService();
       boolean updateDoublets = true;
       TimeSeriesCollection targetCourseSeries = new TimeSeriesCollection();
@@ -591,8 +598,9 @@ public final class StackedDotHelper
           // just ignore it
         }
       };
-      
-      helper.initialise(switcher, true, onlyVis, logger, "Bearings", true, false);
+
+      helper.initialise(switcher, true, onlyVis, logger, "Bearings", true,
+          false);
       helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
@@ -600,20 +608,19 @@ public final class StackedDotHelper
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
       // have a look at what's happened
-      
+
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct name", "ERRORStail sensor", dotPlotData
           .getSeries(0).getKey());
-      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData.getSeries(
-          1).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
       assertEquals("series correct name", "ERRORShull sensor", dotPlotData
           .getSeries(2).getKey());
-      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData.getSeries(
-          3).getKey());
-
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, dotPlotData.getSeries(0)
@@ -641,7 +648,6 @@ public final class StackedDotHelper
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
           .getSeries(5).getKey());
-      
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, linePlotData.getSeries(0)
@@ -659,11 +665,12 @@ public final class StackedDotHelper
 
       // ok, hide a sensor, and recalculate
       TrackWrapper primary = (TrackWrapper) tracks.getPrimaryTrack();
-      SensorWrapper firstSensor = (SensorWrapper) primary.getSensors().elements().nextElement();
+      SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
+          .elements().nextElement();
       firstSensor.setVisible(true);
-      
+
       onlyVis = false;
-      
+
       helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
@@ -678,13 +685,12 @@ public final class StackedDotHelper
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct name", "ERRORStail sensor", dotPlotData
           .getSeries(0).getKey());
-      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData.getSeries(
-          1).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
       assertEquals("series correct name", "ERRORShull sensor", dotPlotData
           .getSeries(2).getKey());
-      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData.getSeries(
-          3).getKey());
-
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, dotPlotData.getSeries(0)
@@ -712,7 +718,6 @@ public final class StackedDotHelper
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
           .getSeries(5).getKey());
-      
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, linePlotData.getSeries(0)
@@ -727,10 +732,9 @@ public final class StackedDotHelper
           .getItemCount());
       assertEquals("series correct length", 9, linePlotData.getSeries(5)
           .getItemCount());
-      
 
       onlyVis = true;
-      
+
       helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
@@ -749,8 +753,8 @@ public final class StackedDotHelper
           .getItemCount());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "ERRORS", dotPlotData
-          .getSeries(0).getKey());
+      assertEquals("series correct name", "ERRORS", dotPlotData.getSeries(0)
+          .getKey());
       assertEquals("series correct name", "ERRORS_amb_", dotPlotData.getSeries(
           1).getKey());
 
@@ -766,41 +770,39 @@ public final class StackedDotHelper
           .getItemCount());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "M_", linePlotData
-          .getSeries(0).getKey());
+      assertEquals("series correct name", "M_", linePlotData.getSeries(0)
+          .getKey());
       assertEquals("series correct name", "hull sensor", linePlotData.getSeries(
           1).getKey());
-      assertEquals("series correct name", "Calculated", linePlotData
-          .getSeries(2).getKey());
-      
-      
+      assertEquals("series correct name", "Calculated", linePlotData.getSeries(
+          2).getKey());
+
       // and make the second sensor visible
       Enumeration<Editable> sIter = primary.getSensors().elements();
-      while(sIter.hasMoreElements())
+      while (sIter.hasMoreElements())
       {
         SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
         sensor.setVisible(true);
       }
-            
+
       helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
           showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
           targetSpeedSeries, measuredValuesColl, ambigValuesColl,
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
-      
+
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct name", "ERRORStail sensor", dotPlotData
           .getSeries(0).getKey());
-      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData.getSeries(
-          1).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
       assertEquals("series correct name", "ERRORShull sensor", dotPlotData
           .getSeries(2).getKey());
-      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData.getSeries(
-          3).getKey());
-
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, dotPlotData.getSeries(0)
@@ -828,7 +830,6 @@ public final class StackedDotHelper
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
           .getSeries(5).getKey());
-      
 
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct length", 8, linePlotData.getSeries(0)
@@ -843,7 +844,7 @@ public final class StackedDotHelper
           .getItemCount());
       assertEquals("series correct length", 9, linePlotData.getSeries(5)
           .getItemCount());
-          
+
     }
   }
 
@@ -939,7 +940,7 @@ public final class StackedDotHelper
 
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
-        
+
         @Override
         protected void makeActions()
         {
@@ -1021,26 +1022,31 @@ public final class StackedDotHelper
   {
     final Paint col;
     double maxError = 0d;
-    final TimeSeries ts = errorSeries.getSeries(0);
-    final List<?> items = ts.getItems();
-    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
+
+    Iterator<?> sIter = errorSeries.getSeries().iterator();
+    while (sIter.hasNext())
     {
-      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
-      final boolean useMe;
-      // check this isn't infill
-      if (item instanceof ColouredDataItem)
+      TimeSeries ts = (TimeSeries) sIter.next();
+      final List<?> items = ts.getItems();
+      for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
       {
-        final ColouredDataItem cd = (ColouredDataItem) item;
-        useMe = cd.isShapeFilled();
-      }
-      else
-      {
-        useMe = true;
-      }
-      if (useMe)
-      {
-        final double thisE = (Double) item.getValue();
-        maxError = Math.max(maxError, Math.abs(thisE));
+        final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+        final boolean useMe;
+        // check this isn't infill
+        if (item instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cd = (ColouredDataItem) item;
+          useMe = cd.isShapeFilled();
+        }
+        else
+        {
+          useMe = true;
+        }
+        if (useMe)
+        {
+          final double thisE = (Double) item.getValue();
+          maxError = Math.max(maxError, Math.abs(thisE));
+        }
       }
     }
 
@@ -1195,7 +1201,7 @@ public final class StackedDotHelper
    * sort out data of interest
    *
    */
-  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
+  public static TreeSet<Doublet> getDoublets(final List<TrackWrapper> primaries,
       final ISecondaryTrack targetTrack, final boolean onlyVis,
       final boolean needBearing, final boolean needFrequency)
   {
@@ -1221,122 +1227,128 @@ public final class StackedDotHelper
       theSegments = null;
     }
 
-    // loop through our sensor data
-    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-    if (sensors != null)
+    for (TrackWrapper sensorHost : primaries)
     {
-      while (sensors.hasMoreElements())
+
+      // loop through our sensor data
+      final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
+      if (sensors != null)
       {
-        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-        if (!onlyVis || (onlyVis && wrapper.getVisible()))
+        while (sensors.hasMoreElements())
         {
-          final Enumeration<Editable> cuts = wrapper.elements();
-
-          while (cuts.hasMoreElements())
+          final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+          if (!onlyVis || (onlyVis && wrapper.getVisible()))
           {
-            final SensorContactWrapper scw = (SensorContactWrapper) cuts
-                .nextElement();
+            final Enumeration<Editable> cuts = wrapper.elements();
 
-            if (!onlyVis || (onlyVis && scw.getVisible()))
+            while (cuts.hasMoreElements())
             {
-              // is this cut suitable for what we're looking for?
-              if (needBearing)
+              final SensorContactWrapper scw = (SensorContactWrapper) cuts
+                  .nextElement();
+
+              if (!onlyVis || (onlyVis && scw.getVisible()))
               {
-                if (!scw.getHasBearing())
+                // is this cut suitable for what we're looking for?
+                if (needBearing)
                 {
-                  continue;
+                  if (!scw.getHasBearing())
+                  {
+                    continue;
+                  }
                 }
-              }
 
-              // aaah, but does it meet the frequency requirement?
-              if (needFrequency)
-              {
-                if (!scw.getHasFrequency())
+                // aaah, but does it meet the frequency requirement?
+                if (needFrequency)
                 {
-                  continue;
+                  if (!scw.getHasFrequency())
+                  {
+                    continue;
+                  }
                 }
-              }
 
-              /**
-               * note: if this is frequency data then we accept an interpolated fix. This is based
-               * upon the working practice that initially legs of target track are created from
-               * bearing data.
-               *
-               * Plus, there is greater variance in bearing angle - so it's more important to get
-               * the right data item.
-               */
+                /**
+                 * note: if this is frequency data then we accept an interpolated fix. This is based
+                 * upon the working practice that initially legs of target track are created from
+                 * bearing data.
+                 *
+                 * Plus, there is greater variance in bearing angle - so it's more important to get
+                 * the right data item.
+                 */
 
-              /**
-               * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
-               * speed when on a leg, it's perfectly OK to interpolate a target position for any
-               * sensor time.
-               */
-              final boolean interpFix = true;// needFrequency;
+                /**
+                 * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
+                 * speed when on a leg, it's perfectly OK to interpolate a target position for any
+                 * sensor time.
+                 */
+                final boolean interpFix = true;// needFrequency;
 
-              /**
-               * for frequency data we don't generate a double for dynamic infills, since we have
-               * low confidence in the target course/speed
-               */
-              final boolean allowInfill = !needFrequency;
+                /**
+                 * for frequency data we don't generate a double for dynamic infills, since we have
+                 * low confidence in the target course/speed
+                 */
+                final boolean allowInfill = !needFrequency;
 
-              final TargetDoublet doublet = getTargetDoublet(index, theSegments,
-                  scw.getDTG(), interpFix, allowInfill);
+                final TargetDoublet doublet = getTargetDoublet(index,
+                    theSegments, scw.getDTG(), interpFix, allowInfill);
 
-              final Doublet thisDub;
-              final FixWrapper hostFix;
+                final Doublet thisDub;
+                final FixWrapper hostFix;
 
-              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-              if (matches != null && matches.length == 1)
-              {
-                hostFix = (FixWrapper) matches[0];
-              }
-              else
-              {
-                hostFix = null;
-              }
-
-              if (doublet.targetFix != null && hostFix != null)
-              {
-                thisDub = new Doublet(scw, doublet.targetFix,
-                    doublet.targetParent, hostFix);
-
-                // if we've no target track add all the points
-                if (targetTrack == null)
+                final Watchable[] matches = sensorHost.getNearestTo(scw
+                    .getDTG());
+                if (matches != null && matches.length == 1)
                 {
-                  // store our data
-                  res.add(thisDub);
+                  hostFix = (FixWrapper) matches[0];
                 }
                 else
                 {
-                  // if we've got a target track we only add points
-                  // for which we
-                  // have
-                  // a target location
-                  if (doublet.targetFix != null)
+                  hostFix = null;
+                }
+
+                if (doublet.targetFix != null && hostFix != null)
+                {
+                  thisDub = new Doublet(scw, doublet.targetFix,
+                      doublet.targetParent, hostFix);
+
+                  // if we've no target track add all the points
+                  if (targetTrack == null)
                   {
                     // store our data
                     res.add(thisDub);
                   }
-                } // if we know the track
-                // if there are any matching items
+                  else
+                  {
+                    // if we've got a target track we only add points
+                    // for which we
+                    // have
+                    // a target location
+                    if (doublet.targetFix != null)
+                    {
+                      // store our data
+                      res.add(thisDub);
+                    }
+                  } // if we know the track
+                  // if there are any matching items
 
-              } // if we find a match
-              // this test used to be the following, but we changed it so we
-              // could see measured data even when we don't have track:
-              // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null &&
-              // hostFix != null))
-              else if (hostFix != null && (doublet.targetFix == null
-                  || targetTrack == null))
-              {
-                // no target data, just use ownship sensor data
-                thisDub = new Doublet(scw, null, null, hostFix);
-                res.add(thisDub);
-              }
-            } // if cut is visible
-          } // loop through cuts
-        } // if sensor is visible
-      } // loop through sensors
-    } // if there are sensors
+                } // if we find a match
+                // this test used to be the following, but we changed it so we
+                // could see measured data even when we don't have track:
+                // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null
+                // &&
+                // hostFix != null))
+                else if (hostFix != null && (doublet.targetFix == null
+                    || targetTrack == null))
+                {
+                  // no target data, just use ownship sensor data
+                  thisDub = new Doublet(scw, null, null, hostFix);
+                  res.add(thisDub);
+                }
+              } // if cut is visible
+            } // loop through cuts
+          } // if sensor is visible
+        } // loop through sensors
+      } // if there are sensors
+    } // loop through primaries
 
     return res;
   }
@@ -1534,6 +1546,12 @@ public final class StackedDotHelper
   private TrackWrapper _primaryTrack;
 
   /**
+   * introduce support for multiple primary tracks
+   * 
+   */
+  private List<TrackWrapper> _primaryTracks = new ArrayList<TrackWrapper>();
+
+  /**
    * the secondary track we're monitoring
    */
   private ISecondaryTrack _secondaryTrack;
@@ -1584,7 +1602,7 @@ public final class StackedDotHelper
   public TreeSet<Doublet> getDoublets(final boolean onlyVis,
       final boolean needBearing, final boolean needFrequency)
   {
-    return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
+    return getDoublets(_primaryTracks, _secondaryTrack, onlyVis, needBearing,
         needFrequency);
   }
 
@@ -1605,13 +1623,14 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    */
-  void initialise(final SwitchableTrackProvider provider, final boolean showError,
-      final boolean onlyVis, final ErrorLogger logger, final String dataType,
-      final boolean needBrg, final boolean needFreq)
+  void initialise(final SwitchableTrackProvider provider,
+      final boolean showError, final boolean onlyVis, final ErrorLogger logger,
+      final String dataType, final boolean needBrg, final boolean needFreq)
   {
 
     _secondaryTrack = null;
     _primaryTrack = null;
+    _primaryTracks.clear();
 
     // do we have some data?
     if (provider == null)
@@ -1621,7 +1640,8 @@ public final class StackedDotHelper
       return;
     }
 
-    if(!provider.isPopulated() || provider.getPrimaryTracks() == null || provider.getPrimaryTracks().length == 0)
+    if (!provider.isPopulated() || provider.getPrimaryTracks() == null
+        || provider.getPrimaryTracks().length == 0)
     {
       logger.logError(IStatus.INFO,
           "A primary track must be placed on the Tote", null);
@@ -1630,11 +1650,12 @@ public final class StackedDotHelper
     else
     {
       WatchableList[] primaryTracks = provider.getPrimaryTracks();
-      for(WatchableList priTrk: primaryTracks)
+      for (WatchableList priTrk : primaryTracks)
       {
         if (priTrk instanceof TrackWrapper)
         {
           _primaryTrack = (TrackWrapper) priTrk;
+          _primaryTracks.add((TrackWrapper) priTrk);
         }
         else
         {
@@ -1711,15 +1732,25 @@ public final class StackedDotHelper
 
     final Iterator<Doublet> iter = doublets.iterator();
     SensorWrapper lastS = null;
+    TrackWrapper lastT = null;
     while (iter.hasNext())
     {
       final Doublet next = iter.next();
       final SensorWrapper thisS = next.getSensorCut().getSensor();
+      final TrackWrapper thisT = thisS.getHost();
       if (lastS == null)
       {
         lastS = thisS;
       }
       else if (!lastS.equals(thisS))
+      {
+        return true;
+      }
+      if (lastT == null)
+      {
+        lastT = thisT;
+      }
+      else if (!lastT.equals(thisT))
       {
         return true;
       }
@@ -1748,8 +1779,9 @@ public final class StackedDotHelper
    *          how far the current track has been dragged
    */
   public void updateBearingData(final TimeSeriesCollection dotPlotData,
-      final TimeSeriesCollection linePlotData, final SwitchableTrackProvider tracks,
-      final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
+      final TimeSeriesCollection linePlotData,
+      final SwitchableTrackProvider tracks, final boolean onlyVis,
+      final boolean showCourse, final boolean flipAxes,
       final ErrorLogger logger, final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
@@ -2045,12 +2077,11 @@ public final class StackedDotHelper
                 final ColouredDataItem newAmbigError = new ColouredDataItem(
                     thisMilli, thisAmnigError, ambigColor, false, null, true,
                     parentIsNotDynamic);
-                
+
                 final String ambErrorName = multiSensor
                     ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
                     : BaseStackedDotsView.ERROR_VALUES + "_amb_";
 
-                
                 safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
               }
 
@@ -2473,10 +2504,6 @@ public final class StackedDotHelper
         // dotPlot.setBackgroundPaint(errorColor);
         backShader.setShade(errorColor);
       }
-
-      // linePlot.setDataset(actualSeries);
-      // targetPlot.setDataset(0, targetCourseSeries);
-      // targetPlot.setDataset(1, targetSpeedSeries);
     }
     finally
     {
@@ -2505,7 +2532,7 @@ public final class StackedDotHelper
     if (_primaryTrack != null)
     {
       // cool sort out the list of sensor locations for these tracks
-      _primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis,
+      _primaryDoublets = getDoublets(_primaryTracks, _secondaryTrack, onlyVis,
           needBearing, needFreq);
     }
   }
@@ -2532,9 +2559,10 @@ public final class StackedDotHelper
    *          how far the current track has been dragged
    */
   public void updateFrequencyData(final TimeSeriesCollection dotPlotData,
-      final TimeSeriesCollection linePlotData, final SwitchableTrackProvider tracks,
-      final boolean onlyVis, final ErrorLogger logger,
-      final boolean updateDoublets, final SetBackgroundShade backShader,
+      final TimeSeriesCollection linePlotData,
+      final SwitchableTrackProvider tracks, final boolean onlyVis,
+      final ErrorLogger logger, final boolean updateDoublets,
+      final SetBackgroundShade backShader,
       final ColourStandardXYItemRenderer lineRend)
   {
 
@@ -2728,11 +2756,15 @@ public final class StackedDotHelper
 
   }
 
-  /** utility method to add a value to a series, calculating the series
-   * if necessary
-   * @param collection parent collection
-   * @param seriesName name of series of operate on
-   * @param bFreq data item to add
+  /**
+   * utility method to add a value to a series, calculating the series if necessary
+   * 
+   * @param collection
+   *          parent collection
+   * @param seriesName
+   *          name of series of operate on
+   * @param bFreq
+   *          data item to add
    */
   static private void safelyAddItem(final TimeSeriesCollection collection,
       final String seriesName, TimeSeriesDataItem bFreq)
