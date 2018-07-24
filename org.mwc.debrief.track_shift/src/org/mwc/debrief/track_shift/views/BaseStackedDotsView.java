@@ -478,7 +478,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Action _selectMeasurements;
 
   protected Action _selectPositions;
-  
+
   protected Action _switchPrimary;
 
   /**
@@ -508,7 +508,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Layers _ourLayersSubject;
 
   protected TrackDataProvider _myTrackDataProvider;
-  
+
   protected SwitchableTrackProvider _switchableTrackDataProvider;
 
   protected ChartComposite _holder;
@@ -668,17 +668,37 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     _switchableTrackDataProvider = new SwitchableTrackProvider()
     {
-      
+      private boolean isSwitched()
+      {
+        return _switchPrimary.isChecked();
+      }
+
       @Override
       public WatchableList[] getSecondaryTracks()
       {
-        return _myTrackDataProvider.getSecondaryTracks();
+        if (isSwitched())
+        {
+          return new WatchableList[]
+          {_myTrackDataProvider.getPrimaryTrack()};
+        }
+        else
+        {
+          return _myTrackDataProvider.getSecondaryTracks();
+        }
       }
-      
+
       @Override
       public WatchableList[] getPrimaryTracks()
       {
-        return new WatchableList[] {_myTrackDataProvider.getPrimaryTrack()};
+        if (isSwitched())
+        {
+          return _myTrackDataProvider.getSecondaryTracks();
+        }
+        else
+        {
+          return new WatchableList[]
+          {_myTrackDataProvider.getPrimaryTrack()};
+        }
       }
 
       @Override
@@ -687,7 +707,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         return _myTrackDataProvider != null;
       }
     };
-    
+
   }
 
   /**
@@ -752,7 +772,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         TimeSeriesCollection line = (TimeSeriesCollection) _linePlot
             .getDataset();
         line.removeAllSeries();
-        
+
         _targetCourseSeries.removeAllSeries();
         _targetSpeedSeries.removeAllSeries();
       }
@@ -2088,7 +2108,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok, insert separator
     toolBarManager.add(new Separator());
 
-    toolBarManager.add(_switchPrimary);   
+    toolBarManager.add(_switchPrimary);
 
     // ok, insert separator
     toolBarManager.add(new Separator());
@@ -2731,16 +2751,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
     _showCrossHairs.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
         "icons/24/crosshair.png"));
-    
-    
-    _switchPrimary = new Action(
-        "Use multistatics",
-        IAction.AS_CHECK_BOX)
+
+    _switchPrimary = new Action("Use multistatics", IAction.AS_CHECK_BOX)
     {
+
+      @Override
+      public void run()
+      {
+        super.run();
+
+        // we need to get a fresh set of data pairs - the number may
+        // have changed
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_switchableTrackDataProvider, true, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
+
+        updateData(true);
+      }
+
     };
     _switchPrimary.setChecked(false);
-    _switchPrimary.setToolTipText(
-        "Use multiple secondary tracks as primary");
+    _switchPrimary.setToolTipText("Use multiple secondary tracks as primary");
     _switchPrimary.setImageDescriptor(DebriefPlugin.getImageDescriptor(
         "icons/16/MultiPath.png"));
 
@@ -3500,8 +3537,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               }
               else
               {
-                _myHelper.initialise(_switchableTrackDataProvider, false, _onlyVisible
-                    .isChecked(), logger, getType(), _needBrg, _needFreq);
+                _myHelper.initialise(_switchableTrackDataProvider, false,
+                    _onlyVisible.isChecked(), logger, getType(), _needBrg,
+                    _needFreq);
               }
 
               // hey - fire a dot update
