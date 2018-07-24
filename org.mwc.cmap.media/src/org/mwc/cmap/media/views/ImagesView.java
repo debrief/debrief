@@ -400,6 +400,7 @@ public class ImagesView extends ViewPart {
 				imagePanel.redraw(0, 0, size.x, size.y, true);				
 			}
 		};
+		stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
 	}
 	
 	
