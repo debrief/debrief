@@ -64,10 +64,10 @@
 				<Location>
 					<shortLocation Lat="60.2" Long="0"></shortLocation>
 				</Location>
-				<Speed Value="7" Units="kts" />
+				<Speed Value="9" Units="kts" />
 			</Status>
 			<Waterfall Name="sensor route">
-				<Move Name="leg one" Course="0">
+				<Move Name="leg one" Course="5">
 					<Vector Value="12" Units="nm" /></Move>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
@@ -76,7 +76,7 @@
 				<MaxSpeed Value="20" Units="kts" />
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
-				<TurningCircle Value="800" Units="m"></TurningCircle>
+				<TurningCircle Value="2000" Units="m"></TurningCircle>
 			</SurfaceMovementCharacteristics>
 		</Surface>
 		<Surface Name="SENSOR_2">
