@@ -298,9 +298,9 @@ public class ImageGallery<T, I> implements IDisposable {
       label.redraw();
           
     }
-	  /*imagesTable.layout();
+	  imagesTable.layout();
     mainComposite.layout();
-	  */
+	  
 	}
 
 	public void dispose() {
@@ -379,15 +379,15 @@ public class ImageGallery<T, I> implements IDisposable {
 		public void redraw() {
 		  //System.out.println("Redrawing with:<<"+thumbnailWidth+">>");
 		 // imageLabel.setSize(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
-  /*    GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
+      GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
       data.horizontalIndent = 0;
       data.horizontalSpan = 0;
       textlabel.setLayoutData(data);
       textlabel.setMargins(0, 0, 0, 0);
       //this will set filename label
       //setImageMeta(getImageMeta());
-      textlabel.redraw();*/
-      GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+      textlabel.redraw();
+      data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
       imageLabel.setLayoutData(data);
       imageLabel.layout(true);
       imageLabel.redraw();
