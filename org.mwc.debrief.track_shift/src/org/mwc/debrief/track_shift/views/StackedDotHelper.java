@@ -88,6 +88,7 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import junit.framework.TestCase;
 
 public final class StackedDotHelper
@@ -726,6 +727,53 @@ public final class StackedDotHelper
 
       // return prov;
     }
+    
+    public void testGetCourseData()
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+
+      // sort out start/end times
+      HiResDate startDTG = DebriefFormatDateTime.parseThis("100112", "120200");
+      HiResDate endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+      
+      TimeSeries courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 3, courseData.getItemCount());
+      
+      TimeSeriesDataItem firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+      
+      TimeSeriesDataItem lastItem = courseData.getDataItem(courseData.getItemCount()-1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+
+      // sort out start/end times
+      startDTG = DebriefFormatDateTime.parseThis("100112", "110000");
+      endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+      
+      courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+      
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+      
+      lastItem = courseData.getDataItem(courseData.getItemCount()-1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+      
+      // switch the flip axes value
+      courseData = getStandardCourseData(ownship, true, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+      
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", -160d, firstItem.getValue());
+      
+      lastItem = courseData.getDataItem(courseData.getItemCount()-1);
+      assertEquals("correct course", -160d, lastItem.getValue());
+
+    }
 
     public void testUpdateBearings() throws ExecutionException
     {
@@ -1242,121 +1290,109 @@ public final class StackedDotHelper
     {
       // loop through our sensor data
       final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-      if (sensors != null)
+      while (sensors.hasMoreElements())
       {
-        while (sensors.hasMoreElements())
+        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
+        if (!onlyVis || (onlyVis && wrapper.getVisible()))
         {
-          final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-          if (!onlyVis || (onlyVis && wrapper.getVisible()))
+          final Enumeration<Editable> cuts = wrapper.elements();
+          while (cuts.hasMoreElements())
           {
-            final Enumeration<Editable> cuts = wrapper.elements();
+            final SensorContactWrapper scw = (SensorContactWrapper) cuts
+                .nextElement();
 
-            while (cuts.hasMoreElements())
+            if (!onlyVis || (onlyVis && scw.getVisible()))
             {
-              final SensorContactWrapper scw = (SensorContactWrapper) cuts
-                  .nextElement();
-
-              if (!onlyVis || (onlyVis && scw.getVisible()))
+              // is this cut suitable for what we're looking for?
+              if (needBearing)
               {
-                // is this cut suitable for what we're looking for?
-                if (needBearing)
+                if (!scw.getHasBearing())
                 {
-                  if (!scw.getHasBearing())
-                  {
-                    continue;
-                  }
+                  continue;
                 }
+              }
 
-                // aaah, but does it meet the frequency requirement?
-                if (needFrequency)
+              // aaah, but does it meet the frequency requirement?
+              if (needFrequency)
+              {
+                if (!scw.getHasFrequency())
                 {
-                  if (!scw.getHasFrequency())
-                  {
-                    continue;
-                  }
+                  continue;
                 }
+              }
 
-                /**
-                 * note: if this is frequency data then we accept an interpolated fix. This is based
-                 * upon the working practice that initially legs of target track are created from
-                 * bearing data.
-                 *
-                 * Plus, there is greater variance in bearing angle - so it's more important to get
-                 * the right data item.
-                 */
+              /**
+               * note: if this is frequency data then we accept an interpolated fix. This is based
+               * upon the working practice that initially legs of target track are created from
+               * bearing data.
+               *
+               * Plus, there is greater variance in bearing angle - so it's more important to get
+               * the right data item.
+               */
 
-                /**
-                 * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
-                 * speed when on a leg, it's perfectly OK to interpolate a target position for any
-                 * sensor time.
-                 */
-                final boolean interpFix = true;// needFrequency;
+              /**
+               * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
+               * speed when on a leg, it's perfectly OK to interpolate a target position for any
+               * sensor time.
+               */
+              final boolean interpFix = true;// needFrequency;
 
-                /**
-                 * for frequency data we don't generate a double for dynamic infills, since we have
-                 * low confidence in the target course/speed
-                 */
-                final boolean allowInfill = !needFrequency;
+              /**
+               * for frequency data we don't generate a double for dynamic infills, since we have
+               * low confidence in the target course/speed
+               */
+              final boolean allowInfill = !needFrequency;
 
-                final TargetDoublet doublet = getTargetDoublet(index,
-                    theSegments, scw.getDTG(), interpFix, allowInfill);
+              final TargetDoublet doublet = getTargetDoublet(index, theSegments,
+                  scw.getDTG(), interpFix, allowInfill);
 
-                final FixWrapper hostFix;
-                final Watchable[] matches = sensorHost.getNearestTo(scw
-                    .getDTG());
-                if (matches != null && matches.length == 1)
+              final FixWrapper hostFix;
+              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+              if (matches != null && matches.length == 1)
+              {
+                hostFix = (FixWrapper) matches[0];
+              }
+              else
+              {
+                hostFix = null;
+              }
+
+              final Doublet thisDub;
+              if (doublet.targetFix != null && hostFix != null)
+              {
+                thisDub = new Doublet(scw, doublet.targetFix,
+                    doublet.targetParent, hostFix);
+
+                // if we've no target track add all the points
+                if (targetTrack == null)
                 {
-                  hostFix = (FixWrapper) matches[0];
+                  // store our data
+                  res.add(thisDub);
                 }
                 else
                 {
-                  hostFix = null;
-                }
-
-                final Doublet thisDub;
-                if (doublet.targetFix != null && hostFix != null)
-                {
-                  thisDub = new Doublet(scw, doublet.targetFix,
-                      doublet.targetParent, hostFix);
-
-                  // if we've no target track add all the points
-                  if (targetTrack == null)
+                  // if we've got a target track we only add points
+                  // for which we
+                  // have
+                  // a target location
+                  if (doublet.targetFix != null)
                   {
                     // store our data
                     res.add(thisDub);
                   }
-                  else
-                  {
-                    // if we've got a target track we only add points
-                    // for which we
-                    // have
-                    // a target location
-                    if (doublet.targetFix != null)
-                    {
-                      // store our data
-                      res.add(thisDub);
-                    }
-                  } // if we know the track
-                  // if there are any matching items
-
-                } // if we find a match
-                // this test used to be the following, but we changed it so we
-                // could see measured data even when we don't have track:
-                // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null
-                // &&
-                // hostFix != null))
-                else if (hostFix != null && (doublet.targetFix == null
-                    || targetTrack == null))
-                {
-                  // no target data, just use ownship sensor data
-                  thisDub = new Doublet(scw, null, null, hostFix);
-                  res.add(thisDub);
-                }
-              } // if cut is visible
-            } // loop through cuts
-          } // if sensor is visible
-        } // loop through sensors
-      } // if there are sensors
+                } // if we know the track
+              } // if we find a match
+              else if (hostFix != null && (doublet.targetFix == null
+                  || targetTrack == null))
+              {
+                // no target data, just use ownship sensor data
+                thisDub = new Doublet(scw, null, null, hostFix);
+                res.add(thisDub);
+              }
+            } // if cut is visible
+          } // loop through cuts
+        } // if sensor is visible
+      } // loop through sensors
     } // loop through primaries
 
     return res;
@@ -1366,7 +1402,6 @@ public final class StackedDotHelper
       final TrackWrapper primaryTrack, final ISecondaryTrack secondaryTrack,
       final boolean flipAxes)
   {
-
     final TimeSeries osCourseValues = new TimeSeries(primaryTrack.getName());
 
     // get the single location
@@ -1377,17 +1412,9 @@ public final class StackedDotHelper
     while (segments.hasMoreElements())
     {
       final Editable nextE = segments.nextElement();
-      // if there's just one segment - then we need to wrap it
-      final SegmentList segList;
-      if (nextE instanceof SegmentList)
-      {
-        segList = (SegmentList) nextE;
-      }
-      else
-      {
-        segList = new SegmentList();
-        segList.addSegment((TrackSegment) nextE);
-      }
+
+      // produce a list of segments even if there's actually only one
+      final SegmentList segList = collateSegments(secondaryTrack, nextE);
 
       final Enumeration<Editable> segIter = segList.elements();
       while (segIter.hasMoreElements())
@@ -1787,12 +1814,9 @@ public final class StackedDotHelper
     }
 
     // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-    if (flipAxes)
+    if (flipAxes && theBearing > 180)
     {
-      if (theBearing > 180)
-      {
-        theBearing -= 360;
-      }
+      theBearing -= 360;
     }
 
     final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
