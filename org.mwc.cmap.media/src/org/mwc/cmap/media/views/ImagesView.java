@@ -65,683 +65,777 @@ import org.mwc.cmap.media.views.images.ThumbnailPackage;
 
 import MWC.GenericData.HiResDate;
 
-public class ImagesView extends ViewPart {
-	private static final String STATE_FOLDER = "folder";
-	private static final String STATE_SELECTED_IMAGE = "selectedImage";
-	private static final String STATE_STRETCH = "stretch";	
-	private static final String STATE_THUMBNAIL_WIDTH="thumbnailWidth";
-	private static final String STATE_THUMBNAIL_HEIGHT="thumbnailHeight";
-	
-	public static final String ID = "org.mwc.cmap.media.views.ImagesView";
-	
-	private static final ImageMetaDataComparator IMAGES_COMPARATOR = new ImageMetaDataComparator();
-	
-	private IMemento memento;
-  public static final int SMALL_ICON_WIDTH=85;
-  public static final int SMALL_ICON_HEIGHT=45;
-  public static final int MEDIUM_ICON_WIDTH=135;
-  public static final int MEDIUM_ICON_HEIGHT=75;
-  public static final int LARGE_ICON_WIDTH=210;
-  public static final int LARGE_ICON_HEIGHT=140;
-	private Composite main;
-	private ImageGallery<ImageMetaData, ThumbnailPackage> gallery;
-	private ImagePanel imagePanel;
-	
-	private String openedFolder;
-	
-	private Action open;
-//	private Action refresh;
-	private Action stretch;
-	private Action smallIcons;
-	private Action largeIcons;
-	private Action mediumIcons;
-	
-	private List<ImageMetaData> images;
-	
-	private ITimeListener timeListener;
-	
-	private ControllableTime _controllableTime;
-	
-	private TimeProvider _timeProvider;
-	
-	private PartMonitor _myPartMonitor;
-	
-	private PropertyChangeListener _propertyChangeListener = new PropertyChangeListener()
-	{
-		
-		@Override
-		public void propertyChange(PropertyChangeEvent evt)
-		{
-			Object newValue = evt.getNewValue();
-			if (newValue instanceof HiResDate)
-			{
-				HiResDate now = (HiResDate) newValue;
-				if (now != null)
-				{
-					long millis = now.getMicros()/1000;
-					selectImage(millis);
-				}
-			}
-		}
-	};
-	private boolean _firingNewTime;
+public class ImagesView extends ViewPart
+{
+  private static final String STATE_FOLDER = "folder";
+  private static final String STATE_SELECTED_IMAGE = "selectedImage";
+  private static final String STATE_STRETCH = "stretch";
+  private static final String STATE_THUMBNAIL_WIDTH = "thumbnailWidth";
+  private static final String STATE_THUMBNAIL_HEIGHT = "thumbnailHeight";
 
-	@Override
-	public void init(IViewSite site, IMemento memento) throws PartInitException {
-		super.init(site, memento);
-		this.memento = memento;
-		timeListener = new ITimeListener() {
-			
-			@Override
-			public void newTime(Object src, long millis) {
-				if (src == ImagesView.this || images == null || images.isEmpty()) {
-					return;
-				}
-				selectImage(millis);				
-			}
-		};		
-	}
-	
-	@SuppressWarnings("deprecation")
+  public static final String ID = "org.mwc.cmap.media.views.ImagesView";
+
+  private static final ImageMetaDataComparator IMAGES_COMPARATOR =
+      new ImageMetaDataComparator();
+
+  private IMemento memento;
+  public static final int SMALL_ICON_WIDTH = 85;
+  public static final int SMALL_ICON_HEIGHT = 45;
+  public static final int MEDIUM_ICON_WIDTH = 135;
+  public static final int MEDIUM_ICON_HEIGHT = 75;
+  public static final int LARGE_ICON_WIDTH = 210;
+  public static final int LARGE_ICON_HEIGHT = 140;
+  private Composite main;
+  private ImageGallery<ImageMetaData, ThumbnailPackage> gallery;
+  private ImagePanel imagePanel;
+
+  private String openedFolder;
+
+  private Action open;
+  // private Action refresh;
+  private Action stretch;
+  private Action smallIcons;
+  private Action largeIcons;
+  private Action mediumIcons;
+
+  private List<ImageMetaData> images;
+
+  private ITimeListener timeListener;
+
+  private ControllableTime _controllableTime;
+
+  private TimeProvider _timeProvider;
+
+  private PartMonitor _myPartMonitor;
+
+  private PropertyChangeListener _propertyChangeListener =
+      new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+          Object newValue = evt.getNewValue();
+          if (newValue instanceof HiResDate)
+          {
+            HiResDate now = (HiResDate) newValue;
+            if (now != null)
+            {
+              long millis = now.getMicros() / 1000;
+              selectImage(millis);
+            }
+          }
+        }
+      };
+  private boolean _firingNewTime;
+
   @Override
-	public void dispose() {
-		Activator.getDefault().getTimeProvider().removeListener(timeListener);
-		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
-		if(_timeProvider!=null) {
-		  _timeProvider.removeListener(_propertyChangeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-		}
-		gallery.dispose();
-		super.dispose();
-	}
-	
-	public void fireNewTime(final HiResDate dtg)
-	{
-		if (_controllableTime == null) {
-			return;
-		}
-		if (!_firingNewTime)
-		{
-			_firingNewTime = true;
-			try
-			{
-				_controllableTime.setTime(this, dtg, true);
-			}
-			finally
-			{
-				_firingNewTime = false;
-			}
-		}
-	}
-	
-	@Override
-	public void saveState(IMemento memento) {
-		super.saveState(memento);
-		memento.putBoolean(STATE_STRETCH, stretch.isChecked());
-		if(!largeIcons.isEnabled()) {
-		  memento.putInteger(STATE_THUMBNAIL_WIDTH, LARGE_ICON_WIDTH);
-		  memento.putInteger(STATE_THUMBNAIL_HEIGHT, LARGE_ICON_HEIGHT);
-		}
-		if(!smallIcons.isEnabled()) {
-		  memento.putInteger(STATE_THUMBNAIL_WIDTH, SMALL_ICON_WIDTH);
-      memento.putInteger(STATE_THUMBNAIL_HEIGHT, SMALL_ICON_HEIGHT);
-		}
-		if(!mediumIcons.isEnabled()) {
-		  memento.putInteger(STATE_THUMBNAIL_WIDTH, MEDIUM_ICON_WIDTH);
-      memento.putInteger(STATE_THUMBNAIL_HEIGHT, MEDIUM_ICON_HEIGHT);
-		}
-		
-		if (openedFolder != null) {
-			memento.putString(STATE_FOLDER, openedFolder);
-			ImageMetaData meta = gallery.getSelectedImage();
-			if (meta != null) {
-				memento.putString(STATE_SELECTED_IMAGE, meta.getFileName());
-			}
-		}
-	}
+  public void init(IViewSite site, IMemento memento) throws PartInitException
+  {
+    super.init(site, memento);
+    this.memento = memento;
+    timeListener = new ITimeListener()
+    {
 
-	@Override
-	public void createPartControl(Composite parent) {
-		initDrop(parent);
-		createMainWindow(parent);
-		createActions();
-		fillToolbarManager();
-		fillMenu();
-		restoreSavedState();
-		Activator.getDefault().getTimeProvider().addListener(timeListener);
-		// and start listing for any part action
-		setupListeners();
-
-		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
-	}
-	
-	private void initDrop(Control control)
-	{
-		final DropTarget target = new DropTarget(control, DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK);
-		Transfer[] transfers = new Transfer[] {FileTransfer.getInstance()};
-		target.setTransfer(transfers);
-		target.addDropListener(new DropTargetAdapter()
-		{
-			@Override
-			public void dragEnter(DropTargetEvent e)
-			{
-				if (e.detail == DND.DROP_NONE)
-				{
-					e.detail = DND.DROP_LINK;
-				}
-			}
-
-			@Override
-			public void dragOperationChanged(DropTargetEvent e)
-			{
-				if (e.detail == DND.DROP_NONE)
-				{
-					e.detail = DND.DROP_LINK;
-				}
-			}
-
-			@Override
-			public void drop(DropTargetEvent e)
-			{
-				if (e.data == null)
-				{
-					e.detail = DND.DROP_NONE;
-					return;
-				}
-				if (e.data instanceof String[])
-				{
-					String[] fileNames = (String[]) e.data;
-					if (fileNames.length > 0 && fileNames[0] != null
-							&& !fileNames[0].isEmpty())
-					{
-						String fileName = fileNames[0];
-						if (!fileName.equals(openedFolder)
-								&& new File(fileName).isDirectory())
-						{
-							openFolder(fileName);
-						}
-
-					}
-				}
-			}
-		});
-	}
-
-	private void createMainWindow(Composite parent) {
-		main = parent;
-	  FillLayout mainLayout = new FillLayout();
-		main.setLayout(mainLayout);
-		SashForm dividerPane = new SashForm(main,SWT.HORIZONTAL);
-		gallery = new ImageGallery<ImageMetaData, ThumbnailPackage>(dividerPane);
-		gallery.setThumbnailSize(LARGE_ICON_WIDTH,LARGE_ICON_HEIGHT);
-		gallery.setDefaultImage(PlanetmayoImages.UNKNOWN.getImage().createImage(gallery.getMainComposite().getDisplay()));
-		imagePanel = new ImagePanel(dividerPane);
-		gallery.setLabelBuilder(new ImageGalleryElementsBuilder<ImageMetaData, ThumbnailPackage>() {
-			
-			@Override
-			public String buildLabel(ImageMetaData imageName) {				
-				return new File(imageName.getFileName()).getName();
-			}
-
-			@Override
-			public Image buildImage(ThumbnailPackage image) {
-				return image.getScaled();
-			}
-
-			@Override
-			public void disposeImage(ThumbnailPackage i) {
-				i.dispose();				
-			}
-
-			@Override
-			public void disposeMeta(ImageMetaData t) {
-				
-			}
-		});
-		gallery.addElementMouseListener(new MouseListener() {
-			
-			@Override
-			@SuppressWarnings("unchecked")			
-			public void mouseUp(MouseEvent event) {
-				ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label = (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
-				long timeToFire = label.getImageMeta().getDate().getTime();
-				fireNewTime(new HiResDate(timeToFire));
-				int index = images.indexOf(label.getImageMeta());
-				Activator.getDefault().getTimeProvider().fireNewTime(ImagesView.this, timeToFire);
-				selectImage(index);				
-			}
-			
-			@Override
-			public void mouseDown(MouseEvent event) {
-				//default method nothing to do
-			}
-
-			@Override
-			public void mouseDoubleClick(MouseEvent e)
-			{
-			  //default method, nothing to do here
-			}
-			
-		});
-	}
-	
-	private void createActions() {
-		open = new Action() {
-
-			@Override
-			public void run() {
-				DirectoryDialog dialog = new DirectoryDialog(getSite().getShell());
-				if (openedFolder != null) {
-					dialog.setFilterPath(openedFolder);
-				}
-		        dialog.setText("Open folder");
-		        dialog.setMessage("Select a folder");
-		        String folder = dialog.open();
-		        if (folder != null) {
-		        	openFolder(folder);		        	
-		        }				
-			}
-		};
-		open.setImageDescriptor(PlanetmayoImages.OPEN.getImage());
-		open.setText("Open");
-		open.setEnabled(true);	
-		
-//		refresh = new Action() {
-//
-//			@Override
-//			public void run() {
-//				if (openedFolder != null) {
-//					openFolder(openedFolder);
-//				}
-//			}
-//		};
-//		refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
-//		refresh.setText("Refresh");
-//		refresh.setEnabled(false);
-		
-		smallIcons = new Action() {
-		  @Override
-		  public void run() {
-		    setSmallThumbnails();
-		  };
-		};
-		smallIcons.setEnabled(true);
-		smallIcons.setText("SmallIcons");
-    smallIcons.setImageDescriptor(PlanetmayoImages.VIEW_THUMBNAILS.getImage());
-		
-		mediumIcons = new Action() {
       @Override
-      public void run() {
+      public void newTime(Object src, long millis)
+      {
+        if (src == ImagesView.this || images == null || images.isEmpty())
+        {
+          return;
+        }
+        selectImage(millis);
+      }
+    };
+  }
+
+  @SuppressWarnings("deprecation")
+  @Override
+  public void dispose()
+  {
+    Activator.getDefault().getTimeProvider().removeListener(timeListener);
+    _myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+    if (_timeProvider != null)
+    {
+      _timeProvider.removeListener(_propertyChangeListener,
+          TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+    }
+    gallery.dispose();
+    super.dispose();
+  }
+
+  public void fireNewTime(final HiResDate dtg)
+  {
+    if (_controllableTime == null)
+    {
+      return;
+    }
+    if (!_firingNewTime)
+    {
+      _firingNewTime = true;
+      try
+      {
+        _controllableTime.setTime(this, dtg, true);
+      }
+      finally
+      {
+        _firingNewTime = false;
+      }
+    }
+  }
+
+  @Override
+  public void saveState(IMemento memento)
+  {
+    super.saveState(memento);
+    memento.putBoolean(STATE_STRETCH, stretch.isChecked());
+    if (!largeIcons.isEnabled())
+    {
+      memento.putInteger(STATE_THUMBNAIL_WIDTH, LARGE_ICON_WIDTH);
+      memento.putInteger(STATE_THUMBNAIL_HEIGHT, LARGE_ICON_HEIGHT);
+    }
+    if (!smallIcons.isEnabled())
+    {
+      memento.putInteger(STATE_THUMBNAIL_WIDTH, SMALL_ICON_WIDTH);
+      memento.putInteger(STATE_THUMBNAIL_HEIGHT, SMALL_ICON_HEIGHT);
+    }
+    if (!mediumIcons.isEnabled())
+    {
+      memento.putInteger(STATE_THUMBNAIL_WIDTH, MEDIUM_ICON_WIDTH);
+      memento.putInteger(STATE_THUMBNAIL_HEIGHT, MEDIUM_ICON_HEIGHT);
+    }
+
+    if (openedFolder != null)
+    {
+      memento.putString(STATE_FOLDER, openedFolder);
+      ImageMetaData meta = gallery.getSelectedImage();
+      if (meta != null)
+      {
+        memento.putString(STATE_SELECTED_IMAGE, meta.getFileName());
+      }
+    }
+  }
+
+  @Override
+  public void createPartControl(Composite parent)
+  {
+    initDrop(parent);
+    createMainWindow(parent);
+    createActions();
+    fillToolbarManager();
+    fillMenu();
+    restoreSavedState();
+    Activator.getDefault().getTimeProvider().addListener(timeListener);
+    // and start listing for any part action
+    setupListeners();
+
+    // ok we're all ready now. just try and see if the current part is valid
+    _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+        .getActivePage());
+  }
+
+  private void initDrop(Control control)
+  {
+    final DropTarget target = new DropTarget(control, DND.DROP_MOVE
+        | DND.DROP_COPY | DND.DROP_LINK);
+    Transfer[] transfers = new Transfer[]
+    {FileTransfer.getInstance()};
+    target.setTransfer(transfers);
+    target.addDropListener(new DropTargetAdapter()
+    {
+      @Override
+      public void dragEnter(DropTargetEvent e)
+      {
+        if (e.detail == DND.DROP_NONE)
+        {
+          e.detail = DND.DROP_LINK;
+        }
+      }
+
+      @Override
+      public void dragOperationChanged(DropTargetEvent e)
+      {
+        if (e.detail == DND.DROP_NONE)
+        {
+          e.detail = DND.DROP_LINK;
+        }
+      }
+
+      @Override
+      public void drop(DropTargetEvent e)
+      {
+        if (e.data == null)
+        {
+          e.detail = DND.DROP_NONE;
+          return;
+        }
+        if (e.data instanceof String[])
+        {
+          String[] fileNames = (String[]) e.data;
+          if (fileNames.length > 0 && fileNames[0] != null && !fileNames[0]
+              .isEmpty())
+          {
+            String fileName = fileNames[0];
+            if (!fileName.equals(openedFolder) && new File(fileName)
+                .isDirectory())
+            {
+              openFolder(fileName);
+            }
+
+          }
+        }
+      }
+    });
+  }
+
+  private void createMainWindow(Composite parent)
+  {
+    main = parent;
+    FillLayout mainLayout = new FillLayout();
+    main.setLayout(mainLayout);
+    SashForm dividerPane = new SashForm(main, SWT.HORIZONTAL);
+    gallery = new ImageGallery<ImageMetaData, ThumbnailPackage>(dividerPane);
+    gallery.setThumbnailSize(LARGE_ICON_WIDTH, LARGE_ICON_HEIGHT);
+    gallery.setDefaultImage(PlanetmayoImages.UNKNOWN.getImage().createImage(
+        gallery.getMainComposite().getDisplay()));
+    imagePanel = new ImagePanel(dividerPane);
+    gallery.setLabelBuilder(
+        new ImageGalleryElementsBuilder<ImageMetaData, ThumbnailPackage>()
+        {
+
+          @Override
+          public String buildLabel(ImageMetaData imageName)
+          {
+            return new File(imageName.getFileName()).getName();
+          }
+
+          @Override
+          public Image buildImage(ThumbnailPackage image)
+          {
+            return image.getScaled();
+          }
+
+          @Override
+          public void disposeImage(ThumbnailPackage i)
+          {
+            i.dispose();
+          }
+
+          @Override
+          public void disposeMeta(ImageMetaData t)
+          {
+
+          }
+        });
+    gallery.addElementMouseListener(new MouseListener()
+    {
+
+      @Override
+      @SuppressWarnings("unchecked")
+      public void mouseUp(MouseEvent event)
+      {
+        ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel label =
+            (ImageGallery<ImageMetaData, ThumbnailPackage>.ImageLabel) event.data;
+        long timeToFire = label.getImageMeta().getDate().getTime();
+        fireNewTime(new HiResDate(timeToFire));
+        int index = images.indexOf(label.getImageMeta());
+        Activator.getDefault().getTimeProvider().fireNewTime(ImagesView.this,
+            timeToFire);
+        selectImage(index);
+      }
+
+      @Override
+      public void mouseDown(MouseEvent event)
+      {
+        // default method nothing to do
+      }
+
+      @Override
+      public void mouseDoubleClick(MouseEvent e)
+      {
+        // default method, nothing to do here
+      }
+
+    });
+  }
+
+  private void createActions()
+  {
+    open = new Action()
+    {
+
+      @Override
+      public void run()
+      {
+        DirectoryDialog dialog = new DirectoryDialog(getSite().getShell());
+        if (openedFolder != null)
+        {
+          dialog.setFilterPath(openedFolder);
+        }
+        dialog.setText("Open folder");
+        dialog.setMessage("Select a folder");
+        String folder = dialog.open();
+        if (folder != null)
+        {
+          openFolder(folder);
+        }
+      }
+    };
+    open.setImageDescriptor(PlanetmayoImages.OPEN.getImage());
+    open.setText("Open");
+    open.setEnabled(true);
+
+    // refresh = new Action() {
+    //
+    // @Override
+    // public void run() {
+    // if (openedFolder != null) {
+    // openFolder(openedFolder);
+    // }
+    // }
+    // };
+    // refresh.setImageDescriptor(PlanetmayoImages.REFRESH.getImage());
+    // refresh.setText("Refresh");
+    // refresh.setEnabled(false);
+
+    smallIcons = new Action()
+    {
+      @Override
+      public void run()
+      {
+        setSmallThumbnails();
+      };
+    };
+    smallIcons.setEnabled(true);
+    smallIcons.setText("SmallIcons");
+    smallIcons.setImageDescriptor(PlanetmayoImages.VIEW_THUMBNAILS.getImage());
+
+    mediumIcons = new Action()
+    {
+      @Override
+      public void run()
+      {
         setMediumThumbnails();
       };
     };
     mediumIcons.setEnabled(true);
     mediumIcons.setText("Medium Icons");
     mediumIcons.setImageDescriptor(PlanetmayoImages.VIEW_MEDIUM.getImage());
-    
-    largeIcons = new Action() {
+
+    largeIcons = new Action()
+    {
       @Override
-      public void run() {
+      public void run()
+      {
         setLargeThumbnails();
       };
     };
     largeIcons.setEnabled(false);
     largeIcons.setText("Large Icons");
     largeIcons.setImageDescriptor(PlanetmayoImages.VIEW_FULLSIZE.getImage());
-    
-		stretch = new Action("Stretch", Action.AS_CHECK_BOX) {
 
-			@Override
-			public void run() {
-				ScrolledComposite mainComposite = gallery.getMainComposite();
-				Point size = mainComposite.getSize();
-				mainComposite.redraw(0, 0, size.x, size.y, true);
-				imagePanel.setStretchMode(isChecked());
-				size = imagePanel.getSize();
-				imagePanel.redraw(0, 0, size.x, size.y, true);				
-			}
-		};
-		stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
-	}
-	
-	
-	
-	private void fillToolbarManager() {
-		IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
-		toolbar.add(stretch);
-		toolbar.add(new Separator());
-    toolbar.add(smallIcons);
-    toolbar.add(mediumIcons);
-		toolbar.add(largeIcons);
-		toolbar.add(new Separator());
-		toolbar.add(open);
-	}
-	
-	private void fillMenu() {
-		IMenuManager menu = getViewSite().getActionBars().getMenuManager();
-		menu.add(stretch);
-		menu.add(new Separator());
-		menu.add(smallIcons);
-    menu.add(mediumIcons);
-    menu.add(largeIcons);
-		menu.add(new Separator());			
-		menu.add(open);
-//		menu.add(refresh);
-	}	
-	
-	public boolean openFolder(String folderName) {
-		this.openedFolder = folderName;
-		gallery.removeAll();
-		imagePanel.setCurrentImage(null, null, true);
-		imagePanel.setNextImage(null, null);
-		File folder = new File(openedFolder);
-		if (! folder.exists() || ! folder.isDirectory()) {
-			return false;
-		}
-		setPartName("Images: " + folder.getName());
-		File[] childs = folder.listFiles();
-		images = new ArrayList<ImagesView.ImageMetaData>();
-		for (File child : childs) {
-			if (! child.isFile()) {
-				continue;
-			}
-			String childName = child.getName();
-			if (! PlanetmayoFormats.getInstance().isSupportedImage(childName)) {
-				continue;
-			}
-			Date date = PlanetmayoFormats.getInstance().parseDateFromFileName(childName);
-			if (date != null) {
-				images.add(new ImageMetaData(child.getAbsolutePath(), date));
-			}
-			childName = childName.substring(0, childName.lastIndexOf('.'));
-		}
-		
-		Collections.sort(images, IMAGES_COMPARATOR);
-		//loadedGallery =true;
-		for (ImageMetaData image : images) {
-			gallery.addImage(image, null);
-			//if (loadedGallery) {
-				ImageLoader.getInstance().load(image.getFileName(), image, gallery);
-			//}
-		}
-		if (! images.isEmpty()) {
-			imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
-			ImageLoader.getInstance().load(imagePanel);
-		}		
-//		refresh.setEnabled(true);
-		return true;
-	}
-	
-	private void selectImage(final int index) {
-	  //run this in a ui thread.
-	  Display.getDefault().syncExec(new Runnable()
+    stretch = new Action("Stretch", Action.AS_CHECK_BOX)
     {
-      
+
       @Override
       public void run()
       {
-        ImageMetaData current = images.get(index);    
+        ScrolledComposite mainComposite = gallery.getMainComposite();
+        Point size = mainComposite.getSize();
+        mainComposite.redraw(0, 0, size.x, size.y, true);
+        imagePanel.setStretchMode(isChecked());
+        size = imagePanel.getSize();
+        imagePanel.redraw(0, 0, size.x, size.y, true);
+      }
+    };
+    stretch.setImageDescriptor(PlanetmayoImages.STRETCH.getImage());
+  }
+
+  private void fillToolbarManager()
+  {
+    IToolBarManager toolbar = getViewSite().getActionBars().getToolBarManager();
+    toolbar.add(stretch);
+    toolbar.add(new Separator());
+    toolbar.add(smallIcons);
+    toolbar.add(mediumIcons);
+    toolbar.add(largeIcons);
+    toolbar.add(new Separator());
+    toolbar.add(open);
+  }
+
+  private void fillMenu()
+  {
+    IMenuManager menu = getViewSite().getActionBars().getMenuManager();
+    menu.add(stretch);
+    menu.add(new Separator());
+    menu.add(smallIcons);
+    menu.add(mediumIcons);
+    menu.add(largeIcons);
+    menu.add(new Separator());
+    menu.add(open);
+    // menu.add(refresh);
+  }
+
+  public boolean openFolder(String folderName)
+  {
+    this.openedFolder = folderName;
+    gallery.removeAll();
+    imagePanel.setCurrentImage(null, null, true);
+    imagePanel.setNextImage(null, null);
+    File folder = new File(openedFolder);
+    if (!folder.exists() || !folder.isDirectory())
+    {
+      return false;
+    }
+    setPartName("Images: " + folder.getName());
+    File[] childs = folder.listFiles();
+    images = new ArrayList<ImagesView.ImageMetaData>();
+    for (File child : childs)
+    {
+      if (!child.isFile())
+      {
+        continue;
+      }
+      String childName = child.getName();
+      if (!PlanetmayoFormats.getInstance().isSupportedImage(childName))
+      {
+        continue;
+      }
+      Date date = PlanetmayoFormats.getInstance().parseDateFromFileName(
+          childName);
+      if (date != null)
+      {
+        images.add(new ImageMetaData(child.getAbsolutePath(), date));
+      }
+      childName = childName.substring(0, childName.lastIndexOf('.'));
+    }
+
+    Collections.sort(images, IMAGES_COMPARATOR);
+    // loadedGallery =true;
+    for (ImageMetaData image : images)
+    {
+      gallery.addImage(image, null);
+      // if (loadedGallery) {
+      ImageLoader.getInstance().load(image.getFileName(), image, gallery);
+      // }
+    }
+    if (!images.isEmpty())
+    {
+      imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
+      ImageLoader.getInstance().load(imagePanel);
+    }
+    // refresh.setEnabled(true);
+    return true;
+  }
+
+  private void selectImage(final int index)
+  {
+    // run this in a ui thread.
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        ImageMetaData current = images.get(index);
         gallery.selectImage(current, true);
         imagePanel.setCurrentImage(current.getFileName(), null, false);
-        if (index != images.size() - 1) {
+        if (index != images.size() - 1)
+        {
           imagePanel.setNextImage(images.get(index + 1).getFileName(), null);
         }
-        ImageLoader.getInstance().load(imagePanel);    
+        ImageLoader.getInstance().load(imagePanel);
       }
     });
-		
-	}
-	
-	
-	@Override
-	public void setFocus() {
-		
-	}
-	
-	private void setLargeThumbnails() {
-	  smallIcons.setEnabled(true);
+
+  }
+
+  @Override
+  public void setFocus()
+  {
+
+  }
+
+  private void setLargeThumbnails()
+  {
+    smallIcons.setEnabled(true);
     largeIcons.setEnabled(false);
     mediumIcons.setEnabled(true);
     gallery.setThumbnailSize(LARGE_ICON_WIDTH, LARGE_ICON_HEIGHT);
-    reloadImages();   
-	}
-	private void reloadImages() {
-	  if(images!=null && !images.isEmpty()) {
-	    for (ImageMetaData image : images) {
-	      gallery.addImage(image, null);
+    reloadImages();
+  }
+
+  private void reloadImages()
+  {
+    if (images != null && !images.isEmpty())
+    {
+      for (ImageMetaData image : images)
+      {
+        gallery.addImage(image, null);
         ImageLoader.getInstance().load(image.getFileName(), image, gallery);
-	    }
-	    if (! images.isEmpty()) {
-	      imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
-	      ImageLoader.getInstance().load(imagePanel);
-	    }
-	    gallery.redrawGallery();
-	    main.layout();
-	  }
-	}
-	
-	private void setMediumThumbnails() {
-	  smallIcons.setEnabled(true);
+      }
+      if (!images.isEmpty())
+      {
+        imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
+        ImageLoader.getInstance().load(imagePanel);
+      }
+      gallery.redrawGallery();
+      main.layout();
+    }
+  }
+
+  private void setMediumThumbnails()
+  {
+    smallIcons.setEnabled(true);
     largeIcons.setEnabled(true);
     mediumIcons.setEnabled(false);
     gallery.setThumbnailSize(MEDIUM_ICON_WIDTH, MEDIUM_ICON_HEIGHT);
     reloadImages();
-	}
-	
-	private void setSmallThumbnails() {
-	  smallIcons.setEnabled(false);
+  }
+
+  private void setSmallThumbnails()
+  {
+    smallIcons.setEnabled(false);
     largeIcons.setEnabled(true);
     mediumIcons.setEnabled(true);
     gallery.setThumbnailSize(SMALL_ICON_WIDTH, SMALL_ICON_HEIGHT);
     reloadImages();
-	}
-	
-	public void restoreSavedState() {
-		if (memento == null) {
-			return;
-		}
-		if (memento.getBoolean(STATE_STRETCH) != null) {
-			imagePanel.setStretchMode(memento.getBoolean(STATE_STRETCH));
-			stretch.setChecked(memento.getBoolean(STATE_STRETCH));
-		}
-		if(memento.getInteger(STATE_THUMBNAIL_WIDTH)!=null) {
-  		if(memento.getInteger(STATE_THUMBNAIL_WIDTH)==LARGE_ICON_WIDTH) {
-  		  setLargeThumbnails();
-  		}
-  		else if(memento.getInteger(STATE_THUMBNAIL_WIDTH)==MEDIUM_ICON_WIDTH) {
-  		  setMediumThumbnails();
-  		}
-  		else {
-  		  setSmallThumbnails();
-  		}
-		}
-		if (memento.getString(STATE_FOLDER) != null) {
-			openFolder(memento.getString(STATE_FOLDER));
-			// Issue #545 - we don't need select a image
-//			if (memento.getString(STATE_SELECTED_IMAGE) != null) {
-//				String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
-//				for (int i = 0; i < images.size(); i++) {
-//					if (images.get(i).getFileName().equals(selectedImage)) {
-//						selectImage(i);
-//						break;
-//					}
-//				}
-//			}
-		}
-	}
-	
-	static class ImageMetaData {
-		
-		private final String fileName;
-		private final Date date;
-		
-		public ImageMetaData(String fileName, Date date) {			
-			this.fileName = fileName;
-			this.date = date;
-			if (date == null) {
-				throw new IllegalArgumentException("date can't be null");
-			}
-		}
+  }
 
-		@Override
-		public int hashCode() {
-			return fileName != null ? fileName.hashCode() : 0;
-		}
+  public void restoreSavedState()
+  {
+    if (memento == null)
+    {
+      return;
+    }
+    if (memento.getBoolean(STATE_STRETCH) != null)
+    {
+      imagePanel.setStretchMode(memento.getBoolean(STATE_STRETCH));
+      stretch.setChecked(memento.getBoolean(STATE_STRETCH));
+    }
+    if (memento.getInteger(STATE_THUMBNAIL_WIDTH) != null)
+    {
+      if (memento.getInteger(STATE_THUMBNAIL_WIDTH) == LARGE_ICON_WIDTH)
+      {
+        setLargeThumbnails();
+      }
+      else if (memento.getInteger(STATE_THUMBNAIL_WIDTH) == MEDIUM_ICON_WIDTH)
+      {
+        setMediumThumbnails();
+      }
+      else
+      {
+        setSmallThumbnails();
+      }
+    }
+    if (memento.getString(STATE_FOLDER) != null)
+    {
+      openFolder(memento.getString(STATE_FOLDER));
+      // Issue #545 - we don't need select a image
+      // if (memento.getString(STATE_SELECTED_IMAGE) != null) {
+      // String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
+      // for (int i = 0; i < images.size(); i++) {
+      // if (images.get(i).getFileName().equals(selectedImage)) {
+      // selectImage(i);
+      // break;
+      // }
+      // }
+      // }
+    }
+  }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (! (obj instanceof ImageMetaData)) {
-				return false;
-			}
-			String anotherFileName = ((ImageMetaData) obj).getFileName();
-			if (anotherFileName == fileName) {
-				return true;
-			}
-			if (fileName == null) {
-				return false;
-			}
-			return fileName.equals(anotherFileName);
-		}
+  static class ImageMetaData
+  {
 
-		public long distance(ImageMetaData o) {
-			long time = date.getTime();
-			long anotherTime = o.date.getTime();
-			return Math.abs(time - anotherTime);
-		}		
+    private final String fileName;
+    private final Date date;
 
-		public String getFileName() {
-			return fileName;
-		}
+    public ImageMetaData(String fileName, Date date)
+    {
+      this.fileName = fileName;
+      this.date = date;
+      if (date == null)
+      {
+        throw new IllegalArgumentException("date can't be null");
+      }
+    }
 
-		public Date getDate() {
-			return date;
-		}
-	}
-	
-	static class ImageMetaDataComparator implements Comparator<ImageMetaData> {
+    @Override
+    public int hashCode()
+    {
+      return fileName != null ? fileName.hashCode() : 0;
+    }
 
-		@Override
-		public int compare(ImageMetaData o1, ImageMetaData o2) {
-			long time1 = o1.getDate().getTime();
-			long time2 = o2.getDate().getTime();
-			if (time1 < time2) {
-				return -1;
-			} else if (time1 == time2) {
-				return 0;				
-			} else {
-				return 1;
-			}
-		}
-	}
+    @Override
+    public boolean equals(Object obj)
+    {
+      if (!(obj instanceof ImageMetaData))
+      {
+        return false;
+      }
+      String anotherFileName = ((ImageMetaData) obj).getFileName();
+      if (anotherFileName == fileName)
+      {
+        return true;
+      }
+      if (fileName == null)
+      {
+        return false;
+      }
+      return fileName.equals(anotherFileName);
+    }
 
-	public String getOpenedFolder()
-	{
-		return this.openedFolder;
-	}
+    public long distance(ImageMetaData o)
+    {
+      long time = date.getTime();
+      long anotherTime = o.date.getTime();
+      return Math.abs(time - anotherTime);
+    }
 
-	/**
-	 * Select nearest image from the images list based on date in image name
-	 * 
-	 * @param millis
-	 */
-	private void selectImage(long millis)
-	{
-	  if(images != null)
-	  {
-  		ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
-  		int result = Collections.binarySearch(images, toSelect, IMAGES_COMPARATOR);
-  		if (result >= 0) {
-  			selectImage(result);
-  			return;
-  		}
-  		result = (- (result + 1)) + 1;
-  		long nearest = Long.MAX_VALUE;
-  		int nearestImage = -1;
-  		for (int i = result - 2; i <= result; i++) {
-  			if (i >= 0 && i < images.size()) {
-  				long distance = toSelect.distance(images.get(i));
-  				if (distance < nearest) {
-  					nearest = distance;
-  					nearestImage = i;
-  				}
-  			}					
-  		}
-  		if(nearestImage >= 0)
-  		{
-  		  selectImage(nearestImage);
-  		}
-	  }
-	}
-	
-	private void setupListeners()
-	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+    public String getFileName()
+    {
+      return fileName;
+    }
 
-		_myPartMonitor.addPartListener(ControllableTime.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
+    public Date getDate()
+    {
+      return date;
+    }
+  }
 
-						if (_controllableTime != part)
-						{
-							// implementation here.
-							final ControllableTime ct = (ControllableTime) part;
-							_controllableTime = ct;
-						}
-					}
+  static class ImageMetaDataComparator implements Comparator<ImageMetaData>
+  {
 
-				});
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						if (part == _controllableTime)
-						{
-							_controllableTime = null;
-						}
-					}
-				});
+    @Override
+    public int compare(ImageMetaData o1, ImageMetaData o2)
+    {
+      long time1 = o1.getDate().getTime();
+      long time2 = o2.getDate().getTime();
+      if (time1 < time2)
+      {
+        return -1;
+      }
+      else if (time1 == time2)
+      {
+        return 0;
+      }
+      else
+      {
+        return 1;
+      }
+    }
+  }
 
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
+  public String getOpenedFolder()
+  {
+    return this.openedFolder;
+  }
 
-						if (_timeProvider != part)
-						{
-							// implementation here.
-							final TimeProvider tp = (TimeProvider) part;
-							_timeProvider = tp;
-							_timeProvider.addListener(_propertyChangeListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-						}
-					}
+  /**
+   * Select nearest image from the images list based on date in image name
+   * 
+   * @param millis
+   */
+  private void selectImage(long millis)
+  {
+    if (images != null)
+    {
+      ImageMetaData toSelect = new ImageMetaData(null, new Date(millis));
+      int result = Collections.binarySearch(images, toSelect,
+          IMAGES_COMPARATOR);
+      if (result >= 0)
+      {
+        selectImage(result);
+        return;
+      }
+      result = (-(result + 1)) + 1;
+      long nearest = Long.MAX_VALUE;
+      int nearestImage = -1;
+      for (int i = result - 2; i <= result; i++)
+      {
+        if (i >= 0 && i < images.size())
+        {
+          long distance = toSelect.distance(images.get(i));
+          if (distance < nearest)
+          {
+            nearest = distance;
+            nearestImage = i;
+          }
+        }
+      }
+      if (nearestImage >= 0)
+      {
+        selectImage(nearestImage);
+      }
+    }
+  }
 
-				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(final String type, final Object part,
-							final IWorkbenchPart parentPart)
-					{
-						if (part == _timeProvider)
-						{
-							_timeProvider.removeListener(_propertyChangeListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-							_timeProvider = null;
-						}
-					}
-				});
-	}
-	
-	
+  private void setupListeners()
+  {
+    _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+        .getPartService());
+
+    _myPartMonitor.addPartListener(ControllableTime.class,
+        PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+
+            if (_controllableTime != part)
+            {
+              // implementation here.
+              final ControllableTime ct = (ControllableTime) part;
+              _controllableTime = ct;
+            }
+          }
+
+        });
+    _myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            if (part == _controllableTime)
+            {
+              _controllableTime = null;
+            }
+          }
+        });
+
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+
+            if (_timeProvider != part)
+            {
+              // implementation here.
+              final TimeProvider tp = (TimeProvider) part;
+              _timeProvider = tp;
+              _timeProvider.addListener(_propertyChangeListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+            }
+          }
+
+        });
+    _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          public void eventTriggered(final String type, final Object part,
+              final IWorkbenchPart parentPart)
+          {
+            if (part == _timeProvider)
+            {
+              _timeProvider.removeListener(_propertyChangeListener,
+                  TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+              _timeProvider = null;
+            }
+          }
+        });
+  }
 
 }
