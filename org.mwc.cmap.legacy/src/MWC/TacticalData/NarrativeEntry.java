@@ -20,16 +20,17 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Date;
 
-import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.FireExtended;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
-    ExcludeFromRightClickEdit
+    ExcludeFromRightClickEdit, TimeStampedDataItem
 {
 
   public static final String DTG = "DTG";
@@ -396,9 +397,30 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   // ////////////////////////////////////////////////////
   // bean info for this class
   // ///////////////////////////////////////////////////
-  public final static class NarrativeEntryInfo extends Editable.EditorType
+  public final static class NarrativeEntryInfo extends Griddable
   {
     private PropertyDescriptor[] _cachedProps = null;
+    
+
+    @Override
+    public PropertyDescriptor[] getGriddablePropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+          {prop("Type", "the type of entry", FORMAT),
+              prop("Source", "the source for this entry", FORMAT),
+              prop("Visible", "whether to display this narrative entry", FORMAT),
+              prop("Entry", "the content of this entry", FORMAT)};
+
+        return res;
+
+      }
+      catch (final IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
 
     public NarrativeEntryInfo(final NarrativeEntry data, final String theName)
     {
@@ -429,6 +451,12 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
         e.printStackTrace();
         return super.getPropertyDescriptors();
       }
+    }
+
+    @Override
+    public NonBeanPropertyDescriptor[] getNonBeanGriddableDescriptors()
+    {
+      return null;
     }
 
   }

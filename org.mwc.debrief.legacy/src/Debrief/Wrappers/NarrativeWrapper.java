@@ -107,6 +107,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -131,16 +132,19 @@ import org.xml.sax.SAXException;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import MWC.GUI.Editable;
+import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-    MWC.GUI.Layer, IRollingNarrativeProvider
+    MWC.GUI.Layer, IRollingNarrativeProvider, GriddableSeriesMarker
 {
 
   // //////////////////////////////////////
@@ -708,6 +712,58 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
       assertEquals("still has three", 3, narr.size());
 
     }
+  }
+
+  @Override
+  public Editable getSampleGriddable()
+  {
+    Editable res = null;
+
+    // check we have an item before we edit it
+    final Enumeration<Editable> eles = this.elements();
+    if (eles.hasMoreElements())
+      res = eles.nextElement();
+    return res;
+  }
+
+  @Override
+  public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+  {
+    if (false == item instanceof NarrativeEntry)
+    {
+      throw new IllegalArgumentException(
+          "I am expecting the Observation's, don't know how to copy " + item);
+    }
+
+    final NarrativeEntry template = (NarrativeEntry) item;
+
+    // note, we silently drop duplicate narratives. So, consciously ensure the
+    // new entry has unique text
+    SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
+    final String pending = "Pending_" + sdf.format(new Date());
+    
+    final NarrativeEntry result = new NarrativeEntry(template.getTrackName(),
+        template.getType(), new HiResDate(template.getDTG()), pending);
+    return result;
+  }
+
+  @Override
+  public boolean supportsAddRemove()
+  {
+    return true;
+  }
+
+  @Override
+  public boolean requiresManualSave()
+  {
+    return false;
+  }
+
+  @Override
+  public void doSave(String message)
+  {
+    throw new RuntimeException(
+        "should not have called manual save for Sensor Wrapper");
   }
 
 }
