@@ -384,10 +384,10 @@ public class ImageGallery<T, I> implements IDisposable {
 		public void redraw() {
 		  //System.out.println("Redrawing with:<<"+thumbnailWidth+">>");
 		  //resize image label
-		  setImageMeta(getImageMeta());
 		  GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
       data.horizontalIndent = 0;
       data.horizontalSpan = 0;
+      System.out.println("Text "+textlabel.getText());
       textlabel.setLayoutData(data);
 
 		  Point sizePt = imageLabel.getSize();
@@ -488,57 +488,12 @@ public class ImageGallery<T, I> implements IDisposable {
 			this.imageMeta = imageMeta;
 			String imageText;
 			imageText = elementsBuilder.buildLabel(imageMeta);
-			
-			String[] splitted = imageText.split("\\s+");
-			int[] width = new int[splitted.length];
-			
-			GC gc = new GC(textlabel);
-			int spaceWidth = gc.getCharWidth(' ');
-			for (int i = 0; i < splitted.length; i++) {
-				String word = splitted[i];
-				for (int j = 0; j < word.length(); j++) {
-					width[i] += gc.getCharWidth(word.charAt(j));
-				}				
+			String labelText=imageText;
+			int indexOfExtension = imageText.lastIndexOf(".");
+			if(indexOfExtension!=-1) {
+			  labelText = imageText.substring(0, indexOfExtension);
 			}
-			final int lineWidth = thumbnailWidth;
-			int remainingWidth = lineWidth;
-			StringBuilder labelText = new StringBuilder();
-			for (int i = 0; i < splitted.length; i++) {
-				int checkWidth = width[i] + (remainingWidth == lineWidth ? 0 : spaceWidth);
-				if (remainingWidth >= checkWidth) {
-					if (remainingWidth != lineWidth) {
-						labelText.append(' ');
-					}
-					labelText.append(splitted[i]);
-					remainingWidth -= checkWidth;
-					continue;
-				}
-				if (width[i] <= lineWidth) {
-					labelText.append('\n');
-					labelText.append(splitted[i]);
-					remainingWidth = lineWidth - width[i];
-					continue;
-				}
-				if (remainingWidth >= spaceWidth) {
-					labelText.append(' ');
-					remainingWidth -= spaceWidth;
-				} else {
-					labelText.append('\n');
-					remainingWidth = lineWidth;
-				}
-				String word = splitted[i];
-				for (int j = 0; j < word.length(); j++) {
-					int charWidth = gc.getCharWidth(word.charAt(j));
-					if (remainingWidth < charWidth) {
-						labelText.append('\n');
-						remainingWidth = lineWidth;
-					}
-					labelText.append(word.charAt(j));
-					remainingWidth -= charWidth;
-				}
-			}			
-			gc.dispose();
-			textlabel.setText(labelText.toString());
+			textlabel.setText(labelText);
 			Point size = textlabel.computeSize(thumbnailWidth + IMAGE_BORDER_MARGIN, SWT.DEFAULT);
 			((GridData) textlabel.getLayoutData()).heightHint = size.y;
 			((GridData)composite.getLayoutData()).heightHint = thumbnailHeight + IMAGE_BORDER_MARGIN + size.y + 2;
