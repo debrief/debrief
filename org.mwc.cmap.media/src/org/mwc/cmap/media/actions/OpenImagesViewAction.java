@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.media.actions;
 
@@ -37,75 +37,78 @@ import org.mwc.cmap.media.views.ImagesView;
 public class OpenImagesViewAction extends AbstractHandler
 {
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException
-	{
-		ISelection sel = HandlerUtil.getCurrentSelectionChecked(event);
-		if (sel instanceof IStructuredSelection)
-		{
-			IStructuredSelection selection = (IStructuredSelection) sel;
-			Object object = selection.getFirstElement();
-			if (object instanceof IFolder)
-			{
-				IFolder file = (IFolder) object;
-				if (!file.exists())
-				{
-					return null;
-				}
-				URI uri = file.getLocationURI();
-				if (file.isLinked())
-				{
-					uri = file.getRawLocationURI();
-				}
-				try
-				{
-					File javaFile = EFS.getStore(uri).toLocalFile(0,
-							new NullProgressMonitor());
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
-					IViewReference[] viewReferences = page.getViewReferences();
-					ImagesView emptyIv = null;
-					ImagesView foundIv = null;
-					String fileName = javaFile.getAbsolutePath();
-					for (IViewReference viewReference : viewReferences)
-					{
-						IViewPart view = viewReference.getView(false);
-						if (view instanceof ImagesView)
-						{
-							ImagesView iv = (ImagesView) view;
-							if (fileName.equals(iv.getOpenedFolder()))
-							{
-								foundIv = iv;
-								break;
-							}
-							if (iv.getOpenedFolder() == null)
-							{
-								emptyIv = iv;
-							}
-						}
-					}
-					if (foundIv != null)
-					{
-						page.activate(foundIv);
-					} else if (emptyIv != null)
-					{
-						page.activate(emptyIv);
-						emptyIv.openFolder(fileName);
-					} else
-					{
-						Object o = new NewImagesViewAction().execute(null);
-						if (o instanceof ImagesView)
-						{
-							((ImagesView) o).openFolder(fileName);
-						}
-					}
-				} catch (CoreException e)
-				{
-					Activator.log(e);
-				}
-			}
-		}
-		return null;
-	}
+  @Override
+  public Object execute(final ExecutionEvent event) throws ExecutionException
+  {
+    final ISelection sel = HandlerUtil.getCurrentSelectionChecked(event);
+    if (sel instanceof IStructuredSelection)
+    {
+      final IStructuredSelection selection = (IStructuredSelection) sel;
+      final Object object = selection.getFirstElement();
+      if (object instanceof IFolder)
+      {
+        final IFolder file = (IFolder) object;
+        if (!file.exists())
+        {
+          return null;
+        }
+        URI uri = file.getLocationURI();
+        if (file.isLinked())
+        {
+          uri = file.getRawLocationURI();
+        }
+        try
+        {
+          final File javaFile = EFS.getStore(uri).toLocalFile(0,
+              new NullProgressMonitor());
+          final IWorkbenchPage page = PlatformUI.getWorkbench()
+              .getActiveWorkbenchWindow().getActivePage();
+          final IViewReference[] viewReferences = page.getViewReferences();
+          ImagesView emptyIv = null;
+          ImagesView foundIv = null;
+          final String fileName = javaFile.getAbsolutePath();
+          for (final IViewReference viewReference : viewReferences)
+          {
+            final IViewPart view = viewReference.getView(false);
+            if (view instanceof ImagesView)
+            {
+              final ImagesView iv = (ImagesView) view;
+              if (fileName.equals(iv.getOpenedFolder()))
+              {
+                foundIv = iv;
+                break;
+              }
+              if (iv.getOpenedFolder() == null)
+              {
+                emptyIv = iv;
+              }
+            }
+          }
+          if (foundIv != null)
+          {
+            page.activate(foundIv);
+          }
+          else if (emptyIv != null)
+          {
+            page.activate(emptyIv);
+            emptyIv.openFolder(fileName);
+          }
+          else
+          {
+            final Object o = new NewImagesViewAction().execute(null);
+            if (o instanceof ImagesView)
+            {
+              ((ImagesView) o).openFolder(fileName);
+            }
+          }
+        }
+        catch (final CoreException e)
+        {
+          Activator.log(e);
+        }
+      }
+    }
+    return null;
+  }
 
 }

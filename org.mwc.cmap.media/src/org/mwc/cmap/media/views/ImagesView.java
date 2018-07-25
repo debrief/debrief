@@ -70,7 +70,6 @@ public class ImagesView extends ViewPart
 {
   static class ImageMetaData
   {
-
     private final String fileName;
     private final Date date;
 
@@ -175,12 +174,10 @@ public class ImagesView extends ViewPart
   private ImagePanel imagePanel;
   private String openedFolder;
   private Action open;
-  // private Action refresh;
   private Action stretch;
+  
   private Action smallIcons;
-
   private Action largeIcons;
-
   private Action mediumIcons;
 
   private List<ImageMetaData> images;
@@ -572,20 +569,16 @@ public class ImagesView extends ViewPart
     }
 
     Collections.sort(images, IMAGES_COMPARATOR);
-    // loadedGallery =true;
     for (final ImageMetaData image : images)
     {
       gallery.addImage(image, null);
-      // if (loadedGallery) {
       ImageLoader.getInstance().load(image.getFileName(), image, gallery);
-      // }
     }
     if (!images.isEmpty())
     {
       imagePanel.setCurrentImage(images.get(0).getFileName(), null, false);
       ImageLoader.getInstance().load(imagePanel);
     }
-    // refresh.setEnabled(true);
     return true;
   }
 
@@ -637,16 +630,6 @@ public class ImagesView extends ViewPart
     if (memento.getString(STATE_FOLDER) != null)
     {
       openFolder(memento.getString(STATE_FOLDER));
-      // Issue #545 - we don't need select a image
-      // if (memento.getString(STATE_SELECTED_IMAGE) != null) {
-      // String selectedImage = memento.getString(STATE_SELECTED_IMAGE);
-      // for (int i = 0; i < images.size(); i++) {
-      // if (images.get(i).getFileName().equals(selectedImage)) {
-      // selectImage(i);
-      // break;
-      // }
-      // }
-      // }
     }
   }
 
