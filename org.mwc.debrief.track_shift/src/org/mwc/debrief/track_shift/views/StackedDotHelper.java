@@ -805,10 +805,10 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
-          2).getKey());
-      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
-          3).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
@@ -875,10 +875,10 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
-          2).getKey());
-      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
-          3).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
@@ -937,8 +937,8 @@ public final class StackedDotHelper
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct name", "M_", linePlotData.getSeries(0)
           .getKey());
-      assertEquals("series correct name", "M_(A)", linePlotData.getSeries(
-          1).getKey());
+      assertEquals("series correct name", "M_(A)", linePlotData.getSeries(1)
+          .getKey());
       assertEquals("series correct name", "Calculated", linePlotData.getSeries(
           2).getKey());
 
@@ -987,10 +987,10 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
-          2).getKey());
-      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
-          3).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
       assertEquals("series correct name", "Calculatedhull sensor", linePlotData
@@ -1240,7 +1240,6 @@ public final class StackedDotHelper
 
     for (final TrackWrapper sensorHost : primaries)
     {
-
       // loop through our sensor data
       final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
       if (sensors != null)
@@ -1302,9 +1301,7 @@ public final class StackedDotHelper
                 final TargetDoublet doublet = getTargetDoublet(index,
                     theSegments, scw.getDTG(), interpFix, allowInfill);
 
-                final Doublet thisDub;
                 final FixWrapper hostFix;
-
                 final Watchable[] matches = sensorHost.getNearestTo(scw
                     .getDTG());
                 if (matches != null && matches.length == 1)
@@ -1316,6 +1313,7 @@ public final class StackedDotHelper
                   hostFix = null;
                 }
 
+                final Doublet thisDub;
                 if (doublet.targetFix != null && hostFix != null)
                 {
                   thisDub = new Doublet(scw, doublet.targetFix,
@@ -1730,6 +1728,207 @@ public final class StackedDotHelper
     return res;
   }
 
+  private static void storeAmbiguousCut(final double ambigBearing,
+      final boolean flipAxes, final boolean bearingToPort,
+      final Color thisColor, final Doublet thisD, final Color grayShade,
+      final RegularTimePeriod thisMilli, final boolean parentIsNotDynamic,
+      final TimeSeriesCollection ambigValuesColl, final String seriesName)
+  {
+    double theBearing = ambigBearing;
+
+    // put the ambig baering into the correct domain
+    while (theBearing < 0)
+    {
+      theBearing += 360;
+    }
+
+    if (flipAxes && theBearing > 180)
+    {
+      theBearing -= 360;
+    }
+
+    // make the color darker, if we're on the stbd bearnig
+    final Color ambigColor;
+    if (bearingToPort)
+    {
+      ambigColor = thisColor.darker();
+    }
+    else
+    {
+      ambigColor = thisColor;
+    }
+
+    // if this cut has been resolved, we don't show a symbol
+    // for the ambiguous cut
+    final boolean showSymbol = true;
+    final Color color = thisD.getHasBeenResolved() ? grayShade : ambigColor;
+
+    final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
+        theBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
+            .getSensorCut());
+    safelyAddItem(ambigValuesColl, seriesName, amBearing);
+  }
+
+  private static void storeMeasuredBearing(final boolean multiSensor,
+      final SensorWrapper sensor, final double measuredBearing,
+      final boolean flipAxes, final RegularTimePeriod thisMilli,
+      final Color bearingColor, final boolean parentIsNotDynamic,
+      final Doublet thisD, final TimeSeriesCollection measuredValuesColl)
+  {
+    final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES
+        + sensor.getName() : BaseStackedDotsView.MEASURED_VALUES;
+
+    double theBearing = measuredBearing;
+
+    // put the measured bearing back in the positive domain
+    if (theBearing < 0)
+    {
+      theBearing += 360d;
+    }
+
+    // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+    if (flipAxes)
+    {
+      if (theBearing > 180)
+      {
+        theBearing -= 360;
+      }
+    }
+
+    final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
+        theBearing, bearingColor, false, null, true, parentIsNotDynamic, thisD
+            .getSensorCut());
+    safelyAddItem(measuredValuesColl, seriesName, mBearing);
+
+  }
+
+  private static void storeTargetCourseSpeedData(
+      final ISecondaryTrack _secondaryTrack, final HiResDate startDTG,
+      final HiResDate endDTG, final boolean flipAxes,
+      final TimeSeries tgtCourseValues, final TimeSeries tgtSpeedValues)
+  {
+    // sort out the target course/speed
+    final Enumeration<Editable> segments = _secondaryTrack.segments();
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+
+      // if there's just one segment - then we need to wrap it, else return
+      // the list of segments
+      final SegmentList segList = collateSegments(_secondaryTrack, nextE);
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        // is this an infill segment
+        final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+        // check it has values, and is in range
+        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG))
+        {
+          // ok, we can skip this one
+        }
+        else
+        {
+          final Enumeration<Editable> points = segment.elements();
+          Double lastCourse = null;
+          while (points.hasMoreElements())
+          {
+            final FixWrapper fw = (FixWrapper) points.nextElement();
+            if (period.contains(fw.getDateTimeGroup()))
+            {
+              // ok, create a point for it
+              final FixedMillisecond thisMilli = new FixedMillisecond(fw
+                  .getDateTimeGroup().getDate().getTime());
+
+              double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+                  .getCourse());
+              final double tgtSpeed = fw.getSpeed();
+
+              // see if we need to change the domain of the course to match
+              // the previous value
+              if (lastCourse != null)
+              {
+                if (tgtCourse - lastCourse > 190)
+                {
+                  tgtCourse = tgtCourse - 360;
+                }
+                else if (tgtCourse - lastCourse < -180)
+                {
+                  tgtCourse = 360 + tgtCourse;
+                }
+              }
+              lastCourse = tgtCourse;
+
+              // trim to +/- domain if we're flipping axes
+              if (flipAxes && tgtCourse > 180)
+              {
+                tgtCourse -= 360;
+              }
+
+              // we use the raw color for infills, to help find which
+              // infill we're referring to (esp in random infills)
+              final Color courseColor;
+              final Color speedColor;
+              if (isInfill)
+              {
+                courseColor = fw.getColor();
+                speedColor = fw.getColor();
+              }
+              else
+              {
+                courseColor = fw.getColor().brighter();
+                speedColor = fw.getColor().darker();
+              }
+
+              tgtCourseValues.add(new ColouredDataItem(thisMilli, tgtCourse,
+                  courseColor, isInfill, null, true, true));
+              tgtSpeedValues.add(new ColouredDataItem(thisMilli, tgtSpeed,
+                  speedColor, isInfill, null, true, true));
+            }
+          }
+        }
+
+      }
+    }
+  }
+
+  /**
+   * either produce a list, or build up a list of segments
+   * 
+   * @param secondaryTrack
+   * @param editable
+   * @return
+   */
+  private static SegmentList collateSegments(
+      final ISecondaryTrack secondaryTrack, final Editable editable)
+  {
+    final SegmentList segList;
+
+    if (editable instanceof SegmentList)
+    {
+      segList = (SegmentList) editable;
+    }
+    else
+    {
+      segList = new SegmentList();
+      // note: we can only set the wrapper
+      // if we're looking at a real TMA solution
+      if (secondaryTrack instanceof TrackWrapper)
+      {
+        segList.setWrapper((TrackWrapper) secondaryTrack);
+      }
+
+      // ok, add this segment to the list
+      segList.addSegment((TrackSegment) editable);
+    }
+    return segList;
+  }
+
   /**
    * the track being dragged
    */
@@ -1753,6 +1952,55 @@ public final class StackedDotHelper
    * overlapping time periods
    */
   private TreeSet<Doublet> _primaryDoublets;
+
+  private TimeSeriesCollection getAllSensorCuts(final boolean onlyVis,
+      final boolean flipAxes, final TimePeriod sensorPeriod)
+  {
+    final TimeSeriesCollection allCutsColl = new TimeSeriesCollection();
+
+    for (final TrackWrapper primaryTrack : getPrimaryTracks())
+    {
+      final List<SensorContactWrapper> theBearings = getBearings(primaryTrack,
+          onlyVis, sensorPeriod);
+      for (final SensorContactWrapper cut : theBearings)
+      {
+        double theBearing;
+
+        final String sensorName = cut.getSensorName();
+
+        // ensure it's in the positive domain
+        if (cut.getBearing() < 0)
+        {
+          theBearing = cut.getBearing() + 360;
+        }
+        else
+        {
+          theBearing = cut.getBearing();
+        }
+
+        // put in the correct domain, if necessary
+        if (flipAxes)
+        {
+          if (theBearing > 180d)
+          {
+            theBearing -= 360d;
+          }
+        }
+        else
+        {
+          if (theBearing < 0)
+          {
+            theBearing += 360;
+          }
+        }
+
+        final TimeSeriesDataItem item = new TimeSeriesDataItem(
+            new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing);
+        safelyAddItem(allCutsColl, sensorName, item);
+      }
+    }
+    return allCutsColl;
+  }
 
   public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
       final boolean onlyVis, final TimePeriod targetPeriod)
@@ -1797,14 +2045,14 @@ public final class StackedDotHelper
         needFrequency);
   }
 
-  public List<TrackWrapper> getPrimaryTracks()
-  {
-    return _primaryTracks;
-  }
-
   public TrackWrapper getPrimaryTrack()
   {
     return _primaryTrack;
+  }
+
+  public List<TrackWrapper> getPrimaryTracks()
+  {
+    return _primaryTracks;
   }
 
   public ISecondaryTrack getSecondaryTrack()
@@ -1819,7 +2067,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    */
-  void initialise(final SwitchableTrackProvider provider,
+  public void initialise(final SwitchableTrackProvider provider,
       final boolean showError, final boolean onlyVis, final ErrorLogger logger,
       final String dataType, final boolean needBrg, final boolean needFreq)
   {
@@ -2059,7 +2307,7 @@ public final class StackedDotHelper
         {
           // obvious stuff first (stuff that doesn't need the tgt data)
           final Color thisColor = thisD.getColor();
-          double measuredBearing = thisD.getMeasuredBearing();
+          final double measuredBearing = thisD.getMeasuredBearing();
           double ambigBearing = thisD.getAmbiguousMeasuredBearing();
           final HiResDate currentTime = thisD.getDTG();
           final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
@@ -2081,11 +2329,10 @@ public final class StackedDotHelper
             bearingColor = thisColor.darker();
           }
 
-          SensorWrapper sensor = thisD.getSensorCut().getSensor();
+          final SensorWrapper sensor = thisD.getSensorCut().getSensor();
 
-          storeMeasuredBearing(multiSensor, sensor,
-              measuredBearing, flipAxes, thisMilli,
-              bearingColor, parentIsNotDynamic, thisD,
+          storeMeasuredBearing(multiSensor, sensor, measuredBearing, flipAxes,
+              thisMilli, bearingColor, parentIsNotDynamic, thisD,
               measuredValuesColl);
 
           if (hasAmbiguous)
@@ -2236,7 +2483,7 @@ public final class StackedDotHelper
       }
 
       // special case - if the primary track is a single location
-      for (TrackWrapper thisPrimary : getPrimaryTracks())
+      for (final TrackWrapper thisPrimary : getPrimaryTracks())
       {
         final TimeSeries osCourseValues;
         if (_primaryTrack.isSinglePointTrack())
@@ -2320,7 +2567,7 @@ public final class StackedDotHelper
 
       if (showCourse)
       {
-        Iterator<?> oIter = ownshipCourseColl.getSeries().iterator();
+        final Iterator<?> oIter = ownshipCourseColl.getSeries().iterator();
 
         while (oIter.hasNext())
         {
@@ -2328,16 +2575,11 @@ public final class StackedDotHelper
           targetCourseSeries.addSeries(thisOwnshipSeries);
 
           // and the course data for the zone chart
-          if (!thisOwnshipSeries.isEmpty())
+          if (!thisOwnshipSeries.isEmpty() && ownshipCourseSeries != null
+              && ownshipCourseSeries.isEmpty())
           {
-            if (ownshipCourseSeries != null)
-            {
-              // is it currently empty?
-              if (ownshipCourseSeries.isEmpty())
-              {
-                ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
-              }
-            }
+            // note - only populate it, if it's currently empty
+            ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
           }
         }
       }
@@ -2350,21 +2592,18 @@ public final class StackedDotHelper
       }
 
       // and the bearing data for the zone chart
-      Iterator<?> cutsIter = allCutsColl.getSeries().iterator();
+      final Iterator<?> cutsIter = allCutsColl.getSeries().iterator();
       while (cutsIter.hasNext())
       {
-        TimeSeries thisS = (TimeSeries) cutsIter.next();
-        if (targetBearingSeries != null)
+        final TimeSeries thisS = (TimeSeries) cutsIter.next();
+        if (targetBearingSeries != null && targetBearingSeries.isEmpty())
         {
-          // is it currently empty?
-          if (targetBearingSeries.isEmpty())
-          {
-            targetBearingSeries.addAndOrUpdate(thisS);
-          }
-          else
-          {
-            // ok, ignore it. we only assign the data in the first pass
-          }
+          // note - only populate it, if it's currently empty
+          targetBearingSeries.addAndOrUpdate(thisS);
+        }
+        else
+        {
+          // ok, ignore it. we only assign the data in the first pass
         }
       }
 
@@ -2404,235 +2643,6 @@ public final class StackedDotHelper
         series.setNotify(true);
       }
     }
-  }
-
-  private static void storeMeasuredBearing(boolean multiSensor, SensorWrapper sensor,
-      double measuredBearing, boolean flipAxes, RegularTimePeriod thisMilli,
-      Color bearingColor, boolean parentIsNotDynamic, Doublet thisD,
-      TimeSeriesCollection measuredValuesColl)
-  {
-    final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES
-        + sensor.getName() : BaseStackedDotsView.MEASURED_VALUES;
-
-    // put the measured bearing back in the positive domain
-    if (measuredBearing < 0)
-    {
-      measuredBearing += 360d;
-    }
-
-    // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-    if (flipAxes)
-    {
-      if (measuredBearing > 180)
-      {
-        measuredBearing -= 360;
-      }
-    }
-
-    final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
-        measuredBearing, bearingColor, false, null, true, parentIsNotDynamic,
-        thisD.getSensorCut());
-    safelyAddItem(measuredValuesColl, seriesName, mBearing);
-
-  }
-
-  private static void storeAmbiguousCut(double ambigBearing, boolean flipAxes,
-      boolean bearingToPort, Color thisColor, Doublet thisD, Color grayShade,
-      RegularTimePeriod thisMilli, boolean parentIsNotDynamic,
-      TimeSeriesCollection ambigValuesColl, String seriesName)
-  {
-    // put the ambig baering into the correct domain
-    while (ambigBearing < 0)
-    {
-      ambigBearing += 360;
-    }
-
-    if (flipAxes && ambigBearing > 180)
-    {
-      ambigBearing -= 360;
-    }
-
-    // make the color darker, if we're on the stbd bearnig
-    final Color ambigColor;
-    if (bearingToPort)
-    {
-      ambigColor = thisColor.darker();
-    }
-    else
-    {
-      ambigColor = thisColor;
-    }
-
-    // if this cut has been resolved, we don't show a symbol
-    // for the ambiguous cut
-    final boolean showSymbol = true;
-    final Color color = thisD.getHasBeenResolved() ? grayShade : ambigColor;
-
-    final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
-        ambigBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
-            .getSensorCut());
-    safelyAddItem(ambigValuesColl, seriesName, amBearing);
-  }
-
-  private static void storeTargetCourseSpeedData(
-      ISecondaryTrack _secondaryTrack, HiResDate startDTG, HiResDate endDTG,
-      boolean flipAxes, TimeSeries tgtCourseValues, TimeSeries tgtSpeedValues)
-  {
-    // sort out the target course/speed
-    final Enumeration<Editable> segments = _secondaryTrack.segments();
-    final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
-    while (segments.hasMoreElements())
-    {
-      final Editable nextE = segments.nextElement();
-      // if there's just one segment - then we need to wrap it
-      final SegmentList segList;
-      if (nextE instanceof SegmentList)
-      {
-        segList = (SegmentList) nextE;
-      }
-      else
-      {
-        segList = new SegmentList();
-        // note: we can only set the wrapper
-        // if we're looking at a real TMA solution
-        if (_secondaryTrack instanceof TrackWrapper)
-        {
-          segList.setWrapper((TrackWrapper) _secondaryTrack);
-        }
-
-        // ok, add this segment to the list
-        segList.addSegment((TrackSegment) nextE);
-      }
-
-      final Enumeration<Editable> segIter = segList.elements();
-      while (segIter.hasMoreElements())
-      {
-        final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-        // is this an infill segment
-        final boolean isInfill = segment instanceof DynamicInfillSegment;
-
-        // check it has values, and is in range
-        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-            || segment.endDTG().lessThan(startDTG))
-        {
-          // ok, we can skip this one
-        }
-        else
-        {
-          final Enumeration<Editable> points = segment.elements();
-          Double lastCourse = null;
-          while (points.hasMoreElements())
-          {
-            final FixWrapper fw = (FixWrapper) points.nextElement();
-            if (period.contains(fw.getDateTimeGroup()))
-            {
-              // ok, create a point for it
-              final FixedMillisecond thisMilli = new FixedMillisecond(fw
-                  .getDateTimeGroup().getDate().getTime());
-
-              double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-                  .getCourse());
-              final double tgtSpeed = fw.getSpeed();
-
-              // see if we need to change the domain of the course to match
-              // the previous value
-              if (lastCourse != null)
-              {
-                if (tgtCourse - lastCourse > 190)
-                {
-                  tgtCourse = tgtCourse - 360;
-                }
-                else if (tgtCourse - lastCourse < -180)
-                {
-                  tgtCourse = 360 + tgtCourse;
-                }
-              }
-              lastCourse = tgtCourse;
-
-              // trim to +/- domain if we're flipping axes
-              if (flipAxes && tgtCourse > 180)
-              {
-                tgtCourse -= 360;
-              }
-
-              // we use the raw color for infills, to help find which
-              // infill we're referring to (esp in random infills)
-              final Color courseColor;
-              final Color speedColor;
-              if (isInfill)
-              {
-                courseColor = fw.getColor();
-                speedColor = fw.getColor();
-              }
-              else
-              {
-                courseColor = fw.getColor().brighter();
-                speedColor = fw.getColor().darker();
-              }
-
-              final ColouredDataItem crseBearingItem = new ColouredDataItem(
-                  thisMilli, tgtCourse, courseColor, isInfill, null, true,
-                  true);
-              tgtCourseValues.add(crseBearingItem);
-              final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
-                  thisMilli, tgtSpeed, speedColor, isInfill, null, true, true);
-              tgtSpeedValues.add(tgtSpeedItem);
-            }
-          }
-        }
-
-      }
-    }
-  }
-
-  private TimeSeriesCollection getAllSensorCuts(final boolean onlyVis,
-      final boolean flipAxes, final TimePeriod sensorPeriod)
-  {
-    TimeSeriesCollection allCutsColl = new TimeSeriesCollection();
-
-    for (TrackWrapper primaryTrack : getPrimaryTracks())
-    {
-      final List<SensorContactWrapper> theBearings = getBearings(primaryTrack,
-          onlyVis, sensorPeriod);
-      for (final SensorContactWrapper cut : theBearings)
-      {
-        double theBearing;
-
-        final String sensorName = cut.getSensorName();
-
-        // ensure it's in the positive domain
-        if (cut.getBearing() < 0)
-        {
-          theBearing = cut.getBearing() + 360;
-        }
-        else
-        {
-          theBearing = cut.getBearing();
-        }
-
-        // put in the correct domain, if necessary
-        if (flipAxes)
-        {
-          if (theBearing > 180d)
-          {
-            theBearing -= 360d;
-          }
-        }
-        else
-        {
-          if (theBearing < 0)
-          {
-            theBearing += 360;
-          }
-        }
-
-        final TimeSeriesDataItem item = new TimeSeriesDataItem(
-            new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing);
-        safelyAddItem(allCutsColl, sensorName, item);
-      }
-    }
-    return allCutsColl;
   }
 
   /**
