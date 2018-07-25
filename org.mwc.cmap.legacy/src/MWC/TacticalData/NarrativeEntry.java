@@ -19,6 +19,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GUI.FireExtended;
@@ -257,34 +258,16 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
     if (getClass() != obj.getClass())
       return false;
     final NarrativeEntry other = (NarrativeEntry) obj;
-    if (_DTG == null)
-    {
-      if (other._DTG != null)
-        return false;
-    }
-    else if (!_DTG.equals(other._DTG))
+    
+    if(!Objects.equals(_DTG, other._DTG))
       return false;
-    if (_entry == null)
-    {
-      if (other._entry != null)
-        return false;
-    }
-    else if (!_entry.equals(other._entry))
+    if(!Objects.equals(_entry,  other._entry))
       return false;
-    if (_track == null)
-    {
-      if (other._track != null)
-        return false;
-    }
-    else if (!_track.equals(other._track))
+    if(!Objects.equals(_track, other._track))
       return false;
-    if (_type == null)
-    {
-      if (other._type != null)
-        return false;
-    }
-    else if (!_type.equals(other._type))
+    if(!Objects.equals(_type, other._type))
       return false;
+
     return true;
   }
 
