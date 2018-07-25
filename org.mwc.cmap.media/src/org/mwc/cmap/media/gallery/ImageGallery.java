@@ -63,6 +63,7 @@ public class ImageGallery<T, I> implements IDisposable {
 	private final BackgroundImages backgroundImages;
 	private final Set<MouseListener> elementMouseListeners;
 	private final Set<MouseMoveListener> elementMouseMoveListeners;
+  private GridLayout imagesTableLayout;
 	
 	public ImageGallery(Composite parent, int thumbnailWidth, int thumbnailHeight) {
 		this.thumbnailWidth = thumbnailWidth;
@@ -103,12 +104,12 @@ public class ImageGallery<T, I> implements IDisposable {
 			}			
 		};
 		imagesTable = new Composite(mainComposite, SWT.NONE);
-		final GridLayout layout = new GridLayout(4, false);
-		layout.horizontalSpacing = LABELS_SPACING;
-		layout.verticalSpacing = LABELS_SPACING;
-		layout.marginLeft = TABLE_HORIZONTAL_MARGIN;
-		layout.marginRight = TABLE_HORIZONTAL_MARGIN;
-		imagesTable.setLayout(layout);
+		imagesTableLayout = new GridLayout(4, false);
+		imagesTableLayout.horizontalSpacing = LABELS_SPACING;
+		imagesTableLayout.verticalSpacing = LABELS_SPACING;
+		imagesTableLayout.marginLeft = TABLE_HORIZONTAL_MARGIN;
+		imagesTableLayout.marginRight = TABLE_HORIZONTAL_MARGIN;
+		imagesTable.setLayout(imagesTableLayout);
 		imagesTable.setBackground(imagesTable.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		
 		imagesTable.addMouseMoveListener(new MouseMoveListener() {
@@ -126,7 +127,7 @@ public class ImageGallery<T, I> implements IDisposable {
 			@Override
 			public void handleEvent(Event arg) {
 				
-			  resizeLayout(layout);
+			  resizeLayout(imagesTableLayout);
 				imagesTable.layout();
 				mainComposite.layout();
 			}
@@ -300,7 +301,7 @@ public class ImageGallery<T, I> implements IDisposable {
       label.redraw();
           
     }
-	  resizeLayout((GridLayout)imagesTable.getLayout());
+	  resizeLayout(imagesTableLayout);
 	  imagesTable.layout();
     mainComposite.layout();
 	}
