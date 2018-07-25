@@ -83,11 +83,9 @@ public class ImagesView extends ViewPart {
   public static final int MEDIUM_ICON_HEIGHT=75;
   public static final int LARGE_ICON_WIDTH=210;
   public static final int LARGE_ICON_HEIGHT=140;
-	private FillLayout mainLayout;
 	private Composite main;
 	private ImageGallery<ImageMetaData, ThumbnailPackage> gallery;
 	private ImagePanel imagePanel;
-	private SashForm dividerPane;
 	
 	private String openedFolder;
 	
@@ -272,9 +270,9 @@ public class ImagesView extends ViewPart {
 
 	private void createMainWindow(Composite parent) {
 		main = parent;
-	  mainLayout = new FillLayout();
+	  FillLayout mainLayout = new FillLayout();
 		main.setLayout(mainLayout);
-		dividerPane = new SashForm(main,SWT.HORIZONTAL);
+		SashForm dividerPane = new SashForm(main,SWT.HORIZONTAL);
 		gallery = new ImageGallery<ImageMetaData, ThumbnailPackage>(dividerPane);
 		gallery.setThumbnailSize(LARGE_ICON_WIDTH,LARGE_ICON_HEIGHT);
 		gallery.setDefaultImage(PlanetmayoImages.UNKNOWN.getImage().createImage(gallery.getMainComposite().getDisplay()));
@@ -316,12 +314,13 @@ public class ImagesView extends ViewPart {
 			
 			@Override
 			public void mouseDown(MouseEvent event) {
-				
+				//default method nothing to do
 			}
+
 			@Override
 			public void mouseDoubleClick(MouseEvent e)
 			{
-			  
+			  //default method, nothing to do here
 			}
 			
 		});

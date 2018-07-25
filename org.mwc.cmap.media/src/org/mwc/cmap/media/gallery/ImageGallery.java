@@ -150,9 +150,6 @@ public class ImageGallery<T, I> implements IDisposable {
     count = count > 0 ? count : 1;
     layout.numColumns = count;
     layout.horizontalSpacing = count > 1 ? mod / count - 3 : LABELS_SPACING;
-    int labels = imagesTable.getChildren().length;
-    labels = labels / count + (labels % count == 0 ? 0 : 1);
-    
 	}
 	
 	public void addImage(T imageMeta, I image) {
