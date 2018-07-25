@@ -258,17 +258,10 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
     if (getClass() != obj.getClass())
       return false;
     final NarrativeEntry other = (NarrativeEntry) obj;
-    
-    if(!Objects.equals(_DTG, other._DTG))
-      return false;
-    if(!Objects.equals(_entry,  other._entry))
-      return false;
-    if(!Objects.equals(_track, other._track))
-      return false;
-    if(!Objects.equals(_type, other._type))
-      return false;
 
-    return true;
+    return Objects.equals(_DTG, other._DTG) && Objects.equals(_entry,
+        other._entry) && Objects.equals(_track, other._track) && Objects.equals(
+            _type, other._type);
   }
 
   /**
