@@ -159,7 +159,7 @@ public class GenerateTMASegmentFromCuts implements
 
     private static class DummyMenuManager implements IMenuManager
     {
-      final List<IAction> actions = new ArrayList<IAction>();
+      final private List<IAction> actions = new ArrayList<IAction>();
 
       @Override
       public void add(IAction action)
