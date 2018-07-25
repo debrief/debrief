@@ -672,6 +672,16 @@ public final class SensorContactWrapper extends
     setVisible(true);
     setLabelVisible(false);
   }
+  
+  /** deep copy constructor
+   * 
+   * @param other
+   */
+  public SensorContactWrapper(SensorContactWrapper other)
+  {
+    this(other.getTrackName(), new HiResDate(other.getDTG()), other.getRange(), other.getBearing(), other.getAmbiguousBearing(), other.getFrequency(),
+        other.getOrigin(), other.getColor(), other.getLabel(), other.getLineStyle(), other.getSensorName());
+  }
 
   public SensorContactWrapper(final String theTrack, final HiResDate theDtg,
       final WorldDistance range, final Double brgDegs,
