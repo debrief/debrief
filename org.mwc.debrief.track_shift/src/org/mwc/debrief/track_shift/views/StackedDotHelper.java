@@ -633,6 +633,55 @@ public final class StackedDotHelper
       return prov;
     }
 
+    public void testGetCourseData()
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+
+      // sort out start/end times
+      HiResDate startDTG = DebriefFormatDateTime.parseThis("100112", "120200");
+      HiResDate endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+
+      TimeSeries courseData = getStandardCourseData(ownship, false, startDTG,
+          endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 3, courseData.getItemCount());
+
+      TimeSeriesDataItem firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+
+      TimeSeriesDataItem lastItem = courseData.getDataItem(courseData
+          .getItemCount() - 1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+
+      // sort out start/end times
+      startDTG = DebriefFormatDateTime.parseThis("100112", "110000");
+      endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+
+      courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+
+      lastItem = courseData.getDataItem(courseData.getItemCount() - 1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+
+      // switch the flip axes value
+      courseData = getStandardCourseData(ownship, true, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", -160d, firstItem.getValue());
+
+      lastItem = courseData.getDataItem(courseData.getItemCount() - 1);
+      assertEquals("correct course", -160d, lastItem.getValue());
+
+    }
+
     public void testGetMultiPrimaryTrackData() throws FileNotFoundException
     {
       // get our sample data-file
@@ -726,53 +775,6 @@ public final class StackedDotHelper
       prov.addSecondary(tma);
 
       // return prov;
-    }
-    
-    public void testGetCourseData()
-    {
-      final Layers layers = getData();
-      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
-      assertNotNull("found ownship", ownship);
-
-      // sort out start/end times
-      HiResDate startDTG = DebriefFormatDateTime.parseThis("100112", "120200");
-      HiResDate endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
-      
-      TimeSeries courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
-      assertNotNull("found course data", courseData);
-      assertEquals("has items", 3, courseData.getItemCount());
-      
-      TimeSeriesDataItem firstItem = courseData.getDataItem(0);
-      assertEquals("correct course", 200d, firstItem.getValue());
-      
-      TimeSeriesDataItem lastItem = courseData.getDataItem(courseData.getItemCount()-1);
-      assertEquals("correct course", 200d, lastItem.getValue());
-
-      // sort out start/end times
-      startDTG = DebriefFormatDateTime.parseThis("100112", "110000");
-      endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
-      
-      courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
-      assertNotNull("found course data", courseData);
-      assertEquals("has items", 9, courseData.getItemCount());
-      
-      firstItem = courseData.getDataItem(0);
-      assertEquals("correct course", 200d, firstItem.getValue());
-      
-      lastItem = courseData.getDataItem(courseData.getItemCount()-1);
-      assertEquals("correct course", 200d, lastItem.getValue());
-      
-      // switch the flip axes value
-      courseData = getStandardCourseData(ownship, true, startDTG, endDTG);
-      assertNotNull("found course data", courseData);
-      assertEquals("has items", 9, courseData.getItemCount());
-      
-      firstItem = courseData.getDataItem(0);
-      assertEquals("correct course", -160d, firstItem.getValue());
-      
-      lastItem = courseData.getDataItem(courseData.getItemCount()-1);
-      assertEquals("correct course", -160d, lastItem.getValue());
-
     }
 
     public void testUpdateBearings() throws ExecutionException
@@ -1145,6 +1147,38 @@ public final class StackedDotHelper
   }
 
   /**
+   * either produce a list, or build up a list of segments
+   *
+   * @param secondaryTrack
+   * @param editable
+   * @return
+   */
+  private static SegmentList collateSegments(
+      final ISecondaryTrack secondaryTrack, final Editable editable)
+  {
+    final SegmentList segList;
+
+    if (editable instanceof SegmentList)
+    {
+      segList = (SegmentList) editable;
+    }
+    else
+    {
+      segList = new SegmentList();
+      // note: we can only set the wrapper
+      // if we're looking at a real TMA solution
+      if (secondaryTrack instanceof TrackWrapper)
+      {
+        segList.setWrapper((TrackWrapper) secondaryTrack);
+      }
+
+      // ok, add this segment to the list
+      segList.addSegment((TrackSegment) editable);
+    }
+    return segList;
+  }
+
+  /**
    * determine if this time series contains many identical values - this is an indicator for data
    * coming from a simulator, for which turns can't be determined by our peak tracking algorithm.
    *
@@ -1266,10 +1300,6 @@ public final class StackedDotHelper
   {
     final TreeSet<Doublet> res = new TreeSet<Doublet>();
 
-    // friendly fix-wrapper to save us repeatedly creating it
-    final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
-        0, 0), 0.0, 0.0));
-
     // note - we have to inject some listeners, so that
     // interpolated fixes know when their parent has updated.
     // each time we come in here, we delete existing ones,
@@ -1292,106 +1322,10 @@ public final class StackedDotHelper
       final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
       while (sensors.hasMoreElements())
       {
-        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-        if (!onlyVis || (onlyVis && wrapper.getVisible()))
-        {
-          final Enumeration<Editable> cuts = wrapper.elements();
-          while (cuts.hasMoreElements())
-          {
-            final SensorContactWrapper scw = (SensorContactWrapper) cuts
-                .nextElement();
+        final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+        storeDoubletsFor(sensor, res, onlyVis, needBearing, needFrequency,
+            theSegments, sensorHost, targetTrack);
 
-            if (!onlyVis || (onlyVis && scw.getVisible()))
-            {
-              // is this cut suitable for what we're looking for?
-              if (needBearing)
-              {
-                if (!scw.getHasBearing())
-                {
-                  continue;
-                }
-              }
-
-              // aaah, but does it meet the frequency requirement?
-              if (needFrequency)
-              {
-                if (!scw.getHasFrequency())
-                {
-                  continue;
-                }
-              }
-
-              /**
-               * note: if this is frequency data then we accept an interpolated fix. This is based
-               * upon the working practice that initially legs of target track are created from
-               * bearing data.
-               *
-               * Plus, there is greater variance in bearing angle - so it's more important to get
-               * the right data item.
-               */
-
-              /**
-               * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
-               * speed when on a leg, it's perfectly OK to interpolate a target position for any
-               * sensor time.
-               */
-              final boolean interpFix = true;// needFrequency;
-
-              /**
-               * for frequency data we don't generate a double for dynamic infills, since we have
-               * low confidence in the target course/speed
-               */
-              final boolean allowInfill = !needFrequency;
-
-              final TargetDoublet doublet = getTargetDoublet(index, theSegments,
-                  scw.getDTG(), interpFix, allowInfill);
-
-              final FixWrapper hostFix;
-              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-              if (matches != null && matches.length == 1)
-              {
-                hostFix = (FixWrapper) matches[0];
-              }
-              else
-              {
-                hostFix = null;
-              }
-
-              final Doublet thisDub;
-              if (doublet.targetFix != null && hostFix != null)
-              {
-                thisDub = new Doublet(scw, doublet.targetFix,
-                    doublet.targetParent, hostFix);
-
-                // if we've no target track add all the points
-                if (targetTrack == null)
-                {
-                  // store our data
-                  res.add(thisDub);
-                }
-                else
-                {
-                  // if we've got a target track we only add points
-                  // for which we
-                  // have
-                  // a target location
-                  if (doublet.targetFix != null)
-                  {
-                    // store our data
-                    res.add(thisDub);
-                  }
-                } // if we know the track
-              } // if we find a match
-              else if (hostFix != null && (doublet.targetFix == null
-                  || targetTrack == null))
-              {
-                // no target data, just use ownship sensor data
-                thisDub = new Doublet(scw, null, null, hostFix);
-                res.add(thisDub);
-              }
-            } // if cut is visible
-          } // loop through cuts
-        } // if sensor is visible
       } // loop through sensors
     } // loop through primaries
 
@@ -1755,11 +1689,10 @@ public final class StackedDotHelper
     return res;
   }
 
-  private static void storeAmbiguousCut(final double ambigBearing,
+  private static ColouredDataItem storeAmbiguousCut(final double ambigBearing,
       final boolean flipAxes, final boolean bearingToPort,
       final Color thisColor, final Doublet thisD, final Color grayShade,
-      final RegularTimePeriod thisMilli, final boolean parentIsNotDynamic,
-      final TimeSeriesCollection ambigValuesColl, final String seriesName)
+      final RegularTimePeriod thisMilli, final boolean parentIsNotDynamic)
   {
     double theBearing = ambigBearing;
 
@@ -1793,7 +1726,106 @@ public final class StackedDotHelper
     final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
         theBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
             .getSensorCut());
-    safelyAddItem(ambigValuesColl, seriesName, amBearing);
+    return amBearing;
+  }
+
+  private static void storeDoubletsFor(final SensorWrapper sensor,
+      final TreeSet<Doublet> res, final boolean onlyVis,
+      final boolean needBearing, final boolean needFrequency,
+      final Vector<TrackSegment> theSegments, final WatchableList sensorHost,
+      final ISecondaryTrack targetTrack)
+  {
+    if (!onlyVis || (onlyVis && sensor.getVisible()))
+    {
+      // friendly fix-wrapper to save us repeatedly creating it
+      final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
+          0, 0), 0.0, 0.0));
+
+      final Enumeration<Editable> cuts = sensor.elements();
+      while (cuts.hasMoreElements())
+      {
+        final SensorContactWrapper scw = (SensorContactWrapper) cuts
+            .nextElement();
+
+        if (!onlyVis || (onlyVis && scw.getVisible()))
+        {
+          // is this cut suitable for what we're looking for?
+          if (needBearing)
+          {
+            if (!scw.getHasBearing())
+            {
+              continue;
+            }
+          }
+
+          // aaah, but does it meet the frequency requirement?
+          if (needFrequency)
+          {
+            if (!scw.getHasFrequency())
+            {
+              continue;
+            }
+          }
+          /**
+           * Since the contact is travelling in a straight, on steady speed when on a leg, it's
+           * perfectly OK to interpolate a target position for any sensor time.
+           */
+          final boolean interpFix = true;// needFrequency;
+
+          /**
+           * for frequency data we don't generate a double for dynamic infills, since we have low
+           * confidence in the target course/speed
+           */
+          final boolean allowInfill = !needFrequency;
+
+          final TargetDoublet doublet = getTargetDoublet(index, theSegments, scw
+              .getDTG(), interpFix, allowInfill);
+
+          final FixWrapper hostFix;
+          final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+          if (matches != null && matches.length == 1)
+          {
+            hostFix = (FixWrapper) matches[0];
+          }
+          else
+          {
+            hostFix = null;
+          }
+
+          if (doublet.targetFix != null && hostFix != null)
+          {
+            final Doublet thisDub = new Doublet(scw, doublet.targetFix,
+                doublet.targetParent, hostFix);
+
+            // if we've no target track add all the points
+            if (targetTrack == null)
+            {
+              // store our data
+              res.add(thisDub);
+            }
+            else
+            {
+              // if we've got a target track we only add points
+              // for which we
+              // have
+              // a target location
+              if (doublet.targetFix != null)
+              {
+                // store our data
+                res.add(thisDub);
+              }
+            } // if we know the track
+          } // if we find a match
+          else if (hostFix != null && (doublet.targetFix == null
+              || targetTrack == null))
+          {
+            // no target data, just use ownship sensor data
+            final Doublet thisDub = new Doublet(scw, null, null, hostFix);
+            res.add(thisDub);
+          }
+        } // if cut is visible
+      } // loop through cuts
+    } // if sensor is visible
   }
 
   private static void storeMeasuredBearing(final boolean multiSensor,
@@ -1919,38 +1951,6 @@ public final class StackedDotHelper
 
       }
     }
-  }
-
-  /**
-   * either produce a list, or build up a list of segments
-   * 
-   * @param secondaryTrack
-   * @param editable
-   * @return
-   */
-  private static SegmentList collateSegments(
-      final ISecondaryTrack secondaryTrack, final Editable editable)
-  {
-    final SegmentList segList;
-
-    if (editable instanceof SegmentList)
-    {
-      segList = (SegmentList) editable;
-    }
-    else
-    {
-      segList = new SegmentList();
-      // note: we can only set the wrapper
-      // if we're looking at a real TMA solution
-      if (secondaryTrack instanceof TrackWrapper)
-      {
-        segList.setWrapper((TrackWrapper) secondaryTrack);
-      }
-
-      // ok, add this segment to the list
-      segList.addSegment((TrackSegment) editable);
-    }
-    return segList;
   }
 
   /**
@@ -2364,9 +2364,10 @@ public final class StackedDotHelper
             final String ambSeriesName = multiSensor
                 ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName() + "(A)"
                 : BaseStackedDotsView.MEASURED_VALUES + "(A)";
-            storeAmbiguousCut(ambigBearing, flipAxes, bearingToPort, thisColor,
-                thisD, grayShade, thisMilli, parentIsNotDynamic,
-                ambigValuesColl, ambSeriesName);
+            final ColouredDataItem amBearing = storeAmbiguousCut(ambigBearing, flipAxes, bearingToPort, thisColor,
+                thisD, grayShade, thisMilli, parentIsNotDynamic);
+            safelyAddItem(ambigValuesColl, ambSeriesName, amBearing);
+
           }
 
           // do we have target data?
