@@ -242,35 +242,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
   public static class TestMe extends TestCase
   {
-    
-    
-    public void testGridding()
-    {
-      NarrativeWrapper narrative = new NarrativeWrapper("Test narrative");
-      NarrativeEntry entry = new NarrativeEntry("some track", new HiResDate(2000000), "Some entry text");
-      
-      narrative.add(entry);
-      
-      assertEquals("correct size", 1, narrative.size());
-      
-      NarrativeEntry dummy = (NarrativeEntry) narrative.makeCopy(entry);
-      assertEquals(dummy.getDTG(), entry.getDTG());
-      assertEquals(dummy.getColor(), entry.getColor());
-      assertEquals(entry.getSource(), dummy.getSource());
-      assertEquals(entry.getTrackName(), dummy.getTrackName());
-      assertEquals(entry.getVisible(), dummy.getVisible());
-      
-      // we force the entry to be different, since identical copies get silently dropped.
-      assertTrue(!entry.getEntry().equals(dummy.getEntry()));
-      
-      narrative.add(dummy);
-      assertEquals("correct size", 2, narrative.size());
-      
-      // try to delete the enty
-      narrative.removeElement(entry);
-      assertEquals("correct size", 1, narrative.size());
-      
-    }
+
     /**
      * note: the following test was produced to overcome a specific issue. The narrative wrapper was
      * successfully ignoring duplicate entries, except after a file had been save/restored.
@@ -347,6 +319,35 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
       narr.add(theEntry);
 
       assertEquals("still has three", 3, narr.size());
+
+    }
+
+    public void testGridding()
+    {
+      final NarrativeWrapper narrative = new NarrativeWrapper("Test narrative");
+      final NarrativeEntry entry = new NarrativeEntry("some track",
+          new HiResDate(2000000), "Some entry text");
+
+      narrative.add(entry);
+
+      assertEquals("correct size", 1, narrative.size());
+
+      final NarrativeEntry dummy = (NarrativeEntry) narrative.makeCopy(entry);
+      assertEquals(dummy.getDTG(), entry.getDTG());
+      assertEquals(dummy.getColor(), entry.getColor());
+      assertEquals(entry.getSource(), dummy.getSource());
+      assertEquals(entry.getTrackName(), dummy.getTrackName());
+      assertEquals(entry.getVisible(), dummy.getVisible());
+
+      // we force the entry to be different, since identical copies get silently dropped.
+      assertTrue(!entry.getEntry().equals(dummy.getEntry()));
+
+      narrative.add(dummy);
+      assertEquals("correct size", 2, narrative.size());
+
+      // try to delete the enty
+      narrative.removeElement(entry);
+      assertEquals("correct size", 1, narrative.size());
 
     }
   }
