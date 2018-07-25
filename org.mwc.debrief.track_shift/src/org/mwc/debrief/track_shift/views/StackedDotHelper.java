@@ -87,7 +87,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import MWC.TacticalData.TrackDataProvider;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import junit.framework.TestCase;
 
@@ -322,38 +321,6 @@ public final class StackedDotHelper
 
   public static class TestUpdates extends TestCase
   {
-    private static class SwitchableTrackProviderImpl implements
-        SwitchableTrackProvider
-    {
-
-      private final TrackDataProvider _prov;
-
-      public SwitchableTrackProviderImpl(final TrackDataProvider tracks)
-      {
-        _prov = tracks;
-      }
-
-      @Override
-      public WatchableList[] getPrimaryTracks()
-      {
-        return new WatchableList[]
-        {_prov.getPrimaryTrack()};
-      }
-
-      @Override
-      public WatchableList[] getSecondaryTracks()
-      {
-        return _prov.getSecondaryTracks();
-      }
-
-      @Override
-      public boolean isPopulated()
-      {
-        return _prov != null;
-      }
-
-    }
-
     private static class TrackDataHelper implements SwitchableTrackProvider
     {
 
