@@ -340,7 +340,7 @@ public class ImagesView extends ViewPart
           @Override
           public void disposeMeta(final ImageMetaData t)
           {
-
+            // ignore.
           }
         });
     gallery.addElementMouseListener(new MouseListener()
