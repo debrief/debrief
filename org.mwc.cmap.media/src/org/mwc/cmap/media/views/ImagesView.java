@@ -518,6 +518,7 @@ public class ImagesView extends ViewPart {
 	      ImageLoader.getInstance().load(imagePanel);
 	    }
 	    gallery.redrawGallery();
+	    main.layout();
 	  }
 	}
 	
