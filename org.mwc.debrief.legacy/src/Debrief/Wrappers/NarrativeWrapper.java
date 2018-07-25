@@ -485,7 +485,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public void doSave(final String message)
   {
-    throw new RuntimeException(
+    throw new IllegalArgumentException(
         "should not have called manual save for Sensor Wrapper");
   }
 
