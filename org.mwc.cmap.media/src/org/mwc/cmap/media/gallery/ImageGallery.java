@@ -125,17 +125,8 @@ public class ImageGallery<T, I> implements IDisposable {
 			
 			@Override
 			public void handleEvent(Event arg) {
-				Point size = imagesTable.getSize();
-				int width = size.x;
-				int mod = (width - TABLE_HORIZONTAL_MARGIN * 2) % (thumbnailWidth + IMAGE_BORDER_MARGIN + LABELS_SPACING);
-				int count = (width - TABLE_HORIZONTAL_MARGIN * 2) / (thumbnailWidth + IMAGE_BORDER_MARGIN + LABELS_SPACING) + (mod >= thumbnailWidth + IMAGE_BORDER_MARGIN + (LABELS_SPACING / 2) ? 1 : 0);
-				mod = (width - count * (thumbnailWidth + IMAGE_BORDER_MARGIN) + TABLE_HORIZONTAL_MARGIN * 2);
-				count = count > 0 ? count : 1;
-				layout.numColumns = count;
-				layout.horizontalSpacing = count > 1 ? mod / count - 3 : LABELS_SPACING;
 				
-				int labels = imagesTable.getChildren().length;
-				labels = labels / count + (labels % count == 0 ? 0 : 1);
+			  resizeLayout(layout);
 				imagesTable.layout();
 				mainComposite.layout();
 			}
@@ -149,6 +140,20 @@ public class ImageGallery<T, I> implements IDisposable {
 		mainComposite.setExpandHorizontal(true);
 		mainComposite.setExpandVertical(true);
 	}	
+	
+	private void resizeLayout(final GridLayout layout) {
+	  Point size = imagesTable.getSize();
+    int width = size.x;
+    int mod = (width - TABLE_HORIZONTAL_MARGIN * 2) % (thumbnailWidth + IMAGE_BORDER_MARGIN + LABELS_SPACING);
+    int count = (width - TABLE_HORIZONTAL_MARGIN * 2) / (thumbnailWidth + IMAGE_BORDER_MARGIN + LABELS_SPACING) + (mod >= thumbnailWidth + IMAGE_BORDER_MARGIN + (LABELS_SPACING / 2) ? 1 : 0);
+    mod = (width - count * (thumbnailWidth + IMAGE_BORDER_MARGIN) + TABLE_HORIZONTAL_MARGIN * 2);
+    count = count > 0 ? count : 1;
+    layout.numColumns = count;
+    layout.horizontalSpacing = count > 1 ? mod / count - 3 : LABELS_SPACING;
+    int labels = imagesTable.getChildren().length;
+    labels = labels / count + (labels % count == 0 ? 0 : 1);
+    
+	}
 	
 	public void addImage(T imageMeta, I image) {
 		if (labels.containsKey(imageMeta)) {
@@ -298,9 +303,9 @@ public class ImageGallery<T, I> implements IDisposable {
       label.redraw();
           
     }
+	  resizeLayout((GridLayout)imagesTable.getLayout());
 	  imagesTable.layout();
     mainComposite.layout();
-	  
 	}
 
 	public void dispose() {
@@ -326,7 +331,7 @@ public class ImageGallery<T, I> implements IDisposable {
 
 		public ImageLabel(Composite parent) {
 			composite = new Composite(parent, SWT.NONE);
-			GridData compositeData = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+			GridData compositeData = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN+TEXT_HEIGHT);
 			composite.setLayoutData(compositeData);
 			composite.setBackgroundMode(SWT.INHERIT_DEFAULT);
 			composite.setBackgroundImage(backgroundImages.getTransparent());
@@ -378,22 +383,19 @@ public class ImageGallery<T, I> implements IDisposable {
 		
 		public void redraw() {
 		  //System.out.println("Redrawing with:<<"+thumbnailWidth+">>");
-		 // imageLabel.setSize(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
-      GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
+		  //resize image label
+		  setImageMeta(getImageMeta());
+		  GridData data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, TEXT_HEIGHT); 
       data.horizontalIndent = 0;
       data.horizontalSpan = 0;
       textlabel.setLayoutData(data);
-      textlabel.setMargins(0, 0, 0, 0);
-      //this will set filename label
-      //setImageMeta(getImageMeta());
-      textlabel.redraw();
-      data = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
-      imageLabel.setLayoutData(data);
-      imageLabel.layout(true);
-      imageLabel.redraw();
-      GridData gd = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN);
+
+		  Point sizePt = imageLabel.getSize();
+      imageLabel.redraw(0,0,sizePt.x,sizePt.y,true);
+      imageLabel.setLayoutData(new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN));
+
+      GridData gd = new GridData(thumbnailWidth + IMAGE_BORDER_MARGIN, thumbnailHeight + IMAGE_BORDER_MARGIN+TEXT_HEIGHT);
       composite.setLayoutData(gd);
-      
       composite.layout();
 		  
 		}
@@ -540,6 +542,7 @@ public class ImageGallery<T, I> implements IDisposable {
 			Point size = textlabel.computeSize(thumbnailWidth + IMAGE_BORDER_MARGIN, SWT.DEFAULT);
 			((GridData) textlabel.getLayoutData()).heightHint = size.y;
 			((GridData)composite.getLayoutData()).heightHint = thumbnailHeight + IMAGE_BORDER_MARGIN + size.y + 2;
+			imageLabel.layout();
 			composite.layout();
 		}
 		
