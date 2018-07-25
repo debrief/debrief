@@ -1766,66 +1766,77 @@ public final class StackedDotHelper
               continue;
             }
           }
-          /**
-           * Since the contact is travelling in a straight, on steady speed when on a leg, it's
-           * perfectly OK to interpolate a target position for any sensor time.
-           */
-          final boolean interpFix = true;// needFrequency;
 
-          /**
-           * for frequency data we don't generate a double for dynamic infills, since we have low
-           * confidence in the target course/speed
-           */
-          final boolean allowInfill = !needFrequency;
+          storeDoubletsForThisCut(scw, res, needFrequency, index, theSegments,
+              sensorHost, targetTrack);
 
-          final TargetDoublet doublet = getTargetDoublet(index, theSegments, scw
-              .getDTG(), interpFix, allowInfill);
-
-          final FixWrapper hostFix;
-          final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-          if (matches != null && matches.length == 1)
-          {
-            hostFix = (FixWrapper) matches[0];
-          }
-          else
-          {
-            hostFix = null;
-          }
-
-          if (doublet.targetFix != null && hostFix != null)
-          {
-            final Doublet thisDub = new Doublet(scw, doublet.targetFix,
-                doublet.targetParent, hostFix);
-
-            // if we've no target track add all the points
-            if (targetTrack == null)
-            {
-              // store our data
-              res.add(thisDub);
-            }
-            else
-            {
-              // if we've got a target track we only add points
-              // for which we
-              // have
-              // a target location
-              if (doublet.targetFix != null)
-              {
-                // store our data
-                res.add(thisDub);
-              }
-            } // if we know the track
-          } // if we find a match
-          else if (hostFix != null && (doublet.targetFix == null
-              || targetTrack == null))
-          {
-            // no target data, just use ownship sensor data
-            final Doublet thisDub = new Doublet(scw, null, null, hostFix);
-            res.add(thisDub);
-          }
         } // if cut is visible
       } // loop through cuts
     } // if sensor is visible
+  }
+
+  private static void storeDoubletsForThisCut(final SensorContactWrapper scw,
+      final TreeSet<Doublet> res, final boolean needFrequency,
+      final FixWrapper index, final Vector<TrackSegment> theSegments,
+      final WatchableList sensorHost, final ISecondaryTrack targetTrack)
+  {
+    /**
+     * Since the contact is travelling in a straight, on steady speed when on a leg, it's perfectly
+     * OK to interpolate a target position for any sensor time.
+     */
+    final boolean interpFix = true;// needFrequency;
+
+    /**
+     * for frequency data we don't generate a double for dynamic infills, since we have low
+     * confidence in the target course/speed
+     */
+    final boolean allowInfill = !needFrequency;
+
+    final TargetDoublet doublet = getTargetDoublet(index, theSegments, scw
+        .getDTG(), interpFix, allowInfill);
+
+    final FixWrapper hostFix;
+    final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+    if (matches != null && matches.length == 1)
+    {
+      hostFix = (FixWrapper) matches[0];
+    }
+    else
+    {
+      hostFix = null;
+    }
+
+    if (doublet.targetFix != null && hostFix != null)
+    {
+      final Doublet thisDub = new Doublet(scw, doublet.targetFix,
+          doublet.targetParent, hostFix);
+
+      // if we've no target track add all the points
+      if (targetTrack == null)
+      {
+        // store our data
+        res.add(thisDub);
+      }
+      else
+      {
+        // if we've got a target track we only add points
+        // for which we
+        // have
+        // a target location
+        if (doublet.targetFix != null)
+        {
+          // store our data
+          res.add(thisDub);
+        }
+      } // if we know the track
+    } // if we find a match
+    else if (hostFix != null && (doublet.targetFix == null
+        || targetTrack == null))
+    {
+      // no target data, just use ownship sensor data
+      final Doublet thisDub = new Doublet(scw, null, null, hostFix);
+      res.add(thisDub);
+    }
   }
 
   private static void storeMeasuredBearing(final boolean multiSensor,
@@ -2364,8 +2375,9 @@ public final class StackedDotHelper
             final String ambSeriesName = multiSensor
                 ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName() + "(A)"
                 : BaseStackedDotsView.MEASURED_VALUES + "(A)";
-            final ColouredDataItem amBearing = storeAmbiguousCut(ambigBearing, flipAxes, bearingToPort, thisColor,
-                thisD, grayShade, thisMilli, parentIsNotDynamic);
+            final ColouredDataItem amBearing = storeAmbiguousCut(ambigBearing,
+                flipAxes, bearingToPort, thisColor, thisD, grayShade, thisMilli,
+                parentIsNotDynamic);
             safelyAddItem(ambigValuesColl, ambSeriesName, amBearing);
 
           }
