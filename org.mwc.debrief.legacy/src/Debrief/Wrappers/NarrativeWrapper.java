@@ -340,7 +340,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
       assertEquals(entry.getVisible(), dummy.getVisible());
 
       // we force the entry to be different, since identical copies get silently dropped.
-      assertTrue(!entry.getEntry().equals(dummy.getEntry()));
+      assertFalse(entry.getEntry().equals(dummy.getEntry()));
 
       narrative.add(dummy);
       assertEquals("correct size", 2, narrative.size());
@@ -692,7 +692,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
   {
-    if (false == item instanceof NarrativeEntry)
+    if (!(item instanceof NarrativeEntry))
     {
       throw new IllegalArgumentException(
           "I am expecting the Observation's, don't know how to copy " + item);
