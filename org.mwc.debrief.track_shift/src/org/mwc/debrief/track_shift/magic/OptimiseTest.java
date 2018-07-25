@@ -17,7 +17,9 @@ package org.mwc.debrief.track_shift.magic;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -131,7 +133,7 @@ public class OptimiseTest
 		}
 
 		// TODO FIX-TEST
-		public void NtestLoad() throws FileNotFoundException
+		public void testLoad() throws FileNotFoundException
 		{
 			// get some data
 			final Layers layers = getTheData();
@@ -147,12 +149,15 @@ public class OptimiseTest
 
 			final TrackWrapper pri = (TrackWrapper) layerPri;
 			final TrackWrapper sec = (TrackWrapper) layerSec;
+			
+			List<TrackWrapper> primaries = new ArrayList<TrackWrapper>();
+			primaries.add(pri);
 
 			assertEquals("NONSUCH", pri.getName());
 			assertEquals("TMA_TGT", sec.getName());
 
 			// can we get some doublets?
-			final TreeSet<Doublet> doublets = StackedDotHelper.getDoublets(pri, sec, true,
+			final TreeSet<Doublet> doublets = StackedDotHelper.getDoublets(primaries, sec, true,
 					true, false);
 
 			assertNotNull("found some", doublets);

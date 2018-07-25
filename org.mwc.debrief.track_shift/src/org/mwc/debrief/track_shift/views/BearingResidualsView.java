@@ -1297,7 +1297,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
     memento.putBoolean(SCALE_ERROR, scaleError.isChecked());
   }
-
+  
   @Override
   protected void updateData(final boolean updateDoublets)
   {
@@ -1324,7 +1324,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       return;
     }
     
-    _myHelper.updateBearingData(errorData, lineData, _myTrackDataProvider,
+    
+    
+    _myHelper.updateBearingData(errorData, lineData, _switchableTrackDataProvider,
         _onlyVisible.isChecked(), showCourse.isChecked(), relativeAxes
             .isChecked(), this, updateDoublets, _targetCourseSeries,
         _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
