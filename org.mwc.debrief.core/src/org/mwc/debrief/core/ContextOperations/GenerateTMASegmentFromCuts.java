@@ -29,10 +29,19 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
+import org.eclipse.jface.action.IContributionManager;
+import org.eclipse.jface.action.IContributionManagerOverrides;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.CoolBar;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -83,6 +92,375 @@ public class GenerateTMASegmentFromCuts implements
     public testMe(final String val)
     {
       super(val);
+    }
+
+    public void testGenerateMultiSensor()
+    {
+      TrackWrapper host = new TrackWrapper();
+      host.setName("host");
+
+      SensorWrapper sensor1 = new SensorWrapper("sensor1");
+      host.add(sensor1);
+      SensorWrapper sensor2 = new SensorWrapper("sensor2");
+      host.add(sensor2);
+
+      host.addFix(new FixWrapper(new Fix(new HiResDate(1000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(2000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(3000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(4000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(5000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(6000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(7000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+      host.addFix(new FixWrapper(new Fix(new HiResDate(8000), new WorldLocation(
+          0, 0, 0), 10, 20)));
+
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(1800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(2800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(5800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(7800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(8800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor1.add(new SensorContactWrapper("host", new HiResDate(9800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor2.add(new SensorContactWrapper("host", new HiResDate(800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor2.add(new SensorContactWrapper("host", new HiResDate(1800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor2.add(new SensorContactWrapper("host", new HiResDate(2800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+      sensor2.add(new SensorContactWrapper("host", new HiResDate(5800), null,
+          100d, null, Color.RED, "label", 12, "sensor"));
+
+      GenerateTMASegmentFromCuts genny = new GenerateTMASegmentFromCuts();
+      Editable[] sensors = new SensorWrapper[]
+      {sensor1, sensor2};
+      Layers theLayers = new Layers();
+
+      DummyMenuManager parent = new DummyMenuManager();
+      genny.generate(parent, theLayers, null, sensors);
+      assertEquals("has action", parent.actions.size(), 1);
+      TMAAction theAction = (TMAAction) parent.actions.get(0);
+      assertEquals("correct cuts", 11, theAction._items.length);
+
+    }
+
+    private static class DummyMenuManager implements IMenuManager
+    {
+      final List<IAction> actions = new ArrayList<IAction>();
+
+      @Override
+      public void add(IAction action)
+      {
+        actions.add(action);
+      }
+
+      @Override
+      public void add(IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void appendToGroup(String groupName, IAction action)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void appendToGroup(String groupName, IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public IContributionItem find(String id)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IContributionItem[] getItems()
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IContributionManagerOverrides getOverrides()
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public void insertAfter(String id, IAction action)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void insertAfter(String id, IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void insertBefore(String id, IAction action)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void insertBefore(String id, IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public boolean isDirty()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean isEmpty()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public void markDirty()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void prependToGroup(String groupName, IAction action)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void prependToGroup(String groupName, IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public IContributionItem remove(String id)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IContributionItem remove(IContributionItem item)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public void removeAll()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void update(boolean force)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void dispose()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void fill(Composite parent)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void fill(Menu parent, int index)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void fill(ToolBar parent, int index)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void fill(CoolBar parent, int index)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public String getId()
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public boolean isDynamic()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean isGroupMarker()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean isSeparator()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean isVisible()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public void saveWidgetState()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void setParent(IContributionManager parent)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void setVisible(boolean visible)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void update()
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void update(String id)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void addMenuListener(IMenuListener listener)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public IMenuManager findMenuUsingPath(String path)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public IContributionItem findUsingPath(String path)
+      {
+        // TODO Auto-generated method stub
+        return null;
+      }
+
+      @Override
+      public boolean getRemoveAllWhenShown()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public boolean isEnabled()
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public void removeMenuListener(IMenuListener listener)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void setRemoveAllWhenShown(boolean removeAll)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void updateAll(boolean force)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
     }
 
     public void testTrimmingTrack()
@@ -431,11 +809,11 @@ public class GenerateTMASegmentFromCuts implements
     {
       return true;
     }
-    
+
     public String getTrackNameFor(TrackWrapper newTrack)
     {
-      return TrackSegment.TMA_LEADER + FormatRNDateTime.toString(
-          newTrack.getStartDTG().getDate().getTime());   
+      return TrackSegment.TMA_LEADER + FormatRNDateTime.toString(newTrack
+          .getStartDTG().getDate().getTime());
     }
 
     @Override
@@ -480,7 +858,7 @@ public class GenerateTMASegmentFromCuts implements
       shadeCuts();
 
       // also set it as a secondary track
-      if(isRunning())
+      if (isRunning())
       {
         final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
         if (editor != null)
@@ -495,14 +873,14 @@ public class GenerateTMASegmentFromCuts implements
           }
         }
       }
-      
+
       // sorted, do the update
       _layers.fireExtended();
 
       return Status.OK_STATUS;
 
     }
-    
+
     public boolean isRunning()
     {
       return Platform.isRunning();
@@ -577,153 +955,175 @@ public class GenerateTMASegmentFromCuts implements
     //
     Action _myAction = null;
 
-    // so, see if it's something we can do business with
-    if (subjects.length == 1)
+    if (allSensors(subjects))
     {
-      // ok, do I know how to create a TMA segment from this?
-      final Editable onlyOne = subjects[0];
-      if (onlyOne instanceof SensorWrapper)
+      final Vector<SensorContactWrapper> wraps =
+          new Vector<SensorContactWrapper>();
+      for (Editable thisE : subjects)
       {
-        final SensorWrapper sw = (SensorWrapper) onlyOne;
+        SensorWrapper sw = (SensorWrapper) thisE;
         // cool, go for it
-        final Vector<SensorContactWrapper> wraps =
-            new Vector<SensorContactWrapper>();
         final Enumeration<Editable> numer = sw.elements();
         while (numer.hasMoreElements())
         {
           wraps.add((SensorContactWrapper) numer.nextElement());
         }
-        if (!wraps.isEmpty())
-        {
-          final SensorContactWrapper[] items = new SensorContactWrapper[wraps
-              .size()];
-          final SensorContactWrapper[] finalItems = wraps.toArray(items);
-          final SensorContactWrapper firstContact = finalItems[0];
-
-          final Color firstColor = firstContact.getColor() != null
-              ? firstContact.getColor() : firstContact.getSensor().getColor();
-
-          // cool wrap it in an action.
-          _myAction = new Action("Generate TMA solution from all cuts")
-          {
-            @Override
-            public void run()
-            {
-              // get ready for the supporting data (using selected sensor data,
-              // if
-              // we can)
-
-              // just check we have some kind of range
-              WorldDistance theDist = firstContact.getRange();
-              if (theDist == null)
-                theDist = new WorldDistance(6, WorldDistance.NM);
-
-              // get the supporting data
-              final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
-                  firstContact.getBearing(), theDist, DEFAULT_TARGET_COURSE,
-                  DEFAULT_TARGET_SPEED, firstColor);
-              final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-                  .getActiveShell(), wizard);
-              dialog.create();
-              dialog.open();
-
-              // did it work?
-              if (dialog.getReturnCode() == Window.OK)
-              {
-                final UserChoice answers = getUserChoice(wizard, firstColor);
-
-                // ok, go for it.
-                // sort it out as an operation
-                final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-                    finalItems, theLayers, answers.res, answers.courseDegs,
-                    answers.speed, answers.newColor);
-
-                // ok, stick it on the buffer
-                runIt(convertToTrack1);
-
-              }
-              else
-                System.err.println("user cancelled");
-            }
-          };
-        }
-        ; // whether there are any cuts for this sensor
       }
+      if (!wraps.isEmpty())
+      {
+        final SensorContactWrapper[] items = new SensorContactWrapper[wraps
+            .size()];
+        final SensorContactWrapper[] finalItems = wraps.toArray(items);
+        final SensorContactWrapper firstContact = finalItems[0];
+
+        final Color firstColor = firstContact.getColor() != null ? firstContact
+            .getColor() : firstContact.getSensor().getColor();
+
+        // cool wrap it in an action.
+        _myAction = new TMAAction("Generate TMA solution from all cuts",
+            finalItems)
+        {
+          @Override
+          public void run()
+          {
+            // get ready for the supporting data (using selected sensor data,
+            // if
+            // we can)
+
+            // just check we have some kind of range
+            WorldDistance theDist = firstContact.getRange();
+            if (theDist == null)
+              theDist = new WorldDistance(6, WorldDistance.NM);
+
+            // get the supporting data
+            final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+                firstContact.getBearing(), theDist, DEFAULT_TARGET_COURSE,
+                DEFAULT_TARGET_SPEED, firstColor);
+            final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+                .getActiveShell(), wizard);
+            dialog.create();
+            dialog.open();
+
+            // did it work?
+            if (dialog.getReturnCode() == Window.OK)
+            {
+              final UserChoice answers = getUserChoice(wizard, firstColor);
+
+              // ok, go for it.
+              // sort it out as an operation
+              final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+                  getItems(), theLayers, answers.res, answers.courseDegs,
+                  answers.speed, answers.newColor);
+
+              // ok, stick it on the buffer
+              runIt(convertToTrack1);
+
+            }
+            else
+              System.err.println("user cancelled");
+          }
+        };
+      } // whether there are any cuts for this sensor
+
     }
-    else
+    else if (allSensorCuts(subjects))
     {
       // so, it's a number of items, Are they all sensor contact wrappers
-      boolean allGood = true;
       final SensorContactWrapper[] items =
           new SensorContactWrapper[subjects.length];
       for (int i = 0; i < subjects.length; i++)
       {
         final Editable editable = subjects[i];
-        if (editable instanceof SensorContactWrapper)
-        {
-          // cool, stick with it
-          items[i] = (SensorContactWrapper) editable;
-        }
-        else
-        {
-          allGood = false;
-          break;
-        }
+        // cool, stick with it
+        final SensorContactWrapper firstContact =
+            (SensorContactWrapper) editable;
+        final Color firstColor = firstContact.getColor() != null ? firstContact
+            .getColor() : firstContact.getSensor().getColor();
 
-        // are we good to go?
-        if (allGood)
+        // cool wrap it in an action.
+        _myAction = new TMAAction("Generate TMA solution from selected cuts",
+            items)
         {
-          final SensorContactWrapper firstContact = items[0];
-          final Color firstColor = firstContact.getColor() != null
-              ? firstContact.getColor() : firstContact.getSensor().getColor();
-
-          // cool wrap it in an action.
-          _myAction = new Action("Generate TMA solution from selected cuts")
+          @Override
+          public void run()
           {
+            // get the supporting data
+            final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
+                firstContact.getBearing(), firstContact.getRange(),
+                DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED, firstColor);
+            final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+                .getActiveShell(), wizard);
+            dialog.create();
+            dialog.open();
 
-            @Override
-            public void run()
+            // did it work?
+            if (dialog.getReturnCode() == Window.OK)
             {
+              final UserChoice answers = getUserChoice(wizard, firstColor);
 
-              // get the supporting data
-              final TMAFromSensorWizard wizard = new TMAFromSensorWizard(
-                  firstContact.getBearing(), firstContact.getRange(),
-                  DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED, firstColor);
-              final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-                  .getActiveShell(), wizard);
-              dialog.create();
-              dialog.open();
+              // ok, go for it.
+              // sort it out as an operation
+              final IUndoableOperation convertToTrack1 = new TMAfromCuts(
+                  getItems(), theLayers, answers.res, answers.courseDegs,
+                  answers.speed, answers.newColor);
 
-              // did it work?
-              if (dialog.getReturnCode() == Window.OK)
-              {
-                final UserChoice answers = getUserChoice(wizard, firstColor);
-
-                // ok, go for it.
-                // sort it out as an operation
-                final IUndoableOperation convertToTrack1 = new TMAfromCuts(
-                    items, theLayers, answers.res, answers.courseDegs,
-                    answers.speed, answers.newColor);
-
-                // ok, stick it on the buffer
-                runIt(convertToTrack1);
-
-              }
-              else
-                System.err.println("user cancelled");
-
+              // ok, stick it on the buffer
+              runIt(convertToTrack1);
             }
-          };
-        }
-
+            else
+            {
+              System.err.println("user cancelled");
+            }
+          }
+        };
       }
-
     }
 
     // go for it, or not...
     if (_myAction != null)
       parent.add(_myAction);
 
+  }
+
+  private static abstract class TMAAction extends Action
+  {
+    private final SensorContactWrapper[] _items;
+
+    public TMAAction(String title, SensorContactWrapper[] items)
+    {
+      super(title);
+      _items = items;
+    }
+
+    public SensorContactWrapper[] getItems()
+    {
+      return _items;
+    }
+
+  }
+
+  private boolean allSensors(Editable[] subjects)
+  {
+    for (final Editable e : subjects)
+    {
+      if (!(e instanceof SensorWrapper))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean allSensorCuts(Editable[] subjects)
+  {
+    for (final Editable e : subjects)
+    {
+      if (!(e instanceof SensorContactWrapper))
+      {
+        return false;
+      }
+    }
+    return true;
   }
 
   protected UserChoice getUserChoice(final TMAFromSensorWizard wizard,
