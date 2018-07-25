@@ -805,9 +805,9 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "tail sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
           2).getKey());
-      assertEquals("series correct name", "hull sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
           3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
@@ -875,9 +875,9 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "tail sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
           2).getKey());
-      assertEquals("series correct name", "hull sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
           3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
@@ -937,7 +937,7 @@ public final class StackedDotHelper
       // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
       assertEquals("series correct name", "M_", linePlotData.getSeries(0)
           .getKey());
-      assertEquals("series correct name", "hull sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_(A)", linePlotData.getSeries(
           1).getKey());
       assertEquals("series correct name", "Calculated", linePlotData.getSeries(
           2).getKey());
@@ -987,9 +987,9 @@ public final class StackedDotHelper
           .getSeries(0).getKey());
       assertEquals("series correct name", "M_hull sensor", linePlotData
           .getSeries(1).getKey());
-      assertEquals("series correct name", "tail sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData.getSeries(
           2).getKey());
-      assertEquals("series correct name", "hull sensor", linePlotData.getSeries(
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData.getSeries(
           3).getKey());
       assertEquals("series correct name", "Calculatedtail sensor", linePlotData
           .getSeries(4).getKey());
@@ -2593,12 +2593,13 @@ public final class StackedDotHelper
 
     for (TrackWrapper primaryTrack : getPrimaryTracks())
     {
-      final String trackName = primaryTrack.getName();
       final List<SensorContactWrapper> theBearings = getBearings(primaryTrack,
           onlyVis, sensorPeriod);
       for (final SensorContactWrapper cut : theBearings)
       {
         double theBearing;
+
+        final String sensorName = cut.getSensorName();
 
         // ensure it's in the positive domain
         if (cut.getBearing() < 0)
@@ -2628,7 +2629,7 @@ public final class StackedDotHelper
 
         final TimeSeriesDataItem item = new TimeSeriesDataItem(
             new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing);
-        safelyAddItem(allCutsColl, trackName, item);
+        safelyAddItem(allCutsColl, sensorName, item);
       }
     }
     return allCutsColl;
