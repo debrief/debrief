@@ -20,13 +20,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -81,6 +79,7 @@ import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
+import org.mwc.cmap.TimeController.recorders.CoordinateRecorder;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -104,7 +103,6 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.SteppingListener;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
@@ -317,7 +315,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    */
   private SelectionAdapter _recordListener;
   
-  private List<SteppingListener> _steppingListeners = new ArrayList(); 
+  private CoordinateRecorder _coordinateRecorder;
+  
 
   // private static final Color bColor = new Color(Display.getDefault(), 0, 0,
   // 0);
@@ -406,6 +405,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // of course though, we start off with the buttons not enabled
     _wholePanel.setEnabled(false);
 
+    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,null);
     // and start listing for any part action
     setupListeners();
 
@@ -619,11 +619,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
       public void widgetSelected(final SelectionEvent e)
       {
-        final boolean playing = _recordButton.getSelection();
+        final boolean recording = _recordButton.getSelection();
         final String tipTxt;
         final String imageTxt;
         // ImageDescriptor thisD;
-        if (playing)
+        if (recording)
         {
           startRecording();
           tipTxt = RECORD_PAUSE_TEXT;
@@ -833,27 +833,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   void stopRecording()
   {
-    /**
-     * give the event to our child class, in case it's a scenario
-     * 
-     */
-    if (_steppableTime != null)
-      _steppableTime.pause(this, true);
-
-    getTimer().stop();
+    stopPlaying();
+    _coordinateRecorder.stopStepping(getTimeProvider().getTime());
   }
 
   void startRecording()
   {
-    // hey - set a practical minimum step size, 1/4 second is a fair start
-    // point
-    final long delayToUse =
-        Math.max(_myStepperProperties.getAutoInterval().getMillis(), 250);
-
-    // ok - make sure the time has the right time
-    getTimer().setDelay(delayToUse);
-
-    getTimer().start();
+    _coordinateRecorder.startStepping(getTimeProvider().getTime());
+    startPlaying();   
+    
   }
 
   
@@ -1160,6 +1148,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       try
       {
         _controllableTime.setTime(this, dtg, true);
+        _coordinateRecorder.newTime(dtg);
       }
       finally
       {
@@ -1671,31 +1660,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             }
           }
         });
-    _myPartMonitor.addPartListener(SteppingListener.class, PartMonitor.ACTIVATED,
-        new PartMonitor.ICallback()
-        {
-          @Override
-          public void eventTriggered(String type, Object part,
-              IWorkbenchPart parentPArt)
-          {
-            _steppingListeners.clear();
-            _steppingListeners.add((SteppingListener)part);
-          }
-        });
-    _myPartMonitor.addPartListener(SteppingListener.class, PartMonitor.CLOSED,
-        new PartMonitor.ICallback()
-        {
-          @Override
-          public void eventTriggered(String type, Object part,
-              IWorkbenchPart parentPart)
-          {
-            if(_steppingListeners.contains((SteppingListener)part))
-              _steppingListeners.clear();
-          
-          }
-        });
-    
-    
   }
   
 
@@ -3129,5 +3093,5 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     return _myTemporalDataset;
   }
-
+  
 }

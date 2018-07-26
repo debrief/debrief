@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.editors;
+package org.mwc.cmap.TimeController.recorders;
 
 import java.awt.Point;
 import java.beans.PropertyChangeEvent;
@@ -17,15 +17,14 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.SteppingListener;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class CoordinateRecorder implements PropertyChangeListener,
-    SteppingListener
+public class CoordinateRecorder 
+
 {
   private final Layers _myLayers;
   private final PlainProjection _projection;
@@ -43,14 +42,12 @@ public class CoordinateRecorder implements PropertyChangeListener,
     _timePrefs = timePreferences;
   }
 
-  @Override
-  public void propertyChange(PropertyChangeEvent evt)
+  public void newTime(final HiResDate timeNow)
   {
     if (!_running)
       return;
 
     // get the new time.
-    final HiResDate timeNow = (HiResDate) evt.getNewValue();
     
     _times.add(FormatRNDateTime.toMediumString(timeNow.getDate().getTime()));
 
@@ -91,7 +88,6 @@ public class CoordinateRecorder implements PropertyChangeListener,
     _myLayers.walkVisibleItems(TrackWrapper.class, outputIt);
   }
 
-  @Override
   public void startStepping(final HiResDate now)
   {
     _tracks.clear();
@@ -99,7 +95,6 @@ public class CoordinateRecorder implements PropertyChangeListener,
     _running = true;
   }
 
-  @Override
   public void stopStepping(final HiResDate now)
   {
     _running = false;

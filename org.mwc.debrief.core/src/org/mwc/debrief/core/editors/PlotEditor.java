@@ -181,7 +181,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.SteppingListener;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -469,8 +468,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private final IPropertyChangeListener _sensorTransparencyListener;
   
-  private CoordinateRecorder _coordinateRecorder;
-
   /**
    * constructor - quite simple really.
    */
@@ -1031,10 +1028,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         }
       });
     }
-    _coordinateRecorder = new CoordinateRecorder(_myLayers,res.getCanvas().
-        getProjection(),_timePreferences);
-    _timeManager.addListener(_coordinateRecorder, 
-        TimeManager.TIME_CHANGED_PROPERTY_NAME);
     return res;
   }
 
@@ -1862,10 +1855,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       res = _propertySheetPage;
     }
-    else if(adapter == SteppingListener.class) {
-      res = _coordinateRecorder;
-    }
-
     // did we find anything?
     if (res == null)
     {
