@@ -6,6 +6,18 @@
         <category id="org.mwc.debrief.core.DebriefCategory" name="Debrief"/>
     </extension>
 
+	<extension point="org.eclipse.ui.splashHandlers">
+        <splashHandler
+            class="org.mwc.debrief.core.handlers.SplashHandler"
+            id="org.mwc.debrief.splash">
+          </splashHandler>
+          <splashHandlerProductBinding
+            productId="org.mwc.debrief.core.Debrief"
+            splashId="org.mwc.debrief.splash">
+          </splashHandlerProductBinding>
+    </extension>
+	
+	
     <extension point="org.eclipse.ui.editors">
         <editor class="org.mwc.debrief.core.editors.PlotEditor"
             contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
