@@ -20,11 +20,13 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -102,6 +104,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.SteppingListener;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
@@ -150,11 +153,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
+  private static final String ICON_RECORD_PAUSE = "icons/24/media_pause.png";
+
+  private static final String ICON_RECORD_PLAY = "icons/24/media_play.png";
+
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
   private static final String PAUSE_TEXT = "Pause automatically moving forward";
 
   private static final String PLAY_TEXT = "Start automatically moving forward";
+  
+  private static final String RECORD_PAUSE_TEXT = "Pause recording";
+
+  private static final String RECORD_TEXT = "Start recording";
+  
 
   private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
@@ -258,6 +270,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * the play button, obviously.
    */
   Button _playButton;
+  
+  /**
+   * the record button
+   */
+  Button _recordButton;
 
   PropertyChangeListener _myDateFormatListener = null;
 
@@ -294,6 +311,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * 
    */
   private SelectionAdapter _playListener;
+  
+  /**
+   * listener for the record button
+   */
+  private SelectionAdapter _recordListener;
+  
+  private List<SteppingListener> _steppingListeners = new ArrayList(); 
 
   // private static final Color bColor = new Color(Display.getDefault(), 0, 0,
   // 0);
@@ -533,7 +557,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     // first create the button holder
     _btnPanel = new Composite(_wholePanel, SWT.BORDER);
-    _btnPanel.setLayout(new GridLayout(7, true));
+    _btnPanel.setLayout(new GridLayout(8, true));
 
     final Button eBwd = new Button(_btnPanel, SWT.NONE);
     addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false,
@@ -587,6 +611,42 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     };
     _playButton.addSelectionListener(_playListener);
 
+    _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
+    //_recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
+    _recordButton.setToolTipText(PLAY_TEXT);
+    _recordButton.setText("REC");
+    _recordListener = new SelectionAdapter()
+    {
+      public void widgetSelected(final SelectionEvent e)
+      {
+        final boolean playing = _recordButton.getSelection();
+        final String tipTxt;
+        final String imageTxt;
+        // ImageDescriptor thisD;
+        if (playing)
+        {
+          startRecording();
+          tipTxt = RECORD_PAUSE_TEXT;
+          imageTxt = ICON_RECORD_PAUSE;
+        }
+        else
+        {
+          stopRecording();
+          tipTxt = RECORD_TEXT;
+          imageTxt = ICON_RECORD_PLAY;
+
+        }
+
+        // ok, set the tooltip & image
+        _recordButton.setToolTipText(tipTxt);
+        _recordButton.setImage(TimeControllerPlugin.getImage(imageTxt));
+
+      }
+    };
+
+    _recordButton.addSelectionListener(_recordListener);
+    
+    
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
     listener = new RepeatingTimeButtonListener(true, STEP_SIZE.NORMAL, true);
@@ -771,6 +831,32 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     getTimer().start();
   }
 
+  void stopRecording()
+  {
+    /**
+     * give the event to our child class, in case it's a scenario
+     * 
+     */
+    if (_steppableTime != null)
+      _steppableTime.pause(this, true);
+
+    getTimer().stop();
+  }
+
+  void startRecording()
+  {
+    // hey - set a practical minimum step size, 1/4 second is a fair start
+    // point
+    final long delayToUse =
+        Math.max(_myStepperProperties.getAutoInterval().getMillis(), 250);
+
+    // ok - make sure the time has the right time
+    getTimer().setDelay(delayToUse);
+
+    getTimer().start();
+  }
+
+  
   public void onTime(final ActionEvent event)
   {
 
@@ -1585,7 +1671,33 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             }
           }
         });
+    _myPartMonitor.addPartListener(SteppingListener.class, PartMonitor.ACTIVATED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(String type, Object part,
+              IWorkbenchPart parentPArt)
+          {
+            _steppingListeners.clear();
+            _steppingListeners.add((SteppingListener)part);
+          }
+        });
+    _myPartMonitor.addPartListener(SteppingListener.class, PartMonitor.CLOSED,
+        new PartMonitor.ICallback()
+        {
+          @Override
+          public void eventTriggered(String type, Object part,
+              IWorkbenchPart parentPart)
+          {
+            if(_steppingListeners.contains((SteppingListener)part))
+              _steppingListeners.clear();
+          
+          }
+        });
+    
+    
   }
+  
 
   protected void refreshTimeOperations()
   {
@@ -1681,11 +1793,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     final GridLayout gl = (GridLayout) _btnPanel.getLayout();
     if (canRewind)
     {
-      gl.numColumns = 7;
+      gl.numColumns = 8;
     }
     else
     {
-      gl.numColumns = 3;
+      gl.numColumns = 4;
     }
 
     // tell the parent that some buttons have changed, and that it probably
