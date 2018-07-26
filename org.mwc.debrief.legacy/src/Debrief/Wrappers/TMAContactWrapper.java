@@ -1337,7 +1337,6 @@ public final class TMAContactWrapper extends
 			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 			final EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
 					10, WorldDistance.DEGS), new WorldDistance(5, WorldDistance.DEGS));
-			theEllipse.setName("test ellipse");
 			final TMAContactWrapper ed_abs = new TMAContactWrapper("blank sensor",
 					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
 					theEllipse, "some symbol");

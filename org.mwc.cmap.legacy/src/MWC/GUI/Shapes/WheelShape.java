@@ -274,8 +274,6 @@ public class WheelShape extends PlainShape implements Editable
 
 		// store the corners of the area,
 		calcPoints();
-
-		setName("Wheel");
 	}
 
 	/**

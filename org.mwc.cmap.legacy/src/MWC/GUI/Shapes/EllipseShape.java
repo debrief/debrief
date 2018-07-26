@@ -230,8 +230,6 @@ public class EllipseShape extends PlainShape implements Editable
 
     // now represented our Ellipse as an area
     calcPoints();
-
-    setName("Ellipse");
   }
   //////////////////////////////////////////////////
   // member functions
