@@ -193,6 +193,20 @@ public class CircleShape extends PlainShape implements Editable,
 	// constructor
 	// ////////////////////////////////////////////////
 
+	 public CircleShape(WorldLocation theCentre, WorldDistance theRadius,
+	      String name)
+	  {
+	    super(0, name);
+
+	    // store the values
+	    _theCentre = theCentre;
+	    _theRadius = theRadius;
+
+	    // now represented our circle as an area
+	    calcPoints();
+	  }
+
+	
 	/**
 	 * constructor
 	 * 
@@ -217,27 +231,11 @@ public class CircleShape extends PlainShape implements Editable,
 	public CircleShape(final WorldLocation theCentre,
 			final WorldDistance theRadius)
 	{
-		super(0, "Circle");
-
-		// store the values
-		_theCentre = theCentre;
-		_theRadius = theRadius;
-
-		// now represented our circle as an area
-		calcPoints();
-
+	  this(theCentre, theRadius, "Circle");
 	}
 
-	// public CircleShape(){
-	// // scrap, in case we are serializing
-	// _theArea = null;
-	// }
 
-	// ////////////////////////////////////////////////
-	// member functions
-	// ////////////////////////////////////////////////
-
-	public void paint(final CanvasType dest)
+  public void paint(final CanvasType dest)
 	{
 
 		// are we visible?
