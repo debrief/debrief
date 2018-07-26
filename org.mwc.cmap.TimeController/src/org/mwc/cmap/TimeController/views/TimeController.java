@@ -153,7 +153,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_RECORD_PAUSE = "icons/24/media_pause.png";
 
-  private static final String ICON_RECORD_PLAY = "icons/24/media_play.png";
+  private static final String ICON_RECORD_PLAY = "icons/24/media_record.png";
 
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
@@ -612,9 +612,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _playButton.addSelectionListener(_playListener);
 
     _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-    //_recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
+    _recordButton.setImage(TimeControllerPlugin.getImage(ICON_RECORD_PLAY));
     _recordButton.setToolTipText(PLAY_TEXT);
-    _recordButton.setText("REC");
     _recordListener = new SelectionAdapter()
     {
       public void widgetSelected(final SelectionEvent e)
