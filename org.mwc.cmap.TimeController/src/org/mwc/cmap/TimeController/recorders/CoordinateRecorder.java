@@ -1,8 +1,6 @@
 package org.mwc.cmap.TimeController.recorders;
 
 import java.awt.Point;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,6 +105,10 @@ public class CoordinateRecorder
     
     List<TrackWrapper> list = new ArrayList<TrackWrapper>();
     list.addAll(_tracks.values());
+    /*System.out.println("Tracks values:");
+    for(TrackWrapper trackW:_tracks.values()) {
+      
+    }*/
     // output tracks object.
     
   }

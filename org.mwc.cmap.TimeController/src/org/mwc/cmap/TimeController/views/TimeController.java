@@ -405,7 +405,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // of course though, we start off with the buttons not enabled
     _wholePanel.setEnabled(false);
 
-    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,null);
+    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
     // and start listing for any part action
     setupListeners();
 
