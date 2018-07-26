@@ -109,7 +109,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import junit.framework.Assert;
 import junit.framework.TestCase;
 
 public class EditableTests extends TestCase
@@ -751,7 +750,7 @@ public class EditableTests extends TestCase
                                 // | Settings | File Templates.
         }
         // check it worked
-        Assert.assertNotNull("we didn't create the custom editor for:",
+        assertNotNull("we didn't create the custom editor for:",
             newInstance);
       }
       else
@@ -766,12 +765,12 @@ public class EditableTests extends TestCase
 				catch (Exception e)
 				{
 					org.mwc.debrief.editable.test.Activator.log(e);
-					Assert.fail("problem fetching property editors for " + toBeTested.getClass());
+					fail("problem fetching property editors for " + toBeTested.getClass());
 				}
 
         if (pd == null)
         {
-          Assert.fail("problem fetching property editors for " + toBeTested.getClass());
+          fail("problem fetching property editors for " + toBeTested.getClass());
           return;
         }
 
@@ -794,13 +793,13 @@ public class EditableTests extends TestCase
 					catch (Exception e)
 					{
 						org.mwc.debrief.editable.test.Activator.log(e);
-						Assert.fail("problem fetching griddable property editors for "
+						fail("problem fetching griddable property editors for "
 								+ toBeTested.getClass());
 					}
 
 					if (pd == null)
 					{
-						Assert.fail("problem fetching griddable property editors for "
+						fail("problem fetching griddable property editors for "
 								+ toBeTested.getClass());
 						return;
 					}
@@ -820,7 +819,7 @@ public class EditableTests extends TestCase
         final MethodDescriptor method = methods[thisM];
         final Method thisOne = method.getMethod();
         final String theName = thisOne.getName();
-        Assert.assertNotNull(theName);
+        assertNotNull(theName);
       }
     }
   }
