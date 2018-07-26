@@ -233,7 +233,6 @@ final class ImportPeriodText extends AbstractPlainLineImporter
     line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime
         .getEndDTG());
     line = line + " " + DebriefFormatLocation.toString(theLabel.getLocation());
-
     line = line + " " + theLabel.getLabel();
 
     return line;
