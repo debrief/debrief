@@ -518,6 +518,8 @@ public class CompositeTrackWrapper extends TrackWrapper implements
       }
     }
   }
+  
+  
 
   private abstract static class PlanningCalc
   {
@@ -787,7 +789,16 @@ public class CompositeTrackWrapper extends TrackWrapper implements
   @Override
   public boolean supportsAddRemove()
   {
-    return false;
+    return true;
+  }
+
+  @Override
+  public void removeElement(Editable point)
+  {
+    super.removeElement(point);
+    
+    // now recalculate
+    recalculate();
   }
 
   @Override
@@ -799,6 +810,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
   @Override
   public void doSave(final String message)
   {
+    throw new IllegalArgumentException("Should not try to manually save");
   }
 
   @Override

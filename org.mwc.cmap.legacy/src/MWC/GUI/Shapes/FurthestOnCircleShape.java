@@ -209,8 +209,6 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 
 		// store the corners of the area,
 		calcPoints();
-
-		setName("Range Ring");
 	}
 
 	// ////////////////////////////////////////////////

@@ -542,9 +542,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		// store the shape
 		_theShape = theShape;
 
-		// store the name of the shape
-		_theShape.setName(getName());
-
 		// set the default font
 		setFont(Defaults.getFont());
 

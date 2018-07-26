@@ -388,9 +388,6 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(false);
 		_theLabel.setRelativeLocation(LocationPropertyEditor.TOP);
 
-		// store the name of the shape
-		_theShape.setName(getName());
-
 		_theLabel.setFont(Defaults.getScaledFont(0.8f));
 		_theLabel.setColor(theColor);
 
