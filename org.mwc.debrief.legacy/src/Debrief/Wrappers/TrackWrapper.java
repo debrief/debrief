@@ -3614,7 +3614,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    *          the point to remove
    */
   @Override
-  public final void removeElement(final Editable point)
+  public void removeElement(final Editable point)
   {
     boolean modified = false;
 
