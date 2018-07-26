@@ -64,7 +64,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
-		bottomPanel.addPlaceholder(CorePlugin.NARRATIVE_VIEWER);
+		bottomPanel.addPlaceholder(CorePlugin.BULK_NARRATIVE_VIEWER);
 
 		// RIGHT: SATC contributions
 		final IPlaceholderFolderLayout right = layout.createPlaceholderFolder("right", IPageLayout.RIGHT, 0.6f,
