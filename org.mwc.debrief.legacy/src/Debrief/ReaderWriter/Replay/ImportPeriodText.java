@@ -78,6 +78,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.DebriefFormatLocation;
 
 /**
  * class to parse a label from a line of text
@@ -228,9 +229,9 @@ final class ImportPeriodText extends AbstractPlainLineImporter
     final TimePeriod theTime = theLabel.getTimePeriod();
 
     line = _myType + " " + ImportReplay.replaySymbolFor(theLabel.getColor(), theLabel.getSymbolType());
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(theTime.getStartDTG());
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(theTime.getEndDTG());
-    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(theLabel.getLocation());
+    line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime.getStartDTG());
+    line = line + " " + DebriefFormatDateTime.toStringHiRes(theTime.getEndDTG());
+    line = line + " " + DebriefFormatLocation.toString(theLabel.getLocation());
 
     line = line + " " + theLabel.getLabel();
 
