@@ -22,63 +22,11 @@ public class ExtensibleSplashHandler extends AbstractSplashHandler
 
   private static final String ABOUT_MAPPINGS = "$nl$/about.mappings"; //$NON-NLS-1$
 
-  /**
-   * 
-   */
-  public ExtensibleSplashHandler()
-  {
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.eclipse.ui.splash.AbstractSplashHandler#init(org.eclipse.swt.widgets.Shell)
-   */
-  public void init(Shell splash)
-  {
-
-    // Store the shell
-    super.init(splash);
-    // Configure the shell layout
-    configureUISplash();
-
-    // Create UI
-    createUI();
-    // Enter event loop and prevent the RCP application from
-    // loading until all work is done
-    doEventLoop();
-  }
-
-  /**
-   * 
-   */
-  private void createUI()
-  {
-
-    configureUICompositeBuildBounds();
-
-  }
-
-  private void configureUICompositeBuildBounds()
-  {
-    String[] loadMappings = loadMappings(Platform.getProduct()
-        .getDefiningBundle());
-    String qualifier = loadMappings[0] + "-" + loadMappings[1];
-    Label build = new Label(getSplash(), SWT.NONE);
-
-    build.setText(qualifier);
-
-    int x_coord = getSplash().getSize().x - 120;
-    int y_coord = getSplash().getSize().y - 22;
-
-    build.setBounds(x_coord, y_coord, 120, 22);
-  }
-
   // read the product bundle version
-  private static String[] loadMappings(Bundle definingBundle)
+  private static String[] loadMappings(final Bundle definingBundle)
   {
-    URL location = FileLocator.find(definingBundle, new Path(ABOUT_MAPPINGS),
-        null);
+    final URL location = FileLocator.find(definingBundle, new Path(
+        ABOUT_MAPPINGS), null);
     PropertyResourceBundle bundle = null;
     if (location != null)
     {
@@ -86,13 +34,13 @@ public class ExtensibleSplashHandler extends AbstractSplashHandler
       {
         bundle = new PropertyResourceBundle(is);
       }
-      catch (IOException e)
+      catch (final IOException e)
       {
         bundle = null;
       }
     }
 
-    ArrayList<String> mappingsList = new ArrayList<>();
+    final ArrayList<String> mappingsList = new ArrayList<>();
     if (bundle != null)
     {
       boolean found = true;
@@ -103,20 +51,35 @@ public class ExtensibleSplashHandler extends AbstractSplashHandler
         {
           mappingsList.add(bundle.getString(Integer.toString(i)));
         }
-        catch (MissingResourceException e)
+        catch (final MissingResourceException e)
         {
           found = false;
         }
         i++;
       }
     }
-    String[] mappings = (String[]) mappingsList.toArray(new String[mappingsList
+    final String[] mappings = mappingsList.toArray(new String[mappingsList
         .size()]);
     return mappings;
   }
 
+  private void configureUICompositeBuildBounds()
+  {
+    final String[] loadMappings = loadMappings(Platform.getProduct()
+        .getDefiningBundle());
+    final String qualifier = loadMappings[0] + "-" + loadMappings[1];
+    final Label build = new Label(getSplash(), SWT.NONE);
+
+    build.setText(qualifier);
+
+    final int x_coord = getSplash().getSize().x - 120;
+    final int y_coord = getSplash().getSize().y - 22;
+
+    build.setBounds(x_coord, y_coord, 120, 22);
+  }
+
   /**
-   * 
+   *
    */
   private void configureUISplash()
   {
@@ -128,15 +91,43 @@ public class ExtensibleSplashHandler extends AbstractSplashHandler
   }
 
   /**
-   * 
+   *
+   */
+  private void createUI()
+  {
+    configureUICompositeBuildBounds();
+  }
+
+  /**
+   *
    */
   private void doEventLoop()
   {
-    Shell splash = getSplash();
-    if (splash.getDisplay().readAndDispatch() == false)
+    final Shell splash = getSplash();
+    if (!splash.getDisplay().readAndDispatch())
     {
       splash.getDisplay().sleep();
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.ui.splash.AbstractSplashHandler#init(org.eclipse.swt.widgets.Shell)
+   */
+  @Override
+  public void init(final Shell splash)
+  {
+    // Store the shell
+    super.init(splash);
+    // Configure the shell layout
+    configureUISplash();
+
+    // Create UI
+    createUI();
+    // Enter event loop and prevent the RCP application from
+    // loading until all work is done
+    doEventLoop();
   }
 
 }
