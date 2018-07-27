@@ -1,5 +1,6 @@
 package org.mwc.cmap.TimeController.recorders;
 
+import java.awt.Dimension;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -105,6 +106,10 @@ public class CoordinateRecorder
     
     List<TrackWrapper> list = new ArrayList<TrackWrapper>();
     list.addAll(_tracks.values());
+    Dimension dims = _projection.getScreenArea();
+    long interval =  _timePrefs.getAutoInterval().getMillis();
+    System.out.println(dims);
+    System.out.println(interval);
     /*System.out.println("Tracks values:");
     for(TrackWrapper trackW:_tracks.values()) {
       
