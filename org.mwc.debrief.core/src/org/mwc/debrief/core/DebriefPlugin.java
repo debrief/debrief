@@ -330,7 +330,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     ImportReplay.addExtraImporters(importers);
 
     // make Debrief the default editor for XML files
-    Display.getCurrent().asyncExec(new Runnable()
+    Display.getDefault().asyncExec(new Runnable()
     {
       
       @Override
