@@ -330,9 +330,18 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     ImportReplay.addExtraImporters(importers);
 
     // make Debrief the default editor for XML files
-    final IEditorRegistry editorRegistry =
-        PlatformUI.getWorkbench().getEditorRegistry();
-    editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
+    Display.getCurrent().asyncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        final IEditorRegistry editorRegistry =
+            PlatformUI.getWorkbench().getEditorRegistry();
+        editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
+      }
+    });
+    
 
     // tell the message provider where it can fire messages to
     MessageProvider.Base.setProvider(this);
