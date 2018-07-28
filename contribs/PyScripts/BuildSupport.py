@@ -82,7 +82,7 @@ def updatePlugin(plugin, filePath, fieldName):
                 newLine = incrVersion(thisLine)
 
                 # replace the string in the list
-                x[index] = newLine + "\n"
+                x[index] = newLine + '\n'
 
                 print('Updated:' + plugin + ' from ' + thisLine.strip() + ' to ' + newLine)
 
@@ -122,12 +122,12 @@ def updateMappings(filePath):
                 # which row is it?
                 lineNum = int(thisLine[0])
                 if lineNum == 0:
-                    newVer = incrVersion(thisLine) + "\n"
+                    newVer = incrVersion(thisLine) + '\n'
                 elif lineNum == 1:
                     # generate date
                     dt = datetime.now()
                     strg = dt.strftime('%Y%m%d')
-                    newVer = '1=' + strg + "\n"
+                    newVer = '1=' + strg + '\n'
                 elif lineNum == 2:
                     # generate date
                     dt = datetime.now()
