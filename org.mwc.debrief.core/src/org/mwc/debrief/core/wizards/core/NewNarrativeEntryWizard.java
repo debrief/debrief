@@ -32,9 +32,11 @@ public class NewNarrativeEntryWizard extends Wizard
 	private EnterDTGPage dtgPage;
 	private EnterStringPage typePage;
 	private EnterStringPage entryPage;
-
-	public NewNarrativeEntryWizard()
+	private final HiResDate defaultDate;
+	
+	public NewNarrativeEntryWizard(final HiResDate date)
 	{
+	  defaultDate = date;
 	}
 
 	public void addPages()
@@ -51,7 +53,9 @@ public class NewNarrativeEntryWizard extends Wizard
 				imagePath, helpContext, true, null);
 		addPage(namePage);
 
-		dtgPage = new EnterDTGPage(null, new HiResDate(new Date()), PAGE_TITLE,
+		final HiResDate date = defaultDate != null ? defaultDate : new HiResDate(new Date());
+		
+		dtgPage = new EnterDTGPage(null, date, PAGE_TITLE,
 				"Please specify the date-time for the entry",
 				"Date-time the observation was recorded", imagePath, helpContext);
 		addPage(dtgPage);
