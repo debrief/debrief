@@ -344,11 +344,11 @@ public final class ImportData2 extends PlainTool {
       for(int i=0;i<len;i++)
       {
         final Layer ly = _theSession.getData().elementAt(i);
-        if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
+        if(ly instanceof MWC.TacticalData.NarrativeWrapper)
         {
           @SuppressWarnings("unused")
 		final
-					Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper)ly;
+					MWC.TacticalData.NarrativeWrapper nw = (MWC.TacticalData.NarrativeWrapper)ly;
         }
       }
 

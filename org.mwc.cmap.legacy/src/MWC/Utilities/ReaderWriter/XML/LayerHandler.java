@@ -52,6 +52,8 @@ public class LayerHandler extends MWCXMLReader implements PlottableExporter
 
 	protected MWC.GUI.BaseLayer _myLayer;
 
+  static public final String NARRATIVE_LAYER = "Narratives";
+
 	protected static java.util.Hashtable<Class<?>, PlottableExporter> _myExporters;
 
 	/**

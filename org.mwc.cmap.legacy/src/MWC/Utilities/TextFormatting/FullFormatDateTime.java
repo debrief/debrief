@@ -20,8 +20,6 @@ package MWC.Utilities.TextFormatting;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 public class FullFormatDateTime 
 {

@@ -159,7 +159,6 @@ import org.osgi.framework.Bundle;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAContactWrapper;
@@ -188,8 +187,10 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import junit.framework.TestCase;
 
 /**
@@ -1758,7 +1759,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     else if (adapter == IRollingNarrativeProvider.class)
     {
       // so, do we have any narrative data?
-      final Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      final Layer narr = _myLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
       if (narr != null)
       {
