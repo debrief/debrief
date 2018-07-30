@@ -155,7 +155,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				{
 					ExternallyManagedLayerHandler.exportThisPlottable(ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.BaseLayer)
+				else if (ly instanceof BaseLayer)
 				{
 					DebriefLayerHandler.exportLayer((BaseLayer) ly, layers, doc);
 				}

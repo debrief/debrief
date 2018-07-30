@@ -775,7 +775,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         myViewer.setWrappingEntries(_clipText.isChecked());
       }
     };
-    _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _clipText.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/wrap.png"));
     _clipText.setToolTipText("Whether to clip to visible space");
     _clipText.setChecked(true);
@@ -786,7 +786,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     _followTime = new Action("Follow current time", IAction.AS_CHECK_BOX)
     {
     };
-    _followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _followTime.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/follow_time.png"));
     _followTime.setToolTipText("Whether to listen to the time controller");
     _followTime.setChecked(true);
@@ -796,7 +796,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     _controlTime = new Action("Control current time", IAction.AS_CHECK_BOX)
     {
     };
-    _controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _controlTime.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/control_time.png"));
     _controlTime.setToolTipText("Whether to control the current time");
     _controlTime.setChecked(true);
@@ -855,7 +855,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
-    fontPlus.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor(
+    fontPlus.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/increase.png"));
     fontPlus.setToolTipText("+");
 
@@ -889,7 +889,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
-    fontMin.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor(
+    fontMin.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/decrease.png"));
     fontMin.setToolTipText("-");
 
