@@ -1,6 +1,7 @@
 ### Project Status
 
 [![Continuous Build Status](https://travis-ci.org/debrief/debrief.svg?branch=master)](https://travis-ci.org/debrief/debrief/builds)
+[![Contributors](https://img.shields.io/github/contributors/debrief/debrief.svg)](https://github.com/debrief/debrief/graphs/contributors)
 
 ## New in Debrief
 * May 2015 - Switch to new [Color Map](http://www.debrief.info/tutorial/reference.html#shades_2015) for tracks and symbols.
