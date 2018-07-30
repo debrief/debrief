@@ -715,7 +715,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @param toolBarManager
    */
-  protected void addExtras(final IToolBarManager toolBarManager)
+  protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
   }
 
@@ -2061,11 +2061,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     accuracyMenu.add(_precisionOne);
     accuracyMenu.add(_precisionTwo);
     accuracyMenu.add(_precisionThree);
+    
+    addPullDownExtras(manager);
 
     // and the help
     manager.add(new Separator());
     manager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.TrackShifting", null, this));
+
+  }
+
+  protected void addPullDownExtras(IMenuManager manager)
+  {
 
   }
 
@@ -2113,7 +2120,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok, insert separator
     toolBarManager.add(new Separator());
 
-    addExtras(toolBarManager);
+    addToolbarExtras(toolBarManager);
 
     // and a separator
     toolBarManager.add(new Separator());

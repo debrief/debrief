@@ -912,9 +912,9 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   }
 
   @Override
-  protected void addExtras(final IToolBarManager toolBarManager)
+  protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
-    super.addExtras(toolBarManager);
+    super.addToolbarExtras(toolBarManager);
     toolBarManager.add(showCourse);
   }
 
