@@ -15,6 +15,7 @@
 package org.mwc.cmap.TimeController.wizards;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,6 +30,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.TimeController.recorders.CoordinateRecorder;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -37,7 +40,8 @@ import org.eclipse.swt.widgets.Text;
 public class ExportPPTDialog extends Dialog
 {
 
-  private static final String[] supportedFormats = {"PPT","PPTX"};
+  
+  private static final String[] supportedFormats = {"PPTX"};
   
   private Text txtExportLocation;
   private Text txtFilename;
@@ -129,10 +133,20 @@ public class ExportPPTDialog extends Dialog
   protected void okPressed()
   {
     //set the export path and format here
-    this.exportLocation = txtExportLocation.getText();
-    this.fileName = txtFilename.getText();
-    this.fileFormat = cmbFileFormats.getText();
-    super.okPressed();
+    if(isNullOrEmpty(txtExportLocation.getText())) {
+      MessageDialog.openError(getParentShell(), "Error!", "Specify the location to export the PPT file");
+      txtExportLocation.setFocus();
+    }
+    else if(isNullOrEmpty(txtFilename.getText())) {
+      MessageDialog.openError(getParentShell(), "Error!", "Specify the name of the file to export");
+      txtFilename.setFocus();
+    }
+    else {
+      this.exportLocation = txtExportLocation.getText();
+      this.fileName = txtFilename.getText();
+      this.fileFormat = cmbFileFormats.getText();
+      super.okPressed();
+    }
   }
   
   public String getFileName() {
@@ -177,5 +191,8 @@ public class ExportPPTDialog extends Dialog
     });
     super.createButtonsForButtonBar(parent);
     
+  }
+  private boolean isNullOrEmpty(String text) {
+    return text==null || "".equals(text.trim());
   }
 }
