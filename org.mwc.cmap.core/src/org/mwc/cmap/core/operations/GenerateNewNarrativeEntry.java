@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.core.ContextOperations;
+package org.mwc.cmap.core.operations;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoableOperation;
@@ -30,18 +30,16 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
-import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.wizards.core.NewNarrativeEntryWizard;
+import org.mwc.cmap.core.wizards.NewNarrativeEntryWizard;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
 /**
  * @author ian.mayo
@@ -53,7 +51,7 @@ public class GenerateNewNarrativeEntry implements
 
 	private static final String WIZARD_TITLE = "Generate new narrative entry";
 
-	private static class AddNarrativeEntry extends CMAPOperation
+public static class AddNarrativeEntry extends CMAPOperation
 	{
 
 		final private Layers _layers;
@@ -77,10 +75,10 @@ public class GenerateNewNarrativeEntry implements
 			if (_parent == null)
 			{
 				// see if it already exists
-				_parent = (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+				_parent = (NarrativeWrapper) _layers.findLayer(LayerHandler.NARRATIVE_LAYER);
 				if (_parent == null)
 				{
-					_parent = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+					_parent = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
 					_layers.addThisLayer(_parent);
 				}
 			}
@@ -184,7 +182,7 @@ public class GenerateNewNarrativeEntry implements
 			};
 			
 			// ok - set the image descriptor
-			addEntry.setImageDescriptor(DebriefPlugin
+			addEntry.setImageDescriptor(CorePlugin
 					.getImageDescriptor("icons/16/narrative_entry.png"));
 
 			

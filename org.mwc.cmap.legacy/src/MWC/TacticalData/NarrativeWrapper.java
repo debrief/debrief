@@ -95,7 +95,7 @@
 // Initial revision
 //
 
-package Debrief.Wrappers;
+package MWC.TacticalData;
 
 import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
@@ -127,8 +127,6 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layers;
@@ -136,9 +134,9 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.TacticalData.IRollingNarrativeProvider;
-import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
+import MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -191,19 +189,19 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
       super(data, data.getName(), "Narrative");
     }
 
-    /**
-     * return a description of this bean, also specifies the custom editor we use
-     *
-     * @return the BeanDescriptor
-     */
-    @Override
-    public final BeanDescriptor getBeanDescriptor()
-    {
-      final BeanDescriptor bp = new BeanDescriptor(NarrativeWrapper.class,
-          Debrief.GUI.Panels.NarrativeViewer.class);
-      bp.setDisplayName("Narrative Viewer");
-      return bp;
-    }
+//    /**
+//     * return a description of this bean, also specifies the custom editor we use
+//     *
+//     * @return the BeanDescriptor
+//     */
+//    @Override
+//    public final BeanDescriptor getBeanDescriptor()
+//    {
+//      final BeanDescriptor bp = new BeanDescriptor(NarrativeWrapper.class,
+//          Debrief.GUI.Panels.NarrativeViewer.class);
+//      bp.setDisplayName("Narrative Viewer");
+//      return bp;
+//    }
 
     @Override
     public final MethodDescriptor[] getMethodDescriptors()
@@ -286,7 +284,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
       final Document doc = DocumentBuilderFactory.newInstance()
           .newDocumentBuilder().newDocument();
       final org.w3c.dom.Element plt = doc.createElement("narrative");
-      plt.setAttribute("Name", ImportReplay.NARRATIVE_LAYER);
+      plt.setAttribute("Name", LayerHandler.NARRATIVE_LAYER);
       doc.appendChild(plt);
       NarrativeHandler.EntryHandler.exportEntry(n4, plt, doc);
 
@@ -311,7 +309,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
       // get the contents
       final NarrativeWrapper narrLayer = (NarrativeWrapper) parent.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          LayerHandler.NARRATIVE_LAYER);
 
       final NarrativeEntry theEntry = (NarrativeEntry) narrLayer.elements()
           .nextElement();

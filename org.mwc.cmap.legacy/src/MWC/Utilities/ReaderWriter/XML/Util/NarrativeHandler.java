@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package Debrief.ReaderWriter.XML.Tactical;
+package MWC.Utilities.ReaderWriter.XML.Util;
 
 /**
  * Title:        Debrief 2000
@@ -25,15 +25,17 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import java.util.Enumeration;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class NarrativeHandler extends
@@ -45,7 +47,7 @@ public final class NarrativeHandler extends
 	private final MWC.GUI.Layers _theLayers;
 
 	// our "working" Narrative
-	Debrief.Wrappers.NarrativeWrapper _myNarrative;
+	NarrativeWrapper _myNarrative;
 
 	public NarrativeHandler(final MWC.GUI.Layers theLayers)
 	{
@@ -74,7 +76,7 @@ public final class NarrativeHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_myNarrative = new Debrief.Wrappers.NarrativeWrapper("");
+		_myNarrative = new NarrativeWrapper("");
 
 		super.handleOurselves(name, attributes);
 
@@ -87,9 +89,9 @@ public final class NarrativeHandler extends
 		Layer thisL = _theLayers.findLayer(source);
 		if(thisL != null)
 		{
-			if(thisL instanceof TrackWrapper)
+			if(thisL instanceof WatchableList)
 			{
-				TrackWrapper tw=  (TrackWrapper) thisL;
+			  WatchableList tw=  (WatchableList) thisL;
 				entry.setColor(tw.getColor());
 			}
 		}
@@ -100,7 +102,7 @@ public final class NarrativeHandler extends
 	public final void elementClosed()
 	{
 		// is this one of those funny narratives?
-		if (!_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+		if (!_myNarrative.getName().equals(LayerHandler.NARRATIVE_LAYER))
 		{
 			// yes, better put the narrative name into the type field, since the user won't see it 
 			// in the layer manager
@@ -118,7 +120,7 @@ public final class NarrativeHandler extends
 		}
 
 		// is there already a narratives layer?
-		final Layer oldNarr = _theLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+		final Layer oldNarr = _theLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
 		if (oldNarr != null)
 		{
@@ -135,9 +137,9 @@ public final class NarrativeHandler extends
 			// we don't already have a narrative, create a new one (with the correct name)
 			
 			// ok, do we have the right name?
-			if (_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+			if (_myNarrative.getName().equals(LayerHandler.NARRATIVE_LAYER))
 			{
-				_myNarrative.setName(ImportReplay.NARRATIVE_LAYER);
+				_myNarrative.setName(LayerHandler.NARRATIVE_LAYER);
 			}
 
 			// ok, now add it
@@ -148,8 +150,8 @@ public final class NarrativeHandler extends
 	}
 
 	public static void exportNarrative(
-			final Debrief.Wrappers.NarrativeWrapper Narrative, final org.w3c.dom.Element parent,
-			final org.w3c.dom.Document doc)
+			final NarrativeWrapper Narrative, final Element parent,
+			final Document doc)
 	{
 
 		final Element trk = doc.createElement(_myType);

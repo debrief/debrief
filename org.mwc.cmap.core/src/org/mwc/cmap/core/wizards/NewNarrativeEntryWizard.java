@@ -12,15 +12,12 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.core.wizards.core;
+package org.mwc.cmap.core.wizards;
 
 import java.util.Date;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.mwc.cmap.core.wizards.EnterDTGPage;
-import org.mwc.cmap.core.wizards.EnterStringPage;
-import org.mwc.cmap.core.wizards.MessageWizardPage;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
