@@ -832,21 +832,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   void stopRecording()
   {
     stopPlaying();
-    getCoordinateRecorder().stopStepping(getTimeProvider().getTime());
+    _coordinateRecorder.stopStepping(getTimeProvider().getTime());    
+    _coordinateRecorder = null;
   }
 
   void startRecording()
   {
-    getCoordinateRecorder().startStepping(getTimeProvider().getTime());
-    startPlaying();   
-    
+    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
+    _coordinateRecorder.startStepping(getTimeProvider().getTime());    
+    startPlaying();    
   }
 
-  private CoordinateRecorder getCoordinateRecorder() {
-    if(_coordinateRecorder==null)
-      _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
-    return _coordinateRecorder;
-  }
   
   public void onTime(final ActionEvent event)
   {
@@ -1151,7 +1147,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       try
       {
         _controllableTime.setTime(this, dtg, true);
-        _coordinateRecorder.newTime(dtg);
+        
+        if (_coordinateRecorder != null)
+        {
+          _coordinateRecorder.newTime(dtg);
+        }
       }
       finally
       {
