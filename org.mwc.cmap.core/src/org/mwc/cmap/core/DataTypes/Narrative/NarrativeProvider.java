@@ -24,5 +24,5 @@ public interface NarrativeProvider
 	 * 
 	 * @return the narrative
 	 */
-	public Debrief.Wrappers.NarrativeWrapper getNarrative();
+	public MWC.TacticalData.NarrativeWrapper getNarrative();
 }

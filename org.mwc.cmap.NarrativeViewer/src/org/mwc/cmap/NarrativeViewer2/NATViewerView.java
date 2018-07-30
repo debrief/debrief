@@ -26,9 +26,11 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -37,6 +39,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -46,6 +49,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -59,6 +63,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
@@ -66,11 +71,12 @@ import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.operations.GenerateNewNarrativeEntry;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.core.wizards.NewNarrativeEntryWizard;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -82,6 +88,8 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class NATViewerView extends ViewPart implements PropertyChangeListener,
@@ -138,6 +146,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   private Action _controlTime;
 
   private Action _search;
+
+  private Action _newEntry;
 
   protected TimeProvider _myTemporalDataset;
 
@@ -218,7 +228,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       public void dataExtended(final Layers theData)
       {
         // nope, see if there is one
-        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
+        final Layer match = theData.findLayer(LayerHandler.NARRATIVE_LAYER);
 
         // ok, do we already have a narrative?
         if (_myRollingNarrative == null)
@@ -686,6 +696,21 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     final IToolBarManager toolManager =
         getViewSite().getActionBars().getToolBarManager();
 
+    
+    _newEntry = new Action("New Entry", IAction.AS_PUSH_BUTTON)
+    {
+
+      @Override
+      public void run()
+      {
+        createNewEntry();
+      }
+    };
+    _newEntry.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+        .getImageDescriptor("icons/16/add.png"));
+    _newEntry.setToolTipText("Create new narrative entry");
+    toolManager.add(_newEntry); 
+    
     _search = new Action("Search", IAction.AS_CHECK_BOX)
     {
 
@@ -882,6 +907,54 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     toolManager.add(fontPlus);
     toolManager.add(fontMin);
 
+  }
+
+  protected void createNewEntry()
+  {
+    // check we've got a "real" narrative
+    if (_myRollingNarrative instanceof NarrativeWrapper)
+    {
+      final NarrativeWrapper theNarrative = (NarrativeWrapper) _myRollingNarrative;
+
+      // try to get the current plot date
+      // ok, populate the data
+      final IEditorPart curEditor = PlatformUI.getWorkbench()
+          .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+      HiResDate date;
+      if (curEditor instanceof IAdaptable)
+      {
+        TimeProvider prov = (TimeProvider) curEditor.getAdapter(
+            TimeProvider.class);
+        if (prov != null)
+        {
+          date = prov.getTime();
+
+          final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard(
+              date);
+
+          final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+              .getActiveShell(), wizard);
+          TrayDialog.setDialogHelpAvailable(true);
+          dialog.setHelpAvailable(true);
+          dialog.create();
+          dialog.open();
+
+          // did it work?
+          if (dialog.getReturnCode() == WizardDialog.OK)
+          {
+            final NarrativeEntry ne = wizard.getEntry();
+            // ok, go for it.
+            // sort it out as an operation
+            final IUndoableOperation addTheCut =
+                new GenerateNewNarrativeEntry.AddNarrativeEntry(_myLayers,
+                    theNarrative, ne);
+
+            // ok, stick it on the buffer
+            CorePlugin.run(addTheCut);
+          }
+        }
+      }
+    }
   }
 
   /**

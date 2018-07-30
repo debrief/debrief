@@ -108,11 +108,11 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.table.TableCellRenderer;
 
-import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor implements MWC.GUI.StepperListener,

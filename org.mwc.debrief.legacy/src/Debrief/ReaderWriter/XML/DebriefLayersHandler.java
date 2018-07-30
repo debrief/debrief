@@ -30,7 +30,6 @@ import java.util.List;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler;
-import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import Debrief.ReaderWriter.XML.Tactical.PatternHandler;
 import Debrief.ReaderWriter.XML.Tactical.TrackHandler;
 import MWC.GUI.ExternallyManagedDataLayer;
@@ -42,6 +41,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.ChartFolioHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ETOPOHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ExternallyManagedLayerHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.TOPOHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler;
 
 public final class DebriefLayersHandler extends MWCXMLReader
 {
@@ -133,10 +133,10 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					Debrief.ReaderWriter.XML.Tactical.PatternHandler.exportTrack(
 							(Debrief.Wrappers.BuoyPatternWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
+				else if (ly instanceof MWC.TacticalData.NarrativeWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.exportNarrative(
-							(Debrief.Wrappers.NarrativeWrapper) ly, layers, doc);
+					MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler.exportNarrative(
+							(MWC.TacticalData.NarrativeWrapper) ly, layers, doc);
 				}
 				else if (ly instanceof MWC.GUI.Chart.Painters.ETOPOPainter)
 				{

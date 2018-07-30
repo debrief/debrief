@@ -42,7 +42,6 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -53,6 +52,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.NarrativeWrapper;
 
 /**
  * @author ian.mayo

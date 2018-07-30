@@ -871,10 +871,10 @@ public abstract class Application implements ToolParent, ActionListener,
 				for (int i = 0; i < len; i++)
 				{
 					final Layer ly = theData.elementAt(i);
-					if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
+					if (ly instanceof MWC.TacticalData.NarrativeWrapper)
 					{
 						@SuppressWarnings("unused")
-						final Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
+						final MWC.TacticalData.NarrativeWrapper nw = (MWC.TacticalData.NarrativeWrapper) ly;
 					} // whether this is a narrative
 				} // through the layers
 			} // whether this is an analysis view
