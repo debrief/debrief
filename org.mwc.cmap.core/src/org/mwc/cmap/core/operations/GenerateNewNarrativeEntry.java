@@ -132,14 +132,11 @@ public static class AddNarrativeEntry extends CMAPOperation
 			goForIt = true;
 		}
 
-		if (subjects.length == 1)
-		{
-			if (subjects[0] instanceof NarrativeWrapper)
-			{
-				goForIt = true;
-				narrative = (NarrativeWrapper) subjects[0];
-			}
-		}
+    if (subjects.length == 1 && subjects[0] instanceof NarrativeWrapper)
+    {
+      goForIt = true;
+      narrative = (NarrativeWrapper) subjects[0];
+    }
 
 		if (goForIt)
 		{

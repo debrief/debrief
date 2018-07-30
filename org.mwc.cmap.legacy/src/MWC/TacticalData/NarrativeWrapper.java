@@ -143,7 +143,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
-    MWC.GUI.Layer, IRollingNarrativeProvider, GriddableSeriesMarker
+    Layer, IRollingNarrativeProvider, GriddableSeriesMarker
 {
 
   /*
@@ -151,9 +151,9 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
    * Enumeration
    */
   protected static final class IteratorWrapper implements
-      java.util.Enumeration<Editable>
+      Enumeration<Editable>
   {
-    private final java.util.Iterator<Editable> _val;
+    private final Iterator<Editable> _val;
 
     public IteratorWrapper(final Iterator<Editable> iterator)
     {

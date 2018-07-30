@@ -32,6 +32,7 @@ import org.xml.sax.Attributes;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
@@ -46,7 +47,7 @@ public final class NarrativeHandler extends
 
 	static private final String _myType = "narrative";
 
-	private final MWC.GUI.Layers _theLayers;
+	private final Layers _theLayers;
 
 	// our "working" Narrative
 	private NarrativeWrapper _myNarrative;
@@ -84,7 +85,7 @@ public final class NarrativeHandler extends
 
 	}
 
-	void addThis(final NarrativeEntry entry)
+	private void addThis(final NarrativeEntry entry)
 	{
 		// see if we have a color code for this entry type
 		String source = entry.getSource();
@@ -156,10 +157,10 @@ public final class NarrativeHandler extends
 		final Element trk = doc.createElement(_myType);
 		trk.setAttribute("Name", Narrative.getName());
 		// now the entries
-		final java.util.Enumeration<Editable> iter = Narrative.elements();
+		final Enumeration<Editable> iter = Narrative.elements();
 		while (iter.hasMoreElements())
 		{
-			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
+			final Plottable pl = (Plottable) iter.nextElement();
 			if (pl instanceof NarrativeEntry)
 			{
 				final NarrativeEntry fw = (NarrativeEntry) pl;

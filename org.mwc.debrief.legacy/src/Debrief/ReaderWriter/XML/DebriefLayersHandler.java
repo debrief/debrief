@@ -35,8 +35,11 @@ import Debrief.ReaderWriter.XML.Tactical.PatternHandler;
 import Debrief.ReaderWriter.XML.Tactical.TrackHandler;
 import Debrief.Wrappers.BuoyPatternWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.ETOPOPainter;
+import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
@@ -121,7 +124,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					CompositeTrackHandler.exportTrack(
 							(TrackWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.TrackWrapper)
+				else if (ly instanceof TrackWrapper)
 				{
 					TrackHandler.exportTrack(
 							(TrackWrapper) ly, layers, doc);
@@ -130,7 +133,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				{
 					ChartFolioHandler.exportThisFolio((ChartFolio) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.BuoyPatternWrapper)
+				else if (ly instanceof BuoyPatternWrapper)
 				{
 					PatternHandler.exportTrack(
 							(BuoyPatternWrapper) ly, layers, doc);
@@ -140,11 +143,11 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					NarrativeHandler.exportNarrative(
 							(NarrativeWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.Chart.Painters.ETOPOPainter)
+				else if (ly instanceof ETOPOPainter)
 				{
 					ETOPOHandler.exportThisPlottable(ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.ETOPO.ETOPO_2_Minute)
+				else if (ly instanceof ETOPO_2_Minute)
 				{
 					TOPOHandler.exportThisPlottable(ly, layers, doc);
 				}
@@ -154,7 +157,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				}
 				else if (ly instanceof MWC.GUI.BaseLayer)
 				{
-					DebriefLayerHandler.exportLayer((MWC.GUI.BaseLayer) ly, layers, doc);
+					DebriefLayerHandler.exportLayer((BaseLayer) ly, layers, doc);
 				}
 			}
 		}
