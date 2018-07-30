@@ -108,3 +108,6 @@ org.mwc.debrief.help/help_content.jar
 org.mwc.debrief.legacy/debrief_legacy.jar
 org.mwc.asset.help/html/legacy
 org.mwc.debrief.product/DebriefNG-cache/
+
+.idea
+*.xpr
