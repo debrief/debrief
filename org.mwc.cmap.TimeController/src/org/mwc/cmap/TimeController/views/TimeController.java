@@ -151,7 +151,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
-  private static final String ICON_RECORD_PAUSE = "icons/24/media_pause.png";
+  private static final String ICON_RECORD_PAUSE = "icons/24/media_stop.png";
 
   private static final String ICON_RECORD_PLAY = "icons/24/media_record.png";
 
@@ -405,7 +405,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // of course though, we start off with the buttons not enabled
     _wholePanel.setEnabled(false);
 
-    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
     // and start listing for any part action
     setupListeners();
 
@@ -833,16 +832,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   void stopRecording()
   {
     stopPlaying();
-    _coordinateRecorder.stopStepping(getTimeProvider().getTime());
+    getCoordinateRecorder().stopStepping(getTimeProvider().getTime());
   }
 
   void startRecording()
   {
-    _coordinateRecorder.startStepping(getTimeProvider().getTime());
+    getCoordinateRecorder().startStepping(getTimeProvider().getTime());
     startPlaying();   
     
   }
 
+  private CoordinateRecorder getCoordinateRecorder() {
+    if(_coordinateRecorder==null)
+      _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
+    return _coordinateRecorder;
+  }
   
   public void onTime(final ActionEvent event)
   {
@@ -1348,6 +1352,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             if (newLayers != _myLayers)
             {
               _myLayers = newLayers;
+              //initialize after mylayers are initialized
+              //_coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
             }
           }
 
@@ -1362,7 +1368,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               _myLayers = null;
           }
         });
-
     _myPartMonitor.addPartListener(RelativeProjectionParent.class,
         PartMonitor.ACTIVATED, new PartMonitor.ICallback()
         {

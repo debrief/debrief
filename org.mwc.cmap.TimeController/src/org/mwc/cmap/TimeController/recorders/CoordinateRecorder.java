@@ -2,11 +2,15 @@ package org.mwc.cmap.TimeController.recorders;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 
 import Debrief.Wrappers.FixWrapper;
@@ -32,7 +36,12 @@ public class CoordinateRecorder
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   private TimeControlPreferences _timePrefs;
+  private String exportLocation;
+  private String fileName;
+  private String fileFormat;
+  private int fileNameIncr;
 
+  private String startTime = null;
   public CoordinateRecorder(final Layers _myLayers,
       final PlainProjection plainProjection,TimeControlPreferences timePreferences)
   {
@@ -47,8 +56,11 @@ public class CoordinateRecorder
       return;
 
     // get the new time.
-    
-    _times.add(FormatRNDateTime.toMediumString(timeNow.getDate().getTime()));
+    String time =FormatRNDateTime.toMediumString(timeNow.getDate().getTime()); 
+    if(startTime==null) {
+      startTime = time;
+    }
+    _times.add(time);
 
     OperateFunction outputIt = new OperateFunction()
     {
@@ -115,6 +127,31 @@ public class CoordinateRecorder
       
     }*/
     // output tracks object.
+    //showDialog now
+    ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault().getActiveShell());
+    if(fileName == null) {
+      exportDialog.setFileName("DebriefExport-"+startTime);
+    }
+    else {
+      if(exportLocation!=null) {
+        File f = new File(exportLocation+File.separator+fileName+"."+fileFormat);
+        if(f.exists()) {
+          fileName+="_"+(++fileNameIncr);
+        }
+      }
+      exportDialog.setFileName(fileName);
+    }
+    exportDialog.setExportLocation(exportLocation);
+    exportDialog.setFileFormat(fileFormat);
+    if(exportDialog.open() == Window.OK) {
+      exportLocation = exportDialog.getExportLocation();
+      fileName = exportDialog.getFileName();
+      fileFormat = exportDialog.getFileFormat();
+      startTime=null;
+      System.out.println("export path:"+exportLocation+File.separator+fileName+"."+fileFormat);
+      //export to file now and open the file
+          
+    }
     
   }
 }
