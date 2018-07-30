@@ -257,8 +257,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       }
 
       @Override
-      public void
-          dataReformatted(final Layers theData, final Layer changedLayer)
+      public void dataReformatted(final Layers theData,
+          final Layer changedLayer)
       {
         if (changedLayer == _myRollingNarrative)
         {
@@ -338,8 +338,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
 
               if (isPending)
               {
-                if (_myRollingNarrative != null
-                    && _myRollingNarrative.size() > 0)
+                if (_myRollingNarrative != null && _myRollingNarrative
+                    .size() > 0)
                 {
                   myViewer.setInput(_myRollingNarrative);
                 }
@@ -385,8 +385,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         public void run()
         {
           super.run();
-          final String theFormat =
-              DateFormatPropertyEditor.getTagList()[thisIndex];
+          final String theFormat = DateFormatPropertyEditor
+              .getTagList()[thisIndex];
 
           myViewer.setTimeFormatter(new TimeFormatter()
           {
@@ -420,17 +420,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         if (selection.getFirstElement() instanceof NarrativeEntry)
         {
 
-          final NarrativeEntry entry =
-              (NarrativeEntry) selection.getFirstElement();
+          final NarrativeEntry entry = (NarrativeEntry) selection
+              .getFirstElement();
           final long tNow = entry.getDTG().getMicros();
           final String currentText = FormatDateTime.toString(tNow / 1000);
           if (file != null)
           {
             // yup, get the description
-            final InputDialog inputD =
-                new InputDialog(getViewSite().getShell(),
-                    "Add bookmark at this DTG",
-                    "Enter description of this bookmark", currentText, null);
+            final InputDialog inputD = new InputDialog(getViewSite().getShell(),
+                "Add bookmark at this DTG",
+                "Enter description of this bookmark", currentText, null);
             inputD.open();
 
             final String content = inputD.getValue();
@@ -477,8 +476,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   public void createPartControl(final Composite parent)
   {
 
-    _myPartMonitor =
-        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+    _myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+        .getPartService());
 
     parent.setLayout(new GridLayout(1, false));
     final Composite rootPanel = new Composite(parent, SWT.BORDER);
@@ -486,9 +485,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
 
     rootPanel.setLayout(new GridLayout());
 
-    myViewer =
-        new NatNarrativeViewer(rootPanel, CorePlugin.getDefault()
-            .getPreferenceStore());
+    myViewer = new NatNarrativeViewer(rootPanel, CorePlugin.getDefault()
+        .getPreferenceStore());
 
     getSite().setSelectionProvider(this);
 
@@ -660,8 +658,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
 
     // now update the selection
     final EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
-    final StructuredSelection structuredItem =
-        new StructuredSelection(wrappedEntry);
+    final StructuredSelection structuredItem = new StructuredSelection(
+        wrappedEntry);
     setSelection(structuredItem);
   }
 
@@ -687,27 +685,25 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   private void populateMenu()
   {
     // clear the list
-    final IMenuManager menuManager =
-        getViewSite().getActionBars().getMenuManager();
-    final IToolBarManager toolManager =
-        getViewSite().getActionBars().getToolBarManager();
+    final IMenuManager menuManager = getViewSite().getActionBars()
+        .getMenuManager();
+    final IToolBarManager toolManager = getViewSite().getActionBars()
+        .getToolBarManager();
 
-    
     final Action _newEntry = new Action("New Entry", IAction.AS_PUSH_BUTTON)
     {
-
       @Override
       public void run()
       {
         createNewEntry();
       }
     };
-    _newEntry.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/add.png"));
+    _newEntry.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/add.png"));
     _newEntry.setToolTipText("Create new narrative entry");
-    toolManager.add(_newEntry); 
+    toolManager.add(_newEntry);
     menuManager.add(_newEntry);
-    
+
     final Action _search = new Action("Search", IAction.AS_CHECK_BOX)
     {
 
@@ -717,8 +713,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         myViewer.setSearchMode(isChecked());
       }
     };
-    _search.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/search.png"));
+    _search.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/search.png"));
     _search.setToolTipText("Toggle search mode");
     _search.setChecked(true);
     toolManager.add(_search);
@@ -733,8 +729,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        final PreferenceDialog dialog =
-            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
+        final PreferenceDialog dialog = PreferencesUtil
+            .createPreferenceDialogOn(getSite().getShell(),
                 "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
                 null, null);
         if (dialog.open() == IDialogConstants.OK_ID)
@@ -743,8 +739,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
-    editPhrases.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/properties.png"));
+    editPhrases.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/properties.png"));
     menuManager.add(editPhrases);
     toolManager.add(editPhrases);
 
@@ -753,8 +749,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        final PreferenceDialog dialog =
-            PreferencesUtil.createPreferenceDialogOn(getSite().getShell(),
+        final PreferenceDialog dialog = PreferencesUtil
+            .createPreferenceDialogOn(getSite().getShell(),
                 "org.mwc.cmap.narratives.preferences.NarrativeViewerPrefsPage",
                 null, null);
         if (dialog.open() == IDialogConstants.OK_ID)
@@ -763,8 +759,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
-    fontSize.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/font.png"));
+    fontSize.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/font.png"));
     menuManager.add(fontSize);
     // and another separator
     menuManager.add(new Separator());
@@ -807,19 +803,19 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(_controlTime);
 
     // now the add-bookmark item
-    _setAsBookmarkAction =
-        new Action("Add DTG as bookmark", IAction.AS_PUSH_BUTTON)
-        {
-          @Override
-          public void runWithEvent(final Event event)
-          {
-            addMarker();
-          }
-        };
-    _setAsBookmarkAction.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/16/add_bookmark.png"));
-    _setAsBookmarkAction
-        .setToolTipText("Add this DTG to the list of bookmarks");
+    _setAsBookmarkAction = new Action("Add DTG as bookmark",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void runWithEvent(final Event event)
+      {
+        addMarker();
+      }
+    };
+    _setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/add_bookmark.png"));
+    _setAsBookmarkAction.setToolTipText(
+        "Add this DTG to the list of bookmarks");
     menuManager.add(_setAsBookmarkAction);
 
     // and the DTG formatter
@@ -835,34 +831,32 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        IPreferenceStore preferenceStore =
-            CorePlugin.getDefault().getPreferenceStore();
+        IPreferenceStore preferenceStore = CorePlugin.getDefault()
+            .getPreferenceStore();
 
-        final String fontStr =
-            preferenceStore
-                .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+        final String fontStr = preferenceStore.getString(
+            NarrativeViewerPrefsPage.PreferenceConstants.FONT);
         if (fontStr != null)
         {
-          final FontData[] readFontData =
-              PreferenceConverter.readFontData(fontStr);
+          final FontData[] readFontData = PreferenceConverter.readFontData(
+              fontStr);
           if (readFontData != null && readFontData.length > 0)
           {
             readFontData[0].setHeight((int) readFontData[0].height + 1);
-            FontData[] bestFont =
-                JFaceResources.getFontRegistry().filterData(readFontData,
-                    Display.getCurrent());
+            FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
+                readFontData, Display.getCurrent());
             if (bestFont != null)
-              preferenceStore
-                  .setValue(NarrativeViewerPrefsPage.PreferenceConstants.FONT,
-                      org.eclipse.jface.resource.StringConverter
-                          .asString(bestFont));
+              preferenceStore.setValue(
+                  NarrativeViewerPrefsPage.PreferenceConstants.FONT,
+                  org.eclipse.jface.resource.StringConverter.asString(
+                      bestFont));
 
           }
         }
       }
     };
-    fontPlus.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/increase.png"));
+    fontPlus.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor(
+        "icons/16/increase.png"));
     fontPlus.setToolTipText("+");
 
     Action fontMin = new Action("-", IAction.AS_PUSH_BUTTON)
@@ -871,34 +865,32 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        IPreferenceStore preferenceStore =
-            CorePlugin.getDefault().getPreferenceStore();
+        IPreferenceStore preferenceStore = CorePlugin.getDefault()
+            .getPreferenceStore();
 
-        final String fontStr =
-            preferenceStore
-                .getString(NarrativeViewerPrefsPage.PreferenceConstants.FONT);
+        final String fontStr = preferenceStore.getString(
+            NarrativeViewerPrefsPage.PreferenceConstants.FONT);
         if (fontStr != null)
         {
-          final FontData[] readFontData =
-              PreferenceConverter.readFontData(fontStr);
+          final FontData[] readFontData = PreferenceConverter.readFontData(
+              fontStr);
           if (readFontData != null && readFontData.length > 0)
           {
             readFontData[0].setHeight((int) readFontData[0].height - 1);
-            FontData[] bestFont =
-                JFaceResources.getFontRegistry().filterData(readFontData,
-                    Display.getCurrent());
+            FontData[] bestFont = JFaceResources.getFontRegistry().filterData(
+                readFontData, Display.getCurrent());
             if (bestFont != null)
-              preferenceStore
-                  .setValue(NarrativeViewerPrefsPage.PreferenceConstants.FONT,
-                      org.eclipse.jface.resource.StringConverter
-                          .asString(bestFont));
+              preferenceStore.setValue(
+                  NarrativeViewerPrefsPage.PreferenceConstants.FONT,
+                  org.eclipse.jface.resource.StringConverter.asString(
+                      bestFont));
 
           }
         }
       }
     };
-    fontMin.setImageDescriptor(org.mwc.cmap.core.CorePlugin
-        .getImageDescriptor("icons/16/decrease.png"));
+    fontMin.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor(
+        "icons/16/decrease.png"));
     fontMin.setToolTipText("-");
 
     toolManager.add(fontPlus);
@@ -909,46 +901,51 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   protected void createNewEntry()
   {
     // check we've got a "real" narrative
+    final NarrativeWrapper theNarrative;
     if (_myRollingNarrative instanceof NarrativeWrapper)
     {
-      final NarrativeWrapper theNarrative = (NarrativeWrapper) _myRollingNarrative;
+      theNarrative = (NarrativeWrapper) _myRollingNarrative;
+    }
+    else
+    {
+      theNarrative = null;
+    }
 
-      // try to get the current plot date
-      // ok, populate the data
-      final IEditorPart curEditor = PlatformUI.getWorkbench()
-          .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-      HiResDate date;
-      if (curEditor instanceof IAdaptable)
+    // try to get the current plot date
+    // ok, populate the data
+    final IEditorPart curEditor = PlatformUI.getWorkbench()
+        .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+    HiResDate date;
+    if (curEditor instanceof IAdaptable)
+    {
+      TimeProvider prov = (TimeProvider) curEditor.getAdapter(
+          TimeProvider.class);
+      if (prov != null)
       {
-        TimeProvider prov = (TimeProvider) curEditor.getAdapter(
-            TimeProvider.class);
-        if (prov != null)
+        date = prov.getTime();
+
+        final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard(
+            date);
+
+        final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+            .getActiveShell(), wizard);
+        TrayDialog.setDialogHelpAvailable(true);
+        dialog.setHelpAvailable(true);
+        dialog.create();
+        dialog.open();
+
+        // did it work?
+        if (dialog.getReturnCode() == WizardDialog.OK)
         {
-          date = prov.getTime();
+          final NarrativeEntry ne = wizard.getEntry();
+          // ok, go for it.
+          // sort it out as an operation
+          final IUndoableOperation addTheCut =
+              new GenerateNewNarrativeEntry.AddNarrativeEntry(_myLayers,
+                  theNarrative, ne);
 
-          final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard(
-              date);
-
-          final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-              .getActiveShell(), wizard);
-          TrayDialog.setDialogHelpAvailable(true);
-          dialog.setHelpAvailable(true);
-          dialog.create();
-          dialog.open();
-
-          // did it work?
-          if (dialog.getReturnCode() == WizardDialog.OK)
-          {
-            final NarrativeEntry ne = wizard.getEntry();
-            // ok, go for it.
-            // sort it out as an operation
-            final IUndoableOperation addTheCut =
-                new GenerateNewNarrativeEntry.AddNarrativeEntry(_myLayers,
-                    theNarrative, ne);
-
-            // ok, stick it on the buffer
-            CorePlugin.run(addTheCut);
-          }
+          // ok, stick it on the buffer
+          CorePlugin.run(addTheCut);
         }
       }
     }
@@ -976,17 +973,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       final String name = track.getName();
       final Color color = track.getColor();
       boolean refresh = false;
-      final NarrativeEntry[] entries =
-          _myRollingNarrative.getNarrativeHistory(new String[]
+      final NarrativeEntry[] entries = _myRollingNarrative.getNarrativeHistory(
+          new String[]
           {});
       for (final NarrativeEntry entry : entries)
       {
         if (entry.getTrackName() != null && entry.getTrackName().equals(name))
         {
           // special handling for rider narratives
-          if (entry.getType() != null
-              && entry.getType().equals(
-                  ImportRiderNarrativeDocument.RIDER_SOURCE))
+          if (entry.getType() != null && entry.getType().equals(
+              ImportRiderNarrativeDocument.RIDER_SOURCE))
           {
             // don't over-write the color. We leave rider narratives unchanged
           }
@@ -1091,8 +1087,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         _selectionListeners.iterator(); iterator.hasNext();)
     {
       final ISelectionChangedListener type = iterator.next();
-      final SelectionChangedEvent event =
-          new SelectionChangedEvent(this, selection);
+      final SelectionChangedEvent event = new SelectionChangedEvent(this,
+          selection);
       type.selectionChanged(event);
     }
   }
