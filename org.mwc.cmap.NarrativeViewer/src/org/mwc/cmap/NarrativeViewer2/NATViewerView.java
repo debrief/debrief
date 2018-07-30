@@ -145,10 +145,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
    */
   private Action _controlTime;
 
-  private Action _search;
-
-  private Action _newEntry;
-
   protected TimeProvider _myTemporalDataset;
 
   protected PropertyChangeListener _temporalListener;
@@ -697,7 +693,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         getViewSite().getActionBars().getToolBarManager();
 
     
-    _newEntry = new Action("New Entry", IAction.AS_PUSH_BUTTON)
+    final Action _newEntry = new Action("New Entry", IAction.AS_PUSH_BUTTON)
     {
 
       @Override
@@ -706,12 +702,13 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         createNewEntry();
       }
     };
-    _newEntry.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _newEntry.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/add.png"));
     _newEntry.setToolTipText("Create new narrative entry");
     toolManager.add(_newEntry); 
+    menuManager.add(_newEntry);
     
-    _search = new Action("Search", IAction.AS_CHECK_BOX)
+    final Action _search = new Action("Search", IAction.AS_CHECK_BOX)
     {
 
       @Override
@@ -720,7 +717,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         myViewer.setSearchMode(isChecked());
       }
     };
-    _search.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+    _search.setImageDescriptor(CorePlugin
         .getImageDescriptor("icons/16/search.png"));
     _search.setToolTipText("Toggle search mode");
     _search.setChecked(true);

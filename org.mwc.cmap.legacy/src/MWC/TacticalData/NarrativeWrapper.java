@@ -97,7 +97,6 @@
 
 package MWC.TacticalData;
 
-import java.beans.BeanDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
@@ -108,6 +107,7 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.AbstractCollection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -129,11 +129,13 @@ import org.xml.sax.SAXException;
 
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 import MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler;
@@ -153,7 +155,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   {
     private final java.util.Iterator<Editable> _val;
 
-    public IteratorWrapper(final java.util.Iterator<Editable> iterator)
+    public IteratorWrapper(final Iterator<Editable> iterator)
     {
       _val = iterator;
     }
@@ -175,7 +177,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * the definition of what is editable about this object
    */
-  public final class NarrativeInfo extends MWC.GUI.Editable.EditorType
+  public final class NarrativeInfo extends EditorType
   {
 
     /**
@@ -394,7 +396,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * our editor
    */
-  transient private MWC.GUI.Editable.EditorType _myEditor;
+  transient private EditorType _myEditor;
 
   /**
    * the line width to draw
@@ -437,7 +439,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   @Override
-  public final void add(final MWC.GUI.Editable editable)
+  public final void add(final Editable editable)
   {
     // check it's a narrative entry
     if (editable instanceof NarrativeEntry)
@@ -475,7 +477,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   @Override
-  public final void append(final MWC.GUI.Layer layer)
+  public final void append(final Layer layer)
   {
     // don't bother
   }
@@ -488,7 +490,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   @Override
-  public final java.util.Enumeration<Editable> elements()
+  public final Enumeration<Editable> elements()
   {
     return new IteratorWrapper(_myEntries.iterator());
   }
@@ -496,7 +498,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   @Override
   public final void exportShape()
   {
-    MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
+    ImportManager.exportThis(this);
   }
 
   /**
@@ -525,19 +527,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     }
 
     // ok, has there been a change?
-    if (updated)
+    if (updated && _myListeners != null)
     {
-      // and the narrative listeners, if we have one
-      if (_myListeners != null)
+      for (final Iterator<INarrativeListener> iter = _myListeners
+          .iterator(); iter.hasNext();)
       {
-        for (final Iterator<INarrativeListener> iter = _myListeners
-            .iterator(); iter.hasNext();)
-        {
-          final INarrativeListener thisL = iter.next();
-          thisL.filtered();
-        }
+        final INarrativeListener thisL = iter.next();
+        thisL.filtered();
       }
-
     }
   }
 
@@ -547,7 +544,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
     return null;
   }
 
-  public final java.util.AbstractCollection<Editable> getData()
+  public final AbstractCollection<Editable> getData()
   {
     return _myEntries;
   }
@@ -597,7 +594,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   @Override
-  public final MWC.GUI.Editable.EditorType getInfo()
+  public final EditorType getInfo()
   {
     if (_myEditor == null)
       _myEditor = new NarrativeInfo(this);
@@ -716,7 +713,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
   }
 
   @Override
-  public final void removeElement(final MWC.GUI.Editable editable)
+  public final void removeElement(final Editable editable)
   {
     // check it's a narrative entry
     if (editable instanceof NarrativeEntry)

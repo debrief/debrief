@@ -27,14 +27,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler;
 import Debrief.ReaderWriter.XML.Tactical.PatternHandler;
 import Debrief.ReaderWriter.XML.Tactical.TrackHandler;
+import Debrief.Wrappers.BuoyPatternWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.ChartFolio;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.ChartFolioHandler;
@@ -62,7 +66,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 	}
 
 	public static void exportThis(final Debrief.GUI.Frames.Session session,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+			final Element parent, final Document doc)
 	{
 		// fill it out
 		final MWC.GUI.Layers data = session.getData();
@@ -74,7 +78,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 	}
 
 	public static void exportThis(final Layers data, final org.w3c.dom.Element parent,
-			final org.w3c.dom.Document doc, final List<LayerHandlerExtension> extraLoaders)
+			final Document doc, final List<LayerHandlerExtension> extraLoaders)
 	{
 
 		if (data == null)
@@ -109,20 +113,18 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					}
 				}
 			}
-
 			if (!handled)
 			{
-
 				// find out which sort of layer this is
 				if (ly instanceof Debrief.Wrappers.CompositeTrackWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler.exportTrack(
-							(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+					CompositeTrackHandler.exportTrack(
+							(TrackWrapper) ly, layers, doc);
 				}
 				else if (ly instanceof Debrief.Wrappers.TrackWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.TrackHandler.exportTrack(
-							(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+					TrackHandler.exportTrack(
+							(TrackWrapper) ly, layers, doc);
 				}
 				else if (ly instanceof ChartFolio)
 				{
@@ -130,13 +132,13 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				}
 				else if (ly instanceof Debrief.Wrappers.BuoyPatternWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.PatternHandler.exportTrack(
-							(Debrief.Wrappers.BuoyPatternWrapper) ly, layers, doc);
+					PatternHandler.exportTrack(
+							(BuoyPatternWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof MWC.TacticalData.NarrativeWrapper)
+				else if (ly instanceof NarrativeWrapper)
 				{
-					MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler.exportNarrative(
-							(MWC.TacticalData.NarrativeWrapper) ly, layers, doc);
+					NarrativeHandler.exportNarrative(
+							(NarrativeWrapper) ly, layers, doc);
 				}
 				else if (ly instanceof MWC.GUI.Chart.Painters.ETOPOPainter)
 				{
@@ -155,11 +157,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					DebriefLayerHandler.exportLayer((MWC.GUI.BaseLayer) ly, layers, doc);
 				}
 			}
-
 		}
-
 		parent.appendChild(layers);
-
 	}
-
 }
