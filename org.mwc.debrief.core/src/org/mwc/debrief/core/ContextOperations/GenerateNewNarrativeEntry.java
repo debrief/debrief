@@ -26,7 +26,10 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -37,6 +40,7 @@ import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 
 /**
@@ -141,6 +145,28 @@ public class GenerateNewNarrativeEntry implements
 
 		if (goForIt)
 		{
+		  // try to get the current plot date
+	    // ok, populate the data
+	    final IEditorPart curEditor = PlatformUI.getWorkbench()
+	        .getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+	    final HiResDate date;
+	    if (curEditor instanceof IAdaptable)
+	    {
+	      TimeProvider prov = (TimeProvider) curEditor.getAdapter(TimeProvider.class);
+	      if(prov != null)
+	      {
+	        date = prov.getTime();
+	      }
+	      else
+	      {
+	        date = null;
+	      }
+	    }
+	    else
+	    {
+	      date = null;
+	    }
+	    
 			// right,stick in a separator
 			parent.add(new Separator());
 
@@ -152,7 +178,7 @@ public class GenerateNewNarrativeEntry implements
 				public void run()
 				{
 					// get the supporting data
-					final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard();
+					final NewNarrativeEntryWizard wizard = new NewNarrativeEntryWizard(date);
 					runOperation(theLayers, theNarrative, wizard);
 				}
 			};
