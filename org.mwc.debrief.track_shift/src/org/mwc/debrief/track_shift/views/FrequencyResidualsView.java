@@ -74,6 +74,9 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
   private List<WatchableList> getPotentialSources()
   {
+    if(_ourLayersSubject != null)
+    {
+    }
     return null;
   }
 
