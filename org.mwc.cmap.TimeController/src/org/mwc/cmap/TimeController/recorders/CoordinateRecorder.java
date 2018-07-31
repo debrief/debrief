@@ -36,21 +36,16 @@ public class CoordinateRecorder
       new HashMap<String, TrackWrapper>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
-  private TimeControlPreferences _timePrefs;
-  private String exportLocation;
-  private String fileName;
-  private String fileFormat;
-  private int fileNameIncr;
+  private final TimeControlPreferences _timePrefs;
   public static final String PREF_PPT_EXPORT_LOCATION="pptExportLocation";
   public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
-  public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat";
-  
-
+  public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
   private String startTime = null;
-  public CoordinateRecorder(final Layers _myLayers,
+  
+  public CoordinateRecorder(final Layers layers,
       final PlainProjection plainProjection,TimeControlPreferences timePreferences)
   {
-    this._myLayers = _myLayers;
+    _myLayers = layers;
     _projection = plainProjection;
     _timePrefs = timePreferences;
   }
@@ -121,9 +116,9 @@ public class CoordinateRecorder
       System.out.println(time);
     }
     
-    exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
-    fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
-    fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
+    String exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
+    String fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
+    String fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
     List<TrackWrapper> list = new ArrayList<TrackWrapper>();
     list.addAll(_tracks.values());
     Dimension dims = _projection.getScreenArea();
@@ -160,37 +155,48 @@ public class CoordinateRecorder
       PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,fileFormat);
       startTime=null;
       System.out.println("export path:"+exportLocation+File.separator+fileName+"."+fileFormat);
-      //export to file now and open the file
-          
-    }
-    
+      //export to file now and open the file        
+    }    
   }
+
   private String getFileNameStem(String fileName2)
   {
     String newName;
-    if(fileName2.indexOf("-")!=-1){
-      newName = fileName2.substring(0,fileName2.lastIndexOf("-"));
+    if (fileName2.indexOf("-") != -1)
+    {
+      newName = fileName2.substring(0, fileName2.lastIndexOf("-"));
     }
-    else {
+    else
+    {
       newName = fileName2;
     }
     return newName;
   }
 
-  private String getNewFileName(final String fileName,final String recordingStartTime) {
-    String newName=fileName;
+  private String getNewFileName(final String fileName,
+      final String recordingStartTime)
+  {
+    String newName = fileName;
     String[] fileNameParts = fileName.split("-");
-    if(fileNameParts.length>0) {
-      newName = fileNameParts[0]+"-"+recordingStartTime;      
+    if (fileNameParts.length > 0)
+    {
+      newName = fileNameParts[0] + "-" + recordingStartTime;
     }
-    if(fileName.matches("^.*_\\d+$")) {
-      int fileNameIncr = Integer.valueOf(fileName.substring(fileName.lastIndexOf("_")+1));
-      newName+="_"+(++fileNameIncr);  
+    if (fileName.matches("^.*_\\d+$"))
+    {
+      int fileNameIncr = Integer.valueOf(fileName.substring(fileName
+          .lastIndexOf("_") + 1));
+      newName += "_" + (++fileNameIncr);
     }
-    else {
-      newName+="_1";
+    else
+    {
+      newName += "_1";
     }
     return newName;
-    
+  }
+
+  public boolean isRecording()
+  {
+    return _running;
   }
 }

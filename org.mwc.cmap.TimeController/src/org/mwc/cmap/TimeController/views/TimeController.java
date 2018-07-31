@@ -2004,6 +2004,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       try
       {
         newVal = toStringHiRes(newDTG, dateFormat);
+        
+        // see if we're recording
+        if(_coordinateRecorder != null && _coordinateRecorder.isRecording())
+        {
+          newVal += " [REC]";
+        }
       }
       catch (final IllegalArgumentException e)
       {
@@ -3076,7 +3082,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     return res;
   }
 
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public Object getAdapter(final Class adapter)
   {
