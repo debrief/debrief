@@ -14,9 +14,13 @@
  */
 package org.mwc.debrief.core.preferences;
 
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
@@ -36,7 +40,7 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
  */
 
 public class PrefsPage extends FieldEditorPreferencePage implements
-    IWorkbenchPreferencePage
+IWorkbenchPreferencePage
 {
   public PrefsPage()
   {
@@ -68,7 +72,6 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         "Show the wizard when importing sensor data from REP",
         getFieldEditorParent()));
-    
     // insert a separator
     Label label1 =
         new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -76,10 +79,26 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 
     addField(new ColorFieldEditor(PreferenceConstants.DEFAULT_PLOT_COLOR,
         "Default background color for new plots:", getFieldEditorParent()));
-
+    Label label2 =
+        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    label2.setText("");
+    label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+    Label label3 =
+        new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    label3.setText("Specify the PPT template to export recordings");
+    label3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+    final FileFieldEditor templateLocationPrefEditor = new 
+        FileFieldEditor(PreferenceConstants.PPT_TEMPLATE, 
+            "Select File: ", 
+            getFieldEditorParent());
+    String[] extensions = new String[] { "*.pptx" }; // NON-NLS-1
+    templateLocationPrefEditor.setFileExtensions(extensions);
+    addField(templateLocationPrefEditor);
   }
-  
-  
+
+
+
+
   /*
    * (non-Javadoc)
    * 
@@ -89,6 +108,21 @@ public class PrefsPage extends FieldEditorPreferencePage implements
   {
   }
 
+  @Override
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    if(event.getProperty().equals(PreferenceConstants.PPT_TEMPLATE)) {
+      IPath path = new Path(event.getNewValue().toString());
+      if(!path.toFile().exists()) {
+        setErrorMessage("Invalid file path, File does not exist");
+        setValid(false);
+      }
+      else {
+        setErrorMessage(null);
+        setValid(true);
+      }
+    }
+  }
   /**
    * Constant definitions for plug-in preferences
    */
@@ -103,6 +137,14 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String DEFAULT_PLOT_COLOR =
         SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
+    public static final String PPT_TEMPLATE = "pptTemplate";
+  }
+
+  @Override
+  public boolean performOk()
+  {
+
+    return super.performOk();
   }
 
 }

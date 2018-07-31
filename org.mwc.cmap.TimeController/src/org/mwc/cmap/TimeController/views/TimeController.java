@@ -79,6 +79,7 @@ import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
+import org.mwc.cmap.TimeController.recorders.CoordinateRecorder;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -150,11 +151,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
+  private static final String ICON_RECORD_PAUSE = "icons/24/media_stop.png";
+
+  private static final String ICON_RECORD_PLAY = "icons/24/media_record.png";
+
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
   private static final String PAUSE_TEXT = "Pause automatically moving forward";
 
   private static final String PLAY_TEXT = "Start automatically moving forward";
+  
+  private static final String RECORD_PAUSE_TEXT = "Pause recording";
+
+  private static final String RECORD_TEXT = "Start recording";
+  
 
   private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
@@ -258,6 +268,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * the play button, obviously.
    */
   Button _playButton;
+  
+  /**
+   * the record button
+   */
+  Button _recordButton;
 
   PropertyChangeListener _myDateFormatListener = null;
 
@@ -294,6 +309,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * 
    */
   private SelectionAdapter _playListener;
+  
+  /**
+   * listener for the record button
+   */
+  private SelectionAdapter _recordListener;
+  
+  private CoordinateRecorder _coordinateRecorder;
+  
 
   // private static final Color bColor = new Color(Display.getDefault(), 0, 0,
   // 0);
@@ -533,7 +556,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     // first create the button holder
     _btnPanel = new Composite(_wholePanel, SWT.BORDER);
-    _btnPanel.setLayout(new GridLayout(7, true));
+    _btnPanel.setLayout(new GridLayout(8, true));
 
     final Button eBwd = new Button(_btnPanel, SWT.NONE);
     addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false,
@@ -587,6 +610,41 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     };
     _playButton.addSelectionListener(_playListener);
 
+    _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
+    _recordButton.setImage(TimeControllerPlugin.getImage(ICON_RECORD_PLAY));
+    _recordButton.setToolTipText(PLAY_TEXT);
+    _recordListener = new SelectionAdapter()
+    {
+      public void widgetSelected(final SelectionEvent e)
+      {
+        final boolean recording = _recordButton.getSelection();
+        final String tipTxt;
+        final String imageTxt;
+        // ImageDescriptor thisD;
+        if (recording)
+        {
+          startRecording();
+          tipTxt = RECORD_PAUSE_TEXT;
+          imageTxt = ICON_RECORD_PAUSE;
+        }
+        else
+        {
+          stopRecording();
+          tipTxt = RECORD_TEXT;
+          imageTxt = ICON_RECORD_PLAY;
+
+        }
+
+        // ok, set the tooltip & image
+        _recordButton.setToolTipText(tipTxt);
+        _recordButton.setImage(TimeControllerPlugin.getImage(imageTxt));
+
+      }
+    };
+
+    _recordButton.addSelectionListener(_recordListener);
+    
+    
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
     listener = new RepeatingTimeButtonListener(true, STEP_SIZE.NORMAL, true);
@@ -771,6 +829,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     getTimer().start();
   }
 
+  void stopRecording()
+  {
+    stopPlaying();
+    _coordinateRecorder.stopStepping(getTimeProvider().getTime());    
+    _coordinateRecorder = null;
+  }
+
+  void startRecording()
+  {
+    _coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
+    _coordinateRecorder.startStepping(getTimeProvider().getTime());    
+    startPlaying();    
+  }
+
+  
   public void onTime(final ActionEvent event)
   {
 
@@ -1074,6 +1147,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       try
       {
         _controllableTime.setTime(this, dtg, true);
+        
+        if (_coordinateRecorder != null)
+        {
+          _coordinateRecorder.newTime(dtg);
+        }
       }
       finally
       {
@@ -1274,6 +1352,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             if (newLayers != _myLayers)
             {
               _myLayers = newLayers;
+              //initialize after mylayers are initialized
+              //_coordinateRecorder = new CoordinateRecorder(_myLayers,_targetProjection,_myStepperProperties);
             }
           }
 
@@ -1288,7 +1368,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               _myLayers = null;
           }
         });
-
     _myPartMonitor.addPartListener(RelativeProjectionParent.class,
         PartMonitor.ACTIVATED, new PartMonitor.ICallback()
         {
@@ -1586,6 +1665,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           }
         });
   }
+  
 
   protected void refreshTimeOperations()
   {
@@ -1681,11 +1761,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     final GridLayout gl = (GridLayout) _btnPanel.getLayout();
     if (canRewind)
     {
-      gl.numColumns = 7;
+      gl.numColumns = 8;
     }
     else
     {
-      gl.numColumns = 3;
+      gl.numColumns = 4;
     }
 
     // tell the parent that some buttons have changed, and that it probably
@@ -1924,6 +2004,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       try
       {
         newVal = toStringHiRes(newDTG, dateFormat);
+        
+        // see if we're recording
+        if(_coordinateRecorder != null && _coordinateRecorder.isRecording())
+        {
+          newVal += " [REC]";
+        }
       }
       catch (final IllegalArgumentException e)
       {
@@ -2996,7 +3082,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     return res;
   }
 
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   @Override
   public Object getAdapter(final Class adapter)
   {
@@ -3017,5 +3103,5 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     return _myTemporalDataset;
   }
-
+  
 }

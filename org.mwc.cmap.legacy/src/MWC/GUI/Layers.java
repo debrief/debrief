@@ -1446,4 +1446,60 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     return getName();
   }
+  
+  public static interface OperateFunction{
+    void operateOn(Editable item);
+  }
+  
+  public void walkVisibleItems(final Class<?> mustMatch,
+      final OperateFunction function)
+  {
+    // walk the tree
+    Enumeration<Editable> lIter = elements();
+    while (lIter.hasMoreElements())
+    {
+      Layer layer = (Layer) lIter.nextElement();
+      if (layer.getVisible())
+      {
+        if (mustMatch.isAssignableFrom(layer.getClass()))
+        {
+          function.operateOn(layer);
+        }
+        else
+        {
+          if (layer instanceof BaseLayer)
+          {
+            walkThis((BaseLayer) layer, mustMatch, function);
+          }
+        }
+      }
+
+    }
+  }
+
+  private void walkThis(BaseLayer layer, final Class<?> mustMatch,
+      OperateFunction function)
+  {
+    // walk the tree
+    Enumeration<Editable> lIter = layer.elements();
+    while (lIter.hasMoreElements())
+    {
+      Plottable item = (Plottable) lIter.nextElement();
+      if (item.getVisible())
+      {
+        if (mustMatch.isAssignableFrom(item.getClass()))
+        {
+          function.operateOn(layer);
+        }
+        else
+        {
+          if (item instanceof BaseLayer)
+          {
+            walkThis((BaseLayer) item, mustMatch, function);
+          }
+        }
+      }
+    }
+  }
+  
 }
