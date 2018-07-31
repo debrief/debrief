@@ -785,13 +785,28 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             final String imageTxt;
             if (playing)
             {
-              startPlaying();
+              if (doExport.getSelection())
+              {
+                startRecording();
+              }
+              else
+              {
+                startPlaying();
+              }
               tipTxt = PAUSE_TEXT;
               imageTxt = ICON_MEDIA_PAUSE;
             }
             else
             {
-              stopPlaying();
+              if (doExport.getSelection())
+              {
+                stopRecording();
+              }
+              else
+              {
+                stopPlaying();
+              }
+
               tipTxt = PLAY_TEXT;
               imageTxt = ICON_MEDIA_PLAY;
             }
@@ -985,8 +1000,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   void stopRecording()
   {
     stopPlaying();
-    _coordinateRecorder.stopStepping(getTimeProvider().getTime());
-    _coordinateRecorder = null;
+    if (_coordinateRecorder != null)
+    {
+      _coordinateRecorder.stopStepping(getTimeProvider().getTime());
+      _coordinateRecorder = null;
+    }
   }
 
   void startRecording()
