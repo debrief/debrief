@@ -722,7 +722,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
   }
 
-  public Layer checkLayer(final Layer layer, final String name)
+  private static Layer checkLayer(final Layer layer, final String name)
   {
     /**
      * if it's a monster layer, we won't bother searching it
