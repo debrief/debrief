@@ -17,8 +17,9 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 
@@ -49,21 +50,25 @@ import org.mwc.debrief.track_shift.views.StackedDotHelper.SetBackgroundShade;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers.OperateFunction;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
-import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
   private static final int NUM_DOPPLER_STEPS = 30;
   private Action calcBaseFreq;
+  protected SensorWrapper _activeSource;
 
   public FrequencyResidualsView()
   {
     super(false, true);
   }
-
+  
   @Override
   protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
@@ -72,12 +77,95 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     toolBarManager.add(calcBaseFreq);
   }
 
-  private List<WatchableList> getPotentialSources()
+  private static interface SourceProvider
   {
-    if(_ourLayersSubject != null)
+    public List<SensorWrapper> getSources();
+  }
+  
+  private List<SensorWrapper> getPotentialSources()
+  {
+    final List<SensorWrapper> res = new ArrayList<SensorWrapper>();
+    if (_ourLayersSubject != null)
     {
+      OperateFunction handleMe = new OperateFunction()
+      {
+
+        @Override
+        public void operateOn(Editable item)
+        {
+          TrackWrapper track = (TrackWrapper) item;
+          BaseLayer sensors = track.getSensors();
+          if (sensors != null)
+          {
+            Enumeration<Editable> sIter = sensors.elements();
+            while (sIter.hasMoreElements())
+            {
+              SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
+              if (sensor.getBaseFrequency() > 0)
+              {
+                res.add(sensor);
+              }
+            }
+          }
+        }
+      };
+      _ourLayersSubject.walkVisibleItems(TrackWrapper.class, handleMe);
     }
-    return null;
+    return res;
+  }
+  
+  public static interface SelectSource
+  {
+    public void select(SensorWrapper source);
+  }
+  
+  
+  private static class SourceMenu implements IMenuListener
+  {
+    private final SourceProvider provider;
+    private final MenuManager parent;
+    private SelectSource select;
+
+    public SourceMenu(MenuManager menu, SourceProvider sourceProvider, SelectSource selectSource)
+    {
+      provider = sourceProvider;
+      parent = menu;
+      select = selectSource;
+    }
+
+    public void menuAboutToShow(IMenuManager manager)
+    {
+      List<SensorWrapper> sources = provider.getSources();
+      if (sources != null && sources.size() > 0)
+      {
+        final DecimalFormat df = new DecimalFormat("0.00");
+        for (final SensorWrapper sensor : sources)
+        {
+          final String host = sensor.getHost().getName();
+          final String name = host + "/" + sensor.getName() + " (" + df
+              .format(sensor.getBaseFrequency()) + " Hz)";
+          Action deleteAction = new Action(name)
+          {
+            public void run()
+            {
+              select.select(sensor);
+            }
+          };
+          parent.add(deleteAction);
+        }
+      }
+      else
+      {
+        Action deleteAction2 = new Action("No sources found")
+        {
+          public void run()
+          {
+            System.out.println("no sources pressed");
+          }
+        };
+        parent.add(deleteAction2);
+      }
+    }
   }
 
   @Override
@@ -85,45 +173,31 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   {
     super.addPullDownExtras(manager);
 
-    System.out.println("in pulldown");
-
-    // ok, can we add a combo box?
     manager.add(new Separator());
+    
+    // ok, provide the list of acoustic sources.
     final MenuManager newMenu = new MenuManager("Acoustic Source");
-    newMenu.setRemoveAllWhenShown(true);
-    newMenu.addMenuListener(new IMenuListener()
-    {
-      public void menuAboutToShow(IMenuManager manager)
-      {
-        List<WatchableList> sources = getPotentialSources();
-        String date = new Date().toString();
-        Action deleteAction2 = new Action("Placeholder at: " + date)
-        {
-          public void run()
-          {
-            System.out.println("new date pressed");
-          }
-        };
-        newMenu.add(deleteAction2);
-        if (sources != null)
-        {
-          for (WatchableList track : sources)
-          {
-            Action deleteAction = new Action(track.getName() + " " + date)
-            {
-              public void run()
-              {
-                System.out.println("new date pressed");
-              }
-            };
-            newMenu.add(deleteAction);
-          }
-        }
-      }
-    });
-    manager.add(newMenu);
+    SelectSource selectSource = new SelectSource() {
 
-    // }
+      @Override
+      public void select(SensorWrapper source)
+      {
+        _activeSource = source;
+        System.out.println("Setting active source to:" + source);
+      }};
+    SourceProvider sourceProvider = new SourceProvider() {
+      @Override
+      public List<SensorWrapper> getSources()
+      {
+        return getPotentialSources();
+      }      
+    };
+    
+    // make this new menu dynamic
+    newMenu.setRemoveAllWhenShown(true);
+    newMenu.addMenuListener(new SourceMenu(newMenu, sourceProvider, selectSource));
+    
+    manager.add(newMenu);
   }
 
   @Override
