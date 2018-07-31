@@ -53,7 +53,6 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -159,17 +158,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
-  private static final String ICON_MEDIA_PPTX = "icons/24/pptx24.png";
+  private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
 
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
   private static final String PAUSE_TEXT = "Pause automatically moving forward";
 
   private static final String PLAY_TEXT = "Start automatically moving forward";
-
-  private static final String RECORD_PAUSE_TEXT = "Pause recording";
-
-  private static final String RECORD_TEXT = "Start recording";
 
   private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
@@ -308,11 +303,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * 
    */
   private HashMap<String, Button> _buttonList;
-
-  /**
-   * listener for the record button
-   */
-  private SelectionAdapter _recordListener;
 
   private CoordinateRecorder _coordinateRecorder;
 
