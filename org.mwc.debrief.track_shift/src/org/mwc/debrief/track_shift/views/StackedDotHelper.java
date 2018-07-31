@@ -2975,7 +2975,6 @@ public final class StackedDotHelper
       final SetBackgroundShade backShader,
       final ColourStandardXYItemRenderer lineRend)
   {
-
     // do we have anything?
     if (_primaryTrack == null)
     {
@@ -3004,8 +3003,6 @@ public final class StackedDotHelper
     }
 
     // create the collection of series
-    // final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    // final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
 
     if (_primaryTrack == null)
@@ -3018,6 +3015,24 @@ public final class StackedDotHelper
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
+    
+    // createa list of series, so we can pause their updates
+
+    final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(measuredValuesColl);
+    tList.add(dotPlotData);
+    tList.add(linePlotData);
+    tList.add(predictedValuesColl);
+    tList.add(baseValuesSeries);
+    
+    // now switch off updates
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(false);
+
+      series.removeAllSeries();
+    }
+    
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     SensorWrapper lastSensor = null;
@@ -3163,6 +3178,12 @@ public final class StackedDotHelper
       lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
-
+    // now switch on updates
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(true);
+    }
   }
+  
+  
 }
