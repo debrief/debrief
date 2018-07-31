@@ -30,8 +30,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
-import org.mwc.cmap.TimeController.recorders.CoordinateRecorder;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
