@@ -1197,4 +1197,15 @@
             writer="Debrief.ReaderWriter.XML.extensions.MeasuredDataHandler">
       </helper>
    </extension>
+   <extension
+         point="org.eclipse.ui.splashHandlers">
+      <splashHandler
+            class="org.mwc.debrief.core.splashHandlers.ExtensibleSplashHandler"
+            id="org.mwc.debrief.core.splashHandlers.extensible">
+      </splashHandler>
+      <splashHandlerProductBinding
+            productId="org.mwc.debrief.core.Debrief"
+            splashId="org.mwc.debrief.core.splashHandlers.extensible">
+      </splashHandlerProductBinding>
+   </extension>
 </plugin>
