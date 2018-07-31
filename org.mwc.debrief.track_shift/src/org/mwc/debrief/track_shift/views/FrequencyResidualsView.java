@@ -24,13 +24,21 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
@@ -68,20 +76,43 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   {
     super(false, true);
   }
-  
+
   @Override
   protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
     super.addToolbarExtras(toolBarManager);
 
     toolBarManager.add(calcBaseFreq);
+
+    IContributionItem comboCI = new ControlContribution("Acoustic Source")
+    {
+      protected Control createControl(Composite parent)
+      {
+        final Combo c = new Combo(parent, SWT.READ_ONLY);
+        
+        int numItems =  2 + (int) (Math.random() * 6d);
+        for (int i = 0; i <= numItems; i++)
+        {
+          c.add("item " + i);
+        }
+        c.addSelectionListener(new SelectionAdapter()
+        {
+          public void widgetSelected(SelectionEvent e)
+          {
+            System.out.println("pressed:" + c.getText());
+          }
+        });
+        return c;
+      }};
+      toolBarManager.add(comboCI);
+
   }
 
   private static interface SourceProvider
   {
     public List<SensorWrapper> getSources();
   }
-  
+
   private List<SensorWrapper> getPotentialSources()
   {
     final List<SensorWrapper> res = new ArrayList<SensorWrapper>();
@@ -113,20 +144,20 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     }
     return res;
   }
-  
+
   public static interface SelectSource
   {
     public void select(SensorWrapper source);
   }
-  
-  
+
   private static class SourceMenu implements IMenuListener
   {
     private final SourceProvider provider;
     private final MenuManager parent;
     private SelectSource select;
 
-    public SourceMenu(MenuManager menu, SourceProvider sourceProvider, SelectSource selectSource)
+    public SourceMenu(MenuManager menu, SourceProvider sourceProvider,
+        SelectSource selectSource)
     {
       provider = sourceProvider;
       parent = menu;
@@ -142,8 +173,8 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         for (final SensorWrapper sensor : sources)
         {
           final String host = sensor.getHost().getName();
-          final String name = host + "/" + sensor.getName() + " (" + df
-              .format(sensor.getBaseFrequency()) + " Hz)";
+          final String name = host + "/" + sensor.getName() + " (" + df.format(
+              sensor.getBaseFrequency()) + " Hz)";
           Action deleteAction = new Action(name)
           {
             public void run()
@@ -174,29 +205,33 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     super.addPullDownExtras(manager);
 
     manager.add(new Separator());
-    
+
     // ok, provide the list of acoustic sources.
     final MenuManager newMenu = new MenuManager("Acoustic Source");
-    SelectSource selectSource = new SelectSource() {
+    SelectSource selectSource = new SelectSource()
+    {
 
       @Override
       public void select(SensorWrapper source)
       {
         _activeSource = source;
         System.out.println("Setting active source to:" + source);
-      }};
-    SourceProvider sourceProvider = new SourceProvider() {
+      }
+    };
+    SourceProvider sourceProvider = new SourceProvider()
+    {
       @Override
       public List<SensorWrapper> getSources()
       {
         return getPotentialSources();
-      }      
+      }
     };
-    
+
     // make this new menu dynamic
     newMenu.setRemoveAllWhenShown(true);
-    newMenu.addMenuListener(new SourceMenu(newMenu, sourceProvider, selectSource));
-    
+    newMenu.addMenuListener(new SourceMenu(newMenu, sourceProvider,
+        selectSource));
+
     manager.add(newMenu);
   }
 
