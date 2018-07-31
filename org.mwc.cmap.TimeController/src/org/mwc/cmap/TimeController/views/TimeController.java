@@ -161,10 +161,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String ICON_MEDIA_PPTX = "icons/24/pptx24.png";
 
-  private static final String ICON_RECORD_PAUSE = "icons/24/media_stop.png";
-
-  private static final String ICON_RECORD_PLAY = "icons/24/media_record.png";
-
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
   private static final String PAUSE_TEXT = "Pause automatically moving forward";
@@ -804,40 +800,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             _playButton.setImage(TimeControllerPlugin.getImage(imageTxt));
           }
         });
-
-    _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-    _recordButton.setImage(TimeControllerPlugin.getImage(ICON_RECORD_PLAY));
-    _recordButton.setToolTipText(PLAY_TEXT);
-    _recordListener = new SelectionAdapter()
-    {
-      public void widgetSelected(final SelectionEvent e)
-      {
-        final boolean recording = _recordButton.getSelection();
-        final String tipTxt;
-        final String imageTxt;
-        // ImageDescriptor thisD;
-        if (recording)
-        {
-          startRecording();
-          tipTxt = RECORD_PAUSE_TEXT;
-          imageTxt = ICON_RECORD_PAUSE;
-        }
-        else
-        {
-          stopRecording();
-          tipTxt = RECORD_TEXT;
-          imageTxt = ICON_RECORD_PLAY;
-
-        }
-
-        // ok, set the tooltip & image
-        _recordButton.setToolTipText(tipTxt);
-        _recordButton.setImage(TimeControllerPlugin.getImage(imageTxt));
-
-      }
-    };
-
-    _recordButton.addSelectionListener(_recordListener);
 
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
