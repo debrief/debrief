@@ -724,4 +724,10 @@ public class PolygonShape extends PlainShape implements Editable,
     firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
   }
 
+  @Override
+  public void setName(String val)
+  {
+    _myName = val;
+  }
+
 }

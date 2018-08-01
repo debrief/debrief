@@ -27,21 +27,28 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler;
-import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import Debrief.ReaderWriter.XML.Tactical.PatternHandler;
 import Debrief.ReaderWriter.XML.Tactical.TrackHandler;
+import Debrief.Wrappers.BuoyPatternWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.ETOPOPainter;
+import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Shapes.ChartFolio;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Features.ChartFolioHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ETOPOHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.ExternallyManagedLayerHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.TOPOHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.NarrativeHandler;
 
 public final class DebriefLayersHandler extends MWCXMLReader
 {
@@ -62,7 +69,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 	}
 
 	public static void exportThis(final Debrief.GUI.Frames.Session session,
-			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+			final Element parent, final Document doc)
 	{
 		// fill it out
 		final MWC.GUI.Layers data = session.getData();
@@ -74,7 +81,7 @@ public final class DebriefLayersHandler extends MWCXMLReader
 	}
 
 	public static void exportThis(final Layers data, final org.w3c.dom.Element parent,
-			final org.w3c.dom.Document doc, final List<LayerHandlerExtension> extraLoaders)
+			final Document doc, final List<LayerHandlerExtension> extraLoaders)
 	{
 
 		if (data == null)
@@ -109,40 +116,38 @@ public final class DebriefLayersHandler extends MWCXMLReader
 					}
 				}
 			}
-
 			if (!handled)
 			{
-
 				// find out which sort of layer this is
 				if (ly instanceof Debrief.Wrappers.CompositeTrackWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.CompositeTrackHandler.exportTrack(
-							(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+					CompositeTrackHandler.exportTrack(
+							(TrackWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.TrackWrapper)
+				else if (ly instanceof TrackWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.TrackHandler.exportTrack(
-							(Debrief.Wrappers.TrackWrapper) ly, layers, doc);
+					TrackHandler.exportTrack(
+							(TrackWrapper) ly, layers, doc);
 				}
 				else if (ly instanceof ChartFolio)
 				{
 					ChartFolioHandler.exportThisFolio((ChartFolio) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.BuoyPatternWrapper)
+				else if (ly instanceof BuoyPatternWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.PatternHandler.exportTrack(
-							(Debrief.Wrappers.BuoyPatternWrapper) ly, layers, doc);
+					PatternHandler.exportTrack(
+							(BuoyPatternWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
+				else if (ly instanceof NarrativeWrapper)
 				{
-					Debrief.ReaderWriter.XML.Tactical.NarrativeHandler.exportNarrative(
-							(Debrief.Wrappers.NarrativeWrapper) ly, layers, doc);
+					NarrativeHandler.exportNarrative(
+							(NarrativeWrapper) ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.Chart.Painters.ETOPOPainter)
+				else if (ly instanceof ETOPOPainter)
 				{
 					ETOPOHandler.exportThisPlottable(ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.ETOPO.ETOPO_2_Minute)
+				else if (ly instanceof ETOPO_2_Minute)
 				{
 					TOPOHandler.exportThisPlottable(ly, layers, doc);
 				}
@@ -150,16 +155,12 @@ public final class DebriefLayersHandler extends MWCXMLReader
 				{
 					ExternallyManagedLayerHandler.exportThisPlottable(ly, layers, doc);
 				}
-				else if (ly instanceof MWC.GUI.BaseLayer)
+				else if (ly instanceof BaseLayer)
 				{
-					DebriefLayerHandler.exportLayer((MWC.GUI.BaseLayer) ly, layers, doc);
+					DebriefLayerHandler.exportLayer((BaseLayer) ly, layers, doc);
 				}
 			}
-
 		}
-
 		parent.appendChild(layers);
-
 	}
-
 }

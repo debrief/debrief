@@ -20,7 +20,6 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -38,6 +37,7 @@ import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class DebriefImageHelper implements ViewLabelImageHelper
 {

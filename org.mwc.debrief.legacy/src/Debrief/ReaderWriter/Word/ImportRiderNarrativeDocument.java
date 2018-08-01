@@ -45,7 +45,6 @@ import org.apache.poi.xwpf.usermodel.XWPFTableRow;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -59,7 +58,9 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -596,7 +597,7 @@ public class ImportRiderNarrativeDocument
 
       // also check no narrative entries added
       final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          LayerHandler.NARRATIVE_LAYER);
       assertNull(narr);
     }
 
@@ -1207,11 +1208,11 @@ public class ImportRiderNarrativeDocument
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(
-        ImportReplay.NARRATIVE_LAYER);
+        LayerHandler.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

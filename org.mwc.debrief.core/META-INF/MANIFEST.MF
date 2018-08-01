@@ -61,5 +61,8 @@ Require-Bundle: org.mwc.cmap.core,
  org.mwc.cmap.plotViewer,
  org.eclipse.team.core,
  org.eclipse.team.ui,
- org.eclipse.ui.intro
+ org.eclipse.ui.intro,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
 Bundle-ActivationPolicy: lazy

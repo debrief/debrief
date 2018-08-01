@@ -131,8 +131,6 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
   private static final int LENGTH_OF_UNDO_BUFFER = 10;
 
   public static final String PLUGIN_ID = "org.mwc.cmap.core";
-  public static final String NARRATIVE_VIEWER =
-      "org.mwc.cmap.narrative.views.NarrativeViewer";
 
   public static final String BULK_NARRATIVE_VIEWER =
       "org.mwc.cmap.narrative.views.BulkNarrativeViewer";

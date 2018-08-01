@@ -5,12 +5,12 @@ import java.awt.Color;
 import org.mwc.debrief.dis.diagnostics.file.EventFileListener;
 import org.mwc.debrief.dis.listeners.IDISEventListener;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
 public class DebriefEventListener extends DebriefCoreListener implements
     IDISEventListener
@@ -26,13 +26,13 @@ public class DebriefEventListener extends DebriefCoreListener implements
   public void add(final long time, final short eid, long id, final String hisName, final int eType, final String message)
   {
     // and the narrative entry
-    addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
+    addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
-        return new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+        return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
       }
 
       @Override

@@ -26,7 +26,7 @@ public enum PlanetmayoImages {
 	TRANSPARENT("icons/transparent.gif"),
 	HIGHLIGHTED_IMAGE("icons/image-highlight.png"),
 	SELECTED_IMAGE("icons/image-select.png"),
-	VIEW_FULLSIZE("icons/16/large-icon.png"),
+	VIEW_FULLSIZE("icons/16/large-icon-4.png"),
 	VIEW_MEDIUM("icons/16/medium-icon.png"),
   VIEW_THUMBNAILS("icons/16/small-icon.png"),
 	CONTROL_TIME("icons/16/control_time.png"),

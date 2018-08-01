@@ -207,7 +207,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
   /**
    * the name of this shape
    */
-  private String _myName;
+  protected String _myName;
 
   /**
    * property change support for this shape, this allows us to store a list of objects which are
@@ -266,7 +266,7 @@ abstract public class PlainShape implements Serializable, DraggableItem
     sb.append("Shape");
     sb.append(System.currentTimeMillis());
 
-    setName(sb.toString());
+    _myName = myType;
 
     // sort the default font
     setFont(Defaults.getFont());
@@ -502,17 +502,6 @@ abstract public class PlainShape implements Serializable, DraggableItem
   public void setLineWidth(final int lineWidth)
   {
     _lineWidth = lineWidth;
-  }
-
-  /**
-   * setter function for name
-   * 
-   * @param val
-   *          String representing name of shape
-   */
-  final public void setName(final String val)
-  {
-    _myName = val;
   }
 
   public void setSemiTransparent(final boolean semiTransparent)

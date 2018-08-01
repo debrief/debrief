@@ -26,9 +26,6 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Vector;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -59,6 +56,14 @@ import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.FMC_Wrapper;
 import org.osgi.framework.Bundle;
+
+import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
+import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
+import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
+import com.planetmayo.debrief.satc.model.generator.ISolver;
+import com.planetmayo.debrief.satc.model.manager.ISolversManager;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 import ASSET.GUI.SuperSearch.Plotters.SSGuiSupport;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
@@ -104,14 +109,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-
-import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
-import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
-import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution.CoreMeasurement;
-import com.planetmayo.debrief.satc.model.contributions.FrequencyMeasurementContribution;
-import com.planetmayo.debrief.satc.model.generator.ISolver;
-import com.planetmayo.debrief.satc.model.manager.ISolversManager;
-import com.planetmayo.debrief.satc_rcp.SATC_Activator;
+import junit.framework.TestCase;
 
 public class EditableTests extends TestCase
 {
@@ -477,7 +475,6 @@ public class EditableTests extends TestCase
 			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 			final EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
 					10, WorldDistance.DEGS), new WorldDistance(5, WorldDistance.DEGS));
-			theEllipse.setName("test ellipse");
 			editable = new TMAContactWrapper("blank sensor",
 					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
 					theEllipse, "some symbol");
@@ -718,13 +715,13 @@ public class EditableTests extends TestCase
     // check if we received an object
   	System.out.println("testing " + toBeTested.getClass());
 
-    Assert.assertNotNull("Found editable object", toBeTested);
+    assertNotNull("Found editable object", toBeTested);
 
     final Editable.EditorType et = toBeTested.getInfo();
 
     if (et == null)
     {
-      Assert.fail("no editor type returned for");
+      fail("no editor type returned for");
       return;
     }
 
@@ -753,7 +750,7 @@ public class EditableTests extends TestCase
                                 // | Settings | File Templates.
         }
         // check it worked
-        Assert.assertNotNull("we didn't create the custom editor for:",
+        assertNotNull("we didn't create the custom editor for:",
             newInstance);
       }
       else
@@ -768,12 +765,12 @@ public class EditableTests extends TestCase
 				catch (Exception e)
 				{
 					org.mwc.debrief.editable.test.Activator.log(e);
-					Assert.fail("problem fetching property editors for " + toBeTested.getClass());
+					fail("problem fetching property editors for " + toBeTested.getClass());
 				}
 
         if (pd == null)
         {
-          Assert.fail("problem fetching property editors for " + toBeTested.getClass());
+          fail("problem fetching property editors for " + toBeTested.getClass());
           return;
         }
 
@@ -796,13 +793,13 @@ public class EditableTests extends TestCase
 					catch (Exception e)
 					{
 						org.mwc.debrief.editable.test.Activator.log(e);
-						Assert.fail("problem fetching griddable property editors for "
+						fail("problem fetching griddable property editors for "
 								+ toBeTested.getClass());
 					}
 
 					if (pd == null)
 					{
-						Assert.fail("problem fetching griddable property editors for "
+						fail("problem fetching griddable property editors for "
 								+ toBeTested.getClass());
 						return;
 					}
@@ -822,7 +819,7 @@ public class EditableTests extends TestCase
         final MethodDescriptor method = methods[thisM];
         final Method thisOne = method.getMethod();
         final String theName = thisOne.getName();
-        Assert.assertNotNull(theName);
+        assertNotNull(theName);
       }
     }
   }
