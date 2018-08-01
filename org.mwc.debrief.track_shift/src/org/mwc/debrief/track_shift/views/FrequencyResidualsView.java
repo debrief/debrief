@@ -38,6 +38,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -92,19 +93,20 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     toolBarManager.add(calcBaseFreq);
 
-    IContributionItem comboCI = new ControlContribution("Acoustic Source")
+    IContributionItem dropdown = new ControlContribution("Acoustic Source")
     {
       protected Control createControl( Composite parent)
       {
 
         Composite body = new Composite(parent, SWT.NONE);
-        GridLayout layout = new GridLayout();
-        body.setLayout(layout);
+        
+        body.setLayout(new FillLayout());
         body.setSize(24, 24);
         final ToolBar toolBar = new ToolBar (body, SWT.None);
         final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
-        item.setText("Acoustic Source:");
-        // @IAN -> you can set Icon if you need on Button
+        item.setToolTipText("Acoustic Source");
+        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin.getImageDescriptor(
+            "icons/24/photo_scenery.png")));
         item.addListener(SWT.Selection, new Listener()
         {
           @Override
@@ -177,7 +179,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
       }
     };
-    toolBarManager.add(comboCI);
+    toolBarManager.add(dropdown);
 
   }
 
