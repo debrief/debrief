@@ -1057,6 +1057,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           // now the slider selector bar thingy
           Display.getDefault().asyncExec(new Runnable()
           {
+
             public void run()
             {
               // ok, double-check we're enabled
@@ -1078,6 +1079,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                   newPeriod.getEndDTG());
             }
           });
+
         }
       }
 
@@ -1775,10 +1777,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               if ((startDTG != null) && (_myTemporalDataset != null))
               {
                 // cool - update the slider to our data settings
-
-                HiResDate startTime, endTime;
-                startTime = _myStepperProperties.getSliderStartTime();
-                endTime = _myStepperProperties.getSliderEndTime();
+                final HiResDate startTime = _myStepperProperties
+                    .getSliderStartTime();
+                final HiResDate endTime = _myStepperProperties
+                    .getSliderEndTime();
 
                 _slideManager.resetRange(startTime, endTime);
 
@@ -1790,7 +1792,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 // probably forgotten
                 // it.
                 timeUpdated(_myTemporalDataset.getTime());
-
               }
             }
           }
@@ -1976,11 +1977,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
       // normal, Debrief-style situation, check we've got
       // what we're after
-      if (_myTemporalDataset != null)
+      if (_myTemporalDataset != null && (_controllableTime != null)
+          && (_myTemporalDataset.getTime() != null))
       {
-        if ((_controllableTime != null) && (_myTemporalDataset
-            .getTime() != null))
-          enable = true;
+        enable = true;
       }
     }
 
@@ -2119,11 +2119,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       // so
       Display.getDefault().asyncExec(new Runnable()
       {
+
         public void run()
         {
 
           _timeLabel.setText(DUFF_TIME_TEXT);
         }
+
       });
     }
 
@@ -2411,6 +2413,43 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
   }
 
+  private class FilterToPeriodAction extends Action
+  {
+    FilterToPeriodAction()
+    {
+      super("Filter to period", Action.AS_CHECK_BOX);
+    }
+
+    @Override
+    public void run()
+    {
+      super.run();
+      if (isChecked())
+      {
+        final HiResDate tNow = _myTemporalDataset.getTime();
+        if (tNow != null)
+        {
+          TimePeriod period = _controllablePeriod.getPeriod();
+          if (period != null)
+          {
+            if (!period.contains(tNow))
+            {
+              if (tNow.greaterThan(period.getEndDTG()))
+              {
+                fireNewTime(period.getEndDTG());
+              }
+              else
+              {
+                fireNewTime(period.getStartDTG());
+              }
+            }
+            stopPlayingTimer();
+          }
+        }
+      }
+    }
+  }
+
   /**
    * ok - put in the stepper mode buttons - and any others we think of.
    */
@@ -2461,40 +2500,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     toolManager.add(new Separator());
 
     // let user indicate whether we should be filtering to window
-    _filterToSelectionAction = new Action("Filter to period",
-        Action.AS_CHECK_BOX)
-    {
-
-      @Override
-      public void run()
-      {
-        super.run();
-        if (isChecked())
-        {
-          final HiResDate tNow = _myTemporalDataset.getTime();
-          if (tNow != null)
-          {
-            TimePeriod period = _controllablePeriod.getPeriod();
-            if (period != null)
-            {
-              if (!period.contains(tNow))
-              {
-                if (tNow.greaterThan(period.getEndDTG()))
-                {
-                  fireNewTime(period.getEndDTG());
-                }
-                else
-                {
-                  fireNewTime(period.getStartDTG());
-                }
-              }
-              stopPlayingTimer();
-            }
-          }
-        }
-      }
-
-    };
+    _filterToSelectionAction = new FilterToPeriodAction();
     _filterToSelectionAction.setImageDescriptor(CorePlugin.getImageDescriptor(
         ICON_FILTER_TO_PERIOD));
     _filterToSelectionAction.setToolTipText(
@@ -2519,7 +2525,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         ICON_BKMRK_NAV));
     _setAsBookmarkAction.setToolTipText(
         "Add this DTG to the list of bookmarks");
-    _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give it an id, so we can
+    _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give
+                                                   // it
+                                                   // an
+                                                   // id,
+                                                   // so
+                                                   // we
+                                                   // can
     menuManager.add(_setAsBookmarkAction);
     // refer to this later on.
 
@@ -2643,6 +2655,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     final Action highlighterProperties = new Action("Edit current highlighter:"
         + currentHighlighter.getName(), Action.AS_PUSH_BUTTON)
     {
+
       public void runWithEvent(final Event event)
       {
         // ok - get the info object for this painter
@@ -2654,6 +2667,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               new StructuredSelection(pw), provider, myPart);
         }
       }
+
     };
     highlighterProperties.setImageDescriptor(CorePlugin.getImageDescriptor(
         ICON_PROPERTIES));
@@ -2734,6 +2748,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     final Action currentPainterProperties = new Action("Edit current painter:"
         + currentPainter.getName(), Action.AS_PUSH_BUTTON)
     {
+
       public void runWithEvent(final Event event)
       {
         // ok - get the info object for this painter
