@@ -1,6 +1,5 @@
 package org.mwc.cmap.TimeController.recorders;
 
-import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
@@ -131,7 +130,6 @@ public class CoordinateRecorder
     String fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
     List<Track> list = new ArrayList<Track>();
     list.addAll(_tracks.values());
-    Dimension dims = _projection.getScreenArea();
     long interval =  _timePrefs.getAutoInterval().getMillis();
     // output tracks object.
     //showDialog now

@@ -69,11 +69,7 @@ public class ExportNarrativeEntry
     {
       return false;
     }
-    if (!Objects.equals(text, other.text))
-    {
-      return false;
-    }
-    return true;
+    return (Objects.equals(text, other.text));
   }
 
 }

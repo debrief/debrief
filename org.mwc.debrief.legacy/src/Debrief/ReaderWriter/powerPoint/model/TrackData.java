@@ -105,14 +105,9 @@ public class TrackData
 
   private boolean basicFieldComparison(TrackData other)
   {
-    if (height != other.height || intervals != other.intervals
+    return ! (height != other.height || intervals != other.intervals
         || width != other.width || (name == null && other.name != null) || !name
-            .equals(other.name))
-    {
-      return false;
-    }
-
-    return true;
+            .equals(other.name));
   }
 
   private boolean classComparison(Object obj)

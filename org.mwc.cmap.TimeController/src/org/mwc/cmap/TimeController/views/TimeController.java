@@ -185,7 +185,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * listen out for new times
    */
-  final PropertyChangeListener _temporalListener = new NewTimeListener();
+  final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
   /**
    * the temporal dataset controlling the narrative entry currently displayed
@@ -291,9 +291,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the projection we're going to set to relative mode, as we wish
    */
-  PlainProjection _targetProjection;
+  private PlainProjection _targetProjection;
 
-  TrackDataProvider.TrackDataListener _theTrackDataListener;
+  private TrackDataProvider.TrackDataListener _theTrackDataListener;
 
   /**
    * keep track of the list of play buttons, since on occasion we may want to hide some of them
@@ -857,7 +857,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     });
   }
 
-  boolean _alreadyProcessingChange = false;
+  private boolean _alreadyProcessingChange = false;
 
   /**
    * user has selected a time period, indicate it to the controllable
@@ -950,7 +950,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
 
-  void stopPlaying()
+  private void stopPlaying()
   {
     /**
      * give the event to our child class, in case it's a scenario
@@ -965,7 +965,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * ok, start auto-stepping forward through the serial
    */
-  void startPlaying()
+  private void startPlaying()
   {
     // hey - set a practical minimum step size, 1/4 second is a fair start
     // point
@@ -1087,7 +1087,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     }
   }
 
-  void processClick(final STEP_SIZE step, final boolean fwd)
+  private void processClick(final STEP_SIZE step, final boolean fwd)
   {
 
     // CorePlugin.logError(Status.INFO, "Starting step", null);
@@ -1964,7 +1964,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * convenience method to make the panel enabled if we have a time controller and a valid time
    */
-  void checkTimeEnabled()
+  private void checkTimeEnabled()
   {
     boolean enable = false;
 
@@ -2038,7 +2038,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * Passing the focus request to the viewer's control.
    */
-  void editMeInProperties(final PropertyChangeSupport props)
+  private void editMeInProperties(final PropertyChangeSupport props)
   {
     // do we have any data?
     if (props != null)
@@ -2060,7 +2060,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the data we are looking at has updated. If we're set to follow that time, update ourselves
    */
-  void timeUpdated(final HiResDate newDTG)
+  private void timeUpdated(final HiResDate newDTG)
   {
     if (newDTG != null)
     {
@@ -2134,7 +2134,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
 
-  String getFormattedDate(final HiResDate newDTG)
+  private String getFormattedDate(final HiResDate newDTG)
   {
     String newVal = "n/a";
     // hmm, we may have heard about the new date before hearing about the
@@ -2423,7 +2423,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * ok - put in the stepper mode buttons - and any others we think of.
    */
-  void populateDropDownList(final LayerPainterManager myLayerPainterManager)
+  private void populateDropDownList(final LayerPainterManager myLayerPainterManager)
   {
     // clear the list
     final IMenuManager menuManager = getViewSite().getActionBars()
