@@ -96,15 +96,15 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       {
 
         final Button item = new Button(parent, SWT.FLAT | SWT.ARROW | SWT.DOWN);
-        //@IAN -> you can set Icon if you need on Button
+        // @IAN -> you can set Icon if you need on Button
         item.addListener(SWT.Selection, new Listener()
         {
           @Override
           public void handleEvent(Event event)
           {
             final Menu menu = new Menu(parent.getShell(), SWT.POP_UP);
-            
-            //----------- MENU populate -----
+
+            // ----------- MENU populate -----
             SourceProvider sourceProvider = new SourceProvider()
             {
               @Override
@@ -113,7 +113,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
                 return getPotentialSources();
               }
             };
-            
+
             List<SensorWrapper> sources = sourceProvider.getSources();
             if (sources != null && sources.size() > 0)
             {
@@ -121,9 +121,9 @@ public class FrequencyResidualsView extends BaseStackedDotsView
               for (final SensorWrapper sensor : sources)
               {
                 final String host = sensor.getHost().getName();
-                final String name = host + "/" + sensor.getName() + " (" + df.format(
-                    sensor.getBaseFrequency()) + " Hz)";
-                
+                final String name = host + "/" + sensor.getName() + " (" + df
+                    .format(sensor.getBaseFrequency()) + " Hz)";
+
                 final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
                 mitem.setText(name);
                 mitem.setSelection(sensor.equals(_activeSource));
@@ -137,7 +137,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
                     System.out.println("Setting active source to:" + sensor);
                   }
                 });
-                
+
               }
             }
             else
@@ -149,16 +149,15 @@ public class FrequencyResidualsView extends BaseStackedDotsView
                 @Override
                 public void widgetSelected(SelectionEvent e)
                 {
-
                   System.out.println("no sources pressed");
                 }
               });
-              
+
             }
-            
-            //-------------------------------
-            
-            //menu location  
+
+            // -------------------------------
+
+            // menu location
             Rectangle rect = item.getBounds();
             Point pt = new Point(rect.x, rect.y + rect.height);
             pt = parent.toDisplay(pt);
