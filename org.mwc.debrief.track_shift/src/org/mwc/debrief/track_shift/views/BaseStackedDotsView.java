@@ -27,6 +27,7 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +52,9 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -64,9 +67,18 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
@@ -2061,7 +2073,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     accuracyMenu.add(_precisionOne);
     accuracyMenu.add(_precisionTwo);
     accuracyMenu.add(_precisionThree);
-    
+
     addPullDownExtras(manager);
 
     // and the help
@@ -2125,13 +2137,82 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // and a separator
     toolBarManager.add(new Separator());
 
+    // add Drop down
+
     final Vector<Action> actions = DragSegment.getDragModes();
-    for (final Iterator<Action> iterator = actions.iterator(); iterator
-        .hasNext();)
+    IContributionItem dropdown = new ControlContribution("Drag Track Segment")
     {
-      final Action action = iterator.next();
-      toolBarManager.add(action);
-    }
+      protected Control createControl(Composite parent)
+      {
+
+        Composite body = new Composite(parent, SWT.NONE);
+
+        body.setLayout(new FillLayout());
+        body.setSize(24, 24);
+        final ToolBar toolBar = new ToolBar(body, SWT.None);
+        final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+        item.setToolTipText("Drag Track Segment");
+        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+            .getImageDescriptor("icons/24/track_segment.png")));
+        item.addListener(SWT.Selection, new Listener()
+        {
+          @Override
+          public void handleEvent(Event event)
+          {
+            final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+
+            // ----------- MENU populate -----
+
+            if (actions != null && actions.size() > 0)
+            {
+              final DecimalFormat df = new DecimalFormat("0.00");
+              for (final Action action : actions)
+              {
+
+                final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+                mitem.setText(action.getText());
+                mitem.setSelection(action.isChecked());
+                mitem.addSelectionListener(new SelectionAdapter()
+                {
+                  @Override
+                  public void widgetSelected(SelectionEvent e)
+                  {
+                    action.run();
+                  }
+                });
+
+              }
+            }
+            else
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
+              mitem.setText("No actions found");
+              mitem.addSelectionListener(new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  System.out.println("no actions pressed");
+                }
+              });
+
+            }
+            // -------------------------------
+
+            // menu location
+            org.eclipse.swt.graphics.Rectangle rect = item.getBounds();
+            org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(rect.x, rect.y + rect.height);
+            pt = toolBar.toDisplay(pt);
+            menu.setLocation(pt.x, pt.y);
+            menu.setVisible(true);
+          }
+        });
+        return body;
+
+      }
+    };
+    toolBarManager.add(dropdown);
+
   }
 
   /**
@@ -2193,15 +2274,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final double RMS_ZIG_RATIO;
     switch (slicePrecision)
     {
-      case LOW:
-        RMS_ZIG_RATIO = 20;
-        break;
-      case MEDIUM:
-      default:
-        RMS_ZIG_RATIO = 10d;
-        break;
-      case HIGH:
-        RMS_ZIG_RATIO = 5;
+    case LOW:
+      RMS_ZIG_RATIO = 20;
+      break;
+    case MEDIUM:
+    default:
+      RMS_ZIG_RATIO = 10d;
+      break;
+    case HIGH:
+      RMS_ZIG_RATIO = 5;
     }
     return RMS_ZIG_RATIO;
   }

@@ -36,10 +36,19 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
@@ -84,27 +93,93 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     toolBarManager.add(calcBaseFreq);
 
-    IContributionItem comboCI = new ControlContribution("Acoustic Source")
+    IContributionItem dropdown = new ControlContribution("Acoustic Source")
     {
-      protected Control createControl(Composite parent)
+      protected Control createControl( Composite parent)
       {
-        final Combo c = new Combo(parent, SWT.READ_ONLY);
+
+        Composite body = new Composite(parent, SWT.NONE);
         
-        int numItems =  2 + (int) (Math.random() * 6d);
-        for (int i = 0; i <= numItems; i++)
+        body.setLayout(new FillLayout());
+        body.setSize(24, 24);
+        final ToolBar toolBar = new ToolBar (body, SWT.None);
+        final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
+        item.setToolTipText("Acoustic Source");
+        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin.getImageDescriptor(
+            "icons/24/pulse.png")));
+        item.addListener(SWT.Selection, new Listener()
         {
-          c.add("item " + i);
-        }
-        c.addSelectionListener(new SelectionAdapter()
-        {
-          public void widgetSelected(SelectionEvent e)
+          @Override
+          public void handleEvent(Event event)
           {
-            System.out.println("pressed:" + c.getText());
+            final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+
+            // ----------- MENU populate -----
+            SourceProvider sourceProvider = new SourceProvider()
+            {
+              @Override
+              public List<SensorWrapper> getSources()
+              {
+                return getPotentialSources();
+              }
+            };
+
+            List<SensorWrapper> sources = sourceProvider.getSources();
+            if (sources != null && sources.size() > 0)
+            {
+              final DecimalFormat df = new DecimalFormat("0.00");
+              for (final SensorWrapper sensor : sources)
+              {
+                final String host = sensor.getHost().getName();
+                final String name = host + "/" + sensor.getName() + " (" + df
+                    .format(sensor.getBaseFrequency()) + " Hz)";
+
+                final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+                mitem.setText(name);
+                mitem.setSelection(sensor.equals(_activeSource));
+                mitem.addSelectionListener(new SelectionAdapter()
+                {
+                  @Override
+                  public void widgetSelected(SelectionEvent e)
+                  {
+                    _activeSource = sensor;
+
+                    System.out.println("Setting active source to:" + sensor);
+                  }
+                });
+
+              }
+            }
+            else
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
+              mitem.setText("No sources found");
+              mitem.addSelectionListener(new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  System.out.println("no sources pressed");
+                }
+              });
+
+            }
+
+            // -------------------------------
+
+            // menu location
+            Rectangle rect = item.getBounds();
+            Point pt = new Point(rect.x, rect.y + rect.height);
+            pt = toolBar.toDisplay(pt);
+            menu.setLocation(pt.x, pt.y);
+            menu.setVisible(true);
           }
         });
-        return c;
-      }};
-      toolBarManager.add(comboCI);
+        return body;
+
+      }
+    };
+    toolBarManager.add(dropdown);
 
   }
 
