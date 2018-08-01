@@ -27,7 +27,6 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2165,7 +2164,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
             if (actions != null && actions.size() > 0)
             {
-              final DecimalFormat df = new DecimalFormat("0.00");
               for (final Action action : actions)
               {
 

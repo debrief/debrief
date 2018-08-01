@@ -2963,6 +2963,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    * @param logger
+   * @param radiatedSource 
    * @param fZeroMarker
    *
    * @param currentOffset
@@ -2973,7 +2974,8 @@ public final class StackedDotHelper
       final SwitchableTrackProvider tracks, final boolean onlyVis,
       final ErrorLogger logger, final boolean updateDoublets,
       final SetBackgroundShade backShader,
-      final ColourStandardXYItemRenderer lineRend)
+      final ColourStandardXYItemRenderer lineRend, 
+      final SensorWrapper radiatedSource)
   {
     // do we have anything?
     if (_primaryTrack == null)

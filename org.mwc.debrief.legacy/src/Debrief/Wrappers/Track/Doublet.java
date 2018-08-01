@@ -18,6 +18,7 @@ import java.awt.Color;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.Algorithms.FrequencyCalcs;
 import MWC.GenericData.HiResDate;
@@ -360,6 +361,11 @@ public final class Doublet implements Comparable<Doublet>
     return predictedFreq;
   }
 
+  public double getPredictedMultistaticFrequency(final double speedOfSoundKts, final SensorWrapper source)
+  {
+    return getPredictedFrequency(speedOfSoundKts);
+  }
+  
   public SensorContactWrapper getSensorCut()
   {
     return _sensor;

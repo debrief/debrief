@@ -39,7 +39,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -114,7 +113,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
           {
             final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
 
-            // ----------- MENU populate -----
             SourceProvider sourceProvider = new SourceProvider()
             {
               @Override
@@ -555,7 +553,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     _myHelper.updateFrequencyData(errorData, lineData,
         _switchableTrackDataProvider, _onlyVisible.isChecked(), this,
         updateDoubletsVal, backgroundShader,
-        (ColourStandardXYItemRenderer) _linePlot.getRenderer());
+        (ColourStandardXYItemRenderer) _linePlot.getRenderer(), _activeSource);
   }
 
 }
