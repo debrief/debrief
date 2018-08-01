@@ -710,7 +710,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     // first create the button holder
     _btnPanel = new Composite(_wholePanel, SWT.BORDER);
-    _btnPanel.setLayout(new GridLayout(8, true));
+    _btnPanel.setLayout(new GridLayout(7, false));
 
     final Button eBwd = new Button(_btnPanel, SWT.NONE);
     addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false,
