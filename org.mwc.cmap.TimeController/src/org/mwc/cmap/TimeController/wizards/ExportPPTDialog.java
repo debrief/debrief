@@ -16,6 +16,7 @@ package org.mwc.cmap.TimeController.wizards;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -175,7 +177,7 @@ public class ExportPPTDialog extends Dialog
   protected void createButtonsForButtonBar(Composite parent)
   {
     ((GridLayout) parent.getLayout()).numColumns++;
-    Link link = new Link(parent,SWT.NONE);
+    final Link link = new Link(parent,SWT.NONE);
     link.setText("<a>Click to view PPT template</a>");
     link.setLayoutData(new GridData(SWT.LEFT,SWT.CENTER,true,false));
     link.addSelectionListener(new SelectionAdapter()
@@ -183,8 +185,9 @@ public class ExportPPTDialog extends Dialog
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        //TODO implement this one.
-        
+        final String prefId = "org.mwc.debrief.core.preferences.PrefsPage";
+        PreferenceDialog dialog = PreferencesUtil.createPreferenceDialogOn(link.getShell(), prefId, null, null);
+        dialog.open();
       }
     });
     super.createButtonsForButtonBar(parent);
