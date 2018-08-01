@@ -269,11 +269,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    */
   SplitButton _playButton;
 
-  /**
-   * the record button
-   */
-  Button _recordButton;
-
   PropertyChangeListener _myDateFormatListener = null;
 
   /**
@@ -744,8 +739,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       @Override
       public void widgetSelected(SelectionEvent e)
       {
-        boolean toExport = doExport.getSelection();
-        System.out.println("export is:" + toExport);
+        // n/a
       }
 
       @Override
@@ -777,24 +771,26 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             {
               if (doExport.getSelection())
               {
-                startRecording();
+                // get ready for recording
+                _coordinateRecorder = new CoordinateRecorder(_myLayers, _targetProjection,
+                    _myStepperProperties);
+                _coordinateRecorder.startStepping(getTimeProvider().getTime());
               }
-              else
-              {
-                startPlaying();
-              }
+              
+              // and start playing
+              startPlaying();
               tipTxt = PAUSE_TEXT;
               imageTxt = ICON_MEDIA_PAUSE;
             }
             else
             {
-              if (doExport.getSelection())
+              stopPlaying();
+              
+              // do any export tidying up, if we have to
+              if (_coordinateRecorder != null)
               {
-                stopRecording();
-              }
-              else
-              {
-                stopPlaying();
+                _coordinateRecorder.stopStepping(getTimeProvider().getTime());
+                _coordinateRecorder = null;
               }
 
               tipTxt = PLAY_TEXT;
@@ -985,24 +981,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     getTimer().setDelay(delayToUse);
 
     getTimer().start();
-  }
-
-  void stopRecording()
-  {
-    stopPlaying();
-    if (_coordinateRecorder != null)
-    {
-      _coordinateRecorder.stopStepping(getTimeProvider().getTime());
-      _coordinateRecorder = null;
-    }
-  }
-
-  void startRecording()
-  {
-    _coordinateRecorder = new CoordinateRecorder(_myLayers, _targetProjection,
-        _myStepperProperties);
-    _coordinateRecorder.startStepping(getTimeProvider().getTime());
-    startPlaying();
   }
 
   public void onTime(final ActionEvent event)
