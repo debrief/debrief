@@ -22,6 +22,7 @@ import Debrief.Wrappers.SensorWrapper;
 import MWC.Algorithms.Conversions;
 import MWC.Algorithms.FrequencyCalcs;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
@@ -246,11 +247,12 @@ public final class Doublet implements Comparable<Doublet>
   }
 
   public double getCalculatedBearing(final WorldVector sensorOffset,
-      final WorldVector targetOffset)
+      final WorldVector targetOffset, WorldLocation rxLoc,
+      WorldLocation txLoc)
   {
     // copy our locations
-    _workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
-    _workingTargetLocation.copy(_targetFix.getLocation());
+    _workingSensorLocation.copy(rxLoc);
+    _workingTargetLocation.copy(txLoc);
 
     // apply the offsets
     if (sensorOffset != null)
@@ -268,6 +270,13 @@ public final class Doublet implements Comparable<Doublet>
       calcBearing += 360;
 
     return calcBearing;
+  }
+
+  public double getCalculatedBearing(final WorldVector sensorOffset,
+      final WorldVector targetOffset)
+  {
+    return getCalculatedBearing(sensorOffset, targetOffset, _sensor
+        .getCalculatedOrigin(null), _targetFix.getLocation());
   }
 
   /**
@@ -361,11 +370,66 @@ public final class Doublet implements Comparable<Doublet>
     return predictedFreq;
   }
 
-  public double getPredictedMultistaticFrequency(final double speedOfSoundKts, final SensorWrapper source)
+  private FixWrapper getTransmitterFix(SensorWrapper source)
   {
-    return getPredictedFrequency(speedOfSoundKts);
+
+    Watchable[] nearest = source.getHost().getNearestTo(_hostFix
+        .getDateTimeGroup(), false);
+    final Watchable res;
+    if (nearest != null && nearest.length > 0)
+    {
+      res = nearest[0];
+    }
+    else
+    {
+      res = null;
+    }
+
+    return (FixWrapper) res;
   }
-  
+
+  public double getPredictedMultistaticFrequency(final double speedOfSoundKts,
+      final SensorWrapper source)
+  {
+    double predictedFreq = Double.NaN;
+
+    if (_targetTrack instanceof CoreTMASegment)
+    {
+      // ok, freq drop from source to target
+      final FixWrapper sourceFix = getTransmitterFix(source);
+
+      final double baseFreq = source.getBaseFrequency();
+
+      final WorldLocation txLocation = _targetFix.getLocation();
+      final WorldLocation rxLocation = sourceFix.getLocation();
+      double theBearingDegs = getCalculatedBearing(null, null, txLocation, rxLocation);
+
+      double rxCourseDegs = _targetFix.getCourseDegs();
+      double txCourseDegs = sourceFix.getCourseDegs();
+
+      double rxSpeedKts = _targetFix.getSpeed();
+      double txSpeedKts = sourceFix.getSpeed();
+
+      predictedFreq = FrequencyCalcs.getPredictedFreq(baseFreq, speedOfSoundKts,
+          rxSpeedKts, rxCourseDegs, txSpeedKts, txCourseDegs, theBearingDegs);
+
+      // ok, now from the target to the receiver
+      theBearingDegs = getCalculatedBearing(null, null);
+
+      rxCourseDegs = _hostFix.getCourseDegs();
+      txCourseDegs = _targetFix.getCourseDegs();
+
+      rxSpeedKts = _hostFix.getSpeed();
+      txSpeedKts = _targetFix.getSpeed();
+
+      predictedFreq = FrequencyCalcs.getPredictedFreq(predictedFreq,
+          speedOfSoundKts, rxSpeedKts, rxCourseDegs, txSpeedKts, txCourseDegs,
+          theBearingDegs);
+
+    }
+    return predictedFreq;
+  }
+
   public SensorContactWrapper getSensorCut()
   {
     return _sensor;
