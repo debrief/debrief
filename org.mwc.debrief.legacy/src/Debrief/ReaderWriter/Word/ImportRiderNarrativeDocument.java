@@ -596,7 +596,7 @@ public class ImportRiderNarrativeDocument
 
       // also check no narrative entries added
       final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          NarrativeEntry.NARRATIVE_LAYER);
       assertNull(narr);
     }
 
@@ -1207,11 +1207,11 @@ public class ImportRiderNarrativeDocument
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(
-        ImportReplay.NARRATIVE_LAYER);
+        NarrativeEntry.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

@@ -19,7 +19,6 @@ import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -915,11 +914,11 @@ public class ImportWord_LEGACY
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw =
-        (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+        (NarrativeWrapper) _layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

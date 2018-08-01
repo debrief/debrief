@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -100,7 +99,7 @@ public final class NarrativeHandler extends
 	public final void elementClosed()
 	{
 		// is this one of those funny narratives?
-		if (!_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+		if (!_myNarrative.getName().equals(NarrativeEntry.NARRATIVE_LAYER))
 		{
 			// yes, better put the narrative name into the type field, since the user won't see it 
 			// in the layer manager
@@ -118,7 +117,7 @@ public final class NarrativeHandler extends
 		}
 
 		// is there already a narratives layer?
-		final Layer oldNarr = _theLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+		final Layer oldNarr = _theLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 
 		if (oldNarr != null)
 		{
@@ -135,9 +134,9 @@ public final class NarrativeHandler extends
 			// we don't already have a narrative, create a new one (with the correct name)
 			
 			// ok, do we have the right name?
-			if (_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+			if (_myNarrative.getName().equals(NarrativeEntry.NARRATIVE_LAYER))
 			{
-				_myNarrative.setName(ImportReplay.NARRATIVE_LAYER);
+				_myNarrative.setName(NarrativeEntry.NARRATIVE_LAYER);
 			}
 
 			// ok, now add it

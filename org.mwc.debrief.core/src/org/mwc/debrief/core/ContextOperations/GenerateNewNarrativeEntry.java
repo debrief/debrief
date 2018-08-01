@@ -32,7 +32,6 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.wizards.core.NewNarrativeEntryWizard;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -73,10 +72,10 @@ public class GenerateNewNarrativeEntry implements
 			if (_parent == null)
 			{
 				// see if it already exists
-				_parent = (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+				_parent = (NarrativeWrapper) _layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 				if (_parent == null)
 				{
-					_parent = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+					_parent = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
 					_layers.addThisLayer(_parent);
 				}
 			}

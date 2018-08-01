@@ -22,7 +22,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
 import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
@@ -215,7 +214,7 @@ public class CoordinateRecorder
       Layers layers, Map<String, Track> tracks, final long startTime, TimeControlPreferences timePrefs)
   {
     // look for a narratives layer
-    Layer narratives = layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+    Layer narratives = layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
     if(narratives != null)
     {
       Date firstTime = null;

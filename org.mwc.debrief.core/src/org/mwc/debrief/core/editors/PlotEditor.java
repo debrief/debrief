@@ -188,6 +188,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import junit.framework.TestCase;
@@ -1758,7 +1759,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     else if (adapter == IRollingNarrativeProvider.class)
     {
       // so, do we have any narrative data?
-      final Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      final Layer narr = _myLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 
       if (narr != null)
       {

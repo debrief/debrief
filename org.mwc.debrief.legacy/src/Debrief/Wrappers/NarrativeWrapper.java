@@ -128,7 +128,6 @@ import junit.framework.TestCase;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.Tactical.NarrativeHandler;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -674,7 +673,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
           DocumentBuilderFactory.newInstance().newDocumentBuilder()
               .newDocument();
       final org.w3c.dom.Element plt = doc.createElement("narrative");
-      plt.setAttribute("Name", ImportReplay.NARRATIVE_LAYER);
+      plt.setAttribute("Name", NarrativeEntry.NARRATIVE_LAYER);
       doc.appendChild(plt);
       NarrativeHandler.EntryHandler.exportEntry(n4, plt, doc);
 
@@ -698,7 +697,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
       // get the contents
       NarrativeWrapper narrLayer =
-          (NarrativeWrapper) parent.findLayer(ImportReplay.NARRATIVE_LAYER);
+          (NarrativeWrapper) parent.findLayer(NarrativeEntry.NARRATIVE_LAYER);
 
       NarrativeEntry theEntry =
           (NarrativeEntry) narrLayer.elements().nextElement();

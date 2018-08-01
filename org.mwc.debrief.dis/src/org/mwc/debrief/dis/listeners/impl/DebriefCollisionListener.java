@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import org.mwc.debrief.dis.listeners.IDISCollisionListener;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.BaseLayer;
@@ -53,13 +52,13 @@ public class DebriefCollisionListener  extends DebriefCoreListener implements ID
     final String message = "Collision between platform:" + movingName + " and " + recipientName;
 
     // and the narrative entry
-    addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
+    addNewItem(eid, NarrativeEntry.NARRATIVE_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
-        return new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+        return new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
       }
 
       @Override

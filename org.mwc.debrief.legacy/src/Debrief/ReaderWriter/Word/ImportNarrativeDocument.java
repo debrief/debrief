@@ -791,7 +791,7 @@ public class ImportNarrativeDocument
       assertEquals("got new tracks", 3, tLayers.size());
 
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          NarrativeEntry.NARRATIVE_LAYER);
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
       
@@ -865,7 +865,7 @@ public class ImportNarrativeDocument
       
       
 
-      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
       
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
@@ -1303,7 +1303,7 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          NarrativeEntry.NARRATIVE_LAYER);
       assertEquals("Got num lines", 371, narr.size());
     }
   }
@@ -1610,11 +1610,11 @@ public class ImportNarrativeDocument
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(
-        ImportReplay.NARRATIVE_LAYER);
+        NarrativeEntry.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

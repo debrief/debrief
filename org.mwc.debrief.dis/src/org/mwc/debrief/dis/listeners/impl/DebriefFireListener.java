@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import org.mwc.debrief.dis.listeners.IDISFireListener;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.BaseLayer;
@@ -55,13 +54,13 @@ public class DebriefFireListener extends DebriefCoreListener implements
     });
 
     // and the narrative entry
-    addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
+    addNewItem(eid, NarrativeEntry.NARRATIVE_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
-        return new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+        return new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
       }
 
       @Override

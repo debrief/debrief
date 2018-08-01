@@ -549,8 +549,6 @@ public class ImportReplay extends PlainImporterBase
 
   static private Vector<doublet> colors; // list of Replay colours
 
-  static public final String NARRATIVE_LAYER = "Narratives";
-
   static private final String ANNOTATION_LAYER = "Annotations";
 
   /**
@@ -2001,10 +1999,10 @@ public class ImportReplay extends PlainImporterBase
       res = entry.getDTG();
 
       // have we got a narrative wrapper?
-      Layer dest = getLayerFor(NARRATIVE_LAYER);
+      Layer dest = getLayerFor(NarrativeEntry.NARRATIVE_LAYER);
       if (dest == null)
       {
-        dest = new NarrativeWrapper(NARRATIVE_LAYER);
+        dest = new NarrativeWrapper(NarrativeEntry.NARRATIVE_LAYER);
         addLayer(dest);
       }
 
