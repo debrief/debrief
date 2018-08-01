@@ -93,6 +93,120 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     super(false, true);
   }
 
+  private class ToolbarListener implements Listener
+  {
+    final private ToolBar toolBar;
+    final private SourceProvider sourceProvider;
+    final private ToolItem item;
+
+    private ToolbarListener(ToolBar toolBar, SourceProvider sourceProvider, ToolItem item)
+    {
+      this.toolBar = toolBar;
+      this.sourceProvider = sourceProvider;
+      this.item = item;
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+
+      final List<SensorWrapper> sources = sourceProvider.getSources();
+      if (sources != null && sources.size() > 0)
+      {
+        if (_activeSource != null)
+        {
+          // ok, we need to include option to clear the active sensor
+          final MenuItem clearItem = new MenuItem(menu, SWT.RADIO);
+          clearItem.setText("Clear active source");
+          clearItem.addSelectionListener(new SelectionAdapter()
+          {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+              _activeSource = null;
+              updateData(false);
+            }
+          });
+        }
+
+        final DecimalFormat df = new DecimalFormat("0.00");
+        for (final SensorWrapper sensor : sources)
+        {
+          final String host = sensor.getHost().getName();
+          final String name = host + "/" + sensor.getName() + " (" + df
+              .format(sensor.getBaseFrequency()) + " Hz)";
+
+          final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+          mitem.setText(name);
+          mitem.setSelection(sensor.equals(_activeSource));
+          mitem.addSelectionListener(new SelectionAdapter()
+          {
+            @Override
+            public void widgetSelected(final SelectionEvent e)
+            {
+              _activeSource = sensor;
+
+              // trigger update of doublets
+              updateData(false);
+            }
+          });
+        }
+      }
+      else
+      {
+        final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
+        mitem.setText("No sources found");
+        mitem.addSelectionListener(new SelectionAdapter()
+        {
+          @Override
+          public void widgetSelected(final SelectionEvent e)
+          {
+            System.out.println("no sources pressed");
+          }
+        });
+      }
+
+      // -------------------------------
+
+      // menu location
+      final Rectangle rect = item.getBounds();
+      Point pt = new Point(rect.x, rect.y + rect.height);
+      pt = toolBar.toDisplay(pt);
+      menu.setLocation(pt.x, pt.y);
+      menu.setVisible(true);
+    }
+  }
+  
+  private class SourceDropdown extends ControlContribution
+  {
+    final SourceProvider sourceProvider;
+    
+    private SourceDropdown(final SourceProvider provider)
+    {
+      super("Acoustic Source");
+      sourceProvider = provider;
+    }
+
+    @Override
+    protected Control createControl(Composite parent)
+    {
+      final Composite body = new Composite(parent, SWT.NONE);
+
+      body.setLayout(new FillLayout());
+      body.setSize(24, 24);
+      final ToolBar toolBar = new ToolBar(body, SWT.None);
+      final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+      item.setToolTipText("Acoustic Source");
+      item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+          .getImageDescriptor("icons/24/pulse.png")));
+      
+      Listener itemListener = new ToolbarListener(toolBar, sourceProvider, item);     
+      item.addListener(SWT.Selection, itemListener);
+      return body;
+    }
+  }
+
   @Override
   protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
@@ -100,111 +214,18 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     toolBarManager.add(calcBaseFreq);
 
-    final IContributionItem dropdown = new ControlContribution(
-        "Acoustic Source")
+    final SourceProvider sourceProvider = new SourceProvider()
     {
       @Override
-      protected Control createControl(final Composite parent)
+      public List<SensorWrapper> getSources()
       {
-
-        final Composite body = new Composite(parent, SWT.NONE);
-
-        body.setLayout(new FillLayout());
-        body.setSize(24, 24);
-        final ToolBar toolBar = new ToolBar(body, SWT.None);
-        final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-        item.setToolTipText("Acoustic Source");
-        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
-            .getImageDescriptor("icons/24/pulse.png")));
-        item.addListener(SWT.Selection, new Listener()
-        {
-          @Override
-          public void handleEvent(final Event event)
-          {
-            final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
-
-            final SourceProvider sourceProvider = new SourceProvider()
-            {
-              @Override
-              public List<SensorWrapper> getSources()
-              {
-                return getPotentialSources();
-              }
-            };
-
-            final List<SensorWrapper> sources = sourceProvider.getSources();
-            if (sources != null && sources.size() > 0)
-            {
-              if (_activeSource != null)
-              {
-                // ok, we need to include option to clear the active sensor
-                final MenuItem clearItem = new MenuItem(menu, SWT.RADIO);
-                clearItem.setText("Clear active source");
-                clearItem.addSelectionListener(new SelectionAdapter()
-                {
-                  @Override
-                  public void widgetSelected(SelectionEvent e)
-                  {
-                    _activeSource = null;
-                    updateData(false);
-                  }
-                });
-              }
-
-              final DecimalFormat df = new DecimalFormat("0.00");
-              for (final SensorWrapper sensor : sources)
-              {
-                final String host = sensor.getHost().getName();
-                final String name = host + "/" + sensor.getName() + " (" + df
-                    .format(sensor.getBaseFrequency()) + " Hz)";
-
-                final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
-                mitem.setText(name);
-                mitem.setSelection(sensor.equals(_activeSource));
-                mitem.addSelectionListener(new SelectionAdapter()
-                {
-                  @Override
-                  public void widgetSelected(final SelectionEvent e)
-                  {
-                    _activeSource = sensor;
-
-                    // trigger update of doublets
-                    updateData(false);
-                  }
-                });
-              }
-            }
-            else
-            {
-              final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
-              mitem.setText("No sources found");
-              mitem.addSelectionListener(new SelectionAdapter()
-              {
-                @Override
-                public void widgetSelected(final SelectionEvent e)
-                {
-                  System.out.println("no sources pressed");
-                }
-              });
-
-            }
-
-            // -------------------------------
-
-            // menu location
-            final Rectangle rect = item.getBounds();
-            Point pt = new Point(rect.x, rect.y + rect.height);
-            pt = toolBar.toDisplay(pt);
-            menu.setLocation(pt.x, pt.y);
-            menu.setVisible(true);
-          }
-        });
-        return body;
-
+        return getPotentialSources();
       }
     };
-    toolBarManager.add(dropdown);
+    
+    final IContributionItem dropdown = new SourceDropdown(sourceProvider);
 
+    toolBarManager.add(dropdown);
   }
 
   @Override

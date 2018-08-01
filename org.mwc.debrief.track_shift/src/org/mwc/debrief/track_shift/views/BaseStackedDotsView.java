@@ -2087,6 +2087,64 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
+  private class DragTrackSegment extends ControlContribution
+  {
+    final private Vector<Action> dragModeActions;
+
+    public DragTrackSegment(Vector<Action> actions)
+    {
+      super("Drag Track Segment");
+      this.dragModeActions = actions;
+    }
+    
+    protected Control createControl(Composite parent)
+    {
+      Composite body = new Composite(parent, SWT.NONE);
+
+      body.setLayout(new FillLayout());
+      body.setSize(24, 24);
+      final ToolBar toolBar = new ToolBar(body, SWT.None);
+      final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+      item.setToolTipText("Drag Track Segment");
+      item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+          .getImageDescriptor("icons/24/SelectSegment.png")));
+      item.addListener(SWT.Selection, new Listener()
+      {
+        @Override
+        public void handleEvent(Event event)
+        {
+          final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+          if (dragModeActions != null && dragModeActions.size() > 0)
+          {
+            for (final Action action : dragModeActions)
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+              mitem.setText(action.getText());
+              mitem.setSelection(action.isChecked());
+              mitem.addSelectionListener(new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  action.run();
+                }
+              });
+            }
+          }
+
+          // menu location
+          org.eclipse.swt.graphics.Rectangle rect = item.getBounds();
+          org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(rect.x, rect.y + rect.height);
+          pt = toolBar.toDisplay(pt);
+          menu.setLocation(pt.x, pt.y);
+          menu.setVisible(true);
+        }
+      });
+      return body;
+
+    }
+  }
+  
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
     // Note: we have undo/redo buttons on the toolbar. Let's not bother with them here, there are
@@ -2138,77 +2196,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // add Drop down
 
-    final Vector<Action> actions = DragSegment.getDragModes();
-    IContributionItem dropdown = new ControlContribution("Drag Track Segment")
-    {
-      protected Control createControl(Composite parent)
-      {
-
-        Composite body = new Composite(parent, SWT.NONE);
-
-        body.setLayout(new FillLayout());
-        body.setSize(24, 24);
-        final ToolBar toolBar = new ToolBar(body, SWT.None);
-        final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-        item.setToolTipText("Drag Track Segment");
-        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
-            .getImageDescriptor("icons/24/track_segment.png")));
-        item.addListener(SWT.Selection, new Listener()
-        {
-          @Override
-          public void handleEvent(Event event)
-          {
-            final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
-
-            // ----------- MENU populate -----
-
-            if (actions != null && actions.size() > 0)
-            {
-              for (final Action action : actions)
-              {
-
-                final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
-                mitem.setText(action.getText());
-                mitem.setSelection(action.isChecked());
-                mitem.addSelectionListener(new SelectionAdapter()
-                {
-                  @Override
-                  public void widgetSelected(SelectionEvent e)
-                  {
-                    action.run();
-                  }
-                });
-
-              }
-            }
-            else
-            {
-              final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
-              mitem.setText("No actions found");
-              mitem.addSelectionListener(new SelectionAdapter()
-              {
-                @Override
-                public void widgetSelected(SelectionEvent e)
-                {
-                  System.out.println("no actions pressed");
-                }
-              });
-
-            }
-            // -------------------------------
-
-            // menu location
-            org.eclipse.swt.graphics.Rectangle rect = item.getBounds();
-            org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(rect.x, rect.y + rect.height);
-            pt = toolBar.toDisplay(pt);
-            menu.setLocation(pt.x, pt.y);
-            menu.setVisible(true);
-          }
-        });
-        return body;
-
-      }
-    };
+    final Vector<Action> dragModeActions = DragSegment.getDragModes();
+    IContributionItem dropdown = new DragTrackSegment(dragModeActions);
     toolBarManager.add(dropdown);
 
   }
