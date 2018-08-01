@@ -25,11 +25,6 @@ import net.lingala.zip4j.exception.ZipException;
 
 public class JUnitTests
 {
-  public JUnitTests()
-  {
-
-  }
-
   final private String[] donorFiles = new String[]
   {"donor.pptx", "designed.pptx"};
   final private String[] trackFiles = new String[]
@@ -41,7 +36,7 @@ public class JUnitTests
       + File.separator + "slide1.xml";
 
   @Test
-  public void IntegrationTests() throws IOException, ZipException, DebriefException
+  public void integrationTests() throws IOException, ZipException, DebriefException
   {
     for (String donor : donorFiles)
     {

@@ -173,7 +173,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the automatic timer we are using
    */
-  MWC.Utilities.Timer.Timer _myTimer;
+  private MWC.Utilities.Timer.Timer _myTimer;
 
   /**
    * the editor the user is currently working with (assigned alongside the time-provider object)
@@ -188,39 +188,39 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the temporal dataset controlling the narrative entry currently displayed
    */
-  TimeProvider _myTemporalDataset;
+  private TimeProvider _myTemporalDataset;
 
   /**
    * the "write" interface for the plot which tracks the narrative, where avaialable
    */
-  ControllableTime _controllableTime;
+  private ControllableTime _controllableTime;
 
   /**
    * an object that gets stepped, not one that we can slide backwards & forwards through
    * 
    */
-  SteppableTime _steppableTime;
+  private SteppableTime _steppableTime;
 
   /**
    * the "write" interface for indicating a selected time period
    */
-  ControllablePeriod _controllablePeriod;
+  private ControllablePeriod _controllablePeriod;
 
   /**
    * label showing the current time
    */
-  Label _timeLabel;
+  private Label _timeLabel;
 
   /**
    * the set of layers we control through the range selector
    */
-  Layers _myLayers;
+  private Layers _myLayers;
 
   /**
    * the parent object for the time controller. It is at this level that we enable/disable the
    * controls
    */
-  Composite _wholePanel;
+  private Composite _wholePanel;
 
   /**
    * the holder for the VCR controls
@@ -231,17 +231,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the people listening to us
    */
-  Vector<ISelectionChangedListener> _selectionListeners;
+  private Vector<ISelectionChangedListener> _selectionListeners;
 
   /**
    * and the preferences for time control
    */
-  TimeControlProperties _myStepperProperties;
+  private TimeControlProperties _myStepperProperties;
 
   /**
    * module to look after the limits of the slider
    */
-  SliderRangeManagement _slideManager = null;
+  private SliderRangeManagement _slideManager = null;
 
   /**
    * when the user clicks on us, we set our properties as a selection. Remember the set of
@@ -252,24 +252,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * our fancy time range selector
    */
-  DTGBiSlider _dtgRangeSlider;
+  private DTGBiSlider _dtgRangeSlider;
 
   /**
    * whether the user wants to trim to time period after bislider change
    */
-  Action _filterToSelectionAction;
+  private Action _filterToSelectionAction;
 
   /**
    * the slider control - remember it because we're always changing the limits, etc
    */
-  Scale _tNowSlider;
+  private Scale _tNowSlider;
 
   /**
    * the play button, obviously.
    */
-  SplitButton _playButton;
+  private SplitButton _playButton;
 
-  PropertyChangeListener _myDateFormatListener = null;
+  private PropertyChangeListener _myDateFormatListener = null;
 
   /**
    * name of property storing slider step size, used for saving state
@@ -284,7 +284,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * utility class to help us plot relative plots
    */
-  RelativeProjectionParent _relativeProjector;
+  private RelativeProjectionParent _relativeProjector;
 
   /**
    * the projection we're going to set to relative mode, as we wish
@@ -300,6 +300,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private HashMap<String, Button> _buttonList;
 
   private CoordinateRecorder _coordinateRecorder;
+
+  private MenuItem _doExportItem;
 
   // private static final Color bColor = new Color(Display.getDefault(), 0, 0,
   // 0);
@@ -698,6 +700,56 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
 
+  
+  private class MySplitButtonListener implements SplitButtonSelectionListener
+  {
+    @Override
+    public boolean showMenu()
+    {
+      return true;
+    }
+
+    @Override
+    public void buttonSelected()
+    {
+      final boolean playing = _playButton.getSelection();
+      final String tipTxt;
+      final String imageTxt;
+      if (playing)
+      {
+        if (_doExportItem.getSelection())
+        {
+          // get ready for recording
+          _coordinateRecorder = new CoordinateRecorder(_myLayers, _targetProjection,
+              _myStepperProperties);
+          _coordinateRecorder.startStepping(getTimeProvider().getTime());
+        }
+        
+        // and start playing
+        startPlaying();
+        tipTxt = PAUSE_TEXT;
+        imageTxt = ICON_MEDIA_PAUSE;
+      }
+      else
+      {
+        stopPlaying();
+        
+        // do any export tidying up, if we have to
+        if (_coordinateRecorder != null)
+        {
+          _coordinateRecorder.stopStepping(getTimeProvider().getTime());
+          _coordinateRecorder = null;
+        }
+
+        tipTxt = PLAY_TEXT;
+        imageTxt = ICON_MEDIA_PLAY;
+      }
+      // ok, set the tooltip & image
+      _playButton.setToolTipText(tipTxt);
+      _playButton.setImage(TimeControllerPlugin.getImage(imageTxt));
+    }
+  }
+  
   /**
    * 
    */
@@ -730,77 +782,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     // configure the drop-down menu
     Menu exportMenu = new Menu(_playButton);
-    final MenuItem doExport = new MenuItem(exportMenu, SWT.CHECK);
-    doExport.setText("Export to PPTX");
-    doExport.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PPTX));
-    doExport.addSelectionListener(new SelectionListener()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        // n/a
-      }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-        // n/a
-      }
-    });
+    _doExportItem = new MenuItem(exportMenu, SWT.CHECK);
+    _doExportItem.setText("Export to PPTX");
+    _doExportItem.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PPTX));
+   
     _playButton.setMenu(exportMenu);
-
     _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
     _playButton.setToolTipText(PLAY_TEXT);
     _playButton.addSplitButtonSelectionListener(
-        new SplitButtonSelectionListener()
-        {
-          @Override
-          public boolean showMenu()
-          {
-            return true;
-          }
-
-          @Override
-          public void buttonSelected()
-          {
-            final boolean playing = _playButton.getSelection();
-            final String tipTxt;
-            final String imageTxt;
-            if (playing)
-            {
-              if (doExport.getSelection())
-              {
-                // get ready for recording
-                _coordinateRecorder = new CoordinateRecorder(_myLayers, _targetProjection,
-                    _myStepperProperties);
-                _coordinateRecorder.startStepping(getTimeProvider().getTime());
-              }
-              
-              // and start playing
-              startPlaying();
-              tipTxt = PAUSE_TEXT;
-              imageTxt = ICON_MEDIA_PAUSE;
-            }
-            else
-            {
-              stopPlaying();
-              
-              // do any export tidying up, if we have to
-              if (_coordinateRecorder != null)
-              {
-                _coordinateRecorder.stopStepping(getTimeProvider().getTime());
-                _coordinateRecorder = null;
-              }
-
-              tipTxt = PLAY_TEXT;
-              imageTxt = ICON_MEDIA_PLAY;
-            }
-            // ok, set the tooltip & image
-            _playButton.setToolTipText(tipTxt);
-            _playButton.setImage(TimeControllerPlugin.getImage(imageTxt));
-          }
-        });
+        new MySplitButtonListener());
 
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));

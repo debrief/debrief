@@ -11,10 +11,6 @@ public class TrackPoint
   private float course;
   private float speed;
 
-  public TrackPoint()
-  {
-  }
-
   public float getCourse()
   {
     return course;

@@ -1,6 +1,7 @@
 package Debrief.ReaderWriter.powerPoint.model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Track data to be added to the pptx file.
@@ -11,7 +12,8 @@ public class TrackData
   private int width;
   private int intervals;
   private String name;
-  private final ArrayList<ExportNarrativeEntry> narrativeEntries = new ArrayList<>();
+  private final ArrayList<ExportNarrativeEntry> narrativeEntries =
+      new ArrayList<>();
   private final ArrayList<Track> tracks = new ArrayList<>();
 
   public int getHeight()
@@ -87,13 +89,8 @@ public class TrackData
       return true;
     }
     TrackData other = (TrackData) obj;
-    if (!classComparison(obj) || !basicFieldComparison(other)
-        || !listFieldComparison(other))
-    {
-      return false;
-    }
-
-    return true;
+    return (classComparison(obj) && basicFieldComparison(other)
+        && listFieldComparison(other));
   }
 
   private boolean listFieldComparison(TrackData other)
@@ -103,13 +100,7 @@ public class TrackData
     {
       return false;
     }
-    if ((tracks == null && other.tracks != null) || !tracks.equals(
-        other.tracks))
-    {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(tracks,  other.tracks);
   }
 
   private boolean basicFieldComparison(TrackData other)
@@ -126,11 +117,6 @@ public class TrackData
 
   private boolean classComparison(Object obj)
   {
-    if (obj == null || getClass() != obj.getClass())
-    {
-      return false;
-    }
-
-    return true;
+    return (obj != null && getClass() == obj.getClass());
   }
 }

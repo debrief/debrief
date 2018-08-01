@@ -261,20 +261,20 @@ public class PlotTracks
    * @param invertY
    * @return Scaled coordinates
    */
-  public float[] coordinateTransformation(float x, float y,
+  public float[] coordinateTransformation(final float x_in, final float y_in,
       final float dimensionWidth, final float dimensionHeight,
       final float rectX, final float rectY, final float rectWidth,
       final float rectHeight, final int invertY)
   {
-    x = rectX + x * (rectWidth / dimensionWidth);
+    final float x = rectX + x_in * (rectWidth / dimensionWidth);
+    final float y;
     if (invertY == 1)
     {
-      y = y - dimensionHeight;
-      y = rectY + y * (rectHeight / (-dimensionHeight));
+      y = rectY + (y_in - dimensionHeight) * (rectHeight / (-dimensionHeight));
     }
     else
     {
-      y = rectY + y * (rectHeight / dimensionHeight);
+      y = rectY + y_in * (rectHeight / dimensionHeight);
     }
     return new float[]
     {x, y};
@@ -294,21 +294,21 @@ public class PlotTracks
    * @param invertY
    * @return
    */
-  private int[] coordinateTransformation(int x, int y, final int dimensionWidth,
+  private int[] coordinateTransformation(final int x_in, final int y_in, final int dimensionWidth,
       final int dimensionHeight, final int rectX, final int rectY,
       final int rectWidth, final int rectHeight, final int invertY)
   {
-    x = rectX + x * (rectWidth / dimensionWidth);
+    final int x = rectX + x_in * (rectWidth / dimensionWidth);
+    final int y;
     if (invertY == 1)
     {
-      y = y - dimensionHeight;
       // floor was needed because Java rounds to the nearest integer, instead of
       // flooring.
-      y = rectY + y * ((int) Math.floor((float) rectHeight / -dimensionHeight));
+      y = rectY + (y_in - dimensionHeight) * ((int) Math.floor((float) rectHeight / -dimensionHeight));
     }
     else
     {
-      y = rectY + y * (rectHeight / dimensionHeight);
+      y = rectY + y_in * (rectHeight / dimensionHeight);
     }
     return new int[]
     {x, y};
@@ -498,7 +498,8 @@ public class PlotTracks
 
       for (final TrackPoint coordinate : coordinates)
       {
-        final float x = coordinate.getLongitude(), y = coordinate.getLatitude();
+        final float x = coordinate.getLongitude();
+        final float y = coordinate.getLatitude();
 
         final Element temp_anim_tag = anim_tag.clone();
         tempCoordinates = coordinateTransformation(x, y, dimensionWidth,
