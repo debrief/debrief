@@ -135,6 +135,22 @@ public class FrequencyResidualsView extends BaseStackedDotsView
             final List<SensorWrapper> sources = sourceProvider.getSources();
             if (sources != null && sources.size() > 0)
             {
+              if (_activeSource != null)
+              {
+                // ok, we need to include option to clear the active sensor
+                final MenuItem clearItem = new MenuItem(menu, SWT.RADIO);
+                clearItem.setText("Clear active source");
+                clearItem.addSelectionListener(new SelectionAdapter()
+                {
+                  @Override
+                  public void widgetSelected(SelectionEvent e)
+                  {
+                    _activeSource = null;
+                    updateData(false);
+                  }
+                });
+              }
+
               final DecimalFormat df = new DecimalFormat("0.00");
               for (final SensorWrapper sensor : sources)
               {
