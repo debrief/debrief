@@ -133,8 +133,6 @@ public class CoordinateRecorder
     list.addAll(_tracks.values());
     Dimension dims = _projection.getScreenArea();
     long interval =  _timePrefs.getAutoInterval().getMillis();
-    System.out.println(dims);
-    System.out.println(interval);
     // output tracks object.
     //showDialog now
     ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault().getActiveShell());
