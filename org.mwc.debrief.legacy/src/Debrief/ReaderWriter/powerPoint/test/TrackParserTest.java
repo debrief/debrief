@@ -23,13 +23,7 @@ import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 
 public class TrackParserTest
 {
-
-  public TrackParserTest()
-  {
-
-  }
-
-  final String sampleTrack = Utils.testFolder + File.separator + "TrackParser"
+  private static final String sampleTrack = Utils.testFolder + File.separator + "TrackParser"
       + File.separator + "SampleTrack.txt";
 
   @Test

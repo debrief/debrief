@@ -20,12 +20,17 @@ public class UnpackFunction
     return unpackFunction(pptx_path, "");
   }
 
-  public String unpackFunction(final String pptx_path, String unpack_path)
+  public String unpackFunction(final String pptx_path, final String unpack_path_in)
       throws ZipException, DebriefException
   {
-    if (unpack_path.isEmpty())
+    final String unpack_path;
+    if (unpack_path_in.isEmpty())
     {
       unpack_path = pptx_path.substring(0, pptx_path.length() - 5);
+    }
+    else
+    {
+      unpack_path = unpack_path_in;
     }
 
     // check if unpack_path is directory or not

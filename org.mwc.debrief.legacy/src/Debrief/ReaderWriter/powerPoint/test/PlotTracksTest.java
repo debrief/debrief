@@ -16,12 +16,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class PlotTracksTest
 {
 
-  public PlotTracksTest()
-  {
-
-  }
-
-  final String path = Utils.testFolder + File.separator + "PlotTracks";
+  private static final String path = Utils.testFolder + File.separator + "PlotTracks";
 
   @Test
   public void validateDonorFileTest()

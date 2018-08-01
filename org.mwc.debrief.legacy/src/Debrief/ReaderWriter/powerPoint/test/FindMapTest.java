@@ -12,11 +12,6 @@ import Debrief.ReaderWriter.powerPoint.FindMap;
 
 public class FindMapTest
 {
-  public FindMapTest()
-  {
-
-  }
-
   @Test
   public void testGetMapDetails() throws DebriefException
   {
@@ -40,5 +35,4 @@ public class FindMapTest
           }
         });
   }
-
 }

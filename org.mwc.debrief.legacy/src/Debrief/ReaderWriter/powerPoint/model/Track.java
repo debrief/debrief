@@ -2,6 +2,7 @@ package Debrief.ReaderWriter.powerPoint.model;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Track
 {
@@ -13,7 +14,7 @@ public class Track
   {
     this(name, makeColor(color));
   }
-  
+
   public Track(String name, Color color)
   {
     this.name = name;
@@ -78,27 +79,18 @@ public class Track
     if (getClass() != obj.getClass())
       return false;
     Track other = (Track) obj;
-    if (color == null)
+    if (!Objects.equals(color, other.color))
     {
-      if (other.color != null)
-        return false;
-    }
-    else if (!color.equals(other.color))
       return false;
-    if (name == null)
+    }
+    if (!Objects.equals(name, other.name))
     {
-      if (other.name != null)
-        return false;
-    }
-    else if (!name.equals(other.name))
       return false;
-    if (segments == null)
+    }
+    if (!Objects.equals(segments, other.segments))
     {
-      if (other.segments != null)
-        return false;
-    }
-    else if (!segments.equals(other.segments))
       return false;
+    }
     return true;
   }
 }

@@ -26,7 +26,7 @@ public class PackPresentation
    * @throws DebriefException
    *           In case we don't provide the unpack path or it is not a directory
    */
-  public String pack(String pptx_path, final String unpack_path)
+  public String pack(final String pptx_path, final String unpack_path)
       throws IOException, ZipException, DebriefException
   {
     if (unpack_path == null)
@@ -35,19 +35,23 @@ public class PackPresentation
           "Provide unpack_path (path to directory containing unpacked pptx)");
     }
 
-    if (pptx_path == null)
+    final String path;
+    
+    if (pptx_path != null)
     {
-      if (unpack_path.charAt(unpack_path.length() - 1) == '/' || unpack_path
+      path = pptx_path;
+    }
+    else if (unpack_path.charAt(unpack_path.length() - 1) == '/' || unpack_path
           .charAt(unpack_path.length() - 1) == '\\')
       {
-        pptx_path = unpack_path.substring(0, unpack_path.length() - 1)
+      path = unpack_path.substring(0, unpack_path.length() - 1)
             + ".pptx";
       }
       else
       {
-        pptx_path = unpack_path + ".pptx";
+        path = unpack_path + ".pptx";
       }
-    }
+    
 
     // check if unpack_path is directory or not
     if (!Files.isDirectory(Paths.get(unpack_path)))
@@ -56,8 +60,8 @@ public class PackPresentation
     }
 
     // Pack the unpack_path folder to pptx_path pptx file
-    Files.deleteIfExists(new File(pptx_path).toPath());
-    final ZipFile zipFile = new ZipFile(pptx_path);
+    Files.deleteIfExists(new File(path).toPath());
+    final ZipFile zipFile = new ZipFile(path);
 
     final ZipParameters parameters = new ZipParameters();
     parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);

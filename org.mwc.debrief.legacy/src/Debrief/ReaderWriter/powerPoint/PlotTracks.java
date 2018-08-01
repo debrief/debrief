@@ -354,17 +354,21 @@ public class PlotTracks
     final HashMap<String, String> mapDetails = FindMap.getMapDetails(
         temp_unpack_path);
     final int[] dimensionsTemp = getMapDimesions(mapDetails);
-    final int mapX = dimensionsTemp[0], mapY = dimensionsTemp[1], mapCX =
-        dimensionsTemp[2], mapCY = dimensionsTemp[3];
+    final int mapX = dimensionsTemp[0];
+    final int mapY = dimensionsTemp[1];
+    final int mapCX = dimensionsTemp[2];
+    final int mapCY = dimensionsTemp[3];
 
     // Calculating TL and BR
     float[] tl_tmp = coordinateTransformation(mapX, mapY, Float.parseFloat(
         slide_dimen_x), Float.parseFloat(slide_dimen_y), 0, 0, 1, 1, 0);
-    final float TLx = tl_tmp[0], TLy = tl_tmp[1];
+    final float TLx = tl_tmp[0];
+    final float TLy = tl_tmp[1];
     tl_tmp = coordinateTransformation(mapX + mapCX, mapY + mapCY, Float
         .parseFloat(slide_dimen_x), Float.parseFloat(slide_dimen_y), 0, 0, 1, 1,
         0);
-    final float BRx = tl_tmp[0], BRy = tl_tmp[1];
+    final float BRx = tl_tmp[0];
+    final float BRy = tl_tmp[1];
 
     // Calculating rectangle representated as animated target values
     final float animX = TLx;
@@ -374,8 +378,10 @@ public class PlotTracks
 
     // getting shape tags
     final Element[] shapes_temp = getShapes(soup);
-    final Element shape_tag = shapes_temp[0], arrow_tag = shapes_temp[1],
-        time_tag = shapes_temp[2], narrative_tag = shapes_temp[3];
+    final Element shape_tag = shapes_temp[0];
+    final Element arrow_tag = shapes_temp[1];
+    final Element time_tag = shapes_temp[2];
+    final Element narrative_tag = shapes_temp[3];
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
@@ -406,7 +412,6 @@ public class PlotTracks
 
     for (final Track track : trackData.getTracks())
     {
-
       final Element temp_arrow_tag = arrow_tag.clone();
       final Element temp_shape_tag = shape_tag.clone();
 
@@ -480,11 +485,12 @@ public class PlotTracks
       // multiple anim per tracks
       int coord_count = 1;
 
-      final float first_x = coordinates.get(0).getLongitude(), first_y =
-          coordinates.get(0).getLatitude();
+      final float first_x = coordinates.get(0).getLongitude();
+      final float first_y = coordinates.get(0).getLatitude();
       tempCoordinates = coordinateTransformation(first_x, first_y,
           dimensionWidth, dimensionHeight, animX, animY, animCX, animCY, 1);
-      float prev_anim_x = tempCoordinates[0], prev_anim_y = tempCoordinates[1];
+      float prev_anim_x = tempCoordinates[0];
+      float prev_anim_y = tempCoordinates[1];
       prev_anim_x = prev_anim_x - TailX - arrow_center_x_small;
       prev_anim_y = prev_anim_y - TailY - arrow_center_y_small;
 
@@ -497,7 +503,8 @@ public class PlotTracks
         final Element temp_anim_tag = anim_tag.clone();
         tempCoordinates = coordinateTransformation(x, y, dimensionWidth,
             dimensionHeight, animX, animY, animCX, animCY, 1);
-        float anim_x = tempCoordinates[0], anim_y = tempCoordinates[1];
+        float anim_x = tempCoordinates[0];
+        float anim_y = tempCoordinates[1];
         anim_x = anim_x - TailX - arrow_center_x_small;
         anim_y = anim_y - TailY - arrow_center_y_small;
 
@@ -830,8 +837,10 @@ public class PlotTracks
    */
   private Element[] getShapes(final Document soup)
   {
-    Element shape_tag = null, arrow_tag = null, time_tag = null, narrative_tag =
-        null;
+    Element shape_tag = null;
+    Element arrow_tag = null;
+    Element time_tag = null;
+    Element narrative_tag = null;
 
     // retrieve the sample arrow and path tag
     final Elements all_shape_tags = soup.select("p|sp");

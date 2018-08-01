@@ -14,23 +14,16 @@ import net.lingala.zip4j.exception.ZipException;
 
 public class UnpackFunctionTest
 {
-
-  public UnpackFunctionTest()
-  {
-
-  }
-
   private final String folderToUnpack = Utils.testFolder + File.separator
       + "UnpackPresentation" + File.separator + "designed.pptx";
   private final String expectedFolder = Utils.testFolder + File.separator
       + "PackPresentation" + File.separator + "designedFolder";
-  private String generatedFolder = null;
 
   @Test
   public void testUnpackFunctionString() throws ZipException, DebriefException,
       IOException
   {
-    generatedFolder = new UnpackFunction().unpackFunction(folderToUnpack);
+    final String generatedFolder = new UnpackFunction().unpackFunction(folderToUnpack);
     assertTrue(Utils.compareDirectoriesStructures(new File(generatedFolder),
         new File(expectedFolder)));
     FileUtils.deleteDirectory(new File(generatedFolder));
