@@ -4,8 +4,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
@@ -41,10 +40,10 @@ import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 import net.lingala.zip4j.exception.ZipException;
 
 public class CoordinateRecorder 
@@ -62,6 +61,7 @@ public class CoordinateRecorder
   public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
   public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
   private String startTime = null;
+  private long _startMillis;
   
   public CoordinateRecorder(final Layers layers,
       final PlainProjection plainProjection,TimeControlPreferences timePreferences)
@@ -123,17 +123,12 @@ public class CoordinateRecorder
     _tracks.clear();
     _times.clear();
     _running = true;
+    _startMillis = now.getDate().getTime();
   }
 
   public void stopStepping(final HiResDate now)
   {
     _running = false;
-    
-    // output timestamps
-    for(String time:_times)
-    {
-      System.out.println(time);
-    }
     
     String exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
     String fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
@@ -179,32 +174,48 @@ public class CoordinateRecorder
       td.setWidth(_projection.getScreenArea().width);
       td.setHeight(_projection.getScreenArea().height);
       td.getTracks().addAll(_tracks.values());
-      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks);
+      
+      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks, _startMillis, _timePrefs);
       PlotTracks plotTracks = new PlotTracks();
       String exportFile = getFileToExport(exportLocation, fileName, fileFormat);
       String masterTemplate = getMasterTemplateFile();
-      try {
-        String exportedFile = plotTracks.export(td, masterTemplate , exportFile);
-        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault().getActiveShell(), "PowerPoint Export", "The file is exported to:"+exportedFile, MessageDialog.INFORMATION);
-        
-      }catch(IOException ie) {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR,
-            "Host track for TMA leg can't be determined", ie);
-      }catch(ZipException ze) {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR,
-            "Host track for TMA leg can't be determined", ze);
-      }catch(DebriefException de) {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR,
-            "Host track for TMA leg can't be determined", de);
+      try
+      {
+        String exportedFile = plotTracks.export(td, masterTemplate, exportFile);
+        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+            .getActiveShell(), "PowerPoint Export", "The file is exported to:"
+                + exportedFile, MessageDialog.INFORMATION);
+
+      }
+      catch (IOException ie)
+      {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+            .getActiveShell(), "Error",
+            "Error exporting to powerpoint (File access problem)",
+            MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ie);
+      }
+      catch (ZipException ze)
+      {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+            .getActiveShell(), "Error",
+            "Error exporting to powerpoint (Unable to extract ZIP)",
+            MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ze);
+      }
+      catch (DebriefException de)
+      {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+            .getActiveShell(), "Error",
+            "Error exporting to powerpoint (template may be corrupt)",
+            MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", de);
       }
     }    
   }
 
-  private void storeNarrativesInto(ArrayList<ExportNarrativeEntry> narrativeEntries,
-      Layers layers, Map<String, Track> tracks)
+  private static void storeNarrativesInto(ArrayList<ExportNarrativeEntry> narrativeEntries,
+      Layers layers, Map<String, Track> tracks, final long startTime, TimeControlPreferences timePrefs)
   {
     // look for a narratives layer
     Layer narratives = layers.findLayer(ImportReplay.NARRATIVE_LAYER);
@@ -233,7 +244,19 @@ public class CoordinateRecorder
         }
       }
       
+      // what's the real world time step?
+      final long worldIntervalMillis = timePrefs.getAutoInterval().getMillis();
+       // and the model world time step?
+      final long modelIntervalMillis = timePrefs.getSmallStep().getMillis();
+
+      
       TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(firstTime), new HiResDate(lastTime));
+      
+      // sort out a scale factor
+      final double scale = ((double) worldIntervalMillis)
+          / ((double) modelIntervalMillis);
+
+      final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
       
       Enumeration<Editable> nIter = narratives.elements();
       while(nIter.hasMoreElements())
@@ -241,10 +264,15 @@ public class CoordinateRecorder
         NarrativeEntry entry = (NarrativeEntry) nIter.nextElement();
         if(period.contains(new HiResDate(entry.getDTG())))
         {
-          String dateStr = null;
-          String elapsed = null;
+          String dateStr = df.format(entry.getDTG().getDate());
+          String elapsedStr = null;
+                    
+          final double elapsed = entry.getDTG().getDate().getTime() - startTime;
+          final double scaled = elapsed * scale;
+          elapsedStr = "" + (long) scaled;
+          
           // ok, create a narrative entry for it
-          ExportNarrativeEntry newE = new ExportNarrativeEntry(entry.getEntry(),dateStr, elapsed, entry.getDTG().getDate());
+          ExportNarrativeEntry newE = new ExportNarrativeEntry(entry.getEntry(),dateStr, elapsedStr, entry.getDTG().getDate());
           
           // and store it
           narrativeEntries.add(newE);
