@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
@@ -40,7 +39,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -48,7 +46,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.ToolItem;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
@@ -99,7 +96,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       {
 
         final Button item = new Button(parent, SWT.FLAT | SWT.ARROW | SWT.DOWN);
-        final AtomicReference<String> selection = new   AtomicReference<String>(null);
         //@IAN -> you can set Icon if you need on Button
         item.addListener(SWT.Selection, new Listener()
         {
@@ -109,21 +105,57 @@ public class FrequencyResidualsView extends BaseStackedDotsView
             final Menu menu = new Menu(parent.getShell(), SWT.POP_UP);
             
             //----------- MENU populate -----
-            int numItems =  2 + (int) (Math.random() * 6d);
-            for (int i = 0; i < numItems; i++)
+            SourceProvider sourceProvider = new SourceProvider()
             {
-              final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
-              mitem.setText("Item " + i);
-              mitem.setSelection(mitem.getText().equals(selection.get()));
+              @Override
+              public List<SensorWrapper> getSources()
+              {
+                return getPotentialSources();
+              }
+            };
+            
+            List<SensorWrapper> sources = sourceProvider.getSources();
+            if (sources != null && sources.size() > 0)
+            {
+              final DecimalFormat df = new DecimalFormat("0.00");
+              for (final SensorWrapper sensor : sources)
+              {
+                final String host = sensor.getHost().getName();
+                final String name = host + "/" + sensor.getName() + " (" + df.format(
+                    sensor.getBaseFrequency()) + " Hz)";
+                
+                final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+                mitem.setText(name);
+                mitem.setSelection(sensor.equals(_activeSource));
+                mitem.addSelectionListener(new SelectionAdapter()
+                {
+                  @Override
+                  public void widgetSelected(SelectionEvent e)
+                  {
+                    _activeSource = sensor;
+
+                    System.out.println("Setting active source to:" + sensor);
+                  }
+                });
+                
+              }
+            }
+            else
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
+              mitem.setText("No sources found");
               mitem.addSelectionListener(new SelectionAdapter()
               {
                 @Override
                 public void widgetSelected(SelectionEvent e)
                 {
-                  selection.set(mitem.getText());
+
+                  System.out.println("no sources pressed");
                 }
               });
+              
             }
+            
             //-------------------------------
             
             //menu location  
