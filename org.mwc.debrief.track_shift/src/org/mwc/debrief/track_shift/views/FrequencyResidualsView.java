@@ -38,6 +38,8 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -46,6 +48,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
@@ -92,17 +96,23 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     IContributionItem comboCI = new ControlContribution("Acoustic Source")
     {
-      protected Control createControl(final Composite parent)
+      protected Control createControl( Composite parent)
       {
 
-        final Button item = new Button(parent, SWT.FLAT | SWT.ARROW | SWT.DOWN);
+        Composite body = new Composite(parent, SWT.NONE);
+        GridLayout layout = new GridLayout();
+        body.setLayout(layout);
+        body.setSize(24, 24);
+        final ToolBar toolBar = new ToolBar (body, SWT.None);
+        final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
+        item.setText("Acoustic Source:");
         // @IAN -> you can set Icon if you need on Button
         item.addListener(SWT.Selection, new Listener()
         {
           @Override
           public void handleEvent(Event event)
           {
-            final Menu menu = new Menu(parent.getShell(), SWT.POP_UP);
+            final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
 
             // ----------- MENU populate -----
             SourceProvider sourceProvider = new SourceProvider()
@@ -160,12 +170,12 @@ public class FrequencyResidualsView extends BaseStackedDotsView
             // menu location
             Rectangle rect = item.getBounds();
             Point pt = new Point(rect.x, rect.y + rect.height);
-            pt = parent.toDisplay(pt);
+            pt = toolBar.toDisplay(pt);
             menu.setLocation(pt.x, pt.y);
             menu.setVisible(true);
           }
         });
-        return item;
+        return body;
 
       }
     };
