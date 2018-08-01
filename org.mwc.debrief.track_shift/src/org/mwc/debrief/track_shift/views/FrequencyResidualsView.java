@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
@@ -27,7 +27,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -73,8 +72,20 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
+  public static interface SelectSource
+  {
+    public void select(SensorWrapper source);
+  }
+
+  private static interface SourceProvider
+  {
+    public List<SensorWrapper> getSources();
+  }
+
   private static final int NUM_DOPPLER_STEPS = 30;
+
   private Action calcBaseFreq;
+
   protected SensorWrapper _activeSource;
 
   public FrequencyResidualsView()
@@ -89,28 +100,30 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     toolBarManager.add(calcBaseFreq);
 
-    IContributionItem dropdown = new ControlContribution("Acoustic Source")
+    final IContributionItem dropdown = new ControlContribution(
+        "Acoustic Source")
     {
-      protected Control createControl( Composite parent)
+      @Override
+      protected Control createControl(final Composite parent)
       {
 
-        Composite body = new Composite(parent, SWT.NONE);
-        
+        final Composite body = new Composite(parent, SWT.NONE);
+
         body.setLayout(new FillLayout());
         body.setSize(24, 24);
-        final ToolBar toolBar = new ToolBar (body, SWT.None);
-        final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
+        final ToolBar toolBar = new ToolBar(body, SWT.None);
+        final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
         item.setToolTipText("Acoustic Source");
-        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin.getImageDescriptor(
-            "icons/24/pulse.png")));
+        item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+            .getImageDescriptor("icons/24/pulse.png")));
         item.addListener(SWT.Selection, new Listener()
         {
           @Override
-          public void handleEvent(Event event)
+          public void handleEvent(final Event event)
           {
             final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
 
-            SourceProvider sourceProvider = new SourceProvider()
+            final SourceProvider sourceProvider = new SourceProvider()
             {
               @Override
               public List<SensorWrapper> getSources()
@@ -119,7 +132,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
               }
             };
 
-            List<SensorWrapper> sources = sourceProvider.getSources();
+            final List<SensorWrapper> sources = sourceProvider.getSources();
             if (sources != null && sources.size() > 0)
             {
               final DecimalFormat df = new DecimalFormat("0.00");
@@ -135,7 +148,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
                 mitem.addSelectionListener(new SelectionAdapter()
                 {
                   @Override
-                  public void widgetSelected(SelectionEvent e)
+                  public void widgetSelected(final SelectionEvent e)
                   {
                     _activeSource = sensor;
 
@@ -152,7 +165,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
               mitem.addSelectionListener(new SelectionAdapter()
               {
                 @Override
-                public void widgetSelected(SelectionEvent e)
+                public void widgetSelected(final SelectionEvent e)
                 {
                   System.out.println("no sources pressed");
                 }
@@ -163,7 +176,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
             // -------------------------------
 
             // menu location
-            Rectangle rect = item.getBounds();
+            final Rectangle rect = item.getBounds();
             Point pt = new Point(rect.x, rect.y + rect.height);
             pt = toolBar.toDisplay(pt);
             menu.setLocation(pt.x, pt.y);
@@ -176,48 +189,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     };
     toolBarManager.add(dropdown);
 
-  }
-
-  private static interface SourceProvider
-  {
-    public List<SensorWrapper> getSources();
-  }
-
-  private List<SensorWrapper> getPotentialSources()
-  {
-    final List<SensorWrapper> res = new ArrayList<SensorWrapper>();
-    if (_ourLayersSubject != null)
-    {
-      OperateFunction handleMe = new OperateFunction()
-      {
-
-        @Override
-        public void operateOn(Editable item)
-        {
-          TrackWrapper track = (TrackWrapper) item;
-          BaseLayer sensors = track.getSensors();
-          if (sensors != null)
-          {
-            Enumeration<Editable> sIter = sensors.elements();
-            while (sIter.hasMoreElements())
-            {
-              SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
-              if (sensor.getBaseFrequency() > 0)
-              {
-                res.add(sensor);
-              }
-            }
-          }
-        }
-      };
-      _ourLayersSubject.walkVisibleItems(TrackWrapper.class, handleMe);
-    }
-    return res;
-  }
-
-  public static interface SelectSource
-  {
-    public void select(SensorWrapper source);
   }
 
   @Override
@@ -381,6 +352,38 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     return null;
   }
 
+  private List<SensorWrapper> getPotentialSources()
+  {
+    final List<SensorWrapper> res = new ArrayList<SensorWrapper>();
+    if (_ourLayersSubject != null)
+    {
+      final OperateFunction handleMe = new OperateFunction()
+      {
+
+        @Override
+        public void operateOn(final Editable item)
+        {
+          final TrackWrapper track = (TrackWrapper) item;
+          final BaseLayer sensors = track.getSensors();
+          if (sensors != null)
+          {
+            final Enumeration<Editable> sIter = sensors.elements();
+            while (sIter.hasMoreElements())
+            {
+              final SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
+              if (sensor.getBaseFrequency() > 0)
+              {
+                res.add(sensor);
+              }
+            }
+          }
+        }
+      };
+      _ourLayersSubject.walkVisibleItems(TrackWrapper.class, handleMe);
+    }
+    return res;
+  }
+
   @Override
   protected String getType()
   {
@@ -449,7 +452,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     {
 
       @Override
-      public void setShade(Paint errorColor)
+      public void setShade(final Paint errorColor)
       {
         _dotPlot.setBackgroundPaint(errorColor);
       }
