@@ -152,10 +152,10 @@ public class FrequencyResidualsView extends BaseStackedDotsView
                   {
                     _activeSource = sensor;
 
-                    System.out.println("Setting active source to:" + sensor);
+                    // trigger update of doublets
+                    updateData(false);
                   }
                 });
-
               }
             }
             else
