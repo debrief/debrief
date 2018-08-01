@@ -549,7 +549,7 @@ public class ImportReplay extends PlainImporterBase
 
   static private Vector<doublet> colors; // list of Replay colours
 
-  static public final String NARRATIVE_LAYER = "Narratives";
+  static public final String NARRATIVE_LAYER = NarrativeEntry.NARRATIVE_LAYER;
 
   static private final String ANNOTATION_LAYER = "Annotations";
 
