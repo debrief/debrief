@@ -5,7 +5,6 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -55,8 +54,6 @@ public class CoordinateRecorder
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   private final TimeControlPreferences _timePrefs;
-  final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(
-      "yyyy-MM-dd'T'HH:mm:ss'Z'");
   public static final String PREF_PPT_EXPORT_LOCATION="pptExportLocation";
   public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
   public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
