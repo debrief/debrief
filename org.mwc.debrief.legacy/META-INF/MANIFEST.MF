@@ -198,6 +198,8 @@ Export-Package:
    org.xml.sax,
    Debrief.Wrappers.Extensions",
  Debrief.ReaderWriter.ais;uses:="junit.framework,MWC.GUI",
+ Debrief.ReaderWriter.powerPoint,
+ Debrief.ReaderWriter.powerPoint.model,
  Debrief.Tools.FilterOperations;
   uses:="MWC.GUI.Properties,
    Debrief.Tools.Tote,
@@ -260,6 +262,7 @@ Export-Package:
    MWC.GUI,
    MWC.TacticalData,
    MWC.GUI.Canvas",
+ net.lingala.zip4j.exception,
  org.eclipse.january,
  org.eclipse.january.dataset;
   uses:="org.eclipse.january.metadata,
