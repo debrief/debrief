@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,8 +24,10 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.powerPoint.DebriefException;
 import Debrief.ReaderWriter.powerPoint.PlotTracks;
+import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
@@ -31,12 +35,15 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -93,19 +100,17 @@ public class CoordinateRecorder
             _tracks.put(track.getName(), tp);
           }
           final Point point = _projection.toScreen(fix.getLocation());
-          final WorldLocation newLoc = new WorldLocation(point.getY(), point.getX(),
-              fix.getLocation().getDepth());
+          final double screenHeight = _projection.getScreenArea().getHeight();
           final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix.getCourseDegs());
           final double speedYps = new WorldSpeed(fix.getSpeed(),
           WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3;
           TrackPoint trackPoint = new TrackPoint();
           trackPoint.setCourse((float)courseRads);
           trackPoint.setSpeed((float)speedYps);
-          trackPoint.setLatitude((float)newLoc.getLat());
-          trackPoint.setLongitude((float)newLoc.getLong());
+          trackPoint.setLatitude((float)(screenHeight - point.getY()));
+          trackPoint.setLongitude((float)point.getX());
           trackPoint.setElevation((float)fix.getLocation().getDepth());
-          LocalDateTime ldt = LocalDateTime.ofInstant(fix.getDTG().getDate().toInstant(), ZoneId.systemDefault());
-          trackPoint.setTime(ldt);
+          trackPoint.setTime(fix.getDTG().getDate());
           tp.getSegments().add(trackPoint);          
         }
       }
@@ -174,6 +179,7 @@ public class CoordinateRecorder
       td.setWidth(_projection.getScreenArea().width);
       td.setHeight(_projection.getScreenArea().height);
       td.getTracks().addAll(_tracks.values());
+      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks);
       PlotTracks plotTracks = new PlotTracks();
       String exportFile = getFileToExport(exportLocation, fileName, fileFormat);
       String masterTemplate = getMasterTemplateFile();
@@ -195,6 +201,56 @@ public class CoordinateRecorder
             "Host track for TMA leg can't be determined", de);
       }
     }    
+  }
+
+  private void storeNarrativesInto(ArrayList<ExportNarrativeEntry> narrativeEntries,
+      Layers layers, Map<String, Track> tracks)
+  {
+    // look for a narratives layer
+    Layer narratives = layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+    if(narratives != null)
+    {
+      Date firstTime = null;
+      Date lastTime = null;
+      
+      // ok, get the bounding time period
+      for(Track track: tracks.values())
+      {
+        ArrayList<TrackPoint> segs = track.getSegments();
+        for(TrackPoint point: segs)
+        {
+          Date thisTime = point.getTime();
+          if(firstTime == null)
+          {
+            firstTime = thisTime;
+            lastTime = thisTime;
+          }
+          else
+          {
+            firstTime = thisTime.getTime() < firstTime.getTime() ? thisTime : firstTime;
+            lastTime = thisTime.getTime() > lastTime.getTime() ? thisTime : lastTime;
+          }
+        }
+      }
+      
+      TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(firstTime), new HiResDate(lastTime));
+      
+      Enumeration<Editable> nIter = narratives.elements();
+      while(nIter.hasMoreElements())
+      {
+        NarrativeEntry entry = (NarrativeEntry) nIter.nextElement();
+        if(period.contains(new HiResDate(entry.getDTG())))
+        {
+          String dateStr = null;
+          String elapsed = null;
+          // ok, create a narrative entry for it
+          ExportNarrativeEntry newE = new ExportNarrativeEntry(entry.getEntry(),dateStr, elapsed, entry.getDTG().getDate());
+          
+          // and store it
+          narrativeEntries.add(newE);
+        }
+      }
+    }
   }
 
   private String getMasterTemplateFile() {

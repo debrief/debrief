@@ -11,7 +11,7 @@ public class TrackData
   private int width;
   private int intervals;
   private String name;
-  private final ArrayList<NarrativeEntry> narrativeEntries = new ArrayList<>();
+  private final ArrayList<ExportNarrativeEntry> narrativeEntries = new ArrayList<>();
   private final ArrayList<Track> tracks = new ArrayList<>();
 
   public int getHeight()
@@ -29,7 +29,7 @@ public class TrackData
     return name;
   }
 
-  public ArrayList<NarrativeEntry> getNarrativeEntries()
+  public ArrayList<ExportNarrativeEntry> getNarrativeEntries()
   {
     return narrativeEntries;
   }

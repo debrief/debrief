@@ -14,6 +14,9 @@
  */
 package org.mwc.debrief.core.preferences;
 
+import java.io.IOException;
+import java.util.HashMap;
+
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.preference.BooleanFieldEditor;
@@ -29,6 +32,11 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
+import Debrief.ReaderWriter.powerPoint.DebriefException;
+import Debrief.ReaderWriter.powerPoint.PlotTracks;
+import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
+import net.lingala.zip4j.exception.ZipException;
+
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By
  * subclassing <samp>FieldEditorPreferencePage</samp>, we can use the field support built into JFace
@@ -42,6 +50,8 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 public class PrefsPage extends FieldEditorPreferencePage implements
 IWorkbenchPreferencePage
 {
+  private Label slideDims;
+
   public PrefsPage()
   {
     super("Debrief Preferences", CorePlugin
@@ -85,7 +95,7 @@ IWorkbenchPreferencePage
     label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
     Label label3 =
         new Label(getFieldEditorParent(), SWT.HORIZONTAL);
-    label3.setText("Specify the PPT template to export recordings");
+    label3.setText("Specify the PPT template to export recordings:");
     label3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
     final FileFieldEditor templateLocationPrefEditor = new 
         FileFieldEditor(PreferenceConstants.PPT_TEMPLATE, 
@@ -94,6 +104,16 @@ IWorkbenchPreferencePage
     String[] extensions = new String[] { "*.pptx" }; // NON-NLS-1
     templateLocationPrefEditor.setFileExtensions(extensions);
     addField(templateLocationPrefEditor);
+    
+    Label slideDimsLbl =
+        new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    slideDimsLbl.setText("Map element dimensions:");
+    slideDimsLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+    slideDims=
+        new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    slideDims.setText("Width: (pending) Height: (pending)");
+    slideDims.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
   }
 
 
@@ -111,13 +131,37 @@ IWorkbenchPreferencePage
   @Override
   public void propertyChange(PropertyChangeEvent event)
   {
-    if(event.getProperty().equals(PreferenceConstants.PPT_TEMPLATE)) {
+    if(event.getProperty().equals("field_editor_value")) {
       IPath path = new Path(event.getNewValue().toString());
       if(!path.toFile().exists()) {
         setErrorMessage("Invalid file path, File does not exist");
         setValid(false);
       }
       else {
+        
+        // ok, retrieve the dims
+        PlotTracks exporter = new PlotTracks();
+        try
+        {
+          HashMap<String, String> props = exporter.retrieveMapProperties((String) event.getNewValue());
+          slideDims.setText("Width:" + props.get("cx") + " Height:" + props.get("cy"));
+        }
+        catch (IOException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (ZipException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (DebriefException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        
         setErrorMessage(null);
         setValid(true);
       }

@@ -7,10 +7,11 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -22,7 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-import Debrief.ReaderWriter.powerPoint.model.NarrativeEntry;
+import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
@@ -610,10 +611,10 @@ public class PlotTracks
     final ArrayList<TrackPoint> coordinates = firstItem.getSegments();
     for (final TrackPoint coordinate : coordinates)
     {
-      final LocalDateTime timestamp = coordinate.getTime();
-      final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+      final Date timestamp = coordinate.getTime();
+      final DateFormat formatter = new SimpleDateFormat(
           "yy MMM ddHHmm");
-      final String timestampString = timestamp.format(formatter);
+      final String timestampString = formatter.format(timestamp);
       final Element temp_time_tag = time_tag.clone();
       temp_time_tag.selectFirst("p|cNvPr").attr("id", current_time_id + "");
       temp_time_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst(
@@ -674,10 +675,10 @@ public class PlotTracks
     narrative_objects.add(blank_narrative);
     current_narrative_id = 400;
     int num_narrative = 0;
-    for (final NarrativeEntry narrative : trackData.getNarrativeEntries())
+    for (final ExportNarrativeEntry narrative : trackData.getNarrativeEntries())
     {
       time_delay += Integer.parseInt(narrative.getElapsed()) - time_delay;
-      final String time_str = narrative.getDate();
+      final String time_str = narrative.getDateString();
       final Element temp_narrative_tag = narrative_tag.clone();
       temp_narrative_tag.selectFirst("p|cNvPr").attr("id", current_narrative_id
           + "");

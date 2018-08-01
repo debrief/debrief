@@ -1,13 +1,13 @@
 package Debrief.ReaderWriter.powerPoint.model;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class TrackPoint
 {
   private float latitude;
   private float longitude;
   private float elevation;
-  private LocalDateTime time;
+  private Date time;
   private float course;
   private float speed;
 
@@ -40,7 +40,7 @@ public class TrackPoint
     return speed;
   }
 
-  public LocalDateTime getTime()
+  public Date getTime()
   {
     return time;
   }
@@ -70,7 +70,7 @@ public class TrackPoint
     this.speed = speed;
   }
 
-  public void setTime(final LocalDateTime time)
+  public void setTime(final Date time)
   {
     this.time = time;
   }

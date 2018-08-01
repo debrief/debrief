@@ -1,19 +1,28 @@
 package Debrief.ReaderWriter.powerPoint.model;
 
-public class NarrativeEntry
+import java.util.Date;
+
+public class ExportNarrativeEntry
 {
   private final String text;
-  private final String date;
+  private final String dateString;
+  private final Date date;
   private final String elapsed;
 
-  public NarrativeEntry(String text, String date, String elapsed)
+  public ExportNarrativeEntry(String text, String dateString, String elapsed, Date date)
   {
     this.text = text;
-    this.date = date;
+    this.dateString = dateString;
     this.elapsed= elapsed;
+    this.date = date;
   }
 
-  public String getDate()
+  public String getDateString()
+  {
+    return dateString;
+  }
+
+  public Date getDate()
   {
     return date;
   }
@@ -33,7 +42,7 @@ public class NarrativeEntry
   {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((date == null) ? 0 : date.hashCode());
+    result = prime * result + ((dateString == null) ? 0 : dateString.hashCode());
     result = prime * result + ((elapsed == null) ? 0 : elapsed.hashCode());
     result = prime * result + ((text == null) ? 0 : text.hashCode());
     return result;
@@ -48,13 +57,13 @@ public class NarrativeEntry
       return false;
     if (getClass() != obj.getClass())
       return false;
-    NarrativeEntry other = (NarrativeEntry) obj;
-    if (date == null)
+    ExportNarrativeEntry other = (ExportNarrativeEntry) obj;
+    if (dateString == null)
     {
-      if (other.date != null)
+      if (other.dateString != null)
         return false;
     }
-    else if (!date.equals(other.date))
+    else if (!dateString.equals(other.dateString))
       return false;
     if (elapsed == null)
     {

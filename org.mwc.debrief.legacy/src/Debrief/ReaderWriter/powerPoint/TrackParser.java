@@ -1,7 +1,9 @@
 package Debrief.ReaderWriter.powerPoint;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -9,7 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
-import Debrief.ReaderWriter.powerPoint.model.NarrativeEntry;
+import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
@@ -42,7 +44,14 @@ public class TrackParser
     final Document soup = Jsoup.parse(xml, "", Parser.xmlParser());
     parseBasicInfo(trackData, soup);
     parseNarratives(trackData, soup);
-    parseTracks(trackData, soup);
+    try
+    {
+      parseTracks(trackData, soup);
+    }
+    catch (ParseException e)
+    {
+      e.printStackTrace();
+    }
 
     return trackData;
   }
@@ -98,7 +107,7 @@ public class TrackParser
 
       for (final Element entry : entries)
       {
-        final NarrativeEntry entryInstance = new NarrativeEntry(entry.attr("Text"),entry.attr("dateStr"),entry.attr("elapsed"));
+        final ExportNarrativeEntry entryInstance = new ExportNarrativeEntry(entry.attr("Text"),entry.attr("dateStr"),entry.attr("elapsed"), null);
         trackData.getNarrativeEntries().add(entryInstance);
       }
     }
@@ -111,8 +120,9 @@ public class TrackParser
    *          TrackData instance where we are going to insert the info
    * @param soup
    *          Soup file
+   * @throws ParseException 
    */
-  private void parseTracks(final TrackData trackData, final Document soup)
+  private void parseTracks(final TrackData trackData, final Document soup) throws ParseException
   {
     final Elements tracks = soup.select("trk");
     for (final Element track : tracks)
@@ -125,10 +135,9 @@ public class TrackParser
         point.setLongitude(Float.parseFloat(coordinate.attr("lon")));
         point.setLatitude(Float.parseFloat(coordinate.attr("lat")));
 
-        final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(
+        final DateFormat dateTimeFormatter = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        final LocalDateTime dateTime = LocalDateTime.from(dateTimeFormatter
-            .parse(coordinate.selectFirst("time").text()));
+        final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst("time").text());
         point.setTime(dateTime);
 
         point.setCourse(Float.parseFloat(coordinate.selectFirst("course")
