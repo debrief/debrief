@@ -106,7 +106,7 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         final ToolItem item = new ToolItem (toolBar, SWT.DROP_DOWN);
         item.setToolTipText("Acoustic Source");
         item.setImage(CorePlugin.getImageFromRegistry(CorePlugin.getImageDescriptor(
-            "icons/24/photo_scenery.png")));
+            "icons/24/pulse.png")));
         item.addListener(SWT.Selection, new Listener()
         {
           @Override
