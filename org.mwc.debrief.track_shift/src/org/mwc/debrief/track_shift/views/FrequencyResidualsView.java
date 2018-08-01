@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
@@ -36,10 +37,18 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolItem;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
@@ -86,25 +95,50 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
     IContributionItem comboCI = new ControlContribution("Acoustic Source")
     {
-      protected Control createControl(Composite parent)
+      protected Control createControl(final Composite parent)
       {
-        final Combo c = new Combo(parent, SWT.READ_ONLY);
-        
-        int numItems =  2 + (int) (Math.random() * 6d);
-        for (int i = 0; i <= numItems; i++)
+
+        final Button item = new Button(parent, SWT.FLAT | SWT.ARROW | SWT.DOWN);
+        final AtomicReference<String> selection = new   AtomicReference<String>(null);
+        //@IAN -> you can set Icon if you need on Button
+        item.addListener(SWT.Selection, new Listener()
         {
-          c.add("item " + i);
-        }
-        c.addSelectionListener(new SelectionAdapter()
-        {
-          public void widgetSelected(SelectionEvent e)
+          @Override
+          public void handleEvent(Event event)
           {
-            System.out.println("pressed:" + c.getText());
+            final Menu menu = new Menu(parent.getShell(), SWT.POP_UP);
+            
+            //----------- MENU populate -----
+            int numItems =  2 + (int) (Math.random() * 6d);
+            for (int i = 0; i < numItems; i++)
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+              mitem.setText("Item " + i);
+              mitem.setSelection(mitem.getText().equals(selection.get()));
+              mitem.addSelectionListener(new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  selection.set(mitem.getText());
+                }
+              });
+            }
+            //-------------------------------
+            
+            //menu location  
+            Rectangle rect = item.getBounds();
+            Point pt = new Point(rect.x, rect.y + rect.height);
+            pt = parent.toDisplay(pt);
+            menu.setLocation(pt.x, pt.y);
+            menu.setVisible(true);
           }
         });
-        return c;
-      }};
-      toolBarManager.add(comboCI);
+        return item;
+
+      }
+    };
+    toolBarManager.add(comboCI);
 
   }
 
