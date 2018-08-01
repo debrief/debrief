@@ -468,7 +468,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   private PlotPropertySheetPage _propertySheetPage;
 
   private final IPropertyChangeListener _sensorTransparencyListener;
-
+  
   /**
    * constructor - quite simple really.
    */
@@ -1856,7 +1856,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       res = _propertySheetPage;
     }
-
     // did we find anything?
     if (res == null)
     {
