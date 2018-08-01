@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 
+import Debrief.GUI.Frames.Application;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -34,7 +35,7 @@ public class UnpackFunction
     }
 
     // Unpack the pptx file
-    System.out.println("Unpacking pptx file...");
+    Application.logError2(Application.INFO, "Unpacking pptx file...", null);
     if (Files.notExists(Paths.get(unpack_path)))
     {
       new File(unpack_path).mkdir();
@@ -55,7 +56,7 @@ public class UnpackFunction
 
     final ZipFile zip_ref = new ZipFile(pptx_path);
     zip_ref.extractAll(unpack_path);
-    System.out.println("File unpacked at " + unpack_path);
+    Application.logError2(Application.INFO, "File unpacked at " + unpack_path, null);
     return unpack_path;
   }
 }

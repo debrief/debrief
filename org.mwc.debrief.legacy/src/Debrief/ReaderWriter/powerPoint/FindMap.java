@@ -14,6 +14,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
+import Debrief.GUI.Frames.Application;
+
 public class FindMap
 {
 
@@ -55,8 +57,8 @@ public class FindMap
             shapeDetails.put("cx", shape.select("a|ext").get(0).attr("cx"));
             shapeDetails.put("cy", shape.select("a|ext").get(0).attr("cy"));
             mapDetails = shapeDetails;
-            System.out.println("mapDetails - " + Arrays.toString(mapDetails
-                .entrySet().toArray()));
+            Application.logError2(Application.INFO, "mapDetails - " + Arrays.toString(mapDetails
+                .entrySet().toArray()), null);
             flag = 1;
             break;
           }

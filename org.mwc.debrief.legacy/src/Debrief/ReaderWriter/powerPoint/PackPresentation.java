@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.FileUtils;
 
+import Debrief.GUI.Frames.Application;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.ZipParameters;
@@ -64,7 +65,7 @@ public class PackPresentation
     parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
     parameters.setIncludeRootFolder(false);
     zipFile.addFolder(unpack_path + "/", parameters);
-    System.out.println("File packed at " + pptx_path);
+    Application.logError2(Application.INFO, "File packed at " + pptx_path, null);
 
     try
     {

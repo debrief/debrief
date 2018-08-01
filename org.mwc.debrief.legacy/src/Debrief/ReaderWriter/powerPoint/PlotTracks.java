@@ -23,6 +23,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
@@ -132,7 +133,7 @@ public class PlotTracks
       }
       catch (Exception e)
       {
-        System.err.println(e.getMessage());
+        Application.logError2(Application.ERROR, e.getMessage(), e);
       }
     }
 
@@ -332,7 +333,8 @@ public class PlotTracks
       final String slide_path, final String temp_unpack_path, String output_filename)
       throws IOException, ZipException, DebriefException
   {
-    System.out.println("Number of tracks::: " + trackData.getTracks().size());
+    Application.logError2(Application.INFO, "Number of tracks::: " + trackData.getTracks().size(), null);
+    
 
     // Get slide size from presentation.xml file
     final String[] slideDimen = new ParsePresentation().retrieveDimensions(
@@ -393,8 +395,8 @@ public class PlotTracks
         .attr("id"));
     int current_arrow_id = Integer.parseInt(arrow_tag.selectFirst("p|cNvPr")
         .attr("id"));
-    System.out.println("Last Shape Id::::: " + current_shape_id);
-    System.out.println("Last Arrow Id::::: " + current_arrow_id);
+    Application.logError2(Application.INFO, "Last Shape Id::::: " + current_shape_id, null);
+    Application.logError2(Application.INFO, "Last Arrow Id::::: " + current_arrow_id, null);
 
     final ArrayList<Integer> shape_ids = new ArrayList<>();
     final ArrayList<Integer> arrow_ids = new ArrayList<>();
@@ -604,7 +606,7 @@ public class PlotTracks
     int time_delay = intervalDuration;
     int current_time_id = Integer.parseInt(time_tag.selectFirst("p|cNvPr").attr(
         "id"));
-    System.out.println("Last Time Id::::: " + current_time_id);
+    Application.logError2(Application.INFO, "Last Time Id::::: " + current_time_id, null);
     // we will get the timestamps from the first track
 
     final Track firstItem = trackData.getTracks().get(0);
@@ -664,7 +666,8 @@ public class PlotTracks
     time_delay = 0;
     int current_narrative_id = Integer.parseInt(narrative_tag.selectFirst(
         "p|cNvPr").attr("id"));
-    System.out.println("Last Narrative Id::::: " + current_narrative_id);
+    
+    Application.logError2(Application.INFO, "Last Narrative Id::::: " + current_narrative_id, null);
 
     // Blank narrative box
     final Element blank_narrative = narrative_tag.clone();
