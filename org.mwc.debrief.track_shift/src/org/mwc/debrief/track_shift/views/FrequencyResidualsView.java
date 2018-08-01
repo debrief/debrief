@@ -27,11 +27,8 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -221,91 +218,6 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   public static interface SelectSource
   {
     public void select(SensorWrapper source);
-  }
-
-  private static class SourceMenu implements IMenuListener
-  {
-    private final SourceProvider provider;
-    private final MenuManager parent;
-    private SelectSource select;
-
-    public SourceMenu(MenuManager menu, SourceProvider sourceProvider,
-        SelectSource selectSource)
-    {
-      provider = sourceProvider;
-      parent = menu;
-      select = selectSource;
-    }
-
-    public void menuAboutToShow(IMenuManager manager)
-    {
-      List<SensorWrapper> sources = provider.getSources();
-      if (sources != null && sources.size() > 0)
-      {
-        final DecimalFormat df = new DecimalFormat("0.00");
-        for (final SensorWrapper sensor : sources)
-        {
-          final String host = sensor.getHost().getName();
-          final String name = host + "/" + sensor.getName() + " (" + df.format(
-              sensor.getBaseFrequency()) + " Hz)";
-          Action deleteAction = new Action(name)
-          {
-            public void run()
-            {
-              select.select(sensor);
-            }
-          };
-          parent.add(deleteAction);
-        }
-      }
-      else
-      {
-        Action deleteAction2 = new Action("No sources found")
-        {
-          public void run()
-          {
-            System.out.println("no sources pressed");
-          }
-        };
-        parent.add(deleteAction2);
-      }
-    }
-  }
-
-  @Override
-  protected void addPullDownExtras(IMenuManager manager)
-  {
-    super.addPullDownExtras(manager);
-
-    manager.add(new Separator());
-
-    // ok, provide the list of acoustic sources.
-    final MenuManager newMenu = new MenuManager("Acoustic Source");
-    SelectSource selectSource = new SelectSource()
-    {
-
-      @Override
-      public void select(SensorWrapper source)
-      {
-        _activeSource = source;
-        System.out.println("Setting active source to:" + source);
-      }
-    };
-    SourceProvider sourceProvider = new SourceProvider()
-    {
-      @Override
-      public List<SensorWrapper> getSources()
-      {
-        return getPotentialSources();
-      }
-    };
-
-    // make this new menu dynamic
-    newMenu.setRemoveAllWhenShown(true);
-    newMenu.addMenuListener(new SourceMenu(newMenu, sourceProvider,
-        selectSource));
-
-    manager.add(newMenu);
   }
 
   @Override
