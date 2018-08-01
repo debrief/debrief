@@ -3077,8 +3077,17 @@ public final class StackedDotHelper
         final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
         final String sensorName = thisSensor.getName();
         safelyAddItem(measuredValuesColl, sensorName, mFreq);
-
-        final double baseFreq = thisD.getBaseFrequency();
+        
+        final double baseFreq;
+        if(isMultistatic)
+        {
+          baseFreq = radiatedSource.getBaseFrequency();
+        }
+        else
+        {
+          baseFreq = thisD.getBaseFrequency();          
+        }
+        
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
