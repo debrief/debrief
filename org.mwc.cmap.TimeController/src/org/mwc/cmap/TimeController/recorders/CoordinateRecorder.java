@@ -3,17 +3,30 @@ package org.mwc.cmap.TimeController.recorders;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
+import Debrief.ReaderWriter.powerPoint.DebriefException;
+import Debrief.ReaderWriter.powerPoint.PlotTracks;
+import Debrief.ReaderWriter.powerPoint.model.Track;
+import Debrief.ReaderWriter.powerPoint.model.TrackData;
+import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -24,19 +37,20 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import net.lingala.zip4j.exception.ZipException;
 
 public class CoordinateRecorder 
 
 {
   private final Layers _myLayers;
   private final PlainProjection _projection;
-  final private Map<String, TrackWrapper> _tracks =
-      new HashMap<String, TrackWrapper>();
+  final private Map<String,Track> _tracks = new HashMap<>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   private final TimeControlPreferences _timePrefs;
+  final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(
+      "yyyy-MM-dd'T'HH:mm:ss'Z'");
   public static final String PREF_PPT_EXPORT_LOCATION="pptExportLocation";
   public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
   public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
@@ -73,14 +87,10 @@ public class CoordinateRecorder
         if (items != null && items.length > 0)
         {
           final FixWrapper fix = (FixWrapper) items[0];
-
-          TrackWrapper match = _tracks.get(track.getName());
-          if (match == null)
-          {
-            match = new TrackWrapper();
-            match.setName(track.getName());
-            match.setColor(track.getColor());
-            _tracks.put(track.getName(), match);
+          Track tp = _tracks.get(track.getName());
+          if(tp == null) {
+            tp = new Track(track.getName(),track.getColor());
+            _tracks.put(track.getName(), tp);
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final WorldLocation newLoc = new WorldLocation(point.getY(), point.getX(),
@@ -88,11 +98,15 @@ public class CoordinateRecorder
           final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix.getCourseDegs());
           final double speedYps = new WorldSpeed(fix.getSpeed(),
           WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3;
-          final Fix fix2 = new Fix(timeNow, newLoc,
-              courseRads,
-              speedYps);
-          final FixWrapper fw2 = new FixWrapper(fix2);
-          match.addFix(fw2);
+          TrackPoint trackPoint = new TrackPoint();
+          trackPoint.setCourse((float)courseRads);
+          trackPoint.setSpeed((float)speedYps);
+          trackPoint.setLatitude((float)newLoc.getLat());
+          trackPoint.setLongitude((float)newLoc.getLong());
+          trackPoint.setElevation((float)fix.getLocation().getDepth());
+          LocalDateTime ldt = LocalDateTime.ofInstant(fix.getDTG().getDate().toInstant(), ZoneId.systemDefault());
+          trackPoint.setTime(ldt);
+          tp.getSegments().add(trackPoint);          
         }
       }
     };
@@ -119,7 +133,7 @@ public class CoordinateRecorder
     String exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
     String fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
     String fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
-    List<TrackWrapper> list = new ArrayList<TrackWrapper>();
+    List<Track> list = new ArrayList<Track>();
     list.addAll(_tracks.values());
     Dimension dims = _projection.getScreenArea();
     long interval =  _timePrefs.getAutoInterval().getMillis();
@@ -154,11 +168,45 @@ public class CoordinateRecorder
       PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,fileNameToSave);
       PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,fileFormat);
       startTime=null;
-      System.out.println("export path:"+exportLocation+File.separator+fileName+"."+fileFormat);
-      //export to file now and open the file        
+      TrackData td = new TrackData();
+      td.setName(fileName);
+      td.setIntervals((int)interval);
+      td.setWidth(_projection.getScreenArea().width);
+      td.setHeight(_projection.getScreenArea().height);
+      td.getTracks().addAll(_tracks.values());
+      PlotTracks plotTracks = new PlotTracks();
+      String exportFile = getFileToExport(exportLocation, fileName, fileFormat);
+      String masterTemplate = getMasterTemplateFile();
+      try {
+        String exportedFile = plotTracks.export(td, masterTemplate , exportFile);
+        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault().getActiveShell(), "PowerPoint Export", "The file is exported to:"+exportedFile, MessageDialog.INFORMATION);
+        
+      }catch(IOException ie) {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR,
+            "Host track for TMA leg can't be determined", ie);
+      }catch(ZipException ze) {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR,
+            "Host track for TMA leg can't be determined", ze);
+      }catch(DebriefException de) {
+        MessageDialog.open(MessageDialog.ERROR, Display.getDefault().getActiveShell(), "Error", "Error exporting to powerpoint", MessageDialog.ERROR);
+        CorePlugin.logError(IStatus.ERROR,
+            "Host track for TMA leg can't be determined", de);
+      }
     }    
   }
 
+  private String getMasterTemplateFile() {
+    String templateFile = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    if(templateFile==null || templateFile.isEmpty()) {
+      templateFile = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    }
+    return templateFile;
+  }
+  private String getFileToExport(String exportLocation,String fileName,String fileFormat) {
+    return exportLocation+File.separator+fileName+"."+fileFormat;
+  }
   private String getFileNameStem(String fileName2)
   {
     String newName;
