@@ -3034,6 +3034,9 @@ public final class StackedDotHelper
 
       series.removeAllSeries();
     }
+
+    // keep track if this is a multi-static engagement
+    final boolean isMultistatic = radiatedSource != null;
     
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -3101,8 +3104,19 @@ public final class StackedDotHelper
 
             // did we get a base frequency? We may have a track
             // with a section of data that doesn't have frequency, you see.
-            final double predictedFreq = thisD.getPredictedFrequency(
-                speedOfSound);
+            final double predictedFreq;
+            
+            if(isMultistatic)
+            {
+              predictedFreq = thisD.getPredictedMultistaticFrequency(
+                  speedOfSound, radiatedSource);
+            }
+            else
+            {
+              predictedFreq = thisD.getPredictedFrequency(
+                  speedOfSound);
+            }
+            
             final double thisError = thisD.calculateFreqError(measuredFreq,
                 predictedFreq);
             final Color predictedColor = halfWayColor(calcColor, thisColor);
