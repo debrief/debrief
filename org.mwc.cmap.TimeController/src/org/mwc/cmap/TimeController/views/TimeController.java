@@ -185,7 +185,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * listen out for new times
    */
-  final private PropertyChangeListener _temporalListener = new NewTimeListener();
+  final private PropertyChangeListener _temporalListener =
+      new NewTimeListener();
 
   /**
    * the temporal dataset controlling the narrative entry currently displayed
@@ -702,7 +703,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
 
-  
   private class MySplitButtonListener implements SplitButtonSelectionListener
   {
     @Override
@@ -720,17 +720,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         if (_doExportItem.getSelection())
         {
           // get ready for recording
-          _coordinateRecorder = new CoordinateRecorder(_myLayers, _targetProjection,
-              _myStepperProperties);
+          _coordinateRecorder = new CoordinateRecorder(_myLayers,
+              _targetProjection, _myStepperProperties);
           _coordinateRecorder.startStepping(getTimeProvider().getTime());
         }
-        
+
         // and start playing
         startPlaying();
-        
+
         // ok, disable the buttons
         setVCREnabled(false);
-        
+
         _playButton.setToolTipText(PAUSE_TEXT);
         _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PAUSE));
       }
@@ -754,7 +754,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       }
     }
   }
-  
+
   /**
    * 
    */
@@ -790,12 +790,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _doExportItem = new MenuItem(exportMenu, SWT.CHECK);
     _doExportItem.setText("Export to PPTX");
     _doExportItem.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PPTX));
-   
+
     _playButton.setMenu(exportMenu);
     _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
     _playButton.setToolTipText(PLAY_TEXT);
-    _playButton.addSplitButtonSelectionListener(
-        new MySplitButtonListener());
+    _playButton.addSplitButtonSelectionListener(new MySplitButtonListener());
 
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
@@ -1863,16 +1862,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   protected void setVCREnabled(final boolean enable)
   {
-    for(String key: _buttonList.keySet())
+    for (String key : _buttonList.keySet())
     {
-      if(!key.equals(PLAY_BUTTON_KEY))
+      if (!key.equals(PLAY_BUTTON_KEY))
       {
         Button item = _buttonList.get(key);
         item.setEnabled(enable);
       }
     }
   }
-  
+
   /**
    * we may be listening to an object that cannot be rewound, that does not support backward
    * stepping. If so, let us reformat ourselves accordingly
@@ -2084,28 +2083,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             if (!_timeLabel.isDisposed())
               _timeLabel.setText(newVal);
 
-            if (!_alreadyProcessingChange)
+            // there's a (slim) chance that the temp dataset has
+            // already been
+            // cleared, or
+            // hasn't been caught yet. just check we still know
+            // about it
+            if (!_alreadyProcessingChange && _myTemporalDataset != null)
             {
-
-              // there's a (slim) chance that the temp dataset has
-              // already been
-              // cleared, or
-              // hasn't been caught yet. just check we still know
-              // about it
-              if (_myTemporalDataset != null)
+              final TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
+              if (dataPeriod != null)
               {
-                final TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-                if (dataPeriod != null)
+                final int newIndex = _slideManager.toSliderUnits(newDTG);
+                // did we find a valid time?
+                if (newIndex != -1)
                 {
-                  final int newIndex = _slideManager.toSliderUnits(newDTG);
-                  // did we find a valid time?
-                  if (newIndex != -1)
+                  // yes, go for it.
+                  if (!_tNowSlider.isDisposed())
                   {
-                    // yes, go for it.
-                    if (!_tNowSlider.isDisposed())
-                    {
-                      _tNowSlider.setSelection(newIndex);
-                    }
+                    _tNowSlider.setSelection(newIndex);
                   }
                 }
               }
@@ -2175,18 +2170,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     final StringBuffer res = new StringBuffer();
 
-    final java.util.Date theTime = new java.util.Date(micros / 1000);
+    final Date theTime = new Date(micros / 1000);
 
     // do we already know about a date format?
-    if (_myFormatString != null)
+    if (_myFormatString != null && !_myFormatString.equals(pattern))
     {
-      // right, see if it's what we're after
-      if (_myFormatString != pattern)
-      {
-        // nope, it's not what we're after. ditch gash
-        _myFormatString = null;
-        _myFormat = null;
-      }
+      // nope, it's not what we're after. ditch gash
+      _myFormatString = null;
+      _myFormat = null;
     }
 
     // so, we either don't have a format yet, or we did have, and now we
@@ -2233,17 +2224,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   public static class TestTimeController extends TestCase
   {
-    int _min;
+    private int _min;
 
-    int _max;
+    private int _max;
 
-    int _smallTick;
+    private int _smallTick;
 
-    int _largeTick;
+    private int _largeTick;
 
-    int _dragSize;
+    private int _dragSize;
 
-    boolean _enabled;
+    private boolean _enabled;
 
     public void testSliderScales()
     {
@@ -2423,7 +2414,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * ok - put in the stepper mode buttons - and any others we think of.
    */
-  private void populateDropDownList(final LayerPainterManager myLayerPainterManager)
+  private void populateDropDownList(
+      final LayerPainterManager myLayerPainterManager)
   {
     // clear the list
     final IMenuManager menuManager = getViewSite().getActionBars()

@@ -238,6 +238,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Tools.Operations.CloseSession;
 import Debrief.Tools.Operations.ExitApplication;
 import Debrief.Tools.Operations.ImportData2;
@@ -255,6 +256,7 @@ import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.Utilities.Errors.Trace;
+import MWC.Utilities.ReaderWriter.ImportManager;
 
 public abstract class Application implements ToolParent, ActionListener,
     FileDropSupport.FileDropListener
@@ -323,12 +325,12 @@ public abstract class Application implements ToolParent, ActionListener,
     _theClipboard = new Clipboard("Debrief");
 
     // set the importer in the libary
-    MWC.Utilities.ReaderWriter.ImportManager.addImporter(
-        new Debrief.ReaderWriter.Replay.ImportReplay());
+    ImportManager.addImporter(
+        new ImportReplay());
 
     // add the XML importer
-    MWC.Utilities.ReaderWriter.ImportManager.addImporter(
-        new Debrief.ReaderWriter.XML.DebriefXMLReaderWriter(this));
+    ImportManager.addImporter(
+        new DebriefXMLReaderWriter(this));
 
     try
     {
@@ -838,7 +840,7 @@ public abstract class Application implements ToolParent, ActionListener,
         }
         else
         {
-          MWC.Utilities.Errors.Trace.trace("This file type not handled:"
+          Trace.trace("This file type not handled:"
               + suff);
         }
       }
@@ -930,7 +932,7 @@ public abstract class Application implements ToolParent, ActionListener,
   /**
    * get the values of any properties like this pattern
    */
-  public static java.util.Map<String, String> getPropertiesLikeThis(
+  public static Map<String, String> getPropertiesLikeThis(
       final String pattern)
   {
     Map<String, String> res = null;
@@ -950,7 +952,7 @@ public abstract class Application implements ToolParent, ActionListener,
   /**
    * get the values of any properties like this pattern
    */
-  public final java.util.Map<String, String> getPropertiesLike(
+  public final Map<String, String> getPropertiesLike(
       final String pattern)
   {
     final Map<String, String> res;
