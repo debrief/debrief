@@ -126,6 +126,8 @@ import junit.framework.TestCase;
 public class TimeController extends ViewPart implements ISelectionProvider,
     TimerListener, RelativeProjectionParent
 {
+  private static final String PLAY_BUTTON_KEY = "play";
+
   private static final String ICON_BKMRK_NAV = "icons/bkmrk_nav.gif";
 
   private static final String ICON_FILTER_TO_PERIOD = "icons/16/filter.png";
@@ -713,8 +715,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     public void buttonSelected()
     {
       final boolean playing = _playButton.getSelection();
-      final String tipTxt;
-      final String imageTxt;
       if (playing)
       {
         if (_doExportItem.getSelection())
@@ -727,26 +727,31 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         
         // and start playing
         startPlaying();
-        tipTxt = PAUSE_TEXT;
-        imageTxt = ICON_MEDIA_PAUSE;
+        
+        // ok, disable the buttons
+        setVCREnabled(false);
+        
+        _playButton.setToolTipText(PAUSE_TEXT);
+        _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PAUSE));
       }
       else
       {
         stopPlaying();
-        
+
+        // ok, disable the buttons
+        setVCREnabled(true);
+
+        // ok, set the tooltip & image
+        _playButton.setToolTipText(PLAY_TEXT);
+        _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
+
         // do any export tidying up, if we have to
         if (_coordinateRecorder != null)
         {
           _coordinateRecorder.stopStepping(getTimeProvider().getTime());
           _coordinateRecorder = null;
         }
-
-        tipTxt = PLAY_TEXT;
-        imageTxt = ICON_MEDIA_PLAY;
       }
-      // ok, set the tooltip & image
-      _playButton.setToolTipText(tipTxt);
-      _playButton.setImage(TimeControllerPlugin.getImage(imageTxt));
     }
   }
   
@@ -828,7 +833,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _buttonList.put("eBwd", eBwd);
     _buttonList.put("lBwd", lBwd);
     _buttonList.put("sBwd", sBwd);
-    _buttonList.put("play", _playButton);
+    _buttonList.put(PLAY_BUTTON_KEY, _playButton);
     _buttonList.put("sFwd", _forwardButton);
     _buttonList.put("lFwd", lFwd);
     _buttonList.put("eFwd", eFwd);
@@ -1856,6 +1861,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     }
   }
 
+  protected void setVCREnabled(final boolean enable)
+  {
+    for(String key: _buttonList.keySet())
+    {
+      if(!key.equals(PLAY_BUTTON_KEY))
+      {
+        Button item = _buttonList.get(key);
+        item.setEnabled(enable);
+      }
+    }
+  }
+  
   /**
    * we may be listening to an object that cannot be rewound, that does not support backward
    * stepping. If so, let us reformat ourselves accordingly
