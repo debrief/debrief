@@ -12,8 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
@@ -43,23 +45,25 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import net.lingala.zip4j.exception.ZipException;
 
-public class CoordinateRecorder 
+public class CoordinateRecorder
 
 {
   private final Layers _myLayers;
   private final PlainProjection _projection;
-  final private Map<String,Track> _tracks = new HashMap<>();
+  final private Map<String, Track> _tracks = new HashMap<>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   private final TimeControlPreferences _timePrefs;
-  public static final String PREF_PPT_EXPORT_LOCATION="pptExportLocation";
-  public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
-  public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
+  public static final String PREF_PPT_EXPORT_LOCATION = "pptExportLocation";
+  public static final String PREF_PPT_EXPORT_FILENAME = "pptExportFilename";
+  public static final String PREF_PPT_EXPORT_FILEFORMAT = "pptExportFormat";
+  public static final String PREF_PPT_EXPORT_OPEN_FILE = "pptExportOpenFile";
   private String startTime = null;
   private long _startMillis;
-  
+
   public CoordinateRecorder(final Layers layers,
-      final PlainProjection plainProjection,TimeControlPreferences timePreferences)
+      final PlainProjection plainProjection,
+      TimeControlPreferences timePreferences)
   {
     _myLayers = layers;
     _projection = plainProjection;
@@ -72,8 +76,9 @@ public class CoordinateRecorder
       return;
 
     // get the new time.
-    String time =FormatRNDateTime.toMediumString(timeNow.getDate().getTime()); 
-    if(startTime==null) {
+    String time = FormatRNDateTime.toMediumString(timeNow.getDate().getTime());
+    if (startTime == null)
+    {
       startTime = time;
     }
     _times.add(time);
@@ -90,23 +95,25 @@ public class CoordinateRecorder
         {
           final FixWrapper fix = (FixWrapper) items[0];
           Track tp = _tracks.get(track.getName());
-          if(tp == null) {
-            tp = new Track(track.getName(),track.getColor());
+          if (tp == null)
+          {
+            tp = new Track(track.getName(), track.getColor());
             _tracks.put(track.getName(), tp);
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final double screenHeight = _projection.getScreenArea().getHeight();
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix.getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(),
-          WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3;
+          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
+              .getCourseDegs());
+          final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
+              .getValueIn(WorldSpeed.ft_sec) / 3;
           TrackPoint trackPoint = new TrackPoint();
-          trackPoint.setCourse((float)courseRads);
-          trackPoint.setSpeed((float)speedYps);
-          trackPoint.setLatitude((float)(screenHeight - point.getY()));
-          trackPoint.setLongitude((float)point.getX());
-          trackPoint.setElevation((float)fix.getLocation().getDepth());
+          trackPoint.setCourse((float) courseRads);
+          trackPoint.setSpeed((float) speedYps);
+          trackPoint.setLatitude((float) (screenHeight - point.getY()));
+          trackPoint.setLongitude((float) point.getX());
+          trackPoint.setElevation((float) fix.getLocation().getDepth());
           trackPoint.setTime(fix.getDTG().getDate());
-          tp.getSegments().add(trackPoint);          
+          tp.getSegments().add(trackPoint);
         }
       }
     };
@@ -124,60 +131,92 @@ public class CoordinateRecorder
   public void stopStepping(final HiResDate now)
   {
     _running = false;
-    
-    String exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
-    String fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
-    String fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
+
+    String exportLocation = PlatformUI.getPreferenceStore().getString(
+        PREF_PPT_EXPORT_LOCATION);
+    String fileName = PlatformUI.getPreferenceStore().getString(
+        PREF_PPT_EXPORT_FILENAME);
+    String fileFormat = PlatformUI.getPreferenceStore().getString(
+        PREF_PPT_EXPORT_FILEFORMAT);
+    Boolean openFile = PlatformUI.getPreferenceStore().getBoolean(
+        PREF_PPT_EXPORT_OPEN_FILE);
     List<Track> list = new ArrayList<Track>();
     list.addAll(_tracks.values());
-    long interval =  _timePrefs.getAutoInterval().getMillis();
+    long interval = _timePrefs.getAutoInterval().getMillis();
     // output tracks object.
-    //showDialog now
-    ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault().getActiveShell());
-    if(fileName == null || "".equals(fileName)) {
-      exportDialog.setFileName("DebriefExport-"+startTime);
+    // showDialog now
+    ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault()
+        .getActiveShell());
+    if (fileName == null || "".equals(fileName))
+    {
+      exportDialog.setFileName("DebriefExport-" + startTime);
     }
-    else {
-      if(exportLocation!=null && !"".equals(exportLocation)) {
-        File f = new File(exportLocation+File.separator+fileName+"."+fileFormat);
-        if(f.exists()) {
-          fileName = getNewFileName(fileName,startTime);
+    else
+    {
+      if (exportLocation != null && !"".equals(exportLocation))
+      {
+        File f = new File(exportLocation + File.separator + fileName + "."
+            + fileFormat);
+        if (f.exists())
+        {
+          fileName = getNewFileName(fileName, startTime);
         }
       }
-      exportDialog.setFileName(fileName+"-"+startTime);
+      exportDialog.setFileName(fileName + "-" + startTime);
     }
     exportDialog.setExportLocation(exportLocation);
-    if(fileFormat==null || "".equals(fileFormat)){
-      fileFormat="PPTX";
+    exportDialog.setOpenOnComplete(openFile);
+    if (fileFormat == null || "".equals(fileFormat))
+    {
+      fileFormat = "PPTX";
     }
     exportDialog.setFileFormat(fileFormat);
-    if(exportDialog.open() == Window.OK) {
+    if (exportDialog.open() == Window.OK)
+    {
       exportLocation = exportDialog.getExportLocation();
       fileName = exportDialog.getFileName();
-      String fileNameToSave=getFileNameStem(fileName);
+      String fileNameToSave = getFileNameStem(fileName);
       fileFormat = exportDialog.getFileFormat();
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,exportLocation);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,fileNameToSave);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,fileFormat);
-      startTime=null;
+      openFile = exportDialog.getOpenOncomplete();
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,
+          exportLocation);
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,
+          fileNameToSave);
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,
+          fileFormat);
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
+          openFile);
+      startTime = null;
       TrackData td = new TrackData();
       td.setName(fileName);
-      td.setIntervals((int)interval);
+      td.setIntervals((int) interval);
       td.setWidth(_projection.getScreenArea().width);
       td.setHeight(_projection.getScreenArea().height);
       td.getTracks().addAll(_tracks.values());
-      
-      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks, _startMillis, _timePrefs);
+
+      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
+          _startMillis, _timePrefs);
       PlotTracks plotTracks = new PlotTracks();
       String exportFile = getFileToExport(exportLocation, fileName, fileFormat);
       String masterTemplate = getMasterTemplateFile();
       try
       {
         String exportedFile = plotTracks.export(td, masterTemplate, exportFile);
-        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
-            .getActiveShell(), "PowerPoint Export", "The file is exported to:"
-                + exportedFile, MessageDialog.INFORMATION);
-
+        
+        
+        if (openFile)
+        {
+          CorePlugin.logError(Status.INFO, "Opening file:" + exportedFile,
+              null);
+          boolean worked = Program.launch(exportedFile);
+          CorePlugin.logError(Status.INFO, "Open file result:" + worked, null);
+        }
+        else
+        {
+          MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+              .getActiveShell(), "PowerPoint Export", "File exported to:"
+                  + exportedFile, MessageDialog.INFORMATION);
+        }
       }
       catch (IOException ie)
       {
@@ -203,69 +242,74 @@ public class CoordinateRecorder
             MessageDialog.ERROR);
         CorePlugin.logError(IStatus.ERROR, "During export to PPTX", de);
       }
-    }    
+    }
   }
 
-  private static void storeNarrativesInto(ArrayList<ExportNarrativeEntry> narrativeEntries,
-      Layers layers, Map<String, Track> tracks, final long startTime, TimeControlPreferences timePrefs)
+  private static void storeNarrativesInto(
+      ArrayList<ExportNarrativeEntry> narrativeEntries, Layers layers,
+      Map<String, Track> tracks, final long startTime,
+      TimeControlPreferences timePrefs)
   {
     // look for a narratives layer
     Layer narratives = layers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
-    if(narratives != null)
+    if (narratives != null)
     {
       Date firstTime = null;
       Date lastTime = null;
-      
+
       // ok, get the bounding time period
-      for(Track track: tracks.values())
+      for (Track track : tracks.values())
       {
         ArrayList<TrackPoint> segs = track.getSegments();
-        for(TrackPoint point: segs)
+        for (TrackPoint point : segs)
         {
           Date thisTime = point.getTime();
-          if(firstTime == null)
+          if (firstTime == null)
           {
             firstTime = thisTime;
             lastTime = thisTime;
           }
           else
           {
-            firstTime = thisTime.getTime() < firstTime.getTime() ? thisTime : firstTime;
-            lastTime = thisTime.getTime() > lastTime.getTime() ? thisTime : lastTime;
+            firstTime = thisTime.getTime() < firstTime.getTime() ? thisTime
+                : firstTime;
+            lastTime = thisTime.getTime() > lastTime.getTime() ? thisTime
+                : lastTime;
           }
         }
       }
-      
+
       // what's the real world time step?
       final long worldIntervalMillis = timePrefs.getAutoInterval().getMillis();
-       // and the model world time step?
+      // and the model world time step?
       final long modelIntervalMillis = timePrefs.getSmallStep().getMillis();
 
-      
-      TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(firstTime), new HiResDate(lastTime));
-      
+      TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(
+          firstTime), new HiResDate(lastTime));
+
       // sort out a scale factor
       final double scale = ((double) worldIntervalMillis)
           / ((double) modelIntervalMillis);
 
       final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
-      
+
       Enumeration<Editable> nIter = narratives.elements();
-      while(nIter.hasMoreElements())
+      while (nIter.hasMoreElements())
       {
         NarrativeEntry entry = (NarrativeEntry) nIter.nextElement();
-        if(period.contains(new HiResDate(entry.getDTG())))
+        if (period.contains(new HiResDate(entry.getDTG())))
         {
           String dateStr = df.format(entry.getDTG().getDate());
           String elapsedStr = null;
-                    
+
           final double elapsed = entry.getDTG().getDate().getTime() - startTime;
           final double scaled = elapsed * scale;
           elapsedStr = "" + (long) scaled;
-          
+
           // ok, create a narrative entry for it
-          ExportNarrativeEntry newE = new ExportNarrativeEntry(entry.getEntry(),dateStr, elapsedStr, entry.getDTG().getDate());
-          
+          ExportNarrativeEntry newE = new ExportNarrativeEntry(entry.getEntry(),
+              dateStr, elapsedStr, entry.getDTG().getDate());
+
           // and store it
           narrativeEntries.add(newE);
         }
@@ -273,16 +317,24 @@ public class CoordinateRecorder
     }
   }
 
-  private String getMasterTemplateFile() {
-    String templateFile = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
-    if(templateFile==null || templateFile.isEmpty()) {
-      templateFile = CorePlugin.getDefault().getPreferenceStore().getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+  private String getMasterTemplateFile()
+  {
+    String templateFile = CorePlugin.getDefault().getPreferenceStore()
+        .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    if (templateFile == null || templateFile.isEmpty())
+    {
+      templateFile = CorePlugin.getDefault().getPreferenceStore().getString(
+          PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     }
     return templateFile;
   }
-  private String getFileToExport(String exportLocation,String fileName,String fileFormat) {
-    return exportLocation+File.separator+fileName+"."+fileFormat;
+
+  private String getFileToExport(String exportLocation, String fileName,
+      String fileFormat)
+  {
+    return exportLocation + File.separator + fileName + "." + fileFormat;
   }
+
   private String getFileNameStem(String fileName2)
   {
     String newName;

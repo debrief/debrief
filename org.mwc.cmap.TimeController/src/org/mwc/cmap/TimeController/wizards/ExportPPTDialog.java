@@ -15,6 +15,7 @@
 package org.mwc.cmap.TimeController.wizards;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
@@ -50,6 +51,8 @@ public class ExportPPTDialog extends Dialog
   private String fileFormat;
   private String fileName;
   private String exportLocation;
+
+  private boolean viewOnComplete = true;
   
   public ExportPPTDialog(Shell parentShell)
   {
@@ -109,6 +112,20 @@ public class ExportPPTDialog extends Dialog
     txtFilename.setLayoutData(data);
     cmbFileFormats = new Combo(composite,SWT.DROP_DOWN);
     cmbFileFormats.setItems(supportedFormats);
+    
+    // ok, and the "view on complete" toggle
+    final Button viewOnCompleteBtn = new Button(composite, SWT.CHECK);
+    viewOnCompleteBtn.setText("Open exported PPTX");
+    viewOnCompleteBtn.setSelection(viewOnComplete);
+    viewOnCompleteBtn.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        viewOnComplete = viewOnCompleteBtn.getSelection();
+      }      
+    });
+    
     initUI();
     return dialogParent;
   }
@@ -172,6 +189,10 @@ public class ExportPPTDialog extends Dialog
   {
     this.fileName = fileName;
   }
+  public boolean getOpenOncomplete()
+  {
+    return viewOnComplete;
+  }
   
   @Override
   protected void createButtonsForButtonBar(Composite parent)
@@ -190,10 +211,18 @@ public class ExportPPTDialog extends Dialog
         dialog.open();
       }
     });
-    super.createButtonsForButtonBar(parent);
+
+    // create OK and Cancel buttons by default
+    createButton(parent, IDialogConstants.OK_ID, "Export", true);
+    createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CANCEL_LABEL, false);
     
   }
   private boolean isNullOrEmpty(String text) {
     return text==null || "".equals(text.trim());
+  }
+
+  public void setOpenOnComplete(Boolean openFile)
+  {
+    viewOnComplete = openFile;
   }
 }
