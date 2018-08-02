@@ -2186,8 +2186,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         else {
           if(animatedGif!=null) {
             animatedGif.cancel();
-            _recordingLabel.setVisible(false);
           }
+          _recordingLabel.setVisible(false);
         }
       }
       catch (final IllegalArgumentException e)
