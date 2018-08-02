@@ -211,7 +211,7 @@ public class CoordinateRecorder
       {
         MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
             .getActiveShell(), "Error",
-            "Error exporting to powerpoint (template may be corrupt)",
+            "Error exporting to powerpoint (template may be corrupt).\n" + de.getMessage(),
             MessageDialog.ERROR);
         CorePlugin.logError(IStatus.ERROR, "During export to PPTX", de);
       }
