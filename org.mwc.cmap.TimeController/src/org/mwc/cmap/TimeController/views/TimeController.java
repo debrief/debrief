@@ -3316,10 +3316,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     }
 
     public void animate() {
-      Display display = lbl.getDisplay();
-      GC shellGC = new GC(lbl);
-      Color shellBackground = lbl.getBackground();
-      Rectangle bounds = lbl.getBounds();
+      final Display display = lbl.getDisplay();
+      final GC shellGC = new GC(lbl);
+      final Color shellBackground = lbl.getBackground();
+      final Rectangle bounds = lbl.getBounds();
       //when animate is called, restart thread
       cancel=false;
       if(imageDataArray.length>1) {
