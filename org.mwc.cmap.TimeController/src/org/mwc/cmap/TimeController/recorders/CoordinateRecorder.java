@@ -17,7 +17,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
@@ -54,10 +53,7 @@ public class CoordinateRecorder
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   private final TimeControlPreferences _timePrefs;
-  public static final String PREF_PPT_EXPORT_LOCATION = "pptExportLocation";
-  public static final String PREF_PPT_EXPORT_FILENAME = "pptExportFilename";
-  public static final String PREF_PPT_EXPORT_FILEFORMAT = "pptExportFormat";
-  public static final String PREF_PPT_EXPORT_OPEN_FILE = "pptExportOpenFile";
+
   private String startTime = null;
   private long _startMillis;
 
@@ -132,14 +128,6 @@ public class CoordinateRecorder
   {
     _running = false;
 
-    String exportLocation = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_LOCATION);
-    String fileName = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_FILENAME);
-    String fileFormat = PlatformUI.getPreferenceStore().getString(
-        PREF_PPT_EXPORT_FILEFORMAT);
-    Boolean openFile = PlatformUI.getPreferenceStore().getBoolean(
-        PREF_PPT_EXPORT_OPEN_FILE);
     List<Track> list = new ArrayList<Track>();
     list.addAll(_tracks.values());
     long interval = _timePrefs.getAutoInterval().getMillis();
@@ -147,64 +135,49 @@ public class CoordinateRecorder
     // showDialog now
     ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault()
         .getActiveShell());
-    if (fileName == null || "".equals(fileName))
+    
+    // fix the filename
+    String exportLocation = exportDialog.getExportLocation();
+    String fileName = exportDialog.getFileName() + "-" + startTime;
+    
+    if (exportLocation != null && !"".equals(exportLocation))
     {
-      exportDialog.setFileName("DebriefExport-" + startTime);
-    }
-    else
-    {
-      if (exportLocation != null && !"".equals(exportLocation))
+      String filePath = exportDialog.getFileToExport(fileName);
+      File f = new File(filePath);
+      if (f.exists())
       {
-        File f = new File(exportLocation + File.separator + fileName + "."
-            + fileFormat);
-        if (f.exists())
-        {
-          fileName = getNewFileName(fileName, startTime);
-        }
+        fileName = getNewFileName(fileName, startTime);
       }
-      exportDialog.setFileName(fileName + "-" + startTime);
     }
-    exportDialog.setExportLocation(exportLocation);
-    exportDialog.setOpenOnComplete(openFile);
-    if (fileFormat == null || "".equals(fileFormat))
-    {
-      fileFormat = "PPTX";
-    }
-    exportDialog.setFileFormat(fileFormat);
+    exportDialog.setFileName(fileName);
+
+    // clear startTime text, we don't need it any more
+    startTime = null;
+
+    // show the dialog
     if (exportDialog.open() == Window.OK)
     {
-      exportLocation = exportDialog.getExportLocation();
-      fileName = exportDialog.getFileName();
-      String fileNameToSave = getFileNameStem(fileName);
-      fileFormat = exportDialog.getFileFormat();
-      openFile = exportDialog.getOpenOncomplete();
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,
-          exportLocation);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,
-          fileNameToSave);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,
-          fileFormat);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
-          openFile);
-      startTime = null;
+      
+      // collate the data object
       TrackData td = new TrackData();
       td.setName(fileName);
       td.setIntervals((int) interval);
       td.setWidth(_projection.getScreenArea().width);
       td.setHeight(_projection.getScreenArea().height);
       td.getTracks().addAll(_tracks.values());
-
       storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
           _startMillis, _timePrefs);
+      
+      // start export
       PlotTracks plotTracks = new PlotTracks();
-      String exportFile = getFileToExport(exportLocation, fileName, fileFormat);
+      String exportFile = exportDialog.getFileToExport(null);
       String masterTemplate = getMasterTemplateFile();
       try
       {
         String exportedFile = plotTracks.export(td, masterTemplate, exportFile);
-        
-        
-        if (openFile)
+
+        // do we open resulting file?
+        if (exportDialog.getOpenOncomplete())
         {
           CorePlugin.logError(Status.INFO, "Opening file:" + exportedFile,
               null);
@@ -327,26 +300,6 @@ public class CoordinateRecorder
           PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     }
     return templateFile;
-  }
-
-  private String getFileToExport(String exportLocation, String fileName,
-      String fileFormat)
-  {
-    return exportLocation + File.separator + fileName + "." + fileFormat;
-  }
-
-  private String getFileNameStem(String fileName2)
-  {
-    String newName;
-    if (fileName2.indexOf("-") != -1)
-    {
-      newName = fileName2.substring(0, fileName2.lastIndexOf("-"));
-    }
-    else
-    {
-      newName = fileName2;
-    }
-    return newName;
   }
 
   private String getNewFileName(final String fileName,
