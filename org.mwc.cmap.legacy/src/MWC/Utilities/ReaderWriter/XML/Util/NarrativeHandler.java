@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package Debrief.ReaderWriter.XML.Tactical;
+package MWC.Utilities.ReaderWriter.XML.Util;
 
 /**
  * Title:        Debrief 2000
@@ -25,29 +25,34 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import java.util.Enumeration;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class NarrativeHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+		MWCXMLReader
 {
 
 	static private final String _myType = "narrative";
 
-	private final MWC.GUI.Layers _theLayers;
+	private final Layers _theLayers;
 
 	// our "working" Narrative
-	Debrief.Wrappers.NarrativeWrapper _myNarrative;
+	private NarrativeWrapper _myNarrative;
 
-	public NarrativeHandler(final MWC.GUI.Layers theLayers)
+	public NarrativeHandler(final Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(_myType);
@@ -64,7 +69,7 @@ public final class NarrativeHandler extends
 		});
 		addHandler(new EntryHandler()
 		{
-			public void addEntry(final MWC.TacticalData.NarrativeEntry entry)
+			public void addEntry(final NarrativeEntry entry)
 			{
 				addThis(entry);
 			}
@@ -74,25 +79,22 @@ public final class NarrativeHandler extends
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(final String name, final Attributes attributes)
 	{
-		_myNarrative = new Debrief.Wrappers.NarrativeWrapper("");
+		_myNarrative = new NarrativeWrapper("");
 
 		super.handleOurselves(name, attributes);
 
 	}
 
-	void addThis(final MWC.TacticalData.NarrativeEntry entry)
+	private void addThis(final NarrativeEntry entry)
 	{
 		// see if we have a color code for this entry type
 		String source = entry.getSource();
 		Layer thisL = _theLayers.findLayer(source);
-		if(thisL != null)
-		{
-			if(thisL instanceof TrackWrapper)
-			{
-				TrackWrapper tw=  (TrackWrapper) thisL;
-				entry.setColor(tw.getColor());
-			}
-		}
+    if (thisL != null && thisL instanceof WatchableList)
+    {
+      WatchableList tw = (WatchableList) thisL;
+      entry.setColor(tw.getColor());
+    }
 		
 		_myNarrative.add(entry);
 	}
@@ -100,7 +102,7 @@ public final class NarrativeHandler extends
 	public final void elementClosed()
 	{
 		// is this one of those funny narratives?
-		if (!_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+		if (!_myNarrative.getName().equals(LayerHandler.NARRATIVE_LAYER))
 		{
 			// yes, better put the narrative name into the type field, since the user won't see it 
 			// in the layer manager
@@ -118,7 +120,7 @@ public final class NarrativeHandler extends
 		}
 
 		// is there already a narratives layer?
-		final Layer oldNarr = _theLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+		final Layer oldNarr = _theLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
 		if (oldNarr != null)
 		{
@@ -135,9 +137,9 @@ public final class NarrativeHandler extends
 			// we don't already have a narrative, create a new one (with the correct name)
 			
 			// ok, do we have the right name?
-			if (_myNarrative.getName().equals(ImportReplay.NARRATIVE_LAYER))
+			if (_myNarrative.getName().equals(LayerHandler.NARRATIVE_LAYER))
 			{
-				_myNarrative.setName(ImportReplay.NARRATIVE_LAYER);
+				_myNarrative.setName(LayerHandler.NARRATIVE_LAYER);
 			}
 
 			// ok, now add it
@@ -148,20 +150,20 @@ public final class NarrativeHandler extends
 	}
 
 	public static void exportNarrative(
-			final Debrief.Wrappers.NarrativeWrapper Narrative, final org.w3c.dom.Element parent,
-			final org.w3c.dom.Document doc)
+			final NarrativeWrapper Narrative, final Element parent,
+			final Document doc)
 	{
 
 		final Element trk = doc.createElement(_myType);
 		trk.setAttribute("Name", Narrative.getName());
 		// now the entries
-		final java.util.Enumeration<Editable> iter = Narrative.elements();
+		final Enumeration<Editable> iter = Narrative.elements();
 		while (iter.hasMoreElements())
 		{
-			final MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
-			if (pl instanceof MWC.TacticalData.NarrativeEntry)
+			final Plottable pl = (Plottable) iter.nextElement();
+			if (pl instanceof NarrativeEntry)
 			{
-				final MWC.TacticalData.NarrativeEntry fw = (MWC.TacticalData.NarrativeEntry) pl;
+				final NarrativeEntry fw = (NarrativeEntry) pl;
 				EntryHandler.exportEntry(fw, trk, doc);
 			}
 
@@ -176,13 +178,13 @@ public final class NarrativeHandler extends
 	// //////////////////////////////////////////
 
 	static abstract public class EntryHandler extends
-			MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+			MWCXMLReader
 	{
 
 		private static final String _myType1 = "narrative_entry";
-		String _entry;
-		HiResDate _dtg;
-		String _track;
+		private String _entry;
+		private HiResDate _dtg;
+		private String _track;
 		protected String _type;
 
 		public EntryHandler()
@@ -238,7 +240,7 @@ public final class NarrativeHandler extends
 		public final void elementClosed()
 		{
 			// create the new object
-			final MWC.TacticalData.NarrativeEntry ne = new MWC.TacticalData.NarrativeEntry(
+			final NarrativeEntry ne = new NarrativeEntry(
 					_track, _type, _dtg, _entry);
 
 			// pass it to the parent
@@ -246,10 +248,10 @@ public final class NarrativeHandler extends
 
 		}
 
-		abstract public void addEntry(MWC.TacticalData.NarrativeEntry entry);
+		abstract public void addEntry(NarrativeEntry entry);
 
-		public static void exportEntry(final MWC.TacticalData.NarrativeEntry Entry,
-				final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+		public static void exportEntry(final NarrativeEntry Entry,
+				final Element parent, final Document doc)
 		{
 
 			final Element eEntry = doc.createElement(_myType1);

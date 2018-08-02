@@ -19,7 +19,13 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -28,17 +34,18 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.swt.widgets.Composite;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.Series;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.RegularTimePeriod;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.util.ShapeUtilities;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts.TMAfromCuts;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ColorProvider;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
@@ -50,6 +57,7 @@ import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ISecondaryTrack;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -61,9 +69,11 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.FrequencyCalcs;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layers;
+import MWC.GUI.LoggingService;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
@@ -72,14 +82,17 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import MWC.TacticalData.TrackDataProvider;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 public final class StackedDotHelper
 {
+
   /**
    * special listener, that knows how to detatch itself
    *
@@ -106,6 +119,39 @@ public final class StackedDotHelper
 
   }
 
+  /**
+   * convenience class, to avoid having to pass plot into data helper
+   *
+   */
+  public static interface SetBackgroundShade
+  {
+    void setShade(final Paint errorColor);
+  }
+
+  /**
+   * we have a special multistatics use case where we need to support multiple primary tracks.
+   *
+   */
+  public static interface SwitchableTrackProvider
+  {
+    /**
+     * find out what the primary tracks are
+     */
+    public WatchableList[] getPrimaryTracks();
+
+    /**
+     * find out what the secondary track is
+     */
+    public WatchableList[] getSecondaryTracks();
+
+    /**
+     * whether we have any valid data
+     *
+     * @return yes/no
+     */
+    public boolean isPopulated();
+  }
+
   private static class TargetDoublet
   {
 
@@ -114,7 +160,7 @@ public final class StackedDotHelper
 
   }
 
-  public static class TestSlicing extends junit.framework.TestCase
+  public static class TestSlicing extends TestCase
   {
     public void testOSLegDetector()
     {
@@ -206,6 +252,7 @@ public final class StackedDotHelper
 
       final BaseStackedDotsView view = new BaseStackedDotsView(true, false)
       {
+
         @Override
         protected boolean allowDisplayOfTargetOverview()
         {
@@ -243,6 +290,12 @@ public final class StackedDotHelper
         }
 
         @Override
+        protected void makeActions()
+        {
+          // don't make actions, since they rely on Workbench running
+        }
+
+        @Override
         protected void updateData(final boolean updateDoublets)
         {
           // no, nothing to do.
@@ -266,9 +319,1013 @@ public final class StackedDotHelper
     }
   }
 
+  public static class TestUpdates extends TestCase
+  {
+    private static class TrackDataHelper implements SwitchableTrackProvider
+    {
+
+      private TrackWrapper _primary;
+      private final List<TrackWrapper> _secondaries =
+          new ArrayList<TrackWrapper>();
+      private boolean switchMe = false;
+
+      public void setPrimary(final TrackWrapper ownship)
+      {
+        _primary = ownship;
+      }
+
+      public void addSecondary(final TrackWrapper tma)
+      {
+        _secondaries.add(tma);
+      }
+
+      @Override
+      public WatchableList[] getSecondaryTracks()
+      {
+        if (switchMe)
+        {
+          return new WatchableList[]
+          {_primary};
+        }
+        else
+        {
+          final WatchableList[] res = new WatchableList[_secondaries.size()];
+          int ctr = 0;
+          final Iterator<TrackWrapper> sIter = _secondaries.iterator();
+          while (sIter.hasNext())
+          {
+            res[ctr++] = sIter.next();
+          }
+          return res;
+        }
+      }
+
+      @Override
+      public WatchableList[] getPrimaryTracks()
+      {
+        if (switchMe)
+        {
+          final WatchableList[] res = new WatchableList[_secondaries.size()];
+          int ctr = 0;
+          final Iterator<TrackWrapper> sIter = _secondaries.iterator();
+          while (sIter.hasNext())
+          {
+            res[ctr++] = sIter.next();
+          }
+          return res;
+        }
+        else
+        {
+          return new WatchableList[]
+          {_primary};
+        }
+      }
+
+      public void setSwitch(final boolean doSwitch)
+      {
+        switchMe = doSwitch;
+      }
+
+      @Override
+      public boolean isPopulated()
+      {
+        return true;
+      }
+    }
+
+    private SensorContactWrapper[] getAllCutsFrom(
+        final SensorWrapper secondSensor)
+    {
+      final SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
+          .size()];
+      final Enumeration<Editable> sIter = secondSensor.elements();
+      int ctr = 0;
+      while (sIter.hasMoreElements())
+      {
+        res[ctr++] = (SensorContactWrapper) sIter.nextElement();
+      }
+
+      return res;
+    }
+
+    public Layers getData()
+    {
+      final Layers layers = new Layers();
+      final ImportReplay importer = new ImportReplay();
+      importer.setLayers(layers);
+
+      try
+      {
+        importer.readLine(
+            "100112 120000 SUBJECT VC 60 06 00.00 N 000 15 00.00 E 320.00  9.00  0.00");
+        importer.readLine(
+            "100112 120000 SENSOR FA 60 10 48.00 N 000 12 00.00 E 200.00  12.00  0.00");
+        importer.readLine(
+            ";SENSOR2: 100112 120016 SENSOR @A NULL 162.64 237.36 150.910 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120015 SENSOR @A NULL 166.15 233.85 150.920 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120020 SUBJECT VC 60 06 02.30 N 000 14 56.13 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120020 SENSOR FA 60 10 44.24 N 000 11 57.25 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120020 SENSOR @A NULL 162.39 237.61 150.909 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120020 SENSOR @A NULL 165.99 234.01 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120040 SUBJECT VC 60 06 04.60 N 000 14 52.26 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120040 SENSOR FA 60 10 40.48 N 000 11 54.50 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120040 SENSOR @A NULL 162.13 237.87 150.908 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120040 SENSOR @A NULL 165.82 234.18 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120100 SUBJECT VC 60 06 06.89 N 000 14 48.39 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120100 SENSOR FA 60 10 36.72 N 000 11 51.75 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120100 SENSOR @A NULL 161.87 238.13 150.907 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        // miss this tail measurement
+        // importer.readLine(
+        // ";SENSOR2: 100112 120100 SENSOR @A NULL 165.64 234.36 150.918 NULL \"tail sensor\"
+        // SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120120 SUBJECT VC 60 06 09.19 N 000 14 44.53 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120120 SENSOR FA 60 10 32.96 N 000 11 49.00 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120120 SENSOR @A NULL 161.59 238.41 150.906 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        // importer.readLine(
+        // ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\"
+        // SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120140 SUBJECT VC 60 06 11.49 N 000 14 40.66 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120140 SENSOR FA 60 10 29.21 N 000 11 46.25 E 200.00  12.00  0.00 ");
+        // importer.readLine(
+        // ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\"
+        // SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120140 SENSOR @A NULL 165.27 234.73 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120200 SUBJECT VC 60 06 13.79 N 000 14 36.79 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120200 SENSOR FA 60 10 25.45 N 000 11 43.49 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120200 SENSOR @A NULL 160.99 239.01 150.904 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120200 SENSOR @A NULL 165.08 234.92 150.917 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120220 SUBJECT VC 60 06 16.09 N 000 14 32.92 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120220 SENSOR FA 60 10 21.69 N 000 11 40.74 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120220 SENSOR @A NULL 160.67 239.33 150.902 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120220 SENSOR @A NULL 164.87 235.13 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120240 SUBJECT VC 60 06 18.39 N 000 14 29.05 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120240 SENSOR FA 60 10 17.93 N 000 11 37.99 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120240 SENSOR @A NULL 160.33 239.67 150.901 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120240 SENSOR @A NULL 164.66 235.34 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+        importer.readLine(
+            "100112 120300 SUBJECT VC 60 06 20.68 N 000 14 25.18 E 320.00  9.00  0.00 ");
+        importer.readLine(
+            "100112 120300 SENSOR FA 60 10 14.17 N 000 11 35.24 E 200.00  12.00  0.00 ");
+        importer.readLine(
+            ";SENSOR2: 100112 120300 SENSOR @A NULL 159.98 240.02 150.900 NULL \"hull sensor\" SUBJECT held on hull sensor");
+        importer.readLine(
+            ";SENSOR2: 100112 120300 SENSOR @A NULL 164.44 235.56 150.915 NULL \"tail sensor\" SUBJECT held on tail sensor");
+
+        importer.storePendingSensors();
+
+      }
+      catch (final IOException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+
+      return layers;
+    }
+
+    public TrackDataHelper getTrackData()
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+
+      final BaseLayer sensors = ownship.getSensors();
+      assertEquals("has all sensors", 2, sensors.size());
+
+      // get the tail
+      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
+          "tail sensor");
+      assertNotNull("found tail", tailSensor);
+      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
+          "hull sensor");
+      assertNotNull("found hull", hullSensor);
+
+      // give it it's offset
+      tailSensor.setSensorOffset(new ArrayLength(1000));
+
+      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
+      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 8, tailItems.length);
+      assertEquals("got all cuts", 9, hullItems.length);
+
+      final String newName = "TMA_LEG";
+
+      // ok, we also have to generate some target track
+      final TMAfromCuts genny = new TMAfromCuts(tailItems, layers,
+          new WorldVector(Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12,
+              WorldSpeed.Kts), Color.RED)
+      {
+        @Override
+        public String getTrackNameFor(final TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (final Exception e)
+      {
+        fail("exception thrown while running command" + e.getMessage());
+        e.printStackTrace();
+      }
+
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      final Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(
+          0), new HiResDate(new Date().getTime()));
+
+      // note: only 8 fixes in leg, since two sensor cut was hidden
+      assertEquals("has fixes", 8, fixes.size());
+
+      final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
+      @SuppressWarnings("deprecation")
+      final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.setPrimary(ownship);
+      prov.addSecondary(tma);
+
+      return prov;
+    }
+    
+    public void testGetSinglePointCourseData()
+    {
+      TrackDataHelper data = getTrackDataWithSingle();
+      data.setSwitch(true);
+      
+      WatchableList primary = data.getPrimaryTracks()[1];
+      ISecondaryTrack secondary = (ISecondaryTrack) data.getSecondaryTracks()[0];
+      TimeSeries series = StackedDotHelper.getSinglePointCourseData((TrackWrapper) primary, secondary, false);
+      assertNotNull("has data", series);
+      assertEquals("correct num points", 8, series.getItemCount());
+      
+      List<?> items = series.getItems();
+      for(Object t: items)
+      {
+        TimeSeriesDataItem item = (TimeSeriesDataItem) t;
+        assertEquals("correct course", 200d, item.getValue());
+      }
+      
+    }
+
+    public void testGetCourseData()
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+
+      // sort out start/end times
+      HiResDate startDTG = DebriefFormatDateTime.parseThis("100112", "120200");
+      HiResDate endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+
+      TimeSeries courseData = getStandardCourseData(ownship, false, startDTG,
+          endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 3, courseData.getItemCount());
+
+      TimeSeriesDataItem firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+
+      TimeSeriesDataItem lastItem = courseData.getDataItem(courseData
+          .getItemCount() - 1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+
+      // sort out start/end times
+      startDTG = DebriefFormatDateTime.parseThis("100112", "110000");
+      endDTG = DebriefFormatDateTime.parseThis("100112", "120240");
+
+      courseData = getStandardCourseData(ownship, false, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", 200d, firstItem.getValue());
+
+      lastItem = courseData.getDataItem(courseData.getItemCount() - 1);
+      assertEquals("correct course", 200d, lastItem.getValue());
+
+      // switch the flip axes value
+      courseData = getStandardCourseData(ownship, true, startDTG, endDTG);
+      assertNotNull("found course data", courseData);
+      assertEquals("has items", 9, courseData.getItemCount());
+
+      firstItem = courseData.getDataItem(0);
+      assertEquals("correct course", -160d, firstItem.getValue());
+
+      lastItem = courseData.getDataItem(courseData.getItemCount() - 1);
+      assertEquals("correct course", -160d, lastItem.getValue());
+
+    }
+
+    public void testGetMultiPrimaryTrackData() throws FileNotFoundException
+    {
+      // get our sample data-file
+      final ImportReplay importer = new ImportReplay();
+      final Layers layers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/MultiStatics/multistatics_buoyfield.rep";
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      importer.importThis(fName, is, layers);
+
+      // sort out the sensors
+      importer.storePendingSensors();
+
+      // get the sensor tracks
+      final TrackWrapper rx_1 = (TrackWrapper) layers.findLayer("RX_1");
+      final TrackWrapper rx_2 = (TrackWrapper) layers.findLayer("RX_2");
+
+      final SensorWrapper rx_1_sensor = (SensorWrapper) rx_1.getSensors()
+          .first();
+      final SensorWrapper rx_2_sensor = (SensorWrapper) rx_2.getSensors()
+          .first();
+
+      assertNotNull("found sensor 1", rx_1_sensor);
+      assertNotNull("found sensor 2", rx_2_sensor);
+
+      // ok, we need to move one sensor
+
+      // get the tail
+
+      final SensorContactWrapper[] rx1_cuts = getAllCutsFrom(rx_1_sensor);
+      final SensorContactWrapper[] rx2_cuts = getAllCutsFrom(rx_2_sensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 42, rx1_cuts.length);
+      assertEquals("got all cuts", 66, rx2_cuts.length);
+
+      final String newName = "TMA_LEG";
+
+      // ok, we also have to generate some target track
+      final TMAfromCuts genny = new TMAfromCuts(rx1_cuts, layers,
+          new WorldVector(Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12,
+              WorldSpeed.Kts), Color.RED)
+      {
+        @Override
+        public String getTrackNameFor(final TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (final Exception e)
+      {
+        fail("exception thrown while running command" + e.getMessage());
+        e.printStackTrace();
+      }
+
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      final Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(
+          0), new HiResDate(new Date().getTime()));
+
+      assertEquals("has fixes", 42, fixes.size());
+
+      final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
+      @SuppressWarnings("deprecation")
+      final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time", "12 Dec 2014 12:03:40 GMT", toTime);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.addSecondary(rx_1);
+      prov.addSecondary(rx_2);
+      prov.setPrimary(tma);
+      prov.setSwitch(true);
+
+      // return prov;
+    }
+
+    public void testSwitchedUpdateBearings() throws ExecutionException
+    {
+      final StackedDotHelper helper = new StackedDotHelper();
+      final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
+      final TimeSeriesCollection linePlotData = new TimeSeriesCollection();
+
+      final TrackDataHelper switcher = getTrackDataWithSingle();
+
+      boolean onlyVis = false;
+      final boolean showCourse = true;
+      final boolean flipAxes = false;
+
+      final ErrorLogger logger = new LoggingService();
+      final boolean updateDoublets = true;
+      final TimeSeriesCollection targetCourseSeries =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection targetSpeedSeries = new TimeSeriesCollection();
+      final TimeSeriesCollection measuredValuesColl =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
+      final TimeSeries ownshipCourseSeries = new TimeSeries("OS Course");
+      final TimeSeries targetBearingSeries = new TimeSeries("Tgt Bearing");
+      final TimeSeries targetCalculatedSeries = new TimeSeries("target calc");
+      final ResidualXYItemRenderer overviewSpeedRenderer = null;
+      final WrappingResidualRenderer overviewCourseRenderer = null;
+      final SetBackgroundShade backShader = new SetBackgroundShade()
+      {
+        @Override
+        public void setShade(final Paint errorColor)
+        {
+          // just ignore it
+        }
+      };
+
+      helper.initialise(switcher, true, onlyVis, logger, "Bearings", true,
+          false);
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // should be zero, since we have too many secondaries
+      assertEquals("has error data", 0, dotPlotData.getSeriesCount());
+
+      switcher.setSwitch(true);
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // have a look at what's happened
+      assertEquals("has error data", 8, dotPlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "ERRORStail sensor_2", dotPlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor_2", dotPlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "ERRORShull sensor_2", dotPlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "ERRORS_amb_hull sensor_2", dotPlotData
+          .getSeries(3).getKey());
+      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
+          .getSeries(4).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(5).getKey());
+      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
+          .getSeries(6).getKey());
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(7).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
+          .getItemCount());
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 12, linePlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "M_tail sensor_2", linePlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "M_hull sensor_2", linePlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "M_tail sensor", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor", linePlotData
+          .getSeries(3).getKey());
+      assertEquals("series correct name", "M_tail sensor_2(A)", linePlotData
+          .getSeries(4).getKey());
+      assertEquals("series correct name", "M_hull sensor_2(A)", linePlotData
+          .getSeries(5).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(6).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(7).getKey());
+      assertEquals("series correct name", "Calculatedtail sensor_2", linePlotData
+          .getSeries(8).getKey());
+      assertEquals("series correct name", "Calculatedhull sensor_2", linePlotData
+          .getSeries(9).getKey());
+      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
+          .getSeries(10).getKey());
+      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
+          .getSeries(11).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, linePlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(3)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(4)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(5)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(6)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(7)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(8)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(9)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(10)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(11)
+          .getItemCount());
+
+      // ok, hide a sensor, and recalculate
+      final TrackWrapper primary = (TrackWrapper) switcher
+          .getPrimaryTracks()[0];
+      final SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
+          .elements().nextElement();
+      firstSensor.setVisible(true);
+
+      onlyVis = false;
+
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+    }
+
+    public void testUpdateBearings() throws ExecutionException
+    {
+      final StackedDotHelper helper = new StackedDotHelper();
+      final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
+      final TimeSeriesCollection linePlotData = new TimeSeriesCollection();
+
+      final TrackDataHelper switcher = getTrackData();
+
+      boolean onlyVis = false;
+      final boolean showCourse = true;
+      final boolean flipAxes = false;
+
+      final ErrorLogger logger = new LoggingService();
+      final boolean updateDoublets = true;
+      final TimeSeriesCollection targetCourseSeries =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection targetSpeedSeries = new TimeSeriesCollection();
+      final TimeSeriesCollection measuredValuesColl =
+          new TimeSeriesCollection();
+      final TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
+      final TimeSeries ownshipCourseSeries = new TimeSeries("OS Course");
+      final TimeSeries targetBearingSeries = new TimeSeries("Tgt Bearing");
+      final TimeSeries targetCalculatedSeries = new TimeSeries("target calc");
+      final ResidualXYItemRenderer overviewSpeedRenderer = null;
+      final WrappingResidualRenderer overviewCourseRenderer = null;
+      final SetBackgroundShade backShader = new SetBackgroundShade()
+      {
+        @Override
+        public void setShade(final Paint errorColor)
+        {
+          // just ignore it
+        }
+      };
+
+      helper.initialise(switcher, true, onlyVis, logger, "Bearings", true,
+          false);
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // have a look at what's happened
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 4, dotPlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
+          .getItemCount());
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 6, linePlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "M_tail sensor", linePlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "M_hull sensor", linePlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
+      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
+          .getSeries(4).getKey());
+      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
+          .getSeries(5).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, linePlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(3)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(4)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(5)
+          .getItemCount());
+
+      // ok, hide a sensor, and recalculate
+      final TrackWrapper primary = (TrackWrapper) switcher
+          .getPrimaryTracks()[0];
+      final SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
+          .elements().nextElement();
+      firstSensor.setVisible(true);
+
+      onlyVis = false;
+
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // have a look at what's happened
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 4, dotPlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
+          .getItemCount());
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 6, linePlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "M_tail sensor", linePlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "M_hull sensor", linePlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
+      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
+          .getSeries(4).getKey());
+      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
+          .getSeries(5).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, linePlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(3)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(4)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(5)
+          .getItemCount());
+
+      onlyVis = true;
+
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // have a look at what's happened
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 2, dotPlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 9, dotPlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(1)
+          .getItemCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "ERRORS", dotPlotData.getSeries(0)
+          .getKey());
+      assertEquals("series correct name", "ERRORS_amb_", dotPlotData.getSeries(
+          1).getKey());
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 3, linePlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 9, linePlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(2)
+          .getItemCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "M_", linePlotData.getSeries(0)
+          .getKey());
+      assertEquals("series correct name", "M_(A)", linePlotData.getSeries(1)
+          .getKey());
+      assertEquals("series correct name", "Calculated", linePlotData.getSeries(
+          2).getKey());
+
+      // and make the second sensor visible
+      final Enumeration<Editable> sIter = primary.getSensors().elements();
+      while (sIter.hasMoreElements())
+      {
+        final SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
+        sensor.setVisible(true);
+      }
+
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 4, dotPlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
+          .getSeries(3).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
+          .getItemCount());
+
+      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
+      assertEquals("has error data", 6, linePlotData.getSeriesCount());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct name", "M_tail sensor", linePlotData
+          .getSeries(0).getKey());
+      assertEquals("series correct name", "M_hull sensor", linePlotData
+          .getSeries(1).getKey());
+      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
+          .getSeries(2).getKey());
+      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
+          .getSeries(3).getKey());
+      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
+          .getSeries(4).getKey());
+      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
+          .getSeries(5).getKey());
+
+      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
+      assertEquals("series correct length", 8, linePlotData.getSeries(0)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(1)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(2)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(3)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(4)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(5)
+          .getItemCount());
+
+    }
+
+    public FixWrapper getShiftedFix(FixWrapper fix)
+    {
+      WorldLocation newLoc = fix.getLocation().add(new WorldVector(0.002,
+          Math.PI / 2, 0.0d));
+      Fix theFix = new Fix(fix.getDateTimeGroup(), newLoc, fix.getCourse(), fix
+          .getSpeed());
+      FixWrapper res = new FixWrapper(theFix);
+      return res;
+    }
+
+    public TrackDataHelper getTrackDataWithSingle()
+    {
+      final Layers layers = getData();
+      final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
+      assertNotNull("found ownship", ownship);
+
+      final BaseLayer sensors = ownship.getSensors();
+      assertEquals("has all sensors", 2, sensors.size());
+
+      // ok, create another sensor track
+      final TrackWrapper singleP = new TrackWrapper();
+      singleP.setName("Single");
+      FixWrapper firstLoc = getShiftedFix((FixWrapper) ownship
+          .getPositionIterator().nextElement());
+      singleP.add(firstLoc);
+
+      Enumeration<Editable> sIter = sensors.elements();
+      while (sIter.hasMoreElements())
+      {
+        SensorWrapper thisS = (SensorWrapper) sIter.nextElement();
+        SensorWrapper newS = new SensorWrapper(thisS.getName() + "_2");
+        singleP.add(newS);
+        Enumeration<Editable> cutITer = thisS.elements();
+        while (cutITer.hasMoreElements())
+        {
+          SensorContactWrapper scw = (SensorContactWrapper) cutITer.nextElement();
+          SensorContactWrapper dup = new SensorContactWrapper(scw);
+          newS.add(dup);
+        }
+      }
+
+      // get the tail
+      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
+          "tail sensor");
+      assertNotNull("found tail", tailSensor);
+      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
+          "hull sensor");
+      assertNotNull("found hull", hullSensor);
+
+      // give it it's offset
+      tailSensor.setSensorOffset(new ArrayLength(1000));
+
+      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
+      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 8, tailItems.length);
+      assertEquals("got all cuts", 9, hullItems.length);
+
+      final String newName = "TMA_LEG";
+
+      // ok, we also have to generate some target track
+      final TMAfromCuts genny = new TMAfromCuts(tailItems, layers,
+          new WorldVector(Math.PI / 2, 0.02, 0), 45, new WorldSpeed(12,
+              WorldSpeed.Kts), Color.RED)
+      {
+        @Override
+        public String getTrackNameFor(final TrackWrapper newTrack)
+        {
+          return newName;
+        }
+
+        @Override
+        public boolean isRunning()
+        {
+          return false;
+        }
+      };
+
+      // create the new TMA
+      try
+      {
+        genny.execute(null, null);
+      }
+      catch (final Exception e)
+      {
+        fail("exception thrown while running command" + e.getMessage());
+        e.printStackTrace();
+      }
+
+      // get the TMA
+      final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
+      assertNotNull("found it", tma);
+
+      // have a butchers
+      assertEquals("has segments", 1, tma.getSegments().size());
+      final Collection<Editable> fixes = tma.getUnfilteredItems(new HiResDate(
+          0), new HiResDate(new Date().getTime()));
+
+      // note: only 8 fixes in leg, since two sensor cut was hidden
+      assertEquals("has fixes", 8, fixes.size());
+
+      final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
+      {})[0];
+      @SuppressWarnings("deprecation")
+      final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
+      assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.setPrimary(tma);
+      prov.addSecondary(ownship);
+      prov.addSecondary(singleP);
+      prov.setSwitch(false);
+
+      return prov;
+    }
+  }
+
   public static final String MEASURED_DATASET = "Measured";
 
   public static final String CALCULATED_VALUES = "Calculated";
+
+  /**
+   * the maximum number of items we plot as symbols. Above this we just use a line
+   */
+  private final static int MAX_ITEMS_TO_PLOT = 1000;
 
   /**
    * produce a color shade, according to whether the max error is inside 3 degrees or not.
@@ -281,26 +1338,31 @@ public final class StackedDotHelper
   {
     final Paint col;
     double maxError = 0d;
-    final TimeSeries ts = errorSeries.getSeries(0);
-    final List<?> items = ts.getItems();
-    for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
+
+    final Iterator<?> sIter = errorSeries.getSeries().iterator();
+    while (sIter.hasNext())
     {
-      final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
-      final boolean useMe;
-      // check this isn't infill
-      if (item instanceof ColouredDataItem)
+      final TimeSeries ts = (TimeSeries) sIter.next();
+      final List<?> items = ts.getItems();
+      for (final Iterator<?> iterator = items.iterator(); iterator.hasNext();)
       {
-        final ColouredDataItem cd = (ColouredDataItem) item;
-        useMe = cd.isShapeFilled();
-      }
-      else
-      {
-        useMe = true;
-      }
-      if (useMe)
-      {
-        final double thisE = (Double) item.getValue();
-        maxError = Math.max(maxError, Math.abs(thisE));
+        final TimeSeriesDataItem item = (TimeSeriesDataItem) iterator.next();
+        final boolean useMe;
+        // check this isn't infill
+        if (item instanceof ColouredDataItem)
+        {
+          final ColouredDataItem cd = (ColouredDataItem) item;
+          useMe = cd.isShapeFilled();
+        }
+        else
+        {
+          useMe = true;
+        }
+        if (useMe)
+        {
+          final double thisE = (Double) item.getValue();
+          maxError = Math.max(maxError, Math.abs(thisE));
+        }
       }
     }
 
@@ -337,6 +1399,38 @@ public final class StackedDotHelper
         }
       }
     }
+  }
+
+  /**
+   * either produce a list, or build up a list of segments
+   *
+   * @param secondaryTrack
+   * @param editable
+   * @return
+   */
+  private static SegmentList collateSegments(
+      final ISecondaryTrack secondaryTrack, final Editable editable)
+  {
+    final SegmentList segList;
+
+    if (editable instanceof SegmentList)
+    {
+      segList = (SegmentList) editable;
+    }
+    else
+    {
+      segList = new SegmentList();
+      // note: we can only set the wrapper
+      // if we're looking at a real TMA solution
+      if (secondaryTrack instanceof TrackWrapper)
+      {
+        segList.setWrapper((TrackWrapper) secondaryTrack);
+      }
+
+      // ok, add this segment to the list
+      segList.addSegment((TrackSegment) editable);
+    }
+    return segList;
   }
 
   /**
@@ -455,15 +1549,11 @@ public final class StackedDotHelper
    * sort out data of interest
    *
    */
-  public static TreeSet<Doublet> getDoublets(final TrackWrapper sensorHost,
+  public static TreeSet<Doublet> getDoublets(final List<TrackWrapper> primaries,
       final ISecondaryTrack targetTrack, final boolean onlyVis,
       final boolean needBearing, final boolean needFrequency)
   {
     final TreeSet<Doublet> res = new TreeSet<Doublet>();
-
-    // friendly fix-wrapper to save us repeatedly creating it
-    final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
-        0, 0), 0.0, 0.0));
 
     // note - we have to inject some listeners, so that
     // interpolated fixes know when their parent has updated.
@@ -481,124 +1571,129 @@ public final class StackedDotHelper
       theSegments = null;
     }
 
-    // loop through our sensor data
-    final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
-    if (sensors != null)
+    for (final TrackWrapper sensorHost : primaries)
     {
+      // loop through our sensor data
+      final Enumeration<Editable> sensors = sensorHost.getSensors().elements();
       while (sensors.hasMoreElements())
       {
-        final SensorWrapper wrapper = (SensorWrapper) sensors.nextElement();
-        if (!onlyVis || (onlyVis && wrapper.getVisible()))
-        {
-          final Enumeration<Editable> cuts = wrapper.elements();
+        final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+        storeDoubletsFor(sensor, res, onlyVis, needBearing, needFrequency,
+            theSegments, sensorHost, targetTrack);
 
-          while (cuts.hasMoreElements())
-          {
-            final SensorContactWrapper scw = (SensorContactWrapper) cuts
-                .nextElement();
-
-            if (!onlyVis || (onlyVis && scw.getVisible()))
-            {
-              // is this cut suitable for what we're looking for?
-              if (needBearing)
-              {
-                if (!scw.getHasBearing())
-                {
-                  continue;
-                }
-              }
-
-              // aaah, but does it meet the frequency requirement?
-              if (needFrequency)
-              {
-                if (!scw.getHasFrequency())
-                {
-                  continue;
-                }
-              }
-
-              /**
-               * note: if this is frequency data then we accept an interpolated fix. This is based
-               * upon the working practice that initially legs of target track are created from
-               * bearing data.
-               *
-               * Plus, there is greater variance in bearing angle - so it's more important to get
-               * the right data item.
-               */
-
-              /**
-               * Note: CANCEL THE ABOVE. Since the contact is travelling in a straight, on steady
-               * speed when on a leg, it's perfectly OK to interpolate a target position for any
-               * sensor time.
-               */
-              final boolean interpFix = true;// needFrequency;
-
-              /**
-               * for frequency data we don't generate a double for dynamic infills, since we have
-               * low confidence in the target course/speed
-               */
-              final boolean allowInfill = !needFrequency;
-
-              final TargetDoublet doublet = getTargetDoublet(index, theSegments,
-                  scw.getDTG(), interpFix, allowInfill);
-
-              final Doublet thisDub;
-              final FixWrapper hostFix;
-
-              final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-              if (matches != null && matches.length == 1)
-              {
-                hostFix = (FixWrapper) matches[0];
-              }
-              else
-              {
-                hostFix = null;
-              }
-
-              if (doublet.targetFix != null && hostFix != null)
-              {
-                thisDub = new Doublet(scw, doublet.targetFix,
-                    doublet.targetParent, hostFix);
-
-                // if we've no target track add all the points
-                if (targetTrack == null)
-                {
-                  // store our data
-                  res.add(thisDub);
-                }
-                else
-                {
-                  // if we've got a target track we only add points
-                  // for which we
-                  // have
-                  // a target location
-                  if (doublet.targetFix != null)
-                  {
-                    // store our data
-                    res.add(thisDub);
-                  }
-                } // if we know the track
-                // if there are any matching items
-
-              } // if we find a match
-              // this test used to be the following, but we changed it so we
-              // could see measured data even when we don't have track:
-              // else if ((targetTrack == null && hostFix != null) || (doublet.targetFix == null &&
-              // hostFix != null))
-              else if (hostFix != null && (doublet.targetFix == null
-                  || targetTrack == null))
-              {
-                // no target data, just use ownship sensor data
-                thisDub = new Doublet(scw, null, null, hostFix);
-                res.add(thisDub);
-              }
-            } // if cut is visible
-          } // loop through cuts
-        } // if sensor is visible
       } // loop through sensors
-    } // if there are sensors
+    } // loop through primaries
 
     return res;
+  }
+
+  private static TimeSeries getSinglePointCourseData(
+      final TrackWrapper primaryTrack, final ISecondaryTrack secondaryTrack,
+      final boolean flipAxes)
+  {
+    final TimeSeries osCourseValues = new TimeSeries(primaryTrack.getName());
+
+    // get the single location
+    final FixWrapper loc = (FixWrapper) primaryTrack.getPositionIterator()
+        .nextElement();
+    final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
+        .getCourse());
+
+    final Enumeration<Editable> segments = secondaryTrack.segments();
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+
+      // produce a list of segments even if there's actually only one
+      final SegmentList segList = collateSegments(secondaryTrack, nextE);
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        final Enumeration<Editable> enumer = segment.elements();
+        while (enumer.hasMoreElements())
+        {
+          final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
+
+          double thisCourse = ownshipCourse;
+          
+          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+          if (flipAxes && thisCourse > 180)
+          {
+            thisCourse -= 360;
+          }
+          final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
+              .getDateTimeGroup().getDate().getTime());
+          final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+              ownshipCourse, loc.getColor(), true, null, true, true);
+          osCourseValues.add(crseBearing);
+        }
+      }
+    }
+
+    return osCourseValues;
+  }
+
+  private static TimeSeries getStandardCourseData(
+      final TrackWrapper primaryTrack, final boolean flipAxes,
+      final HiResDate startDTG, final HiResDate endDTG)
+  {
+
+    final TimeSeries osCourseValues = new TimeSeries(primaryTrack.getName());
+
+    // loop through using the iterator
+    final Enumeration<Editable> pIter = primaryTrack.getPositionIterator();
+    final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
+        endDTG);
+    final List<Editable> validItems = new LinkedList<Editable>();
+    while (pIter.hasMoreElements())
+    {
+      final FixWrapper fw = (FixWrapper) pIter.nextElement();
+      if (validPeriod.contains(fw.getDateTimeGroup()))
+      {
+        validItems.add(fw);
+      }
+      else
+      {
+        // have we passed the end of the requested period?
+        if (fw.getDateTimeGroup().greaterThan(endDTG))
+        {
+          // ok, drop out
+          break;
+        }
+      }
+    }
+
+    // ok, now go through the list
+    final Iterator<Editable> vIter = validItems.iterator();
+    final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
+    int ctr = 0;
+    while (vIter.hasNext())
+    {
+      final Editable ed = vIter.next();
+      if (ctr++ % freq == 0)
+      {
+        final FixWrapper fw = (FixWrapper) ed;
+        final FixedMillisecond thisMilli = new FixedMillisecond(fw
+            .getDateTimeGroup().getDate().getTime());
+        double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+            .getCourse());
+
+        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+        if (flipAxes && ownshipCourse > 180)
+        {
+          ownshipCourse -= 360;
+        }
+
+        final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
+            ownshipCourse, fw.getColor(), true, null, true, true);
+        osCourseValues.add(crseBearing);
+      }
+    }
+
+    return osCourseValues;
   }
 
   /**
@@ -724,6 +1819,14 @@ public final class StackedDotHelper
     return _theSegments;
   }
 
+  private static Color halfWayColor(final Color a, final Color b)
+  {
+    final int red = (a.getRed() + b.getRed()) / 2;
+    final int blue = (a.getBlue() + b.getBlue()) / 2;
+    final int green = (a.getGreen() + b.getGreen()) / 2;
+    return new Color(red, blue, green);
+  }
+
   private static void handleDynamicInfill(final FixWrapper workingFix,
       final HiResDate requiredTime, final TargetDoublet doublet,
       final TrackSegment segment)
@@ -740,6 +1843,65 @@ public final class StackedDotHelper
     {
       doublet.targetFix = (FixWrapper) items.first();
     }
+  }
+
+  /**
+   * is this a multi-sensor dataset?
+   *
+   * @param doublets
+   * @return
+   */
+  private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
+  {
+
+    final Iterator<Doublet> iter = doublets.iterator();
+    SensorWrapper lastS = null;
+    TrackWrapper lastT = null;
+    while (iter.hasNext())
+    {
+      final Doublet next = iter.next();
+      final SensorWrapper thisS = next.getSensorCut().getSensor();
+      final TrackWrapper thisT = thisS.getHost();
+      if (lastS == null)
+      {
+        lastS = thisS;
+      }
+      else if (!lastS.equals(thisS))
+      {
+        return true;
+      }
+      if (lastT == null)
+      {
+        lastT = thisT;
+      }
+      else if (!lastT.equals(thisT))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * utility method to add a value to a series, calculating the series if necessary
+   *
+   * @param collection
+   *          parent collection
+   * @param seriesName
+   *          name of series of operate on
+   * @param bFreq
+   *          data item to add
+   */
+  static private void safelyAddItem(final TimeSeriesCollection collection,
+      final String seriesName, final TimeSeriesDataItem bFreq)
+  {
+    TimeSeries series = collection.getSeries(seriesName);
+    if (series == null)
+    {
+      series = new TimeSeries(seriesName);
+      collection.addSeries(series);
+    }
+    series.add(bFreq);
   }
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
@@ -783,15 +1945,292 @@ public final class StackedDotHelper
     return res;
   }
 
-  /**
-   * the maximum number of items we plot as symbols. Above this we just use a line
-   */
-  private final int MAX_ITEMS_TO_PLOT = 1000;
+  private static ColouredDataItem storeAmbiguousCut(final double ambigBearing,
+      final boolean flipAxes, final boolean bearingToPort,
+      final Color thisColor, final Doublet thisD, final Color grayShade,
+      final RegularTimePeriod thisMilli, final boolean parentIsNotDynamic)
+  {
+    double theBearing = ambigBearing;
+
+    // put the ambig baering into the correct domain
+    while (theBearing < 0)
+    {
+      theBearing += 360;
+    }
+
+    if (flipAxes && theBearing > 180)
+    {
+      theBearing -= 360;
+    }
+
+    // make the color darker, if we're on the stbd bearnig
+    final Color ambigColor;
+    if (bearingToPort)
+    {
+      ambigColor = thisColor.darker();
+    }
+    else
+    {
+      ambigColor = thisColor;
+    }
+
+    // if this cut has been resolved, we don't show a symbol
+    // for the ambiguous cut
+    final boolean showSymbol = true;
+    final Color color = thisD.getHasBeenResolved() ? grayShade : ambigColor;
+
+    final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
+        theBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
+            .getSensorCut());
+    return amBearing;
+  }
+
+  private static void storeDoubletsFor(final SensorWrapper sensor,
+      final TreeSet<Doublet> res, final boolean onlyVis,
+      final boolean needBearing, final boolean needFrequency,
+      final Vector<TrackSegment> theSegments, final WatchableList sensorHost,
+      final ISecondaryTrack targetTrack)
+  {
+    if (!onlyVis || (onlyVis && sensor.getVisible()))
+    {
+      // friendly fix-wrapper to save us repeatedly creating it
+      final FixWrapper index = new FixWrapper(new Fix(null, new WorldLocation(0,
+          0, 0), 0.0, 0.0));
+
+      final Enumeration<Editable> cuts = sensor.elements();
+      while (cuts.hasMoreElements())
+      {
+        final SensorContactWrapper scw = (SensorContactWrapper) cuts
+            .nextElement();
+
+        if (!onlyVis || (onlyVis && scw.getVisible()))
+        {
+          // is this cut suitable for what we're looking for?
+          if (needBearing)
+          {
+            if (!scw.getHasBearing())
+            {
+              continue;
+            }
+          }
+
+          // aaah, but does it meet the frequency requirement?
+          if (needFrequency)
+          {
+            if (!scw.getHasFrequency())
+            {
+              continue;
+            }
+          }
+
+          storeDoubletsForThisCut(scw, res, needFrequency, index, theSegments,
+              sensorHost, targetTrack);
+
+        } // if cut is visible
+      } // loop through cuts
+    } // if sensor is visible
+  }
+
+  private static void storeDoubletsForThisCut(final SensorContactWrapper scw,
+      final TreeSet<Doublet> res, final boolean needFrequency,
+      final FixWrapper index, final Vector<TrackSegment> theSegments,
+      final WatchableList sensorHost, final ISecondaryTrack targetTrack)
+  {
+    /**
+     * Since the contact is travelling in a straight, on steady speed when on a leg, it's perfectly
+     * OK to interpolate a target position for any sensor time.
+     */
+    final boolean interpFix = true;// needFrequency;
+
+    /**
+     * for frequency data we don't generate a double for dynamic infills, since we have low
+     * confidence in the target course/speed
+     */
+    final boolean allowInfill = !needFrequency;
+
+    final TargetDoublet doublet = getTargetDoublet(index, theSegments, scw
+        .getDTG(), interpFix, allowInfill);
+
+    final FixWrapper hostFix;
+    final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+    if (matches != null && matches.length == 1)
+    {
+      hostFix = (FixWrapper) matches[0];
+    }
+    else
+    {
+      hostFix = null;
+    }
+
+    if (doublet.targetFix != null && hostFix != null)
+    {
+      final Doublet thisDub = new Doublet(scw, doublet.targetFix,
+          doublet.targetParent, hostFix);
+
+      // if we've no target track add all the points
+      if (targetTrack == null)
+      {
+        // store our data
+        res.add(thisDub);
+      }
+      else
+      {
+        // if we've got a target track we only add points
+        // for which we
+        // have
+        // a target location
+        if (doublet.targetFix != null)
+        {
+          // store our data
+          res.add(thisDub);
+        }
+      } // if we know the track
+    } // if we find a match
+    else if (hostFix != null && (doublet.targetFix == null
+        || targetTrack == null))
+    {
+      // no target data, just use ownship sensor data
+      final Doublet thisDub = new Doublet(scw, null, null, hostFix);
+      res.add(thisDub);
+    }
+  }
+
+  private static void storeMeasuredBearing(final boolean multiSensor,
+      final SensorWrapper sensor, final double measuredBearing,
+      final boolean flipAxes, final RegularTimePeriod thisMilli,
+      final Color bearingColor, final boolean parentIsNotDynamic,
+      final Doublet thisD, final TimeSeriesCollection measuredValuesColl)
+  {
+    final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES
+        + sensor.getName() : BaseStackedDotsView.MEASURED_VALUES;
+
+    double theBearing = measuredBearing;
+
+    // put the measured bearing back in the positive domain
+    if (theBearing < 0)
+    {
+      theBearing += 360d;
+    }
+
+    // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+    if (flipAxes && theBearing > 180)
+    {
+      theBearing -= 360;
+    }
+
+    final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
+        theBearing, bearingColor, false, null, true, parentIsNotDynamic, thisD
+            .getSensorCut());
+    safelyAddItem(measuredValuesColl, seriesName, mBearing);
+
+  }
+
+  private static void storeTargetCourseSpeedData(
+      final ISecondaryTrack _secondaryTrack, final HiResDate startDTG,
+      final HiResDate endDTG, final boolean flipAxes,
+      final TimeSeries tgtCourseValues, final TimeSeries tgtSpeedValues)
+  {
+    // sort out the target course/speed
+    final Enumeration<Editable> segments = _secondaryTrack.segments();
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    while (segments.hasMoreElements())
+    {
+      final Editable nextE = segments.nextElement();
+
+      // if there's just one segment - then we need to wrap it, else return
+      // the list of segments
+      final SegmentList segList = collateSegments(_secondaryTrack, nextE);
+
+      final Enumeration<Editable> segIter = segList.elements();
+      while (segIter.hasMoreElements())
+      {
+        final TrackSegment segment = (TrackSegment) segIter.nextElement();
+
+        // is this an infill segment
+        final boolean isInfill = segment instanceof DynamicInfillSegment;
+
+        // check it has values, and is in range
+        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG))
+        {
+          // ok, we can skip this one
+        }
+        else
+        {
+          final Enumeration<Editable> points = segment.elements();
+          Double lastCourse = null;
+          while (points.hasMoreElements())
+          {
+            final FixWrapper fw = (FixWrapper) points.nextElement();
+            if (period.contains(fw.getDateTimeGroup()))
+            {
+              // ok, create a point for it
+              final FixedMillisecond thisMilli = new FixedMillisecond(fw
+                  .getDateTimeGroup().getDate().getTime());
+
+              double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
+                  .getCourse());
+              final double tgtSpeed = fw.getSpeed();
+
+              // see if we need to change the domain of the course to match
+              // the previous value
+              if (lastCourse != null)
+              {
+                if (tgtCourse - lastCourse > 190)
+                {
+                  tgtCourse = tgtCourse - 360;
+                }
+                else if (tgtCourse - lastCourse < -180)
+                {
+                  tgtCourse = 360 + tgtCourse;
+                }
+              }
+              lastCourse = tgtCourse;
+
+              // trim to +/- domain if we're flipping axes
+              if (flipAxes && tgtCourse > 180)
+              {
+                tgtCourse -= 360;
+              }
+
+              // we use the raw color for infills, to help find which
+              // infill we're referring to (esp in random infills)
+              final Color courseColor;
+              final Color speedColor;
+              if (isInfill)
+              {
+                courseColor = fw.getColor();
+                speedColor = fw.getColor();
+              }
+              else
+              {
+                courseColor = fw.getColor().brighter();
+                speedColor = fw.getColor().darker();
+              }
+
+              tgtCourseValues.add(new ColouredDataItem(thisMilli, tgtCourse,
+                  courseColor, isInfill, null, true, true));
+              tgtSpeedValues.add(new ColouredDataItem(thisMilli, tgtSpeed,
+                  speedColor, isInfill, null, true, true));
+            }
+          }
+        }
+
+      }
+    }
+  }
 
   /**
    * the track being dragged
    */
   private TrackWrapper _primaryTrack;
+
+  /**
+   * introduce support for multiple primary tracks
+   *
+   */
+  private final List<TrackWrapper> _primaryTracks =
+      new ArrayList<TrackWrapper>();
 
   /**
    * the secondary track we're monitoring
@@ -804,6 +2243,55 @@ public final class StackedDotHelper
    * overlapping time periods
    */
   private TreeSet<Doublet> _primaryDoublets;
+
+  private TimeSeriesCollection getAllSensorCuts(final boolean onlyVis,
+      final boolean flipAxes, final TimePeriod sensorPeriod)
+  {
+    final TimeSeriesCollection allCutsColl = new TimeSeriesCollection();
+
+    for (final TrackWrapper primaryTrack : getPrimaryTracks())
+    {
+      final List<SensorContactWrapper> theBearings = getBearings(primaryTrack,
+          onlyVis, sensorPeriod);
+      for (final SensorContactWrapper cut : theBearings)
+      {
+        double theBearing;
+
+        final String sensorName = cut.getSensorName();
+
+        // ensure it's in the positive domain
+        if (cut.getBearing() < 0)
+        {
+          theBearing = cut.getBearing() + 360;
+        }
+        else
+        {
+          theBearing = cut.getBearing();
+        }
+
+        // put in the correct domain, if necessary
+        if (flipAxes)
+        {
+          if (theBearing > 180d)
+          {
+            theBearing -= 360d;
+          }
+        }
+        else
+        {
+          if (theBearing < 0)
+          {
+            theBearing += 360;
+          }
+        }
+
+        final TimeSeriesDataItem item = new TimeSeriesDataItem(
+            new FixedMillisecond(cut.getDTG().getDate().getTime()), theBearing);
+        safelyAddItem(allCutsColl, sensorName, item);
+      }
+    }
+    return allCutsColl;
+  }
 
   public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
       final boolean onlyVis, final TimePeriod targetPeriod)
@@ -844,13 +2332,18 @@ public final class StackedDotHelper
   public TreeSet<Doublet> getDoublets(final boolean onlyVis,
       final boolean needBearing, final boolean needFrequency)
   {
-    return getDoublets(_primaryTrack, _secondaryTrack, onlyVis, needBearing,
+    return getDoublets(_primaryTracks, _secondaryTrack, onlyVis, needBearing,
         needFrequency);
   }
 
   public TrackWrapper getPrimaryTrack()
   {
     return _primaryTrack;
+  }
+
+  public List<TrackWrapper> getPrimaryTracks()
+  {
+    return _primaryTracks;
   }
 
   public ISecondaryTrack getSecondaryTrack()
@@ -865,37 +2358,25 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    */
-  void initialise(final TrackDataProvider tracks, final boolean showError,
-      final boolean onlyVis, final Composite holder, final ErrorLogger logger,
+  public void initialise(final SwitchableTrackProvider provider,
+      final boolean showError, final boolean onlyVis, final ErrorLogger logger,
       final String dataType, final boolean needBrg, final boolean needFreq)
   {
 
-    // have we been created?
-    if (holder == null)
-    {
-      return;
-    }
-
-    // are we visible?
-    if (holder.isDisposed())
-    {
-      return;
-    }
-
     _secondaryTrack = null;
     _primaryTrack = null;
+    _primaryTracks.clear();
 
     // do we have some data?
-    if (tracks == null)
+    if (provider == null)
     {
       // output error message
       logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
       return;
     }
 
-    // check we have a primary track
-    final WatchableList priTrk = tracks.getPrimaryTrack();
-    if (priTrk == null)
+    if (!provider.isPopulated() || provider.getPrimaryTracks() == null
+        || provider.getPrimaryTracks().length == 0)
     {
       logger.logError(IStatus.INFO,
           "A primary track must be placed on the Tote", null);
@@ -903,20 +2384,25 @@ public final class StackedDotHelper
     }
     else
     {
-      if (!(priTrk instanceof TrackWrapper))
+      final WatchableList[] primaryTracks = provider.getPrimaryTracks();
+      for (final WatchableList priTrk : primaryTracks)
       {
-        logger.logError(IStatus.INFO,
-            "The primary track must be a vehicle track", null);
-        return;
-      }
-      else
-      {
-        _primaryTrack = (TrackWrapper) priTrk;
+        if (priTrk instanceof TrackWrapper)
+        {
+          _primaryTrack = (TrackWrapper) priTrk;
+          _primaryTracks.add((TrackWrapper) priTrk);
+        }
+        else
+        {
+          logger.logError(IStatus.INFO,
+              "The primary track must be a vehicle track", null);
+          return;
+        }
       }
     }
 
     // now the sec track
-    final WatchableList[] secs = tracks.getSecondaryTracks();
+    final WatchableList[] secs = provider.getSecondaryTracks();
 
     // any?
     if ((secs == null) || (secs.length == 0))
@@ -969,32 +2455,6 @@ public final class StackedDotHelper
     _primaryTrack = null;
     _secondaryTrack = null;
   }
-  
-  /** is this a multi-sensor dataset?
-   * 
-   * @param doublets
-   * @return
-   */
-  private final static boolean isMultiSensor(final TreeSet<Doublet> doublets)
-  {
-    
-    final Iterator<Doublet> iter = doublets.iterator();
-    SensorWrapper lastS = null;
-    while(iter.hasNext())
-    {
-      final Doublet next = iter.next();
-      final SensorWrapper thisS = next.getSensorCut().getSensor();
-      if(lastS == null)
-      {
-        lastS = thisS;
-      }
-      else if(!lastS.equals(thisS))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
 
   /**
    * ok, our track has been dragged, calculate the new series of offsets
@@ -1016,27 +2476,29 @@ public final class StackedDotHelper
    * @param currentOffset
    *          how far the current track has been dragged
    */
-  public void updateBearingData(final XYPlot dotPlot, final XYPlot linePlot,
-      final XYPlot targetPlot, final TrackDataProvider tracks,
-      final boolean onlyVis, final boolean showCourse, final boolean flipAxes,
-      final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets,
+  public void updateBearingData(final TimeSeriesCollection dotPlotData,
+      final TimeSeriesCollection linePlotData,
+      final SwitchableTrackProvider tracks, final boolean onlyVis,
+      final boolean showCourse, final boolean flipAxes,
+      final ErrorLogger logger, final boolean updateDoublets,
       final TimeSeriesCollection targetCourseSeries,
       final TimeSeriesCollection targetSpeedSeries,
       final TimeSeriesCollection measuredValuesColl,
-      final TimeSeriesCollection ambigValuesColl, final TimeSeries ownshipCourseSeries,
+      final TimeSeriesCollection ambigValuesColl,
+      final TimeSeries ownshipCourseSeries,
       final TimeSeries targetBearingSeries,
       final TimeSeries targetCalculatedSeries,
       final ResidualXYItemRenderer overviewSpeedRenderer,
-      final WrappingResidualRenderer overviewCourseRenderer)
+      final WrappingResidualRenderer overviewCourseRenderer,
+      final SetBackgroundShade backShader)
   {
     // do we even have a primary track
     if (_primaryTrack == null)
     {
       // ok, clear the data
-      linePlot.setDataset(null);
-      dotPlot.setDataset(null);
-      targetPlot.setDataset(null);
+      linePlotData.removeAllSeries();
+      dotPlotData.removeAllSeries();
+      targetCourseSeries.removeAllSeries();
       targetSpeedSeries.removeAllSeries();
       return;
     }
@@ -1044,8 +2506,7 @@ public final class StackedDotHelper
     // ok, find the track wrappers
     if (_secondaryTrack == null)
     {
-      initialise(tracks, false, onlyVis, holder, logger, "Bearing", true,
-          false);
+      initialise(tracks, false, onlyVis, logger, "Bearing", true, false);
     }
 
     // did it work?
@@ -1057,27 +2518,22 @@ public final class StackedDotHelper
     {
       updateDoublets(onlyVis, true, false);
     }
-    
+
     // aah - but what if we've ditched our doublets?
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
       // better clear the plot
-      dotPlot.setDataset(null);
-      linePlot.setDataset(null);
-      targetPlot.setDataset(null);
-      targetPlot.setDataset(1, null);
+      dotPlotData.removeAllSeries();
+      linePlotData.removeAllSeries();
       return;
     }
-    
+
     // check if we've got multi sensor
     final boolean multiSensor = isMultiSensor(_primaryDoublets);
 
     // create the collection of series
-    final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection calculatedSeries = new TimeSeriesCollection();
-    
-    final TimeSeriesCollection ambigErrorSeries = new TimeSeriesCollection();
+    final TimeSeriesCollection ownshipCourseColl = new TimeSeriesCollection();
 
     // the previous steps occupy some time.
     // just check we haven't lost the primary track while they were running
@@ -1087,29 +2543,25 @@ public final class StackedDotHelper
     }
 
     // produce a dataset for each track
-    final TimeSeries osCourseValues = new TimeSeries("O/S Course");
     final TimeSeries tgtCourseValues = new TimeSeries("Tgt Course");
     final TimeSeries tgtSpeedValues = new TimeSeries("Tgt Speed");
-    final TimeSeries allCuts = new TimeSeries("Sensor cuts");
 
     // createa list of series, so we can pause their updates
     final List<TimeSeries> sList = new Vector<TimeSeries>();
-    sList.add(osCourseValues);
     sList.add(tgtCourseValues);
     sList.add(tgtSpeedValues);
-    sList.add(allCuts);
     sList.add(targetCalculatedSeries);
     sList.add(targetBearingSeries);
     sList.add(ownshipCourseSeries);
 
     final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
     tList.add(measuredValuesColl);
+    tList.add(ownshipCourseColl);
     tList.add(targetCourseSeries);
     tList.add(targetSpeedSeries);
-    tList.add(errorSeries);
-    tList.add(actualSeries);
+    tList.add(dotPlotData);
+    tList.add(linePlotData);
     tList.add(calculatedSeries);
-    tList.add(ambigErrorSeries);
     tList.add(ambigValuesColl);
 
     // ok, wrap the switching on/off of notify in try/catch,
@@ -1146,7 +2598,7 @@ public final class StackedDotHelper
         {
           // obvious stuff first (stuff that doesn't need the tgt data)
           final Color thisColor = thisD.getColor();
-          double measuredBearing = thisD.getMeasuredBearing();
+          final double measuredBearing = thisD.getMeasuredBearing();
           double ambigBearing = thisD.getAmbiguousMeasuredBearing();
           final HiResDate currentTime = thisD.getDTG();
           final FixedMillisecond thisMilli = new FixedMillisecond(currentTime
@@ -1168,80 +2620,22 @@ public final class StackedDotHelper
             bearingColor = thisColor.darker();
           }
 
-          // put the measured bearing back in the positive domain
-          if (measuredBearing < 0)
-          {
-            measuredBearing += 360d;
-          }
-
-          // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-          if (flipAxes)
-          {
-            if (measuredBearing > 180)
-            {
-              measuredBearing -= 360;
-            }
-          }
-
-          final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
-              measuredBearing, bearingColor, false, null, true,
-              parentIsNotDynamic, thisD.getSensorCut());
-
-          // find the series for this sensor
           final SensorWrapper sensor = thisD.getSensorCut().getSensor();
-          final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES + sensor
-              .getName() : BaseStackedDotsView.MEASURED_VALUES;
-          TimeSeries measuredBearings = measuredValuesColl.getSeries(
-              seriesName);
-          if (measuredBearings == null)
-          {
-            measuredBearings = new TimeSeries(seriesName);
-            measuredValuesColl.addSeries(measuredBearings);
-          }
 
-          // and add them to the series
-          measuredBearings.add(mBearing);
+          storeMeasuredBearing(multiSensor, sensor, measuredBearing, flipAxes,
+              thisMilli, bearingColor, parentIsNotDynamic, thisD,
+              measuredValuesColl);
 
           if (hasAmbiguous)
           {
-            // put the ambig baering into the correct domain
-            while (ambigBearing < 0)
-            {
-              ambigBearing += 360;
-            }
+            final String ambSeriesName = multiSensor
+                ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName() + "(A)"
+                : BaseStackedDotsView.MEASURED_VALUES + "(A)";
+            final ColouredDataItem amBearing = storeAmbiguousCut(ambigBearing,
+                flipAxes, bearingToPort, thisColor, thisD, grayShade, thisMilli,
+                parentIsNotDynamic);
+            safelyAddItem(ambigValuesColl, ambSeriesName, amBearing);
 
-            if (flipAxes && ambigBearing > 180)
-            {
-              ambigBearing -= 360;
-            }
-
-            // make the color darker, if we're on the stbd bearnig
-            final Color ambigColor;
-            if (bearingToPort)
-            {
-              ambigColor = thisColor.darker();
-            }
-            else
-            {
-              ambigColor = thisColor;
-            }
-
-            // if this cut has been resolved, we don't show a symbol
-            // for the ambiguous cut
-            final boolean showSymbol = true;
-            final Color color = thisD.getHasBeenResolved() ? grayShade
-                : ambigColor;
-
-            final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
-                ambigBearing, color, false, null, showSymbol,
-                parentIsNotDynamic, thisD.getSensorCut());
-            TimeSeries ambigValues = ambigValuesColl.getSeries(sensor.getName());
-            if(ambigValues == null)
-            {
-              ambigValues = new TimeSeries(sensor.getName());
-              ambigValuesColl.addSeries(ambigValues);
-            }
-            ambigValues.add(amBearing);
           }
 
           // do we have target data?
@@ -1252,8 +2646,8 @@ public final class StackedDotHelper
             if (thisD.getTarget().getFixLocation() != null)
             {
               double calculatedBearing = thisD.getCalculatedBearing(null, null);
-              
-              // note:  now that we're allowing multi-sensor TMA, we should color the
+
+              // note: now that we're allowing multi-sensor TMA, we should color the
               // errors acccording to the sensor color (not the target color)
               final Color error = thisD.getColor();
               final Color calcColor = thisD.getTarget().getColor();
@@ -1288,7 +2682,7 @@ public final class StackedDotHelper
               final ColouredDataItem newTrueError = new ColouredDataItem(
                   thisMilli, thisTrueError, brgColor, false, null, true,
                   parentIsNotDynamic, thisD.getTarget());
-              
+
               final Color halfBearing = halfWayColor(calcColor, brgColor);
 
               final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
@@ -1296,32 +2690,18 @@ public final class StackedDotHelper
                   parentIsNotDynamic, thisD.getTarget());
 
               final String sensorName = thisD.getSensorCut().getSensorName();
-              
-              // ok, get this error              
+
+              // ok, get this error
               final String errorName = multiSensor
                   ? BaseStackedDotsView.ERROR_VALUES + sensorName
                   : BaseStackedDotsView.ERROR_VALUES;
-              TimeSeries thisError = errorSeries.getSeries(errorName);
-              if (thisError == null)
-              {
-                thisError = new TimeSeries(errorName);
-                errorSeries.addSeries(thisError);
-              }
+              safelyAddItem(dotPlotData, errorName, newTrueError);
 
-              thisError.add(newTrueError);
-              
               // get the calc series for this one
               final String calcName = multiSensor
                   ? StackedDotHelper.CALCULATED_VALUES + sensorName
                   : StackedDotHelper.CALCULATED_VALUES;
-              TimeSeries calculatedValues = calculatedSeries.getSeries(calcName);
-              if(calculatedValues == null)
-              {
-                calculatedValues = new TimeSeries(calcName);
-                calculatedSeries.addSeries(calculatedValues);
-              }
-
-              calculatedValues.add(cBearing);
+              safelyAddItem(calculatedSeries, calcName, cBearing);
 
               // and the ambiguous error, if it hasn't been resolved
               if (!thisD.getHasBeenResolved())
@@ -1349,20 +2729,15 @@ public final class StackedDotHelper
                 final ColouredDataItem newAmbigError = new ColouredDataItem(
                     thisMilli, thisAmnigError, ambigColor, false, null, true,
                     parentIsNotDynamic);
-                
-                TimeSeries ambigErrorValues = ambigErrorSeries.getSeries(sensorName);
-                if(ambigErrorValues == null)
-                {
-                  ambigErrorValues = new TimeSeries(sensorName);
-                  ambigErrorSeries.addSeries(ambigErrorValues);
-                }
-                
-                ambigErrorValues.add(newAmbigError);
-              }
 
+                final String ambErrorName = multiSensor
+                    ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
+                    : BaseStackedDotsView.ERROR_VALUES + "_amb_";
+
+                safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
+              }
             }
           }
-
         }
         catch (final SeriesException e)
         {
@@ -1401,222 +2776,27 @@ public final class StackedDotHelper
       }
 
       // special case - if the primary track is a single location
-      if (_primaryTrack.isSinglePointTrack())
+      for (final TrackWrapper thisPrimary : getPrimaryTracks())
       {
-        // ok, it's a single point. We'll use the sensor cut times for the course data
-
-        // get the single location
-        final FixWrapper loc = (FixWrapper) _primaryTrack.getPositionIterator()
-            .nextElement();
-
-        final Enumeration<Editable> segments = _secondaryTrack.segments();
-        while (segments.hasMoreElements())
+        final TimeSeries osCourseValues;
+        if (thisPrimary.isSinglePointTrack())
         {
-          final Editable nextE = segments.nextElement();
-          // if there's just one segment - then we need to wrap it
-          final SegmentList segList;
-          if (nextE instanceof SegmentList)
-          {
-            segList = (SegmentList) nextE;
-          }
-          else
-          {
-            segList = new SegmentList();
-            segList.addSegment((TrackSegment) nextE);
-          }
-
-          final Enumeration<Editable> segIter = segList.elements();
-          while (segIter.hasMoreElements())
-          {
-            final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-            final Enumeration<Editable> enumer = segment.elements();
-            while (enumer.hasMoreElements())
-            {
-              final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
-
-              double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(loc
-                  .getCourse());
-
-              // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-              if (flipAxes && ownshipCourse > 180)
-              {
-                ownshipCourse -= 360;
-              }
-              final FixedMillisecond thisMilli = new FixedMillisecond(thisTgtFix
-                  .getDateTimeGroup().getDate().getTime());
-              final ColouredDataItem crseBearing = new ColouredDataItem(
-                  thisMilli, ownshipCourse, loc.getColor(), true, null, true,
-                  true);
-              osCourseValues.addOrUpdate(crseBearing);
-            }
-          }
+          // ok, it's a single point. We'll use the sensor cut times for the course data
+          osCourseValues = getSinglePointCourseData(thisPrimary,
+              _secondaryTrack, flipAxes);
         }
-      }
-      else
-      {
-
-        // loop through using the iterator
-        final Enumeration<Editable> pIter = _primaryTrack.getPositionIterator();
-        final TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(startDTG,
-            endDTG);
-        final List<Editable> validItems = new LinkedList<Editable>();
-        while (pIter.hasMoreElements())
+        else
         {
-          final FixWrapper fw = (FixWrapper) pIter.nextElement();
-          if (validPeriod.contains(fw.getDateTimeGroup()))
-          {
-            validItems.add(fw);
-          }
-          else
-          {
-            // have we passed the end of the requested period?
-            if (fw.getDateTimeGroup().greaterThan(endDTG))
-            {
-              // ok, drop out
-              break;
-            }
-          }
+          osCourseValues = getStandardCourseData(thisPrimary, flipAxes,
+              startDTG, endDTG);
         }
-
-        // ok, now go through the list
-        final Iterator<Editable> vIter = validItems.iterator();
-        final int freq = Math.max(1, validItems.size() / MAX_ITEMS_TO_PLOT);
-        int ctr = 0;
-        while (vIter.hasNext())
-        {
-          final Editable ed = vIter.next();
-          if (ctr++ % freq == 0)
-          {
-            final FixWrapper fw = (FixWrapper) ed;
-            final FixedMillisecond thisMilli = new FixedMillisecond(fw
-                .getDateTimeGroup().getDate().getTime());
-            double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-                .getCourse());
-
-            // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-            if (flipAxes && ownshipCourse > 180)
-            {
-              ownshipCourse -= 360;
-            }
-
-            final ColouredDataItem crseBearing = new ColouredDataItem(thisMilli,
-                ownshipCourse, fw.getColor(), true, null, true, true);
-            osCourseValues.add(crseBearing);
-          }
-        }
-
+        ownshipCourseColl.addSeries(osCourseValues);
       }
 
       if (_secondaryTrack != null)
       {
-        // sort out the target course/speed
-        final Enumeration<Editable> segments = _secondaryTrack.segments();
-        final TimePeriod period = new TimePeriod.BaseTimePeriod(startDTG,
-            endDTG);
-        while (segments.hasMoreElements())
-        {
-          final Editable nextE = segments.nextElement();
-          // if there's just one segment - then we need to wrap it
-          final SegmentList segList;
-          if (nextE instanceof SegmentList)
-          {
-            segList = (SegmentList) nextE;
-          }
-          else
-          {
-            segList = new SegmentList();
-            // note: we can only set the wrapper
-            // if we're looking at a real TMA solution
-            if (_secondaryTrack instanceof TrackWrapper)
-            {
-              segList.setWrapper((TrackWrapper) _secondaryTrack);
-            }
-
-            // ok, add this segment to the list
-            segList.addSegment((TrackSegment) nextE);
-          }
-
-          final Enumeration<Editable> segIter = segList.elements();
-          while (segIter.hasMoreElements())
-          {
-            final TrackSegment segment = (TrackSegment) segIter.nextElement();
-
-            // is this an infill segment
-            final boolean isInfill = segment instanceof DynamicInfillSegment;
-
-            // check it has values, and is in range
-            if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-                || segment.endDTG().lessThan(startDTG))
-            {
-              // ok, we can skip this one
-            }
-            else
-            {
-              final Enumeration<Editable> points = segment.elements();
-              Double lastCourse = null;
-              while (points.hasMoreElements())
-              {
-                final FixWrapper fw = (FixWrapper) points.nextElement();
-                if (period.contains(fw.getDateTimeGroup()))
-                {
-                  // ok, create a point for it
-                  final FixedMillisecond thisMilli = new FixedMillisecond(fw
-                      .getDateTimeGroup().getDate().getTime());
-
-                  double tgtCourse = MWC.Algorithms.Conversions.Rads2Degs(fw
-                      .getCourse());
-                  final double tgtSpeed = fw.getSpeed();
-
-                  // see if we need to change the domain of the course to match
-                  // the previous value
-                  if (lastCourse != null)
-                  {
-                    if (tgtCourse - lastCourse > 190)
-                    {
-                      tgtCourse = tgtCourse - 360;
-                    }
-                    else if (tgtCourse - lastCourse < -180)
-                    {
-                      tgtCourse = 360 + tgtCourse;
-                    }
-                  }
-                  lastCourse = tgtCourse;
-
-                  // trim to +/- domain if we're flipping axes
-                  if (flipAxes && tgtCourse > 180)
-                  {
-                    tgtCourse -= 360;
-                  }
-
-                  // we use the raw color for infills, to help find which
-                  // infill we're referring to (esp in random infills)
-                  final Color courseColor;
-                  final Color speedColor;
-                  if (isInfill)
-                  {
-                    courseColor = fw.getColor();
-                    speedColor = fw.getColor();
-                  }
-                  else
-                  {
-                    courseColor = fw.getColor().brighter();
-                    speedColor = fw.getColor().darker();
-                  }
-
-                  final ColouredDataItem crseBearingItem = new ColouredDataItem(
-                      thisMilli, tgtCourse, courseColor, isInfill, null, true,
-                      true);
-                  tgtCourseValues.add(crseBearingItem);
-                  final ColouredDataItem tgtSpeedItem = new ColouredDataItem(
-                      thisMilli, tgtSpeed, speedColor, isInfill, null, true,
-                      true);
-                  tgtSpeedValues.add(tgtSpeedItem);
-                }
-              }
-            }
-          }
-        }
+        storeTargetCourseSpeedData(_secondaryTrack, startDTG, endDTG, flipAxes,
+            tgtCourseValues, tgtSpeedValues);
       }
 
       // sort out the sensor cuts (all of them, not just those when we have target legs)
@@ -1630,75 +2810,29 @@ public final class StackedDotHelper
       {
         sensorPeriod = null;
       }
-      final List<SensorContactWrapper> theBearings = getBearings(_primaryTrack,
-          onlyVis, sensorPeriod);
-      for (final SensorContactWrapper cut : theBearings)
-      {
-        double theBearing;
 
-        // ensure it's in the positive domain
-        if (cut.getBearing() < 0)
-        {
-          theBearing = cut.getBearing() + 360;
-        }
-        else
-        {
-          theBearing = cut.getBearing();
-        }
-
-        // put in the correct domain, if necessary
-        if (flipAxes)
-        {
-          if (theBearing > 180d)
-          {
-            theBearing -= 360d;
-          }
-        }
-        else
-        {
-          if (theBearing < 0)
-          {
-            theBearing += 360;
-          }
-        }
-
-        // ok, store it.
-        allCuts.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(cut
-            .getDTG().getDate().getTime()), theBearing));
-      }
-
-      // ok, add these new series
-      // if (errorValues.getItemCount() > 0)
-      // {
-      // errorSeries.addSeries(errorValues);
-      // }
-
-      final Iterator<?> eIter = ambigErrorSeries.getSeries().iterator();
-      while(eIter.hasNext())
-      {
-        final TimeSeries series = (TimeSeries) eIter.next();
-        errorSeries.addSeries(series);
-      }
+      final TimeSeriesCollection allCutsColl = getAllSensorCuts(onlyVis,
+          flipAxes, sensorPeriod);
 
       final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
       while (mIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) mIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       final Iterator<?> aIter = ambigValuesColl.getSeries().iterator();
-      while(aIter.hasNext())
+      while (aIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) aIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       final Iterator<?> cIter = calculatedSeries.getSeries().iterator();
       while (cIter.hasNext())
       {
         final TimeSeries series = (TimeSeries) cIter.next();
-        actualSeries.addSeries(series);
+        linePlotData.addSeries(series);
       }
 
       if (tgtCourseValues.getItemCount() > 0)
@@ -1706,23 +2840,43 @@ public final class StackedDotHelper
         targetCourseSeries.addSeries(tgtCourseValues);
 
         // ok, sort out the renderer
-        overviewCourseRenderer.setLightweightMode(tgtCourseValues
-            .getItemCount() > MAX_ITEMS_TO_PLOT);
+        if (overviewCourseRenderer != null)
+        {
+          overviewCourseRenderer.setLightweightMode(tgtCourseValues
+              .getItemCount() > MAX_ITEMS_TO_PLOT);
+        }
       }
 
       if (tgtSpeedValues.getItemCount() > 0)
       {
         targetSpeedSeries.addSeries(tgtSpeedValues);
 
-        overviewSpeedRenderer.setLightweightMode(tgtSpeedValues
-            .getItemCount() > MAX_ITEMS_TO_PLOT);
+        if (overviewSpeedRenderer != null)
+        {
+          overviewSpeedRenderer.setLightweightMode(tgtSpeedValues
+              .getItemCount() > MAX_ITEMS_TO_PLOT);
+        }
       }
 
       if (showCourse)
       {
-        targetCourseSeries.addSeries(osCourseValues);
+        final Iterator<?> oIter = ownshipCourseColl.getSeries().iterator();
+
+        while (oIter.hasNext())
+        {
+          final TimeSeries thisOwnshipSeries = (TimeSeries) oIter.next();
+          targetCourseSeries.addSeries(thisOwnshipSeries);
+
+          // and the course data for the zone chart
+          if (!thisOwnshipSeries.isEmpty() && ownshipCourseSeries != null
+              && ownshipCourseSeries.isEmpty())
+          {
+            // note - only populate it, if it's currently empty
+            ownshipCourseSeries.addAndOrUpdate(thisOwnshipSeries);
+          }
+        }
       }
-      
+
       final Iterator<?> cIter2 = calculatedSeries.getSeries().iterator();
       while (cIter2.hasNext())
       {
@@ -1730,42 +2884,24 @@ public final class StackedDotHelper
         targetCalculatedSeries.addAndOrUpdate(series);
       }
 
-      // and the course data for the zone chart
-      if (!osCourseValues.isEmpty())
-      {
-        if (ownshipCourseSeries != null)
-        {
-          // is it currently empty?
-          if (ownshipCourseSeries.isEmpty())
-          {
-            ownshipCourseSeries.addAndOrUpdate(osCourseValues);
-          }
-          else
-          {
-            // ok, ignore it. we only assign the data in the first pass
-          }
-        }
-      }
-
       // and the bearing data for the zone chart
-      if (!allCuts.isEmpty())
+      final Iterator<?> cutsIter = allCutsColl.getSeries().iterator();
+      while (cutsIter.hasNext())
       {
-        if (targetBearingSeries != null)
+        final TimeSeries thisS = (TimeSeries) cutsIter.next();
+        if (targetBearingSeries != null && targetBearingSeries.isEmpty())
         {
-          // is it currently empty?
-          if (targetBearingSeries.isEmpty())
-          {
-            targetBearingSeries.addAndOrUpdate(allCuts);
-          }
-          else
-          {
-            // ok, ignore it. we only assign the data in the first pass
-          }
+          // note - only populate it, if it's currently empty
+          targetBearingSeries.addAndOrUpdate(thisS);
+        }
+        else
+        {
+          // ok, ignore it. we only assign the data in the first pass
         }
       }
 
       // find the color for maximum value in the error series, if we have error data
-      if (errorSeries.getSeriesCount() > 0)
+      if (dotPlotData.getSeriesCount() > 0)
       {
         // retrieve the cut-off value
         final double cutOffValue;
@@ -1781,15 +2917,11 @@ public final class StackedDotHelper
           cutOffValue = 3d;
         }
 
-        final Paint errorColor = calculateErrorShadeFor(errorSeries,
+        final Paint errorColor = calculateErrorShadeFor(dotPlotData,
             cutOffValue);
-        dotPlot.setBackgroundPaint(errorColor);
+        // dotPlot.setBackgroundPaint(errorColor);
+        backShader.setShade(errorColor);
       }
-
-      dotPlot.setDataset(errorSeries);
-      linePlot.setDataset(actualSeries);
-      targetPlot.setDataset(0, targetCourseSeries);
-      targetPlot.setDataset(1, targetSpeedSeries);
     }
     finally
     {
@@ -1818,17 +2950,9 @@ public final class StackedDotHelper
     if (_primaryTrack != null)
     {
       // cool sort out the list of sensor locations for these tracks
-      _primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis,
+      _primaryDoublets = getDoublets(_primaryTracks, _secondaryTrack, onlyVis,
           needBearing, needFreq);
     }
-  }
-  
-  private static Color halfWayColor(final Color a, final Color b)
-  {
-    int red = (a.getRed() + b.getRed()) / 2;
-    int blue = (a.getBlue() + b.getBlue())/2;
-    int green = (a.getGreen() + b.getGreen()) / 2;
-    return new Color(red, blue, green);
   }
 
   /**
@@ -1844,10 +2968,12 @@ public final class StackedDotHelper
    * @param currentOffset
    *          how far the current track has been dragged
    */
-  public void updateFrequencyData(final XYPlot dotPlot, final XYPlot linePlot,
-      final TrackDataProvider tracks, final boolean onlyVis,
-      final Composite holder, final ErrorLogger logger,
-      final boolean updateDoublets)
+  public void updateFrequencyData(final TimeSeriesCollection dotPlotData,
+      final TimeSeriesCollection linePlotData,
+      final SwitchableTrackProvider tracks, final boolean onlyVis,
+      final ErrorLogger logger, final boolean updateDoublets,
+      final SetBackgroundShade backShader,
+      final ColourStandardXYItemRenderer lineRend)
   {
 
     // do we have anything?
@@ -1859,8 +2985,7 @@ public final class StackedDotHelper
     // ok, find the track wrappers
     if (_secondaryTrack == null)
     {
-      initialise(tracks, false, onlyVis, holder, logger, "Frequency", false,
-          true);
+      initialise(tracks, false, onlyVis, logger, "Frequency", false, true);
     }
 
     // ok - the tracks have moved. better update the doublets
@@ -1873,16 +2998,15 @@ public final class StackedDotHelper
     if ((_primaryDoublets == null) || (_primaryDoublets.size() == 0))
     {
       // better clear the plot
-      dotPlot.setDataset(null);
-      linePlot.setDataset(null);
+      dotPlotData.removeAllSeries();
+      linePlotData.removeAllSeries();
       return;
     }
 
     // create the collection of series
-    final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+    // final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
+    // final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
-    
 
     if (_primaryTrack == null)
     {
@@ -1890,7 +3014,7 @@ public final class StackedDotHelper
     }
 
     final TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
-    
+
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
@@ -1932,13 +3056,7 @@ public final class StackedDotHelper
         // correctedFreq, thisColor, false, null);
         final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
         final String sensorName = thisSensor.getName();
-        TimeSeries measuredValues = measuredValuesColl.getSeries(sensorName);
-        if(measuredValues == null)
-        {
-          measuredValues = new TimeSeries(sensorName);
-          measuredValuesColl.addSeries(measuredValues);
-        }
-        measuredValues.add(mFreq);
+        safelyAddItem(measuredValuesColl, sensorName, mFreq);
 
         final double baseFreq = thisD.getBaseFrequency();
         if (!Double.isNaN(baseFreq))
@@ -1957,13 +3075,7 @@ public final class StackedDotHelper
 
           final ColouredDataItem bFreq = new ColouredDataItem(thisMilli,
               baseFreq, thisColor.darker(), !newSensor, null, true, true);
-          TimeSeries baseValues = baseValuesSeries.getSeries(sensorName + "(base)"); 
-          if(baseValues == null)
-          {
-            baseValues = new TimeSeries(sensorName +"(base)");
-            baseValuesSeries.addSeries(baseValues);
-          }
-          baseValues.add(bFreq);
+          safelyAddItem(baseValuesSeries, sensorName + "(base)", bFreq);
 
           // do we have target data?
           if (thisD.getTarget() != null)
@@ -1983,21 +3095,9 @@ public final class StackedDotHelper
 
             final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
                 thisError, thisColor, false, null, true, true);
-            TimeSeries predictedValues = predictedValuesColl.getSeries(sensorName);
-            if(predictedValues == null)
-            {
-              predictedValues = new TimeSeries(sensorName);
-              predictedValuesColl.addSeries(predictedValues);
-            }
-            predictedValues.addOrUpdate(pFreq);
-            
-            TimeSeries errorValues = errorSeries.getSeries(thisSensor.getName());
-            if(errorValues == null)
-            {
-              errorValues = new TimeSeries(thisSensor.getName());
-              errorSeries.addSeries(errorValues);
-            }
-            errorValues.add(eFreq);
+            safelyAddItem(predictedValuesColl, sensorName, pFreq);
+
+            safelyAddItem(dotPlotData, sensorName, eFreq);
           } // if we have a target
         } // if we have a base frequency
       }
@@ -2010,7 +3110,7 @@ public final class StackedDotHelper
     }
 
     // find the color for maximum value in the error series, if we have error data
-    if (errorSeries.getSeriesCount() > 0)
+    if (dotPlotData.getSeriesCount() > 0)
     {
       final double cutOffValue;
 
@@ -2027,38 +3127,36 @@ public final class StackedDotHelper
         cutOffValue = 1d;
       }
 
-      final Paint errorColor = calculateErrorShadeFor(errorSeries, cutOffValue);
-      dotPlot.setBackgroundPaint(errorColor);
+      final Paint errorColor = calculateErrorShadeFor(dotPlotData, cutOffValue);
+      backShader.setShade(errorColor);
     }
 
-    Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
-    while(mIter.hasNext())
+    final Iterator<?> mIter = measuredValuesColl.getSeries().iterator();
+    while (mIter.hasNext())
     {
-      TimeSeries series = (TimeSeries) mIter.next();
-      actualSeries.addSeries(series);
+      final TimeSeries series = (TimeSeries) mIter.next();
+      linePlotData.addSeries(series);
     }
-    
+
     // actualSeries.addSeries(correctedValues);
-    Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
-    while(pIter.hasNext())
+    final Iterator<?> pIter = predictedValuesColl.getSeries().iterator();
+    while (pIter.hasNext())
     {
-      TimeSeries predictedValues = (TimeSeries) pIter.next();
-      actualSeries.addSeries(predictedValues);
+      final TimeSeries predictedValues = (TimeSeries) pIter.next();
+      linePlotData.addSeries(predictedValues);
     }
-    
-    if(baseValuesSeries.getSeries().size() > 0)
+
+    if (baseValuesSeries.getSeries().size() > 0)
     {
-      Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
-      while(bIter.hasNext())
+      final Iterator<?> bIter = baseValuesSeries.getSeries().iterator();
+      while (bIter.hasNext())
       {
-        TimeSeries baseValues = (TimeSeries) bIter.next();
-        actualSeries.addSeries(baseValues);
+        final TimeSeries baseValues = (TimeSeries) bIter.next();
+        linePlotData.addSeries(baseValues);
       }
       // sort out the rendering for the BaseFrequencies.
       // we want to show a solid line, with no markers
       final int BaseFreqSeries = 2;
-      final ColourStandardXYItemRenderer lineRend =
-          (ColourStandardXYItemRenderer) linePlot.getRenderer();
       lineRend.setSeriesShape(BaseFreqSeries, ShapeUtilities.createDiamond(
           0.2f));
       lineRend.setSeriesStroke(BaseFreqSeries, new BasicStroke(4));
@@ -2066,7 +3164,5 @@ public final class StackedDotHelper
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
 
-    dotPlot.setDataset(errorSeries);
-    linePlot.setDataset(actualSeries);
   }
 }

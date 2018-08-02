@@ -19,9 +19,7 @@ import org.apache.poi.hwpf.usermodel.Paragraph;
 import org.apache.poi.hwpf.usermodel.Range;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -38,6 +36,8 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class ImportWord_LEGACY
@@ -915,11 +915,11 @@ public class ImportWord_LEGACY
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw =
-        (NarrativeWrapper) _layers.findLayer(ImportReplay.NARRATIVE_LAYER);
+        (NarrativeWrapper) _layers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

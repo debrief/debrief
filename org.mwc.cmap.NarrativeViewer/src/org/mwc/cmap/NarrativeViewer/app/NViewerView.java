@@ -69,7 +69,6 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
@@ -81,6 +80,7 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class NViewerView extends ViewPart implements PropertyChangeListener,
@@ -211,7 +211,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
       public void dataExtended(final Layers theData)
       {
         // nope, see if there is one
-        final Layer match = theData.findLayer(ImportReplay.NARRATIVE_LAYER);
+        final Layer match = theData.findLayer(LayerHandler.NARRATIVE_LAYER);
 
         // ok, do we already have a narrative?
         if (_myRollingNarrative == null)

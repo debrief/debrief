@@ -15,6 +15,7 @@
 package org.mwc.cmap.core.wizards;
 
 import java.text.ParseException;
+import java.util.Date;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
@@ -35,24 +36,19 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 			final String pageTitle, final String pageExplanation, final String fieldExplanation, final String imagePath, final String helpContext)
 	{
 		super(selection,
-				FullFormatDateTime.toString(startDate.getDate().getTime()), pageTitle,
+				FullFormatDateTime.toString(new Date().getTime()), pageTitle,
 				pageExplanation, fieldExplanation, imagePath, helpContext, true, null);
 
 		// tell the editor we're listening for modifications
 		super.addModifiedListener(this);
-
-		setDefaults();
-	}
-
-	private void setDefaults()
-	{
-		final Preferences prefs = getPrefs();
-
-		if (prefs != null)
+		
+		// if we have a date, overwrite today's date
+		if(startDate != null)
 		{
-			_startName = prefs.get(DATE, _startName);
+		  _startName = FullFormatDateTime.toString(startDate.getDate().getTime());
 		}
 	}
+
 
 	/**
 	 * sort out our answer
@@ -101,8 +97,6 @@ public class EnterDTGPage extends EnterStringPage implements ModifyListener
 		{
 			// invalid - try to stop it!!!
 			super.setErrorMessage("Date not formatted correctly");
-
 		}
 	}
-
 }

@@ -9093,15 +9093,15 @@ and entry type can be multi-word if surrounded by quotes (").
               <secondary>Dynamic Elements</secondary>
             </indexterm>The format for the different types of dynamic annotations is: <screen width="70">
             <markup>
-;;DYNAMIC_CIRCLE: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H YYY XX.XX 
-;;DYNAMIC_POLYGON: @@@@@ YYMMDD HHMMSS "NAME" DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
-;;DYNAMIC_RECTANGLE: @@@@@ YYMMDD HHMMSS "NAME"DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
-;; symb, date-time, shape name [other fields as in the standard annotation type
+;;DYNAMIC_CIRCLE: @@@@@ "NAME" YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H YYY XX.XX 
+;;DYNAMIC_POLY: @@@@@ "NAME" YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H  XX...XX
+;;DYNAMIC_RECT: @@@@@ "NAME" YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H XX..XX
+;; symb, shape name, date-time [other fields as in the standard annotation type]
 ;; example:
-;DYNAMIC_CIRCLE: @@011 151212 143000 "Circle Track A" 54 05 12.1 N 4 0 12.4 W 1000 At time 1430 
-;DYNAMIC_CIRCLE: @@011 151212 143100 "Circle Track A" 54 05 14.1 N 4 0 12.1 W 1100 At time 1431         
-;DYNAMIC_POLYGON: @@011 151212 143200 "Circle Track A" 54 05 15.1 N 4 0 12.1 W  54 06 15.1 N 4 0 11.1 W  54 05 13.1 N 4 1 14.1 W At time 1432         
-;DYNAMIC_RECTANGLE: @@011 151212 143300 "Circle Track A" 54 05 17.1 N 4 0 12.1 W  54 05 10.1 N 4 0 12.6 W At time 1433
+;DYNAMIC_CIRCLE: @@011 "Circle Track A" 151212 143000 54 05 12.1 N 4 0 12.4 W 1000 At time 1430 
+;DYNAMIC_CIRCLE: @@011 "Circle Track B" 151212 143100 54 05 14.1 N 4 0 12.1 W 1100 At time 1431         
+;DYNAMIC_POLY: @@011 "Circle Track C" 151212 143200 54 05 15.1 N 4 0 12.1 W  54 06 15.1 N 4 0 11.1 W  54 05 13.1 N 4 1 14.1 W At time 1432         
+;DYNAMIC_RECT: @@011 "Circle Track D" 151212 143300 54 05 17.1 N 4 0 12.1 W  54 05 10.1 N 4 0 12.6 W At time 1433
             </markup>
             </screen>
             </para>

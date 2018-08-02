@@ -47,7 +47,6 @@ import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
@@ -67,6 +66,8 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -791,7 +792,7 @@ public class ImportNarrativeDocument
       assertEquals("got new tracks", 3, tLayers.size());
 
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          LayerHandler.NARRATIVE_LAYER);
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
       
@@ -865,7 +866,7 @@ public class ImportNarrativeDocument
       
       
 
-      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
       
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
@@ -1303,7 +1304,7 @@ public class ImportNarrativeDocument
       importer.processThese(strings);
 
       final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
-          ImportReplay.NARRATIVE_LAYER);
+          LayerHandler.NARRATIVE_LAYER);
       assertEquals("Got num lines", 371, narr.size());
     }
   }
@@ -1610,11 +1611,11 @@ public class ImportNarrativeDocument
   private NarrativeWrapper getNarrativeLayer()
   {
     NarrativeWrapper nw = (NarrativeWrapper) _layers.findLayer(
-        ImportReplay.NARRATIVE_LAYER);
+        LayerHandler.NARRATIVE_LAYER);
 
     if (nw == null)
     {
-      nw = new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+      nw = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
       _layers.addThisLayer(nw);
     }
 

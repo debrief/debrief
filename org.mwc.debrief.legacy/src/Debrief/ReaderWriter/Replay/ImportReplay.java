@@ -39,7 +39,6 @@ import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -67,11 +66,13 @@ import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.PlainLineImporter.ImportRequiresFinalisation;
 import MWC.Utilities.ReaderWriter.ReaderMonitor;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -548,8 +549,6 @@ public class ImportReplay extends PlainImporterBase
   private static ArrayList<ExtensibleLineImporter> _extensionImporters;
 
   static private Vector<doublet> colors; // list of Replay colours
-
-  static public final String NARRATIVE_LAYER = "Narratives";
 
   static private final String ANNOTATION_LAYER = "Annotations";
 
@@ -2001,10 +2000,10 @@ public class ImportReplay extends PlainImporterBase
       res = entry.getDTG();
 
       // have we got a narrative wrapper?
-      Layer dest = getLayerFor(NARRATIVE_LAYER);
+      Layer dest = getLayerFor(LayerHandler.NARRATIVE_LAYER);
       if (dest == null)
       {
-        dest = new NarrativeWrapper(NARRATIVE_LAYER);
+        dest = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
         addLayer(dest);
       }
 

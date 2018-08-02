@@ -56,7 +56,7 @@ import org.junit.runners.Suite;
     Debrief.Tools.Palette.BuoyPatterns.WedgeBuilder.testMe.class,
     Debrief.Wrappers.BuoyPatternWrapper.testMe.class,
     Debrief.Wrappers.FixWrapper.testMe.class,
-    Debrief.Wrappers.NarrativeWrapper.TestMe.class,
+    MWC.TacticalData.NarrativeWrapper.TestMe.class,
     Debrief.Wrappers.LabelWrapper.testMe.class,
     Debrief.Wrappers.SensorContactWrapper.testSensorContact.class,
     Debrief.Wrappers.SensorWrapper.testSensors.class,
@@ -121,8 +121,10 @@ import org.junit.runners.Suite;
     org.mwc.debrief.track_shift.ambiguity.AmbiguityResolver.TestResolveAmbig.class,
     org.mwc.debrief.track_shift.ambiguity.LegOfCuts.TestLegs.class,
     org.mwc.debrief.track_shift.views.BearingResidualsView.TestResiduals.class,
-    org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,
-    Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class})
+    org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.CSVExportDropdownRegistry.TestRegistry.class,    
+    Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
+    org.mwc.debrief.track_shift.views.StackedDotHelper.TestSlicing.class,
+    org.mwc.debrief.track_shift.views.StackedDotHelper.TestUpdates.class})
 @RunWith(Suite.class)
 public class AllTests
 {

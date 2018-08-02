@@ -129,6 +129,7 @@ import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneChartConfig;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneSlicer;
 import org.mwc.debrief.track_shift.controls.ZoneUndoRedoProvider;
+import org.mwc.debrief.track_shift.views.StackedDotHelper.SwitchableTrackProvider;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.target.ILegStorer;
 import org.mwc.debrief.track_shift.zig_detector.target.IZigStorer;
@@ -478,6 +479,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   protected Action _selectPositions;
 
+  protected Action _switchPrimary;
+
   /**
    * flag indicating whether we should show cross-hairs
    *
@@ -505,6 +508,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   protected Layers _ourLayersSubject;
 
   protected TrackDataProvider _myTrackDataProvider;
+
+  protected SwitchableTrackProvider _switchableTrackDataProvider;
 
   protected ChartComposite _holder;
 
@@ -542,10 +547,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   final protected TimeSeries targetCalculatedSeries = new TimeSeries(
       "Calculated Bearing");
 
-//  final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
-  final protected TimeSeriesCollection measuredValuesColl = new TimeSeriesCollection();
+  // final protected TimeSeries measuredValues = new TimeSeries(MEASURED_VALUES);
+  final protected TimeSeriesCollection measuredValuesColl =
+      new TimeSeriesCollection();
 
-  final protected TimeSeriesCollection ambigValuesColl = new TimeSeriesCollection();
+  final protected TimeSeriesCollection ambigValuesColl =
+      new TimeSeriesCollection();
 
   final protected TimeSeries ambigScores = new TimeSeries(
       "Ambiguity Delta Rate (deg/sec)");
@@ -586,7 +593,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // the
     // interface is shown
     makeActions();
-    
+
     // declare the listeners
     _myShiftListener = new TrackShiftListener()
     {
@@ -617,8 +624,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                     .getSecondaryTrack() == null);
 
         // ok, have things changed?
-        _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_switchableTrackDataProvider, false, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
 
         // clear the zone charts, but maybe not the primary
         clearZoneCharts(!secSame || !primarySame, !secSame, !secSame);
@@ -649,6 +663,48 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           // the doublets, to capture the new location.
           updateStackedDots(true);
         }
+      }
+    };
+
+    _switchableTrackDataProvider = new SwitchableTrackProvider()
+    {
+      private boolean isSwitched()
+      {
+        return _switchPrimary.isChecked();
+      }
+
+      @Override
+      public WatchableList[] getSecondaryTracks()
+      {
+        if (isSwitched())
+        {
+          return new WatchableList[]
+          {_myTrackDataProvider.getPrimaryTrack()};
+        }
+        else
+        {
+          return _myTrackDataProvider.getSecondaryTracks();
+        }
+      }
+
+      @Override
+      public WatchableList[] getPrimaryTracks()
+      {
+        if (isSwitched())
+        {
+          return _myTrackDataProvider.getSecondaryTracks();
+        }
+        else
+        {
+          return new WatchableList[]
+          {_myTrackDataProvider.getPrimaryTrack()};
+        }
+      }
+
+      @Override
+      public boolean isPopulated()
+      {
+        return _myTrackDataProvider != null;
       }
     };
 
@@ -709,10 +765,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       @Override
       public void run()
       {
-        _dotPlot.setDataset(null);
-        _linePlot.setDataset(null);
-        _targetOverviewPlot.setDataset(null);
-        _targetOverviewPlot.setDataset(1, null);
+        TimeSeriesCollection coll = (TimeSeriesCollection) _dotPlot
+            .getDataset();
+        coll.removeAllSeries();
+
+        TimeSeriesCollection line = (TimeSeriesCollection) _linePlot
+            .getDataset();
+        line.removeAllSeries();
+
+        _targetCourseSeries.removeAllSeries();
+        _targetSpeedSeries.removeAllSeries();
       }
     };
 
@@ -740,7 +802,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       clearCollection(measuredValuesColl);
-      
+
       ambigScores.clear();
     }
 
@@ -760,19 +822,20 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     }
   }
 
-  /** empty out this collection
+  /**
+   * empty out this collection
    * 
    * @param coll
    */
   private void clearCollection(final TimeSeriesCollection coll)
   {
     final Iterator<?> iter = coll.getSeries().iterator();
-    while(iter.hasNext())
+    while (iter.hasNext())
     {
       final TimeSeries series = (TimeSeries) iter.next();
       series.clear();
     }
-    
+
     coll.removeAllSeries();
   }
 
@@ -1269,6 +1332,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
     _dotPlot.addRangeMarker(zeroMarker);
 
+    // give the dot plot some data
+    _dotPlot.setDataset(new TimeSeriesCollection());
+
     _linePlot = new XYPlot();
     final NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits()
         + ")");
@@ -1282,10 +1348,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     lineRend.setPaint(Color.DARK_GRAY);
     _linePlot.setRenderer(lineRend);
 
+    // give it some data
+    _linePlot.setDataset(new TimeSeriesCollection());
+
     formatCrossHair(_linePlot);
     formatCrossHair(_dotPlot);
 
     _targetOverviewPlot = new XYPlot();
+
+    // give it some data
+    _targetOverviewPlot.setDataset(0, _targetCourseSeries);
+    _targetOverviewPlot.setDataset(1, _targetSpeedSeries);
+
     final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
     {
       /**
@@ -1423,12 +1497,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         // and write the text
         final String numA = formatValue(_linePlot.getRangeCrosshairValue());
-        
+
         // check we're using the correct crosshair
         final long crossDate = (long) (_linePlot.isDomainCrosshairVisible()
             ? _linePlot.getDomainCrosshairValue() : _dotPlot
                 .getDomainCrosshairValue());
-        
+
         final Date newDate = new Date(crossDate);
         final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
         final String dateVal = _df.format(newDate);
@@ -1683,17 +1757,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // cuts are shown on the line plot. Markers are only
             // present on the error plot if TMA points are present
 
-            if(entity instanceof XYItemEntity)
+            if (entity instanceof XYItemEntity)
             {
               // get the data
-              final TimeSeriesCollection coll = (TimeSeriesCollection) _linePlot.getDataset();
-              
+              final TimeSeriesCollection coll = (TimeSeriesCollection) _linePlot
+                  .getDataset();
+
               // get the XY details
               XYItemEntity xy = (XYItemEntity) entity;
-              
+
               // retrieve the subject series
               TimeSeries ts = coll.getSeries(xy.getSeriesIndex());
-              
+
               // and get the series name
               seriesName = (String) ts.getKey();
             }
@@ -1854,9 +1929,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final List<Editable> toSelect = new ArrayList<Editable>();
     if (measurements == null)
     {
-      CorePlugin.logError(Status.ERROR, "Trying to select fixes/cuts, but can't find them:" + seriesName, null);
-      CorePlugin.showMessage("Select items", "Sorry, not possible to select items when multiple sensors in use");
-    } 
+      CorePlugin.logError(Status.ERROR,
+          "Trying to select fixes/cuts, but can't find them:" + seriesName,
+          null);
+      CorePlugin.showMessage("Select items",
+          "Sorry, not possible to select items when multiple sensors in use");
+    }
     else
     {
       final List<?> list = measurements.getItems();
@@ -2026,6 +2104,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // right, select items goes here
     toolBarManager.add(_selectMeasurements);
     toolBarManager.add(_selectPositions);
+
+    // ok, insert separator
+    toolBarManager.add(new Separator());
+
+    toolBarManager.add(_switchPrimary);
 
     // ok, insert separator
     toolBarManager.add(new Separator());
@@ -2605,11 +2688,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         _myChart.setTitle("");
 
         // we need to get a fresh set of data pairs - the number may
-        // have
-        // changed
-        _myHelper.initialise(_myTrackDataProvider, true, _onlyVisible
-            .isChecked(), _holder, logger, getType(), _needBrg, _needFreq);
-
+        // have changed
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_switchableTrackDataProvider, true, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
         // and a new plot please
         updateStackedDots(true);
       }
@@ -2663,6 +2751,35 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _showCrossHairs.setToolTipText("Show/hide cross-hair marker");
     _showCrossHairs.setImageDescriptor(TrackShiftActivator.getImageDescriptor(
         "icons/24/crosshair.png"));
+
+    _switchPrimary = new Action("Use multistatics", IAction.AS_CHECK_BOX)
+    {
+
+      @Override
+      public void run()
+      {
+        super.run();
+
+        // we need to get a fresh set of data pairs - the number may
+        // have changed
+        if (_holder == null || _holder.isDisposed())
+        {
+          return;
+        }
+        else
+        {
+          _myHelper.initialise(_switchableTrackDataProvider, true, _onlyVisible
+              .isChecked(), logger, getType(), _needBrg, _needFreq);
+        }
+
+        updateData(true);
+      }
+
+    };
+    _switchPrimary.setChecked(false);
+    _switchPrimary.setToolTipText("Use multiple secondary tracks as primary");
+    _switchPrimary.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+        "icons/16/MultiPath.png"));
 
   }
 
@@ -3359,7 +3476,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             if (_myTrackDataProvider != dataP)
             {
               // ok - let's start off with a clean plot
-              _dotPlot.setDataset(null);
+              TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot
+                  .getDataset();
+              errorData.removeAllSeries();
 
               // nope, better stop listening then
               if (_myTrackDataProvider != null)
@@ -3412,9 +3531,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               _myChart.setTitle("");
 
               // ok - fire off the event for the new tracks
-              _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-                  .isChecked(), _holder, logger, getType(), _needBrg,
-                  _needFreq);
+              if (_holder == null || _holder.isDisposed())
+              {
+                return;
+              }
+              else
+              {
+                _myHelper.initialise(_switchableTrackDataProvider, false,
+                    _onlyVisible.isChecked(), logger, getType(), _needBrg,
+                    _needFreq);
+              }
 
               // hey - fire a dot update
               updateStackedDots(true);
@@ -3516,12 +3642,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
                 public void dataReformatted(final Layers theData,
                     final Layer changedLayer)
                 {
-                  _myHelper.initialise(_myTrackDataProvider, false, _onlyVisible
-                      .isChecked(), _holder, logger, getType(), _needBrg,
-                      _needFreq);
+                  if (_holder == null || _holder.isDisposed())
+                  {
+                    return;
+                  }
+                  else
+                  {
+                    _myHelper.initialise(_switchableTrackDataProvider, false,
+                        _onlyVisible.isChecked(), logger, getType(), _needBrg,
+                        _needFreq);
 
-                  updateStackedDots(true);
-
+                    updateStackedDots(true);
+                  }
                 }
               };
             }

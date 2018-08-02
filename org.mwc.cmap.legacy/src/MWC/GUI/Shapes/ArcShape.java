@@ -220,9 +220,7 @@ public class ArcShape extends CircleShape
 			final double centreBearing, final double arcWidth,
 			final boolean plotOrigin, final boolean plotSpokes)
 	{
-		super(theCentre, theRadius);
-
-		super.setName("Arc");
+		super(theCentre, theRadius, "Arc");
 
 		_centreBearing = centreBearing;
 		_arcWidth = arcWidth;

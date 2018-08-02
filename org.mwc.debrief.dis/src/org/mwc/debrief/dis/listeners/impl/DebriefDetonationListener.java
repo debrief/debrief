@@ -4,15 +4,15 @@ import java.awt.Color;
 
 import org.mwc.debrief.dis.listeners.IDISDetonationListener;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
 public class DebriefDetonationListener extends DebriefCoreListener implements
     IDISDetonationListener
@@ -54,13 +54,13 @@ public class DebriefDetonationListener extends DebriefCoreListener implements
     });
 
     // and the narrative entry
-    addNewItem(eid, ImportReplay.NARRATIVE_LAYER, new ListenerHelper()
+    addNewItem(eid, LayerHandler.NARRATIVE_LAYER, new ListenerHelper()
     {
 
       @Override
       public Layer createLayer()
       {
-        return new NarrativeWrapper(ImportReplay.NARRATIVE_LAYER);
+        return new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
       }
 
       @Override
