@@ -34,7 +34,12 @@ public class UnpackFunction
     }
 
     // check if unpack_path is directory or not
-    if (!Files.exists(Paths.get(pptx_path)) || !pptx_path.endsWith("pptx"))
+    if (!Files.exists(Paths.get(pptx_path)) || pptx_path.isEmpty())
+    {
+      throw new DebriefException("The PPTX master template hasn't been assigned");
+    }
+
+    if (!pptx_path.endsWith("pptx"))
     {
       throw new DebriefException("pptx_path provided is not a pptx file");
     }
