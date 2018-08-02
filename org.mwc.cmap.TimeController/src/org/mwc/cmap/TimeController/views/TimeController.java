@@ -18,6 +18,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,6 +35,9 @@ import java.util.Vector;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IContributionItem;
@@ -49,6 +53,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.PaintEvent;
@@ -57,6 +62,10 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
@@ -161,6 +170,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
   private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
+  
+  private static final String ICON_PULSATING_GIF="icons/16/pulse.gif";
 
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
@@ -213,6 +224,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * label showing the current time
    */
   private Label _timeLabel;
+  private Label _recordingLabel;
 
   /**
    * the set of layers we control through the range selector
@@ -305,6 +317,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private CoordinateRecorder _coordinateRecorder;
 
   private MenuItem _doExportItem;
+
+  private AnimatedGif animatedGif;
 
   // private static final Color bColor = new Color(Display.getDefault(), 0, 0,
   // 0);
@@ -442,10 +456,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // stick in the long list of VCR buttons
     createVCRbuttons();
 
-    _timeLabel = new Label(_wholePanel, SWT.NONE);
+    Composite timePanel = new Composite(_wholePanel,SWT.NONE);
+    timePanel.setLayout(new GridLayout(2,false));
+    timePanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    timePanel.setBackground(bColor);
+    
+    
+    _recordingLabel = new Label(timePanel,SWT.NONE);
+    final GridData recordingGrid = new GridData(GridData.FILL_HORIZONTAL);
+    recordingGrid.minimumWidth=24;
+    _recordingLabel.setLayoutData(recordingGrid);
+    _recordingLabel.setFont(arialFont);
+    _recordingLabel.setForeground(fColor);
+    _recordingLabel.setBackground(bColor);
+    _recordingLabel.setVisible(false);
+    _timeLabel = new Label(timePanel, SWT.NONE);
     final GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
     _timeLabel.setLayoutData(labelGrid);
-    _timeLabel.setAlignment(SWT.CENTER);
+    _timeLabel.setAlignment(SWT.LEFT);
     _timeLabel.setText(DUFF_TIME_TEXT);
     // _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended",
     // 16,
@@ -453,7 +481,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _timeLabel.setFont(arialFont);
     _timeLabel.setForeground(fColor);
     _timeLabel.setBackground(bColor);
-
+    
     // next create the time slider holder
     _tNowSlider = new Scale(_wholePanel, SWT.NONE);
     final GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
@@ -2148,11 +2176,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         // see if we're recording
         if (_coordinateRecorder != null && _coordinateRecorder.isRecording())
         {
-          newVal += " [REC]";
+          animatedGif = new AnimatedGif(_recordingLabel,ICON_PULSATING_GIF);
+          if(_recordingLabel.getImage()==null) {
+            _recordingLabel.setImage(animatedGif.getImage());
+          }
+          animatedGif.animate();
+          _recordingLabel.setVisible(true);
+        }
+        else {
+          if(animatedGif!=null) {
+            animatedGif.cancel();
+            _recordingLabel.setVisible(false);
+          }
         }
       }
       catch (final IllegalArgumentException e)
       {
+        e.printStackTrace();
         System.err.println("Invalid date format in preferences");
       }
     }
@@ -3247,6 +3287,150 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   public TimeProvider getTimeProvider()
   {
     return _myTemporalDataset;
+  }
+  
+  /**
+   * does the actual animation
+   * @author Ayesha
+   *
+   */
+  private static class AnimatedGif
+  {
+
+    static ImageLoader loader = new ImageLoader();
+    private Thread animateThread;
+    private Image image;
+    private ImageData[] imageDataArray;
+    private Label lbl;
+    private boolean cancel;
+    public AnimatedGif(Label lbl,String filename) {
+      this.lbl = lbl;
+      try
+      {
+        imageDataArray = loader.load(FileLocator.openStream(TimeControllerPlugin.getDefault().getBundle(), new Path(filename), false));
+      }
+      catch (IOException e)
+      {
+        CorePlugin.logError(IStatus.ERROR, "Could not find pulsating gif", e);
+      }
+    }
+
+    public void animate() {
+      Display display = lbl.getDisplay();
+      GC shellGC = new GC(lbl);
+      Color shellBackground = lbl.getBackground();
+      Rectangle bounds = lbl.getBounds();
+      //when animate is called, restart thread
+      cancel=false;
+      if(imageDataArray.length>1) {
+        animateThread = new Thread("Animate") {
+          public void run() {
+            //run only if not cancel.
+            if(!cancel) {
+              Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);
+              GC offScreenImageGC = new GC(offScreenImage);
+              offScreenImageGC.setBackground(shellBackground);
+              offScreenImageGC.fillRectangle(0, 0, loader.logicalScreenWidth, loader.logicalScreenHeight);
+
+              try {
+                /* Create the first image and draw it on the off-screen image. */
+                int imageDataIndex = 0;  
+                ImageData imageData = imageDataArray[imageDataIndex];
+
+                if (image != null && !image.isDisposed()) image.dispose();
+                image = new Image(display, imageData);
+                offScreenImageGC.drawImage(
+                    image,
+                    0,
+                    0,
+                    imageData.width,
+                    imageData.height,
+                    imageData.x,
+                    imageData.y,
+                    imageData.width,
+                    imageData.height);
+
+                /* Now loop through the images, creating and drawing each one
+                 * on the off-screen image before drawing it on the shell. */
+                int repeatCount = loader.repeatCount;
+                while (loader.repeatCount == 0 || repeatCount > 0) {
+                  switch (imageData.disposalMethod) {
+                    case SWT.DM_FILL_BACKGROUND:
+                      /* Fill with the background color before drawing. */
+                      Color bgColor = null;
+                      offScreenImageGC.setBackground(bgColor != null ? bgColor : shellBackground);
+                      offScreenImageGC.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
+                      if (bgColor != null) bgColor.dispose();
+                      break;
+                    case SWT.DM_FILL_PREVIOUS:
+                      /* Restore the previous image before drawing. */
+                      offScreenImageGC.drawImage(
+                          image,
+                          0,
+                          0,
+                          imageData.width,
+                          imageData.height,
+                          imageData.x,
+                          imageData.y,
+                          imageData.width,
+                          imageData.height);
+                      break;
+                  }
+
+                  imageDataIndex = (imageDataIndex + 1) % imageDataArray.length;
+                  imageData = imageDataArray[imageDataIndex];
+                  image.dispose();
+                  image = new Image(display, imageData);
+                  offScreenImageGC.drawImage(
+                      image,
+                      0,
+                      0,
+                      imageData.width,
+                      imageData.height,
+                      imageData.x,
+                      imageData.y,
+                      imageData.width,
+                      imageData.height);
+
+                  /* Draw the off-screen image to the shell. */
+                  shellGC.drawImage(offScreenImage, bounds.width-imageData.width-5, bounds.height/2-imageData.height/2);
+
+                  /* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */
+                  try {
+                    int ms = imageData.delayTime * 10;
+                    if (ms < 20) ms += 30;
+                    if (ms < 30) ms += 10;
+                    Thread.sleep(ms);
+                  } catch (InterruptedException e) {
+                  }
+
+                  /* If we have just drawn the last image, decrement the repeat count and start again. */
+                  if (imageDataIndex == imageDataArray.length - 1) repeatCount--;
+                }
+              } catch (SWTException ex) {
+                System.out.println("There was an error animating the GIF");
+              } finally {
+                if (offScreenImage != null && !offScreenImage.isDisposed()) offScreenImage.dispose();
+                if (offScreenImageGC != null && !offScreenImageGC.isDisposed()) offScreenImageGC.dispose();
+                if (image != null && !image.isDisposed()) image.dispose();
+              } 
+            }
+          }
+        };
+        animateThread.setDaemon(true);
+        animateThread.start();
+      }
+    }
+
+    public void cancel() {
+      this.cancel = true;
+    }
+
+    public Image getImage()
+    {
+      return image;
+    }
+
   }
 
 }
