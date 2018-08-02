@@ -2182,6 +2182,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           }
           animatedGif.animate();
           _recordingLabel.setVisible(true);
+          
+          newVal += " [REC]";
+          
         }
         else {
           if(animatedGif!=null) {
