@@ -21,6 +21,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -36,6 +38,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.preferences.PrefsPage;
+
+import Debrief.ReaderWriter.powerPoint.PlotTracks;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -125,6 +131,7 @@ public class ExportPPTDialog extends Dialog
     createButton(parent, IDialogConstants.OK_ID, "Export", true);
     createButton(parent, IDialogConstants.CANCEL_ID,
         IDialogConstants.CANCEL_LABEL, false);
+    enableOK(false);
 
   }
 
@@ -138,6 +145,7 @@ public class ExportPPTDialog extends Dialog
     final Label lblExportLocation = new Label(composite, SWT.NONE);
     lblExportLocation.setText("Export Location");
     txtExportLocation = new Text(composite, SWT.BORDER);
+    
     final GridData data = new GridData(GridData.FILL_HORIZONTAL);
     data.grabExcessHorizontalSpace = true;
     data.horizontalAlignment = SWT.FILL;
@@ -156,6 +164,18 @@ public class ExportPPTDialog extends Dialog
         {
           txtExportLocation.setText(selectedFile);
           exportLocation = txtExportLocation.getText();
+          if(!isExportLocationValid()) {
+            MessageDialog.openError(getParentShell(), "Error!",
+                "Specify a valid folder to export the PPT file");
+            enableOK(false);
+          }
+          else {
+            enableOK(true);
+          }
+          
+        }
+        else {
+          enableOK(false);
         }
       }
     });
@@ -163,6 +183,7 @@ public class ExportPPTDialog extends Dialog
     lblFilename.setText("File name");
     txtFilename = new Text(composite, SWT.BORDER);
     txtFilename.setLayoutData(data);
+    
     cmbFileFormats = new Combo(composite, SWT.DROP_DOWN);
     cmbFileFormats.setItems(supportedFormats);
 
@@ -220,6 +241,41 @@ public class ExportPPTDialog extends Dialog
       txtFilename.setText(fileName);
     }
     viewOnCompleteBtn.setSelection(viewOnComplete);
+    txtFilename.addModifyListener(new ModifyListener()
+    {
+      
+      @Override
+      public void modifyText(ModifyEvent e)
+      {
+        if (isNullOrEmpty(txtFilename.getText()))
+        {
+          MessageDialog.openError(getParentShell(), "Error!",
+              "Specify the name of the file to export");
+         enableOK(false);
+        }
+        else
+        {
+          enableOK(true);
+        }
+      }
+    });
+    txtExportLocation.addModifyListener(new ModifyListener()
+    {
+      
+      @Override
+      public void modifyText(ModifyEvent e)
+      {
+        if(!isExportLocationValid()) {
+          MessageDialog.openError(getParentShell(), "Error!",
+              "Specify a valid folder to export the PPT file");
+          enableOK(false);
+        }
+        else {
+          enableOK(true);
+        }
+        
+      }
+    });
   }
 
   private boolean isNullOrEmpty(final String text)
@@ -232,46 +288,56 @@ public class ExportPPTDialog extends Dialog
   {
     return true;
   }
+  
+  private void enableOK(boolean enable) {
+    if(getShell().isVisible()) {
+      getButton(OK).setEnabled(enable);
+    }
+  }
 
+  private boolean isExportLocationValid() {
+    if (isNullOrEmpty(txtExportLocation.getText()))
+    {
+      return false;
+    }
+    if(!new File(txtExportLocation.getText()).exists()) {
+      return false;
+    }
+    return true;
+  }
   @Override
   protected void okPressed()
   {
     // check the export path and format
-    if (isNullOrEmpty(txtExportLocation.getText()))
-    {
-      MessageDialog.openError(getParentShell(), "Error!",
-          "Specify the location to export the PPT file");
-      txtExportLocation.setFocus();
-    }
-    else if (isNullOrEmpty(txtFilename.getText()))
-    {
-      MessageDialog.openError(getParentShell(), "Error!",
-          "Specify the name of the file to export");
-      txtFilename.setFocus();
-    }
-    else
-    {
+    
       // ok, we've got to store the values in the controls,
       // since they're about to get disposed
       this.exportLocation = txtExportLocation.getText();
       this.fileName = txtFilename.getText();
       final String stemmedName = getFileNameStem(fileName);
       this.fileFormat = cmbFileFormats.getText();
-      this.viewOnComplete = viewOnCompleteBtn.getSelection();
-
-      // and store the prefs
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,
-          exportLocation);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,
-          stemmedName);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,
-          fileFormat);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
-          viewOnComplete);
-
-      // let parent do it's business
-      super.okPressed();
-    }
+      PlotTracks plotTracks = new PlotTracks();
+      String errorMsg = plotTracks.validateDonorFile(getMasterTemplateFile());
+      if(errorMsg!=null  && !errorMsg.isEmpty()) {
+        MessageDialog.openError(getParentShell(), "Error!",
+            errorMsg);
+      }
+      else {
+       this.viewOnComplete = viewOnCompleteBtn.getSelection();
+  
+        // and store the prefs
+        PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,
+            exportLocation);
+        PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,
+            stemmedName);
+        PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,
+            fileFormat);
+        PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
+            viewOnComplete);
+  
+        // let parent do it's business
+        super.okPressed();
+      }
   }
 
   public void setExportLocation(final String exportLocation)
@@ -292,5 +358,16 @@ public class ExportPPTDialog extends Dialog
   public void setOpenOnComplete(final Boolean openFile)
   {
     viewOnComplete = openFile;
+  }
+  private String getMasterTemplateFile()
+  {
+    String templateFile = CorePlugin.getDefault().getPreferenceStore()
+        .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    if (templateFile == null || templateFile.isEmpty())
+    {
+      templateFile = CorePlugin.getDefault().getPreferenceStore().getDefaultString(
+          PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    }
+    return templateFile;
   }
 }

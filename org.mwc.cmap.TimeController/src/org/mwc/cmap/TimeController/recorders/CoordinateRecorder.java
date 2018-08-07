@@ -296,7 +296,7 @@ public class CoordinateRecorder
         .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     if (templateFile == null || templateFile.isEmpty())
     {
-      templateFile = CorePlugin.getDefault().getPreferenceStore().getString(
+      templateFile = CorePlugin.getDefault().getPreferenceStore().getDefaultString(
           PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     }
     return templateFile;

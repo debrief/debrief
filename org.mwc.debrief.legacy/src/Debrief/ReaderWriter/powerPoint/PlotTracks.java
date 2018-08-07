@@ -63,8 +63,12 @@ public class PlotTracks
       for (File genFile : FileUtils.listFilesAndDirs(new File(temp_unpack_path),
           TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
       {
-        allFiles.add(genFile.getAbsolutePath().substring(temp_unpack_path
-            .length()));
+        String fileName = genFile.getAbsolutePath().substring(temp_unpack_path
+            .length()); 
+        if(fileName.contains("\\")) {
+          fileName = fileName.replaceAll("\\\\", "/");
+        }
+        allFiles.add(fileName);
       }
       final String[] mustContain = new String[]
       {"/[Content_Types].xml", "/_rels", "/ppt", "/ppt/slides",
