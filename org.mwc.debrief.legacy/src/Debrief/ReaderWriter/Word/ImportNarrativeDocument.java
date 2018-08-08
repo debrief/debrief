@@ -1720,30 +1720,7 @@ public class ImportNarrativeDocument
     boolean dataAdded = false;
 
     // find the outer time period - we only load data into the current time period
-    TimePeriod outerPeriod = null;
-    final Enumeration<Editable> layers = _layers.elements();
-    while (layers.hasMoreElements())
-    {
-      final Layer thisL = (Layer) layers.nextElement();
-      if (thisL instanceof WatchableList)
-      {
-        final WatchableList wl = (WatchableList) thisL;
-        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
-        {
-          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl
-              .getStartDTG(), wl.getEndDTG());
-          if (outerPeriod == null)
-          {
-            outerPeriod = thisP;
-          }
-          else
-          {
-            outerPeriod.extend(wl.getStartDTG());
-            outerPeriod.extend(wl.getEndDTG());
-          }
-        }
-      }
-    }
+    TimePeriod outerPeriod = outerPeriodFor(_layers);
 
     // ok, now we can loop through the strings
     int ctr = 0;
@@ -1845,6 +1822,35 @@ public class ImportNarrativeDocument
     {
       _layers.fireModified(getNarrativeLayer());
     }
+  }
+
+  private TimePeriod outerPeriodFor(Layers theLayers)
+  {
+    TimePeriod outerPeriod = null;
+    final Enumeration<Editable> layers = theLayers.elements();
+    while (layers.hasMoreElements())
+    {
+      final Layer thisL = (Layer) layers.nextElement();
+      if (thisL instanceof WatchableList)
+      {
+        final WatchableList wl = (WatchableList) thisL;
+        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
+        {
+          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl
+              .getStartDTG(), wl.getEndDTG());
+          if (outerPeriod == null)
+          {
+            outerPeriod = thisP;
+          }
+          else
+          {
+            outerPeriod.extend(wl.getStartDTG());
+            outerPeriod.extend(wl.getEndDTG());
+          }
+        }
+      }
+    }
+    return outerPeriod;
   }
 
   /**
