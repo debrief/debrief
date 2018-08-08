@@ -24,10 +24,11 @@ import MWC.Algorithms.FrequencyCalcs;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
-public final class Doublet implements Comparable<Doublet>
+public class Doublet implements Comparable<Doublet>
 {
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
@@ -43,6 +44,37 @@ public final class Doublet implements Comparable<Doublet>
       final double bearingRads = Conversions.Degs2Rads(bearingDegs);
       return FrequencyCalcs.calcDopplerComponent(bearingRads, myCrseRads,
           mySpeedKts, observedFreq);
+    }
+    
+    public void testTwoWay()
+    {
+      SensorContactWrapper receiver = new SensorContactWrapper("host",new HiResDate(1000), null,90d,null,Color.red, "label", 0, "Receiver");
+      double targetCourse = 120;
+      double targetSpeed = 15;
+      Fix targetFix = new Fix(new HiResDate(2000), new WorldLocation(2,2,2d), targetCourse, targetSpeed);
+      final FixWrapper targetFixW = new FixWrapper(targetFix);
+      WorldLocation targetLocation = new WorldLocation(0,0,0d);
+      HiResDate startTime = new HiResDate(1000);
+      HiResDate endTime = new HiResDate(1000000);
+      TrackSegment parent = new AbsoluteTMASegment(34, new WorldSpeed(12, WorldSpeed.Kts), targetLocation, startTime, endTime);
+      double hostCourse = 90d;
+      double hostSpeed = 10d;
+      Fix hostFix = new Fix(new HiResDate(4000), new WorldLocation(1,1,1d), hostCourse, hostSpeed );
+      FixWrapper hostFixW = new FixWrapper(hostFix);
+      double speed_of_sound = FrequencyCalcs.SpeedOfSoundKts;
+      SensorWrapper transmitter = new SensorWrapper("Transmitter");
+      Doublet dub = new Doublet(receiver, targetFixW, parent, hostFixW)
+          {
+
+            @Override
+            protected FixWrapper getTransmitterFix(SensorWrapper source)
+            {
+              return targetFixW;
+            }
+        
+          };
+      double freq = dub.getPredictedMultistaticFrequency(speed_of_sound, transmitter);
+      assertEquals("correct freq", 330d, freq);
     }
 
     public void testCorrected()
@@ -370,9 +402,8 @@ public final class Doublet implements Comparable<Doublet>
     return predictedFreq;
   }
 
-  private FixWrapper getTransmitterFix(SensorWrapper source)
+  protected FixWrapper getTransmitterFix(SensorWrapper source)
   {
-
     Watchable[] nearest = source.getHost().getNearestTo(_hostFix
         .getDateTimeGroup(), false);
     final Watchable res;
