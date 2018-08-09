@@ -1226,10 +1226,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             if (newDTG.greaterThan(timeP.getEndDTG()))
             {
               fireNewTime(timeP.getEndDTG());
+              stopPlayingRecorder(timeP.getEndDTG());
             }
             else
             {
               fireNewTime(timeP.getStartDTG());
+              stopPlayingRecorder(timeP.getStartDTG());          
             }
             stopPlayingTimer();
           }
@@ -1239,6 +1241,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     // CorePlugin.logError(Status.INFO, "Step complete", null);
 
+  }
+  
+  private void stopPlayingRecorder(HiResDate timeNow) {
+    if(_coordinateRecorder!=null) {
+      
+      _coordinateRecorder.stopStepping(timeNow);
+    }
   }
 
   private void stopPlayingTimer()

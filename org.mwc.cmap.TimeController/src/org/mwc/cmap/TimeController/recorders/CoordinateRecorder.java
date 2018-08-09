@@ -133,89 +133,99 @@ public class CoordinateRecorder
     long interval = _timePrefs.getAutoInterval().getMillis();
     // output tracks object.
     // showDialog now
-    ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault()
-        .getActiveShell());
-    
-    // fix the filename
-    String exportLocation = exportDialog.getExportLocation();
-    String fileName = exportDialog.getFileName() + "-" + startTime;
-    
-    if (exportLocation != null && !"".equals(exportLocation))
-    {
-      String filePath = exportDialog.getFileToExport(fileName);
-      File f = new File(filePath);
-      if (f.exists())
-      {
-        fileName = getNewFileName(fileName, startTime);
-      }
-    }
-    exportDialog.setFileName(fileName);
-
-    // clear startTime text, we don't need it any more
-    startTime = null;
-
-    // show the dialog
-    if (exportDialog.open() == Window.OK)
+    Display.getDefault().syncExec(new Runnable()
     {
       
-      // collate the data object
-      TrackData td = new TrackData();
-      td.setName(fileName);
-      td.setIntervals((int) interval);
-      td.setWidth(_projection.getScreenArea().width);
-      td.setHeight(_projection.getScreenArea().height);
-      td.getTracks().addAll(_tracks.values());
-      storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
-          _startMillis, _timePrefs);
-      
-      // start export
-      PlotTracks plotTracks = new PlotTracks();
-      String exportFile = exportDialog.getFileToExport(null);
-      String masterTemplate = getMasterTemplateFile();
-      try
+      @Override
+      public void run()
       {
-        String exportedFile = plotTracks.export(td, masterTemplate, exportFile);
+        // TODO Auto-generated method stub
+        ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault()
+            .getActiveShell());
+        
+        // fix the filename
+        String exportLocation = exportDialog.getExportLocation();
+        String fileName = exportDialog.getFileName() + "-" + startTime;
+        
+        if (exportLocation != null && !"".equals(exportLocation))
+        {
+          String filePath = exportDialog.getFileToExport(fileName);
+          File f = new File(filePath);
+          if (f.exists())
+          {
+            fileName = getNewFileName(fileName, startTime);
+          }
+        }
+        exportDialog.setFileName(fileName);
 
-        // do we open resulting file?
-        if (exportDialog.getOpenOncomplete())
+        // clear startTime text, we don't need it any more
+        startTime = null;
+
+        // show the dialog
+        if (exportDialog.open() == Window.OK)
         {
-          CorePlugin.logError(Status.INFO, "Opening file:" + exportedFile,
-              null);
-          boolean worked = Program.launch(exportedFile);
-          CorePlugin.logError(Status.INFO, "Open file result:" + worked, null);
+          
+          // collate the data object
+          TrackData td = new TrackData();
+          td.setName(fileName);
+          td.setIntervals((int) interval);
+          td.setWidth(_projection.getScreenArea().width);
+          td.setHeight(_projection.getScreenArea().height);
+          td.getTracks().addAll(_tracks.values());
+          storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
+              _startMillis, _timePrefs);
+          
+          // start export
+          PlotTracks plotTracks = new PlotTracks();
+          String exportFile = exportDialog.getFileToExport(null);
+          String masterTemplate = getMasterTemplateFile();
+          try
+          {
+            String exportedFile = plotTracks.export(td, masterTemplate, exportFile);
+
+            // do we open resulting file?
+            if (exportDialog.getOpenOncomplete())
+            {
+              CorePlugin.logError(Status.INFO, "Opening file:" + exportedFile,
+                  null);
+              boolean worked = Program.launch(exportedFile);
+              CorePlugin.logError(Status.INFO, "Open file result:" + worked, null);
+            }
+            else
+            {
+              MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+                  .getActiveShell(), "PowerPoint Export", "File exported to:"
+                      + exportedFile, MessageDialog.INFORMATION);
+            }
+          }
+          catch (IOException ie)
+          {
+            MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+                .getActiveShell(), "Error",
+                "Error exporting to powerpoint (File access problem)",
+                MessageDialog.ERROR);
+            CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ie);
+          }
+          catch (ZipException ze)
+          {
+            MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+                .getActiveShell(), "Error",
+                "Error exporting to powerpoint (Unable to extract ZIP)",
+                MessageDialog.ERROR);
+            CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ze);
+          }
+          catch (DebriefException de)
+          {
+            MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
+                .getActiveShell(), "Error",
+                "Error exporting to powerpoint (template may be corrupt).\n" + de.getMessage(),
+                MessageDialog.ERROR);
+            CorePlugin.logError(IStatus.ERROR, "During export to PPTX", de);
+          }
         }
-        else
-        {
-          MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
-              .getActiveShell(), "PowerPoint Export", "File exported to:"
-                  + exportedFile, MessageDialog.INFORMATION);
-        }
+    
       }
-      catch (IOException ie)
-      {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
-            .getActiveShell(), "Error",
-            "Error exporting to powerpoint (File access problem)",
-            MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ie);
-      }
-      catch (ZipException ze)
-      {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
-            .getActiveShell(), "Error",
-            "Error exporting to powerpoint (Unable to extract ZIP)",
-            MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", ze);
-      }
-      catch (DebriefException de)
-      {
-        MessageDialog.open(MessageDialog.ERROR, Display.getDefault()
-            .getActiveShell(), "Error",
-            "Error exporting to powerpoint (template may be corrupt).\n" + de.getMessage(),
-            MessageDialog.ERROR);
-        CorePlugin.logError(IStatus.ERROR, "During export to PPTX", de);
-      }
-    }
+    });
   }
 
   private static void storeNarrativesInto(
