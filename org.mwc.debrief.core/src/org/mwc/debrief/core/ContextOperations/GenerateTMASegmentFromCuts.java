@@ -1030,7 +1030,7 @@ public class GenerateTMASegmentFromCuts implements
     {
       // so, it's a number of items, Are they all sensor contact wrappers
       final SensorContactWrapper[] items =
-          new SensorContactWrapper[subjects.length];
+          cutsToArray(subjects);
       for (int i = 0; i < subjects.length; i++)
       {
         final Editable editable = subjects[i];
@@ -1083,6 +1083,16 @@ public class GenerateTMASegmentFromCuts implements
     if (_myAction != null)
       parent.add(_myAction);
 
+  }
+
+  private SensorContactWrapper[] cutsToArray(Editable[] subjects)
+  {
+    SensorContactWrapper[] res = new SensorContactWrapper[subjects.length];
+    for(int i=0;i<subjects.length;i++)
+    {
+      res[i] = (SensorContactWrapper) subjects[i];
+    }
+    return res;
   }
 
   private static abstract class TMAAction extends Action
