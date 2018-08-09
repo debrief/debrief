@@ -130,7 +130,7 @@ public class CoordinateRecorder
 
     List<Track> list = new ArrayList<Track>();
     list.addAll(_tracks.values());
-    long interval = _timePrefs.getAutoInterval().getMillis();
+    final long interval = _timePrefs.getAutoInterval().getMillis();
     // output tracks object.
     // showDialog now
     Display.getDefault().syncExec(new Runnable()
