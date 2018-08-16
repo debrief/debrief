@@ -26,7 +26,6 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
 public class ImportNarrativeDialog extends Dialog
 {
   private Button _btnLoadedTracks;
-  private Button _btnAllData;
   private ImportNarrativeEnum userChoice;
   private boolean preference;
   
@@ -68,7 +67,7 @@ public class ImportNarrativeDialog extends Dialog
     _btnLoadedTracks.setText("Trim to loaded tracks");
     _btnLoadedTracks.addSelectionListener(selectionListener);
     _btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    _btnAllData = new Button(composite,SWT.RADIO);
+     Button _btnAllData = new Button(composite,SWT.RADIO);
     _btnAllData.setText("Load all data");
     _btnAllData.addSelectionListener(selectionListener);
     _btnAllData.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
