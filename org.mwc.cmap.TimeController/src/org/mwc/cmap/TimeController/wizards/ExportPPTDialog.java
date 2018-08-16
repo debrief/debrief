@@ -93,6 +93,9 @@ public class ExportPPTDialog extends Dialog
         PREF_PPT_EXPORT_LOCATION);
     fileName = PlatformUI.getPreferenceStore().getString(
         PREF_PPT_EXPORT_FILENAME);
+    if(fileName==null || fileName.isEmpty()) {
+      fileName="DebriefExport";
+    }
     fileFormat = PlatformUI.getPreferenceStore().getString(
         PREF_PPT_EXPORT_FILEFORMAT);
     viewOnComplete = PlatformUI.getPreferenceStore().getBoolean(
@@ -170,7 +173,7 @@ public class ExportPPTDialog extends Dialog
             enableOK(false);
           }
           else {
-            enableOK(true);
+            enableOK(isValid());
           }
           
         }
@@ -222,19 +225,22 @@ public class ExportPPTDialog extends Dialog
     return viewOnComplete;
   }
 
+  private boolean isValid() {
+    return !isNullOrEmpty(txtExportLocation.getText()) && !isNullOrEmpty(txtFilename.getText());
+  }
   private void initUI()
   {
     if (exportLocation != null)
     {
       txtExportLocation.setText(exportLocation);
     }
-    if (fileFormat != null)
+    if (!isNullOrEmpty(fileFormat))
     {
       cmbFileFormats.setText(fileFormat);
     }
     else
     {
-      cmbFileFormats.setText("PPTX");
+      cmbFileFormats.setText(supportedFormats[0]);
     }
     if (fileName != null)
     {
@@ -255,7 +261,7 @@ public class ExportPPTDialog extends Dialog
         }
         else
         {
-          enableOK(true);
+          enableOK(isValid());
         }
       }
     });
@@ -271,7 +277,7 @@ public class ExportPPTDialog extends Dialog
           enableOK(false);
         }
         else {
-          enableOK(true);
+          enableOK(isValid());
         }
         
       }
@@ -280,7 +286,7 @@ public class ExportPPTDialog extends Dialog
 
   private boolean isNullOrEmpty(final String text)
   {
-    return text == null || "".equals(text.trim());
+    return text == null || text.trim().isEmpty();
   }
 
   @Override
