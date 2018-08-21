@@ -371,7 +371,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     AISDecoder.initialise(CorePlugin.getToolParent());
 
     ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
-    ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
+    if(!isRunningTests()) {
+      ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
+    }
 
     // tell the additional data that we can help
     AdditionalDataHandler.setExportHelper(new ExportProvider()

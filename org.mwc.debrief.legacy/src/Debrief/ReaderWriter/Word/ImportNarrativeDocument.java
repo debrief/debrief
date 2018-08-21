@@ -1749,7 +1749,13 @@ public class ImportNarrativeDocument
       return;
     }
     boolean proceed = true;
-    ImportNarrativeEnum whatToImport = trimNarrativeHelper.findWhatToImport();
+    ImportNarrativeEnum whatToImport = null;
+    if(trimNarrativeHelper!=null) {
+      whatToImport = trimNarrativeHelper.findWhatToImport();
+    }
+    else {
+      whatToImport = ImportNarrativeEnum.TRIMMED_DATA;
+    }
     // keep track of if we've added anything
     boolean dataAdded = false;
     
