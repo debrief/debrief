@@ -1634,7 +1634,7 @@ public class MaintainContributionsView extends ViewPart
             if (measurement.isActive())
             {
               long thisT = measurement.getDate().getTime();
-              bearings.add(new FixedMillisecond(thisT), Math.toDegrees(Math
+              bearings.addOrUpdate(new FixedMillisecond(thisT), Math.toDegrees(Math
                   .abs(measurement.getBearingRads())));
             }
           }
