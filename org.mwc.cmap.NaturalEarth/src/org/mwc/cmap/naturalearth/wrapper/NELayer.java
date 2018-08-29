@@ -287,18 +287,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange, L
 	}
 
 	@Override
-	public boolean hasEditor()
-	{
-		return _myFeatures.hasEditor();
-	}
-
-	@Override
-	public EditorType getInfo()
-	{
-		return _myFeatures.getInfo();
-	}
-
-	@Override
 	public void exportShape()
 	{
 	}
