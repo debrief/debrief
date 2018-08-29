@@ -35,6 +35,9 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.views.properties.PropertySheetPage;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
+import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
+
 public class PlotPropertySheetPage extends PropertySheetPage
 {
 
@@ -163,8 +166,25 @@ public class PlotPropertySheetPage extends PropertySheetPage
             addSep = true;
             
             // listen for any property changes
-            wrapper.getEditable().getInfo().addPropertyChangeListener(
-                _propListener);
+            final Editable editable = wrapper.getEditable();
+            if (editable == null)
+            {
+              System.out.println("null editable for:" + wrapper);
+            }
+            else
+            {
+              final EditorType info = editable.getInfo();
+              if (info == null)
+              {
+                System.out.println("null editorType for:" + editable + " in "
+                    + wrapper);
+              }
+              else
+              {
+                info.addPropertyChangeListener(
+                    _propListener);
+              }
+            }
           }
         }
 
