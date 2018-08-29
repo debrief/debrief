@@ -167,22 +167,12 @@ public class PlotPropertySheetPage extends PropertySheetPage
             
             // listen for any property changes
             final Editable editable = wrapper.getEditable();
-            if (editable == null)
+            if (editable != null)
             {
-              System.out.println("null editable for:" + wrapper);
-            }
-            else
-            {
-              final EditorType info = editable.getInfo();
-              if (info == null)
+              if (editable.hasEditor())
               {
-                System.out.println("null editorType for:" + editable + " in "
-                    + wrapper);
-              }
-              else
-              {
-                info.addPropertyChangeListener(
-                    _propListener);
+                final EditorType info = editable.getInfo();
+                info.addPropertyChangeListener(_propListener);
               }
             }
           }
@@ -210,12 +200,15 @@ public class PlotPropertySheetPage extends PropertySheetPage
       for(Object obj: curSelection)
       {
         // was it an editable?
-        if(obj instanceof EditableWrapper)
+        if (obj instanceof EditableWrapper)
         {
           EditableWrapper ed = (EditableWrapper) obj;
           // ok, de-register
-          ed.getEditable().getInfo().removePropertyChangeListener(
-              propListener);
+          final Editable editable = ed.getEditable();
+          if (editable.hasEditor())
+          {
+            editable.getInfo().removePropertyChangeListener(propListener);
+          }
         }
       }
     }
