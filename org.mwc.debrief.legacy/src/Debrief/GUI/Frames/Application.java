@@ -257,6 +257,7 @@ import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
+import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
 
 public abstract class Application implements ToolParent, ActionListener,
     FileDropSupport.FileDropListener
@@ -767,8 +768,8 @@ public abstract class Application implements ToolParent, ActionListener,
         {
           newLayers = new Layers();
 
-          MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller =
-              new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+          BaseImportCaller caller =
+              new BaseImportCaller(
                   fList, newLayers)
               {
                 // handle the completion of each file

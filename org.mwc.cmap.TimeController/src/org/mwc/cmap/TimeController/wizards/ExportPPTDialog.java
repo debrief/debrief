@@ -306,10 +306,7 @@ public class ExportPPTDialog extends Dialog
     {
       return false;
     }
-    if(!new File(txtExportLocation.getText()).exists()) {
-      return false;
-    }
-    return true;
+    return new File(txtExportLocation.getText()).exists();
   }
   @Override
   protected void okPressed()

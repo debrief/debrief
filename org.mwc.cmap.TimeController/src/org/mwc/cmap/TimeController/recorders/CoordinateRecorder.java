@@ -2,7 +2,7 @@ package org.mwc.cmap.TimeController.recorders;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.program.Program;
@@ -21,73 +21,10 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 {
   public CoordinateRecorder(final Layers layers,
       final PlainProjection plainProjection,
-      TimeControlPreferences timePreferences)
+      final TimeControlPreferences timePreferences)
   {
-    super(layers,plainProjection,timePreferences.getAutoInterval().getMillis(),timePreferences.getSmallStep().getMillis());
-  }
-
-  
-  @Override
-  public ExportDialogResult showExportDialog()
-  {
-    final ExportDialogResult retVal = new ExportDialogResult();
-    Display.getDefault().syncExec(new Runnable()
-    {
-      
-      @Override
-      public void run()
-      {
-        ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault()
-            .getActiveShell());
-        
-        // fix the filename
-        String exportLocation = exportDialog.getExportLocation();
-        String fileName = exportDialog.getFileName() + "-" + startTime;
-        
-        if (exportLocation != null && !"".equals(exportLocation))
-        {
-          String filePath = exportDialog.getFileToExport(fileName);
-          File f = new File(filePath);
-          if (f.exists())
-          {
-            fileName = getNewFileName(fileName, startTime);
-          }
-        }
-        exportDialog.setFileName(fileName);
-
-        // clear startTime text, we don't need it any more
-        startTime = null;
-
-        // show the dialog
-        if (exportDialog.open() == Window.OK)
-        {
-          String exportFile = exportDialog.getFileToExport(null);
-          String masterTemplateFile = getMasterTemplateFile();
-          retVal.setMasterTemplate(masterTemplateFile);
-          retVal.setFileName(fileName);
-          retVal.setOpenOnComplete(exportDialog.getOpenOncomplete());
-          retVal.setSelectedFile(exportFile);
-          retVal.setStatus(true);
-        }
-      }
-    });
-    return retVal;
-  }
-
-  @Override
-  protected void showMessageDialog(String message)
-  {
-    MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
-      .getActiveShell(), "Export" ,message, MessageDialog.INFORMATION);
-    
-  }
-  @Override
-  protected void openFile(String filename)
-  {
-    CorePlugin.logError(Status.INFO, "Opening file:" + filename,null);
-    boolean worked = Program.launch(filename);
-    CorePlugin.logError(Status.INFO, "Open file result:" + worked, null);
-    
+    super(layers, plainProjection, timePreferences.getAutoInterval()
+        .getMillis(), timePreferences.getSmallStep().getMillis());
   }
 
   private String getMasterTemplateFile()
@@ -96,8 +33,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
         .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     if (templateFile == null || templateFile.isEmpty())
     {
-      templateFile = CorePlugin.getDefault().getPreferenceStore().getDefaultString(
-          PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+      templateFile = CorePlugin.getDefault().getPreferenceStore()
+          .getDefaultString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     }
     return templateFile;
   }
@@ -106,7 +43,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final String recordingStartTime)
   {
     String newName = fileName;
-    String[] fileNameParts = fileName.split("-");
+    final String[] fileNameParts = fileName.split("-");
     if (fileNameParts.length > 0)
     {
       newName = fileNameParts[0] + "-" + recordingStartTime;
@@ -124,4 +61,65 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
     return newName;
   }
 
+  @Override
+  protected void openFile(final String filename)
+  {
+    CorePlugin.logError(IStatus.INFO, "Opening file:" + filename, null);
+    final boolean worked = Program.launch(filename);
+    CorePlugin.logError(IStatus.INFO, "Open file result:" + worked, null);
+  }
+
+  @Override
+  public ExportDialogResult showExportDialog()
+  {
+    final ExportDialogResult retVal = new ExportDialogResult();
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        final ExportPPTDialog exportDialog = new ExportPPTDialog(Display
+            .getDefault().getActiveShell());
+
+        // fix the filename
+        final String exportLocation = exportDialog.getExportLocation();
+        String fileName = exportDialog.getFileName() + "-" + startTime;
+
+        if (exportLocation != null && !"".equals(exportLocation))
+        {
+          final String filePath = exportDialog.getFileToExport(fileName);
+          final File f = new File(filePath);
+          if (f.exists())
+          {
+            fileName = getNewFileName(fileName, startTime);
+          }
+        }
+        exportDialog.setFileName(fileName);
+
+        // clear startTime text, we don't need it any more
+        startTime = null;
+
+        // show the dialog
+        if (exportDialog.open() == Window.OK)
+        {
+          final String exportFile = exportDialog.getFileToExport(null);
+          final String masterTemplateFile = getMasterTemplateFile();
+          retVal.setMasterTemplate(masterTemplateFile);
+          retVal.setFileName(fileName);
+          retVal.setOpenOnComplete(exportDialog.getOpenOncomplete());
+          retVal.setSelectedFile(exportFile);
+          retVal.setStatus(true);
+        }
+      }
+    });
+    return retVal;
+  }
+
+  @Override
+  protected void showMessageDialog(final String message)
+  {
+    MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+        .getActiveShell(), "Export", message, MessageDialog.INFORMATION);
+  }
 }
