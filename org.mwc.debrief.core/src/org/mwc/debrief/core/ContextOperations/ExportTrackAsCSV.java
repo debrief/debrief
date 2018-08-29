@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -48,6 +50,7 @@ import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.ExportCSVPreference
 import org.mwc.debrief.core.wizards.CSVExportWizard;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -55,13 +58,189 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
+import junit.framework.TestCase;
 
 /**
  * @author ian.mayo
  */
 public class ExportTrackAsCSV implements RightClickContextItemGenerator
 {
+  public static class TestExport extends TestCase
+  {
+    
+    private static class DummyAttributes implements CSVAttributeProvider
+    {
+      @Override
+      public String getUnitName()
+      {
+        return "OWNSHIP_NAME";
+      }
+      
+      @Override
+      public String getType()
+      {
+        return "OILER";
+      }
+      
+      @Override
+      public String getSuppliedBy()
+      {
+        return "DeepBlue";
+      }
+      
+      @Override
+      public String getSensor()
+      {
+        return "SensorName";
+      }
+      
+      @Override
+      public String getSemiMinorAxis()
+      {
+        return "1000";
+      }
+      
+      @Override
+      public String getSemiMajorAxis()
+      {
+        return "2000";
+      }
+      
+      @Override
+      public String getPurpose()
+      {
+        return "Purpose String";
+      }
+      
+      @Override
+      public String getProvenance()
+      {
+        return "Provenance String";
+      }
+      
+      @Override
+      public String getLikelihood()
+      {
+        return "UNLIKELY";
+      }
+      
+      @Override
+      public String getFlag()
+      {
+        return "MAURETANIA";
+      }
+      
+      @Override
+      public String getFilePath()
+      {
+        return "UNKNOWN";
+      }
+      
+      @Override
+      public String getDistributionStatement()
+      {
+        return "Distribution Statement";
+      }
+      
+      @Override
+      public String getConfidence()
+      {
+        return "Hopefully";
+      }
+      
+      @Override
+      public String getClassification()
+      {
+        return "Public";
+      }
+      
+      @Override
+      public String getCaseNumber()
+      {
+        return "21B";
+      }
+    }
+    
+    public void testExport()
+    {
+      TrackWrapper track = new TrackWrapper();
+      track.setName("OWNSHIP");
+      track.addFix(new FixWrapper(new Fix(new HiResDate(1000000), new WorldLocation(2d,4d,0d), Math.PI, 10d)));
+      track.addFix(new FixWrapper(new Fix(new HiResDate(1200000), new WorldLocation(3d,6d,0d), Math.PI / 2d, 20d)));
+      
+      CSVAttributeProvider provider = new DummyAttributes();
+      List<String> strings = ExportTrackToCSV.outputStrings(track, provider);
+      
+      assertEquals("correct num of lines", 4, strings.size());
+      
+      // and the headings
+      String headingStr = strings.get(1);
+      String[] headings = headingStr.split(",");
+      assertEquals("correct num headings", 22, headings.length);
+      
+      // and some checking
+      assertEquals("Correct heading","# Lat",headings[0]);
+      assertEquals("Correct heading","Long",headings[1]);
+      assertEquals("Correct heading","DTG",headings[2]);
+      assertEquals("Correct heading","UnitName",headings[3]);
+      assertEquals("Correct heading","CaseNumber",headings[4]);
+      assertEquals("Correct heading","Type",headings[5]);
+      assertEquals("Correct heading","Flag",headings[6]);
+      assertEquals("Correct heading","Sensor",headings[7]);
+      assertEquals("Correct heading","MajorAxis",headings[8]);
+      assertEquals("Correct heading","SemiMajorAxis",headings[9]);
+      assertEquals("Correct heading","SemiMinorAxis",headings[10]);
+      assertEquals("Correct heading","Course",headings[11]);
+      assertEquals("Correct heading","Speed",headings[12]);
+      assertEquals("Correct heading","Depth",headings[13]);
+      assertEquals("Correct heading","Likelihood",headings[14]);
+      assertEquals("Correct heading","Confidence",headings[15]);
+      assertEquals("Correct heading","SuppliedBy",headings[16]);
+      assertEquals("Correct heading","Provenance",headings[17]);
+      assertEquals("Correct heading","InfoCutoffDate",headings[18]);
+      assertEquals("Correct heading","Purpose",headings[19]);
+      assertEquals("Correct heading","Classification",headings[20]);
+      assertEquals("Correct heading","DistributionStatement\n",headings[21]);
+      
+      // and the content
+      String rowOne = strings.get(2);
+      String[] entries = rowOne.split(",");
+      assertEquals("correct entries",22, entries.length);
+      assertEquals("correct val", 2d, Double.valueOf(entries[0]));
+      assertEquals("correct val", 4d, Double.valueOf(entries[1]));
+      assertEquals("correct val", "19700101T001640Z", entries[2]);
+      assertEquals("correct val", "OWNSHIP_NAME", entries[3]);
+      assertEquals("correct val", "21B", entries[4]);
+      assertEquals("correct val", "OILER", entries[5]);
+      assertEquals("correct val", "MAURETANIA", entries[6]);
+      assertEquals("correct val", "SensorName", entries[7]);
+      assertEquals("correct val", 4000d, Double.valueOf(entries[8]));
+      assertEquals("correct val", 2000d, Double.valueOf(entries[9]));
+      assertEquals("correct val", 1000d, Double.valueOf(entries[10]));
+      assertEquals("correct val", 180d, Double.valueOf(entries[11]));
+      assertEquals("correct val", 17.7745d, Double.valueOf(entries[12]));
+      assertEquals("correct val", 0d, Double.valueOf(entries[13]));
+      assertEquals("correct val", "UNLIKELY", entries[14]);
+      assertEquals("correct val", "Hopefully", entries[15]);
+      assertEquals("correct val", "DeepBlue", entries[16]);
+      assertEquals("correct val", "Provenance String", entries[17]);
+      assertEquals("correct val", "19700101", entries[18]);
+      assertEquals("correct val", "Purpose String", entries[19]);
+      assertEquals("correct val", "Public", entries[20]);
+      assertEquals("correct val", "\"Distribution Statement\"\n", entries[21]);
+      
+      // quick look at next row
+      String rowTwo = strings.get(3);
+      entries = rowTwo.split(",");
+      assertEquals("correct entries",22, entries.length);
+      assertEquals("correct val", 3d, Double.valueOf(entries[0]));
+      assertEquals("correct val", 6d, Double.valueOf(entries[1]));
+      assertEquals("correct val", "19700101T002000Z", entries[2]);
+     }
+  }
+  
   public static interface CSVAttributeProvider
   {
     String getCaseNumber();
@@ -119,6 +298,120 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
       return fileName.toString();
     }
 
+    private static List<String> outputStrings(final LightweightTrackWrapper subject, final CSVAttributeProvider provider)
+    {
+      List<String> res = new ArrayList<String>();
+      
+      final DateFormat dateFormatter = new GMTDateFormat(
+          "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
+      final DateFormat cutOffFormatter = new GMTDateFormat("yyyyMMdd",
+          Locale.ENGLISH);
+
+      final NumberFormat numF = new DecimalFormat("0.0000");
+
+      final String lineBreak = System.getProperty("line.separator");
+
+      // find the last time on the track
+      Date lastDTG = subject.getEndDTG().getDate();
+      final String infoCutoffDate = cutOffFormatter.format(lastDTG);
+
+      // capture the constants
+      final String provenance = cleanPlatform(provider.getProvenance());
+      final String unitName = cleanPlatform(provider.getUnitName());
+      final String caseNumber = provider.getCaseNumber();
+      final String suppliedBy = provider.getSuppliedBy();
+      final String purpose = provider.getPurpose();
+      final String classification = provider.getClassification();
+      final String distributionStatement = "\"" + cleanPhrase(provider
+          .getDistributionStatement()) + "\"";
+      final String type = provider.getType();
+      final String flag = provider.getFlag();
+      final String sensor = provider.getSensor();
+      final String semiMajorAxis = provider.getSemiMajorAxis();
+      final String majorAxis = "" + Double.valueOf(semiMajorAxis) * 2d;
+      final String semiMinorAxis = provider.getSemiMinorAxis();
+      final String likelihood = provider.getLikelihood();
+      final String confidence = provider.getConfidence();
+
+      // ok, collate the data
+      final StringBuffer header = new StringBuffer();
+
+      // start with the comment markers
+
+      // first the version num
+      header.append("# UK TRACK EXCHANGE FORMAT, V1.0");
+      header.append(lineBreak);
+      res.add(header.toString());
+
+      final StringBuffer fields = new StringBuffer();
+
+      // now the fields
+      fields.append(
+          "# Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis," + 
+          "SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood," + 
+          "Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose," + 
+          "Classification,DistributionStatement");
+      fields.append(lineBreak);
+      res.add(fields.toString());
+
+      final Enumeration<Editable> iter = subject.getPositionIterator();
+      while (iter.hasMoreElements())
+      {
+        final StringBuffer lineOut = new StringBuffer();
+
+        final FixWrapper next = (FixWrapper) iter.nextElement();
+        lineOut.append(write(next.getLocation()));
+        lineOut.append(",");
+        lineOut.append(write(next.getDTG(), dateFormatter));
+        lineOut.append(",");
+        lineOut.append(unitName);
+        lineOut.append(",");
+        lineOut.append(caseNumber);
+        lineOut.append(",");
+        lineOut.append(type);
+        lineOut.append(",");
+        lineOut.append(flag);
+        lineOut.append(",");
+        lineOut.append(sensor);
+        lineOut.append(",");
+        lineOut.append(majorAxis);
+        lineOut.append(",");
+        lineOut.append(semiMajorAxis);
+        lineOut.append(",");
+        lineOut.append(semiMinorAxis);
+        lineOut.append(",");
+        lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next
+            .getCourse())));
+        lineOut.append(",");
+        lineOut.append(numF.format(next.getSpeed()));
+        lineOut.append(",");
+        lineOut.append(next.getLocation().getDepth());
+        lineOut.append(",");
+        lineOut.append(likelihood);
+        lineOut.append(",");
+        lineOut.append(confidence);
+        lineOut.append(",");
+        lineOut.append(suppliedBy);
+        lineOut.append(",");
+        lineOut.append(provenance);
+        lineOut.append(",");
+        lineOut.append(infoCutoffDate);
+        lineOut.append(",");
+        lineOut.append(purpose);
+        lineOut.append(",");
+        lineOut.append(classification);
+        lineOut.append(",");
+        lineOut.append(distributionStatement);
+
+        // and the newline
+        lineOut.append(lineBreak);
+        
+        res.add(lineOut.toString());
+      }
+      
+      return res;
+    }
+    
     private static void performExport(final LightweightTrackWrapper subject,
         final CSVAttributeProvider provider)
     {
@@ -130,107 +423,14 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
             subject, provider));
         System.out.println("Writing data to:" + outFile.getAbsolutePath());
         fos = new FileWriter(outFile);
-
-        final DateFormat dateFormatter = new GMTDateFormat(
-            "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
-        final DateFormat cutOffFormatter = new GMTDateFormat("yyyyMMdd",
-            Locale.ENGLISH);
-
-        final NumberFormat numF = new DecimalFormat("0.0000");
-
-        final String lineBreak = System.getProperty("line.separator");
-
-        // find the last time on the track
-        Date lastDTG = subject.getEndDTG().getDate();
-        final String infoCutoffDate = cutOffFormatter.format(lastDTG);
-
-        // capture the constants
-        final String provenance = cleanPlatform(provider.getProvenance());
-        final String unitName = cleanPlatform(provider.getUnitName());
-        final String caseNumber = provider.getCaseNumber();
-        final String suppliedBy = provider.getSuppliedBy();
-        final String purpose = provider.getPurpose();
-        final String classification = provider.getClassification();
-        final String distributionStatement = "\"" + cleanPhrase(provider
-            .getDistributionStatement()) + "\"";
-        final String type = provider.getType();
-        final String flag = provider.getFlag();
-        final String sensor = provider.getSensor();
-        final String semiMajorAxis = provider.getSemiMajorAxis();
-        final String majorAxis = "" + Double.valueOf(semiMajorAxis) * 2d;
-        final String semiMinorAxis = provider.getSemiMinorAxis();
-        final String likelihood = provider.getLikelihood();
-        final String confidence = provider.getConfidence();
-
-        // ok, collate the data
-        final StringBuffer lineOut = new StringBuffer();
-
-        // start with the comment markers
-
-        // first the version num
-        lineOut.append("# UK TRACK EXCHANGE FORMAT, V1.0");
-        lineOut.append(lineBreak);
-
-        // now the fields
-        lineOut.append(
-            "# provenance,Long,lat,DTG,unitName,caseNumber,infoCutoffDate,suppliedBy,purpose,"
-                + "classification,distributionStatement,type,flag,sensor,majorAxis,semiMajorAxis,"
-                + "semiMinorAxis,Course,Speed,Depth,likelihood,confidence");
-        lineOut.append(lineBreak);
-
-        final Enumeration<Editable> iter = subject.getPositionIterator();
-        while (iter.hasMoreElements())
-        {
-          final FixWrapper next = (FixWrapper) iter.nextElement();
-          lineOut.append(provenance);
-          lineOut.append(",");
-          lineOut.append(write(next.getLocation()));
-          lineOut.append(",");
-          lineOut.append(write(next.getDTG(), dateFormatter));
-          lineOut.append(",");
-          lineOut.append(unitName);
-          lineOut.append(",");
-          lineOut.append(caseNumber);
-          lineOut.append(",");
-          lineOut.append(infoCutoffDate);
-          lineOut.append(",");
-          lineOut.append(suppliedBy);
-          lineOut.append(",");
-          lineOut.append(purpose);
-          lineOut.append(",");
-          lineOut.append(classification);
-          lineOut.append(",");
-          lineOut.append(distributionStatement);
-          lineOut.append(",");
-          lineOut.append(type);
-          lineOut.append(",");
-          lineOut.append(flag);
-          lineOut.append(",");
-          lineOut.append(sensor);
-          lineOut.append(",");
-          lineOut.append(majorAxis);
-          lineOut.append(",");
-          lineOut.append(semiMajorAxis);
-          lineOut.append(",");
-          lineOut.append(semiMinorAxis);
-          lineOut.append(",");
-          lineOut.append(numF.format(MWC.Algorithms.Conversions.Rads2Degs(next
-              .getCourse())));
-          lineOut.append(",");
-          lineOut.append(numF.format(next.getSpeed()));
-          lineOut.append(",");
-          lineOut.append(next.getLocation().getDepth());
-          lineOut.append(",");
-          lineOut.append(likelihood);
-          lineOut.append(",");
-          lineOut.append(confidence);
-
-          // and the newline
-          lineOut.append(lineBreak);
-        }
+        
+        List<String> strings = outputStrings(subject, provider);
 
         // done.
-        fos.write(lineOut.toString());
+        for(String line: strings)
+        {
+          fos.write(line);
+        }
       }
       catch (final IOException e)
       {
@@ -273,8 +473,7 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
 
     private static Object write(final WorldLocation location)
     {
-      // TODO: NEED TO CONSIDER NUMBER OF D.P.
-      return location.getLong() + ", " + location.getLat();
+      return location.getLat() + ", " + location.getLong();
     }
 
     /**
