@@ -4,6 +4,7 @@
 package org.mwc.debrief.core.ui;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,7 +29,7 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
 public class ImportNarrativeDialog extends Dialog
 {
   private Button _btnLoadedTracks;
-  private ImportNarrativeEnum userChoice;
+  private ImportNarrativeEnum userChoice = ImportNarrativeEnum.ALL_DATA;
   private boolean preference;
   
   private SelectionListener selectionListener = new SelectionAdapter()
@@ -64,11 +65,26 @@ public class ImportNarrativeDialog extends Dialog
     Composite composite = new Composite(control,SWT.NONE);
     composite.setLayout(new GridLayout(1,false));
     composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+
+    Label title = new Label(composite, SWT.BOLD);
+    FontDescriptor descriptor = FontDescriptor.createFrom(title.getFont());
+    // setStyle method returns a new font descriptor for the given style
+    descriptor = descriptor.setStyle(SWT.BOLD);
+    title.setFont(descriptor.createFont(title.getDisplay()));
+    title.setText("Loading narrative data.");    
+    
+    Label intro = new Label(composite, SWT.NONE);
+    intro.setText("Please select whether you wish to trim\n"
+        + "the narrative entries to the period of the \n"
+        + "currently loaded tracks, or whether\n"
+        + "all entries should be loaded");
     
     _btnLoadedTracks = new Button(composite,SWT.RADIO);
     _btnLoadedTracks.setText("Trim to loaded tracks");
     _btnLoadedTracks.addSelectionListener(selectionListener);
     _btnLoadedTracks.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    _btnLoadedTracks.setSelection(true);
      Button _btnAllData = new Button(composite,SWT.RADIO);
     _btnAllData.setText("Load all data");
     _btnAllData.addSelectionListener(selectionListener);
@@ -85,7 +101,9 @@ public class ImportNarrativeDialog extends Dialog
       public void widgetSelected(SelectionEvent e)
       {
         preference = dontAskAgain.getSelection();
-        CorePlugin.getDefault().getPreferenceStore().setValue(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,preference);
+        CorePlugin.getDefault().getPreferenceStore().setValue(
+            PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,
+            preference);
       }
     });
     return control;
