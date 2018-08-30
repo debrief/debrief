@@ -299,7 +299,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
   private HiResDate _lastArrowFrequency = new HiResDate(0);
 
-  private EditorType _myEditor;
+  private transient EditorType _myEditor;
 
   public LightweightTrackWrapper()
   {
