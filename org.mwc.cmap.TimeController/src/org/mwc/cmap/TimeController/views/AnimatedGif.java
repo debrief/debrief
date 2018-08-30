@@ -86,10 +86,10 @@ public class AnimatedGif
                 switch (imageData.disposalMethod) {
                   case SWT.DM_FILL_BACKGROUND:
                     /* Fill with the background color before drawing. */
-                    Color bgColor = null;
-                    offScreenImageGC.setBackground(bgColor != null ? bgColor : shellBackground);
+                    // original version was similar to:
+                    // http://www.java2s.com/Tutorial/Java/0300__SWT-2D-Graphics/DisplayananimatedGIF.htm
+                    offScreenImageGC.setBackground(shellBackground);
                     offScreenImageGC.fillRectangle(imageData.x, imageData.y, imageData.width, imageData.height);
-                    if (bgColor != null) bgColor.dispose();
                     break;
                   case SWT.DM_FILL_PREVIOUS:
                     /* Restore the previous image before drawing. */
