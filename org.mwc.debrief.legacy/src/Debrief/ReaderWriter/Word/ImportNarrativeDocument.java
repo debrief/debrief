@@ -705,10 +705,17 @@ public class ImportNarrativeDocument
     ImportNarrativeEnum findWhatToImport();
   }
   
+  /** string constants to use for the enum names
+   * 
+   */
+  private final static String TRIMMED_DATA_STR = "trimmed-data";
+  private final static String ALL_DATA_STR = "all-data";
+  private final static String CANCEL_STR = "cancel";
+  
   public static enum ImportNarrativeEnum{
-    TRIMMED_DATA("trimmed-data"), 
-    ALL_DATA("all-data"),
-    CANCEL("cancel");
+    TRIMMED_DATA(TRIMMED_DATA_STR), 
+    ALL_DATA(ALL_DATA_STR),
+    CANCEL(CANCEL_STR);
     private String name;
     ImportNarrativeEnum(String string){
       this.name = string;
@@ -718,8 +725,8 @@ public class ImportNarrativeDocument
     }
     public static ImportNarrativeEnum getByName(String name) {
       switch(name) {
-        case "trimmed-data":return TRIMMED_DATA;
-        case "all-data":return ALL_DATA;
+        case TRIMMED_DATA_STR:return TRIMMED_DATA;
+        case ALL_DATA_STR:return ALL_DATA;
         default:return CANCEL;
       }
     }
