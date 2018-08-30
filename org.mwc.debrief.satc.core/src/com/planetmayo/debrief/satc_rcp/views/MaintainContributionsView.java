@@ -1634,8 +1634,14 @@ public class MaintainContributionsView extends ViewPart
             if (measurement.isActive())
             {
               long thisT = measurement.getDate().getTime();
-              bearings.addOrUpdate(new FixedMillisecond(thisT), Math.toDegrees(Math
-                  .abs(measurement.getBearingRads())));
+
+              // TODO: we're currently putting all of the measurements into one
+              // time-series (so we have to use addOrUpdate ) in case there are
+              // multiple measurements at one time-stamp.
+              // a more refined implementation would be to use multiple TimeSeries
+              // objects
+              bearings.addOrUpdate(new FixedMillisecond(thisT), Math.toDegrees(
+                  Math.abs(measurement.getBearingRads())));
             }
           }
 
