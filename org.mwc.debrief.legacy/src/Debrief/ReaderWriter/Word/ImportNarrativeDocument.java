@@ -699,6 +699,39 @@ public class ImportNarrativeDocument
   {
     boolean askYes(String title, String message);
   }
+  
+  public static interface TrimNarrativeHelper
+  {
+    ImportNarrativeEnum findWhatToImport();
+  }
+  
+  /** string constants to use for the enum names
+   * 
+   */
+  private final static String TRIMMED_DATA_STR = "trimmed-data";
+  private final static String ALL_DATA_STR = "all-data";
+  private final static String CANCEL_STR = "cancel";
+  
+  public static enum ImportNarrativeEnum{
+    TRIMMED_DATA(TRIMMED_DATA_STR), 
+    ALL_DATA(ALL_DATA_STR),
+    CANCEL(CANCEL_STR);
+    private String name;
+    ImportNarrativeEnum(String string){
+      this.name = string;
+    }
+    public String getName() {
+      return this.name;
+    }
+    public static ImportNarrativeEnum getByName(String name) {
+      switch(name) {
+        case TRIMMED_DATA_STR:return TRIMMED_DATA;
+        case ALL_DATA_STR:return ALL_DATA;
+        default:return CANCEL;
+      }
+    }
+  };
+  
 
   public static class TestImportWord extends TestCase
   {
@@ -1316,6 +1349,8 @@ public class ImportNarrativeDocument
 
   private static List<String> SkipNames = null;
 
+  private static TrimNarrativeHelper trimNarrativeHelper = null;
+
   /**
    * match a 6 figure DTG
    *
@@ -1399,6 +1434,10 @@ public class ImportNarrativeDocument
     questionHelper = helper;
   }
 
+  public static void setNarrativeHelper(final TrimNarrativeHelper helper)
+  {
+    trimNarrativeHelper = helper;
+  }
   /**
    * keep track of which track-source combinations we've asked about
    *
@@ -1711,116 +1750,137 @@ public class ImportNarrativeDocument
    */
   public void processThese(final ArrayList<String> strings)
   {
+    
     if (strings.isEmpty())
     {
       return;
     }
-
+    boolean proceed = true;
+    ImportNarrativeEnum whatToImport = null;
+    if(trimNarrativeHelper!=null) {
+      whatToImport = trimNarrativeHelper.findWhatToImport();
+    }
+    else {
+      whatToImport = ImportNarrativeEnum.TRIMMED_DATA;
+    }
     // keep track of if we've added anything
     boolean dataAdded = false;
+    
+    TimePeriod outerPeriod = null;
 
     // find the outer time period - we only load data into the current time period
-    TimePeriod outerPeriod = outerPeriodFor(_layers);
-
+    if(whatToImport == ImportNarrativeEnum.CANCEL) {
+      proceed=false;
+      //if cancelled then do nothing.
+    }
+    else if(whatToImport == ImportNarrativeEnum.ALL_DATA) {
+      outerPeriod = null;
+    }
+    else {
+      outerPeriod = outerPeriodFor(_layers);
+    }
+    
     // ok, now we can loop through the strings
-    int ctr = 0;
-    for (final String raw_text : strings)
-    {
-      ctr++;
-
-      if (raw_text.trim().length() == 0)
+    if(proceed) {
+      int ctr = 0;
+      for (final String raw_text : strings)
       {
-        continue;
-      }
-
-      // also remove any other control chars that may throw MS Word
-      final String text = removeBadChars(raw_text);
-
-      // ok, get the narrative type
-      final NarrEntry thisN = NarrEntry.create(text, ctr);
-
-      if (thisN == null)
-      {
-        // logError("Unable to parse line:" + text, null);
-        continue;
-      }
-
-      // do we know the outer time period?
-      if (outerPeriod != null && thisN.dtg != null)
-      {
-        // check it's in the currently loaded time period
-        if (!outerPeriod.contains(thisN.dtg))
+        ctr++;
+  
+        if (raw_text.trim().length() == 0)
         {
-          // System.out.println(thisN.dtg.getDate() + " is not between " +
-          // outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
-
-          // ok, it's not in our period
           continue;
         }
+  
+        // also remove any other control chars that may throw MS Word
+        final String text = removeBadChars(raw_text);
+  
+        // ok, get the narrative type
+        final NarrEntry thisN = NarrEntry.create(text, ctr);
+  
+        if (thisN == null)
+        {
+          // logError("Unable to parse line:" + text, null);
+          continue;
+        }
+  
+        // do we know the outer time period?
+        if (outerPeriod != null && thisN.dtg != null)
+        {
+          // check it's in the currently loaded time period
+          if (!outerPeriod.contains(thisN.dtg))
+          {
+            // System.out.println(thisN.dtg.getDate() + " is not between " +
+            // outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+  
+            // ok, it's not in our period
+            continue;
+          }
+        }
+  
+        // is it just text, that we will appned
+        if (thisN.appendedToPrevious)
+        {
+          // hmm, just check if this is an FCS
+  
+          // do we have a previous one?
+          if (_lastEntry != null)
+          {
+            final String newText = thisN.text;
+  
+            _lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
+          }
+  
+          // ok, we can't do any more. carry on
+          continue;
+        }
+  
+        switch (thisN.type)
+        {
+          case "FCS":
+          {
+            // add a narrative entry
+            addEntry(thisN);
+  
+            // create track for this
+            try
+            {
+              addFCS(thisN);
+            }
+            catch (final StringIndexOutOfBoundsException e)
+            {
+              // don't worry about panicking, it may not be an FCS after all
+            }
+            catch (final NumberFormatException e)
+            {
+              // don't worry about panicking, it may not be an FCS after all
+            }
+  
+            // ok, take note that we've added something
+            dataAdded = true;
+  
+            break;
+          }
+          default:
+          {
+            // ok, just add a narrative entry for anything not recognised
+  
+            // add a narrative entry
+            addEntry(thisN);
+  
+            // ok, take note that we've added something
+            dataAdded = true;
+  
+            break;
+  
+          }
+        }
       }
-
-      // is it just text, that we will appned
-      if (thisN.appendedToPrevious)
+  
+      if (dataAdded)
       {
-        // hmm, just check if this is an FCS
-
-        // do we have a previous one?
-        if (_lastEntry != null)
-        {
-          final String newText = thisN.text;
-
-          _lastEntry.setEntry(_lastEntry.getEntry() + "\n" + newText);
-        }
-
-        // ok, we can't do any more. carry on
-        continue;
+        _layers.fireModified(getNarrativeLayer());
       }
-
-      switch (thisN.type)
-      {
-        case "FCS":
-        {
-          // add a narrative entry
-          addEntry(thisN);
-
-          // create track for this
-          try
-          {
-            addFCS(thisN);
-          }
-          catch (final StringIndexOutOfBoundsException e)
-          {
-            // don't worry about panicking, it may not be an FCS after all
-          }
-          catch (final NumberFormatException e)
-          {
-            // don't worry about panicking, it may not be an FCS after all
-          }
-
-          // ok, take note that we've added something
-          dataAdded = true;
-
-          break;
-        }
-        default:
-        {
-          // ok, just add a narrative entry for anything not recognised
-
-          // add a narrative entry
-          addEntry(thisN);
-
-          // ok, take note that we've added something
-          dataAdded = true;
-
-          break;
-
-        }
-      }
-    }
-
-    if (dataAdded)
-    {
-      _layers.fireModified(getNarrativeLayer());
     }
   }
 

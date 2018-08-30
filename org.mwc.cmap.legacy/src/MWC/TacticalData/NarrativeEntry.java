@@ -169,6 +169,9 @@ public final class NarrativeEntry implements MWC.GUI.Plottable, Serializable,
   private transient NarrativeEntryInfo _myInfo;
 
   private Color _color = DEFAULT_COLOR;
+  
+
+  static public final String NARRATIVE_LAYER = "Narratives";
 
   /**
    * old constructor - for when narratives didn't include the type attribute

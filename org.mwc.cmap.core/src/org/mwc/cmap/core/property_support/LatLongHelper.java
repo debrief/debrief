@@ -20,7 +20,6 @@ import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.Status;
@@ -53,7 +52,6 @@ public class LatLongHelper extends EditorHelper
 	 * remember how to format items on line
 	 */
 	protected static DecimalFormat _floatFormat = new DecimalFormat("0.0000", new DecimalFormatSymbols(Locale.UK));
-	private HashMap<WorldLocation, LatLongPropertySource> _myLocations;
 
 	/**
 	 * constructor. just declare our object type
@@ -86,23 +84,9 @@ public class LatLongHelper extends EditorHelper
 	{
 		final WorldLocation value = (WorldLocation) orig;
     
-    // do we have a list?
-    if (_myLocations == null)
-      _myLocations = new HashMap<WorldLocation, LatLongPropertySource>();
-
-		LatLongPropertySource res = null;
-
-		// do we know this one already?
-		res = _myLocations.get(value);
-		if (res == null)
-		{
-			res = new LatLongPropertySource((WorldLocation) value);
-			_myLocations.put(value, res);
-		}
+		// create the new source
+		final LatLongPropertySource res = new LatLongPropertySource(value);
 		
-		// ok, refresh the extracted values
-		res.refresh();
-
 		// ok, we've received a location. Return our new property source
 		// representing a
 		// DTG
