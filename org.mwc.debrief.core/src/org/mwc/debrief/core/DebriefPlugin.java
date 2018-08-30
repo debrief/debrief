@@ -67,6 +67,7 @@ import org.mwc.debrief.core.ContextOperations.TrimTrack;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.mwc.debrief.core.ui.DebriefImageHelper;
+import org.mwc.debrief.core.ui.ImportNarrativeHelper;
 import org.mwc.debrief.core.ui.SWTEclipseHelper;
 import org.osgi.framework.BundleContext;
 
@@ -370,6 +371,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     AISDecoder.initialise(CorePlugin.getToolParent());
 
     ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
+    if(!isRunningTests()) {
+      ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
+    }
 
     // tell the additional data that we can help
     AdditionalDataHandler.setExportHelper(new ExportProvider()
