@@ -42,6 +42,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer
     store.setDefault(PrefsPage.PreferenceConstants.ASK_ABOUT_PROJECT, true);
     store.setDefault(PrefsPage.PreferenceConstants.DEFAULT_PLOT_COLOR,
         Color.white.getRGB());
+    store.setDefault(PrefsPage.PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,false);
   }
 
 }

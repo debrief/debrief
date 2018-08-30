@@ -3,6 +3,7 @@ package org.mwc.debrief.core.ui;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.preferences.PrefsPage.PreferenceConstants;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.TrimNarrativeHelper;
@@ -16,13 +17,14 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.TrimNarrativeHelper;
 public class ImportNarrativeHelper implements TrimNarrativeHelper
 {
 
-  private static final String PREF_DEF_NARRATIVE_CHOICE = "defaultNarrativeEntryChoice";
+  public static final String PREF_DEF_NARRATIVE_CHOICE = "defaultNarrativeEntryChoice";
   @Override
   public ImportNarrativeEnum findWhatToImport()
   {
     final Display targetDisplay;
+    boolean reuseChoice = CorePlugin.getDefault().getPreferenceStore().getBoolean(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE);
     String defaultChoice = CorePlugin.getDefault().getPreference(PREF_DEF_NARRATIVE_CHOICE);
-    if(defaultChoice!=null && !defaultChoice.isEmpty()) {
+    if(reuseChoice && defaultChoice!=null && !defaultChoice.isEmpty()) {
       return ImportNarrativeEnum.getByName(defaultChoice);
     }
     else {

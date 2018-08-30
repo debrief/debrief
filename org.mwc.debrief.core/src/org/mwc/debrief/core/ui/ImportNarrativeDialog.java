@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.debrief.core.preferences.PrefsPage.PreferenceConstants;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.ImportNarrativeEnum;
 
@@ -83,6 +85,7 @@ public class ImportNarrativeDialog extends Dialog
       public void widgetSelected(SelectionEvent e)
       {
         preference = dontAskAgain.getSelection();
+        CorePlugin.getDefault().getPreferenceStore().setValue(PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,preference);
       }
     });
     return control;

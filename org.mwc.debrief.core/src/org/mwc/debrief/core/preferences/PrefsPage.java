@@ -68,6 +68,11 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         PreferenceConstants.USE_IMPORT_SENSOR_WIZARD,
         "Show the wizard when importing sensor data from REP",
         getFieldEditorParent()));
+    addField(new BooleanFieldEditor(
+        PreferenceConstants.REUSE_TRIM_NARRATIVES_DIALOG_CHOICE,
+        "Re-use existing choice for trimming imported narratives",
+        getFieldEditorParent()));
+    
     
     // insert a separator
     Label label1 =
@@ -94,6 +99,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
    */
   public static class PreferenceConstants
   {
+    public static final String REUSE_TRIM_NARRATIVES_DIALOG_CHOICE = "reuseTrimNarrativesDialogChoice";
     public static final String AUTO_SELECT = "AUTO_SELECT";
     public static final String CALC_SLANT_RANGE = "CALC_SLANT_RANGE";
     public static final String DONT_SHOW_DRAG_IN_PROPS =
