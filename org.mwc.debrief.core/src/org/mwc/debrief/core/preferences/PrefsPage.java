@@ -14,9 +14,17 @@
  */
 package org.mwc.debrief.core.preferences;
 
+import java.io.IOException;
+import java.util.HashMap;
+
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.ColorFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.FileFieldEditor;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Label;
@@ -24,6 +32,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
+
+import Debrief.ReaderWriter.powerPoint.DebriefException;
+import Debrief.ReaderWriter.powerPoint.PlotTracks;
+import net.lingala.zip4j.exception.ZipException;
 
 /**
  * This class represents a preference page that is contributed to the Preferences dialog. By
@@ -38,10 +50,12 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 public class PrefsPage extends FieldEditorPreferencePage implements
     IWorkbenchPreferencePage
 {
+  private Label slideDims;
+
   public PrefsPage()
   {
-    super("Debrief Preferences", CorePlugin
-        .getImageDescriptor("icons/24/debrief_icon.png"), GRID);
+    super("Debrief Preferences", CorePlugin.getImageDescriptor(
+        "icons/24/debrief_icon.png"), GRID);
     setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
     setDescription("Settings applicable to Debrief analysis tool");
   }
@@ -54,11 +68,11 @@ public class PrefsPage extends FieldEditorPreferencePage implements
   public void createFieldEditors()
   {
     addField(new BooleanFieldEditor(PreferenceConstants.AUTO_SELECT,
-        "Select newly created items in Properties View", getFieldEditorParent()));
+        "Select newly created items in Properties View",
+        getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.CALC_SLANT_RANGE,
         "Use Slant range in Tote range calculations", getFieldEditorParent()));
-    addField(new BooleanFieldEditor(
-        PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS,
+    addField(new BooleanFieldEditor(PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS,
         "Don't Show current details in properties window when dragging TMA solution",
         getFieldEditorParent()));
     addField(new BooleanFieldEditor(PreferenceConstants.ASK_ABOUT_PROJECT,
@@ -73,18 +87,42 @@ public class PrefsPage extends FieldEditorPreferencePage implements
         "Re-use existing choice for trimming imported narratives",
         getFieldEditorParent()));
     
-    
     // insert a separator
-    Label label1 =
-        new Label(getFieldEditorParent(), SWT.SEPARATOR | SWT.HORIZONTAL);
+    Label label1 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
     label1.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
 
     addField(new ColorFieldEditor(PreferenceConstants.DEFAULT_PLOT_COLOR,
         "Default background color for new plots:", getFieldEditorParent()));
+    Label label2 = new Label(getFieldEditorParent(), SWT.SEPARATOR
+        | SWT.HORIZONTAL);
+    label2.setText("");
+    label2.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+    Label label3 = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    label3.setText("Specify the PPT template to export recordings:");
+    label3.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+    final FileFieldEditor templateLocationPrefEditor = new FileFieldEditor(
+        PreferenceConstants.PPT_TEMPLATE, "Select File: ",
+        getFieldEditorParent());
+    String[] extensions = new String[]
+    {"*.pptx"}; // NON-NLS-1
+    templateLocationPrefEditor.setFileExtensions(extensions);
+    addField(templateLocationPrefEditor);
 
+    Label slideDimsLbl = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    slideDimsLbl.setText("Map element dimensions:");
+    slideDimsLbl.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1,
+        1));
+    slideDims = new Label(getFieldEditorParent(), SWT.HORIZONTAL);
+    slideDims.setText("Width: (pending) Height: (pending)");
+    slideDims.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
+    // ok, get the current path
+    final String templatePath = getPreferenceStore().getString(PreferenceConstants.PPT_TEMPLATE);
+    final PropertyChangeEvent event = new PropertyChangeEvent(this, "field_editor_value", null, templatePath);
+    this.propertyChange(event);
   }
-  
-  
+
   /*
    * (non-Javadoc)
    * 
@@ -92,6 +130,52 @@ public class PrefsPage extends FieldEditorPreferencePage implements
    */
   public void init(final IWorkbench workbench)
   {
+    // don't worry
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent event)
+  {
+    if (event.getProperty().equals("field_editor_value"))
+    {
+      IPath path = new Path(event.getNewValue().toString());
+      if (!path.toFile().exists())
+      {
+        setErrorMessage("Invalid file path, File does not exist");
+        setValid(false);
+      }
+      else
+      {
+        updateDimensions((String) event.getNewValue());
+        setErrorMessage(null);
+        setValid(true);
+      }
+    }
+  }
+
+  private void updateDimensions(String path)
+  {
+    // ok, retrieve the dims
+    PlotTracks exporter = new PlotTracks();
+    try
+    {
+      HashMap<String, String> props = exporter.retrieveMapProperties(
+          (String) path);
+      slideDims.setText("Width:" + props.get("cx") + " Height:" + props.get(
+          "cy"));
+    }
+    catch (IOException e)
+    {
+      CorePlugin.logError(Status.ERROR, "Error while retrieving map dimensions", e);
+    }
+    catch (ZipException e)
+    {
+      CorePlugin.logError(Status.ERROR, "Error while retrieving map dimensions", e);
+    }
+    catch (DebriefException e)
+    {
+      CorePlugin.logError(Status.ERROR, "Error while retrieving map dimensions", e);
+    }
   }
 
   /**
@@ -109,6 +193,14 @@ public class PrefsPage extends FieldEditorPreferencePage implements
     public static final String ASK_ABOUT_PROJECT = "createProject";
     public static final String DEFAULT_PLOT_COLOR =
         SWTCanvasAdapter.BACKGROUND_COLOR_PROPERTY;
+    public static final String PPT_TEMPLATE = "pptTemplate";
+  }
+
+  @Override
+  public boolean performOk()
+  {
+
+    return super.performOk();
   }
 
 }

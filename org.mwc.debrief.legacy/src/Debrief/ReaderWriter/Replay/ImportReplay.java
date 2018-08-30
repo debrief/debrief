@@ -72,7 +72,6 @@ import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.PlainLineImporter.ImportRequiresFinalisation;
 import MWC.Utilities.ReaderWriter.ReaderMonitor;
-import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -549,6 +548,8 @@ public class ImportReplay extends PlainImporterBase
   private static ArrayList<ExtensibleLineImporter> _extensionImporters;
 
   static private Vector<doublet> colors; // list of Replay colours
+
+  static public final String NARRATIVE_LAYER = NarrativeEntry.NARRATIVE_LAYER;
 
   static private final String ANNOTATION_LAYER = "Annotations";
 
@@ -2000,10 +2001,10 @@ public class ImportReplay extends PlainImporterBase
       res = entry.getDTG();
 
       // have we got a narrative wrapper?
-      Layer dest = getLayerFor(LayerHandler.NARRATIVE_LAYER);
+      Layer dest = getLayerFor(NARRATIVE_LAYER);
       if (dest == null)
       {
-        dest = new NarrativeWrapper(LayerHandler.NARRATIVE_LAYER);
+        dest = new NarrativeWrapper(NARRATIVE_LAYER);
         addLayer(dest);
       }
 

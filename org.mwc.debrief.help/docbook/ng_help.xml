@@ -2549,7 +2549,34 @@ and so on....</programlisting></para>
             using Debrief&apos;s <emphasis>New Plot Wizard</emphasis> (see relevant Cheat Sheet, <xref linkend="g_cheat"/>)</para>
         </sect2>
       </sect1>
-
+      <sect1 xml:id="LightweightTracks">
+        <title>Lightweight tracks</title>
+        
+        <sect2 xml:id="IntroLightweight">
+          <title>Introduction</title>
+          <para>
+            The Debrief track object is a heavyweight entity that contains many, many capabilities. Some of the more complex capabilities include the ability to compose a track from multiple TMA solutions, storing measured sensor data within the track, or constructing a track using <glossterm linkend="g_DeadReckoning">DR</glossterm>, rather than <glossterm linkend="g_OverTheGround">OTG</glossterm> measurements. These capabilities come at a performance (and UI) cost, so the concept of <glossterm linkend="g_lightweight">lightweight tracks</glossterm> has been introduced.
+          </para>
+          <para> In addition to having higher performance (through reduced capability), lightweight tracks can be organised into layers, enabling them to be collectively switched on and off. On import from Replay file, lightweight tracks are denoted by specifying the name of the target layer into which they should be stored. See an example in <xref linkend="debrief_NamedSym"/>. Here is an example of how to indicate the folder into which a lightweight track is to be stored: <screen>
+                  <markup>
+100112 131314 F003 VC[LAYER=red] 00 01 59.10 N 001 10 58.22 E 70.6 6.0 0.0 
+100112 132314 F003 VC[LAYER=red] 00 02 18.96 N 001 11 54.84 E 70.6 6.0 0.0 
+100112 133314 F003 VC[LAYER=red] 00 02 38.82 N 001 12 51.45 E 70.6 6.0 0.0 
+                  </markup>
+                </screen>
+          </para>
+          <para>
+            So, in the previous example we're indicating that the track titled <emphasis>F003</emphasis> should be placed into a folder called <emphasis>red</emphasis>.  Note: no other changes are made to the line of REP data, we just provide the indication of the target folder.
+          </para>
+        </sect2>
+        <sect2 xml:id="managing_lightweight">
+          <title>Managing lightweight tracks</title>
+          <para>
+            In addition to loading lightweight tracks directly from REP files, it's possible to convert conventional heavyweight tracks to/from lightweight tracks (via right-click), and to drag lightweight tracks between folders.
+          </para>
+        </sect2>
+      </sect1>
+      
       <sect1 xml:id="GroomingTrackData">
         <title>Grooming track data</title>
 
