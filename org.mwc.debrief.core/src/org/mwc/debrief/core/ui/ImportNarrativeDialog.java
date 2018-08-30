@@ -90,8 +90,6 @@ public class ImportNarrativeDialog extends Dialog
     _btnAllData.addSelectionListener(selectionListener);
     _btnAllData.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     
-    
-    new Label(composite,SWT.NONE).setLayoutData(new GridData(GridData.FILL));
     new Label(composite,SWT.NONE).setLayoutData(new GridData(GridData.FILL));
     final Button dontAskAgain = new Button(composite,SWT.CHECK);
     dontAskAgain.setText("Use this mode next time");
