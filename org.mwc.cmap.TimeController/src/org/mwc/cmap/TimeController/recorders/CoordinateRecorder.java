@@ -1,183 +1,49 @@
 package org.mwc.cmap.TimeController.recorders;
 
-import java.awt.Dimension;
-import java.awt.Point;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.GUI.Views.CoreCoordinateRecorder;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
-import MWC.GUI.Layers.OperateFunction;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-import MWC.TacticalData.Fix;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class CoordinateRecorder 
+public class CoordinateRecorder extends CoreCoordinateRecorder
 
 {
-  private final Layers _myLayers;
-  private final PlainProjection _projection;
-  final private Map<String, TrackWrapper> _tracks =
-      new HashMap<String, TrackWrapper>();
-  final private List<String> _times = new ArrayList<String>();
-  private boolean _running = false;
-  private final TimeControlPreferences _timePrefs;
-  public static final String PREF_PPT_EXPORT_LOCATION="pptExportLocation";
-  public static final String PREF_PPT_EXPORT_FILENAME="pptExportFilename";
-  public static final String PREF_PPT_EXPORT_FILEFORMAT="pptExportFormat"; 
-  private String startTime = null;
-  
   public CoordinateRecorder(final Layers layers,
-      final PlainProjection plainProjection,TimeControlPreferences timePreferences)
+      final PlainProjection plainProjection,
+      final TimeControlPreferences timePreferences)
   {
-    _myLayers = layers;
-    _projection = plainProjection;
-    _timePrefs = timePreferences;
+    super(layers, plainProjection, timePreferences.getAutoInterval()
+        .getMillis(), timePreferences.getSmallStep().getMillis());
   }
 
-  public void newTime(final HiResDate timeNow)
+  private String getMasterTemplateFile()
   {
-    if (!_running)
-      return;
-
-    // get the new time.
-    String time =FormatRNDateTime.toMediumString(timeNow.getDate().getTime()); 
-    if(startTime==null) {
-      startTime = time;
-    }
-    _times.add(time);
-
-    OperateFunction outputIt = new OperateFunction()
+    String templateFile = CorePlugin.getDefault().getPreferenceStore()
+        .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
+    if (templateFile == null || templateFile.isEmpty())
     {
-
-      @Override
-      public void operateOn(final Editable item)
-      {
-        final TrackWrapper track = (TrackWrapper) item;
-        final Watchable[] items = track.getNearestTo(timeNow);
-        if (items != null && items.length > 0)
-        {
-          final FixWrapper fix = (FixWrapper) items[0];
-
-          TrackWrapper match = _tracks.get(track.getName());
-          if (match == null)
-          {
-            match = new TrackWrapper();
-            match.setName(track.getName());
-            match.setColor(track.getColor());
-            _tracks.put(track.getName(), match);
-          }
-          final Point point = _projection.toScreen(fix.getLocation());
-          final WorldLocation newLoc = new WorldLocation(point.getY(), point.getX(),
-              fix.getLocation().getDepth());
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix.getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(),
-          WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3;
-          final Fix fix2 = new Fix(timeNow, newLoc,
-              courseRads,
-              speedYps);
-          final FixWrapper fw2 = new FixWrapper(fix2);
-          match.addFix(fw2);
-        }
-      }
-    };
-    _myLayers.walkVisibleItems(TrackWrapper.class, outputIt);
-  }
-
-  public void startStepping(final HiResDate now)
-  {
-    _tracks.clear();
-    _times.clear();
-    _running = true;
-  }
-
-  public void stopStepping(final HiResDate now)
-  {
-    _running = false;
-    
-    // output timestamps
-    for(String time:_times)
-    {
-      System.out.println(time);
+      templateFile = CorePlugin.getDefault().getPreferenceStore()
+          .getDefaultString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
     }
-    
-    String exportLocation = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_LOCATION);
-    String fileName = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILENAME);
-    String fileFormat = PlatformUI.getPreferenceStore().getString(PREF_PPT_EXPORT_FILEFORMAT);
-    List<TrackWrapper> list = new ArrayList<TrackWrapper>();
-    list.addAll(_tracks.values());
-    Dimension dims = _projection.getScreenArea();
-    long interval =  _timePrefs.getAutoInterval().getMillis();
-    System.out.println(dims);
-    System.out.println(interval);
-    // output tracks object.
-    //showDialog now
-    ExportPPTDialog exportDialog = new ExportPPTDialog(Display.getDefault().getActiveShell());
-    if(fileName == null || "".equals(fileName)) {
-      exportDialog.setFileName("DebriefExport-"+startTime);
-    }
-    else {
-      if(exportLocation!=null && !"".equals(exportLocation)) {
-        File f = new File(exportLocation+File.separator+fileName+"."+fileFormat);
-        if(f.exists()) {
-          fileName = getNewFileName(fileName,startTime);
-        }
-      }
-      exportDialog.setFileName(fileName+"-"+startTime);
-    }
-    exportDialog.setExportLocation(exportLocation);
-    if(fileFormat==null || "".equals(fileFormat)){
-      fileFormat="PPTX";
-    }
-    exportDialog.setFileFormat(fileFormat);
-    if(exportDialog.open() == Window.OK) {
-      exportLocation = exportDialog.getExportLocation();
-      fileName = exportDialog.getFileName();
-      String fileNameToSave=getFileNameStem(fileName);
-      fileFormat = exportDialog.getFileFormat();
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_LOCATION,exportLocation);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILENAME,fileNameToSave);
-      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_FILEFORMAT,fileFormat);
-      startTime=null;
-      System.out.println("export path:"+exportLocation+File.separator+fileName+"."+fileFormat);
-      //export to file now and open the file        
-    }    
-  }
-
-  private String getFileNameStem(String fileName2)
-  {
-    String newName;
-    if (fileName2.indexOf("-") != -1)
-    {
-      newName = fileName2.substring(0, fileName2.lastIndexOf("-"));
-    }
-    else
-    {
-      newName = fileName2;
-    }
-    return newName;
+    return templateFile;
   }
 
   private String getNewFileName(final String fileName,
       final String recordingStartTime)
   {
     String newName = fileName;
-    String[] fileNameParts = fileName.split("-");
+    final String[] fileNameParts = fileName.split("-");
     if (fileNameParts.length > 0)
     {
       newName = fileNameParts[0] + "-" + recordingStartTime;
@@ -195,8 +61,65 @@ public class CoordinateRecorder
     return newName;
   }
 
-  public boolean isRecording()
+  @Override
+  protected void openFile(final String filename)
   {
-    return _running;
+    CorePlugin.logError(IStatus.INFO, "Opening file:" + filename, null);
+    final boolean worked = Program.launch(filename);
+    CorePlugin.logError(IStatus.INFO, "Open file result:" + worked, null);
+  }
+
+  @Override
+  public ExportDialogResult showExportDialog()
+  {
+    final ExportDialogResult retVal = new ExportDialogResult();
+    Display.getDefault().syncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        final ExportPPTDialog exportDialog = new ExportPPTDialog(Display
+            .getDefault().getActiveShell());
+
+        // fix the filename
+        final String exportLocation = exportDialog.getExportLocation();
+        String fileName = exportDialog.getFileName() + "-" + startTime;
+
+        if (exportLocation != null && !"".equals(exportLocation))
+        {
+          final String filePath = exportDialog.getFileToExport(fileName);
+          final File f = new File(filePath);
+          if (f.exists())
+          {
+            fileName = getNewFileName(fileName, startTime);
+          }
+        }
+        exportDialog.setFileName(fileName);
+
+        // clear startTime text, we don't need it any more
+        startTime = null;
+
+        // show the dialog
+        if (exportDialog.open() == Window.OK)
+        {
+          final String exportFile = exportDialog.getFileToExport(null);
+          final String masterTemplateFile = getMasterTemplateFile();
+          retVal.setMasterTemplate(masterTemplateFile);
+          retVal.setFileName(fileName);
+          retVal.setOpenOnComplete(exportDialog.getOpenOncomplete());
+          retVal.setSelectedFile(exportFile);
+          retVal.setStatus(true);
+        }
+      }
+    });
+    return retVal;
+  }
+
+  @Override
+  protected void showMessageDialog(final String message)
+  {
+    MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+        .getActiveShell(), "Export", message, MessageDialog.INFORMATION);
   }
 }

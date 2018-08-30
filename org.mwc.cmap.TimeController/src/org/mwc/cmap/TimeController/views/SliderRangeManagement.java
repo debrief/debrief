@@ -266,16 +266,16 @@ abstract class SliderRangeManagement
 		long newValue = value;
 
 		// convert the resolution to micros
-		//sliderResolution *= 1000;
+		long sliderResolutionMicros = sliderResolution * 1000;
 
 		// convert reading to real time units
 		newValue *= _timeScalar;
 
 		// re-apply the offset
-		final long newDate = _startTime.getMicros() + newValue;
+		long newDate = _startTime.getMicros() + newValue;
 
 		// and trim the resulting value
-//		newDate = (newDate / sliderResolution) * sliderResolution;
+		newDate = (newDate / sliderResolutionMicros) * sliderResolutionMicros;
 
 		return new HiResDate(0, newDate);
 	}

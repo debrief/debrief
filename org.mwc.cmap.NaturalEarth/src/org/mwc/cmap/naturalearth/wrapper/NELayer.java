@@ -75,11 +75,15 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange, L
 	private double _maxBathyScale = 0;
 	private double _minBathyScale = Double.MAX_VALUE;
 
-	public NELayer(NEFeatureRoot features)
+  public NELayer(final NEFeatureRoot features, final String name)
+  {
+    super(ChartBoundsWrapper.NELAYER_TYPE, name, null);
+    _myFeatures = features;
+  }
+	
+	public NELayer(final NEFeatureRoot features)
 	{
-		super(ChartBoundsWrapper.NELAYER_TYPE, NATURAL_EARTH, null);
-		setName(NATURAL_EARTH);
-		_myFeatures = features;
+	  this(features, NATURAL_EARTH);
 	}
 
 	@Override
@@ -284,18 +288,6 @@ public class NELayer extends GeoToolsLayer implements BaseLayer.ProvidesRange, L
 	public int compareTo(Plottable o)
 	{
 		return this.getName().compareTo(o.getName());
-	}
-
-	@Override
-	public boolean hasEditor()
-	{
-		return _myFeatures.hasEditor();
-	}
-
-	@Override
-	public EditorType getInfo()
-	{
-		return _myFeatures.getInfo();
 	}
 
 	@Override

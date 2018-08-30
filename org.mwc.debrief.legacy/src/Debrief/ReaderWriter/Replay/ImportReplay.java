@@ -39,7 +39,6 @@ import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -67,6 +66,7 @@ import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
@@ -549,7 +549,7 @@ public class ImportReplay extends PlainImporterBase
 
   static private Vector<doublet> colors; // list of Replay colours
 
-  static public final String NARRATIVE_LAYER = "Narratives";
+  static public final String NARRATIVE_LAYER = NarrativeEntry.NARRATIVE_LAYER;
 
   static private final String ANNOTATION_LAYER = "Annotations";
 

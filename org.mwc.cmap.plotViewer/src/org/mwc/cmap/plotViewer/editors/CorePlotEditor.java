@@ -362,8 +362,8 @@ public abstract class CorePlotEditor extends EditorPart implements
           }
           else if (ChartBoundsWrapper.NELAYER_TYPE.equals(dl.getDataType()))
           {
-            final NELayer gt =
-                new NELayer(Activator.getDefault().getDefaultStyleSet());
+            final NELayer gt = new NELayer(Activator.getDefault()
+                .getDefaultStyleSet(), dl.getName());
             gt.setVisible(dl.getVisible());
             _myGeoHandler.addGeoToolsLayer(gt);
             wrappedLayer = gt;

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Core
 Bundle-SymbolicName: org.mwc.debrief.core; singleton:=true
-Bundle-Version: 1.0.333
+Bundle-Version: 1.0.335
 Bundle-ClassPath: debrief_core.jar,
  libs/jdom-1.0.jar,
  libs/eclipselink.jar
@@ -61,5 +61,8 @@ Require-Bundle: org.mwc.cmap.core,
  org.mwc.cmap.plotViewer,
  org.eclipse.team.core,
  org.eclipse.team.ui,
- org.eclipse.ui.intro
+ org.eclipse.ui.intro,
+ org.eclipse.swt,
+ org.eclipse.jface,
+ org.eclipse.ui.workbench
 Bundle-ActivationPolicy: lazy

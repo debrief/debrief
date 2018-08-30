@@ -731,12 +731,17 @@ public class EditableWrapper implements IPropertySource
       final FontData[] oldD = fontOne.getFontData();
 
       // compare all the font definitions
-      for (FontData newData : newD)
+      for (final FontData newData : newD)
       {
-        for (FontData oldData : oldD)
-        {
-          // ok - it's a match!
-          if (newData.equals(oldData))
+        for (final FontData oldData : oldD)
+        {          
+          // note, we were using FontData.equals, but it was falsley
+          // returning false on MS Windows
+          
+          // ok - is it a match?
+          if(newData.getHeight()== oldData.getHeight() &&
+             newData.getName().equals(oldData.getName()) &&
+             newData.getStyle() == oldData.getStyle())
           {
             // ok, we can drop out.
             return true;

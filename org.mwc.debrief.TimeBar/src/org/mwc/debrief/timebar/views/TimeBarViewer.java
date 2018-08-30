@@ -41,7 +41,6 @@ import org.mwc.debrief.timebar.painter.ITimeBarsPainter;
 import org.mwc.debrief.timebar.painter.ITimeBarsPainterListener;
 import org.mwc.debrief.timebar.painter.NebulaGanttPainter;
 
-import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -49,6 +48,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class TimeBarViewer implements ISelectionProvider,
     ITimeBarsPainterListener
