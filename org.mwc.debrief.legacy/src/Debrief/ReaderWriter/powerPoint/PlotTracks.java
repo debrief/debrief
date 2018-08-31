@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -126,6 +127,10 @@ public class PlotTracks
     {
       returnValue = e.getMessage();
     }
+    catch (AccessDeniedException ae)
+    {
+      returnValue = "Unable to produce copy of master template";
+    }
     catch (IOException | ZipException e)
     {
       returnValue = "Corrupted File";
@@ -234,7 +239,7 @@ public class PlotTracks
    * @throws DebriefException
    */
   private String[] checkPathandInitialization(final String donor)
-      throws IOException, ZipException, DebriefException
+      throws AccessDeniedException, IOException, ZipException, DebriefException
   {
     if (Files.notExists(Paths.get(donor)))
     {
