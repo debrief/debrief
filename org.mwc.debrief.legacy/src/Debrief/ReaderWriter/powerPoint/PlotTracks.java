@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -64,8 +65,9 @@ public class PlotTracks
           TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE))
       {
         String fileName = genFile.getAbsolutePath().substring(temp_unpack_path
-            .length()); 
-        if(fileName.contains("\\")) {
+            .length());
+        if (fileName.contains("\\"))
+        {
           fileName = fileName.replaceAll("\\\\", "/");
         }
         allFiles.add(fileName);
@@ -124,6 +126,10 @@ public class PlotTracks
     catch (DebriefException e)
     {
       returnValue = e.getMessage();
+    }
+    catch (AccessDeniedException ae)
+    {
+      returnValue = "Unable to produce copy of master template";
     }
     catch (IOException | ZipException e)
     {
@@ -233,15 +239,17 @@ public class PlotTracks
    * @throws DebriefException
    */
   private String[] checkPathandInitialization(final String donor)
-      throws IOException, ZipException, DebriefException
+      throws AccessDeniedException, IOException, ZipException, DebriefException
   {
     if (Files.notExists(Paths.get(donor)))
     {
       throw new DebriefException("donor file does not exist");
     }
 
-    final Path temp_unpack_path = Files.createTempDirectory(Paths.get("")
-        .toAbsolutePath(), "");
+    /** use standard O/S temp folder
+     * 
+     */
+    final Path temp_unpack_path = Files.createTempDirectory("Debrief_to_pptx_");
 
     new UnpackFunction().unpackFunction(donor, temp_unpack_path.toString());
 
@@ -298,9 +306,10 @@ public class PlotTracks
    * @param invertY
    * @return
    */
-  private int[] coordinateTransformation(final int x_in, final int y_in, final int dimensionWidth,
-      final int dimensionHeight, final int rectX, final int rectY,
-      final int rectWidth, final int rectHeight, final int invertY)
+  private int[] coordinateTransformation(final int x_in, final int y_in,
+      final int dimensionWidth, final int dimensionHeight, final int rectX,
+      final int rectY, final int rectWidth, final int rectHeight,
+      final int invertY)
   {
     final int x = rectX + x_in * (rectWidth / dimensionWidth);
     final int y;
@@ -308,7 +317,8 @@ public class PlotTracks
     {
       // floor was needed because Java rounds to the nearest integer, instead of
       // flooring.
-      y = rectY + (y_in - dimensionHeight) * ((int) Math.floor((float) rectHeight / -dimensionHeight));
+      y = rectY + (y_in - dimensionHeight) * ((int) Math.floor(
+          (float) rectHeight / -dimensionHeight));
     }
     else
     {
@@ -328,17 +338,17 @@ public class PlotTracks
    *          Slide path
    * @param temp_unpack_path
    *          Temporary unpack folder path
- * @param output_filename 
+   * @param output_filename
    * @return Path to the new pptx
    * @throws IOException
    * @throws DebriefException
    */
   private String createPptxFromTrackData(final TrackData trackData,
-      final String slide_path, final String temp_unpack_path, String output_filename)
-      throws IOException, ZipException, DebriefException
+      final String slide_path, final String temp_unpack_path,
+      String output_filename) throws IOException, ZipException, DebriefException
   {
-    Application.logError2(Application.INFO, "Number of tracks::: " + trackData.getTracks().size(), null);
-    
+    Application.logError2(Application.INFO, "Number of tracks::: " + trackData
+        .getTracks().size(), null);
 
     // Get slide size from presentation.xml file
     final String[] slideDimen = new ParsePresentation().retrieveDimensions(
@@ -405,8 +415,10 @@ public class PlotTracks
         .attr("id"));
     int current_arrow_id = Integer.parseInt(arrow_tag.selectFirst("p|cNvPr")
         .attr("id"));
-    Application.logError2(Application.INFO, "Last Shape Id::::: " + current_shape_id, null);
-    Application.logError2(Application.INFO, "Last Arrow Id::::: " + current_arrow_id, null);
+    Application.logError2(Application.INFO, "Last Shape Id::::: "
+        + current_shape_id, null);
+    Application.logError2(Application.INFO, "Last Arrow Id::::: "
+        + current_arrow_id, null);
 
     final ArrayList<Integer> shape_ids = new ArrayList<>();
     final ArrayList<Integer> arrow_ids = new ArrayList<>();
@@ -618,7 +630,8 @@ public class PlotTracks
     int time_delay = intervalDuration;
     int current_time_id = Integer.parseInt(time_tag.selectFirst("p|cNvPr").attr(
         "id"));
-    Application.logError2(Application.INFO, "Last Time Id::::: " + current_time_id, null);
+    Application.logError2(Application.INFO, "Last Time Id::::: "
+        + current_time_id, null);
     // we will get the timestamps from the first track
 
     final Track firstItem = trackData.getTracks().get(0);
@@ -626,8 +639,7 @@ public class PlotTracks
     for (final TrackPoint coordinate : coordinates)
     {
       final Date timestamp = coordinate.getTime();
-      final DateFormat formatter = new SimpleDateFormat(
-          "yy MMM ddHHmm");
+      final DateFormat formatter = new SimpleDateFormat("yy MMM ddHHmm");
       final String timestampString = formatter.format(timestamp);
       final Element temp_time_tag = time_tag.clone();
       temp_time_tag.selectFirst("p|cNvPr").attr("id", current_time_id + "");
@@ -678,8 +690,9 @@ public class PlotTracks
     time_delay = 0;
     int current_narrative_id = Integer.parseInt(narrative_tag.selectFirst(
         "p|cNvPr").attr("id"));
-    
-    Application.logError2(Application.INFO, "Last Narrative Id::::: " + current_narrative_id, null);
+
+    Application.logError2(Application.INFO, "Last Narrative Id::::: "
+        + current_narrative_id, null);
 
     // Blank narrative box
     final Element blank_narrative = narrative_tag.clone();
@@ -737,15 +750,16 @@ public class PlotTracks
   }
 
   public String export(final TrackData trackData,
-      final String donorTemplateFilePath, String output_filename) throws IOException, ZipException,
-      DebriefException
+      final String donorTemplateFilePath, String output_filename)
+      throws IOException, ZipException, DebriefException
   {
     final String[] output = checkPathandInitialization(donorTemplateFilePath);
 
     final String slide_path = output[0];
     final String temp_unpack_path = output[1];
 
-    return createPptxFromTrackData(trackData, slide_path, temp_unpack_path, output_filename);
+    return createPptxFromTrackData(trackData, slide_path, temp_unpack_path,
+        output_filename);
   }
 
   /**
