@@ -18,7 +18,6 @@ import java.awt.Color;
 
 import org.w3c.dom.Element;
 
-import Debrief.GUI.Frames.Application;
 import MWC.GUI.CanvasType;
 
 public class SVGRectangle extends SVGElement
@@ -52,8 +51,8 @@ public class SVGRectangle extends SVGElement
       }
       else
       {
-        Application.logError2(Application.WARNING,
-            "SVG contains a non-valid fill " + colorString, null);
+        MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
+            + colorString);
       }
     }
   }
