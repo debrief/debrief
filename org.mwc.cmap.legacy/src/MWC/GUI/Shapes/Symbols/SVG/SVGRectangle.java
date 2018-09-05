@@ -18,26 +18,44 @@ import java.awt.Color;
 
 import org.w3c.dom.Element;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.CanvasType;
 
 public class SVGRectangle extends SVGElement
 {
-  
+
   private double _x;
-  
+
   private double _y;
-  
+
   private double _width;
-  
+
   private double _height;
-  
+
+  private Color _fill;
+
   public SVGRectangle(Element dom)
   {
     super(dom);
-    _x = Double.parseDouble(get_dom().getAttribute("x"));
-    _y = Double.parseDouble(get_dom().getAttribute("y"));
-    _width = Double.parseDouble(get_dom().getAttribute("width"));
-    _height = Double.parseDouble(get_dom().getAttribute("height"));
+    _x = Double.parseDouble(getDom().getAttribute("x"));
+    _y = Double.parseDouble(getDom().getAttribute("y"));
+    _width = Double.parseDouble(getDom().getAttribute("width"));
+    _height = Double.parseDouble(getDom().getAttribute("height"));
+
+    if (getDom().hasAttribute("fill"))
+    {
+      // We have a color.
+      String colorString = getDom().getAttribute("fill");
+      if (colorString.matches("#[0-9A-Fa-f]{3}"))
+      {
+        _fill = hex2Rgb(colorString);
+      }
+      else
+      {
+        Application.logError2(Application.WARNING,
+            "SVG contains a non-valid fill " + colorString, null);
+      }
+    }
   }
 
   @Override
@@ -48,11 +66,13 @@ public class SVGRectangle extends SVGElement
     final double y = _y * sym_size;
     final double width = _width * sym_size;
     final double height = _height * sym_size;
-    
-    /*final String fillColorAsString = get_dom().attr("fill");
-    final Color fillColor = hex2Rgb(fillColorAsString);*/
-        
-    dest.drawRect((int)x, (int)y, (int)width, (int)height);
+
+    if (_fill != null)
+    {
+      // TODO
+    }
+
+    dest.drawRect((int) x, (int) y, (int) width, (int) height);
   }
 
 }

@@ -17,8 +17,6 @@ package MWC.GUI.Shapes.Symbols.SVG;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,12 +61,12 @@ public class SVGShape extends PlainSymbol
     _svgPath = svgPath;
   }
 
-  public boolean is_canRotate()
+  public boolean canRotate()
   {
     return _canRotate;
   }
 
-  public void set_canRotate(boolean _canRotate)
+  public void setCanRotate(boolean _canRotate)
   {
     this._canRotate = _canRotate;
   }
@@ -119,7 +117,7 @@ public class SVGShape extends PlainSymbol
 
             SVGElement newElement = elementFactory.getInstance((Element)element);
 
-            // We are ignoring for now unknown elements.
+            // We are ignoring unknown elements for now.
             if (newElement != null)
             {
               _elements.add(newElement);

@@ -21,10 +21,6 @@ import org.w3c.dom.Element;
  */
 public class SVGElementFactory
 {
-  public SVGElementFactory()
-  {
-
-  }
 
   public SVGElement getInstance(Element svgElement)
   {

@@ -33,12 +33,12 @@ abstract public class SVGElement
     this._dom = dom;
   }
 
-  public Element get_dom()
+  public Element getDom()
   {
     return _dom;
   }
 
-  public void set_dom(Element _dom)
+  public void setDom(Element _dom)
   {
     this._dom = _dom;
   }
