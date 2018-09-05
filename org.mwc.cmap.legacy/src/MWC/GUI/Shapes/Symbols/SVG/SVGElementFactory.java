@@ -16,41 +16,23 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import org.jsoup.nodes.Element;
 
+
+/**
+ * It creates a factory given the svg dom Element
+ */
 public class SVGElementFactory
-{
-  private Element _svgElement;
-  
-  /**
-   * It creates a factory given the svg dom Element
-   * @param svgElement SVG Dom Element
-   */
-  public SVGElementFactory(final Element svgElement)
+{  
+  public SVGElementFactory()
   {
-    this._svgElement = svgElement;
-  }
-  
-  
-  
-  public Element get_svgElement()
-  {
-    return _svgElement;
+    
   }
 
-
-
-  public void set_svgElement(Element _svgElement)
-  {
-    this._svgElement = _svgElement;
-  }
-
-
-
-  public SVGElement getInstance() {
+  public SVGElement getInstance(Element svgElement) {
     SVGElement answer = null;
-    switch (get_svgElement().nodeName())
+    switch (svgElement.nodeName())
     {
       case "rect":
-        answer = new SVGRectangle(get_svgElement());
+        answer = new SVGRectangle(svgElement);
         break;
 
       default:

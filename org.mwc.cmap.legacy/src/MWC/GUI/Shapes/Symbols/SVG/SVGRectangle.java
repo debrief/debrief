@@ -23,20 +23,32 @@ import MWC.GUI.CanvasType;
 public class SVGRectangle extends SVGElement
 {
   
+  private double _x;
+  
+  private double _y;
+  
+  private double _width;
+  
+  private double _height;
+  
   public SVGRectangle(Element dom)
   {
     super(dom);
+    _x = Double.parseDouble(get_dom().attr("x"));
+    _y = Double.parseDouble(get_dom().attr("y"));
+    _width = Double.parseDouble(get_dom().attr("width"));
+    _height = Double.parseDouble(get_dom().attr("height"));
   }
 
   @Override
   public void render(CanvasType dest, double sym_size,
       java.awt.Point origin_coords, double rotation_degs)
   {
-    final double x = Double.parseDouble(get_dom().attr("x")) * sym_size;
-    final double y = Double.parseDouble(get_dom().attr("y")) * sym_size;
-    final double width = Double.parseDouble(get_dom().attr("width"))* sym_size;
-    final double height = Double.parseDouble(get_dom().attr("height")) * sym_size;
-
+    final double x = _x * sym_size;
+    final double y = _y * sym_size;
+    final double width = _width * sym_size;
+    final double height = _height * sym_size;
+    
     /*final String fillColorAsString = get_dom().attr("fill");
     final Color fillColor = hex2Rgb(fillColorAsString);*/
         

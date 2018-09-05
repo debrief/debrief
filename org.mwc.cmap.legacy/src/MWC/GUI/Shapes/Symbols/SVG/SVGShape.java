@@ -97,10 +97,11 @@ public class SVGShape extends PlainSymbol
         final Document soup = Jsoup.parse(svgAsString, "", Parser.xmlParser());
         final Element svgRoot = soup.select("svg").get(0);
 
+        final SVGElementFactory elementFactory = new SVGElementFactory();
         _elements = new ArrayList<>();
         for (Element element : svgRoot.children())
         {
-          SVGElement newElement = new SVGElementFactory(element).getInstance();
+          SVGElement newElement = elementFactory.getInstance(element);
           
           // We are ignoring for now unknown elements.
           if ( newElement != null ) {
