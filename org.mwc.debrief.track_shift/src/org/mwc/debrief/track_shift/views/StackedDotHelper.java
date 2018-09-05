@@ -1901,7 +1901,20 @@ public final class StackedDotHelper
       series = new TimeSeries(seriesName);
       collection.addSeries(series);
     }
-    series.add(bFreq);
+    
+    // wrap the "add" event. We still may get duplicate entries, since
+    // multiple series may have the same name - meaning we try to put
+    // multiple cuts into the same time series.
+    try
+    {
+      series.add(bFreq);
+    }
+    catch (SeriesException se)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Mistakenly tried to add duplicate value to series:" + seriesName + " at:" + bFreq.getPeriod(),
+          null);
+    }
   }
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
