@@ -177,11 +177,11 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       menu.setVisible(true);
     }
   }
-  
+
   private class SourceDropdown extends ControlContribution
   {
-    final SourceProvider sourceProvider;
-    
+    private final SourceProvider sourceProvider;
+
     private SourceDropdown(final SourceProvider provider)
     {
       super("Acoustic Source");
