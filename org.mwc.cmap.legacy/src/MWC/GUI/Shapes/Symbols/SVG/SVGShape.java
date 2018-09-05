@@ -15,16 +15,21 @@
 package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Dimension;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.parser.Parser;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -91,23 +96,35 @@ public class SVGShape extends PlainSymbol
         /**
          * We get the SVG as String
          */
-        byte[] encoded = Files.readAllBytes(Paths.get(_svgPath));
-        final String svgAsString = new String(encoded);
+        final File fXmlFile = new File(_svgPath);
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        final Document doc = dBuilder.parse(fXmlFile);
 
-        final Document soup = Jsoup.parse(svgAsString, "", Parser.xmlParser());
-        final Element svgRoot = soup.select("svg").get(0);
+        // read this -
+        // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+        doc.getDocumentElement().normalize();
+
+        final Element svgRoot = doc.getDocumentElement();
 
         final SVGElementFactory elementFactory = new SVGElementFactory();
         _elements = new ArrayList<>();
-        for (Element element : svgRoot.children())
+        for (int i = 0; i < svgRoot.getChildNodes().getLength(); i++)
         {
-          SVGElement newElement = elementFactory.getInstance(element);
-          
-          // We are ignoring for now unknown elements.
-          if ( newElement != null ) {
-            _elements.add(newElement);
+          Node element = svgRoot.getChildNodes().item(i);
+
+          if (element.getNodeType() == Node.ELEMENT_NODE)
+          {
+
+            SVGElement newElement = elementFactory.getInstance((Element)element);
+
+            // We are ignoring for now unknown elements.
+            if (newElement != null)
+            {
+              _elements.add(newElement);
+            }
           }
-          
         }
       }
       catch (IOException e)
@@ -115,18 +132,30 @@ public class SVGShape extends PlainSymbol
         // TODO I coudln't read the given file.
         e.printStackTrace();
       }
+      catch (SAXException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      catch (ParserConfigurationException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
     }
-    
+
     // At this point, we have our file loaded (pre-cached)
-    
+
     double directionToUse = .0;
-    if ( _canRotate ) {
+    if (_canRotate)
+    {
       directionToUse = direction;
     }
 
     // create our centre point
     final java.awt.Point centre = dest.toScreen(center);
-    for (SVGElement element : _elements) {
+    for (SVGElement element : _elements)
+    {
       element.render(dest, getScaleVal(), centre, directionToUse);
     }
   }

@@ -16,7 +16,7 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Color;
 
-import org.jsoup.nodes.Element;
+import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
 
@@ -34,10 +34,10 @@ public class SVGRectangle extends SVGElement
   public SVGRectangle(Element dom)
   {
     super(dom);
-    _x = Double.parseDouble(get_dom().attr("x"));
-    _y = Double.parseDouble(get_dom().attr("y"));
-    _width = Double.parseDouble(get_dom().attr("width"));
-    _height = Double.parseDouble(get_dom().attr("height"));
+    _x = Double.parseDouble(get_dom().getAttribute("x"));
+    _y = Double.parseDouble(get_dom().getAttribute("y"));
+    _width = Double.parseDouble(get_dom().getAttribute("width"));
+    _height = Double.parseDouble(get_dom().getAttribute("height"));
   }
 
   @Override

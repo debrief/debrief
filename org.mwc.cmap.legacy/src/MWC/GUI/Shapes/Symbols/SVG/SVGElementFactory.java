@@ -14,22 +14,22 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import org.jsoup.nodes.Element;
-
+import org.w3c.dom.Element;
 
 /**
  * It creates a factory given the svg dom Element
  */
 public class SVGElementFactory
-{  
+{
   public SVGElementFactory()
   {
-    
+
   }
 
-  public SVGElement getInstance(Element svgElement) {
+  public SVGElement getInstance(Element svgElement)
+  {
     SVGElement answer = null;
-    switch (svgElement.nodeName())
+    switch (svgElement.getNodeName())
     {
       case "rect":
         answer = new SVGRectangle(svgElement);

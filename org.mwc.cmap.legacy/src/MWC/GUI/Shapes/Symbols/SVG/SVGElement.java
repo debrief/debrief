@@ -18,7 +18,7 @@ import MWC.GUI.CanvasType;
 
 import java.awt.Color;
 
-import org.jsoup.nodes.Element;
+import org.w3c.dom.Element;
 
 abstract public class SVGElement
 {
