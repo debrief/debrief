@@ -48,7 +48,10 @@ public class Doublet implements Comparable<Doublet>
     
     public void testTwoWay()
     {
+      SensorWrapper rxSensor = new SensorWrapper("Receiver_Sensor");
       SensorContactWrapper receiver = new SensorContactWrapper("host",new HiResDate(1000), null,90d,null,Color.red, "label", 0, "Receiver");
+      receiver.setOrigin(new WorldLocation(0.1,0.1,0d));
+      receiver.setSensor(rxSensor);
       double targetCourse = 120;
       double targetSpeed = 15;
       Fix targetFix = new Fix(new HiResDate(2000), new WorldLocation(2,2,2d), targetCourse, targetSpeed);
@@ -63,6 +66,7 @@ public class Doublet implements Comparable<Doublet>
       FixWrapper hostFixW = new FixWrapper(hostFix);
       double speed_of_sound = FrequencyCalcs.SpeedOfSoundKts;
       SensorWrapper transmitter = new SensorWrapper("Transmitter");
+      transmitter.setBaseFrequency(300d);
       Doublet dub = new Doublet(receiver, targetFixW, parent, hostFixW)
           {
 
@@ -73,8 +77,8 @@ public class Doublet implements Comparable<Doublet>
             }
         
           };
-  //    double freq = dub.getPredictedMultistaticFrequency(speed_of_sound, transmitter);
-   //   assertEquals("correct freq", 330d, freq);
+      double freq = dub.getPredictedMultistaticFrequency(speed_of_sound, transmitter);
+      assertEquals("correct freq", 297.914, freq, 0.001);
     }
 
     public void testCorrected()
@@ -307,8 +311,9 @@ public class Doublet implements Comparable<Doublet>
   public double getCalculatedBearing(final WorldVector sensorOffset,
       final WorldVector targetOffset)
   {
-    return getCalculatedBearing(sensorOffset, targetOffset, _sensor
-        .getCalculatedOrigin(null), _targetFix.getLocation());
+    final WorldLocation sensorOrigin = _sensor
+        .getCalculatedOrigin(null);
+    return getCalculatedBearing(sensorOffset, targetOffset, sensorOrigin, _targetFix.getLocation());
   }
 
   /**
