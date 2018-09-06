@@ -7,7 +7,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _QMn3MK9cEei4e5U78aujdw
 Runtime-Version: 2.2.0.201706152316
-Save-Time: 9/3/18 3:52 PM
+Save-Time: 9/6/18 5:11 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -16,16 +16,12 @@ Entry-Name: .content
 
 get-menu -path "File/New/Debrief Project" | click
 
-/*with [get-window "Create Project"] {
-    get-button Browse | click
-    get-button "Add Debrief Samples (required for self-teach tutorials)" | check
-    get-button Finish | click
-}*/
-set-dialog-result Folder "D:\\workspaces\\aut-Debrief\\"
+set-dialog-result Folder [concat [get-workspace-location] "\\" $project]
+ 
 with [get-window "Create Project"] {
     get-button Browse | click
-    get-editbox -after [get-label "Project location:"] | set-text [concat "D:\\workspaces\\aut-Debrief\\" $project]
-      get-button "Add Debrief Samples (required for self-teach tutorials)" | uncheck
+    get-button "Add Debrief Samples (required for self-teach tutorials)" | check
+    wait 500
     get-button Finish | click
 }
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
