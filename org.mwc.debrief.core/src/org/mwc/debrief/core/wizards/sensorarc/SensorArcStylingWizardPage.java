@@ -32,6 +32,8 @@ public class SensorArcStylingWizardPage extends NewSensorArcBaseWizardPage
     super(pageName);
     this.trackNames = tracks;
     this._selectedTrack = selectedTrack;
+    setTitle("Create dynamic track shapes");
+    setDescription("This wizard is used to create new track shapes (or sensor arcs)");
   }
 
   /* (non-Javadoc)

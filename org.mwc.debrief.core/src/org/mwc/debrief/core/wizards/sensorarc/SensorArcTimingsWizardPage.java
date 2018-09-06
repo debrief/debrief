@@ -32,6 +32,8 @@ public class SensorArcTimingsWizardPage extends NewSensorArcBaseWizardPage
     super(pageName);
     this._startTime = startTime;
     this._endTime = endTime;
+    setTitle("Create dynamic track shapes");
+    setDescription("This wizard is used to create new track shapes (or sensor arcs)");
   }
 
   @Override

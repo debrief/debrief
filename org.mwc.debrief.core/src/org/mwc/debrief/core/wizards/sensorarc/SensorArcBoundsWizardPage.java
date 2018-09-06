@@ -55,7 +55,8 @@ public class SensorArcBoundsWizardPage extends NewSensorArcBaseWizardPage
   protected SensorArcBoundsWizardPage(String pageName)
   {
     super(pageName);
-    
+    setTitle("Create dynamic track shapes");
+    setDescription("This wizard is used to create new track shapes (or sensor arcs)");
   }
 
   /* (non-Javadoc)
