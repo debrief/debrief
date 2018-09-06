@@ -150,8 +150,8 @@ public class GenerateNewInsertSensorArcAction implements
   
   
   @Override
-  public void generate(IMenuManager parent, Layers theLayers,
-      Layer[] parentLayers, Editable[] subjects)
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
   {
     boolean goForIt = false;
     TrackWrapper track = null;
