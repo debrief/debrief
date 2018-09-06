@@ -44,6 +44,9 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
+import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other bits
@@ -785,20 +788,43 @@ public class EditableWrapper implements IPropertySource
     }
     else if (thisProp != null)
     {
-      // see if the helpers can help
-      EditorHelper helper = thisProp.getHelper();
-      
-      // do a round trip of the new value, to ensure they're of the
-      // correct type
-      Object newVal = helper.translateFromSWT(value);
-      Object toSWT = helper.translateToSWT(newVal);
-      if (toSWT != null && !toSWT.equals(oldVal))
+      if (thisProp.getDisplayName().equals("Symbol type"))
       {
-        valueChanged = true;
+        // special case here, because one backend symbol type can be used to represent multiple symbols
+        final TagListHelper helper = new TagListHelper(SymbolFactory.getSymbolList(), new SymbolFactoryPropertyEditor());
+        final String newSym = (String) helper.translateFromSWT(value);
+        final String oldSym = (String) helper.translateFromSWT(oldVal);
+        
+        if (newSym != null && oldSym != null)
+        {
+          final PlainSymbol newShape = SymbolFactory.createSymbol(newSym);
+          final PlainSymbol oldShape = SymbolFactory.createSymbol(oldSym);
+
+          valueChanged = !newShape.getType().equals(oldShape.getType());
+        }
+        else
+        {
+          valueChanged = true;
+        }
       }
       else
       {
-        valueChanged = false;
+
+        // see if the helpers can help
+        EditorHelper helper = thisProp.getHelper();
+
+        // do a round trip of the new value, to ensure they're of the
+        // correct type
+        Object newVal = helper.translateFromSWT(value);
+        Object toSWT = helper.translateToSWT(newVal);
+        if (toSWT != null && !toSWT.equals(oldVal))
+        {
+          valueChanged = true;
+        }
+        else
+        {
+          valueChanged = false;
+        }
       }
     }
     else
