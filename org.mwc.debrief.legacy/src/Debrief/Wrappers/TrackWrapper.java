@@ -1077,8 +1077,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
       // just check we don't alraedy have it
       if (_myDynamicShapes.contains(swr))
       {
-        MWC.Utilities.Errors.Trace.trace("Don't allow duplicate shape set name:"
-            + swr.getName());
+        MWC.Utilities.Errors.Trace.trace("Not adding shape-set, it's already present"
+            + swr.getName(), false);
       }
       else
       {
