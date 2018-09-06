@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
 public class SVGShape extends PlainSymbol
@@ -45,7 +46,11 @@ public class SVGShape extends PlainSymbol
    * Path of the SVG we are going to load.
    */
   private String _svgPath;
-
+  
+  /**
+   * Type of the shape (in the custom format svg:File Name)
+   */
+  private String _svgType;
   /**
    * Elements of the shape (Cache)
    */
@@ -56,9 +61,14 @@ public class SVGShape extends PlainSymbol
    */
   private boolean _canRotate;
 
-  public SVGShape(final String svgPath)
+  /**
+   * 
+   * @param svgFileName SVG File name without extension or path.
+   */
+  public SVGShape(final String svgFileName)
   {
-    _svgPath = svgPath;
+    _svgPath = SymbolFactory.SVG_FOLDER + File.separator + svgFileName + SymbolFactory.SVG_EXTENSION;
+    _svgType = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgFileName;
   }
 
   public boolean canRotate()
@@ -74,13 +84,20 @@ public class SVGShape extends PlainSymbol
   @Override
   public String getType()
   {
-    return "SVG Shape";
+    return _svgType;
   }
 
   @Override
   public Dimension getBounds()
   {
-    return null;
+    final int sWid = (int) (getScaleVal());
+    return new java.awt.Dimension(10 * sWid, 10 * sWid);
+  }
+  
+  @Override
+  public void paint(CanvasType dest, WorldLocation theCentre)
+  {
+    paint(dest, theCentre, .0);
   }
 
   @Override
@@ -94,7 +111,15 @@ public class SVGShape extends PlainSymbol
         /**
          * We get the SVG as String
          */
+
+        
+        // TODO. Change this. If we use org.mwc.cmap.core, it gives a cyclic dependency error.
+        //final URL resource = SymbolFactory.class.getResource(completePath);
+        //SymbolFactory.class.getReso.
+        
+        //String svgFilePath = Paths.get(resource.toURI()).toAbsolutePath().toString();
         final File fXmlFile = new File(_svgPath);
+        //System.out.println(fXmlFile.getAbsolutePath());
         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
             .newInstance();
         final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

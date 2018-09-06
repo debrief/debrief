@@ -45,7 +45,7 @@ public class SVGRectangle extends SVGElement
     {
       // We have a color.
       String colorString = getDom().getAttribute("fill");
-      if (colorString.matches("#[0-9A-Fa-f]{3}"))
+      if (colorString.matches("#[0-9A-Fa-f]{6}"))
       {
         _fill = hex2Rgb(colorString);
       }
@@ -61,17 +61,22 @@ public class SVGRectangle extends SVGElement
   public void render(CanvasType dest, double sym_size,
       java.awt.Point origin_coords, double rotation_degs)
   {
-    final double x = _x * sym_size;
-    final double y = _y * sym_size;
+    final double x = _x * sym_size + origin_coords.getX();
+    final double y = _y * sym_size + origin_coords.getY();
     final double width = _width * sym_size;
     final double height = _height * sym_size;
 
+    
     if (_fill != null)
     {
-      // TODO
+      dest.setColor(_fill);
+      dest.fillRect((int) x, (int) y, (int) width, (int) height);
+    }
+    else
+    {
+      dest.drawRect((int) x, (int) y, (int) width, (int) height);
     }
 
-    dest.drawRect((int) x, (int) y, (int) width, (int) height);
   }
 
 }
