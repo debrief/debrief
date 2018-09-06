@@ -44,6 +44,9 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
+import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other bits
@@ -142,9 +145,8 @@ public class EditableWrapper implements IPropertySource
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
       // get the value, if it worked
       _property.setValue(_newValue);
@@ -162,11 +164,11 @@ public class EditableWrapper implements IPropertySource
       {
         // right, we can fire a change if we like. have a look
         final Annotation[] ann = _property.getAnnotationsForSetter();
-        if(PlainWrapper.hasFireExtendedAnnotation(ann))
+        if (PlainWrapper.hasFireExtendedAnnotation(ann))
         {
           _wholeLayers.fireExtended(null, _topLevelLayer);
         }
-        else if(PlainWrapper.hasFireReformattedAnnotation(ann))
+        else if (PlainWrapper.hasFireReformattedAnnotation(ann))
         {
           _wholeLayers.fireReformatted(_topLevelLayer);
         }
@@ -195,8 +197,8 @@ public class EditableWrapper implements IPropertySource
       _property.setValue(_oldValue);
 
       // ok, and tell any listeners that want to know...
-      _property._subject.getInfo().fireChanged(_property.getValue(),
-          _property.getDisplayName(), _newValue, _oldValue);
+      _property._subject.getInfo().fireChanged(_property.getValue(), _property
+          .getDisplayName(), _newValue, _oldValue);
 
       // right, we can fire a change if we like. have a look
       final Annotation[] ann = _property.getAnnotationsForSetter();
@@ -294,8 +296,8 @@ public class EditableWrapper implements IPropertySource
    * @param plottable
    * @param theLayers
    */
-  public EditableWrapper(final Editable plottable,
-      final EditableWrapper parent, final Layers theLayers)
+  public EditableWrapper(final Editable plottable, final EditableWrapper parent,
+      final Layers theLayers)
   {
     _editable = plottable;
     _theLayers = theLayers;
@@ -385,8 +387,8 @@ public class EditableWrapper implements IPropertySource
     _myGridDescriptors = null;
     if (_myGridDescriptors == null)
     {
-      final Vector<IPropertyDescriptor> list =
-          new Vector<IPropertyDescriptor>(0, 1);
+      final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(
+          0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
       if (_editable != null)
@@ -406,8 +408,8 @@ public class EditableWrapper implements IPropertySource
 
           final Griddable grid = (Griddable) sample.getInfo();
 
-          final PropertyDescriptor[] properties =
-              grid.getGriddablePropertyDescriptors();
+          final PropertyDescriptor[] properties = grid
+              .getGriddablePropertyDescriptors();
 
           if (properties != null)
           {
@@ -423,23 +425,23 @@ public class EditableWrapper implements IPropertySource
               else
               {
                 // ok, wrap it, and add it to our list.
-                final IPropertyDescriptor newProp =
-                    new DebriefProperty(thisProp, sample, null);
+                final IPropertyDescriptor newProp = new DebriefProperty(
+                    thisProp, sample, null);
                 list.add(newProp);
               }
             }
           }
           else
           {
-            final NonBeanPropertyDescriptor[] nonBean =
-                grid.getNonBeanGriddableDescriptors();
+            final NonBeanPropertyDescriptor[] nonBean = grid
+                .getNonBeanGriddableDescriptors();
             if (nonBean != null)
             {
               for (int i = 0; i < nonBean.length; i++)
               {
                 final NonBeanPropertyDescriptor nb = nonBean[i];
-                final IPropertyDescriptor newP =
-                    new DebriefNonBeanProperty(nb, null);
+                final IPropertyDescriptor newP = new DebriefNonBeanProperty(nb,
+                    null);
                 list.add(newP);
               }
             }
@@ -475,8 +477,8 @@ public class EditableWrapper implements IPropertySource
                       else
                       {
                         // ok, add this editor
-                        final IPropertyDescriptor newProp =
-                            new DebriefProperty(pd, obj, null);
+                        final IPropertyDescriptor newProp = new DebriefProperty(
+                            pd, obj, null);
 
                         list.add(newProp);
                       }
@@ -527,8 +529,8 @@ public class EditableWrapper implements IPropertySource
 
     if (_myDescriptors == null)
     {
-      final Vector<IPropertyDescriptor> list =
-          new Vector<IPropertyDescriptor>(0, 1);
+      final Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(
+          0, 1);
       final IPropertyDescriptor[] res = new IPropertyDescriptor[]
       {null};
       final Editable.EditorType editor = info;
@@ -576,16 +578,16 @@ public class EditableWrapper implements IPropertySource
         else
         {
           // ok, wrap it, and add it to our list.
-          final IPropertyDescriptor newProp =
-              new DebriefProperty(thisProp, (Editable) editor.getData(),
-                  null);
+          final IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+              (Editable) editor.getData(), null);
           list.add(newProp);
         }
       }
     }
   }
 
-  private void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
+  private void addAdditionalPropertyEditors(
+      final Vector<IPropertyDescriptor> list, final BeanInfo editor)
   {
     final BeanInfo[] others = editor.getAdditionalBeanInfo();
     if (others != null)
@@ -614,8 +616,8 @@ public class EditableWrapper implements IPropertySource
               else
               {
                 // ok, add this editor
-                final IPropertyDescriptor newProp =
-                    new DebriefProperty(pd, obj, null);
+                final IPropertyDescriptor newProp = new DebriefProperty(pd, obj,
+                    null);
 
                 list.add(newProp);
               }
@@ -623,7 +625,7 @@ public class EditableWrapper implements IPropertySource
           }
         }
       }
-    }    
+    }
   }
 
   /*
@@ -688,7 +690,8 @@ public class EditableWrapper implements IPropertySource
 
   final public boolean hasChildren()
   {
-    return ((_editable instanceof HasEditables) && (!(_editable instanceof Editable.DoNoInspectChildren)));
+    return ((_editable instanceof HasEditables)
+        && (!(_editable instanceof Editable.DoNoInspectChildren)));
   }
 
   @Override
@@ -708,7 +711,7 @@ public class EditableWrapper implements IPropertySource
   {
 
   }
-  
+
   /**
    * determine if the font objects are effectively equal
    * 
@@ -734,14 +737,14 @@ public class EditableWrapper implements IPropertySource
       for (final FontData newData : newD)
       {
         for (final FontData oldData : oldD)
-        {          
+        {
           // note, we were using FontData.equals, but it was falsley
           // returning false on MS Windows
-          
+
           // ok - is it a match?
-          if(newData.getHeight()== oldData.getHeight() &&
-             newData.getName().equals(oldData.getName()) &&
-             newData.getStyle() == oldData.getStyle())
+          if (newData.getHeight() == oldData.getHeight() && newData.getName()
+              .equals(oldData.getName()) && newData.getStyle() == oldData
+                  .getStyle())
           {
             // ok, we can drop out.
             return true;
@@ -752,7 +755,7 @@ public class EditableWrapper implements IPropertySource
     }
     return res;
   }
-  
+
   /*
    * (non-Javadoc)
    * 
@@ -778,27 +781,50 @@ public class EditableWrapper implements IPropertySource
     final boolean valueChanged;
     if (value instanceof Font)
     {
-      // special handling for fonts.  This is because, within some Debiref
-      // objects the font is stored as an AWT font.  But, it's converted to an
-      // SWT font.  This round trip means that identical fonts can appear to be different
+      // special handling for fonts. This is because, within some Debiref
+      // objects the font is stored as an AWT font. But, it's converted to an
+      // SWT font. This round trip means that identical fonts can appear to be different
       valueChanged = !fontsAreEqual((Font) value, (Font) oldVal);
     }
     else if (thisProp != null)
     {
-      // see if the helpers can help
-      EditorHelper helper = thisProp.getHelper();
-      
-      // do a round trip of the new value, to ensure they're of the
-      // correct type
-      Object newVal = helper.translateFromSWT(value);
-      Object toSWT = helper.translateToSWT(newVal);
-      if (toSWT != null && !toSWT.equals(oldVal))
+      if (thisProp.getDisplayName().equals("Symbol type"))
       {
-        valueChanged = true;
+        // special case here, because one backend symbol type can be used to represent multiple symbols
+        final TagListHelper helper = new TagListHelper(SymbolFactory.getSymbolList(), new SymbolFactoryPropertyEditor());
+        final String newSym = (String) helper.translateFromSWT(value);
+        final String oldSym = (String) helper.translateFromSWT(oldVal);
+        
+        if (newSym != null && oldSym != null)
+        {
+          final PlainSymbol newShape = SymbolFactory.createSymbol(newSym);
+          final PlainSymbol oldShape = SymbolFactory.createSymbol(oldSym);
+
+          valueChanged = !newShape.getType().equals(oldShape.getType());
+        }
+        else
+        {
+          valueChanged = true;
+        }
       }
       else
       {
-        valueChanged = false;
+
+        // see if the helpers can help
+        EditorHelper helper = thisProp.getHelper();
+
+        // do a round trip of the new value, to ensure they're of the
+        // correct type
+        Object newVal = helper.translateFromSWT(value);
+        Object toSWT = helper.translateToSWT(newVal);
+        if (toSWT != null && !toSWT.equals(oldVal))
+        {
+          valueChanged = true;
+        }
+        else
+        {
+          valueChanged = false;
+        }
       }
     }
     else
