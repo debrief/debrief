@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -106,7 +107,7 @@ abstract public class CoreInsertSensorArc extends CoreInsertChartFeature
     while (enumer.hasMoreElements())
     {
       final Layer thisLayer = (Layer) enumer.nextElement();
-      if (thisLayer instanceof TrackWrapper)
+      if (thisLayer instanceof TrackWrapper && !(thisLayer instanceof CompositeTrackWrapper))
       {
         res.add(thisLayer.getName());
       }

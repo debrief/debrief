@@ -16,6 +16,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.creators.shapes.CoreInsertSensorArc;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.Editable;
@@ -43,7 +44,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
     while(elements.hasMoreElements()) {
       TrackWrapper theTrack = null;
       Editable elem = elements.nextElement();
-      if(elem instanceof TrackWrapper) {
+      if(elem instanceof TrackWrapper &&!(elem instanceof CompositeTrackWrapper)) {
         theTrack = (TrackWrapper)elem;
         if(startDate == null || theTrack.getStartDTG().getDate().before(startDate)) {
           startDate = theTrack.getStartDTG().getDate();
@@ -78,7 +79,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
     Enumeration<Editable> elements = layers.elements();
     while(elements.hasMoreElements()) {
       Editable elem = elements.nextElement();
-      if(elem instanceof TrackWrapper) {
+      if(elem instanceof TrackWrapper && !(elem instanceof CompositeTrackWrapper)) {
         trackNames.add(elem.getName());
         proceed=true;
       }
