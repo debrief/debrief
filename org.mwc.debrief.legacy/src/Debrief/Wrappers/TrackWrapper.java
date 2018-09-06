@@ -1090,6 +1090,36 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
         swr.setHost(this);
       }
     }
+    else if (point instanceof DynamicTrackShapeWrapper)
+    {
+      DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
+      DynamicTrackShapeSetWrapper target = null;
+      final Enumeration<Editable> iter = getDynamicShapes().elements();
+      if (iter != null)
+      {
+        while (iter.hasMoreElements())
+        {
+          final DynamicTrackShapeSetWrapper set =
+              (DynamicTrackShapeSetWrapper) iter.nextElement();
+
+          // is this our sensor?
+          if (set.getName().equals(shape.getSensorName()))
+          {
+            // cool, drop out
+            target = set;
+            break;
+          }
+        } // looping through the sensors
+      } // whether there are any sensors
+      if (target == null)
+      {
+        // then create it
+        target = new DynamicTrackShapeSetWrapper(shape.getSensorName());
+
+        add(target);
+      }
+      target.add(shape);
+    }
     // is this a TMA solution track?
     else if (point instanceof TMAWrapper)
     {

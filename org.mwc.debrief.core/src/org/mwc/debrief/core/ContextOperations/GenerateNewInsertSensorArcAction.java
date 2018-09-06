@@ -30,7 +30,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -54,9 +54,9 @@ public class GenerateNewInsertSensorArcAction implements
   public static class InsertSensorArcOperation extends CMAPOperation{
 
     private TrackWrapper _track;
-    private DynamicTrackShapeSetWrapper _shapeWrapper;
+    private DynamicTrackShapeWrapper _shapeWrapper;
     private Layers _layers;
-    public InsertSensorArcOperation(Layers theLayers,TrackWrapper theTrack,DynamicTrackShapeSetWrapper shape)
+    public InsertSensorArcOperation(Layers theLayers,TrackWrapper theTrack,DynamicTrackShapeWrapper shape)
     {
       super(WIZARD_TITLE);
       this._layers = theLayers;
@@ -137,7 +137,7 @@ public class GenerateNewInsertSensorArcAction implements
     // did it work?
     if (dialog.getReturnCode() == WizardDialog.OK)
     {
-      final DynamicTrackShapeSetWrapper dynamicShapeWrapper = wizard.getDynamicShapeWrapper();
+      final DynamicTrackShapeWrapper dynamicShapeWrapper = wizard.getDynamicShapeWrapper();
       // ok, go for it.
       // sort it out as an operation
       final IUndoableOperation addTheCut = new InsertSensorArcOperation(theLayers,

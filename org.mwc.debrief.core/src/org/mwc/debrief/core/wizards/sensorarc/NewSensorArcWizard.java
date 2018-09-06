@@ -6,17 +6,14 @@ package org.mwc.debrief.core.wizards.sensorarc;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.wizard.Wizard;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper.DynamicCoverageShape;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
 import MWC.GUI.Editable;
@@ -37,11 +34,9 @@ public class NewSensorArcWizard extends Wizard
   private SensorArcBoundsWizardPage _boundsPage;
   private SensorArcStylingWizardPage _stylingPage;
   
-  private DynamicTrackShapeSetWrapper dynamicShape;
-  private Map<String, Editable> _tracksMap;
+  private DynamicTrackShapeWrapper dynamicShape;
   public NewSensorArcWizard(Map<String,Editable> tracksMap,String selectedArc,Date startTime,Date endTime)
   {
-    this._tracksMap = tracksMap;
     _timingsPage = new SensorArcTimingsWizardPage("Timings",startTime,endTime);
     _boundsPage = new SensorArcBoundsWizardPage("Bounds");
     _stylingPage = new SensorArcStylingWizardPage("Styling",tracksMap.keySet().toArray(new String[] {}),selectedArc);
@@ -107,42 +102,12 @@ public class NewSensorArcWizard extends Wizard
       }
       
     }
-    dynamicShape = addShapeToTrack((TrackWrapper)_tracksMap.get(data.getTrackName()),data);
+    dynamicShape = data;
     return true;
   }
   
-  private DynamicTrackShapeSetWrapper addShapeToTrack(TrackWrapper theTrack,
-      DynamicTrackShapeWrapper dynamicShapeWrapper) {
-    DynamicTrackShapeSetWrapper thisShape = null;
-    final Enumeration<Editable> iter = theTrack.getDynamicShapes().elements();
-    if (iter != null)
-    {
-      while (iter.hasMoreElements())
-      {
-        final DynamicTrackShapeSetWrapper shape =
-            (DynamicTrackShapeSetWrapper) iter.nextElement();
-
-        // is this our sensor?
-        if (shape.getName().equals(dynamicShapeWrapper.getSensorName()))
-        {
-          // cool, drop out
-          thisShape = shape;
-          break;
-        }
-      } // looping through the sensors
-    } // whether there are any sensors
-    if (thisShape == null)
-    {
-      // then create it
-      thisShape = new DynamicTrackShapeSetWrapper(dynamicShapeWrapper.getSensorName());
-
-      theTrack.add(thisShape);
-    }
-    thisShape.add(dynamicShapeWrapper);
-    return thisShape;
-  }
   
-  public DynamicTrackShapeSetWrapper getDynamicShapeWrapper() {
+  public DynamicTrackShapeWrapper getDynamicShapeWrapper() {
     return dynamicShape;
   }
    

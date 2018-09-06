@@ -18,7 +18,7 @@ import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
@@ -33,7 +33,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
   public static final String COMMAND_ID="org.mwc.debrief.core.creators.shapes.InsertSensorArc";
   
   @Override
-  protected DynamicTrackShapeSetWrapper getPlottable(PlainChart thePlainChart)
+  protected DynamicTrackShapeWrapper getPlottable(PlainChart thePlainChart)
   {
     Layers layers = getChart().getLayers();
     Date startDate = null;
@@ -57,7 +57,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
     }
     NewSensorArcWizard wizard = new NewSensorArcWizard(tracks,null,startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
-    final DynamicTrackShapeSetWrapper thisShape;
+    final DynamicTrackShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
       
       //get all param details from the wizard now.
