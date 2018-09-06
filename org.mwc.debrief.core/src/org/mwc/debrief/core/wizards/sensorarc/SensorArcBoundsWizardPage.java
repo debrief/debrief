@@ -23,8 +23,8 @@ public class SensorArcBoundsWizardPage extends NewSensorArcBaseWizardPage
   private Text _txtInnerRadius;
   private Text _txtOuterRadius;
 
-  private int innerRadius;
-  private int outerRadius;
+  private int innerRadius = 0;
+  private int outerRadius = 1000;
   private ModifyListener doubleValueListener = new ModifyListener()
   {
     
@@ -85,12 +85,12 @@ public class SensorArcBoundsWizardPage extends NewSensorArcBaseWizardPage
     
     new Label(composite,SWT.NONE).setText("Inner Radius (yds)");
     _txtInnerRadius = new Text(composite,SWT.BORDER);
-    _txtInnerRadius.setText("0");
+    _txtInnerRadius.setText("" + innerRadius);
     _txtInnerRadius.setToolTipText("Radius (yds) for inside of shape");
     _txtInnerRadius.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
     new Label(composite,SWT.NONE).setText("Outer Radius (yds)");
     _txtOuterRadius = new Text(composite,SWT.BORDER);
-    _txtOuterRadius.setText("1000");
+    _txtOuterRadius.setText("" + outerRadius);
     _txtOuterRadius.setToolTipText("Radius (yds) for outside of shape");
     _txtOuterRadius.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
     _txtInnerRadius.addModifyListener(doubleValueListener);
