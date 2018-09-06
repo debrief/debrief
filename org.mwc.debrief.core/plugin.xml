@@ -608,6 +608,26 @@
                     <reference definitionId="org.mwc.debrief.activePlotEditor"> </reference>
                 </visibleWhen>
             </command>
+            <separator
+                  name="org.mwc.debrief.core.separator1"
+                  visible="true">
+            </separator>
+            <menu
+                  id="dynamicShapes"
+                  label="Dynamic Shapes">
+               <command
+                     commandId="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
+                     icon="icons/16/sensor.png"
+                     id="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
+                     style="push">
+                  <visibleWhen
+                        checkEnabled="false">
+                     <reference
+                           definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+                  </visibleWhen>
+               </command>
+            </menu>
         </menuContribution>
 
         <menuContribution locationURI="toolbar:org.mwc.debrief.core.EditorShapes?after=shapes">
@@ -890,6 +910,11 @@
 
         <command defaultHandler="org.mwc.debrief.core.operations.ExportGPX"
             id="org.mwc.debrief.core.operations.ExportGPX" name="Export GPX"> </command>
+        <command
+              defaultHandler="org.mwc.debrief.core.creators.shapes.dynamic.InsertSensorArc"
+              id="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
+              name="&amp;Sensor Arc">
+        </command>
     </extension>
 
     <extension point="org.eclipse.ui.newWizards">
