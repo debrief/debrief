@@ -108,6 +108,12 @@ public class AircraftCarrierSym extends PlainSymbol {
     return "Carrier";
   }
 
+
+  @Override
+  public PlainSymbol create()
+  {
+    return new AircraftCarrierSym();
+  }
 }
 
 

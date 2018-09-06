@@ -124,19 +124,16 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    */
   protected boolean _fillMe;
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
   public PlainSymbol(){
     _theCol = DebriefColors.CYAN;
     _theScaleVal = SymbolScalePropertyEditor.MEDIUM;
     _fillMe = false;
   }
 
-  /////////////////////////////////////////////////////////////
-  // editable functions
-  ////////////////////////////////////////////////////////////
-  
+  /** create a clone of this object
+   * 
+   */
+  abstract public PlainSymbol create();
 
   public void setLineWid(final CanvasType dest)
   {

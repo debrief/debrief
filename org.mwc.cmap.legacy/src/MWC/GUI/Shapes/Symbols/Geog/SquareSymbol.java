@@ -120,6 +120,11 @@ public class SquareSymbol extends PlainSymbol
 		// if we think it is really necessary...
 	}
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new SquareSymbol();
+  }
 	/**
 	 * getBounds
 	 * 

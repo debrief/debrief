@@ -84,6 +84,12 @@ public class SubmergedSub extends PlainSymbol {
     return res;
   }
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new SubmergedSub();
+  }
+  
   /**
    * paint
    *

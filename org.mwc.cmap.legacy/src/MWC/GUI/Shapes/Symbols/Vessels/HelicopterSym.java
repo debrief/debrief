@@ -57,6 +57,12 @@ public class HelicopterSym extends PlainSymbol {
 	 */
 	private static final long serialVersionUID = 1L;
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new HelicopterSym();
+  }
+  
 	public void getMetafile()
   {
   }

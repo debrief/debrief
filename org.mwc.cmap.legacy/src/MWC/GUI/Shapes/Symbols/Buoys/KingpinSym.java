@@ -50,6 +50,7 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
@@ -71,7 +72,12 @@ public class KingpinSym extends BuoySym {
     paint(dest, centre, 0.0);
   }
 
-
+  @Override
+  public PlainSymbol create()
+  {
+    return new KingpinSym();
+  }
+  
   public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour

@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldDistance;
 
 public class ScaledMerchantSym extends WorldScaledSym
@@ -36,6 +37,12 @@ public class ScaledMerchantSym extends WorldScaledSym
 	{
 		return -45;
 	}
+	
+  @Override
+  public PlainSymbol create()
+  {
+    return new ScaledMerchantSym();
+  }
 
 	/**
 	 * 
