@@ -75,6 +75,11 @@ public class MinesweeperSym extends PlainSymbol {
     paint(dest, centre, 0.0);
   }
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new MinesweeperSym();
+  }
 
   public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {

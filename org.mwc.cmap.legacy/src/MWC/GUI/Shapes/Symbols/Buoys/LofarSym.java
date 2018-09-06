@@ -57,6 +57,7 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
@@ -66,6 +67,7 @@ public class LofarSym extends BuoySym {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+  private final String _myType;
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
@@ -77,8 +79,23 @@ public class LofarSym extends BuoySym {
   {
     paint(dest, centre, 0.0);
   }
+  
+  public LofarSym()
+  {
+    this(SymbolFactory.LOFAR);
+  }
+  
+  public LofarSym(String type)
+  {
+    _myType = type;
+  }
 
-
+  @Override
+  public PlainSymbol create()
+  {
+    return new LofarSym(_myType);
+  }
+  
   public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
     // set the colour
@@ -112,7 +129,7 @@ public class LofarSym extends BuoySym {
 
   public String getType()
   {
-    return SymbolFactory.LOFAR;
+    return _myType;
   }
 
 }

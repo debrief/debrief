@@ -57,6 +57,7 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
 public class ActiveSym extends BuoySym {
@@ -65,6 +66,8 @@ public class ActiveSym extends BuoySym {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
@@ -114,6 +117,12 @@ public class ActiveSym extends BuoySym {
   public String getType()
   {
     return "Active";
+  }
+
+  @Override
+  public PlainSymbol create()
+  {
+    return new ActiveSym();
   }
 
 }

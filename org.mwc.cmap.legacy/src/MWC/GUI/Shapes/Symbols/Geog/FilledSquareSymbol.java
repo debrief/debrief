@@ -14,6 +14,8 @@
  */
 package MWC.GUI.Shapes.Symbols.Geog;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+
 public class FilledSquareSymbol extends SquareSymbol
 {
 
@@ -29,6 +31,13 @@ public class FilledSquareSymbol extends SquareSymbol
 		// and set it to be filled
 		super.setFillSymbol(true);
 	}
+	
+	 
+  @Override
+  public PlainSymbol create()
+  {
+    return new FilledSquareSymbol();
+  }
 	
 	/**
 	 * getType
