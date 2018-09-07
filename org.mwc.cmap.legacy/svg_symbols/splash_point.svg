@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <line style="stroke: rgb(0, 0, 0); stroke-width: 7;" x1="100" y1="50" x2="0" y2="50"/>
+  <line style="stroke: rgb(0, 0, 0); stroke-width: 7;" x1="98.2" y1="49.586" x2="13" y2="3.1"/>
+  <line style="stroke: rgb(0, 0, 0); stroke-width: 7;" x1="98.2" y1="50.411" x2="13" y2="96.9"/>
+  <circle id="origin" cx="93.964" cy="49.946" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>
