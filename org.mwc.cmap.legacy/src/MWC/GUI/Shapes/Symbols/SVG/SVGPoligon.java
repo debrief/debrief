@@ -23,9 +23,6 @@ import MWC.GUI.CanvasType;
 
 public class SVGPoligon extends SVGElement
 {
-
-  private double[] _points;
-
   private double[] _x;
 
   private double[] _y;
@@ -42,7 +39,7 @@ public class SVGPoligon extends SVGElement
       points = points.replace(',', ' ');
       // We have the format "x1 y1 x2 y2 x3 y3 ... xn yn"
       String[] pointsSplitted = points.split(" ");
-      _points = new double[pointsSplitted.length];
+      double[] _points = new double[pointsSplitted.length];
 
       for (int i = 0; i < pointsSplitted.length; i++)
       {
