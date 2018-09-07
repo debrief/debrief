@@ -215,6 +215,8 @@ public final class SymbolFactory
   public static final String VECTOR_SVG = SVG_FORMAT_PREFIX + ":vector_2";
   
   public static final String ANOMALY_SVG = SVG_FORMAT_PREFIX + ":anomaly";
+  
+  public static final String BUOY_1_SVG = SVG_FORMAT_PREFIX + ":buoy_1";
 
   /**
    */
@@ -527,6 +529,7 @@ public final class SymbolFactory
       svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
       svgIcons.put(VECTOR_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
       svgIcons.put(ANOMALY_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(BUOY_1_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list

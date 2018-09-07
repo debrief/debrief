@@ -51,8 +51,8 @@ public class SVGEllipse extends SVGElement
   public void render(CanvasType dest, double sym_size, Point origin_coords,
       double rotation_degs)
   {
-    final double rx = _rx * sym_size;
-    final double ry = _ry * sym_size;
+    final double rx = _rx * sym_size * 2;
+    final double ry = _ry * sym_size * 2;
     final double x = _x * sym_size + origin_coords.getX() - rx / 2;
     final double y = _y * sym_size + origin_coords.getY() - ry / 2;
 
