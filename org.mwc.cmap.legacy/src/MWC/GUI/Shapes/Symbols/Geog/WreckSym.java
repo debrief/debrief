@@ -92,7 +92,12 @@ public class WreckSym extends PlainSymbol
   // member functions
   ////////////////////////////////
 
-
+  @Override
+  public PlainSymbol create()
+  {
+    return new WreckSym();
+  }
+  
   public void getMetafile()
   {
   }

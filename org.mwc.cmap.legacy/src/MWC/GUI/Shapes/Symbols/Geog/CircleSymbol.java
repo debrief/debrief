@@ -77,7 +77,12 @@ public class CircleSymbol extends PlainSymbol
      // construct the symbol from a sequence of metafile commands,
      // if we think it is really necessary...
   }
-
+  
+  @Override
+  public PlainSymbol create()
+  {
+    return new CircleSymbol();
+  }
   /**
    * getBounds
    *

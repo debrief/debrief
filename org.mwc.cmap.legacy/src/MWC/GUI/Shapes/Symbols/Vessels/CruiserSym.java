@@ -49,6 +49,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
 public class CruiserSym extends ScreenScaledSym
@@ -64,6 +65,12 @@ public class CruiserSym extends ScreenScaledSym
 	{
 		super.paint(dest, theLocation, direction);
 	}
+	
+  @Override
+  public PlainSymbol create()
+  {
+    return new CruiserSym();
+  }
 
 	protected Vector<double[][]> getCoords()
 	{

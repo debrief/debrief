@@ -184,4 +184,10 @@ public class SVGShape extends PlainSymbol
     }
   }
 
+  @Override
+  public PlainSymbol create()
+  {
+    return null;
+  }
+
 }

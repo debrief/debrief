@@ -73,6 +73,12 @@ public class DatumSym extends PlainSymbol {
     final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
     return res;
   }
+  
+  @Override
+  public PlainSymbol create()
+  {
+    return new DatumSym();
+  }
 
   public void paint(final CanvasType dest, final WorldLocation centre)
   {

@@ -48,6 +48,8 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+
 public class DestroyerSym extends ScreenScaledSym
 {
 
@@ -56,6 +58,12 @@ public class DestroyerSym extends ScreenScaledSym
 	 */
 	private static final long serialVersionUID = 1L;
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new DestroyerSym();
+  }
+  
 	protected Vector<double[][]> getCoords()
 	{
 		final Vector<double[][]> hullLines = new Vector<double[][]>();

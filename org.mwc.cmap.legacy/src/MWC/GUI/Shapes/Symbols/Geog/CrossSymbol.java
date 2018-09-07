@@ -91,6 +91,12 @@ public class CrossSymbol extends PlainSymbol {
 	public void getMetafile()
   {
   }
+	
+  @Override
+  public PlainSymbol create()
+  {
+    return new CrossSymbol();
+  }
 
   /** get this symbol as a sequence of lines
    *

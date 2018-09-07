@@ -230,7 +230,7 @@ public final class SymbolFactory
   /**
    * java.util.HashMap _theSymbols
    */
-  private java.util.HashMap<String, Class<?>> _theSymbols;
+  private java.util.HashMap<String, PlainSymbol> _theSymbols;
 
   /**
    * the list of one character identifiers used for import/export to/from Replay File Format
@@ -263,7 +263,7 @@ public final class SymbolFactory
     checkFactory();
 
     // get the class for this symbol
-    Class<?> symClass = (Class<?>) _theFactory._theSymbols.get(symbolType);
+    PlainSymbol symClass = _theFactory._theSymbols.get(symbolType);
 
     // did we find it?
     if (symClass == null)
@@ -278,7 +278,7 @@ public final class SymbolFactory
         {
           if (thisKey.toUpperCase().equals(symbolType.toUpperCase()))
           {
-            symClass = (Class<?>) _theFactory._theSymbols.get(thisKey);
+            symClass = _theFactory._theSymbols.get(thisKey);
             break;
           }
         }
@@ -294,10 +294,7 @@ public final class SymbolFactory
         if (colonIndex < 0)
         {
           // create it
-          final Object newSym = symClass.newInstance();
-
-          // convert to correct type
-          res = (PlainSymbol) newSym;
+          res = symClass.create();
         }
         else
         {
@@ -431,55 +428,40 @@ public final class SymbolFactory
     if (_theFactory == null)
     {
       _theFactory = new SymbolFactory();
-      _theFactory._theSymbols = new java.util.HashMap<String, Class<?>>();
+      _theFactory._theSymbols = new java.util.HashMap<String, PlainSymbol>();
 
       /////////////////////////////////////////
       // first the vessels
       /////////////////////////////////////////
-      final java.util.HashMap<String, Class<?>> vessels =
-          new java.util.HashMap<String, Class<?>>();
-      vessels.put(HELICOPTER,
-          MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym.class);
-      vessels.put(AIRCRAFT, MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
-      vessels.put("ScaledAmphib",
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym.class);
-      vessels.put("ScaledContainer",
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledContainerSym.class);
-      vessels.put(SCALED_FRIGATE,
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym.class);
-      vessels.put("ScaledLPG",
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledLPGSym.class);
-      vessels.put("ScaledMerchant",
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledMerchantSym.class);
-      vessels.put(SCALED_SUBMARINE,
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym.class);
-      vessels.put("ScaledVessel",
-          MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym.class);
-      vessels.put(SUBMARINE, MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
-      vessels.put("Missile", MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
-      vessels.put(TORPEDO, MWC.GUI.Shapes.Symbols.Vessels.TorpedoSym.class);
-      vessels.put(CARRIER,
-          MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym.class);
-      vessels.put(CRUISER, MWC.GUI.Shapes.Symbols.Vessels.CruiserSym.class);
-      vessels.put(DESTROYER, MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym.class);
-      vessels.put(FRIGATE, MWC.GUI.Shapes.Symbols.Vessels.FrigateSym.class);
-      vessels.put(TA_FRIGATE,
-          MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym.class);
-      vessels.put(FISHING_VESSEL,
-          MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
-      vessels.put(MERCHANT, MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
-      vessels.put(UNKNOWN, MWC.GUI.Shapes.Symbols.Vessels.UnknownSym.class);
-      vessels.put(MINESWEEPER,
-          MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym.class);
-      vessels.put(MERCHANT, MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
-      vessels.put(TROOP_CARRIER,
-          MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym.class);
+      final java.util.HashMap<String, PlainSymbol> vessels = new java.util.HashMap<String, PlainSymbol>();
+      vessels.put(HELICOPTER, new MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym());
+      vessels.put(AIRCRAFT, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym());
+      vessels.put("ScaledAmphib", new MWC.GUI.Shapes.Symbols.Vessels.ScaledAmphibSym());
+      vessels.put("ScaledContainer", new MWC.GUI.Shapes.Symbols.Vessels.ScaledContainerSym());
+      vessels.put(SCALED_FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.ScaledFrigateSym());
+      vessels.put("ScaledLPG", new MWC.GUI.Shapes.Symbols.Vessels.ScaledLPGSym());
+      vessels.put("ScaledMerchant", new MWC.GUI.Shapes.Symbols.Vessels.ScaledMerchantSym());
+      vessels.put(SCALED_SUBMARINE, new MWC.GUI.Shapes.Symbols.Vessels.ScaledSubmarineSym());
+      vessels.put("ScaledVessel", new MWC.GUI.Shapes.Symbols.Vessels.ScaledVesselSym());
+      vessels.put(SUBMARINE, new MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub());
+      vessels.put("Missile", new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym("Missile"));
+      vessels.put(TORPEDO, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym(TORPEDO));
+      vessels.put(CARRIER, new MWC.GUI.Shapes.Symbols.Vessels.AircraftCarrierSym());
+      vessels.put(CRUISER, new MWC.GUI.Shapes.Symbols.Vessels.CruiserSym());
+      vessels.put(DESTROYER, new MWC.GUI.Shapes.Symbols.Vessels.DestroyerSym());
+      vessels.put(FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.FrigateSym());
+      vessels.put(TA_FRIGATE, new MWC.GUI.Shapes.Symbols.Vessels.TAFrigateSym());
+      vessels.put(FISHING_VESSEL, new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
+      vessels.put(MERCHANT, new MWC.GUI.Shapes.Symbols.Vessels.MerchantSym());
+      vessels.put(UNKNOWN, new MWC.GUI.Shapes.Symbols.Vessels.UnknownSym());
+      vessels.put(MINESWEEPER, new MWC.GUI.Shapes.Symbols.Vessels.MinesweeperSym());
+      vessels.put(TROOP_CARRIER, new MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym());
 
-      vessels.put("Oiler",
-          MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
+      vessels.put("Oiler", new MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym());
+
 
       // add some other (A SSET related) items
-      vessels.put(MPA, MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
+      vessels.put(MPA, new MWC.GUI.Shapes.Symbols.Vessels.AircraftSym(MPA));
 
       _theVesselIds = new java.util.HashMap<String, String>();
       _theVesselIds.put(UNKNOWN, "@");
@@ -516,46 +498,35 @@ public final class SymbolFactory
       /////////////////////////////////////////
       // now the buoys
       /////////////////////////////////////////
-      final java.util.HashMap<String, Class<?>> buoys =
-          new java.util.HashMap<String, Class<?>>();
-      buoys.put(ACTIVE, MWC.GUI.Shapes.Symbols.Buoys.ActiveSym.class);
-      buoys.put(DIFAR, MWC.GUI.Shapes.Symbols.Buoys.DifarSym.class);
-      buoys.put(LOFAR, MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
-      buoys.put(BARRA, MWC.GUI.Shapes.Symbols.Buoys.BarraSym.class);
-      buoys.put(KINGPIN, MWC.GUI.Shapes.Symbols.Buoys.KingpinSym.class);
-      buoys.put(HIDAR, MWC.GUI.Shapes.Symbols.Buoys.HidarSym.class);
-      buoys.put(SQUARE, MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
+      final java.util.HashMap<String, PlainSymbol> buoys = new java.util.HashMap<String, PlainSymbol>();
+      buoys.put(ACTIVE, new MWC.GUI.Shapes.Symbols.Buoys.ActiveSym());
+      buoys.put(DIFAR, new MWC.GUI.Shapes.Symbols.Buoys.DifarSym());
+      buoys.put(LOFAR, new MWC.GUI.Shapes.Symbols.Buoys.LofarSym(LOFAR));
+      buoys.put(BARRA, new MWC.GUI.Shapes.Symbols.Buoys.BarraSym());
+      buoys.put(KINGPIN, new MWC.GUI.Shapes.Symbols.Buoys.KingpinSym());
+      buoys.put(HIDAR, new MWC.GUI.Shapes.Symbols.Buoys.HidarSym());
+      buoys.put(SQUARE, new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
 
       // just put in the difar sym as a general sonar buoy symbol
-      buoys.put("Sonar_Buoy", MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
+      buoys.put("Sonar_Buoy", new MWC.GUI.Shapes.Symbols.Buoys.LofarSym("Sonar_Buoy"));
 
       /////////////////////////////////////////
       // Now we add the svg items.
       /////////////////////////////////////////
-      final java.util.HashMap<String, Class<?>> svgIcons = new java.util.HashMap<>();
-      svgIcons.put(MERCHANT_SVG, MWC.GUI.Shapes.Symbols.SVG.SVGShape.class);
+      final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
+      svgIcons.put(MERCHANT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list
       /////////////////////////////////////////
-      _theFactory._theSymbols.put(FILLED_SQUARE,
-          MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol.class);
-      _theFactory._theSymbols.put(FILLED_CIRCLE,
-          MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol.class);
-      _theFactory._theSymbols.put(SQUARE,
-          MWC.GUI.Shapes.Symbols.Geog.SquareSymbol.class);
-      _theFactory._theSymbols.put(CIRCLE,
-          MWC.GUI.Shapes.Symbols.Geog.CircleSymbol.class);
-      _theFactory._theSymbols.put(CROSS,
-          MWC.GUI.Shapes.Symbols.Geog.CrossSymbol.class);
-      _theFactory._theSymbols.put(REFERENCE_POSITION,
-          MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.class);
-      _theFactory._theSymbols.put(WRECK,
-          MWC.GUI.Shapes.Symbols.Geog.WreckSym.class);
-      _theFactory._theSymbols.put(DATUM,
-          MWC.GUI.Shapes.Symbols.Geog.DatumSym.class);
-      _theFactory._theSymbols.put("Missile",
-          MWC.GUI.Shapes.Symbols.Vessels.MissileSym.class);
+      _theFactory._theSymbols.put(FILLED_SQUARE, new MWC.GUI.Shapes.Symbols.Geog.FilledSquareSymbol());
+      _theFactory._theSymbols.put(FILLED_CIRCLE, new MWC.GUI.Shapes.Symbols.Geog.FilledCircleSymbol());
+      _theFactory._theSymbols.put(SQUARE, new MWC.GUI.Shapes.Symbols.Geog.SquareSymbol());
+      _theFactory._theSymbols.put(CIRCLE, new MWC.GUI.Shapes.Symbols.Geog.CircleSymbol());
+      _theFactory._theSymbols.put(CROSS, new MWC.GUI.Shapes.Symbols.Geog.CrossSymbol());
+      _theFactory._theSymbols.put(REFERENCE_POSITION, new MWC.GUI.Shapes.Symbols.Geog.ReferenceSym());
+      _theFactory._theSymbols.put(WRECK, new MWC.GUI.Shapes.Symbols.Geog.WreckSym());
+      _theFactory._theSymbols.put(DATUM, new MWC.GUI.Shapes.Symbols.Geog.DatumSym());
 
       // put the sub-lists into the main list
       _theFactory._theSymbols.putAll(vessels);
