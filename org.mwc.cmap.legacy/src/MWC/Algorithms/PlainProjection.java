@@ -88,7 +88,7 @@ abstract public class PlainProjection implements Serializable, Editable
   /**
    * the parent class which will give us the information necessary to produce a relative plot
    */
-  protected RelativeProjectionParent _relativePlotter;
+  private RelativeProjectionParent _relativePlotter;
 
   /**
    * our editor
@@ -263,6 +263,11 @@ abstract public class PlainProjection implements Serializable, Editable
   public void setRelativeProjectionParent(final RelativeProjectionParent par)
   {
     _relativePlotter = par;
+  }
+  
+  protected RelativeProjectionParent getRelativeProjectionParent()
+  {
+    return _relativePlotter;
   }
 
   // HACK : uncomment these fields
