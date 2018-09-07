@@ -6,19 +6,20 @@ Element-Type: context
 Element-Version: 2.0
 Id: _f2QKkLHlEeiJMM-KEOtW-Q
 Runtime-Version: 2.2.0.201706152316
-Save-Time: 9/6/18 7:00 PM
+Save-Time: 9/7/18 12:44 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
 Entry-Name: .ecl.context
 
-proc "import_sample_data_project_proc" {
+proc "import_sample_data_project_proc" [val aut ]{
 get-menu -path "File/Import..." | click
 with [get-window Import] {
     get-tree | select "General/Existing Projects into Workspace"
     get-button "Next >" | click
 }
-set-dialog-result Folder  [concat [get-java-property "debrifInstallation"] "//" "sample_data"]
+set-dialog-result Folder  [concat $aut "sample_data"]
+
 with [get-window Import] {
     get-button "Browse..." | click
     get-button Finish | click
