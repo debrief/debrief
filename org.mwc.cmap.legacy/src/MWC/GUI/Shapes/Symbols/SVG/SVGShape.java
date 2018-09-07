@@ -16,18 +16,15 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -226,20 +223,9 @@ public class SVGShape extends PlainSymbol
 
       return doc;
     }
-    catch (IOException e)
+    catch (Exception e)
     {
-      // TODO I coudln't read the given file.
-      e.printStackTrace();
-    }
-    catch (SAXException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    catch (ParserConfigurationException e)
-    {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Trace.trace(e, "Failed to open SVG file " + _svgFileName);
     }
 
     // failed, drop out
@@ -248,9 +234,9 @@ public class SVGShape extends PlainSymbol
 
   private void parseOrigin(Node element)
   {
-    final int x = Integer.parseInt(element.getAttributes().getNamedItem("cx")
+    final int x = (int)Double.parseDouble(element.getAttributes().getNamedItem("cx")
         .getNodeValue());
-    final int y = Integer.parseInt(element.getAttributes().getNamedItem("cy")
+    final int y = (int)Double.parseDouble(element.getAttributes().getNamedItem("cy")
         .getNodeValue());
     _origin = new Point(x, y);
   }
