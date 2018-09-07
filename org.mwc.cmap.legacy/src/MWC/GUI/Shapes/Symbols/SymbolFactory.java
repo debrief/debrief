@@ -300,20 +300,7 @@ public final class SymbolFactory
     {
       try
       {
-        int colonIndex = symbolType.indexOf(":");
-        if (colonIndex < 0)
-        {
-          // create it
-          res = symClass.create();
-        }
-        else
-        {
-          String fileName = symbolType.substring(colonIndex + 1);
-
-          // We create the object.
-
-          res = new MWC.GUI.Shapes.Symbols.SVG.SVGShape(fileName);
-        }
+        res = symClass.create();
       }
       catch (final Exception ill)
       {
@@ -524,12 +511,12 @@ public final class SymbolFactory
       // Now we add the svg items.
       /////////////////////////////////////////
       final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
-      svgIcons.put(COASTGUARD_LAW_ENFORCEMENT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
-      svgIcons.put(FLOATING_MINE_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
-      svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
-      svgIcons.put(VECTOR_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
-      svgIcons.put(ANOMALY_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
-      svgIcons.put(BUOY_1_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(COASTGUARD_LAW_ENFORCEMENT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(COASTGUARD_LAW_ENFORCEMENT_SVG));
+      svgIcons.put(FLOATING_MINE_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(FLOATING_MINE_SVG));
+      svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(SPLASH_POINT_SVG));
+      svgIcons.put(VECTOR_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(VECTOR_SVG));
+      svgIcons.put(ANOMALY_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(ANOMALY_SVG));
+      svgIcons.put(BUOY_1_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(BUOY_1_SVG));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list
