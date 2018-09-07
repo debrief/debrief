@@ -121,11 +121,6 @@
 
 package MWC.GUI.Shapes.Symbols;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-
-import MWC.GUI.Shapes.Symbols.SVG.SVGShape;
 
 /**
  * note Currently using Factory. Potentially switch to Abstract Factory, only reading in required
@@ -203,14 +198,14 @@ public final class SymbolFactory
    * Where we are going to store the icons
    */
   public static final String SVG_FOLDER = "svg";
-  
+
   /**
    * Value to be used in the custom format SVG_FORMAT_PREFIX:<File Name>
    */
   public static final String SVG_FORMAT_PREFIX = "svg";
-  
+
   public static final String SVG_EXTENSION = ".svg";
-  
+
   public static final String MERCHANT_SVG = SVG_FORMAT_PREFIX + ":Merchant SVG";
 
   /**
@@ -295,7 +290,7 @@ public final class SymbolFactory
     {
       try
       {
-        int colonIndex = symbolType.indexOf(":"); 
+        int colonIndex = symbolType.indexOf(":");
         if (colonIndex < 0)
         {
           // create it
@@ -303,13 +298,14 @@ public final class SymbolFactory
 
           // convert to correct type
           res = (PlainSymbol) newSym;
-        }else
+        }
+        else
         {
           String fileName = symbolType.substring(colonIndex + 1);
-          
+
           // We create the object.
-          
-          res = new SVGShape(fileName);
+
+          res = new MWC.GUI.Shapes.Symbols.SVG.SVGShape(fileName);
         }
       }
       catch (final Exception ill)
@@ -340,7 +336,7 @@ public final class SymbolFactory
 
     // ok, try it the long way
     final java.util.Iterator<String> it = _theVesselIds.values().iterator();
-    final Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
+    final java.util.Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
     while (it.hasNext())
     {
       final String thisKey = (String) it.next();
@@ -372,7 +368,7 @@ public final class SymbolFactory
     if (res == null)
     {
       final String typeUpper = type.toUpperCase();
-      final Iterator<String> iter = _theVesselIds.keySet().iterator();
+      final java.util.Iterator<String> iter = _theVesselIds.keySet().iterator();
       while (iter.hasNext())
       {
         final String thisKey = (String) iter.next();
@@ -415,6 +411,16 @@ public final class SymbolFactory
     checkFactory();
 
     return _theVesselList;
+  }
+
+  /**
+   * return a list of SVG icons available
+   */
+  static public String[] getSVGList()
+  {
+    checkFactory();
+
+    return _theSVGList;
   }
 
   /**
@@ -526,7 +532,7 @@ public final class SymbolFactory
       /////////////////////////////////////////
       // Now we add the svg items.
       /////////////////////////////////////////
-      final java.util.HashMap<String, Class<?>> svgIcons = new HashMap<>();
+      final java.util.HashMap<String, Class<?>> svgIcons = new java.util.HashMap<>();
       svgIcons.put(MERCHANT_SVG, MWC.GUI.Shapes.Symbols.SVG.SVGShape.class);
 
       /////////////////////////////////////////

@@ -14,7 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class SVGShape extends PlainSymbol
    * Path of the SVG we are going to load.
    */
   private String _svgPath;
-  
+
   /**
    * Type of the shape (in the custom format svg:File Name)
    */
@@ -63,11 +62,13 @@ public class SVGShape extends PlainSymbol
 
   /**
    * 
-   * @param svgFileName SVG File name without extension or path.
+   * @param svgFileName
+   *          SVG File name without extension or path.
    */
   public SVGShape(final String svgFileName)
   {
-    _svgPath = SymbolFactory.SVG_FOLDER + File.separator + svgFileName + SymbolFactory.SVG_EXTENSION;
+    _svgPath = SymbolFactory.SVG_FOLDER + File.separator + svgFileName
+        + SymbolFactory.SVG_EXTENSION;
     _svgType = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgFileName;
   }
 
@@ -88,12 +89,12 @@ public class SVGShape extends PlainSymbol
   }
 
   @Override
-  public Dimension getBounds()
+  public java.awt.Dimension getBounds()
   {
     final int sWid = (int) (getScaleVal());
     return new java.awt.Dimension(10 * sWid, 10 * sWid);
   }
-  
+
   @Override
   public void paint(CanvasType dest, WorldLocation theCentre)
   {
@@ -112,14 +113,13 @@ public class SVGShape extends PlainSymbol
          * We get the SVG as String
          */
 
-        
         // TODO. Change this. If we use org.mwc.cmap.core, it gives a cyclic dependency error.
-        //final URL resource = SymbolFactory.class.getResource(completePath);
-        //SymbolFactory.class.getReso.
-        
-        //String svgFilePath = Paths.get(resource.toURI()).toAbsolutePath().toString();
+        // final URL resource = SymbolFactory.class.getResource(completePath);
+        // SymbolFactory.class.getReso.
+
+        // String svgFilePath = Paths.get(resource.toURI()).toAbsolutePath().toString();
         final File fXmlFile = new File(_svgPath);
-        //System.out.println(fXmlFile.getAbsolutePath());
+        // System.out.println(fXmlFile.getAbsolutePath());
         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
             .newInstance();
         final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -140,7 +140,8 @@ public class SVGShape extends PlainSymbol
           if (element.getNodeType() == Node.ELEMENT_NODE)
           {
 
-            SVGElement newElement = elementFactory.getInstance((Element)element);
+            SVGElement newElement = elementFactory.getInstance(
+                (Element) element);
 
             // We are ignoring unknown elements for now.
             if (newElement != null)
