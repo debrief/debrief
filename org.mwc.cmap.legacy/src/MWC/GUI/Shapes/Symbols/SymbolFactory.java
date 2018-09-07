@@ -197,7 +197,7 @@ public final class SymbolFactory
   /**
    * Where we are going to store the icons
    */
-  public static final String SVG_FOLDER = "svg";
+  public static final String SVG_FOLDER = "svg_symbols";
 
   /**
    * Value to be used in the custom format SVG_FORMAT_PREFIX:<File Name>
@@ -206,7 +206,7 @@ public final class SymbolFactory
 
   public static final String SVG_EXTENSION = ".svg";
 
-  public static final String MERCHANT_SVG = SVG_FORMAT_PREFIX + ":Merchant SVG";
+  public static final String COASTGUARD_LAW_ENFORCEMENT_SVG = SVG_FORMAT_PREFIX + ":coastguard_law_enforcement";
 
   /**
    */
@@ -262,7 +262,7 @@ public final class SymbolFactory
     // check we have our factory
     checkFactory();
 
-    // get the class for this symbol
+    // get the class for this symbonPointsl
     PlainSymbol symClass = _theFactory._theSymbols.get(symbolType);
 
     // did we find it?
@@ -514,7 +514,7 @@ public final class SymbolFactory
       // Now we add the svg items.
       /////////////////////////////////////////
       final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
-      svgIcons.put(MERCHANT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(COASTGUARD_LAW_ENFORCEMENT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list

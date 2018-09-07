@@ -67,8 +67,7 @@ public class SVGShape extends PlainSymbol
    */
   public SVGShape(final String svgFileName)
   {
-    _svgPath = SymbolFactory.SVG_FOLDER + File.separator + svgFileName
-        + SymbolFactory.SVG_EXTENSION;
+    _svgPath = svgFileName + SymbolFactory.SVG_EXTENSION;
     _svgType = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgFileName;
   }
 
@@ -114,12 +113,14 @@ public class SVGShape extends PlainSymbol
          */
 
         // TODO. Change this. If we use org.mwc.cmap.core, it gives a cyclic dependency error.
-        // final URL resource = SymbolFactory.class.getResource(completePath);
+        // final java.net.URL resource = ;
         // SymbolFactory.class.getReso.
 
-        // String svgFilePath = Paths.get(resource.toURI()).toAbsolutePath().toString();
-        final File fXmlFile = new File(_svgPath);
+        // String svgFilePath =
+        // java.nio.file.Paths.get(resource.toURI()).toAbsolutePath().toString();
+        //final File fXmlFile = new File(SVGShape.class.getResource("/" + _svgPath).getFile());
         // System.out.println(fXmlFile.getAbsolutePath());
+        final File fXmlFile = new File(_svgPath);
         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
             .newInstance();
         final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();

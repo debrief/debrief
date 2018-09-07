@@ -14,6 +14,7 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
+import java.awt.Color;
 import java.awt.Point;
 
 import org.w3c.dom.Element;
@@ -23,18 +24,81 @@ import MWC.GUI.CanvasType;
 public class SVGPoligon extends SVGElement
 {
 
+  private double[] _points;
+
+  private double[] _x;
+
+  private double[] _y;
+
+  private Color _fill;
+
   public SVGPoligon(Element dom)
   {
     super(dom);
-    // TODO Auto-generated constructor stub
+    try
+    {
+      String points = getDom().getAttribute("points");
+
+      points = points.replace(',', ' ');
+      // We have the format "x1 y1 x2 y2 x3 y3 ... xn yn"
+      String[] pointsSplitted = points.split(" ");
+      _points = new double[pointsSplitted.length];
+
+      for (int i = 0; i < pointsSplitted.length; i++)
+      {
+        _points[i] = Double.parseDouble(pointsSplitted[i]);
+      }
+
+      _x = new double[_points.length / 2];
+      _y = new double[_points.length / 2]; 
+      for (int i = 0; i < _points.length; i += 2)
+      {
+        _x[i / 2] = _points[i];
+        _y[i / 2] = _points[i+1];
+      }
+
+      if (getDom().hasAttribute("fill"))
+      {
+        // We have a color.
+        String colorString = getDom().getAttribute("fill");
+        if (colorString.matches("#[0-9A-Fa-f]{6}"))
+        {
+          _fill = hex2Rgb(colorString);
+        }
+        else
+        {
+          MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
+              + colorString);
+        }
+      }
+    }
+    catch (Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace("Invalid SVG Format");
+    }
   }
 
   @Override
   public void render(CanvasType dest, double sym_size, Point origin_coords,
       double rotation_degs)
   {
-    // TODO Auto-generated method stub
+    int [] x = new int[_x.length];
+    int [] y = new int[_y.length];
     
+    for ( int i = 0 ; i < x.length ; i++ ) {
+      x[i] = (int)(_x[i] * sym_size + origin_coords.getX());
+      y[i] = (int)(_y[i] * sym_size + origin_coords.getY());
+    }
+    
+    if (_fill != null)
+    {
+      dest.setColor(_fill);
+      dest.fillPolygon(x, y, x.length);
+    }
+    else
+    {
+      dest.drawPolygon(x, y, x.length);
+    }
   }
 
 }

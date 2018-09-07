@@ -31,6 +31,9 @@ public class SVGElementFactory
         answer = new SVGRectangle(svgElement);
         break;
 
+      case "polygon":
+        answer = new SVGPoligon(svgElement);
+        break;
       default:
         // We have an unknown type.
         break;

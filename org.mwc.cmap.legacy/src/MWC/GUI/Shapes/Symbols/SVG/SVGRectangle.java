@@ -36,24 +36,32 @@ public class SVGRectangle extends SVGElement
   public SVGRectangle(Element dom)
   {
     super(dom);
-    _x = Double.parseDouble(getDom().getAttribute("x"));
-    _y = Double.parseDouble(getDom().getAttribute("y"));
-    _width = Double.parseDouble(getDom().getAttribute("width"));
-    _height = Double.parseDouble(getDom().getAttribute("height"));
-
-    if (getDom().hasAttribute("fill"))
+    try
     {
-      // We have a color.
-      String colorString = getDom().getAttribute("fill");
-      if (colorString.matches("#[0-9A-Fa-f]{6}"))
+
+      _x = Double.parseDouble(getDom().getAttribute("x"));
+      _y = Double.parseDouble(getDom().getAttribute("y"));
+      _width = Double.parseDouble(getDom().getAttribute("width"));
+      _height = Double.parseDouble(getDom().getAttribute("height"));
+
+      if (getDom().hasAttribute("fill"))
       {
-        _fill = hex2Rgb(colorString);
+        // We have a color.
+        String colorString = getDom().getAttribute("fill");
+        if (colorString.matches("#[0-9A-Fa-f]{6}"))
+        {
+          _fill = hex2Rgb(colorString);
+        }
+        else
+        {
+          MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
+              + colorString);
+        }
       }
-      else
-      {
-        MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
-            + colorString);
-      }
+    }
+    catch (Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace("Invalid SVG Format");
     }
   }
 
@@ -66,7 +74,6 @@ public class SVGRectangle extends SVGElement
     final double width = _width * sym_size;
     final double height = _height * sym_size;
 
-    
     if (_fill != null)
     {
       dest.setColor(_fill);
