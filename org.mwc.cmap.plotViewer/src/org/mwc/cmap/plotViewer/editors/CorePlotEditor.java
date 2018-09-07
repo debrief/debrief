@@ -698,7 +698,11 @@ public abstract class CorePlotEditor extends EditorPart implements
     // and update the projection, if we have one
     if (_pendingProjection != null)
     {
-      _myChart.getCanvas().setProjection(_pendingProjection);
+      final WorldArea dataArea = _pendingProjection.getDataArea();
+      if(dataArea != null)
+      {
+        _myChart.getCanvas().getProjection().setDataArea(dataArea);
+      }
       _pendingProjection = null;
     }
 
