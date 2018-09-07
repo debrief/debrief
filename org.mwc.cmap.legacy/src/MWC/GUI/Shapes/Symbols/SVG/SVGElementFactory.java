@@ -46,6 +46,10 @@ public class SVGElementFactory
       case "ellipse":
         answer = new SVGEllipse(svgElement);
         break;
+
+      case "polyline":
+        answer = new SVGPolyline(svgElement);
+        break;
         
       default:
         // We have an unknown type.

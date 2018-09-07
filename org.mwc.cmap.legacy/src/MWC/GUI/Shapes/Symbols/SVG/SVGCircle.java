@@ -14,7 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Color;
 import java.awt.Point;
 
 import org.w3c.dom.Element;

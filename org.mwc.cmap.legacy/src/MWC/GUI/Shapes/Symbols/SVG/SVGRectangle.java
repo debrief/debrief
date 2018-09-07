@@ -14,8 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Color;
-
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;

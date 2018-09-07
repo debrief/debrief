@@ -213,6 +213,8 @@ public final class SymbolFactory
   public static final String SPLASH_POINT_SVG = SVG_FORMAT_PREFIX + ":splash_point";
   
   public static final String VECTOR_SVG = SVG_FORMAT_PREFIX + ":vector_2";
+  
+  public static final String ANOMALY_SVG = SVG_FORMAT_PREFIX + ":anomaly";
 
   /**
    */
@@ -524,6 +526,7 @@ public final class SymbolFactory
       svgIcons.put(FLOATING_MINE_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
       svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
       svgIcons.put(VECTOR_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(ANOMALY_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list

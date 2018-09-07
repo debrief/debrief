@@ -20,18 +20,48 @@ import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
 
-public class SVGPoligon extends SVGPolyline
+public class SVGPolyline extends SVGElement
 {
+  protected double[] _x;
 
-  public SVGPoligon(Element dom)
+  protected double[] _y;
+  
+  public SVGPolyline(Element dom)
   {
     super(dom);
+    try
+    {
+      String points = getDom().getAttribute("points");
+
+      points = points.replace(',', ' ');
+      // We have the format "x1 y1 x2 y2 x3 y3 ... xn yn"
+      String[] pointsSplitted = points.split(" ");
+      double[] _points = new double[pointsSplitted.length];
+
+      for (int i = 0; i < pointsSplitted.length; i++)
+      {
+        _points[i] = Double.parseDouble(pointsSplitted[i]);
+      }
+
+      _x = new double[_points.length / 2];
+      _y = new double[_points.length / 2]; 
+      for (int i = 0; i < _points.length; i += 2)
+      {
+        _x[i / 2] = _points[i];
+        _y[i / 2] = _points[i+1];
+      }
+    }
+    catch (Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace("Invalid SVG Format");
+    }
   }
 
   @Override
   public void render(CanvasType dest, double sym_size, Point origin_coords,
       double rotation_degs)
   {
+
     int [] x = new int[_x.length];
     int [] y = new int[_y.length];
     
@@ -43,12 +73,8 @@ public class SVGPoligon extends SVGPolyline
     if (_fill != null)
     {
       dest.setColor(_fill);
-      dest.fillPolygon(x, y, x.length);
     }
-    else
-    {
-      dest.drawPolygon(x, y, x.length);
-    }
+    dest.drawPolyline(x, y, x.length);
   }
 
 }
