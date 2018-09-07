@@ -249,10 +249,10 @@ public class FlatProjection extends PlainProjection
 		if (super.getPrimaryOriented())
 		{
 			// check if we have a parent defined
-			if (super._relativePlotter != null)
+			if (getRelativeProjectionParent() != null)
 			{
 				// and the bearing offset
-				bearingOffset = _relativePlotter.getHeading();
+				bearingOffset = getRelativeProjectionParent().getHeading();
 			}
 		}
 
@@ -260,10 +260,10 @@ public class FlatProjection extends PlainProjection
 		if (super.getPrimaryCentred())
 		{
 			// check if we have a parent defined
-			if (super._relativePlotter != null)
+			if (getRelativeProjectionParent() != null)
 			{
 				// try to get the origin
-				myOrigin = _relativePlotter.getLocation();
+				myOrigin = getRelativeProjectionParent().getLocation();
 			}
 		}
 
@@ -349,10 +349,10 @@ public class FlatProjection extends PlainProjection
 			if (super.getPrimaryOriented())
 			{
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
+				if (getRelativeProjectionParent() != null)
 				{
 					// and the bearing offset
-					bearingOffset = _relativePlotter.getHeading();
+					bearingOffset = getRelativeProjectionParent().getHeading();
 				}
 			}
 
@@ -360,10 +360,10 @@ public class FlatProjection extends PlainProjection
 			if (super.getPrimaryCentred())
 			{
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
+				if (getRelativeProjectionParent() != null)
 				{
 					// try to get the origin
-					myOrigin = _relativePlotter.getLocation();
+					myOrigin = getRelativeProjectionParent().getLocation();
 				}
 			}
 		}
