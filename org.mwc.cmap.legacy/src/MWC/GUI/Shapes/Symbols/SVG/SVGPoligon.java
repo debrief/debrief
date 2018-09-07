@@ -30,7 +30,7 @@ public class SVGPoligon extends SVGPolyline
 
   @Override
   public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs)
+      double rotation_degs, final java.awt.Point rotationPoint)
   {
     int [] x = new int[_x.length];
     int [] y = new int[_y.length];

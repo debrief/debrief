@@ -47,7 +47,8 @@ public class SVGRectangle extends SVGElement
 
   @Override
   public void render(CanvasType dest, double sym_size,
-      java.awt.Point origin_coords, double rotation_degs)
+      java.awt.Point origin_coords, double rotation_degs,
+      final java.awt.Point rotationPoint)
   {
     final double x = _x * sym_size + origin_coords.getX();
     final double y = _y * sym_size + origin_coords.getY();

@@ -45,8 +45,9 @@ public class SVGCircle extends SVGElement
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs)
+  public void render(final CanvasType dest, final double sym_size,
+      final Point origin_coords, final double rotation_degs,
+      final java.awt.Point rotationPoint)
   {
     final double r = _r * sym_size * 2;
     final double x = _x * sym_size + origin_coords.getX() - r / 2;

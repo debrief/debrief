@@ -30,7 +30,7 @@ public class SVGLine extends SVGElement
   private double _x2;
 
   private double _y2;
-  
+
   public SVGLine(Element dom)
   {
     super(dom);
@@ -49,15 +49,14 @@ public class SVGLine extends SVGElement
 
   @Override
   public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs)
+      double rotation_degs, final java.awt.Point rotationPoint)
   {
     final double x1 = _x1 * sym_size + origin_coords.getX();
     final double y1 = _y1 * sym_size + origin_coords.getY();
     final double x2 = _x2 * sym_size + origin_coords.getX();
     final double y2 = _y2 * sym_size + origin_coords.getY();
-    
-    dest.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
+
+    dest.drawLine((int) x1, (int) y1, (int) x2, (int) y2);
   }
-  
 
 }

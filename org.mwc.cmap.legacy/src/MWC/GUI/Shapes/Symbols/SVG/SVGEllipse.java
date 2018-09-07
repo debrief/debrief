@@ -49,7 +49,7 @@ public class SVGEllipse extends SVGElement
 
   @Override
   public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs)
+      double rotation_degs, final java.awt.Point rotationPoint)
   {
     final double rx = _rx * sym_size * 2;
     final double ry = _ry * sym_size * 2;

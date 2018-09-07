@@ -137,7 +137,7 @@ public class SVGShape extends PlainSymbol
       final Point centre = dest.toScreen(center);
       for (SVGElement element : _elements)
       {
-        element.render(dest, getScaleVal(), centre, directionToUse);
+        element.render(dest, getScaleVal(), centre, directionToUse, _origin);
       }
     }
   }

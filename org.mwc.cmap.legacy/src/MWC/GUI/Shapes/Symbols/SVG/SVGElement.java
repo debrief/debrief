@@ -64,7 +64,8 @@ abstract public class SVGElement
   }
 
   public abstract void render(final CanvasType dest, final double sym_size,
-      final java.awt.Point origin_coords, final double rotation_degs);
+      final java.awt.Point origin_coords, final double rotation_degs,
+      final java.awt.Point rotationPoint);
 
   /**
    * https://stackoverflow.com/questions/4129666/how-to-convert-hex-to-rgb-using-java
