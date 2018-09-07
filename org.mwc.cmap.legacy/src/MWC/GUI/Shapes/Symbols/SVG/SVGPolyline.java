@@ -70,10 +70,6 @@ public class SVGPolyline extends SVGElement
       y[i] = (int)(_y[i] * sym_size + origin_coords.getY());
     }
     
-    if (_fill != null)
-    {
-      dest.setColor(_fill);
-    }
     dest.drawPolyline(x, y, x.length);
   }
 

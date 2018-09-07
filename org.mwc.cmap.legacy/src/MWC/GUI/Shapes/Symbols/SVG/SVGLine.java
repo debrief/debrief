@@ -56,10 +56,6 @@ public class SVGLine extends SVGElement
     final double x2 = _x2 * sym_size + origin_coords.getX();
     final double y2 = _y2 * sym_size + origin_coords.getY();
     
-    if (_fill != null)
-    {
-      dest.setColor(_fill);
-    }
     dest.drawLine((int)x1, (int)y1, (int)x2, (int)y2);
   }
   

@@ -58,7 +58,6 @@ public class SVGEllipse extends SVGElement
 
     if (_fill != null)
     {
-      dest.setColor(_fill);
       dest.fillOval((int) x, (int) y, (int) rx, (int) ry);
     }
     else

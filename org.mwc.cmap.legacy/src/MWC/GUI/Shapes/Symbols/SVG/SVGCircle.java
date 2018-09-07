@@ -54,7 +54,6 @@ public class SVGCircle extends SVGElement
 
     if (_fill != null)
     {
-      dest.setColor(_fill);
       dest.fillOval((int) x, (int) y, (int) r, (int) r);
     }
     else
