@@ -14,6 +14,7 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
+import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 
 public class SVGShape extends PlainSymbol
 {
@@ -41,15 +43,11 @@ public class SVGShape extends PlainSymbol
    */
   private static final long serialVersionUID = 1L;
 
-  /**
-   * Path of the SVG we are going to load.
+  /** our symbol type
+   * 
    */
-  private String _svgPath;
-
-  /**
-   * Type of the shape (in the custom format svg:File Name)
-   */
-  private String _svgType;
+  private final String _svgFileName;
+  
   /**
    * Elements of the shape (Cache)
    */
@@ -60,6 +58,12 @@ public class SVGShape extends PlainSymbol
    */
   private boolean _canRotate;
 
+  /** the origin, at which we centre the symbol
+   * 
+   */
+  @SuppressWarnings("unused")
+  private Point _origin;
+
   /**
    * 
    * @param svgFileName
@@ -67,8 +71,7 @@ public class SVGShape extends PlainSymbol
    */
   public SVGShape(final String svgFileName)
   {
-    _svgPath = svgFileName + SymbolFactory.SVG_EXTENSION;
-    _svgType = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgFileName;
+    _svgFileName = svgFileName;
   }
 
   public boolean canRotate()
@@ -84,7 +87,7 @@ public class SVGShape extends PlainSymbol
   @Override
   public String getType()
   {
-    return _svgType;
+    return _svgFileName;
   }
 
   @Override
@@ -120,7 +123,13 @@ public class SVGShape extends PlainSymbol
         // java.nio.file.Paths.get(resource.toURI()).toAbsolutePath().toString();
         //final File fXmlFile = new File(SVGShape.class.getResource("/" + _svgPath).getFile());
         // System.out.println(fXmlFile.getAbsolutePath());
-        final File fXmlFile = new File(_svgPath);
+        
+        // remove the svg: prefix, if necesary
+        final String fName = _svgFileName.contains("svg:") ? _svgFileName.substring(4) : _svgFileName;
+        
+        String svgPath = fName + SymbolFactory.SVG_EXTENSION;
+        
+        final File fXmlFile = new File(svgPath);
         final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
             .newInstance();
         final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -141,13 +150,23 @@ public class SVGShape extends PlainSymbol
           if (element.getNodeType() == Node.ELEMENT_NODE)
           {
 
-            SVGElement newElement = elementFactory.getInstance(
-                (Element) element);
-
-            // We are ignoring unknown elements for now.
-            if (newElement != null)
+            // check it's not the origin node
+            Node id = element.getAttributes().getNamedItem("id");
+            if(id != null && "origin".equals(id.getNodeValue()))
             {
-              _elements.add(newElement);
+              parseOrigin(element);
+              parseRotation(element);
+            }
+            else
+            {
+              SVGElement newElement = elementFactory.getInstance(
+                  (Element) element);
+
+              // We are ignoring unknown elements for now.
+              if (newElement != null)
+              {
+                _elements.add(newElement);
+              }
             }
           }
         }
@@ -170,25 +189,65 @@ public class SVGShape extends PlainSymbol
     }
 
     // At this point, we have our file loaded (pre-cached)
-
-    double directionToUse = .0;
-    if (_canRotate)
+    if(_elements == null)
     {
-      directionToUse = direction;
+      Trace.trace("Failed to parse SVG file for: " + _svgFileName);
     }
-
-    // create our centre point
-    final java.awt.Point centre = dest.toScreen(center);
-    for (SVGElement element : _elements)
+    else
     {
-      element.render(dest, getScaleVal(), centre, directionToUse);
+
+      double directionToUse = .0;
+      if (_canRotate)
+      {
+        directionToUse = direction;
+      }
+
+      // create our centre point
+      final java.awt.Point centre = dest.toScreen(center);
+      for (SVGElement element : _elements)
+      {
+        element.render(dest, getScaleVal(), centre, directionToUse);
+      }
     }
+  }
+
+  private void parseOrigin(Node element)
+  {
+    final int x = Integer.parseInt(element.getAttributes().getNamedItem("cx").getNodeValue());
+    final int y = Integer.parseInt(element.getAttributes().getNamedItem("cy").getNodeValue());
+    _origin = new Point(x, y);
+  }
+
+  private void parseRotation(Node element)
+  {
+     final String style = element.getAttributes().getNamedItem("style").getNodeValue();
+     if(style == null || style.length() == 0)
+     {
+       Trace.trace("Style parameter missing for " + _svgFileName);
+     }
+     else
+     {
+       final boolean rotates;
+       if(style.equals("fill: rgb(255, 0, 0);"))
+       {
+         // red - doesn't rotate
+         rotates = false;
+       }
+       else
+       {
+         // green = does rotate
+         rotates = true;
+       }
+       
+       _canRotate = rotates;
+     }
+    
   }
 
   @Override
   public PlainSymbol create()
   {
-    return null;
+    return new SVGShape(_svgFileName);
   }
 
 }
