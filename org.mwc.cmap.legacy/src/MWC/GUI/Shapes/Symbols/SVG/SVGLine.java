@@ -14,7 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Color;
 import java.awt.Point;
 
 import org.w3c.dom.Element;
@@ -32,8 +31,6 @@ public class SVGLine extends SVGElement
 
   private double _y2;
   
-  private Color _fill;
-  
   public SVGLine(Element dom)
   {
     super(dom);
@@ -43,21 +40,6 @@ public class SVGLine extends SVGElement
       _y1 = Double.parseDouble(getDom().getAttribute("y1"));
       _x2 = Double.parseDouble(getDom().getAttribute("x2"));
       _y2 = Double.parseDouble(getDom().getAttribute("y2"));
-
-      if (getDom().hasAttribute("fill"))
-      {
-        // We have a color.
-        String colorString = getDom().getAttribute("fill");
-        if (colorString.matches("#[0-9A-Fa-f]{6}"))
-        {
-          _fill = hex2Rgb(colorString);
-        }
-        else
-        {
-          MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
-              + colorString);
-        }
-      }
     }
     catch (Exception e)
     {

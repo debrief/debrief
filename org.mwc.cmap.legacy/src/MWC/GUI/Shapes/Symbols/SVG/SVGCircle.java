@@ -30,8 +30,6 @@ public class SVGCircle extends SVGElement
 
   private double _r;
 
-  private Color _fill;
-
   public SVGCircle(Element dom)
   {
     super(dom);
@@ -40,21 +38,6 @@ public class SVGCircle extends SVGElement
       _x = Double.parseDouble(getDom().getAttribute("cx"));
       _y = Double.parseDouble(getDom().getAttribute("cy"));
       _r = Double.parseDouble(getDom().getAttribute("r"));
-
-      if (getDom().hasAttribute("fill"))
-      {
-        // We have a color.
-        String colorString = getDom().getAttribute("fill");
-        if (colorString.matches("#[0-9A-Fa-f]{6}"))
-        {
-          _fill = hex2Rgb(colorString);
-        }
-        else
-        {
-          MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
-              + colorString);
-        }
-      }
     }
     catch (Exception e)
     {
@@ -66,9 +49,9 @@ public class SVGCircle extends SVGElement
   public void render(CanvasType dest, double sym_size, Point origin_coords,
       double rotation_degs)
   {
-    final double x = _x * sym_size + origin_coords.getX();
-    final double y = _y * sym_size + origin_coords.getY();
     final double r = _r * sym_size;
+    final double x = _x * sym_size + origin_coords.getX() - r / 2;
+    final double y = _y * sym_size + origin_coords.getY() - r / 2;
 
     if (_fill != null)
     {

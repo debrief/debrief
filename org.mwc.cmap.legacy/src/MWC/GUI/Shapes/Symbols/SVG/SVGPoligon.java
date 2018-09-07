@@ -27,8 +27,6 @@ public class SVGPoligon extends SVGElement
 
   private double[] _y;
 
-  private Color _fill;
-
   public SVGPoligon(Element dom)
   {
     super(dom);
@@ -52,21 +50,6 @@ public class SVGPoligon extends SVGElement
       {
         _x[i / 2] = _points[i];
         _y[i / 2] = _points[i+1];
-      }
-
-      if (getDom().hasAttribute("fill"))
-      {
-        // We have a color.
-        String colorString = getDom().getAttribute("fill");
-        if (colorString.matches("#[0-9A-Fa-f]{6}"))
-        {
-          _fill = hex2Rgb(colorString);
-        }
-        else
-        {
-          MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
-              + colorString);
-        }
       }
     }
     catch (Exception e)

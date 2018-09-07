@@ -42,6 +42,10 @@ public class SVGElementFactory
       case "line":
         answer = new SVGLine(svgElement);
         break;
+
+      case "ellipse":
+        answer = new SVGEllipse(svgElement);
+        break;
         
       default:
         // We have an unknown type.

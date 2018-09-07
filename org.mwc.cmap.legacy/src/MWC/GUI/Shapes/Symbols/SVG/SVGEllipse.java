@@ -14,32 +14,32 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Color;
+import java.awt.Point;
 
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
 
-public class SVGRectangle extends SVGElement
+public class SVGEllipse extends SVGElement
 {
 
   private double _x;
 
   private double _y;
 
-  private double _width;
+  private double _rx;
 
-  private double _height;
+  private double _ry;
 
-  public SVGRectangle(Element dom)
+  public SVGEllipse(Element dom)
   {
     super(dom);
     try
     {
-      _x = Double.parseDouble(getDom().getAttribute("x"));
-      _y = Double.parseDouble(getDom().getAttribute("y"));
-      _width = Double.parseDouble(getDom().getAttribute("width"));
-      _height = Double.parseDouble(getDom().getAttribute("height"));
+      _x = Double.parseDouble(getDom().getAttribute("cx"));
+      _y = Double.parseDouble(getDom().getAttribute("cy"));
+      _rx = Double.parseDouble(getDom().getAttribute("rx"));
+      _ry = Double.parseDouble(getDom().getAttribute("ry"));
     }
     catch (Exception e)
     {
@@ -48,24 +48,23 @@ public class SVGRectangle extends SVGElement
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size,
-      java.awt.Point origin_coords, double rotation_degs)
+  public void render(CanvasType dest, double sym_size, Point origin_coords,
+      double rotation_degs)
   {
-    final double x = _x * sym_size + origin_coords.getX();
-    final double y = _y * sym_size + origin_coords.getY();
-    final double width = _width * sym_size;
-    final double height = _height * sym_size;
+    final double rx = _rx * sym_size;
+    final double ry = _ry * sym_size;
+    final double x = _x * sym_size + origin_coords.getX() - rx / 2;
+    final double y = _y * sym_size + origin_coords.getY() - ry / 2;
 
     if (_fill != null)
     {
       dest.setColor(_fill);
-      dest.fillRect((int) x, (int) y, (int) width, (int) height);
+      dest.fillOval((int) x, (int) y, (int) rx, (int) ry);
     }
     else
     {
-      dest.drawRect((int) x, (int) y, (int) width, (int) height);
+      dest.drawOval((int) x, (int) y, (int) rx, (int) ry);
     }
-
   }
 
 }

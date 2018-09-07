@@ -28,9 +28,29 @@ abstract public class SVGElement
    */
   private Element _dom;
 
+  /**
+   * Color of the object
+   */
+  protected Color _fill;
+
   public SVGElement(final Element dom)
   {
     this._dom = dom;
+
+    if (getDom().hasAttribute("fill"))
+    {
+      // We have a color.
+      String colorString = getDom().getAttribute("fill");
+      if (colorString.matches("#[0-9A-Fa-f]{6}"))
+      {
+        _fill = hex2Rgb(colorString);
+      }
+      else
+      {
+        MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
+            + colorString);
+      }
+    }
   }
 
   public Element getDom()
@@ -45,16 +65,18 @@ abstract public class SVGElement
 
   public abstract void render(final CanvasType dest, final double sym_size,
       final java.awt.Point origin_coords, final double rotation_degs);
-  
+
   /**
    * https://stackoverflow.com/questions/4129666/how-to-convert-hex-to-rgb-using-java
-   * @param colorStr e.g. "#FFFFFF"
-   * @return 
+   * 
+   * @param colorStr
+   *          e.g. "#FFFFFF"
+   * @return
    */
-  public Color hex2Rgb(String colorStr) {
-      return new Color(
-              Integer.valueOf( colorStr.substring( 1, 3 ), 16 ),
-              Integer.valueOf( colorStr.substring( 3, 5 ), 16 ),
-              Integer.valueOf( colorStr.substring( 5, 7 ), 16 ) );
+  public Color hex2Rgb(String colorStr)
+  {
+    return new Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer
+        .valueOf(colorStr.substring(3, 5), 16), Integer.valueOf(colorStr
+            .substring(5, 7), 16));
   }
 }
