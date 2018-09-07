@@ -208,6 +208,10 @@ public final class SymbolFactory
 
   public static final String COASTGUARD_LAW_ENFORCEMENT_SVG = SVG_FORMAT_PREFIX + ":coastguard_law_enforcement";
 
+  public static final String FLOATING_MINE_SVG = SVG_FORMAT_PREFIX + ":floating_mine";
+  
+  public static final String SPLASH_POINT_SVG = SVG_FORMAT_PREFIX + ":splash_point";
+
   /**
    */
   private static SymbolFactory _theFactory;
@@ -515,6 +519,8 @@ public final class SymbolFactory
       /////////////////////////////////////////
       final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
       svgIcons.put(COASTGUARD_LAW_ENFORCEMENT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(FLOATING_MINE_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
+      svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(null));
 
       /////////////////////////////////////////
       // put the other assorted items directly into the main list

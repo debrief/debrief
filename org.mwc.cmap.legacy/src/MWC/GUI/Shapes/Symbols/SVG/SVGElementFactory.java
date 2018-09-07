@@ -34,6 +34,15 @@ public class SVGElementFactory
       case "polygon":
         answer = new SVGPoligon(svgElement);
         break;
+
+      case "circle":
+        answer = new SVGCircle(svgElement);
+        break;
+
+      case "line":
+        answer = new SVGLine(svgElement);
+        break;
+        
       default:
         // We have an unknown type.
         break;
