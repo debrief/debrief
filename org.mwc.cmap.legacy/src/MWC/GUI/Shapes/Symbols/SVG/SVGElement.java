@@ -29,6 +29,11 @@ abstract public class SVGElement
   private Element _dom;
 
   /**
+   * the size of the symbol
+   */
+  protected final int wid = 40;
+
+  /**
    * Color of the object
    */
   protected Color _fill;

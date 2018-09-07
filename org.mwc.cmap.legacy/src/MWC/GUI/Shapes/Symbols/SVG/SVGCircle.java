@@ -15,6 +15,8 @@
 package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 
 import org.w3c.dom.Element;
 
@@ -49,17 +51,36 @@ public class SVGCircle extends SVGElement
       final Point origin_coords, final double rotation_degs,
       final java.awt.Point rotationPoint)
   {
-    final double r = _r * sym_size * 2;
-    final double x = _x * sym_size + origin_coords.getX() - r / 2;
-    final double y = _y * sym_size + origin_coords.getY() - r / 2;
+    // We want the icon to be aligned with the track
+    double rotation = rotation_degs + 90.0 / 180.0 * Math.PI;
+    
+    // Lets assume that the viewbox is 0 0 100 100
+    double magnitude = Math.sqrt(100 * 100 + 100 * 100);
+    
+    // centering and scaling to 1.0
+
+    final double r = _r / magnitude * wid;
+    
+    Point2D centerPoint = new Point2D.Double( (_x - rotationPoint.x)
+        / magnitude * wid,  (_y - rotationPoint.y) / magnitude * wid);
+    
+
+    final AffineTransform thisRotation = AffineTransform.getRotateInstance(
+        rotation, 0, 0); 
+    
+    thisRotation.transform(centerPoint, centerPoint);
+    
+    final double diameter = r * sym_size * 2;
+    final double x = centerPoint.getX() * sym_size + origin_coords.getX() - diameter / 2 ;
+    final double y = centerPoint.getY() * sym_size + origin_coords.getY() - diameter / 2 ;
 
     if (_fill != null)
     {
-      dest.fillOval((int) x, (int) y, (int) r, (int) r);
+      dest.fillOval((int) x, (int) y, (int) diameter, (int) diameter);
     }
     else
     {
-      dest.drawOval((int) x, (int) y, (int) r, (int) r);
+      dest.drawOval((int) x, (int) y, (int) diameter, (int) diameter);
     }
   }
 

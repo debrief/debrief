@@ -25,11 +25,6 @@ import MWC.GUI.CanvasType;
 public class SVGPoligon extends SVGPolyline
 {
 
-  /**
-   * the size of the symbol
-   */
-  protected final int wid = 40;
-
   public SVGPoligon(Element dom)
   {
     super(dom);
