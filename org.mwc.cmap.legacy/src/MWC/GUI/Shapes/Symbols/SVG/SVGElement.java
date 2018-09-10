@@ -33,7 +33,7 @@ abstract public class SVGElement
    * List of coordinates after scaling, rotation.
    */
   protected int[] _intX;
-  
+
   protected int[] _intY;
 
   /**
@@ -51,6 +51,9 @@ abstract public class SVGElement
    */
   protected Color _fill;
 
+  // When color is different to black, we will use it.
+  protected boolean useDefaultColor = false;
+
   public SVGElement(final Element dom)
   {
     this._dom = dom;
@@ -61,12 +64,14 @@ abstract public class SVGElement
       String colorString = getDom().getAttribute("fill");
       if (colorString.matches("#[0-9A-Fa-f]{6}"))
       {
+        useDefaultColor = colorString.equals("#000000");
         _fill = hex2Rgb(colorString);
       }
       else
       {
-        MWC.Utilities.Errors.Trace.trace("SVG contains a non-valid fill "
-            + colorString);
+        MWC.Utilities.Errors.Trace.trace(
+            "SVG contains a non-valid fill or using #000000 color: "
+                + colorString);
       }
     }
   }
@@ -81,11 +86,22 @@ abstract public class SVGElement
     this._dom = _dom;
   }
 
+  public Color getFill()
+  {
+    return _fill;
+  }
+
+  public void setFill(Color _fill)
+  {
+    this._fill = _fill;
+  }
+
   public void render(final CanvasType dest, final double sym_size,
       final java.awt.Point origin_coords, final double rotation_degs,
-      final java.awt.Point rotationPoint)
+      final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    java.awt.geom.Point2D[] tempCoord = new java.awt.geom.Point2D[_originalCoordinates.length];
+    java.awt.geom.Point2D[] tempCoord =
+        new java.awt.geom.Point2D[_originalCoordinates.length];
     // We want the icon to be aligned with the track
     double initial_rotation_degs = 90.0 / 180.0 * Math.PI;
     double current_rotation_deg = initial_rotation_degs + rotation_degs;
@@ -99,15 +115,19 @@ abstract public class SVGElement
 
     final AffineTransform scale = AffineTransform.getScaleInstance(sym_size,
         sym_size);
-    
-    java.awt.geom.Point2D rotationPointProp = new java.awt.geom.Point2D.Double();
+
+    java.awt.geom.Point2D rotationPointProp =
+        new java.awt.geom.Point2D.Double();
     normalize.transform(rotationPoint, rotationPointProp);
     scale.transform(rotationPointProp, rotationPointProp);
-    
+
     final AffineTransform rotate = AffineTransform.getRotateInstance(
-        current_rotation_deg, rotationPointProp.getX(), rotationPointProp.getY());
-    final AffineTransform move = AffineTransform.getTranslateInstance(origin_coords.getX(), origin_coords.getY());
-    final AffineTransform moveOrigin = AffineTransform.getTranslateInstance(-rotationPointProp.getX(), -rotationPointProp.getY());
+        current_rotation_deg, rotationPointProp.getX(), rotationPointProp
+            .getY());
+    final AffineTransform move = AffineTransform.getTranslateInstance(
+        origin_coords.getX(), origin_coords.getY());
+    final AffineTransform moveOrigin = AffineTransform.getTranslateInstance(
+        -rotationPointProp.getX(), -rotationPointProp.getY());
 
     // We rotate
     for (int i = 0; i < _originalCoordinates.length; i++)

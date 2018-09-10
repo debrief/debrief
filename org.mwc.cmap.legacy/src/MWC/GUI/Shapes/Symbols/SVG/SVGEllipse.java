@@ -14,8 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Point;
-
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -36,10 +34,10 @@ public class SVGEllipse extends SVGElement
       _originalCoordinates[0] = new java.awt.geom.Point2D.Double(Double
           .parseDouble(getDom().getAttribute("cx")), Double.parseDouble(getDom()
               .getAttribute("cy")));
-      
+
       _rx = Double.parseDouble(getDom().getAttribute("rx"));
       _ry = Double.parseDouble(getDom().getAttribute("ry"));
-      
+
       _intX = new int[_originalCoordinates.length];
       _intY = new int[_originalCoordinates.length];
     }
@@ -50,10 +48,10 @@ public class SVGEllipse extends SVGElement
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs, final java.awt.Point rotationPoint)
+  public void render(CanvasType dest, double sym_size, java.awt.Point origin_coords,
+      double rotation_degs, final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint, defaultColor);
 
     double magnitude = Math.sqrt(100 * 100 + 100 * 100);
 
@@ -64,11 +62,21 @@ public class SVGEllipse extends SVGElement
 
     if (_fill != null)
     {
-      dest.fillOval((int) (_intX[0] - diameterX / 2), (int) (_intY[0]- diameterY / 2 ), (int) diameterX, (int) diameterY);
+      if (useDefaultColor)
+      {
+        dest.setColor(defaultColor);
+      }
+      else
+      {
+        dest.setColor(_fill);
+      }
+      dest.fillOval((int) (_intX[0] - diameterX / 2), (int) (_intY[0]
+          - diameterY / 2), (int) diameterX, (int) diameterY);
     }
     else
     {
-      dest.drawOval((int) (_intX[0] - diameterX / 2), (int) (_intY[0]- diameterY / 2 ), (int) diameterX, (int) diameterY);
+      dest.drawOval((int) (_intX[0] - diameterX / 2), (int) (_intY[0]
+          - diameterY / 2), (int) diameterX, (int) diameterY);
     }
   }
 

@@ -14,8 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Point;
-
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -51,10 +49,10 @@ public class SVGCircle extends SVGElement
 
   @Override
   public void render(final CanvasType dest, final double sym_size,
-      final Point origin_coords, final double rotation_degs,
-      final java.awt.Point rotationPoint)
+      final java.awt.Point origin_coords, final double rotation_degs,
+      final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint, defaultColor);
 
     double magnitude = Math.sqrt(100 * 100 + 100 * 100);
 
@@ -62,6 +60,14 @@ public class SVGCircle extends SVGElement
     final double diameter = r * sym_size * 2;
     if (_fill != null)
     {
+      if (useDefaultColor)
+      {
+        dest.setColor(defaultColor);
+      }
+      else
+      {
+        dest.setColor(_fill);
+      }
       dest.fillOval((int) (_intX[0] - diameter / 2), (int) (_intY[0] - diameter
           / 2), (int) diameter, (int) diameter);
     }
