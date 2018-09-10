@@ -5,8 +5,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _tVBEcLKjEeim6Z1_sLeZ9g
-Runtime-Version: 2.2.0.201706152316
-Save-Time: 9/7/18 7:07 PM
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 9/10/18 12:10 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -49,7 +49,27 @@ with [get-window Preferences] {
     
 }
 get-window Preferences | get-button Cancel | click
+// open boat1 rep file and check wether it brings the select track mode dialog
 
+get-view Navigator | get-tree | select "sample_data/boat1.rep" | double-click
 
+/*exec-with-options {
+  get-window "Select track mode" |  get-property title | equals "Select track mode" | verify-true
+    with [get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location"] {
+        get-property "getSelection()" | equals true | verify-true
+        get-property "getText()" 
+            | equals "Over The Ground (OTG) - where positions are plotted according to the recorded location" 
+            | verify-true
+    }
+} -allowStatusDialog*/
+//set-q7-option eclExecutionDelay 1000  
+exec-with-options -disableJobWaiting -command {
 
+ get-window "select track mode" |  get-button Cancel | click
+
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+}-allowStatusDialog
+
+//set-q7-option eclExecutionDelay 0
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
