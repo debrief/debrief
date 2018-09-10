@@ -16,7 +16,6 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import MWC.GUI.CanvasType;
 
-import java.awt.Color;
 import java.awt.geom.AffineTransform;
 
 import org.w3c.dom.Element;
@@ -49,7 +48,7 @@ abstract public class SVGElement
   /**
    * Color of the object
    */
-  protected Color _fill;
+  protected java.awt.Color _fill;
 
   // When color is different to black, we will use it.
   protected boolean useDefaultColor = false;
@@ -64,7 +63,7 @@ abstract public class SVGElement
       String colorString = getDom().getAttribute("fill");
       if (colorString.matches("#[0-9A-Fa-f]{6}"))
       {
-        useDefaultColor = colorString.equals("#000000");
+        useDefaultColor = "#000000".equals(colorString);
         _fill = hex2Rgb(colorString);
       }
       else
@@ -86,12 +85,12 @@ abstract public class SVGElement
     this._dom = _dom;
   }
 
-  public Color getFill()
+  public java.awt.Color getFill()
   {
     return _fill;
   }
 
-  public void setFill(Color _fill)
+  public void setFill(java.awt.Color _fill)
   {
     this._fill = _fill;
   }
@@ -154,9 +153,9 @@ abstract public class SVGElement
    *          e.g. "#FFFFFF"
    * @return
    */
-  public Color hex2Rgb(String colorStr)
+  public java.awt.Color hex2Rgb(String colorStr)
   {
-    return new Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer
+    return new java.awt.Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer
         .valueOf(colorStr.substring(3, 5), 16), Integer.valueOf(colorStr
             .substring(5, 7), 16));
   }
