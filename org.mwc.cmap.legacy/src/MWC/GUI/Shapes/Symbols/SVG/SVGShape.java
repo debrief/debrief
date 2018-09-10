@@ -33,15 +33,6 @@ import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 
-import java.io.*;
-import java.net.*;
-import java.nio.file.*;
-import java.security.CodeSource;
-import java.util.*;
-import java.util.stream.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 public class SVGShape extends PlainSymbol
 {
 

@@ -103,7 +103,7 @@ abstract public class SVGElement
     java.awt.geom.Point2D[] tempCoord =
         new java.awt.geom.Point2D[_originalCoordinates.length];
     // We want the icon to be aligned with the track
-    double initial_rotation_degs = 90.0 / 180.0 * Math.PI;
+    double initial_rotation_degs = - 90.0 / 180.0 * Math.PI;
     double current_rotation_deg = initial_rotation_degs + rotation_degs;
 
     // Lets assume that the viewbox is 0 0 100 100

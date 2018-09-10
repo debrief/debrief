@@ -206,39 +206,15 @@ public final class SymbolFactory
 
   public static final String SVG_EXTENSION = ".svg";
 
-  public static final String COASTGUARD_LAW_ENFORCEMENT_SVG = SVG_FORMAT_PREFIX + ":coastguard_law_enforcement";
-
-  public static final String BOTTOMED_MINE_SVG = SVG_FORMAT_PREFIX + ":bottomed_mine";
-  
-  public static final String FLOATING_MINE_SVG = SVG_FORMAT_PREFIX + ":floating_mine";
-  
-  public static final String SPLASH_POINT_SVG = SVG_FORMAT_PREFIX + ":splash_point";
-  
-  public static final String VECTOR_SVG = SVG_FORMAT_PREFIX + ":vector_2";
-  
-  public static final String ANOMALY_SVG = SVG_FORMAT_PREFIX + ":anomaly";
-  
-  public static final String BUOY_1_SVG = SVG_FORMAT_PREFIX + ":buoy_1";
-  
-  public static final String BUOY_2_SVG = SVG_FORMAT_PREFIX + ":buoy_2";
-  
-  public static final String CLEARED_SVG = SVG_FORMAT_PREFIX + ":cleared";
-  
-  public static final String COUNTERMEASURE_SVG = SVG_FORMAT_PREFIX + ":countermeasure";
-  
-  public static final String DECOY_SVG = SVG_FORMAT_PREFIX + ":decoy";
-  
-  public static final String DECOY_AW_SVG = SVG_FORMAT_PREFIX + ":decoy_aw";
-  
-  public static final String DECOY_UW_SVG = SVG_FORMAT_PREFIX + ":decoy_uw";
-  
-  public static final String DROP_POINT_SVG = SVG_FORMAT_PREFIX + ":drop_point";
-  
-  public static final String ENEMY_AIR_SVG = SVG_FORMAT_PREFIX + ":enemy_air";
-  
-  public static final String ENEMY_SUBSURFACE_SVG = SVG_FORMAT_PREFIX + ":enemy_subsurface";
-  
-  public static final String ENEMY_SURFACE_SVG = SVG_FORMAT_PREFIX + ":enemy_surface";
+  public static final String SVG_INDEX = "anomaly,bottomed_mine,buoy_1,buoy_2"
+      + ",cleared,coastguard_law_enforcement,countermeasure,decoy,decoy_aw,"
+      + "decoy_uw,drop_point,enemy_air,enemy_subsurface,enemy_surface,fishing"
+      + ",flagged_marker,floating_mine,friend_air,friend_subsurface,friend_surface,"
+      + "generic_arrow,highlights_1,highlights_2,index.html,jammer,merchant,"
+      + "mine_like_object,missile,moored_mine,neutral_air,neutral_subsurface,"
+      + "neutral_surface,pleasure_craft,splash_point,tagged_marker,torpedo,"
+      + "uav_1,uav_2,unknown_air,unknown_subsurface,unknown_surface,usv_1,"
+      + "usv_2,usv_3,usv_4,usv_5,vector_1,vector_2,wreck,xxx_contact";
 
   /**
    */
@@ -533,13 +509,11 @@ public final class SymbolFactory
       // Now we add the svg items.
       /////////////////////////////////////////
       final java.util.HashMap<String, PlainSymbol> svgIcons = new java.util.HashMap<>();
-      svgIcons.put(COASTGUARD_LAW_ENFORCEMENT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(COASTGUARD_LAW_ENFORCEMENT_SVG));
-      svgIcons.put(FLOATING_MINE_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(FLOATING_MINE_SVG));
-      svgIcons.put(SPLASH_POINT_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(SPLASH_POINT_SVG));
-      svgIcons.put(VECTOR_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(VECTOR_SVG));
-      svgIcons.put(ANOMALY_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(ANOMALY_SVG));
-      svgIcons.put(BUOY_1_SVG, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(BUOY_1_SVG));
-
+      for ( String fileName : SVG_INDEX.split(",") ) {
+        final String completeName = SVG_FORMAT_PREFIX + ":" + fileName;  
+        svgIcons.put(completeName, new MWC.GUI.Shapes.Symbols.SVG.SVGShape(completeName));
+      }
+      
       /////////////////////////////////////////
       // put the other assorted items directly into the main list
       /////////////////////////////////////////
