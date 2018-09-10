@@ -14,8 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Point;
-
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -47,10 +45,12 @@ public class SVGLine extends SVGElement
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs, final java.awt.Point rotationPoint)
+  public void render(final CanvasType dest, final double sym_size,
+      final java.awt.Point origin_coords, final double rotation_degs,
+      final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
+        defaultColor);
 
     dest.drawLine((int) _intX[0], (int) _intY[0], (int) _intX[1],
         (int) _intY[1]);

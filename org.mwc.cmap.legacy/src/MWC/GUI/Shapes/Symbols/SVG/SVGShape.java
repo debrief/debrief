@@ -60,7 +60,6 @@ public class SVGShape extends PlainSymbol
    * the origin, at which we centre the symbol
    * 
    */
-  @SuppressWarnings("unused")
   private Point _origin;
 
   /**
@@ -137,7 +136,7 @@ public class SVGShape extends PlainSymbol
       final Point centre = dest.toScreen(center);
       for (SVGElement element : _elements)
       {
-        element.render(dest, getScaleVal(), centre, directionToUse, _origin);
+        element.render(dest, getScaleVal(), centre, directionToUse, _origin, getColor());
       }
     }
   }

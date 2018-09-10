@@ -14,8 +14,6 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
-import java.awt.Point;
-
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -29,13 +27,20 @@ public class SVGPoligon extends SVGPolyline
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size, Point origin_coords,
-      double rotation_degs, final java.awt.Point rotationPoint)
+  public void render(CanvasType dest, double sym_size, java.awt.Point origin_coords,
+      double rotation_degs, final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint, defaultColor);
     if (_fill != null)
     {
-      dest.setColor(_fill);
+      if (useDefaultColor)
+      {
+        dest.setColor(defaultColor);
+      }
+      else
+      {
+        dest.setColor(_fill);
+      }
       dest.fillPolygon(_intX, _intY, _intX.length);
     }
     else

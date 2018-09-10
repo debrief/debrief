@@ -35,9 +35,10 @@ public class SVGRectangle extends SVGElement
 
       _originalCoordinates[0] = new java.awt.geom.Point2D.Double(x, y);
       _originalCoordinates[1] = new java.awt.geom.Point2D.Double(x + width, y);
-      _originalCoordinates[2] = new java.awt.geom.Point2D.Double(x + width, y + height);
+      _originalCoordinates[2] = new java.awt.geom.Point2D.Double(x + width, y
+          + height);
       _originalCoordinates[3] = new java.awt.geom.Point2D.Double(x, y + height);
-      
+
       _intX = new int[_originalCoordinates.length];
       _intY = new int[_originalCoordinates.length];
 
@@ -51,13 +52,21 @@ public class SVGRectangle extends SVGElement
   @Override
   public void render(final CanvasType dest, final double sym_size,
       final java.awt.Point origin_coords, final double rotation_degs,
-      final java.awt.Point rotationPoint)
+      final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
+        defaultColor);
 
     if (_fill != null)
     {
-      dest.setColor(_fill);
+      if (useDefaultColor)
+      {
+        dest.setColor(defaultColor);
+      }
+      else
+      {
+        dest.setColor(_fill);
+      }
       dest.fillPolygon(_intX, _intY, _intX.length);
     }
     else
