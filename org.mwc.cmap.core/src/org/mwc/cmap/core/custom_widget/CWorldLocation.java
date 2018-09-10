@@ -4,12 +4,15 @@
 package org.mwc.cmap.core.custom_widget;
 
 import java.text.ParseException;
+import java.util.EventListener;
+import java.util.EventObject;
+import java.util.Vector;
 
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.MaskFormatter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
+import org.eclipse.swt.events.SegmentEvent;
+import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -30,58 +33,73 @@ public class CWorldLocation extends Composite
   private FormattedText myLatitude;
 
   private FormattedText myLongitude;
+  
+  Vector<ValueModifiedListener> _valueModifierListeners = new Vector<>();
 
   public CWorldLocation(Composite parent, int style)
   {
     super(parent, style);
-    final Composite panel = new Composite(parent, SWT.NONE);
     final RowLayout rows = new RowLayout();
     rows.marginLeft = rows.marginRight = 0;
     rows.marginTop = rows.marginBottom = 0;
     rows.fill = false;
     rows.spacing = 0;
     rows.pack = false;
-    panel.setLayout(rows);
+    setLayout(rows);
 
-    myLatitude = new FormattedText(panel, SWT.BORDER);
-    myLongitude = new FormattedText(panel, SWT.BORDER);
+    myLatitude = new FormattedText(this, SWT.BORDER);
+    myLongitude = new FormattedText(this, SWT.BORDER);
 
     myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
     myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));
 
-    /*final KeyAdapter enterEscapeKeyHandler = new KeyAdapter() {
-
+    myLatitude.getControl().addSegmentListener(new SegmentListener()
+    {
       @Override
-      public void keyPressed(final KeyEvent e) {
-        //Text cell editor hooks keyPressed to call keyReleased as well
-        CWorldLocation.this.keyReleaseOccured(e);
-      }
-    };*/
-
-    final TraverseListener enterEscapeTraverseHandler = new TraverseListener() {
-
-      public void keyTraversed(final TraverseEvent e) {
-        if (e.detail == SWT.TRAVERSE_ESCAPE || e.detail == SWT.TRAVERSE_RETURN) {
-          e.doit = false;
-          return;
-        }
-      }
-    };
-    myLatitude.getControl().addTraverseListener(enterEscapeTraverseHandler);
-    myLongitude.getControl().addTraverseListener(enterEscapeTraverseHandler);
-//    myLatitude.getControl().addKeyListener(enterEscapeKeyHandler);
-//    myLongitude.getControl().addKeyListener(enterEscapeKeyHandler);
-
-    /*new MultiControlFocusHandler(myLatitude.getControl(), myLongitude.getControl()) {
-
+      public void getSegments(SegmentEvent event)
+      {
+        latitudeValueModified(event);
+        
+      }  
+     
+    });
+    myLongitude.getControl().addSegmentListener(new SegmentListener()
+    {
       @Override
-      protected void focusReallyLost(final FocusEvent e) {
-        CWorldLocation.this.focusLost();
-      }
-    };*/
+      public void getSegments(SegmentEvent event)
+      {
+        longitudeValueModified(event);
+        
+      }  
+     
+    });
 
   }
   
+  
+  public void addValueModifiedListener(ValueModifiedListener listener) {
+    _valueModifierListeners.add(listener);
+  }
+ 
+  
+  private void latitudeValueModified(SegmentEvent e)
+  {
+    ValueModifiedEvent event = new ValueModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
+    for(ValueModifiedListener listener:_valueModifierListeners) {
+      listener.modifyValue(event);
+    }
+    
+  }
+  
+  private void longitudeValueModified(SegmentEvent e)
+  {
+    ValueModifiedEvent event = new ValueModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
+    for(ValueModifiedListener listener:_valueModifierListeners) {
+      listener.modifyValue(event);
+    }
+    
+  }
+
   private SexagesimalFormat getFormat() {
     //intentionally reevaluated each time
     return CorePlugin.getDefault().getLocationFormat();
@@ -132,5 +150,35 @@ public class CWorldLocation extends Composite
 
     myLatitude.setValue(getFormat().format(latitude, false));
     myLongitude.setValue(getFormat().format(longitude, true));
+  }
+  public interface ValueModifiedListener extends EventListener{
+    public void modifyValue(ValueModifiedEvent e);
+  }
+  public static class ValueModifiedEvent extends EventObject{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private Object _newLatValue;
+    private Object _newLongValue;
+
+    public ValueModifiedEvent(Object source,Object newLatValue,Object newLongValue)
+    {
+      super(source);
+      _newLatValue = newLatValue;
+      _newLongValue = newLongValue;
+      
+    }
+
+    public Object getNewLatValue()
+    {
+      return _newLatValue;
+    }
+    public Object getNewLongValue()
+    {
+      return _newLongValue;
+    }
+    
+    
   }
 }

@@ -627,6 +627,42 @@
                      </reference>
                   </visibleWhen>
                </command>
+               <command
+                     commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
+                     icon="icons/16/sensor.png"
+                     id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
+                     style="push">
+                  <visibleWhen
+                        checkEnabled="false">
+                     <reference
+                           definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+                  </visibleWhen>
+               </command>
+               <command
+                     commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
+                     icon="icons/16/sensor.png"
+                     id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
+                     style="push">
+                  <visibleWhen
+                        checkEnabled="false">
+                     <reference
+                           definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+                  </visibleWhen>
+               </command>
+               <command
+                     commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
+                     icon="icons/16/sensor.png"
+                     id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
+                     style="push">
+                  <visibleWhen
+                        checkEnabled="false">
+                     <reference
+                           definitionId="org.mwc.debrief.activePlotEditor">
+                     </reference>
+                  </visibleWhen>
+               </command>
             </menu>
         </menuContribution>
 
@@ -914,6 +950,21 @@
               defaultHandler="org.mwc.debrief.core.creators.shapes.dynamic.InsertSensorArc"
               id="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
               name="&amp;Sensor Arc">
+        </command>
+        <command
+              defaultHandler="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
+              id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
+              name="&amp;Rectangle">
+        </command>
+        <command
+              defaultHandler="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
+              id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
+              name="&amp;Circle">
+        </command>
+        <command
+              defaultHandler="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
+              id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
+              name="&amp;Polygon">
         </command>
     </extension>
 

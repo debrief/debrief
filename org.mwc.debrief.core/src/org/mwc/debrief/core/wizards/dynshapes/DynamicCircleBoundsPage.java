@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
-import org.mwc.cmap.gridharness.views.WorldLocationCellEditor;
+import org.mwc.cmap.core.custom_widget.CWorldLocation.ValueModifiedEvent;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 import MWC.GenericData.WorldLocation;
@@ -29,7 +29,8 @@ public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
   protected DynamicCircleBoundsPage(String pageName)
   {
     super(pageName);
-    // TODO Auto-generated constructor stub
+    setTitle("Create Dynamic Circle");
+    setDescription("This wizard is used to create dynamic shapes");
   }
 
   /* (non-Javadoc)
@@ -40,19 +41,32 @@ public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
   {
     Composite mainComposite = new Composite(parent,SWT.NULL);
     mainComposite.setLayout(new GridLayout());
-    mainComposite.setLayoutData(new GridData(GridData.FILL));
+    mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
     Composite baseComposite = super.createBaseControl(mainComposite);
     Composite composite = new Composite(baseComposite,SWT.NULL);
     composite.setLayout(new GridLayout(2,false));
-    composite.setLayoutData(new GridData(GridData.FILL));
+    composite.setLayoutData(new GridData(GridData.FILL_BOTH));
+    GridData gd = new GridData(SWT.BEGINNING,SWT.CENTER,true,false);
+    gd.minimumWidth=125;
     new Label(composite,SWT.NONE).setText("Centre:");
     _txtCentre = new CWorldLocation(composite,SWT.NONE);
-    _txtCentre.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    _txtCentre.setLayoutData(gd);
     _txtCentre.setToolTipText("Location of centre of the dynamic circle");
+    _txtCentre.addValueModifiedListener(new CWorldLocation.ValueModifiedListener()
+    {
+      
+      @Override
+      public void modifyValue(ValueModifiedEvent e)
+      {
+        setPageComplete(isPageComplete());
+        
+      }
+    });
     new Label(composite,SWT.NONE).setText("Radius: ");
     _txtRadius = new Text(composite,SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
-    _txtRadius.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    
+    _txtRadius.setLayoutData(gd);
     _txtRadius.addModifyListener(new ModifyListener()
     {
       
@@ -83,9 +97,10 @@ public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
   }
   
   private boolean isValidRadius(String value) {
+    //radius must be integer in the range 0 to 4000.
     if(!value.matches("\\\\d+")){
       int num = Integer.valueOf(value);
-      if(num>0 && num<=400) {
+      if(num>0 && num<=4000) {
         return true;
       }
     }
