@@ -25,6 +25,7 @@ import java.util.Enumeration;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 public class MockCanvasType implements CanvasType
@@ -227,7 +228,12 @@ public class MockCanvasType implements CanvasType
     {
         return new Point(1,2);
     }
-
+    
+    public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val,
+        final HiResDate dtg)
+    {
+      return new Point(1,2);
+    }  
 
     public WorldLocation toWorld(final Point val)
     {

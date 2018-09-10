@@ -137,6 +137,7 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -437,6 +438,15 @@ public interface CanvasType {
    *
    */
   public java.awt.Point toScreen(WorldLocation val);
+  
+  /** time-sensitive plotting routine
+   * 
+   * @param val
+   * @param dtg
+   * @return
+   */
+  public java.awt.Point toScreen(WorldLocation val, final HiResDate dtg);
+  
   /**
    * toWorld
    *

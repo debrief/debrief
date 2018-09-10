@@ -26,6 +26,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -427,12 +428,23 @@ abstract public class PlainProjection implements Serializable, Editable
     /**
      * return the current heading
      */
-    public double getHeading();
+    public double getHeading(final HiResDate dtg);
 
     /**
      * return the current origin for the plot
      */
-    public WorldLocation getLocation();
+    public WorldLocation getLocation(final HiResDate dtg);
+  }
+
+  /** convert this coordinate to screen coords, respective to data as specified DTG
+   * 
+   * @param val
+   * @param dtg
+   * @return
+   */
+  public Point toScreen(WorldLocation val, HiResDate dtg)
+  {
+    throw new IllegalArgumentException("Time sensitive toScreen not implemented for plain projection");
   }
 
 }

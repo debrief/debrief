@@ -123,6 +123,7 @@
 package MWC.GUI.Canvas.AWT;
 
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.ImageObserver;
@@ -134,6 +135,7 @@ import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -713,6 +715,12 @@ public void drawText(final String str, final int x, final int y, final float rot
 public void drawText(String str, int x, int y, float rotate, boolean above)
 {
 	
+}
+
+@Override
+public Point toScreen(WorldLocation val, HiResDate dtg)
+{
+  return _theProjection.toScreen(val, dtg);
 }
 
 }

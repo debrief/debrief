@@ -106,6 +106,8 @@ import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
+import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
@@ -1290,7 +1292,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * first custom plotting mode: - always centre the plot on ownship, and orient the plot along
    * ownship heading
    */
-  private Action _primaryCentredPrimaryOrientedPlottingMode;
+  private Action _primaryCentricProjection;
 
   /**
    * second custom plotting mode: always centre the plot on ownship, but keep north-oriented.
@@ -1971,22 +1973,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     // and tell it we're here
     _targetProjection.setRelativeProjectionParent(this);
-
-    // and reflect it's current status
-    if (_targetProjection.getNonStandardPlotting())
-    {
-      if (_targetProjection.getPrimaryOriented())
-      {
-        _primaryCentredPrimaryOrientedPlottingMode.setChecked(true);
-      }
-      else
-      {
-        _primaryCentredNorthOrientedPlottingMode.setChecked(true);
-      }
-
-    }
-    else
-      _normalPlottingMode.setChecked(true);
   }
 
   /**
@@ -2824,6 +2810,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       public void run()
       {
         setRelativeMode(false, false);
+        
+        _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+        _primaryCentricProjection.setChecked(false);
       }
     };
     _normalPlottingMode.setImageDescriptor(TimeControllerPlugin
@@ -2845,9 +2834,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 "A Primary Track must be specified to use this mode");
             _normalPlottingMode.setChecked(true);
             _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+            _primaryCentricProjection.setChecked(false);
           }
           else
+          {
             setRelativeMode(true, false);
+            
+            _normalPlottingMode.setChecked(false);
+            _primaryCentricProjection.setChecked(false);
+          }
         }
       }
     };
@@ -2855,22 +2850,59 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         TimeControllerPlugin.getImageDescriptor(ICON_LOCK_VIEW1));
     displayMenu.add(_primaryCentredNorthOrientedPlottingMode);
 
-    _primaryCentredPrimaryOrientedPlottingMode = new Action(
-        "Primary centred/Primary oriented", Action.AS_RADIO_BUTTON)
-    {
-
-      @Override
-      public void run()
-      {
-        setRelativeMode(true, true);
-      }
-    };
-    _primaryCentredPrimaryOrientedPlottingMode.setImageDescriptor(
+    _primaryCentricProjection = new UnitCentricProjectionHandler(
+        "Primary centric projection", Action.AS_RADIO_BUTTON);
+    _primaryCentricProjection.setImageDescriptor(
         TimeControllerPlugin.getImageDescriptor(ICON_LOCK_VIEW2));
     // no, let's not offer primary centred, primary oriented view
-    // displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
+    displayMenu.add(_primaryCentricProjection);
 
+    
   }
+  
+  private class UnitCentricProjectionHandler extends Action
+  {
+    private PlainProjection _oldProjection;
+
+    public UnitCentricProjectionHandler(String title, int style)
+    {
+      super(title, style);
+    }
+
+    @Override
+    public void run()
+    {
+      boolean switchOn = _primaryCentricProjection.isChecked();
+      // set the new projection
+      CanvasType canvas = _currentEditor.getAdapter(CanvasType.class);
+
+      if(switchOn)
+      {
+        _normalPlottingMode.setChecked(false);
+        _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+
+        _oldProjection = canvas.getProjection();
+        
+        final FlatProjection flatP = new FlatProjection();
+        flatP.setScreenArea(_oldProjection.getScreenArea());
+        flatP.setDataArea(_oldProjection.getDataArea());
+        
+        canvas.setProjection(flatP);
+        storeNewProjection(canvas.getProjection());
+        setRelativeMode(true, true);
+      }
+      else
+      {
+        canvas.setProjection(_oldProjection);
+        _oldProjection = null;
+        storeNewProjection(canvas.getProjection());
+      }
+      
+      // tell the painter to only plot tracks
+      _layerPainterManager.getCurrentPainter().setOnlyPlotTracks(switchOn);
+    }
+  }
+  
 
   private void setRelativeMode(final boolean primaryCentred,
       final boolean primaryOriented)
@@ -3253,19 +3285,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   // RELATIVE PROJECTION-RELATED BITS
   // /////////////////////////////////////////////////
 
-  public double getHeading()
+  public double getHeading(final HiResDate dtg)
   {
     double res = 0;
     if (_relativeProjector != null)
-      res = _relativeProjector.getHeading();
+      res = _relativeProjector.getHeading(null);
     return res;
   }
 
-  public WorldLocation getLocation()
+  public WorldLocation getLocation(final HiResDate dtg)
   {
     WorldLocation res = null;
     if (_relativeProjector != null)
-      res = _relativeProjector.getLocation();
+      res = _relativeProjector.getLocation(null);
     return res;
   }
 

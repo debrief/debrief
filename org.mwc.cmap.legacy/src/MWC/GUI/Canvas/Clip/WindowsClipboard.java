@@ -17,11 +17,13 @@ package MWC.GUI.Canvas.Clip;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.ImageObserver;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -194,6 +196,13 @@ public class WindowsClipboard implements CanvasType
 	{
 		return _myProjection.toScreen(val);
 	}
+	
+  
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _myProjection.toScreen(val, dtg);
+  }
 
 	public WorldLocation toWorld(final java.awt.Point val)
 	{

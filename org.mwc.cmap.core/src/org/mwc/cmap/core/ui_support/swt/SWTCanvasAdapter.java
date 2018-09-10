@@ -113,6 +113,7 @@ package org.mwc.cmap.core.ui_support.swt;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.Shape;
 import java.awt.image.ImageObserver;
 import java.beans.IntrospectionException;
@@ -147,6 +148,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -301,13 +303,14 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    */
   public final void setProjection(final PlainProjection theProjection)
   {
+    _theProjection = theProjection;
     // ok - let's not use the new projection. We'll keep our own projection,
     // but we'll copy the data viewport
-    final WorldArea dataArea = theProjection.getDataArea();
-    if (dataArea != null)
-    {
-      _theProjection.setDataArea(dataArea);
-    }
+//    final WorldArea dataArea = theProjection.getDataArea();
+//    if (dataArea != null)
+//    {
+//      _theProjection.setDataArea(dataArea);
+//    }
   }
 
   /**
@@ -367,6 +370,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
   public final java.awt.Point toScreen(final WorldLocation val)
   {
     return _theProjection.toScreen(val);
+  }
+  
+  
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _theProjection.toScreen(val, dtg);
   }
 
   /**

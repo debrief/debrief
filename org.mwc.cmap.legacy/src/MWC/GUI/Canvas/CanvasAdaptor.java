@@ -18,9 +18,11 @@ package MWC.GUI.Canvas;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.ImageObserver;
 
 import MWC.GUI.CanvasType;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -328,4 +330,11 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	{
 		
 	}
+	
+	@Override
+	public Point toScreen(WorldLocation val, HiResDate dtg)
+	{
+	  return _proj.toScreen(val, dtg);
+	}
+
 }

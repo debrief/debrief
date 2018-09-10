@@ -2974,10 +2974,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
         // and do the paint
         sw.paint(dest, time);
-
       }
     }
-
   }
 
   /**

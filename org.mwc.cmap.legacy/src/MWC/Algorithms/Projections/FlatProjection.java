@@ -28,6 +28,7 @@ import junit.framework.TestCase;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -223,8 +224,15 @@ public class FlatProjection extends PlainProjection
 		zoom(0.0);
 	}
 
-	@Override
-	public java.awt.Point toScreen(final WorldLocation val)
+
+  @Override
+  public java.awt.Point toScreen(final WorldLocation val)
+  {
+    return toScreen(val, null);
+  }
+  
+  @Override
+	public java.awt.Point toScreen(final WorldLocation val, final HiResDate dtg)
 	{
 		// Point scrRes;
 
@@ -252,7 +260,7 @@ public class FlatProjection extends PlainProjection
 			if (getRelativeProjectionParent() != null)
 			{
 				// and the bearing offset
-				bearingOffset = getRelativeProjectionParent().getHeading();
+				bearingOffset = getRelativeProjectionParent().getHeading(null);
 			}
 		}
 
@@ -263,7 +271,7 @@ public class FlatProjection extends PlainProjection
 			if (getRelativeProjectionParent() != null)
 			{
 				// try to get the origin
-				myOrigin = getRelativeProjectionParent().getLocation();
+				myOrigin = getRelativeProjectionParent().getLocation(null);
 			}
 		}
 
@@ -304,10 +312,10 @@ public class FlatProjection extends PlainProjection
 		return scrRes;
 	}
 
-	@Override
-	public WorldLocation toWorld(final java.awt.Point val)
-	{
 
+  @Override
+  public WorldLocation toWorld(final java.awt.Point val)
+	{
 		final WorldLocation answer = null;
 		final Point p1 = new Point();
 
@@ -352,7 +360,7 @@ public class FlatProjection extends PlainProjection
 				if (getRelativeProjectionParent() != null)
 				{
 					// and the bearing offset
-					bearingOffset = getRelativeProjectionParent().getHeading();
+					bearingOffset = getRelativeProjectionParent().getHeading(null);
 				}
 			}
 
@@ -363,7 +371,7 @@ public class FlatProjection extends PlainProjection
 				if (getRelativeProjectionParent() != null)
 				{
 					// try to get the origin
-					myOrigin = getRelativeProjectionParent().getLocation();
+					myOrigin = getRelativeProjectionParent().getLocation(null);
 				}
 			}
 		}

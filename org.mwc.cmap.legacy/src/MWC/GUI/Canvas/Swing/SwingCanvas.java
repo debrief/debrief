@@ -223,6 +223,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -240,6 +241,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -408,6 +410,13 @@ public class SwingCanvas extends javax.swing.JComponent
   public final java.awt.Point toScreen(final WorldLocation val)
   {
     return _theProjection.toScreen(val);
+  }
+  
+  
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _theProjection.toScreen(val, dtg);
   }
 
   /**
