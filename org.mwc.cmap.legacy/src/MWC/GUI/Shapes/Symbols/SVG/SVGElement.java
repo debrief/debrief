@@ -96,20 +96,28 @@ abstract public class SVGElement
     // We initialize the transformers
     final AffineTransform normalize = AffineTransform.getScaleInstance(1.0
         / magnitude * wid, 1.0 / magnitude * wid);
-    final AffineTransform rotate = AffineTransform.getRotateInstance(
-        current_rotation_deg, 0, 0);
+
     final AffineTransform scale = AffineTransform.getScaleInstance(sym_size,
         sym_size);
+    
+    java.awt.geom.Point2D rotationPointProp = new java.awt.geom.Point2D.Double();
+    normalize.transform(rotationPoint, rotationPointProp);
+    scale.transform(rotationPointProp, rotationPointProp);
+    
+    final AffineTransform rotate = AffineTransform.getRotateInstance(
+        current_rotation_deg, rotationPointProp.getX(), rotationPointProp.getY());
     final AffineTransform move = AffineTransform.getTranslateInstance(origin_coords.getX(), origin_coords.getY());
+    final AffineTransform moveOrigin = AffineTransform.getTranslateInstance(-rotationPointProp.getX(), -rotationPointProp.getY());
 
     // We rotate
     for (int i = 0; i < _originalCoordinates.length; i++)
     {
       tempCoord[i] = new java.awt.geom.Point2D.Double();
       normalize.transform(_originalCoordinates[i], tempCoord[i]);
-      rotate.transform(tempCoord[i], tempCoord[i]);
       scale.transform(tempCoord[i], tempCoord[i]);
+      rotate.transform(tempCoord[i], tempCoord[i]);
       move.transform(tempCoord[i], tempCoord[i]);
+      moveOrigin.transform(tempCoord[i], tempCoord[i]);
     }
 
     for (int i = 0; i < _originalCoordinates.length; i++)

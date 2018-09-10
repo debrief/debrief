@@ -62,11 +62,13 @@ public class SVGCircle extends SVGElement
     final double diameter = r * sym_size * 2;
     if (_fill != null)
     {
-      dest.fillOval((int) (_intX[0] - diameter / 2), (int) (_intY[0]- diameter / 2 ), (int) diameter, (int) diameter);
+      dest.fillOval((int) (_intX[0] - diameter / 2), (int) (_intY[0] - diameter
+          / 2), (int) diameter, (int) diameter);
     }
     else
     {
-      dest.drawOval((int) (_intX[0] - diameter / 2), (int) (_intY[0]- diameter / 2 ), (int) diameter, (int) diameter);
+      dest.drawOval((int) (_intX[0] - diameter / 2), (int) (_intY[0] - diameter
+          / 2), (int) diameter, (int) diameter);
     }
   }
 
