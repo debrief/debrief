@@ -4,8 +4,6 @@
 package org.mwc.cmap.core.custom_widget;
 
 import java.text.ParseException;
-import java.util.EventListener;
-import java.util.EventObject;
 import java.util.Vector;
 
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
@@ -34,7 +32,7 @@ public class CWorldLocation extends Composite
 
   private FormattedText myLongitude;
   
-  Vector<ValueModifiedListener> _valueModifierListeners = new Vector<>();
+  Vector<LocationModifiedListener> _locationModifiedListeners = new Vector<>();
 
   public CWorldLocation(Composite parent, int style)
   {
@@ -77,15 +75,15 @@ public class CWorldLocation extends Composite
   }
   
   
-  public void addValueModifiedListener(ValueModifiedListener listener) {
-    _valueModifierListeners.add(listener);
+  public void addLocationModifiedListener(LocationModifiedListener listener) {
+    _locationModifiedListeners.add(listener);
   }
  
   
   private void latitudeValueModified(SegmentEvent e)
   {
-    ValueModifiedEvent event = new ValueModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
-    for(ValueModifiedListener listener:_valueModifierListeners) {
+    LocationModifiedEvent event = new LocationModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
+    for(LocationModifiedListener listener:_locationModifiedListeners) {
       listener.modifyValue(event);
     }
     
@@ -93,8 +91,8 @@ public class CWorldLocation extends Composite
   
   private void longitudeValueModified(SegmentEvent e)
   {
-    ValueModifiedEvent event = new ValueModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
-    for(ValueModifiedListener listener:_valueModifierListeners) {
+    LocationModifiedEvent event = new LocationModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
+    for(LocationModifiedListener listener:_locationModifiedListeners) {
       listener.modifyValue(event);
     }
     
@@ -150,35 +148,5 @@ public class CWorldLocation extends Composite
 
     myLatitude.setValue(getFormat().format(latitude, false));
     myLongitude.setValue(getFormat().format(longitude, true));
-  }
-  public interface ValueModifiedListener extends EventListener{
-    public void modifyValue(ValueModifiedEvent e);
-  }
-  public static class ValueModifiedEvent extends EventObject{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    private Object _newLatValue;
-    private Object _newLongValue;
-
-    public ValueModifiedEvent(Object source,Object newLatValue,Object newLongValue)
-    {
-      super(source);
-      _newLatValue = newLatValue;
-      _newLongValue = newLongValue;
-      
-    }
-
-    public Object getNewLatValue()
-    {
-      return _newLatValue;
-    }
-    public Object getNewLongValue()
-    {
-      return _newLongValue;
-    }
-    
-    
   }
 }

@@ -9,7 +9,8 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
-import org.mwc.cmap.core.custom_widget.CWorldLocation.ValueModifiedEvent;
+import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
+import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 import MWC.GenericData.WorldLocation;
@@ -48,11 +49,11 @@ public class DynamicRectangleBoundsPage extends NewSensorArcBaseWizardPage
     _topLeftLocation = new CWorldLocation(composite,SWT.NONE);
     _topLeftLocation.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
     _topLeftLocation.setToolTipText("Top left of the dynamic rectangle");
-    _topLeftLocation.addValueModifiedListener(new CWorldLocation.ValueModifiedListener()
+    _topLeftLocation.addLocationModifiedListener(new LocationModifiedListener()
     {
       
       @Override
-      public void modifyValue(ValueModifiedEvent e)
+      public void modifyValue(LocationModifiedEvent e)
       {
         setPageComplete(isPageComplete());
         
@@ -62,11 +63,11 @@ public class DynamicRectangleBoundsPage extends NewSensorArcBaseWizardPage
     _bottomRightLocation = new CWorldLocation(composite,SWT.NONE);
     _bottomRightLocation.setToolTipText("Bottom right of the dynamic rectangle");
     _bottomRightLocation.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
-    _bottomRightLocation.addValueModifiedListener(new CWorldLocation.ValueModifiedListener()
+    _bottomRightLocation.addLocationModifiedListener(new LocationModifiedListener()
     {
       
       @Override
-      public void modifyValue(ValueModifiedEvent e)
+      public void modifyValue(LocationModifiedEvent e)
       {
         setPageComplete(isPageComplete());
         

@@ -12,7 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
-import org.mwc.cmap.core.custom_widget.CWorldLocation.ValueModifiedEvent;
+import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
+import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 import MWC.GenericData.WorldLocation;
@@ -52,11 +53,11 @@ public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
     _txtCentre = new CWorldLocation(composite,SWT.NONE);
     _txtCentre.setLayoutData(gd);
     _txtCentre.setToolTipText("Location of centre of the dynamic circle");
-    _txtCentre.addValueModifiedListener(new CWorldLocation.ValueModifiedListener()
+    _txtCentre.addLocationModifiedListener(new LocationModifiedListener()
     {
       
       @Override
-      public void modifyValue(ValueModifiedEvent e)
+      public void modifyValue(LocationModifiedEvent e)
       {
         setPageComplete(isPageComplete());
         
