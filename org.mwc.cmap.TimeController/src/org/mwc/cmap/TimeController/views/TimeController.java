@@ -2874,7 +2874,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     {
       boolean switchOn = _primaryCentricProjection.isChecked();
       // set the new projection
-      CanvasType canvas = _currentEditor.getAdapter(CanvasType.class);
+      CanvasType canvas = (CanvasType) _currentEditor.getAdapter(CanvasType.class);
 
       if(switchOn)
       {
