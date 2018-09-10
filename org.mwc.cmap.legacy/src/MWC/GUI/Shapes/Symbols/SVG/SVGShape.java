@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,15 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
+
+import java.io.*;
+import java.net.*;
+import java.nio.file.*;
+import java.security.CodeSource;
+import java.util.*;
+import java.util.stream.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class SVGShape extends PlainSymbol
 {
@@ -192,29 +202,20 @@ public class SVGShape extends PlainSymbol
    */
   private Document getDocument()
   {
-    // TODO. Change this. If we use org.mwc.cmap.core, it gives a cyclic dependency error.
-    // final java.net.URL resource = ;
-    // SymbolFactory.class.getReso.
-
-    // String svgFilePath =
-    // java.nio.file.Paths.get(resource.toURI()).toAbsolutePath().toString();
-    // final File fXmlFile = new File(SVGShape.class.getResource("/" + _svgPath).getFile());
-    // System.out.println(fXmlFile.getAbsolutePath());
-
     try
     {
-
       // remove the svg: prefix, if necesary
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
+    
+      String svgPath = File.separator + fName + SymbolFactory.SVG_EXTENSION;
+      
+      InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
-      String svgPath = fName + SymbolFactory.SVG_EXTENSION;
-
-      final File fXmlFile = new File(svgPath);
       final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
           .newInstance();
       final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-      final Document doc = dBuilder.parse(fXmlFile);
+      final Document doc = dBuilder.parse(inputStream);
 
       // read this -
       // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work

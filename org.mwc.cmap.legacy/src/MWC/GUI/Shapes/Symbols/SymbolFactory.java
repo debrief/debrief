@@ -208,6 +208,8 @@ public final class SymbolFactory
 
   public static final String COASTGUARD_LAW_ENFORCEMENT_SVG = SVG_FORMAT_PREFIX + ":coastguard_law_enforcement";
 
+  public static final String BOTTOMED_MINE_SVG = SVG_FORMAT_PREFIX + ":bottomed_mine";
+  
   public static final String FLOATING_MINE_SVG = SVG_FORMAT_PREFIX + ":floating_mine";
   
   public static final String SPLASH_POINT_SVG = SVG_FORMAT_PREFIX + ":splash_point";
@@ -217,6 +219,26 @@ public final class SymbolFactory
   public static final String ANOMALY_SVG = SVG_FORMAT_PREFIX + ":anomaly";
   
   public static final String BUOY_1_SVG = SVG_FORMAT_PREFIX + ":buoy_1";
+  
+  public static final String BUOY_2_SVG = SVG_FORMAT_PREFIX + ":buoy_2";
+  
+  public static final String CLEARED_SVG = SVG_FORMAT_PREFIX + ":cleared";
+  
+  public static final String COUNTERMEASURE_SVG = SVG_FORMAT_PREFIX + ":countermeasure";
+  
+  public static final String DECOY_SVG = SVG_FORMAT_PREFIX + ":decoy";
+  
+  public static final String DECOY_AW_SVG = SVG_FORMAT_PREFIX + ":decoy_aw";
+  
+  public static final String DECOY_UW_SVG = SVG_FORMAT_PREFIX + ":decoy_uw";
+  
+  public static final String DROP_POINT_SVG = SVG_FORMAT_PREFIX + ":drop_point";
+  
+  public static final String ENEMY_AIR_SVG = SVG_FORMAT_PREFIX + ":enemy_air";
+  
+  public static final String ENEMY_SUBSURFACE_SVG = SVG_FORMAT_PREFIX + ":enemy_subsurface";
+  
+  public static final String ENEMY_SURFACE_SVG = SVG_FORMAT_PREFIX + ":enemy_surface";
 
   /**
    */
