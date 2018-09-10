@@ -51,8 +51,41 @@ public class DynamicShapeWrapper extends ShapeWrapper
 	 */
 	public int compareTo(Plottable o)
 	{
-		final DynamicShapeWrapper sw = (DynamicShapeWrapper) o;
-		return this.getStartDTG().compareTo(sw.getStartDTG());
+	  final int res;
+	  // is this other item a shape?
+	  if(o instanceof ShapeWrapper)
+	  {
+	    ShapeWrapper shape = (ShapeWrapper) o;
+	    HiResDate myStart = this.getStartDTG();
+	    // do I know my date?
+	    if(myStart != null)
+	    {
+	      HiResDate hisStart = shape.getStartDTG();
+	      
+	      // do we know his date?
+	      if(hisStart != null)
+	      {
+	        // compare dates
+	        res = myStart.compareTo(shape.getStartDTG());
+	      }
+	      else
+	      {
+	        // put me first
+	        res = -1;
+	      }
+	      
+	    }
+	    else
+	    {
+	      // compare names
+	      res = this.getName().compareTo(o.getName());
+	    }
+	  }
+	  else
+	  {
+	    res = this.getName().compareTo(o.getName());
+	  }
+		return res;
 	}
 	
 
