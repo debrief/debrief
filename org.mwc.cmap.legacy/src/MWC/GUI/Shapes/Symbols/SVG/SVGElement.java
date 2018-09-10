@@ -17,11 +17,24 @@ package MWC.GUI.Shapes.Symbols.SVG;
 import MWC.GUI.CanvasType;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
 
 import org.w3c.dom.Element;
 
 abstract public class SVGElement
 {
+  /**
+   * List of coordinates of the Element. If it is a line, it contains two points. If it is a circle,
+   * it contains the center etc
+   */
+  protected java.awt.geom.Point2D[] _originalCoordinates;
+
+  /**
+   * List of coordinates after scaling, rotation.
+   */
+  protected int[] _intX;
+  
+  protected int[] _intY;
 
   /**
    * XML section that describes the SVG Element
@@ -68,9 +81,43 @@ abstract public class SVGElement
     this._dom = _dom;
   }
 
-  public abstract void render(final CanvasType dest, final double sym_size,
+  public void render(final CanvasType dest, final double sym_size,
       final java.awt.Point origin_coords, final double rotation_degs,
-      final java.awt.Point rotationPoint);
+      final java.awt.Point rotationPoint)
+  {
+    java.awt.geom.Point2D[] tempCoord = new java.awt.geom.Point2D[_originalCoordinates.length];
+    // We want the icon to be aligned with the track
+    double initial_rotation_degs = 90.0 / 180.0 * Math.PI;
+    double current_rotation_deg = initial_rotation_degs + rotation_degs;
+
+    // Lets assume that the viewbox is 0 0 100 100
+    double magnitude = Math.sqrt(100 * 100 + 100 * 100);
+
+    // We initialize the transformers
+    final AffineTransform normalize = AffineTransform.getScaleInstance(1.0
+        / magnitude * wid, 1.0 / magnitude * wid);
+    final AffineTransform rotate = AffineTransform.getRotateInstance(
+        current_rotation_deg, 0, 0);
+    final AffineTransform scale = AffineTransform.getScaleInstance(sym_size,
+        sym_size);
+    final AffineTransform move = AffineTransform.getTranslateInstance(origin_coords.getX(), origin_coords.getY());
+
+    // We rotate
+    for (int i = 0; i < _originalCoordinates.length; i++)
+    {
+      tempCoord[i] = new java.awt.geom.Point2D.Double();
+      normalize.transform(_originalCoordinates[i], tempCoord[i]);
+      rotate.transform(tempCoord[i], tempCoord[i]);
+      scale.transform(tempCoord[i], tempCoord[i]);
+      move.transform(tempCoord[i], tempCoord[i]);
+    }
+
+    for (int i = 0; i < _originalCoordinates.length; i++)
+    {
+      _intX[i] = (int) tempCoord[i].getX();
+      _intY[i] = (int) tempCoord[i].getY();
+    }
+  }
 
   /**
    * https://stackoverflow.com/questions/4129666/how-to-convert-hex-to-rgb-using-java

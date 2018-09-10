@@ -15,8 +15,6 @@
 package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
 
 import org.w3c.dom.Element;
 
@@ -24,11 +22,9 @@ import MWC.GUI.CanvasType;
 
 public class SVGCircle extends SVGElement
 {
-
-  private double _x;
-
-  private double _y;
-
+  /**
+   * Radius
+   */
   private double _r;
 
   public SVGCircle(Element dom)
@@ -36,9 +32,16 @@ public class SVGCircle extends SVGElement
     super(dom);
     try
     {
-      _x = Double.parseDouble(getDom().getAttribute("cx"));
-      _y = Double.parseDouble(getDom().getAttribute("cy"));
+      _originalCoordinates = new java.awt.geom.Point2D[1];
+
+      _originalCoordinates[0] = new java.awt.geom.Point2D.Double(Double
+          .parseDouble(getDom().getAttribute("cx")), Double.parseDouble(getDom()
+              .getAttribute("cy")));
+
       _r = Double.parseDouble(getDom().getAttribute("r"));
+
+      _intX = new int[_originalCoordinates.length];
+      _intY = new int[_originalCoordinates.length];
     }
     catch (Exception e)
     {
@@ -51,36 +54,19 @@ public class SVGCircle extends SVGElement
       final Point origin_coords, final double rotation_degs,
       final java.awt.Point rotationPoint)
   {
-    // We want the icon to be aligned with the track
-    double rotation = rotation_degs + 90.0 / 180.0 * Math.PI;
-    
-    // Lets assume that the viewbox is 0 0 100 100
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint);
+
     double magnitude = Math.sqrt(100 * 100 + 100 * 100);
-    
-    // centering and scaling to 1.0
 
     final double r = _r / magnitude * wid;
-    
-    Point2D centerPoint = new Point2D.Double( (_x - rotationPoint.x)
-        / magnitude * wid,  (_y - rotationPoint.y) / magnitude * wid);
-    
-
-    final AffineTransform thisRotation = AffineTransform.getRotateInstance(
-        rotation, 0, 0); 
-    
-    thisRotation.transform(centerPoint, centerPoint);
-    
     final double diameter = r * sym_size * 2;
-    final double x = centerPoint.getX() * sym_size + origin_coords.getX() - diameter / 2 ;
-    final double y = centerPoint.getY() * sym_size + origin_coords.getY() - diameter / 2 ;
-
     if (_fill != null)
     {
-      dest.fillOval((int) x, (int) y, (int) diameter, (int) diameter);
+      dest.fillOval((int) (_intX[0] - diameter / 2), (int) (_intY[0]- diameter / 2 ), (int) diameter, (int) diameter);
     }
     else
     {
-      dest.drawOval((int) x, (int) y, (int) diameter, (int) diameter);
+      dest.drawOval((int) (_intX[0] - diameter / 2), (int) (_intY[0]- diameter / 2 ), (int) diameter, (int) diameter);
     }
   }
 
