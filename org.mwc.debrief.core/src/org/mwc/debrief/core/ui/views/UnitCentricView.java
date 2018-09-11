@@ -1,5 +1,6 @@
 package org.mwc.debrief.core.ui.views;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -21,6 +22,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
+import Debrief.ReaderWriter.XML.Shapes.RangeRingsHandler;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -28,10 +30,13 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.LocalGridPainter;
+import MWC.GUI.Shapes.RangeRingShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
@@ -157,6 +162,7 @@ public class UnitCentricView extends ViewPart
   protected void fitTargetToWindow()
   {
     // TODO: resize to show all data
+    _myOverviewChart.getCanvas().getProjection().setDataArea(null);
 
     // now, redraw our rectable
     _myOverviewChart.repaint();
@@ -450,17 +456,20 @@ public class UnitCentricView extends ViewPart
       final boolean isSnail = _snailPaint.isChecked();
 
       IOperateOnMatch paintIt;
-      final HiResDate subjectTime;
+      final HiResDate subjectTime= _timeProvider.getTime();
 
       if (isSnail)
       {
-        subjectTime = _timeProvider.getTime();
         paintIt = new IOperateOnMatch()
         {
           @Override
           public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation)
           {
+            dest.setLineWidth(3f);
+            dest.setColor(rawSec.getColor());
+            
             rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+            
             // and the line
             Point newEnd = dest.toScreen(offsetLocation);
             if (oldEnd != null)
@@ -469,16 +478,25 @@ public class UnitCentricView extends ViewPart
             }
             oldEnd = new Point(newEnd);
           }
+
+          @Override
+          public void processNearest(FixWrapper nearestInTime,
+              WorldLocation nearestOffset)
+          {
+            // ignore - we don't do it.
+          }
         };
       }
       else
       {
-        subjectTime = null;
         paintIt = new IOperateOnMatch()
         {
           @Override
           public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation)
           {
+            dest.setLineWidth(3f);
+            dest.setColor(rawSec.getColor());
+
             rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
 
             // and the line
@@ -490,26 +508,46 @@ public class UnitCentricView extends ViewPart
             //
             oldEnd = new Point(newEnd);
           }
+
+          @Override
+          public void processNearest(FixWrapper nearestInTime,
+              WorldLocation nearestOffset)
+          {
+            dest.setLineWidth(3);
+            dest.setColor(Color.DARK_GRAY);
+            Point pt = dest.toScreen(nearestOffset);
+            dest.drawRect(pt.x-3, pt.y-3, 7, 7);
+          }
         };
       }
 
       walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
 
+      // do we draw range rings?
+      
+      // do we draw local grid
+      LocalGridPainter lg = new LocalGridPainter();
+      lg.setDelta(new WorldDistance(10, WorldDistance.KM));
+      lg.setOrigin(new WorldLocation(0d, 0d, 0d));
+      lg.paint(dest);
+      
+      RangeRingShape rrs = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
+          new WorldDistance(2, WorldDistance.KM));
+      rrs.paint(dest);      
+      
       // draw in the O/S last, so it's on top
+      dest.setLineWidth(2f);
       Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
           new WorldLocation(0d, 0d, 0d));
       dest.setColor(primary.getColor());
-      dest.drawRect(pt.x - 3, pt.y - 5, 7, 9);
-
-      System.out.println("paint!");
+      dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
+      
+      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5 );
 
       if (priTrack != null)
       {
         priTrack.setInterpolatePoints(oldInterp);
       }
-
-      // super.paintMe(dest);
-
     }
 
     private void checkDataCoverage(Layers theLayers)
@@ -535,6 +573,13 @@ public class UnitCentricView extends ViewPart
                   WorldLocation offsetLocation)
               {
                 area.extend(offsetLocation);
+              }
+
+              @Override
+              public void processNearest(FixWrapper nearestInTime,
+                  WorldLocation nearestOffset)
+              {
+                // ok, ignore
               }
             };
             walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
@@ -571,7 +616,12 @@ public class UnitCentricView extends ViewPart
       else if (thisL instanceof TrackWrapper)
       {
         TrackWrapper other = (TrackWrapper) thisL;
-
+        
+        // keep track of the fix nearest to the required DTG
+        FixWrapper nearestInTime = null;
+        WorldLocation nearestOffset = null;
+        long nearestDelta = Long.MAX_VALUE;
+        
         // ok, run back through the data
         Enumeration<Editable> pts = other.getPositionIterator();
         while (pts.hasMoreElements())
@@ -579,7 +629,7 @@ public class UnitCentricView extends ViewPart
           FixWrapper thisF = (FixWrapper) pts.nextElement();
 
           HiResDate hisD = thisF.getDTG();
-
+          
           final boolean useIt;
           if (subjectTime == null)
           {
@@ -605,34 +655,80 @@ public class UnitCentricView extends ViewPart
             if (nearest != null && nearest.length > 0)
             {
               FixWrapper priFix = (FixWrapper) nearest[0];
+              long diff = Math.abs(hisD.getDate().getTime() - subjectTime.getDate().getTime());
+              
+              if(nearestInTime == null)
+              {
+                nearestInTime = thisF;
+                nearestDelta = diff;
+                nearestOffset = processOffset(priFix, thisF.getLocation(), origin);
+              }
+              else
+              {
+                if(diff < nearestDelta)
+                {
+                  nearestInTime = thisF;
+                  nearestDelta = diff;
+                  nearestOffset = processOffset(priFix, thisF.getLocation(), origin);
+                }
+              }
 
-              // ok, work out offset from this
-              final WorldVector delta = thisF.getLocation().subtract(priFix
-                  .getLocation());
-              
-              // we now have to rotate the delta, according to O/S course
-              double curBearing = delta.getBearing();
-              
-              // work out the bearing relative to O/S head
-              final double newBearing = curBearing - priFix.getCourse();
-              
-              // update the bearing
-              WorldVector newDelta = new WorldVector(newBearing, delta.getRange(), 0d);
-
-              final WorldLocation pos = origin.add(newDelta);
+              WorldLocation pos = processOffset(priFix, thisF.getLocation(), origin);
 
               doIt.doItTo(thisF, pos);
-
-              // dest.getProjection().setDataArea(dataBounds);
             }
           }
+          
+        }
+        if(nearestInTime != null)
+        {
+          doIt.processNearest(nearestInTime, nearestOffset);
         }
       }
     }
   }
 
+  /** convert an absolute location into a location relative to a primary track
+   * 
+   * @param primary
+   * @param other
+   * @param origin
+   * @return
+   */
+  private static WorldLocation processOffset(FixWrapper primary, WorldLocation other, WorldLocation origin)
+  {
+    // ok, work out offset from this
+    final WorldVector delta = other.subtract(primary
+        .getLocation());
+    
+    // we now have to rotate the delta, according to O/S course
+    double curBearing = delta.getBearing();
+    
+    // work out the bearing relative to O/S head
+    final double newBearing = curBearing - primary.getCourse();
+    
+    // update the bearing
+    WorldVector newDelta = new WorldVector(newBearing, delta.getRange(), 0d);
+
+    final WorldLocation pos = origin.add(newDelta);
+    
+    return pos;
+  }
+  
   public static interface IOperateOnMatch
   {
+    /** process this single data object
+     * 
+     * @param rawSec
+     * @param offsetLocation
+     */
     void doItTo(FixWrapper rawSec, WorldLocation offsetLocation);
+
+    /** process the secondary track position that's nearest to the required time
+     * 
+     * @param nearestInTime
+     * @param nearestOffset
+     */
+    void processNearest(FixWrapper nearestInTime, WorldLocation nearestOffset);
   }
 }
