@@ -149,7 +149,6 @@ import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
-import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -197,9 +196,9 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
    * 
    * @param projection
    */
-  public SWTCanvas(final Composite parent, final GeoToolsHandler projection)
+  public SWTCanvas(final Composite parent, final PlainProjection projection)
   {
-    super((PlainProjection) projection);
+    super(projection);
     // super(null);
 
     _updateListeners = new ArrayList<ScreenUpdateListener>();
@@ -579,8 +578,10 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
 
             public void run()
             {
-              _myCanvas.redraw();
-              
+              if(_myCanvas != null && !_myCanvas.isDisposed())
+              {
+                _myCanvas.redraw();
+              }
               screenUpdated();
             }
           });
