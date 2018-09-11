@@ -113,7 +113,6 @@ package org.mwc.cmap.core.ui_support.swt;
 import java.awt.BasicStroke;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Point;
 import java.awt.Shape;
 import java.awt.image.ImageObserver;
 import java.beans.IntrospectionException;
@@ -248,6 +247,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
   private SWTGraphics2D _sg2d;
 
+  private HiResDate _timeOverride;
+
   // ///////////////////////////////////////////////////////////
   // constructor
   // //////////////////////////////////////////////////////////
@@ -369,16 +370,23 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    */
   public final java.awt.Point toScreen(final WorldLocation val)
   {
-    return _theProjection.toScreen(val);
-  }
-  
-  
-  public Point toScreen(final WorldLocation val,
-      final HiResDate dtg)
-  {
-    return _theProjection.toScreen(val, dtg);
+    // see if we have a time override
+    if(_timeOverride != null)
+    {
+      return _theProjection.toScreen(val, _timeOverride);
+    }
+    else
+    {
+      return _theProjection.toScreen(val);
+    }
   }
 
+  @Override
+  public void setTimeOverride(final HiResDate override)
+  {
+    _timeOverride = override;
+  }
+  
   /**
    * convenience function.
    */

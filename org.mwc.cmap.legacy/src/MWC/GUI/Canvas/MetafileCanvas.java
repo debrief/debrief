@@ -133,6 +133,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.ShapeCanvasType;
@@ -724,7 +726,9 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 		g.fillShape(shape);
 	}
 
-	// /////////////////////////////////
-	// nested classes
-	// ////////////////////////////////
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
+	}
 }

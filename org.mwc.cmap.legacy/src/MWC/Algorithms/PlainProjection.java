@@ -444,7 +444,7 @@ abstract public class PlainProjection implements Serializable, Editable
    */
   public Point toScreen(WorldLocation val, HiResDate dtg)
   {
-    throw new IllegalArgumentException("Time sensitive toScreen not implemented for plain projection");
+    return toScreen(val);
   }
 
 }

@@ -85,6 +85,8 @@ import java.text.AttributedCharacterIterator;
 import java.text.DateFormat;
 import java.util.Map;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
@@ -2216,4 +2218,11 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 	public void drawText(final String str, final int x, final int y, final float rotate, boolean above) {
 		
 	}
+	
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
+	}
+
 }

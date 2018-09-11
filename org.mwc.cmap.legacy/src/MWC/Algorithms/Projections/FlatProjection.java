@@ -29,6 +29,8 @@ import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -101,6 +103,11 @@ public class FlatProjection extends PlainProjection
 	 * 
 	 */
 	private final Point scrRes = new Point(0, 0);
+	
+	/** to use primary centric track projection, we need to know which track
+	 * to centre upon.
+	 */
+  private WatchableList _centricPrimaryTrack;
 
 	// ////////////////////////////////////////////////
 	// member functions
@@ -234,8 +241,6 @@ public class FlatProjection extends PlainProjection
   @Override
 	public java.awt.Point toScreen(final WorldLocation val, final HiResDate dtg)
 	{
-		// Point scrRes;
-
 		// check we've got valid data
 		if ((_scaleVal == 0) || (Double.isInfinite(_scaleVal)))
 			return null;
@@ -254,18 +259,30 @@ public class FlatProjection extends PlainProjection
 		// {
 
 		// see if we are in relative mode
-		if (super.getPrimaryOriented())
+		if(_centricPrimaryTrack != null)
 		{
-			// check if we have a parent defined
-			if (getRelativeProjectionParent() != null)
-			{
-				// and the bearing offset
-				bearingOffset = getRelativeProjectionParent().getHeading(null);
-			}
+		  Watchable[] nearest = _centricPrimaryTrack.getNearestTo(dtg);
+		  if(nearest != null && nearest.length > 0)
+		  {
+		    bearingOffset = nearest[0].getCourse();
+		  }
 		}
+		else if (super.getPrimaryOriented() && getRelativeProjectionParent() != null)
+    {
+      // and the bearing offset
+      bearingOffset = getRelativeProjectionParent().getHeading(null);
+    }
 
 		// see if we are in relative mode
-		if (super.getPrimaryCentred())
+    if(_centricPrimaryTrack != null)
+    {
+      Watchable[] nearest = _centricPrimaryTrack.getNearestTo(dtg);
+      if(nearest != null && nearest.length > 0)
+      {
+        myOrigin = nearest[0].getLocation();
+      }
+    }
+    else if (super.getPrimaryCentred())
 		{
 			// check if we have a parent defined
 			if (getRelativeProjectionParent() != null)
@@ -566,6 +583,15 @@ public class FlatProjection extends PlainProjection
 			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
 		}
 	}
+
+	/** store the track that we use for a primary-centric view
+	 * 
+	 * @param primaryTrack
+	 */
+  public void setPrimaryTrack(WatchableList primaryTrack)
+  {
+    _centricPrimaryTrack = primaryTrack;
+  }
 
 
 }

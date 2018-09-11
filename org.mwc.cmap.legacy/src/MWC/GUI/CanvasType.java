@@ -439,14 +439,6 @@ public interface CanvasType {
    */
   public java.awt.Point toScreen(WorldLocation val);
   
-  /** time-sensitive plotting routine
-   * 
-   * @param val
-   * @param dtg
-   * @return
-   */
-  public java.awt.Point toScreen(WorldLocation val, final HiResDate dtg);
-  
   /**
    * toWorld
    *
@@ -619,5 +611,11 @@ public interface CanvasType {
      */
     public String getMultiLineName();
   }
+
+  /** allow the time for relative (centric) plotting to be specified
+   * 
+   * @param override
+   */
+  void setTimeOverride(HiResDate override);
 }
 

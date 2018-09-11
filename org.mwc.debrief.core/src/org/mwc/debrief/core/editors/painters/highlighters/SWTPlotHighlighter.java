@@ -147,17 +147,19 @@ public interface SWTPlotHighlighter extends Editable
           return;
         }
 
+        dest.setTimeOverride(watch.getTime());
+        
         // set the highlight colour
         dest.setColor(_myColor);
         // get the current area of the watchable
         final WorldArea wa = watch.getBounds();
         // convert to screen coordinates
-        final Point tl = proj.toScreen(wa.getTopLeft());
+        final Point tl = dest.toScreen(wa.getTopLeft());
 
         final int tlx = tl.x;
         final int tly = tl.y;
 
-        final Point br = proj.toScreen(wa.getBottomRight());
+        final Point br = dest.toScreen(wa.getBottomRight());
         // get the width
         final int x = tlx - _mySize;
         final int y = tly - _mySize;

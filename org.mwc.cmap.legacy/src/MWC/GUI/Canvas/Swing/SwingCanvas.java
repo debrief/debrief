@@ -234,6 +234,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
@@ -1237,6 +1239,12 @@ public void drawText(final String str, final int x, final int y, final float rot
 public void drawText(String str, int x, int y, float rotate, boolean above)
 {
 	
+}
+
+@Override
+public void setTimeOverride(HiResDate override)
+{
+  throw new IllegalAnnotationException("This canvas does not support time override");
 }
 
 }

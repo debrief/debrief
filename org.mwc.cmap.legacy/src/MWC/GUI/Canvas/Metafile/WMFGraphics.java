@@ -112,6 +112,8 @@ import java.awt.image.PixelGrabber;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.GUI.Defaults;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
@@ -1106,5 +1108,10 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
      wmf.polypolygon(polys);
      setGDIHollowBrush();
    }
+	 @Override
+	 public void setTimeOverride(HiResDate override)
+	 {
+	   throw new IllegalAnnotationException("This canvas does not support time override");
+	 }
 	
 }

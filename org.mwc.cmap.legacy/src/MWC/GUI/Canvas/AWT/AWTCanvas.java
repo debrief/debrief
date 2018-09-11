@@ -123,12 +123,13 @@
 package MWC.GUI.Canvas.AWT;
 
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.ImageObserver;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -718,9 +719,9 @@ public void drawText(String str, int x, int y, float rotate, boolean above)
 }
 
 @Override
-public Point toScreen(WorldLocation val, HiResDate dtg)
+public void setTimeOverride(HiResDate override)
 {
-  return _theProjection.toScreen(val, dtg);
+  throw new IllegalAnnotationException("This canvas does not support time override");
 }
 
 }

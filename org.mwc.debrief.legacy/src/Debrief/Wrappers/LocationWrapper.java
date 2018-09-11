@@ -127,7 +127,6 @@ public final class LocationWrapper extends MWC.GUI.PlainWrapper {
 
     // draw in our symbol
     _theSymbol.paint(dest, _theLocation);
-
   }
 
   public final WorldArea getBounds(){

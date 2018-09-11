@@ -23,6 +23,8 @@ import java.awt.Point;
 import java.awt.image.ImageObserver;
 import java.util.Enumeration;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.HiResDate;
@@ -261,6 +263,11 @@ public class MockCanvasType implements CanvasType
 	public void drawText(String str, int x, int y, float rotate, boolean above)
 	{
 		
+	}
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
 	}
 
 }
