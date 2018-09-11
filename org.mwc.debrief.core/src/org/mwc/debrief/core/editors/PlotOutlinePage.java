@@ -104,11 +104,6 @@ import MWC.GenericData.WatchableList;
 public class PlotOutlinePage extends Page implements IContentOutlinePage
 {
 
-  private static interface IOperateOn
-  {
-    public void doItTo(Editable item);
-  }
-
   private static class MyTreeViewer extends TreeViewer
   {
     public MyTreeViewer(final Composite parent, final int style)
