@@ -684,7 +684,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * return the current heading
    */
-  public final double getHeading()
+  public final double getHeading(final HiResDate dtg)
   {
     double res = 0;
     final Watchable cur = getCurrentPrimary();
@@ -698,7 +698,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * return the current origin for the plot
    */
-  public final MWC.GenericData.WorldLocation getLocation()
+  public final MWC.GenericData.WorldLocation getLocation(final HiResDate dtg)
   {
     MWC.GenericData.WorldLocation res = null;
     final Watchable cur = getCurrentPrimary();

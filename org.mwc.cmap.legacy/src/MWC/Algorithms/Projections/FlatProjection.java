@@ -28,6 +28,9 @@ import junit.framework.TestCase;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -100,6 +103,11 @@ public class FlatProjection extends PlainProjection
 	 * 
 	 */
 	private final Point scrRes = new Point(0, 0);
+	
+	/** to use primary centric track projection, we need to know which track
+	 * to centre upon.
+	 */
+  private WatchableList _centricPrimaryTrack;
 
 	// ////////////////////////////////////////////////
 	// member functions
@@ -223,11 +231,16 @@ public class FlatProjection extends PlainProjection
 		zoom(0.0);
 	}
 
-	@Override
-	public java.awt.Point toScreen(final WorldLocation val)
-	{
-		// Point scrRes;
 
+  @Override
+  public java.awt.Point toScreen(final WorldLocation val)
+  {
+    return toScreen(val, null);
+  }
+  
+  @Override
+	public java.awt.Point toScreen(final WorldLocation val, final HiResDate dtg)
+	{
 		// check we've got valid data
 		if ((_scaleVal == 0) || (Double.isInfinite(_scaleVal)))
 			return null;
@@ -246,24 +259,36 @@ public class FlatProjection extends PlainProjection
 		// {
 
 		// see if we are in relative mode
-		if (super.getPrimaryOriented())
+		if(_centricPrimaryTrack != null)
 		{
-			// check if we have a parent defined
-			if (super._relativePlotter != null)
-			{
-				// and the bearing offset
-				bearingOffset = _relativePlotter.getHeading();
-			}
+		  Watchable[] nearest = _centricPrimaryTrack.getNearestTo(dtg);
+		  if(nearest != null && nearest.length > 0)
+		  {
+		    bearingOffset = nearest[0].getCourse();
+		  }
 		}
+		else if (super.getPrimaryOriented() && getRelativeProjectionParent() != null)
+    {
+      // and the bearing offset
+      bearingOffset = getRelativeProjectionParent().getHeading(null);
+    }
 
 		// see if we are in relative mode
-		if (super.getPrimaryCentred())
+    if(_centricPrimaryTrack != null)
+    {
+      Watchable[] nearest = _centricPrimaryTrack.getNearestTo(dtg);
+      if(nearest != null && nearest.length > 0)
+      {
+        myOrigin = nearest[0].getLocation();
+      }
+    }
+    else if (super.getPrimaryCentred())
 		{
 			// check if we have a parent defined
-			if (super._relativePlotter != null)
+			if (getRelativeProjectionParent() != null)
 			{
 				// try to get the origin
-				myOrigin = _relativePlotter.getLocation();
+				myOrigin = getRelativeProjectionParent().getLocation(null);
 			}
 		}
 
@@ -304,10 +329,10 @@ public class FlatProjection extends PlainProjection
 		return scrRes;
 	}
 
-	@Override
-	public WorldLocation toWorld(final java.awt.Point val)
-	{
 
+  @Override
+  public WorldLocation toWorld(final java.awt.Point val)
+	{
 		final WorldLocation answer = null;
 		final Point p1 = new Point();
 
@@ -349,10 +374,10 @@ public class FlatProjection extends PlainProjection
 			if (super.getPrimaryOriented())
 			{
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
+				if (getRelativeProjectionParent() != null)
 				{
 					// and the bearing offset
-					bearingOffset = _relativePlotter.getHeading();
+					bearingOffset = getRelativeProjectionParent().getHeading(null);
 				}
 			}
 
@@ -360,10 +385,10 @@ public class FlatProjection extends PlainProjection
 			if (super.getPrimaryCentred())
 			{
 				// check if we have a parent defined
-				if (super._relativePlotter != null)
+				if (getRelativeProjectionParent() != null)
 				{
 					// try to get the origin
-					myOrigin = _relativePlotter.getLocation();
+					myOrigin = getRelativeProjectionParent().getLocation(null);
 				}
 			}
 		}
@@ -558,6 +583,15 @@ public class FlatProjection extends PlainProjection
 			assertEquals(new WorldLocation(-10, 10, 0), proj.getDataArea().getBottomRight());
 		}
 	}
+
+	/** store the track that we use for a primary-centric view
+	 * 
+	 * @param primaryTrack
+	 */
+  public void setPrimaryTrack(WatchableList primaryTrack)
+  {
+    _centricPrimaryTrack = primaryTrack;
+  }
 
 
 }

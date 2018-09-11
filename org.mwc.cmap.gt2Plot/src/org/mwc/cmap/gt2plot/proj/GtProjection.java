@@ -142,7 +142,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		// right, quick check. are we in a primary centred mode?
 		if (super.getNonStandardPlotting() && super.getPrimaryCentred())
 		{
-			final WorldLocation loc = super._relativePlotter.getLocation();
+			final WorldLocation loc = getRelativeProjectionParent().getLocation(null);
 
 			// do we have a location for this plotter? We may not have...
 			if (loc != null)

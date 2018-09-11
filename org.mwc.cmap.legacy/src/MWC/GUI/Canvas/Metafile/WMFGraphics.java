@@ -98,6 +98,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.Shape;
@@ -111,9 +112,13 @@ import java.awt.image.PixelGrabber;
 import java.util.Iterator;
 import java.util.Vector;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.GUI.Defaults;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 
 public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
@@ -949,6 +954,12 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
 	{
 		return _projection.toScreen(val);
 	}
+	
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _projection.toScreen(val, dtg);
+  }
 
 	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val)
 	{
@@ -1097,5 +1108,10 @@ public class WMFGraphics extends Graphics implements MWC.GUI.CanvasType
      wmf.polypolygon(polys);
      setGDIHollowBrush();
    }
+	 @Override
+	 public void setTimeOverride(HiResDate override)
+	 {
+	   throw new IllegalAnnotationException("This canvas does not support time override");
+	 }
 	
 }

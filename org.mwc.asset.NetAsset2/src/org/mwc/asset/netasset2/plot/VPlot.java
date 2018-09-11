@@ -147,7 +147,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 				{
 
 					@Override
-					public double getHeading()
+					public double getHeading(final HiResDate dtg)
 					{
 						double res = 0;
 						if (_recentStatus != null)
@@ -157,7 +157,7 @@ public class VPlot extends Composite implements IVPartMovement, IVTime,
 					}
 
 					@Override
-					public WorldLocation getLocation()
+					public WorldLocation getLocation(final HiResDate dtg)
 					{
 						WorldLocation res = null;
 						if (_recentStatus != null)

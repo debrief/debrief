@@ -17,11 +17,15 @@ package MWC.GUI.Canvas.Clip;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.ImageObserver;
+
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -194,6 +198,13 @@ public class WindowsClipboard implements CanvasType
 	{
 		return _myProjection.toScreen(val);
 	}
+	
+  
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _myProjection.toScreen(val, dtg);
+  }
 
 	public WorldLocation toWorld(final java.awt.Point val)
 	{
@@ -259,6 +270,11 @@ public class WindowsClipboard implements CanvasType
 	public void drawText(String str, int x, int y, float rotate, boolean above)
 	{
 		
+	}
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
 	}
 
 }

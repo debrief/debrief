@@ -147,6 +147,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -246,6 +247,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
 
   private SWTGraphics2D _sg2d;
 
+  private HiResDate _timeOverride;
+
   // ///////////////////////////////////////////////////////////
   // constructor
   // //////////////////////////////////////////////////////////
@@ -301,13 +304,14 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    */
   public final void setProjection(final PlainProjection theProjection)
   {
+    _theProjection = theProjection;
     // ok - let's not use the new projection. We'll keep our own projection,
     // but we'll copy the data viewport
-    final WorldArea dataArea = theProjection.getDataArea();
-    if (dataArea != null)
-    {
-      _theProjection.setDataArea(dataArea);
-    }
+//    final WorldArea dataArea = theProjection.getDataArea();
+//    if (dataArea != null)
+//    {
+//      _theProjection.setDataArea(dataArea);
+//    }
   }
 
   /**
@@ -366,9 +370,23 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable,
    */
   public final java.awt.Point toScreen(final WorldLocation val)
   {
-    return _theProjection.toScreen(val);
+    // see if we have a time override
+    if(_timeOverride != null)
+    {
+      return _theProjection.toScreen(val, _timeOverride);
+    }
+    else
+    {
+      return _theProjection.toScreen(val);
+    }
   }
 
+  @Override
+  public void setTimeOverride(final HiResDate override)
+  {
+    _timeOverride = override;
+  }
+  
   /**
    * convenience function.
    */

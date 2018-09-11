@@ -1805,7 +1805,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
 
           @Override
-          public double getHeading()
+          public double getHeading(final HiResDate dtg)
           {
             double res1 = 0.0;
             final Watchable thePos = getFirstPosition(_trackDataProvider,
@@ -1821,7 +1821,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
           }
 
           @Override
-          public WorldLocation getLocation()
+          public WorldLocation getLocation(final HiResDate dtg)
           {
             MWC.GenericData.WorldLocation res1 = null;
             final Watchable thePos = getFirstPosition(_trackDataProvider,

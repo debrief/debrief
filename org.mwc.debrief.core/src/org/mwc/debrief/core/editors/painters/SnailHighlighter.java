@@ -87,6 +87,18 @@ public class SnailHighlighter implements TemporalLayerPainter
    * the snail buoy-pattern plotter to use
    */
   private final SnailDrawSWTBuoyPattern _mySnailBuoyPlotter;
+  
+  /** whether we only render tracks
+   * 
+   */
+  private boolean _onlyPlotTracks = false;
+  
+  @Override
+  public void setOnlyPlotTracks(final boolean onlyPlotTracks)
+  {
+    _onlyPlotTracks = onlyPlotTracks;
+  } 
+
 
   /**
    * constructor - remember we need to know about the primary/secondary tracks
@@ -268,6 +280,14 @@ public class SnailHighlighter implements TemporalLayerPainter
   public void paintThisLayer(final Layer theLayer, final CanvasType dest,
       final HiResDate newDTG)
   {
+
+    // if we're only plotting tracks, and this isn't a track, we can drop out
+    if(_onlyPlotTracks && theLayer instanceof WatchableList)
+    {
+      // ok, drop out
+      return;
+    }
+    
     // right, none of that fannying around painting the whole layer.
 
     // start off by finding the non-watchables for this layer

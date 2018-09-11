@@ -137,6 +137,7 @@ import java.awt.Image;
 import java.awt.image.ImageObserver;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -437,6 +438,7 @@ public interface CanvasType {
    *
    */
   public java.awt.Point toScreen(WorldLocation val);
+  
   /**
    * toWorld
    *
@@ -609,5 +611,11 @@ public interface CanvasType {
      */
     public String getMultiLineName();
   }
+
+  /** allow the time for relative (centric) plotting to be specified
+   * 
+   * @param override
+   */
+  void setTimeOverride(HiResDate override);
 }
 

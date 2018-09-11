@@ -23,8 +23,11 @@ import java.awt.Point;
 import java.awt.image.ImageObserver;
 import java.util.Enumeration;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 public class MockCanvasType implements CanvasType
@@ -227,7 +230,12 @@ public class MockCanvasType implements CanvasType
     {
         return new Point(1,2);
     }
-
+    
+    public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val,
+        final HiResDate dtg)
+    {
+      return new Point(1,2);
+    }  
 
     public WorldLocation toWorld(final Point val)
     {
@@ -255,6 +263,11 @@ public class MockCanvasType implements CanvasType
 	public void drawText(String str, int x, int y, float rotate, boolean above)
 	{
 		
+	}
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
 	}
 
 }

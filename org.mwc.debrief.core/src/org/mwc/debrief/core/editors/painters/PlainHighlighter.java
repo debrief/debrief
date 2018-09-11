@@ -24,6 +24,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
 /**
@@ -37,6 +38,17 @@ public class PlainHighlighter implements TemporalLayerPainter
 	private Color _myColor = Color.white;
 
 	private int _mySize = 5;
+	
+	/** whether we only render tracks
+	 * 
+	 */
+	private boolean _onlyPlotTracks = false;
+	
+  @Override
+  public void setOnlyPlotTracks(final boolean onlyPlotTracks)
+  {
+    _onlyPlotTracks = onlyPlotTracks;
+  } 
 
 	public final void highlightIt(final MWC.Algorithms.PlainProjection proj,
 			final CanvasType dest, final MWC.GenericData.Watchable watch)
@@ -96,32 +108,16 @@ public class PlainHighlighter implements TemporalLayerPainter
 	 */
 	public void paintThisLayer(final Layer theLayer, final CanvasType dest, final HiResDate dtg)
 	{
-		// paint it, to start off with
-		theLayer.paint(dest);
-			
-		// now think about the highlight
+	  if(_onlyPlotTracks && !(theLayer instanceof WatchableList))
+	  {	    
+	    // ok, drop out
+	    return;
+	  }
+	  
+    // paint it, to start off with
+    theLayer.paint(dest);
 
-		// do we have a dtg?
-//		if (dtg != null)
-//		{
-//			if (theLayer instanceof TrackWrapper)
-//			{
-//				TrackWrapper tw = (TrackWrapper) theLayer;
-//				Watchable[] list = tw.getNearestTo(dtg);
-//				if (list != null)
-//				{
-//					for (int i = 0; i < list.length; i++)
-//					{
-//						Watchable thisW = list[i];
-//
-//						highlightIt(dest.getProjection(), dest, thisW);
-//					}
-//				}
-//			}
-//		}
 	}
-
-	
 	
 	public Color getColor()
 	{
@@ -198,5 +194,6 @@ public class PlainHighlighter implements TemporalLayerPainter
       }
 
     }
-  }	
+  }
+
 }

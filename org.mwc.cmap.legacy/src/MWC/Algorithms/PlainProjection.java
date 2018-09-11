@@ -26,6 +26,7 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
 import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -88,7 +89,7 @@ abstract public class PlainProjection implements Serializable, Editable
   /**
    * the parent class which will give us the information necessary to produce a relative plot
    */
-  protected RelativeProjectionParent _relativePlotter;
+  private RelativeProjectionParent _relativePlotter;
 
   /**
    * our editor
@@ -264,6 +265,11 @@ abstract public class PlainProjection implements Serializable, Editable
   {
     _relativePlotter = par;
   }
+  
+  protected RelativeProjectionParent getRelativeProjectionParent()
+  {
+    return _relativePlotter;
+  }
 
   // HACK : uncomment these fields
   // public abstract void shiftViewPort(WorldArea newArea);
@@ -422,12 +428,23 @@ abstract public class PlainProjection implements Serializable, Editable
     /**
      * return the current heading
      */
-    public double getHeading();
+    public double getHeading(final HiResDate dtg);
 
     /**
      * return the current origin for the plot
      */
-    public WorldLocation getLocation();
+    public WorldLocation getLocation(final HiResDate dtg);
+  }
+
+  /** convert this coordinate to screen coords, respective to data as specified DTG
+   * 
+   * @param val
+   * @param dtg
+   * @return
+   */
+  public Point toScreen(WorldLocation val, HiResDate dtg)
+  {
+    return toScreen(val);
   }
 
 }

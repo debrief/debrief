@@ -2974,10 +2974,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
 
         // and do the paint
         sw.paint(dest, time);
-
       }
     }
-
   }
 
   /**
@@ -3474,6 +3472,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   protected void paintThisFix(final CanvasType dest,
       final WorldLocation lastLocation, final FixWrapper fw)
   {
+    // set the time override in the canvas
+    dest.setTimeOverride(fw.getDTG());
+    
     fw.paintMe(dest, lastLocation, getTrackColorMode().colorFor(fw));
   }
 

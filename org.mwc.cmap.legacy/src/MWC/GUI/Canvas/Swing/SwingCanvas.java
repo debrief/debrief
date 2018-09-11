@@ -223,6 +223,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -233,6 +234,8 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
@@ -240,6 +243,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -408,6 +412,13 @@ public class SwingCanvas extends javax.swing.JComponent
   public final java.awt.Point toScreen(final WorldLocation val)
   {
     return _theProjection.toScreen(val);
+  }
+  
+  
+  public Point toScreen(final WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _theProjection.toScreen(val, dtg);
   }
 
   /**
@@ -1228,6 +1239,12 @@ public void drawText(final String str, final int x, final int y, final float rot
 public void drawText(String str, int x, int y, float rotate, boolean above)
 {
 	
+}
+
+@Override
+public void setTimeOverride(HiResDate override)
+{
+  throw new IllegalAnnotationException("This canvas does not support time override");
 }
 
 }

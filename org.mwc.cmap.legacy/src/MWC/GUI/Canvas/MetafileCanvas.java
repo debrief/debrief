@@ -133,11 +133,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DateFormat;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.ShapeCanvasType;
 import MWC.GUI.Canvas.Metafile.WMF;
 import MWC.GUI.Canvas.Metafile.WMFGraphics;
+import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class MetafileCanvas implements CanvasType, ShapeCanvasType
@@ -574,6 +577,13 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 	{
 		return _proj.toScreen(val);
 	}
+	
+  public java.awt.Point toScreen(final MWC.GenericData.WorldLocation val,
+      final HiResDate dtg)
+  {
+    return _proj.toScreen(val, dtg);
+  }	  
+	
 
 	public MWC.GenericData.WorldLocation toWorld(final java.awt.Point val)
 	{
@@ -716,7 +726,9 @@ public class MetafileCanvas implements CanvasType, ShapeCanvasType
 		g.fillShape(shape);
 	}
 
-	// /////////////////////////////////
-	// nested classes
-	// ////////////////////////////////
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
+	}
 }

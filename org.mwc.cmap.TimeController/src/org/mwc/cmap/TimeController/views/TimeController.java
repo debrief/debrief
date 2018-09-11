@@ -106,6 +106,8 @@ import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
+import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
@@ -161,8 +163,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
 
   private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
-  
-  private static final String ICON_PULSATING_GIF="icons/16/pulse.gif";
+
+  private static final String ICON_PULSATING_GIF = "icons/16/pulse.gif";
 
   private static final String DUFF_TIME_TEXT = "--------------------------";
 
@@ -447,15 +449,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // stick in the long list of VCR buttons
     createVCRbuttons();
 
-    Composite timePanel = new Composite(_wholePanel,SWT.NONE);
-    timePanel.setLayout(new GridLayout(2,false));
+    Composite timePanel = new Composite(_wholePanel, SWT.NONE);
+    timePanel.setLayout(new GridLayout(2, false));
     timePanel.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     timePanel.setBackground(bColor);
-    
-    
-    _recordingLabel = new Label(timePanel,SWT.NONE);
+
+    _recordingLabel = new Label(timePanel, SWT.NONE);
     final GridData recordingGrid = new GridData(GridData.FILL_HORIZONTAL);
-    recordingGrid.minimumWidth=24;
+    recordingGrid.minimumWidth = 24;
     _recordingLabel.setLayoutData(recordingGrid);
     _recordingLabel.setFont(arialFont);
     _recordingLabel.setForeground(fColor);
@@ -472,7 +473,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _timeLabel.setFont(arialFont);
     _timeLabel.setForeground(fColor);
     _timeLabel.setBackground(bColor);
-    
+
     // next create the time slider holder
     _tNowSlider = new Scale(_wholePanel, SWT.NONE);
     final GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
@@ -1222,7 +1223,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             else
             {
               fireNewTime(timeP.getStartDTG());
-              stopPlayingRecorder(timeP.getStartDTG());          
+              stopPlayingRecorder(timeP.getStartDTG());
             }
             stopPlayingTimer();
           }
@@ -1233,10 +1234,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // CorePlugin.logError(Status.INFO, "Step complete", null);
 
   }
-  
-  private void stopPlayingRecorder(HiResDate timeNow) {
-    if(_coordinateRecorder!=null) {
-      
+
+  private void stopPlayingRecorder(HiResDate timeNow)
+  {
+    if (_coordinateRecorder != null)
+    {
+
       _coordinateRecorder.stopStepping(timeNow);
     }
   }
@@ -1290,7 +1293,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
    * first custom plotting mode: - always centre the plot on ownship, and orient the plot along
    * ownship heading
    */
-  private Action _primaryCentredPrimaryOrientedPlottingMode;
+  private Action _primaryCentricProjection;
 
   /**
    * second custom plotting mode: always centre the plot on ownship, but keep north-oriented.
@@ -1971,22 +1974,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     // and tell it we're here
     _targetProjection.setRelativeProjectionParent(this);
-
-    // and reflect it's current status
-    if (_targetProjection.getNonStandardPlotting())
-    {
-      if (_targetProjection.getPrimaryOriented())
-      {
-        _primaryCentredPrimaryOrientedPlottingMode.setChecked(true);
-      }
-      else
-      {
-        _primaryCentredNorthOrientedPlottingMode.setChecked(true);
-      }
-
-    }
-    else
-      _normalPlottingMode.setChecked(true);
   }
 
   /**
@@ -2176,18 +2163,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         // see if we're recording
         if (_coordinateRecorder != null && _coordinateRecorder.isRecording())
         {
-          animatedGif = new AnimatedGif(_recordingLabel,ICON_PULSATING_GIF);
-          if(_recordingLabel.getImage()==null) {
+          animatedGif = new AnimatedGif(_recordingLabel, ICON_PULSATING_GIF);
+          if (_recordingLabel.getImage() == null)
+          {
             _recordingLabel.setImage(animatedGif.getImage());
           }
           animatedGif.animate();
           _recordingLabel.setVisible(true);
-          
+
           newVal += " [REC]";
-          
+
         }
-        else {
-          if(animatedGif!=null) {
+        else
+        {
+          if (animatedGif != null)
+          {
             animatedGif.cancel();
           }
           _recordingLabel.setVisible(false);
@@ -2824,6 +2814,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       public void run()
       {
         setRelativeMode(false, false);
+
+        _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+        _primaryCentricProjection.setChecked(false);
       }
     };
     _normalPlottingMode.setImageDescriptor(TimeControllerPlugin
@@ -2845,9 +2838,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 "A Primary Track must be specified to use this mode");
             _normalPlottingMode.setChecked(true);
             _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+            _primaryCentricProjection.setChecked(false);
           }
           else
+          {
             setRelativeMode(true, false);
+
+            _normalPlottingMode.setChecked(false);
+            _primaryCentricProjection.setChecked(false);
+          }
         }
       }
     };
@@ -2855,21 +2854,85 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         TimeControllerPlugin.getImageDescriptor(ICON_LOCK_VIEW1));
     displayMenu.add(_primaryCentredNorthOrientedPlottingMode);
 
-    _primaryCentredPrimaryOrientedPlottingMode = new Action(
-        "Primary centred/Primary oriented", Action.AS_RADIO_BUTTON)
-    {
-
-      @Override
-      public void run()
-      {
-        setRelativeMode(true, true);
-      }
-    };
-    _primaryCentredPrimaryOrientedPlottingMode.setImageDescriptor(
-        TimeControllerPlugin.getImageDescriptor(ICON_LOCK_VIEW2));
+    _primaryCentricProjection = new UnitCentricProjectionHandler(
+        "Primary centric projection", Action.AS_RADIO_BUTTON);
+    _primaryCentricProjection.setImageDescriptor(TimeControllerPlugin
+        .getImageDescriptor(ICON_LOCK_VIEW2));
     // no, let's not offer primary centred, primary oriented view
-    // displayMenu.add(_primaryCentredPrimaryOrientedPlottingMode);
+    displayMenu.add(_primaryCentricProjection);
 
+  }
+
+  private class UnitCentricProjectionHandler extends Action
+  {
+    private PlainProjection _oldProjection;
+
+    public UnitCentricProjectionHandler(String title, int style)
+    {
+      super(title, style);
+    }
+
+    @Override
+    public void run()
+    {
+      boolean switchOn = _primaryCentricProjection.isChecked();
+      // set the new projection
+      CanvasType canvas = (CanvasType) _currentEditor.getAdapter(
+          CanvasType.class);
+
+      if (switchOn)
+      {
+        if (_myTrackProvider != null)
+        {
+          if (_myTrackProvider.getPrimaryTrack() == null)
+          {
+            CorePlugin.showMessage("Primary Centred Plotting",
+                "A Primary Track must be specified to use this mode");
+            _normalPlottingMode.setChecked(true);
+            _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+            _primaryCentricProjection.setChecked(false);
+          }
+          else
+          {
+            // clear the other flags
+            _normalPlottingMode.setChecked(false);
+            _primaryCentredNorthOrientedPlottingMode.setChecked(false);
+
+            // remember the old projection
+            _oldProjection = canvas.getProjection();
+
+            final FlatProjection flatP = new FlatProjection();
+            flatP.setScreenArea(_oldProjection.getScreenArea());
+            flatP.setDataArea(_oldProjection.getDataArea());
+
+            // set the centric view
+            flatP.setPrimaryTrack(_myTrackProvider.getPrimaryTrack());
+
+            canvas.setProjection(flatP);
+            storeNewProjection(canvas.getProjection());
+            setRelativeMode(true, true);
+          }
+        }
+      }
+      else
+      {
+        // clear the centric primary, just in case
+        PlainProjection proj = canvas.getProjection();
+        if(proj instanceof FlatProjection)
+        {
+          final FlatProjection flatP = (FlatProjection) proj;
+          flatP.setPrimaryTrack(null);
+        }
+
+        // and clear things out
+        canvas.setProjection(_oldProjection);
+        _oldProjection = null;
+        storeNewProjection(canvas.getProjection());
+      }
+
+      // tell the painter to only plot tracks
+      _layerPainterManager.getCurrentPainter().setOnlyPlotTracks(switchOn);
+    }
   }
 
   private void setRelativeMode(final boolean primaryCentred,
@@ -3253,19 +3316,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   // RELATIVE PROJECTION-RELATED BITS
   // /////////////////////////////////////////////////
 
-  public double getHeading()
+  public double getHeading(final HiResDate dtg)
   {
     double res = 0;
     if (_relativeProjector != null)
-      res = _relativeProjector.getHeading();
+      res = _relativeProjector.getHeading(null);
     return res;
   }
 
-  public WorldLocation getLocation()
+  public WorldLocation getLocation(final HiResDate dtg)
   {
     WorldLocation res = null;
     if (_relativeProjector != null)
-      res = _relativeProjector.getLocation();
+      res = _relativeProjector.getLocation(null);
     return res;
   }
 

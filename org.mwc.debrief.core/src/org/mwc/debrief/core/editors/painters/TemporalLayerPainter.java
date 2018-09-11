@@ -38,4 +38,10 @@ public interface TemporalLayerPainter extends Editable
 	 * @return the name of this painter
 	 */
 	public String getName();
+
+	/** indicate that this painter should only plot tracks
+	 * 
+	 * @param switchOn
+	 */
+  public void setOnlyPlotTracks(boolean switchOn);
 }

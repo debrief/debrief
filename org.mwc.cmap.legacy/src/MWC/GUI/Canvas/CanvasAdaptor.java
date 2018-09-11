@@ -18,9 +18,13 @@ package MWC.GUI.Canvas;
 import java.awt.BasicStroke;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.ImageObserver;
 
+import com.sun.xml.internal.txw2.IllegalAnnotationException;
+
 import MWC.GUI.CanvasType;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -167,6 +171,13 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	public java.awt.Point toScreen(final WorldLocation val) {
 		return _proj.toScreen(val);
 	}
+	
+	@Override
+	public void setTimeOverride(HiResDate override)
+	{
+	  throw new IllegalAnnotationException("This canvas does not support time override");
+	}
+
 
 	public WorldLocation toWorld(final java.awt.Point val) {
 		return _proj.toWorld(val);
