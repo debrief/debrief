@@ -20,7 +20,7 @@ public class DynamicShapeStylingPage extends DynamicShapeBaseWizardPage
 {
   private String _type;
 
-  protected DynamicShapeStylingPage(String pageName,String type)
+  public DynamicShapeStylingPage(String pageName,String type)
   {
     super(pageName);
     this._type = type;

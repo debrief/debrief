@@ -3,8 +3,6 @@
  */
 package org.mwc.debrief.core.wizards.sensorarc;
 
-import java.util.regex.Pattern;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -73,27 +71,29 @@ public class SensorArcBoundsWizardPage extends DynamicShapeBaseWizardPage
     Composite composite = new Composite(baseComposite,SWT.NULL);
     composite.setLayout(new GridLayout(2,false));
     composite.setLayoutData(new GridData(GridData.FILL));
+    GridData gd = new GridData(SWT.BEGINNING,SWT.CENTER,true,false);
+    gd.minimumWidth=125;
     new Label(composite,SWT.NONE).setText("Arc Start (degs)");
     _txtArcStart = new Text(composite,SWT.BORDER);
-    _txtArcStart.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    _txtArcStart.setLayoutData(gd);
     _txtArcStart.setToolTipText("Angle (degs) for start of shape segment");
     _txtArcStart.setText("45");
     new Label(composite,SWT.NONE).setText("Arc End (degs)");
     _txtArcEnd = new Text(composite,SWT.BORDER);
     _txtArcEnd.setText("-45");
     _txtArcEnd.setToolTipText("Angle (degs) for end of shape segment");
-    _txtArcEnd.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    _txtArcEnd.setLayoutData(gd);
     
     new Label(composite,SWT.NONE).setText("Inner Radius (yds)");
     _txtInnerRadius = new Text(composite,SWT.BORDER);
     _txtInnerRadius.setText("" + innerRadius);
     _txtInnerRadius.setToolTipText("Radius (yds) for inside of shape");
-    _txtInnerRadius.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    _txtInnerRadius.setLayoutData(gd);
     new Label(composite,SWT.NONE).setText("Outer Radius (yds)");
     _txtOuterRadius = new Text(composite,SWT.BORDER);
     _txtOuterRadius.setText("" + outerRadius);
     _txtOuterRadius.setToolTipText("Radius (yds) for outside of shape");
-    _txtOuterRadius.setLayoutData(new GridData(SWT.BEGINNING,SWT.CENTER,true,false));
+    _txtOuterRadius.setLayoutData(gd);
     _txtInnerRadius.addModifyListener(doubleValueListener);
     _txtOuterRadius.addModifyListener(doubleValueListener);
     _txtArcStart.addModifyListener(new ModifyListener()

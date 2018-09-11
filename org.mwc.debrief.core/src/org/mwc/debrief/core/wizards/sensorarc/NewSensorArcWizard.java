@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeStylingPage;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeTimingsWizardPage;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -31,15 +32,17 @@ public class NewSensorArcWizard extends Wizard
 {
   private DynamicShapeTimingsWizardPage _timingsPage;
   private SensorArcBoundsWizardPage _boundsPage;
-  private SensorArcStylingWizardPage _stylingPage;
+  private DynamicShapeStylingPage _stylingPage;
   public static final String SHAPE_NAME="Sensor Arc";
+  private String _selectedTrack;
   
   private DynamicTrackShapeWrapper dynamicShape;
-  public NewSensorArcWizard(Map<String,Editable> tracksMap,String selectedArc,Date startTime,Date endTime)
+  public NewSensorArcWizard(Map<String,Editable> tracksMap,String selectedTrack,Date startTime,Date endTime)
   {
     _timingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,startTime,endTime);
-    _boundsPage = new SensorArcBoundsWizardPage("Bounds");
-    _stylingPage = new SensorArcStylingWizardPage("Styling",tracksMap.keySet().toArray(new String[] {}),selectedArc);
+    _boundsPage = new SensorArcBoundsWizardPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE);
+    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE,SHAPE_NAME);
+    _selectedTrack = selectedTrack;
     
   }
   
@@ -63,9 +66,9 @@ public class NewSensorArcWizard extends Wizard
     int arcEnd = _boundsPage.getArcEnd();
     int innerRadius = _boundsPage.getInnerRadius();
     int outerRadius = _boundsPage.getOuterRadius();
-    String trackName = _stylingPage.getTrackName();
+    String trackName = _selectedTrack;
     String symbology = _stylingPage.getSymbology();
-    String arcName = _stylingPage.getArcName();
+    String arcName = _stylingPage.getShapeLabel();
     //create the object here and return it to command.
     HiResDate startDtg = null;
     HiResDate endDtg = null;
