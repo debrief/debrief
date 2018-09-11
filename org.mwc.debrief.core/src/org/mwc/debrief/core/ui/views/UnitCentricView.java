@@ -22,7 +22,6 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
-import Debrief.ReaderWriter.XML.Shapes.RangeRingsHandler;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -451,6 +450,18 @@ public class UnitCentricView extends ViewPart
 
       // reset the last point we were looking at
       oldEnd = null;
+      
+      // do we draw local grid
+      dest.setLineWidth(0f);
+      LocalGridPainter lg = new LocalGridPainter();
+      lg.setDelta(new WorldDistance(30, WorldDistance.KM));
+      lg.setOrigin(new WorldLocation(0d, 0d, 0d));
+      lg.paint(dest);
+      
+      RangeRingShape rrs = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
+          new WorldDistance(5, WorldDistance.KM));
+      rrs.paint(dest);      
+
 
       // get the time
       final boolean isSnail = _snailPaint.isChecked();
@@ -523,17 +534,6 @@ public class UnitCentricView extends ViewPart
 
       walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
 
-      // do we draw range rings?
-      
-      // do we draw local grid
-      LocalGridPainter lg = new LocalGridPainter();
-      lg.setDelta(new WorldDistance(10, WorldDistance.KM));
-      lg.setOrigin(new WorldLocation(0d, 0d, 0d));
-      lg.paint(dest);
-      
-      RangeRingShape rrs = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
-          new WorldDistance(2, WorldDistance.KM));
-      rrs.paint(dest);      
       
       // draw in the O/S last, so it's on top
       dest.setLineWidth(2f);
