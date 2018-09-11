@@ -60,78 +60,11 @@ public class DynamicPolygonWizard extends Wizard
   public boolean performFinish()
   {
     Date startTime = _shapeTimingsPage.getStartTime();
-    
-    PolygonShape polygon = createPolygonShape(_boundsPage.getCoordinates());
-    
+    PolygonShape polygon = _boundsPage.getPolygonShape();
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
     _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,new HiResDate(startTime),"rectangle");
     _dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
     return true;
-  }
-  
-  private PolygonShape createPolygonShape(String text) {
-    Vector<PolygonNode> coordinates = new Vector<PolygonNode>();
-    final PolygonShape  polygon = new PolygonShape(coordinates);
-  
-    StringTokenizer st = new StringTokenizer(text);
-  
-    while (st.hasMoreTokens())
-    {
-      // meet the label
-      final String sts = st.nextToken();
-      double latDeg;
-      double latMin;
-      double latSec;
-      char latHem;
-      char longHem;
-      double longDeg;
-      double longMin;
-      double longSec;
-      if (Character.isDigit(sts.charAt(0)))
-      {
-        try
-        {
-          // now the location
-          latDeg = MWCXMLReader.readThisDouble(sts);
-          latMin = MWCXMLReader.readThisDouble(st.nextToken());
-          latSec = MWCXMLReader.readThisDouble(st.nextToken());
-
-          /**
-           * now, we may have trouble here, since there may not be a space
-           * between the hemisphere character and a 3-digit latitude value - so
-           * BE CAREFUL
-           */
-          final String vDiff = st.nextToken();
-          if (vDiff.length() > 3)
-          {
-            // hmm, they are combined
-            latHem = vDiff.charAt(0);
-            final String secondPart = vDiff.substring(1, vDiff.length());
-            longDeg = MWCXMLReader.readThisDouble(secondPart);
-          }
-          else
-          {
-            // they are separate, so only the hem is in this one
-            latHem = vDiff.charAt(0);
-            longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-          }
-          longMin = MWCXMLReader.readThisDouble(st.nextToken());
-          longSec = MWCXMLReader.readThisDouble(st.nextToken());
-          longHem = st.nextToken().charAt(0);
-
-          // we have our first location, create it
-          final WorldLocation theLoc = new WorldLocation(latDeg, latMin,
-              latSec, latHem, longDeg, longMin, longSec, longHem, 0);
-          final PolygonNode newNode = new PolygonNode("1",
-              theLoc, polygon);
-          polygon.add(newNode);
-        }catch(ParseException pe) {
-          CorePlugin.logError(Status.ERROR, "Parse exception creating polygonShape", pe);
-          pe.printStackTrace();
-        }
-      }
-    }
-    return polygon;
   }
   
   public DynamicShapeWrapper getDynamicShapeWrapper()
