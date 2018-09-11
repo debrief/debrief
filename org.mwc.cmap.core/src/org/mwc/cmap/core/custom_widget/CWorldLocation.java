@@ -56,7 +56,7 @@ public class CWorldLocation extends Composite
       @Override
       public void getSegments(SegmentEvent event)
       {
-        latitudeValueModified(event);
+        valueModified(event);
         
       }  
      
@@ -66,7 +66,7 @@ public class CWorldLocation extends Composite
       @Override
       public void getSegments(SegmentEvent event)
       {
-        longitudeValueModified(event);
+        valueModified(event);
         
       }  
      
@@ -80,7 +80,7 @@ public class CWorldLocation extends Composite
   }
  
   
-  private void latitudeValueModified(SegmentEvent e)
+  private void valueModified(SegmentEvent e)
   {
     LocationModifiedEvent event = new LocationModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
     for(LocationModifiedListener listener:_locationModifiedListeners) {
@@ -89,14 +89,6 @@ public class CWorldLocation extends Composite
     
   }
   
-  private void longitudeValueModified(SegmentEvent e)
-  {
-    LocationModifiedEvent event = new LocationModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
-    for(LocationModifiedListener listener:_locationModifiedListeners) {
-      listener.modifyValue(event);
-    }
-    
-  }
 
   private SexagesimalFormat getFormat() {
     //intentionally reevaluated each time
