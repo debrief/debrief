@@ -56,6 +56,7 @@ public class DynamicRectangleWizard extends Wizard
     PlainShape rectangle = new RectangleShape(topLeft, bottomRight);
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
     dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),rectangle,theColor,new HiResDate(startTime),"rectangle");
+    dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
     return true;
   }
   public DynamicShapeWrapper getDynamicShapeWrapper()

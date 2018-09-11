@@ -60,6 +60,7 @@ public class DynamicCircleWizard extends Wizard
     PlainShape circle = new CircleShape(center, _boundsPage.getRadius());
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
     dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,new HiResDate(startTime),"rectangle");
+    dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
     return true;
   }
   public DynamicShapeWrapper getDynamicShapeWrapper()

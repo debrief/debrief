@@ -65,6 +65,7 @@ public class DynamicPolygonWizard extends Wizard
     
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
     _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,new HiResDate(startTime),"rectangle");
+    _dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
     return true;
   }
   
