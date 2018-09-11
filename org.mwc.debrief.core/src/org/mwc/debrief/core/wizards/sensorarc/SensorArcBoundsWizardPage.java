@@ -13,12 +13,13 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class SensorArcBoundsWizardPage extends NewSensorArcBaseWizardPage
+public class SensorArcBoundsWizardPage extends DynamicShapeBaseWizardPage
 {
   private Text _txtInnerRadius;
   private Text _txtOuterRadius;
@@ -191,8 +192,6 @@ public class SensorArcBoundsWizardPage extends NewSensorArcBaseWizardPage
          "[fFdD]?))" +
          "[\\x00-\\x20]*");// Optional trailing "whitespace"
 
-    if (Pattern.matches(fpRegex, doubleString))
-        return true;
-    return false;
+    return Pattern.matches(fpRegex, doubleString);
   }
 }

@@ -17,31 +17,34 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
+ * Wizard for inputting parameters required for
+ * creating a dynamic circle
  * @author Ayesha
  *
  */
 public class DynamicCircleWizard extends Wizard
 {
   
-  private DynamicShapeTimingsPage _shapeTimingsPage;
+  private DynamicShapeTimingsWizardPage _shapeTimingsPage;
   private DynamicCircleBoundsPage _boundsPage;
   private DynamicShapeStylingPage _stylingPage;
   private DynamicShapeWrapper dynamicShape;
-  private Layers _layers;
+  public static final String SHAPE_NAME = "Circle";
   private Date _startDate;
+  private Date _endDate;
 
-  public DynamicCircleWizard(Layers theLayers, Date startDate)
+  public DynamicCircleWizard(Layers theLayers, Date startDate,Date endDate)
   {
-    _layers = theLayers;
     _startDate = startDate;
+    _endDate = endDate;
         
   }
   @Override
   public void addPages()
   {
-    _shapeTimingsPage = new DynamicShapeTimingsPage("Timings","Circle",_startDate);
-    _boundsPage = new DynamicCircleBoundsPage("Bounds");
-    _stylingPage = new DynamicShapeStylingPage("Styling", "Circle");
+    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,_startDate,_endDate);
+    _boundsPage = new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE);
+    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, SHAPE_NAME);
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);
     addPage(_stylingPage);

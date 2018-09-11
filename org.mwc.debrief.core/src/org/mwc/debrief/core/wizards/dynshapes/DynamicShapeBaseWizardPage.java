@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mwc.debrief.core.wizards.sensorarc;
+package org.mwc.debrief.core.wizards.dynshapes;
 
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
@@ -17,13 +17,17 @@ import org.eclipse.swt.widgets.Label;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public abstract class NewSensorArcBaseWizardPage extends WizardPage
+public abstract class DynamicShapeBaseWizardPage extends WizardPage
 {
+  public static final String TIMINGS_PAGE = "Timings";
+  public static final String BOUNDS_PAGE = "Bounds";
+  public static final String STYLING_PAGE = "Styling";
   private String pageName;
   private static Font font;
   private static Font regularFont;
+  
 
-  protected NewSensorArcBaseWizardPage(String pageName)
+  protected DynamicShapeBaseWizardPage(String pageName)
   {
     super(pageName);
     this.pageName = pageName;
@@ -53,12 +57,12 @@ public abstract class NewSensorArcBaseWizardPage extends WizardPage
         .getHeight(), SWT.BOLD));
     regularFont = new Font(Display.getDefault(),
         new FontData(fontData.getName(),fontData.getHeight(),SWT.NORMAL));
-    if(NewSensorArcWizard.TIMINGS_PAGE.equals(pageName)) {
+    if(TIMINGS_PAGE.equals(pageName)) {
       lblTimings.setFont(font); 
       lblBounds.setFont(regularFont);
       lblStyling.setFont(regularFont);
     }
-    else if(NewSensorArcWizard.BOUNDS_PAGE.equals(pageName)) {
+    else if(BOUNDS_PAGE.equals(pageName)) {
       lblBounds.setFont(font);
       lblTimings.setFont(regularFont);
       lblStyling.setFont(regularFont);

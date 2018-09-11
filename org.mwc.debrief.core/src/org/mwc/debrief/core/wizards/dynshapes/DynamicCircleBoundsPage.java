@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
 import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
-import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 import MWC.GenericData.WorldLocation;
 
@@ -22,7 +21,7 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
+public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
 {
 
   private CWorldLocation _txtCentre;
@@ -91,10 +90,7 @@ public class DynamicCircleBoundsPage extends NewSensorArcBaseWizardPage
   @Override
   public boolean isPageComplete()
   {
-    if(!_txtRadius.getText().isEmpty() && isValidRadius(_txtRadius.getText())) {
-      return true;
-    }
-    return false;
+   return  (!_txtRadius.getText().isEmpty() && isValidRadius(_txtRadius.getText()));
   }
   
   private boolean isValidRadius(String value) {

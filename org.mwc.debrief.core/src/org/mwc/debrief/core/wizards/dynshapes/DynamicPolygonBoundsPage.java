@@ -11,13 +11,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 /**
  * @author Ayesha
  *
  */
-public class DynamicPolygonBoundsPage extends NewSensorArcBaseWizardPage
+public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
 {
 
   private Text _coordinatesPolygon;

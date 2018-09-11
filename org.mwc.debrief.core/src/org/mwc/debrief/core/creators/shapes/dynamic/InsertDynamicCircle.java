@@ -4,7 +4,6 @@
 package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
-import java.util.Enumeration;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -12,8 +11,6 @@ import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicCircleWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
@@ -31,8 +28,9 @@ public class InsertDynamicCircle extends CoreInsertShape
   protected Plottable getPlottable(PlainChart theChart)
   {
     final Layers theLayers = theChart.getLayers();
-    final Date startDate = getStartDate(theLayers);
-    DynamicCircleWizard wizard = new DynamicCircleWizard(theLayers,startDate);
+    final Date startDate = getTimeControllerDate(theLayers,true);
+    final Date endDate = getTimeControllerDate(theLayers,false);
+    DynamicCircleWizard wizard = new DynamicCircleWizard(theLayers,startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
@@ -46,20 +44,7 @@ public class InsertDynamicCircle extends CoreInsertShape
     return thisShape;
     
   }
-  private Date getStartDate(Layers layers) {
-    Date startDate = null;
-    Enumeration<Editable> elements = layers.elements();
-    while(elements.hasMoreElements()) {
-      Editable elem = elements.nextElement();
-      if(elem instanceof TrackWrapper) {
-        TrackWrapper theTrack = (TrackWrapper)elem;
-        if(startDate == null || theTrack.getStartDTG().getDate().before(startDate)) {
-          startDate = theTrack.getStartDTG().getDate();
-        }
-      }
-    }
-    return startDate;
-  }
+  
   @Override
   protected PlainShape getShape(WorldLocation centre)
   {

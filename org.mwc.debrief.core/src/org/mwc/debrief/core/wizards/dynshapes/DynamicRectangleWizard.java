@@ -22,20 +22,22 @@ import MWC.GenericData.WorldLocation;
 public class DynamicRectangleWizard extends Wizard
 {
 
-  private DynamicShapeTimingsPage _shapeTimingsPage;
+  private DynamicShapeTimingsWizardPage _shapeTimingsPage;
   private DynamicRectangleBoundsPage _boundsPage;
   private DynamicShapeStylingPage _stylingPage;
   private DynamicShapeWrapper dynamicShape;
   private Date _startDate;
-  public DynamicRectangleWizard(Date startDate)
+  private Date _endDate;
+  public DynamicRectangleWizard(Date startDate,Date endDate)
   {
     _startDate = startDate;
+    _endDate = endDate;
   }
   
   @Override
   public void addPages()
   {
-    _shapeTimingsPage = new DynamicShapeTimingsPage("Timings","Rectangle",_startDate);
+    _shapeTimingsPage = new DynamicShapeTimingsWizardPage("Timings","Rectangle",_startDate,_endDate);
     _boundsPage = new DynamicRectangleBoundsPage("Bounds");
     _stylingPage = new DynamicShapeStylingPage("Styling", "Rectangle");
     addPage(_shapeTimingsPage);

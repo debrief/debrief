@@ -14,13 +14,12 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.mwc.cmap.media.PlanetmayoFormats;
-import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 /**
  * @author Ayesha
  *
  */
-public class DynamicShapeTimingsPage extends NewSensorArcBaseWizardPage
+public class DynamicShapeTimingsPage extends DynamicShapeBaseWizardPage
 {
   private CDateTime _cTime;
   private Date _startDate;

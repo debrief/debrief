@@ -619,6 +619,7 @@
                      commandId="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
                      icon="icons/16/sensor.png"
                      id="org.mwc.debrief.core.creators.shapes.InsertSensorArc"
+                     label="Sensor Arc"
                      style="push">
                   <visibleWhen
                         checkEnabled="false">
@@ -629,8 +630,9 @@
                </command>
                <command
                      commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
-                     icon="icons/16/sensor.png"
+                     icon="icons/16/polygon.png"
                      id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicPolygon"
+                     label="Dynamic Polygon"
                      style="push">
                   <visibleWhen
                         checkEnabled="false">
@@ -641,8 +643,9 @@
                </command>
                <command
                      commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
-                     icon="icons/16/sensor.png"
+                     icon="icons/16/circle.png"
                      id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicCircle"
+                     label="Dynamic Circle"
                      style="push">
                   <visibleWhen
                         checkEnabled="false">
@@ -653,8 +656,9 @@
                </command>
                <command
                      commandId="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
-                     icon="icons/16/sensor.png"
+                     icon="icons/16/rectangle.png"
                      id="org.mwc.debrief.core.creators.shapes.dynamic.InsertDynamicRectangle"
+                     label="Dynamic Rectangle"
                      style="push">
                   <visibleWhen
                         checkEnabled="false">

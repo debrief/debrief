@@ -29,24 +29,25 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 public class DynamicPolygonWizard extends Wizard
 {
 
-  private DynamicShapeTimingsPage _shapeTimingsPage;
+  private DynamicShapeTimingsWizardPage _shapeTimingsPage;
   private DynamicPolygonBoundsPage _boundsPage;
   private DynamicShapeStylingPage _stylingPage;
+  public static final String SHAPE_NAME = "Polygon";
   private Date _startDate;
+  private Date _endDate;
 
-  private Layers _layers;
   private DynamicShapeWrapper _dynamicShape;
-  public DynamicPolygonWizard(Layers theLayers,Date startDate)
+  public DynamicPolygonWizard(Layers theLayers,Date startDate,Date endDate)
   {
-    _layers = theLayers;
     _startDate = startDate;
+    _endDate = endDate;
   }
   @Override
   public void addPages()
   {
-    _shapeTimingsPage = new DynamicShapeTimingsPage("Timings","Polygon",_startDate);
-    _boundsPage = new DynamicPolygonBoundsPage("Bounds");
-    _stylingPage = new DynamicShapeStylingPage("Styling", "Polygon");
+    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,_startDate,_endDate);
+    _boundsPage = new DynamicPolygonBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE);
+    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, SHAPE_NAME);
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);
     addPage(_stylingPage);
@@ -80,9 +81,11 @@ public class DynamicPolygonWizard extends Wizard
       double latDeg;
       double latMin;
       double latSec;
-      char latHem,longHem;
+      char latHem;
+      char longHem;
       double longDeg;
-      double longMin,longSec;
+      double longMin;
+      double longSec;
       if (Character.isDigit(sts.charAt(0)))
       {
         try

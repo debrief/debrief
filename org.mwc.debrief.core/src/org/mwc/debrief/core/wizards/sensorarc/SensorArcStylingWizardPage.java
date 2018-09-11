@@ -14,12 +14,13 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
 /**
  * @author Ayesha
  *
  */
-public class SensorArcStylingWizardPage extends NewSensorArcBaseWizardPage
+public class SensorArcStylingWizardPage extends DynamicShapeBaseWizardPage
 {
 
   private Combo _txtTrack;

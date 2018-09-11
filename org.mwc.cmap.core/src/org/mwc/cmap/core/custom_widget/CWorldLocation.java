@@ -32,7 +32,7 @@ public class CWorldLocation extends Composite
 
   private FormattedText myLongitude;
   
-  Vector<LocationModifiedListener> _locationModifiedListeners = new Vector<>();
+  private Vector<LocationModifiedListener> _locationModifiedListeners = new Vector<>();
 
   public CWorldLocation(Composite parent, int style)
   {

@@ -4,7 +4,6 @@
 package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
-import java.util.Enumeration;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -12,8 +11,6 @@ import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicRectangleWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
@@ -30,8 +27,10 @@ public class InsertDynamicRectangle extends CoreInsertShape{
   protected Plottable getPlottable(PlainChart theChart)
   {
     final Layers theLayers = theChart.getLayers();
-    final Date startDate = getStartDate(theLayers);
-    DynamicRectangleWizard wizard = new DynamicRectangleWizard(startDate);
+    final Date startDate = getTimeControllerDate(theLayers,true);
+    final Date endDate = getTimeControllerDate(theLayers,false);
+    
+    DynamicRectangleWizard wizard = new DynamicRectangleWizard(startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
@@ -43,21 +42,6 @@ public class InsertDynamicRectangle extends CoreInsertShape{
       thisShape = null;
     }
     return thisShape;
-  }
-
-  private Date getStartDate(Layers layers) {
-    Date startDate = null;
-    Enumeration<Editable> elements = layers.elements();
-    while(elements.hasMoreElements()) {
-      Editable elem = elements.nextElement();
-      if(elem instanceof TrackWrapper) {
-        TrackWrapper theTrack = (TrackWrapper)elem;
-        if(startDate == null || theTrack.getStartDTG().getDate().before(startDate)) {
-          startDate = theTrack.getStartDTG().getDate();
-        }
-      }
-    }
-    return startDate;
   }
 
   @Override

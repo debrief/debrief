@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Label;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
 import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
 import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
-import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcBaseWizardPage;
 
 import MWC.GenericData.WorldLocation;
 
@@ -19,7 +18,7 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class DynamicRectangleBoundsPage extends NewSensorArcBaseWizardPage
+public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
 {
   private CWorldLocation _topLeftLocation;
   private CWorldLocation _bottomRightLocation;

@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.wizards.sensorarc;
+package org.mwc.debrief.core.wizards.dynshapes;
 
 import java.util.Date;
 
@@ -13,13 +13,15 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.mwc.cmap.media.PlanetmayoFormats;
+import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 /**
- * 
+ * This is the page used for the showing the timings for all the
+ * dynamic shape wizards including sensor arcs.
  * @author Ayesha <ayesha.ma@gmail.com>
  * 
  */
-public class SensorArcTimingsWizardPage extends NewSensorArcBaseWizardPage
+public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
 {
   private CDateTime _cStartTime;
   private CDateTime _cEndTime;
@@ -27,13 +29,19 @@ public class SensorArcTimingsWizardPage extends NewSensorArcBaseWizardPage
   private Button _chkEndTime;
   private Date _startTime,_endTime;
 
-  protected SensorArcTimingsWizardPage(String pageName,Date startTime,Date endTime)
+  public DynamicShapeTimingsWizardPage(String pageName,String type,Date startTime,Date endTime)
   {
     super(pageName);
     this._startTime = startTime;
     this._endTime = endTime;
-    setTitle("Create dynamic track shapes");
-    setDescription("This wizard is used to create new track shapes (or sensor arcs)");
+    setTitle("Create dynamic "+type);
+    if(NewSensorArcWizard.SHAPE_NAME.equals(type)) {
+      setDescription("This wizard is used to create new track shapes (or sensor arcs)");  
+    }
+    else {
+      setDescription("This wizard is used to create new dynamic shapes");
+    }
+    
   }
 
   @Override
@@ -60,7 +68,7 @@ public class SensorArcTimingsWizardPage extends NewSensorArcBaseWizardPage
     
     _chkStartTime.addSelectionListener(new SelectionAdapter()
     {
-      public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+      public void widgetSelected(SelectionEvent e) {
         _cStartTime.setEnabled(_chkStartTime.getSelection());
         _cStartTime.setSelection(_startTime);
         setPageComplete(isPageComplete());
@@ -74,7 +82,7 @@ public class SensorArcTimingsWizardPage extends NewSensorArcBaseWizardPage
     _cEndTime.setLayoutData(gd1);
     _chkEndTime.addSelectionListener(new SelectionAdapter()
     {
-      public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+      public void widgetSelected(SelectionEvent e) {
         _cEndTime.setEnabled(_chkEndTime.getSelection());
         _cEndTime.setSelection(_endTime);
         setPageComplete(isPageComplete());

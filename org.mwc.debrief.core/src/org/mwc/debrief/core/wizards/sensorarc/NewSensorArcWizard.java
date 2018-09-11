@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.wizard.Wizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeTimingsWizardPage;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
@@ -27,17 +29,15 @@ import MWC.GenericData.HiResDate;
  */
 public class NewSensorArcWizard extends Wizard
 {
-  static final String TIMINGS_PAGE = "Timings";
-  static final String BOUNDS_PAGE = "Bounds";
-  static final String STYLING_PAGE = "Styling";
-  private SensorArcTimingsWizardPage _timingsPage;
+  private DynamicShapeTimingsWizardPage _timingsPage;
   private SensorArcBoundsWizardPage _boundsPage;
   private SensorArcStylingWizardPage _stylingPage;
+  public static final String SHAPE_NAME="Sensor Arc";
   
   private DynamicTrackShapeWrapper dynamicShape;
   public NewSensorArcWizard(Map<String,Editable> tracksMap,String selectedArc,Date startTime,Date endTime)
   {
-    _timingsPage = new SensorArcTimingsWizardPage("Timings",startTime,endTime);
+    _timingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,startTime,endTime);
     _boundsPage = new SensorArcBoundsWizardPage("Bounds");
     _stylingPage = new SensorArcStylingWizardPage("Styling",tracksMap.keySet().toArray(new String[] {}),selectedArc);
     
