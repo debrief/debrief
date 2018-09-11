@@ -62,7 +62,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
         
       }
     });
-    new Label(composite,SWT.NONE).setText("Radius: ");
+    new Label(composite,SWT.NONE).setText("Radius (yds): ");
     _txtRadius = new Text(composite,SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
     
