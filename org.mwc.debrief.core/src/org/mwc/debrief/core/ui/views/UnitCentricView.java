@@ -15,7 +15,6 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -44,6 +43,29 @@ import MWC.TacticalData.TrackDataProvider;
 
 public class UnitCentricView extends ViewPart
 {
+  
+  private class PeriodAction extends Action
+  {
+
+    private final long _period;
+    private final PeriodOperation _operation;
+
+    public PeriodAction(final String title, final long period,
+        final PeriodOperation operation)
+    {
+      super(title);
+      _period = period;
+      _myOverviewChart.repaint();
+      _operation = operation;
+    }
+
+    @Override
+    public void run()
+    {
+      _operation.selected(_period);
+      _myOverviewChart.update();
+    }
+  }
 
   private class DistanceAction extends Action
   {
@@ -65,18 +87,13 @@ public class UnitCentricView extends ViewPart
     {
       _operation.selected(_distance);
       _myOverviewChart.update();
-      Display.getCurrent().asyncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-        }
-      });
     }
-
   }
-
+  private static interface PeriodOperation
+  {
+    public void selected(long period);
+  }
+  
   private static interface DistanceOperation
   {
     public void selected(WorldDistance distance);
@@ -487,6 +504,8 @@ public class UnitCentricView extends ViewPart
   private UnitCentricChart _myOverviewChart;
 
   private final FlatProjection _myProjection;
+  
+  private long _snailLength = 1000 * 60 * 30;
 
   /**
    * helper application to help track creation/activation of new plots
@@ -618,7 +637,7 @@ public class UnitCentricView extends ViewPart
         WorldDistance.NM), setRings));
 
     manager.add(ringRadii);
-
+    
     final DistanceOperation setGrid = new DistanceOperation()
     {
       @Override
@@ -642,6 +661,23 @@ public class UnitCentricView extends ViewPart
         WorldDistance.NM), setGrid));
 
     manager.add(gridSize);
+
+    final PeriodOperation setSnail = new PeriodOperation()
+    {
+      @Override
+      public void selected(final long period)
+      {
+        _snailLength = period;
+      }
+    };
+    final MenuManager periodSize = new MenuManager("Snail length");
+    periodSize.add(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail));
+    periodSize.add(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail));
+    periodSize.add(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail));
+    periodSize.add(new PeriodAction("1 Hour", 1000 * 60 * 60 * 1, setSnail));
+    periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail));
+
+    manager.add(periodSize);
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
@@ -679,7 +715,7 @@ public class UnitCentricView extends ViewPart
     final boolean doSnail = _snailPaint.isChecked();
     if (doSnail)
     {
-      return 1000 * 60 * 30;
+      return _snailLength;
     }
     else
     {
