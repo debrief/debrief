@@ -900,4 +900,18 @@ public class UnitCentricView extends ViewPart
      */
     void processNearest(final FixWrapper nearestInTime, final WorldLocation nearestOffset);
   }
+
+  @Override
+  public void dispose()
+  {
+    super.dispose();
+    
+    // cancel any listeners
+    if (_myPartMonitor != null)
+    {
+      _myPartMonitor.ditch();
+    }
+  }
+  
+  
 }
