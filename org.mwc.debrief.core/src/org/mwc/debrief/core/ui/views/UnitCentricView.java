@@ -25,11 +25,12 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.OperateFunction;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GUI.Shapes.RangeRingShape;
 import MWC.GenericData.HiResDate;
@@ -154,7 +155,7 @@ public class UnitCentricView extends ViewPart
           && (_trackDataProvider != null))
       {
         final WatchableList primary = _trackDataProvider.getPrimaryTrack();
-        if (primary != null && primary instanceof TrackWrapper)
+        if (primary != null && primary instanceof WatchableList)
         {
           final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
           final WorldArea area = new WorldArea(origin, origin);
@@ -175,8 +176,8 @@ public class UnitCentricView extends ViewPart
               // ok, ignore
             }
           };
-          walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
-              getBounds, getSnailLength());
+          walkTree(theLayers, primary, _timeProvider
+              .getTime(), getBounds, getSnailLength());
 
           // ok, store the data area
           _myOverviewChart.getCanvas().getProjection().setDataArea(area);
@@ -391,103 +392,93 @@ public class UnitCentricView extends ViewPart
   }
 
   private static void walkTree(final Layers theLayers,
-      final TrackWrapper primary, final HiResDate subjectTime,
+      final WatchableList primary, final HiResDate subjectTime,
       final IOperateOnMatch doIt, final long snailLength)
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
-    final Enumeration<Editable> ele = theLayers.elements();
-    while (ele.hasMoreElements())
+    OperateFunction checkIt = new OperateFunction()
     {
-      final Layer thisL = (Layer) ele.nextElement();
 
-      if (!thisL.getVisible())
+      @Override
+      public void operateOn(Editable item)
       {
-        continue;
-      }
+        final LightweightTrackWrapper other = (LightweightTrackWrapper) item;
+        if (!other.getVisible())
+          return;
 
-      // is it the primary?
-      if ((thisL != primary) && (thisL instanceof TrackWrapper))
-      {
-        final TrackWrapper other = (TrackWrapper) thisL;
-
-        // keep track of the fix nearest to the required DTG
-        FixWrapper nearestInTime = null;
-        WorldLocation nearestOffset = null;
-        long nearestDelta = Long.MAX_VALUE;
-
-        // ok, run back through the data
-        final Enumeration<Editable> pts = other.getPositionIterator();
-        while (pts.hasMoreElements())
+        // is it the primary?
+        if (other != primary)
         {
-          final FixWrapper thisF = (FixWrapper) pts.nextElement();
+          // keep track of the fix nearest to the required DTG
+          FixWrapper nearestInTime = null;
+          WorldLocation nearestOffset = null;
+          long nearestDelta = Long.MAX_VALUE;
 
-          final HiResDate hisD = thisF.getDTG();
+          // ok, run back through the data
+          final Enumeration<Editable> pts = other.getPositionIterator();
+          while (pts.hasMoreElements())
+          {
+            final FixWrapper thisF = (FixWrapper) pts.nextElement();
 
-          final boolean useIt;
-          if (subjectTime == null)
-          {
-            useIt = true;
-          }
-          else
-          {
-            if (snailLength == Long.MAX_VALUE)
+            final HiResDate hisD = thisF.getDTG();
+
+            final boolean useIt;
+            if (subjectTime == null)
             {
               useIt = true;
             }
             else
             {
-              final long offset = subjectTime.getDate().getTime() - hisD
-                  .getDate().getTime();
-              useIt = offset > 0 && offset < snailLength;
-            }
-          }
-
-          if (useIt)
-          {
-            final Watchable[] nearest = primary.getNearestTo(hisD);
-            if (nearest != null && nearest.length > 0)
-            {
-              final FixWrapper priFix = (FixWrapper) nearest[0];
-              final long diff = Math.abs(hisD.getDate().getTime() - subjectTime
-                  .getDate().getTime());
-
-              if (nearestInTime == null)
+              if (snailLength == Long.MAX_VALUE)
               {
-                nearestInTime = thisF;
-                nearestDelta = diff;
-                nearestOffset = processOffset(priFix, thisF.getLocation(),
-                    origin);
+                useIt = true;
               }
               else
               {
-                if (diff < nearestDelta)
+                final long offset = subjectTime.getDate().getTime() - hisD
+                    .getDate().getTime();
+                useIt = offset > 0 && offset < snailLength;
+              }
+            }
+
+            if (useIt)
+            {
+              final Watchable[] nearest = primary.getNearestTo(hisD);
+              if (nearest != null && nearest.length > 0)
+              {
+                final FixWrapper priFix = (FixWrapper) nearest[0];
+                final long diff = Math.abs(hisD.getDate().getTime()
+                    - subjectTime.getDate().getTime());
+
+                if (nearestInTime == null || diff < nearestDelta)
                 {
                   nearestInTime = thisF;
                   nearestDelta = diff;
                   nearestOffset = processOffset(priFix, thisF.getLocation(),
                       origin);
                 }
+
+                final WorldLocation pos = processOffset(priFix, thisF
+                    .getLocation(), origin);
+
+                // work out how far back down the leg we are
+                final long age = subjectTime.getDate().getTime() - thisF
+                    .getDTG().getDate().getTime();
+                final double proportion = age / (double) snailLength;
+
+                doIt.doItTo(thisF, pos, proportion);
               }
-
-              final WorldLocation pos = processOffset(priFix, thisF
-                  .getLocation(), origin);
-
-              // work out how far back down the leg we are
-              final long age = subjectTime.getDate().getTime() - thisF.getDTG()
-                  .getDate().getTime();
-              final double proportion = age / (double) snailLength;
-
-              doIt.doItTo(thisF, pos, proportion);
             }
           }
-        }
-        if (nearestInTime != null)
-        {
-          doIt.processNearest(nearestInTime, nearestOffset);
+          if (nearestInTime != null)
+          {
+            doIt.processNearest(nearestInTime, nearestOffset);
+          }
         }
       }
-    }
+    };
+    theLayers.walkVisibleItems(LightweightTrackWrapper.class, checkIt);
   }
 
   private UnitCentricChart _myOverviewChart;
