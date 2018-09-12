@@ -7,7 +7,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
@@ -19,7 +18,6 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper.DynamicCoverageShape;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
-import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -37,7 +35,7 @@ public class NewSensorArcWizard extends Wizard
   private String _selectedTrack;
   
   private DynamicTrackShapeWrapper dynamicShape;
-  public NewSensorArcWizard(Map<String,Editable> tracksMap,String selectedTrack,Date startTime,Date endTime)
+  public NewSensorArcWizard(String selectedTrack,Date startTime,Date endTime)
   {
     _timingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,startTime,endTime);
     _boundsPage = new SensorArcBoundsWizardPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE);

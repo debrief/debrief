@@ -4,23 +4,14 @@
 package org.mwc.debrief.core.wizards.dynshapes;
 
 import java.awt.Color;
-import java.text.ParseException;
 import java.util.Date;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.wizard.Wizard;
-import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
-import MWC.GUI.Layers;
 import MWC.GUI.Shapes.PolygonShape;
-import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
  * @author Ayesha
@@ -37,7 +28,7 @@ public class DynamicPolygonWizard extends Wizard
   private Date _endDate;
 
   private DynamicShapeWrapper _dynamicShape;
-  public DynamicPolygonWizard(Layers theLayers,Date startDate,Date endDate)
+  public DynamicPolygonWizard(Date startDate,Date endDate)
   {
     _startDate = startDate;
     _endDate = endDate;

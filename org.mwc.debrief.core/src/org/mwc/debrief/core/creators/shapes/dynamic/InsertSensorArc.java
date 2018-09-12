@@ -56,7 +56,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
       }
     }
     //for new sensor arc, the selected layer is the track.
-    NewSensorArcWizard wizard = new NewSensorArcWizard(tracks,_selectedLayer,startDate,endDate);
+    NewSensorArcWizard wizard = new NewSensorArcWizard(_selectedLayer,startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicTrackShapeWrapper thisShape;
     if(wd.open()==Window.OK) {

@@ -31,7 +31,7 @@ public class InsertDynamicPolygon extends CoreInsertShape
     final Date startDate = getTimeControllerDate(theLayers,true);
     final Date endDate = getTimeControllerDate(theLayers,false);
     
-    DynamicPolygonWizard wizard = new DynamicPolygonWizard(theLayers,startDate,endDate);
+    DynamicPolygonWizard wizard = new DynamicPolygonWizard(startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {

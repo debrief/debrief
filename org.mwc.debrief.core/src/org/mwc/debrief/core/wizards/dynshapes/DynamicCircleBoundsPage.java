@@ -8,13 +8,12 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.custom_widget.CWorldLocation;
-import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
 import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
+import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
 
 import MWC.GenericData.WorldLocation;
 

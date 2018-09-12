@@ -33,7 +33,6 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   {
     super(pageName);
     this.pageName = pageName;
-    System.out.println("Current pagename:"+pageName);
   }
 
   protected Composite createBaseControl(Composite parent) {

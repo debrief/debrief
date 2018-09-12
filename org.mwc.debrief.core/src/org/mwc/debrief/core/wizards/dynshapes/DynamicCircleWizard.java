@@ -10,7 +10,6 @@ import org.eclipse.jface.wizard.Wizard;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
-import MWC.GUI.Layers;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
@@ -33,7 +32,7 @@ public class DynamicCircleWizard extends Wizard
   private Date _startDate;
   private Date _endDate;
 
-  public DynamicCircleWizard(Layers theLayers, Date startDate,Date endDate)
+  public DynamicCircleWizard(Date startDate,Date endDate)
   {
     _startDate = startDate;
     _endDate = endDate;

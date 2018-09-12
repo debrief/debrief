@@ -30,7 +30,7 @@ public class InsertDynamicCircle extends CoreInsertShape
     final Layers theLayers = theChart.getLayers();
     final Date startDate = getTimeControllerDate(theLayers,true);
     final Date endDate = getTimeControllerDate(theLayers,false);
-    DynamicCircleWizard wizard = new DynamicCircleWizard(theLayers,startDate,endDate);
+    DynamicCircleWizard wizard = new DynamicCircleWizard(startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
