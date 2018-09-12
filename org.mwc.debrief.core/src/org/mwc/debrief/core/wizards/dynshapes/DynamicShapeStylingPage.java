@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.Text;
  */
 public class DynamicShapeStylingPage extends DynamicShapeBaseWizardPage
 {
-  private String _type;
+  final private String _type;
 
   public DynamicShapeStylingPage(String pageName,String type)
   {

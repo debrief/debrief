@@ -154,10 +154,10 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
 
   public Date getStartTime()
   {
-    return _cStartTime.getSelection();
+    return _chkStartTime.getSelection()?_cStartTime.getSelection():null;
   }
   public Date getEndTime()
   {
-    return _cEndTime.getSelection();
+    return _chkEndTime.getSelection()?_cEndTime.getSelection():null;
   }
 }
