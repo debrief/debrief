@@ -606,10 +606,14 @@ public class UnitCentricView extends ViewPart
         paintIt = new IOperateOnMatch()
         {
           @Override
-          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation)
+          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation, final double proportion)
           {
             dest.setLineWidth(3f);
-            dest.setColor(rawSec.getColor());
+            
+            // sort out the color
+            final Color newCol = colorFor(rawSec.getColor(), (float) proportion, _myOverviewChart.getCanvas().getBackgroundColor());
+            
+            dest.setColor(newCol);
 
             rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
 
@@ -638,7 +642,7 @@ public class UnitCentricView extends ViewPart
         paintIt = new IOperateOnMatch()
         {
           @Override
-          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation)
+          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation, final double proportion)
           {
             dest.setLineWidth(3f);
             dest.setColor(rawSec.getColor());
@@ -687,6 +691,22 @@ public class UnitCentricView extends ViewPart
       }
     }
 
+    protected Color colorFor(Color color, float proportion,
+        Color backgroundColor)
+    {
+      // merge the foreground to the background
+      final int red = backgroundColor.getRed() - color.getRed();
+      final int green = backgroundColor.getGreen() - color.getGreen();
+      final int blue = backgroundColor.getBlue() - color.getBlue();
+      
+
+      final float newRed = color.getRed() + red * proportion;
+      final float newGreen = color.getGreen()
+          + green * proportion;
+      final float newBlue = color.getBlue() + blue * proportion;
+      return new Color((int)newRed, (int)newGreen, (int)newBlue);
+    }
+
     private void checkDataCoverage(Layers theLayers)
     {
 
@@ -707,7 +727,7 @@ public class UnitCentricView extends ViewPart
 
               @Override
               public void doItTo(FixWrapper rawSec,
-                  WorldLocation offsetLocation)
+                  WorldLocation offsetLocation, final double proportion)
               {
                 area.extend(offsetLocation);
               }
@@ -731,7 +751,7 @@ public class UnitCentricView extends ViewPart
   }
 
   private static void walkTree(Layers theLayers, TrackWrapper primary,
-      HiResDate subjectTime, IOperateOnMatch doIt, final long snaiLength)
+      HiResDate subjectTime, IOperateOnMatch doIt, final long snailLength)
   {
     WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
@@ -774,7 +794,7 @@ public class UnitCentricView extends ViewPart
           }
           else
           {
-            if (snaiLength == Long.MAX_VALUE)
+            if (snailLength == Long.MAX_VALUE)
             {
               useIt = true;
             }
@@ -782,7 +802,7 @@ public class UnitCentricView extends ViewPart
             {
               final long offset = subjectTime.getDate().getTime() - hisD
                   .getDate().getTime();
-              useIt = offset > 0 && offset < snaiLength;
+              useIt = offset > 0 && offset < snailLength;
             }
           }
 
@@ -815,8 +835,12 @@ public class UnitCentricView extends ViewPart
 
               WorldLocation pos = processOffset(priFix, thisF.getLocation(),
                   origin);
+              
+              // work out how far back down the leg we are
+              final long age = subjectTime.getDate().getTime() - thisF.getDTG().getDate().getTime();
+              final double proportion = age / (double)snailLength;
 
-              doIt.doItTo(thisF, pos);
+              doIt.doItTo(thisF, pos, proportion);
             }
           }
 
@@ -862,10 +886,11 @@ public class UnitCentricView extends ViewPart
     /**
      * process this single data object
      * 
-     * @param rawSec
-     * @param offsetLocation
+     * @param rawSec the fix we're looking at
+     * @param offsetLocation unit-centric version of the location
+     * @param proportion how far back through the time period we are
      */
-    void doItTo(FixWrapper rawSec, WorldLocation offsetLocation);
+    void doItTo(final FixWrapper rawSec, final WorldLocation offsetLocation, final double proportion);
 
     /**
      * process the secondary track position that's nearest to the required time
@@ -873,6 +898,6 @@ public class UnitCentricView extends ViewPart
      * @param nearestInTime
      * @param nearestOffset
      */
-    void processNearest(FixWrapper nearestInTime, WorldLocation nearestOffset);
+    void processNearest(final FixWrapper nearestInTime, final WorldLocation nearestOffset);
   }
 }
