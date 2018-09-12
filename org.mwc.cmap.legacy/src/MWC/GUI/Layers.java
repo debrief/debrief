@@ -1489,7 +1489,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
       {
         if (mustMatch.isAssignableFrom(item.getClass()))
         {
-          function.operateOn(layer);
+          function.operateOn(item);
         }
         else
         {
