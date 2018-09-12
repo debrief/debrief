@@ -43,7 +43,7 @@ import MWC.TacticalData.TrackDataProvider;
 
 public class UnitCentricView extends ViewPart
 {
-  
+
   private class PeriodAction extends Action
   {
 
@@ -89,11 +89,12 @@ public class UnitCentricView extends ViewPart
       _myOverviewChart.update();
     }
   }
+
   private static interface PeriodOperation
   {
     public void selected(long period);
   }
-  
+
   private static interface DistanceOperation
   {
     public void selected(WorldDistance distance);
@@ -142,46 +143,43 @@ public class UnitCentricView extends ViewPart
     @Override
     public void chartFireSelectionChanged(final ISelection sel)
     {
+      // just ignore it
     }
 
     private void checkDataCoverage(final Layers theLayers)
     {
 
       // check if we have null data area
-      if (_myOverviewChart.getCanvas().getProjection().getDataArea() == null)
+      if ((_myOverviewChart.getCanvas().getProjection().getDataArea() == null)
+          && (_trackDataProvider != null))
       {
-
-        // sort out the bounds
-        if (_trackDataProvider != null)
+        final WatchableList primary = _trackDataProvider.getPrimaryTrack();
+        if (primary != null && primary instanceof TrackWrapper)
         {
-          final WatchableList primary = _trackDataProvider.getPrimaryTrack();
-          if (primary != null && primary instanceof TrackWrapper)
+          final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
+          final WorldArea area = new WorldArea(origin, origin);
+          final IOperateOnMatch getBounds = new IOperateOnMatch()
           {
-            final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
-            final WorldArea area = new WorldArea(origin, origin);
-            final IOperateOnMatch getBounds = new IOperateOnMatch()
+
+            @Override
+            public void doItTo(final FixWrapper rawSec,
+                final WorldLocation offsetLocation, final double proportion)
             {
+              area.extend(offsetLocation);
+            }
 
-              @Override
-              public void doItTo(final FixWrapper rawSec,
-                  final WorldLocation offsetLocation, final double proportion)
-              {
-                area.extend(offsetLocation);
-              }
+            @Override
+            public void processNearest(final FixWrapper nearestInTime,
+                final WorldLocation nearestOffset)
+            {
+              // ok, ignore
+            }
+          };
+          walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
+              getBounds, getSnailLength());
 
-              @Override
-              public void processNearest(final FixWrapper nearestInTime,
-                  final WorldLocation nearestOffset)
-              {
-                // ok, ignore
-              }
-            };
-            walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
-                getBounds, getSnailLength());
-
-            // ok, store the data area
-            _myOverviewChart.getCanvas().getProjection().setDataArea(area);
-          }
+          // ok, store the data area
+          _myOverviewChart.getCanvas().getProjection().setDataArea(area);
         }
       }
     }
@@ -239,8 +237,8 @@ public class UnitCentricView extends ViewPart
       final TrackWrapper priTrack = primary instanceof TrackWrapper
           ? (TrackWrapper) primary : null;
 
+      // remember if we've overridden the interpolation
       final boolean oldInterp;
-
       if (priTrack != null)
       {
         oldInterp = priTrack.getInterpolatePoints();
@@ -269,10 +267,8 @@ public class UnitCentricView extends ViewPart
 
       // get the time
       final boolean isSnail = _snailPaint.isChecked();
-
-      IOperateOnMatch paintIt;
       final HiResDate subjectTime = _timeProvider.getTime();
-
+      final IOperateOnMatch paintIt;
       if (isSnail)
       {
         paintIt = new IOperateOnMatch()
@@ -304,8 +300,6 @@ public class UnitCentricView extends ViewPart
           public void processNearest(final FixWrapper nearestInTime,
               final WorldLocation nearestOffset)
           {
-            // ignore - we don't do it.
-
             // reset the last object pointer
             oldEnd = null;
           }
@@ -319,7 +313,7 @@ public class UnitCentricView extends ViewPart
           public void doItTo(final FixWrapper rawSec,
               final WorldLocation offsetLocation, final double proportion)
           {
-            dest.setLineWidth(3f);
+            dest.setLineWidth(2f);
             dest.setColor(rawSec.getColor());
 
             rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
@@ -351,17 +345,17 @@ public class UnitCentricView extends ViewPart
 
       walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
 
-      // draw in the O/S last, so it's on top
+      // draw in the ownship marker last, so it's on top
       dest.setLineWidth(2f);
       final Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
           new WorldLocation(0d, 0d, 0d));
       dest.setColor(primary.getColor());
       dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
-
       dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5);
 
       if (priTrack != null)
       {
+        // restore interpolation on the primary track
         priTrack.setInterpolatePoints(oldInterp);
       }
     }
@@ -413,11 +407,7 @@ public class UnitCentricView extends ViewPart
       }
 
       // is it the primary?
-      if (thisL == primary)
-      {
-        // ok, just draw in the marker
-      }
-      else if (thisL instanceof TrackWrapper)
+      if ((thisL != primary) && (thisL instanceof TrackWrapper))
       {
         final TrackWrapper other = (TrackWrapper) thisL;
 
@@ -491,7 +481,6 @@ public class UnitCentricView extends ViewPart
               doIt.doItTo(thisF, pos, proportion);
             }
           }
-
         }
         if (nearestInTime != null)
         {
@@ -504,7 +493,7 @@ public class UnitCentricView extends ViewPart
   private UnitCentricChart _myOverviewChart;
 
   private final FlatProjection _myProjection;
-  
+
   private long _snailLength = 1000 * 60 * 30;
 
   /**
@@ -637,7 +626,7 @@ public class UnitCentricView extends ViewPart
         WorldDistance.NM), setRings));
 
     manager.add(ringRadii);
-    
+
     final DistanceOperation setGrid = new DistanceOperation()
     {
       @Override
@@ -725,7 +714,7 @@ public class UnitCentricView extends ViewPart
 
   private void makeActions()
   {
-    _fitToWindow = new org.eclipse.jface.action.Action()
+    _fitToWindow = new Action()
     {
       @Override
       public void run()
