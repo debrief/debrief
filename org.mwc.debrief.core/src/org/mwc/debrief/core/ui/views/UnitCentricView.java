@@ -6,7 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -45,6 +45,445 @@ import MWC.TacticalData.TrackDataProvider;
 public class UnitCentricView extends ViewPart
 {
 
+  private class DistanceAction extends Action
+  {
+
+    private final WorldDistance _distance;
+    private final DistanceOperation _operation;
+
+    public DistanceAction(final String title, final WorldDistance distance,
+        final DistanceOperation operation)
+    {
+      super(title);
+      _distance = distance;
+      _myOverviewChart.repaint();
+      _operation = operation;
+    }
+
+    @Override
+    public void run()
+    {
+      _operation.selected(_distance);
+      _myOverviewChart.update();
+      Display.getCurrent().asyncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+        }
+      });
+    }
+
+  }
+
+  private static interface DistanceOperation
+  {
+    public void selected(WorldDistance distance);
+  }
+
+  public static interface IOperateOnMatch
+  {
+    /**
+     * process this single data object
+     *
+     * @param rawSec
+     *          the fix we're looking at
+     * @param offsetLocation
+     *          unit-centric version of the location
+     * @param proportion
+     *          how far back through the time period we are
+     */
+    void doItTo(final FixWrapper rawSec, final WorldLocation offsetLocation,
+        final double proportion);
+
+    /**
+     * process the secondary track position that's nearest to the required time
+     *
+     * @param nearestInTime
+     * @param nearestOffset
+     */
+    void processNearest(final FixWrapper nearestInTime,
+        final WorldLocation nearestOffset);
+  }
+
+  private class UnitCentricChart extends SWTChart
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    private Point oldEnd;
+
+    public UnitCentricChart(final Composite parent)
+    {
+      super(null, parent, _myProjection);
+    }
+
+    @Override
+    public void chartFireSelectionChanged(final ISelection sel)
+    {
+    }
+
+    private void checkDataCoverage(final Layers theLayers)
+    {
+
+      // check if we have null data area
+      if (_myOverviewChart.getCanvas().getProjection().getDataArea() == null)
+      {
+
+        // sort out the bounds
+        if (_trackDataProvider != null)
+        {
+          final WatchableList primary = _trackDataProvider.getPrimaryTrack();
+          if (primary != null && primary instanceof TrackWrapper)
+          {
+            final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
+            final WorldArea area = new WorldArea(origin, origin);
+            final IOperateOnMatch getBounds = new IOperateOnMatch()
+            {
+
+              @Override
+              public void doItTo(final FixWrapper rawSec,
+                  final WorldLocation offsetLocation, final double proportion)
+              {
+                area.extend(offsetLocation);
+              }
+
+              @Override
+              public void processNearest(final FixWrapper nearestInTime,
+                  final WorldLocation nearestOffset)
+              {
+                // ok, ignore
+              }
+            };
+            walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
+                getBounds, getSnailLength());
+
+            // ok, store the data area
+            _myOverviewChart.getCanvas().getProjection().setDataArea(area);
+          }
+        }
+      }
+    }
+
+    protected Color colorFor(final Color color, final float proportion,
+        final Color backgroundColor)
+    {
+      // merge the foreground to the background
+      final int red = backgroundColor.getRed() - color.getRed();
+      final int green = backgroundColor.getGreen() - color.getGreen();
+      final int blue = backgroundColor.getBlue() - color.getBlue();
+
+      final float newRed = color.getRed() + red * proportion;
+      final float newGreen = color.getGreen() + green * proportion;
+      final float newBlue = color.getBlue() + blue * proportion;
+      return new Color((int) newRed, (int) newGreen, (int) newBlue);
+    }
+
+    @Override
+    public void paintMe(final CanvasType dest)
+    {
+      if (_theLayers == null)
+      {
+        CorePlugin.logError(IStatus.WARNING,
+            "Unit centric view is missing layers", null);
+        return;
+      }
+
+      if (_trackDataProvider == null)
+      {
+        CorePlugin.logError(IStatus.WARNING,
+            "Unit centric view is missing track data provider", null);
+      }
+
+      // ok, check we have primary track
+      if (_trackDataProvider.getPrimaryTrack() == null)
+      {
+        CorePlugin.logError(IStatus.WARNING,
+            "Unit centric view is missing primary track", null);
+        CorePlugin.showMessage("Unit Centric View",
+            "Please assign a primary track");
+      }
+
+      if (_timeProvider == null)
+      {
+        CorePlugin.logError(IStatus.WARNING,
+            "Unit centric view is missing time provider", null);
+      }
+
+      checkDataCoverage(_theLayers);
+
+      final WatchableList primary = _trackDataProvider.getPrimaryTrack();
+
+      // is it a track?
+      final TrackWrapper priTrack = primary instanceof TrackWrapper
+          ? (TrackWrapper) primary : null;
+
+      final boolean oldInterp;
+
+      if (priTrack != null)
+      {
+        oldInterp = priTrack.getInterpolatePoints();
+        priTrack.setInterpolatePoints(true);
+      }
+      else
+      {
+        oldInterp = false;
+      }
+
+      // reset the last point we were looking at
+      oldEnd = null;
+
+      // do we draw local grid
+      dest.setLineWidth(0f);
+
+      if (_showGrid.isChecked())
+      {
+        _localGrid.paint(dest);
+      }
+
+      if (_showRings.isChecked())
+      {
+        _rangeRings.paint(dest);
+      }
+
+      // get the time
+      final boolean isSnail = _snailPaint.isChecked();
+
+      IOperateOnMatch paintIt;
+      final HiResDate subjectTime = _timeProvider.getTime();
+
+      if (isSnail)
+      {
+        paintIt = new IOperateOnMatch()
+        {
+          @Override
+          public void doItTo(final FixWrapper rawSec,
+              final WorldLocation offsetLocation, final double proportion)
+          {
+            dest.setLineWidth(3f);
+
+            // sort out the color
+            final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
+                _myOverviewChart.getCanvas().getBackgroundColor());
+
+            dest.setColor(newCol);
+
+            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+            // and the line
+            final Point newEnd = dest.toScreen(offsetLocation);
+            if (oldEnd != null)
+            {
+              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+            }
+            oldEnd = new Point(newEnd);
+          }
+
+          @Override
+          public void processNearest(final FixWrapper nearestInTime,
+              final WorldLocation nearestOffset)
+          {
+            // ignore - we don't do it.
+
+            // reset the last object pointer
+            oldEnd = null;
+          }
+        };
+      }
+      else
+      {
+        paintIt = new IOperateOnMatch()
+        {
+          @Override
+          public void doItTo(final FixWrapper rawSec,
+              final WorldLocation offsetLocation, final double proportion)
+          {
+            dest.setLineWidth(3f);
+            dest.setColor(rawSec.getColor());
+
+            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+            // and the line
+            final Point newEnd = dest.toScreen(offsetLocation);
+            if (oldEnd != null)
+            {
+              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+            }
+            //
+            oldEnd = new Point(newEnd);
+          }
+
+          @Override
+          public void processNearest(final FixWrapper nearestInTime,
+              final WorldLocation nearestOffset)
+          {
+            dest.setLineWidth(3);
+            dest.setColor(Color.DARK_GRAY);
+            final Point pt = dest.toScreen(nearestOffset);
+            dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+
+            // reset the last object pointer
+            oldEnd = null;
+          }
+        };
+      }
+
+      walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
+
+      // draw in the O/S last, so it's on top
+      dest.setLineWidth(2f);
+      final Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
+          new WorldLocation(0d, 0d, 0d));
+      dest.setColor(primary.getColor());
+      dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
+
+      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5);
+
+      if (priTrack != null)
+      {
+        priTrack.setInterpolatePoints(oldInterp);
+      }
+    }
+  }
+
+  /**
+   * convert an absolute location into a location relative to a primary track
+   *
+   * @param primary
+   * @param other
+   * @param origin
+   * @return
+   */
+  private static WorldLocation processOffset(final FixWrapper primary,
+      final WorldLocation other, final WorldLocation origin)
+  {
+    // ok, work out offset from this
+    final WorldVector delta = other.subtract(primary.getLocation());
+
+    // we now have to rotate the delta, according to O/S course
+    final double curBearing = delta.getBearing();
+
+    // work out the bearing relative to O/S head
+    final double newBearing = curBearing - primary.getCourse();
+
+    // update the bearing
+    final WorldVector newDelta = new WorldVector(newBearing, delta.getRange(),
+        0d);
+
+    final WorldLocation pos = origin.add(newDelta);
+
+    return pos;
+  }
+
+  private static void walkTree(final Layers theLayers,
+      final TrackWrapper primary, final HiResDate subjectTime,
+      final IOperateOnMatch doIt, final long snailLength)
+  {
+    final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
+
+    final Enumeration<Editable> ele = theLayers.elements();
+    while (ele.hasMoreElements())
+    {
+      final Layer thisL = (Layer) ele.nextElement();
+
+      if (!thisL.getVisible())
+      {
+        continue;
+      }
+
+      // is it the primary?
+      if (thisL == primary)
+      {
+        // ok, just draw in the marker
+      }
+      else if (thisL instanceof TrackWrapper)
+      {
+        final TrackWrapper other = (TrackWrapper) thisL;
+
+        // keep track of the fix nearest to the required DTG
+        FixWrapper nearestInTime = null;
+        WorldLocation nearestOffset = null;
+        long nearestDelta = Long.MAX_VALUE;
+
+        // ok, run back through the data
+        final Enumeration<Editable> pts = other.getPositionIterator();
+        while (pts.hasMoreElements())
+        {
+          final FixWrapper thisF = (FixWrapper) pts.nextElement();
+
+          final HiResDate hisD = thisF.getDTG();
+
+          final boolean useIt;
+          if (subjectTime == null)
+          {
+            useIt = true;
+          }
+          else
+          {
+            if (snailLength == Long.MAX_VALUE)
+            {
+              useIt = true;
+            }
+            else
+            {
+              final long offset = subjectTime.getDate().getTime() - hisD
+                  .getDate().getTime();
+              useIt = offset > 0 && offset < snailLength;
+            }
+          }
+
+          if (useIt)
+          {
+            final Watchable[] nearest = primary.getNearestTo(hisD);
+            if (nearest != null && nearest.length > 0)
+            {
+              final FixWrapper priFix = (FixWrapper) nearest[0];
+              final long diff = Math.abs(hisD.getDate().getTime() - subjectTime
+                  .getDate().getTime());
+
+              if (nearestInTime == null)
+              {
+                nearestInTime = thisF;
+                nearestDelta = diff;
+                nearestOffset = processOffset(priFix, thisF.getLocation(),
+                    origin);
+              }
+              else
+              {
+                if (diff < nearestDelta)
+                {
+                  nearestInTime = thisF;
+                  nearestDelta = diff;
+                  nearestOffset = processOffset(priFix, thisF.getLocation(),
+                      origin);
+                }
+              }
+
+              final WorldLocation pos = processOffset(priFix, thisF
+                  .getLocation(), origin);
+
+              // work out how far back down the leg we are
+              final long age = subjectTime.getDate().getTime() - thisF.getDTG()
+                  .getDate().getTime();
+              final double proportion = age / (double) snailLength;
+
+              doIt.doItTo(thisF, pos, proportion);
+            }
+          }
+
+        }
+        if (nearestInTime != null)
+        {
+          doIt.processNearest(nearestInTime, nearestOffset);
+        }
+      }
+    }
+  }
+
   private UnitCentricChart _myOverviewChart;
 
   private final FlatProjection _myProjection;
@@ -72,9 +511,9 @@ public class UnitCentricView extends ViewPart
 
   private Action _showGrid;
 
-  private LocalGridPainter _localGrid;
+  private final LocalGridPainter _localGrid;
 
-  private RangeRingShape _rangeRings;
+  private final RangeRingShape _rangeRings;
 
   public UnitCentricView()
   {
@@ -84,7 +523,7 @@ public class UnitCentricView extends ViewPart
     {
 
       @Override
-      public void propertyChange(PropertyChangeEvent evt)
+      public void propertyChange(final PropertyChangeEvent evt)
       {
         // ok, trigger repaint
         _myOverviewChart.update();
@@ -100,21 +539,15 @@ public class UnitCentricView extends ViewPart
 
   }
 
-  private long getSnailLength()
+  private void contributeToActionBars()
   {
-    boolean doSnail = _snailPaint.isChecked();
-    if (doSnail)
-    {
-      return 1000 * 60 * 30;
-    }
-    else
-    {
-      return Long.MAX_VALUE;
-    }
+    final IActionBars bars = getViewSite().getActionBars();
+    fillLocalPullDown(bars.getMenuManager());
+    fillLocalToolBar(bars.getToolBarManager());
   }
 
   @Override
-  public void createPartControl(Composite parent)
+  public void createPartControl(final Composite parent)
   {
     // declare our context sensitive help
     CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.OverviewChart");
@@ -124,7 +557,7 @@ public class UnitCentricView extends ViewPart
     {
 
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
@@ -142,67 +575,32 @@ public class UnitCentricView extends ViewPart
     makeActions();
     contributeToActionBars();
 
-    // /////////////////////////////////////////
-    // ok - listen out for changes in the view
-    // /////////////////////////////////////////
     watchMyParts();
   }
 
-  private void contributeToActionBars()
+  @Override
+  public void dispose()
   {
-    final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
-    fillLocalToolBar(bars.getToolBarManager());
-  }
+    super.dispose();
 
-  private static interface DistanceOperation
-  {
-    public void selected(WorldDistance distance);
-  }
-
-  private class DistanceAction extends Action
-  {
-
-    private final WorldDistance _distance;
-    private DistanceOperation _operation;
-
-    public DistanceAction(String title, WorldDistance distance,
-        DistanceOperation operation)
+    // cancel any listeners
+    if (_myPartMonitor != null)
     {
-      super(title);
-      _distance = distance;
-      _myOverviewChart.repaint();
-      _operation = operation;
+      _myPartMonitor.ditch();
     }
-
-    @Override
-    public void run()
-    {
-      _operation.selected(_distance);
-      _myOverviewChart.update();
-      Display.getCurrent().asyncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-        }
-      });
-    }
-
   }
 
   private void fillLocalPullDown(final IMenuManager manager)
   {
-    DistanceOperation setRings = new DistanceOperation()
+    final DistanceOperation setRings = new DistanceOperation()
     {
       @Override
-      public void selected(WorldDistance distance)
+      public void selected(final WorldDistance distance)
       {
         _rangeRings.setRingWidth(distance);
       }
     };
-    MenuManager ringRadii = new MenuManager("Ring radii");
+    final MenuManager ringRadii = new MenuManager("Ring radii");
     // ringRadii.setImageDescriptor(CorePlugin.getImageDescriptor(
     // "icons/16/range_rings.png"));
 
@@ -221,15 +619,15 @@ public class UnitCentricView extends ViewPart
 
     manager.add(ringRadii);
 
-    DistanceOperation setGrid = new DistanceOperation()
+    final DistanceOperation setGrid = new DistanceOperation()
     {
       @Override
-      public void selected(WorldDistance distance)
+      public void selected(final WorldDistance distance)
       {
         _localGrid.setDelta(distance);
       }
     };
-    MenuManager gridSize = new MenuManager("Grid size");
+    final MenuManager gridSize = new MenuManager("Grid size");
     gridSize.add(new DistanceAction("100m", new WorldDistance(100,
         WorldDistance.METRES), setGrid));
     gridSize.add(new DistanceAction("500m", new WorldDistance(500,
@@ -276,10 +674,24 @@ public class UnitCentricView extends ViewPart
     _myOverviewChart.repaint();
   }
 
+  private long getSnailLength()
+  {
+    final boolean doSnail = _snailPaint.isChecked();
+    if (doSnail)
+    {
+      return 1000 * 60 * 30;
+    }
+    else
+    {
+      return Long.MAX_VALUE;
+    }
+  }
+
   private void makeActions()
   {
     _fitToWindow = new org.eclipse.jface.action.Action()
     {
+      @Override
       public void run()
       {
         // ok, fit the plot to the window...
@@ -350,6 +762,27 @@ public class UnitCentricView extends ViewPart
 
   }
 
+  /**
+   * ok, a new plot is selected - better show it then
+   *
+   * @param provider
+   *          the new plot
+   * @param parentPart
+   *          the part containing the plot
+   */
+  protected void plotSelected(final Layers provider,
+      final IWorkbenchPart parentPart)
+  {
+    // ok, clear the map area
+    _myOverviewChart.getCanvas().getProjection().setDataArea(null);
+
+    // ok - update our chart to show the indicated plot.
+    _myOverviewChart.setLayers(provider);
+
+    // and trigger repaint
+    _myOverviewChart.repaint();
+  }
+
   @Override
   public void setFocus()
   {
@@ -367,6 +800,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -384,6 +818,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -401,6 +836,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(TrackDataProvider.class,
         PartMonitor.ACTIVATED, new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -421,6 +857,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -441,6 +878,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -467,6 +905,7 @@ public class UnitCentricView extends ViewPart
     _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
+          @Override
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
@@ -487,431 +926,4 @@ public class UnitCentricView extends ViewPart
         .getActivePage());
   }
 
-  /**
-   * ok, a new plot is selected - better show it then
-   * 
-   * @param provider
-   *          the new plot
-   * @param parentPart
-   *          the part containing the plot
-   */
-  protected void plotSelected(final Layers provider,
-      final IWorkbenchPart parentPart)
-  {
-    // ok, clear the map area
-    _myOverviewChart.getCanvas().getProjection().setDataArea(null);
-
-    // ok - update our chart to show the indicated plot.
-    _myOverviewChart.setLayers(provider);
-
-    // and trigger repaint
-    _myOverviewChart.repaint();
-  }
-
-  private class UnitCentricChart extends SWTChart
-  {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    public UnitCentricChart(Composite parent)
-    {
-      super(null, parent, _myProjection);
-    }
-
-    @Override
-    public void chartFireSelectionChanged(ISelection sel)
-    {
-    }
-
-    private Point oldEnd;
-
-    @Override
-    public void paintMe(final CanvasType dest)
-    {
-      if (_theLayers == null)
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Unit centric view is missing layers", null);
-        return;
-      }
-
-      if (_trackDataProvider == null)
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Unit centric view is missing track data provider", null);
-      }
-
-      // ok, check we have primary track
-      if (_trackDataProvider.getPrimaryTrack() == null)
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Unit centric view is missing primary track", null);
-        CorePlugin.showMessage("Unit Centric View",
-            "Please assign a primary track");
-      }
-
-      if (_timeProvider == null)
-      {
-        CorePlugin.logError(Status.WARNING,
-            "Unit centric view is missing time provider", null);
-      }
-
-      checkDataCoverage(_theLayers);
-
-      final WatchableList primary = _trackDataProvider.getPrimaryTrack();
-
-      // is it a track?
-      final TrackWrapper priTrack = primary instanceof TrackWrapper
-          ? (TrackWrapper) primary : null;
-
-      final boolean oldInterp;
-
-      if (priTrack != null)
-      {
-        oldInterp = priTrack.getInterpolatePoints();
-        priTrack.setInterpolatePoints(true);
-      }
-      else
-      {
-        oldInterp = false;
-      }
-
-      // reset the last point we were looking at
-      oldEnd = null;
-
-      // do we draw local grid
-      dest.setLineWidth(0f);
-
-      if (_showGrid.isChecked())
-      {
-        _localGrid.paint(dest);
-      }
-
-      if (_showRings.isChecked())
-      {
-        _rangeRings.paint(dest);
-      }
-
-      // get the time
-      final boolean isSnail = _snailPaint.isChecked();
-
-      IOperateOnMatch paintIt;
-      final HiResDate subjectTime = _timeProvider.getTime();
-
-      if (isSnail)
-      {
-        paintIt = new IOperateOnMatch()
-        {
-          @Override
-          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation, final double proportion)
-          {
-            dest.setLineWidth(3f);
-            
-            // sort out the color
-            final Color newCol = colorFor(rawSec.getColor(), (float) proportion, _myOverviewChart.getCanvas().getBackgroundColor());
-            
-            dest.setColor(newCol);
-
-            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-            // and the line
-            Point newEnd = dest.toScreen(offsetLocation);
-            if (oldEnd != null)
-            {
-              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-            }
-            oldEnd = new Point(newEnd);
-          }
-
-          @Override
-          public void processNearest(FixWrapper nearestInTime,
-              WorldLocation nearestOffset)
-          {
-            // ignore - we don't do it.
-
-            // reset the last object pointer
-            oldEnd = null;
-          }
-        };
-      }
-      else
-      {
-        paintIt = new IOperateOnMatch()
-        {
-          @Override
-          public void doItTo(FixWrapper rawSec, WorldLocation offsetLocation, final double proportion)
-          {
-            dest.setLineWidth(3f);
-            dest.setColor(rawSec.getColor());
-
-            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-            // and the line
-            Point newEnd = dest.toScreen(offsetLocation);
-            if (oldEnd != null)
-            {
-              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-            }
-            //
-            oldEnd = new Point(newEnd);
-          }
-
-          @Override
-          public void processNearest(FixWrapper nearestInTime,
-              WorldLocation nearestOffset)
-          {
-            dest.setLineWidth(3);
-            dest.setColor(Color.DARK_GRAY);
-            Point pt = dest.toScreen(nearestOffset);
-            dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
-
-            // reset the last object pointer
-            oldEnd = null;
-          }
-        };
-      }
-
-      walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
-
-      // draw in the O/S last, so it's on top
-      dest.setLineWidth(2f);
-      Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
-          new WorldLocation(0d, 0d, 0d));
-      dest.setColor(primary.getColor());
-      dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
-
-      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5);
-
-      if (priTrack != null)
-      {
-        priTrack.setInterpolatePoints(oldInterp);
-      }
-    }
-
-    protected Color colorFor(Color color, float proportion,
-        Color backgroundColor)
-    {
-      // merge the foreground to the background
-      final int red = backgroundColor.getRed() - color.getRed();
-      final int green = backgroundColor.getGreen() - color.getGreen();
-      final int blue = backgroundColor.getBlue() - color.getBlue();
-      
-
-      final float newRed = color.getRed() + red * proportion;
-      final float newGreen = color.getGreen()
-          + green * proportion;
-      final float newBlue = color.getBlue() + blue * proportion;
-      return new Color((int)newRed, (int)newGreen, (int)newBlue);
-    }
-
-    private void checkDataCoverage(Layers theLayers)
-    {
-
-      // check if we have null data area
-      if (_myOverviewChart.getCanvas().getProjection().getDataArea() == null)
-      {
-
-        // sort out the bounds
-        if (_trackDataProvider != null)
-        {
-          WatchableList primary = _trackDataProvider.getPrimaryTrack();
-          if (primary != null && primary instanceof TrackWrapper)
-          {
-            WorldLocation origin = new WorldLocation(0d, 0d, 0d);
-            final WorldArea area = new WorldArea(origin, origin);
-            IOperateOnMatch getBounds = new IOperateOnMatch()
-            {
-
-              @Override
-              public void doItTo(FixWrapper rawSec,
-                  WorldLocation offsetLocation, final double proportion)
-              {
-                area.extend(offsetLocation);
-              }
-
-              @Override
-              public void processNearest(FixWrapper nearestInTime,
-                  WorldLocation nearestOffset)
-              {
-                // ok, ignore
-              }
-            };
-            walkTree(theLayers, (TrackWrapper) primary, _timeProvider.getTime(),
-                getBounds, getSnailLength());
-
-            // ok, store the data area
-            _myOverviewChart.getCanvas().getProjection().setDataArea(area);
-          }
-        }
-      }
-    }
-  }
-
-  private static void walkTree(Layers theLayers, TrackWrapper primary,
-      HiResDate subjectTime, IOperateOnMatch doIt, final long snailLength)
-  {
-    WorldLocation origin = new WorldLocation(0d, 0d, 0d);
-
-    Enumeration<Editable> ele = theLayers.elements();
-    while (ele.hasMoreElements())
-    {
-      final Layer thisL = (Layer) ele.nextElement();
-
-      if (!thisL.getVisible())
-      {
-        continue;
-      }
-
-      // is it the primary?
-      if (thisL == primary)
-      {
-        // ok, just draw in the marker
-      }
-      else if (thisL instanceof TrackWrapper)
-      {
-        TrackWrapper other = (TrackWrapper) thisL;
-
-        // keep track of the fix nearest to the required DTG
-        FixWrapper nearestInTime = null;
-        WorldLocation nearestOffset = null;
-        long nearestDelta = Long.MAX_VALUE;
-
-        // ok, run back through the data
-        Enumeration<Editable> pts = other.getPositionIterator();
-        while (pts.hasMoreElements())
-        {
-          FixWrapper thisF = (FixWrapper) pts.nextElement();
-
-          HiResDate hisD = thisF.getDTG();
-
-          final boolean useIt;
-          if (subjectTime == null)
-          {
-            useIt = true;
-          }
-          else
-          {
-            if (snailLength == Long.MAX_VALUE)
-            {
-              useIt = true;
-            }
-            else
-            {
-              final long offset = subjectTime.getDate().getTime() - hisD
-                  .getDate().getTime();
-              useIt = offset > 0 && offset < snailLength;
-            }
-          }
-
-          if (useIt)
-          {
-            Watchable[] nearest = primary.getNearestTo(hisD);
-            if (nearest != null && nearest.length > 0)
-            {
-              FixWrapper priFix = (FixWrapper) nearest[0];
-              long diff = Math.abs(hisD.getDate().getTime() - subjectTime
-                  .getDate().getTime());
-
-              if (nearestInTime == null)
-              {
-                nearestInTime = thisF;
-                nearestDelta = diff;
-                nearestOffset = processOffset(priFix, thisF.getLocation(),
-                    origin);
-              }
-              else
-              {
-                if (diff < nearestDelta)
-                {
-                  nearestInTime = thisF;
-                  nearestDelta = diff;
-                  nearestOffset = processOffset(priFix, thisF.getLocation(),
-                      origin);
-                }
-              }
-
-              WorldLocation pos = processOffset(priFix, thisF.getLocation(),
-                  origin);
-              
-              // work out how far back down the leg we are
-              final long age = subjectTime.getDate().getTime() - thisF.getDTG().getDate().getTime();
-              final double proportion = age / (double)snailLength;
-
-              doIt.doItTo(thisF, pos, proportion);
-            }
-          }
-
-        }
-        if (nearestInTime != null)
-        {
-          doIt.processNearest(nearestInTime, nearestOffset);
-        }
-      }
-    }
-  }
-
-  /**
-   * convert an absolute location into a location relative to a primary track
-   * 
-   * @param primary
-   * @param other
-   * @param origin
-   * @return
-   */
-  private static WorldLocation processOffset(FixWrapper primary,
-      WorldLocation other, WorldLocation origin)
-  {
-    // ok, work out offset from this
-    final WorldVector delta = other.subtract(primary.getLocation());
-
-    // we now have to rotate the delta, according to O/S course
-    double curBearing = delta.getBearing();
-
-    // work out the bearing relative to O/S head
-    final double newBearing = curBearing - primary.getCourse();
-
-    // update the bearing
-    WorldVector newDelta = new WorldVector(newBearing, delta.getRange(), 0d);
-
-    final WorldLocation pos = origin.add(newDelta);
-
-    return pos;
-  }
-
-  public static interface IOperateOnMatch
-  {
-    /**
-     * process this single data object
-     * 
-     * @param rawSec the fix we're looking at
-     * @param offsetLocation unit-centric version of the location
-     * @param proportion how far back through the time period we are
-     */
-    void doItTo(final FixWrapper rawSec, final WorldLocation offsetLocation, final double proportion);
-
-    /**
-     * process the secondary track position that's nearest to the required time
-     * 
-     * @param nearestInTime
-     * @param nearestOffset
-     */
-    void processNearest(final FixWrapper nearestInTime, final WorldLocation nearestOffset);
-  }
-
-  @Override
-  public void dispose()
-  {
-    super.dispose();
-    
-    // cancel any listeners
-    if (_myPartMonitor != null)
-    {
-      _myPartMonitor.ditch();
-    }
-  }
-  
-  
 }
