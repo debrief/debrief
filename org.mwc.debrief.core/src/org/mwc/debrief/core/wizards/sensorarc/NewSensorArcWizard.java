@@ -109,10 +109,6 @@ public class NewSensorArcWizard extends Wizard
       {
         data.setSemiTransparent(true);
       }
-      else
-      {
-      }
-      
     }
     dynamicShape = data;
     return true;
