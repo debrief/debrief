@@ -86,8 +86,21 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
   @Override
   public boolean isPageComplete()
   {
-    return _topLeftLocation.getValue()!=null && _topLeftLocation.getValue().isValid() 
-        && _bottomRightLocation.getValue()!=null && _bottomRightLocation.getValue().isValid();
+    boolean isComplete = false;
+    isComplete = _topLeftLocation.getValue()!=null && _topLeftLocation.getValue().isValid();
+    if(!isComplete) {
+      setErrorMessage("Invalid Top Left Location");
+    }
+    else {
+      isComplete = _bottomRightLocation.getValue()!=null && _bottomRightLocation.getValue().isValid();
+      if(!isComplete) {
+        setErrorMessage("Invalid Bottom Right Location");
+      }
+      else {
+        setErrorMessage(null);
+      }  
+    }
+    return isComplete;
   }
   
 

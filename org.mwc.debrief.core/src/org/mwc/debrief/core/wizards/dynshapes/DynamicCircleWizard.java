@@ -56,11 +56,19 @@ public class DynamicCircleWizard extends Wizard
   public boolean performFinish()
   {
     Date startTime = _shapeTimingsPage.getStartTime();
+    Date endTime = _shapeTimingsPage.getEndTime();
     WorldLocation center = _boundsPage.getCenter();
     PlainShape circle = new CircleShape(center, _boundsPage.getRadius());
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
-    dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,new HiResDate(startTime),"rectangle");
-    dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    if(startTime!=null) {
+      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,new HiResDate(startTime),"rectangle");
+    }
+    else {
+      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,null,"rectangle");
+    }
+    if(endTime!=null) {
+      dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    }
     return true;
   }
   public DynamicShapeWrapper getDynamicShapeWrapper()

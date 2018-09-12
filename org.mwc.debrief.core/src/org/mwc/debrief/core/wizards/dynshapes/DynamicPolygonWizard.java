@@ -60,10 +60,18 @@ public class DynamicPolygonWizard extends Wizard
   public boolean performFinish()
   {
     Date startTime = _shapeTimingsPage.getStartTime();
+    Date endTime = _shapeTimingsPage.getEndTime();
     PolygonShape polygon = _boundsPage.getPolygonShape();
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
-    _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,new HiResDate(startTime),"rectangle");
-    _dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    if(startTime==null) {
+      _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,null,"dynamic polygon");
+    }
+    else {
+    _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,new HiResDate(startTime),"dynamic polygon");
+    }
+    if(endTime!=null) {
+      _dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    }
     return true;
   }
   

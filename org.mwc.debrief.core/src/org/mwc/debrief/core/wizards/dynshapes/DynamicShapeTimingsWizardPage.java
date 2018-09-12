@@ -28,12 +28,14 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
   private Button _chkStartTime;
   private Button _chkEndTime;
   private Date _startTime,_endTime;
+  private String _type;
 
   public DynamicShapeTimingsWizardPage(String pageName,String type,Date startTime,Date endTime)
   {
     super(pageName);
     this._startTime = startTime;
     this._endTime = endTime;
+    this._type = type;
     setTitle("Create dynamic "+type);
     if(NewSensorArcWizard.SHAPE_NAME.equals(type)) {
       setDescription("This wizard is used to create new track shapes (or sensor arcs)");  
@@ -112,21 +114,28 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
   public boolean isPageComplete()
   {
     
-    boolean isComplete =  ((_chkStartTime.getSelection() && _cStartTime.getSelection()!=null) ||
-        (_chkEndTime.getSelection() && _cEndTime.getSelection()!=null));
-    if(!isComplete) {
-      setErrorMessage("Either start time or end time is required");
+    boolean isComplete = false;
+    if(!NewSensorArcWizard.SHAPE_NAME.equals(_type)) {
+      setErrorMessage(null);
+      isComplete = true;
     }
     else {
-      if(_chkStartTime.getSelection() && _chkEndTime.getSelection() && !_cStartTime.getSelection().before(_cEndTime.getSelection())) {
-        setErrorMessage("The start time must be before end time");
+      isComplete = ((_chkStartTime.getSelection() && _cStartTime.getSelection()!=null) ||
+          (_chkEndTime.getSelection() && _cEndTime.getSelection()!=null));
+      if(!isComplete) {
+        setErrorMessage("Either start time or end time is required");
       }
       else {
-        setErrorMessage(null);
-        return true;
+        if(_chkStartTime.getSelection() && _chkEndTime.getSelection() && !_cStartTime.getSelection().before(_cEndTime.getSelection())) {
+          setErrorMessage("The start time must be before end time");
+        }
+        else {
+          setErrorMessage(null);
+          isComplete = true;
+        }
       }
     }
-    return false;
+    return isComplete;
   }
 
   public Date getStartTime()

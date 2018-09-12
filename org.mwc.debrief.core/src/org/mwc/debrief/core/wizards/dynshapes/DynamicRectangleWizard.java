@@ -51,12 +51,20 @@ public class DynamicRectangleWizard extends Wizard
   public boolean performFinish()
   {
     Date startTime = _shapeTimingsPage.getStartTime();
+    Date endTime = _shapeTimingsPage.getEndTime();
     WorldLocation topLeft = _boundsPage.getTopLeftLocation();
     WorldLocation bottomRight = _boundsPage.getBottomRightLocation();
     PlainShape rectangle = new RectangleShape(topLeft, bottomRight);
     final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
-    dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),rectangle,theColor,new HiResDate(startTime),"rectangle");
-    dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    if(startTime!=null) {
+      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),rectangle,theColor,new HiResDate(startTime),"rectangle");
+    }
+    else {
+      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),rectangle,theColor,null,"rectangle");
+    }
+    if(endTime!=null) {
+      dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+    }
     return true;
   }
   public DynamicShapeWrapper getDynamicShapeWrapper()
