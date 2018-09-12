@@ -107,11 +107,13 @@ import static MWC.GUI.Properties.LabelLocationPropertyEditor.RIGHT;
 import static MWC.GUI.Properties.LabelLocationPropertyEditor.TOP;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
@@ -196,6 +198,11 @@ public class RangeRingShape extends PlainShape implements Editable
 	 * the area covered by this Wheel
 	 */
 	private WorldArea _theArea;
+	
+  /**
+   * the font to use
+   */
+  private Font _theFont = Defaults.getScaledFont(0.8f);
 
 	/**
 	 * the centre of this Wheel
@@ -383,16 +390,16 @@ public class RangeRingShape extends PlainShape implements Editable
 			final int strHeight = dest.getStringHeight(null);
 
 			if ((lLoc == ALL) || (lLoc == TOP))
-				dest.drawText(thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
+				dest.drawText(_theFont, thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
 						- thisRadius - strHeight * 0.4));
 			if ((lLoc == ALL) || (lLoc == BOTTOM))
-				dest.drawText(thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
+				dest.drawText(_theFont, thisLabel, (int)(centre.x - strWidth / 2.3), (int) (centre.y
 						+ thisRadius + strHeight * 1.2));
 			if ((lLoc == ALL) || (lLoc == LEFT))
-				dest.drawText(thisLabel, centre.x - strWidth - thisRadius, centre.y
+				dest.drawText(_theFont, thisLabel, centre.x - strWidth - thisRadius, centre.y
 						+ strHeight / 2);
 			if ((lLoc == ALL) || (lLoc == RIGHT))
-				dest.drawText(thisLabel, (int)(centre.x + thisRadius + strWidth / 15d),
+				dest.drawText(_theFont, thisLabel, (int)(centre.x + thisRadius + strWidth / 15d),
 						centre.y + strHeight / 2);
 
 			// move on to the next radius
