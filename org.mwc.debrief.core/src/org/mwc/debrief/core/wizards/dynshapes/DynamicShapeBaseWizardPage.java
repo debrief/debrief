@@ -25,8 +25,8 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   public static final String BOUNDS_PAGE = "Bounds";
   public static final String STYLING_PAGE = "Styling";
   private String pageName;
-  private static Font font;
-  private static Font regularFont;
+  private Font font;
+  private Font regularFont;
   
 
   protected DynamicShapeBaseWizardPage(String pageName)
