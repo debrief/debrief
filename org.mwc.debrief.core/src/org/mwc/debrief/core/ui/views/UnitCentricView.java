@@ -67,9 +67,9 @@ public class UnitCentricView extends ViewPart
   private Action _normalPaint;
 
   private Action _snailPaint;
-  
+
   private Action _showRings;
-  
+
   private Action _showGrid;
 
   private LocalGridPainter _localGrid;
@@ -90,11 +90,11 @@ public class UnitCentricView extends ViewPart
         _myOverviewChart.update();
       }
     };
-    
+
     _localGrid = new LocalGridPainter();
     _localGrid.setDelta(new WorldDistance(30, WorldDistance.KM));
     _localGrid.setOrigin(new WorldLocation(0d, 0d, 0d));
-    
+
     _rangeRings = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
         new WorldDistance(5, WorldDistance.KM));
 
@@ -154,7 +154,7 @@ public class UnitCentricView extends ViewPart
     fillLocalPullDown(bars.getMenuManager());
     fillLocalToolBar(bars.getToolBarManager());
   }
-  
+
   private static interface DistanceOperation
   {
     public void selected(WorldDistance distance);
@@ -166,7 +166,8 @@ public class UnitCentricView extends ViewPart
     private final WorldDistance _distance;
     private DistanceOperation _operation;
 
-    public DistanceAction(String title, WorldDistance distance, DistanceOperation operation)
+    public DistanceAction(String title, WorldDistance distance,
+        DistanceOperation operation)
     {
       super(title);
       _distance = distance;
@@ -179,7 +180,8 @@ public class UnitCentricView extends ViewPart
     {
       _operation.selected(_distance);
       _myOverviewChart.update();
-      Display.getCurrent().asyncExec(new Runnable() {
+      Display.getCurrent().asyncExec(new Runnable()
+      {
 
         @Override
         public void run()
@@ -189,7 +191,7 @@ public class UnitCentricView extends ViewPart
     }
 
   }
-  
+
   private void fillLocalPullDown(final IMenuManager manager)
   {
     DistanceOperation setRings = new DistanceOperation()
@@ -201,16 +203,22 @@ public class UnitCentricView extends ViewPart
       }
     };
     MenuManager ringRadii = new MenuManager("Ring radii");
-//    ringRadii.setImageDescriptor(CorePlugin.getImageDescriptor(
-//        "icons/16/range_rings.png"));
+    // ringRadii.setImageDescriptor(CorePlugin.getImageDescriptor(
+    // "icons/16/range_rings.png"));
 
-    ringRadii.add(new DistanceAction("100m", new WorldDistance(100, WorldDistance.METRES), setRings));
-    ringRadii.add(new DistanceAction("500m", new WorldDistance(500, WorldDistance.METRES), setRings));
-    ringRadii.add(new DistanceAction("1 km", new WorldDistance(1, WorldDistance.KM), setRings));
-    ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1, WorldDistance.NM), setRings));
-    ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5, WorldDistance.NM), setRings));
-    ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10, WorldDistance.NM), setRings));
-    
+    ringRadii.add(new DistanceAction("100m", new WorldDistance(100,
+        WorldDistance.METRES), setRings));
+    ringRadii.add(new DistanceAction("500m", new WorldDistance(500,
+        WorldDistance.METRES), setRings));
+    ringRadii.add(new DistanceAction("1 km", new WorldDistance(1,
+        WorldDistance.KM), setRings));
+    ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1,
+        WorldDistance.NM), setRings));
+    ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5,
+        WorldDistance.NM), setRings));
+    ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10,
+        WorldDistance.NM), setRings));
+
     manager.add(ringRadii);
 
     DistanceOperation setGrid = new DistanceOperation()
@@ -222,13 +230,19 @@ public class UnitCentricView extends ViewPart
       }
     };
     MenuManager gridSize = new MenuManager("Grid size");
-    gridSize.add(new DistanceAction("100m", new WorldDistance(100, WorldDistance.METRES), setGrid));
-    gridSize.add(new DistanceAction("500m", new WorldDistance(500, WorldDistance.METRES), setGrid));
-    gridSize.add(new DistanceAction("1 km", new WorldDistance(1, WorldDistance.KM), setGrid));
-    gridSize.add(new DistanceAction("1 nm", new WorldDistance(1, WorldDistance.NM), setGrid));
-    gridSize.add(new DistanceAction("5 nm", new WorldDistance(5, WorldDistance.NM), setGrid));
-    gridSize.add(new DistanceAction("10 nm", new WorldDistance(10, WorldDistance.NM), setGrid));
-    
+    gridSize.add(new DistanceAction("100m", new WorldDistance(100,
+        WorldDistance.METRES), setGrid));
+    gridSize.add(new DistanceAction("500m", new WorldDistance(500,
+        WorldDistance.METRES), setGrid));
+    gridSize.add(new DistanceAction("1 km", new WorldDistance(1,
+        WorldDistance.KM), setGrid));
+    gridSize.add(new DistanceAction("1 nm", new WorldDistance(1,
+        WorldDistance.NM), setGrid));
+    gridSize.add(new DistanceAction("5 nm", new WorldDistance(5,
+        WorldDistance.NM), setGrid));
+    gridSize.add(new DistanceAction("10 nm", new WorldDistance(10,
+        WorldDistance.NM), setGrid));
+
     manager.add(gridSize);
   }
 
@@ -240,7 +254,7 @@ public class UnitCentricView extends ViewPart
 
     manager.add(_showRings);
     manager.add(_showGrid);
-    
+
     manager.add(new Separator());
     manager.add(_fitToWindow);
 
@@ -333,7 +347,7 @@ public class UnitCentricView extends ViewPart
     _showGrid.setChecked(false);
     _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/local_grid.png"));
-    
+
   }
 
   @Override
@@ -567,10 +581,10 @@ public class UnitCentricView extends ViewPart
 
       // reset the last point we were looking at
       oldEnd = null;
-      
+
       // do we draw local grid
       dest.setLineWidth(0f);
-      
+
       if (_showGrid.isChecked())
       {
         _localGrid.paint(dest);
@@ -585,7 +599,7 @@ public class UnitCentricView extends ViewPart
       final boolean isSnail = _snailPaint.isChecked();
 
       IOperateOnMatch paintIt;
-      final HiResDate subjectTime= _timeProvider.getTime();
+      final HiResDate subjectTime = _timeProvider.getTime();
 
       if (isSnail)
       {
@@ -596,9 +610,9 @@ public class UnitCentricView extends ViewPart
           {
             dest.setLineWidth(3f);
             dest.setColor(rawSec.getColor());
-            
+
             rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-            
+
             // and the line
             Point newEnd = dest.toScreen(offsetLocation);
             if (oldEnd != null)
@@ -613,6 +627,9 @@ public class UnitCentricView extends ViewPart
               WorldLocation nearestOffset)
           {
             // ignore - we don't do it.
+
+            // reset the last object pointer
+            oldEnd = null;
           }
         };
       }
@@ -645,22 +662,24 @@ public class UnitCentricView extends ViewPart
             dest.setLineWidth(3);
             dest.setColor(Color.DARK_GRAY);
             Point pt = dest.toScreen(nearestOffset);
-            dest.drawRect(pt.x-3, pt.y-3, 7, 7);
+            dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+
+            // reset the last object pointer
+            oldEnd = null;
           }
         };
       }
 
       walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
 
-      
       // draw in the O/S last, so it's on top
       dest.setLineWidth(2f);
       Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
           new WorldLocation(0d, 0d, 0d));
       dest.setColor(primary.getColor());
       dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
-      
-      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5 );
+
+      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5);
 
       if (priTrack != null)
       {
@@ -734,12 +753,12 @@ public class UnitCentricView extends ViewPart
       else if (thisL instanceof TrackWrapper)
       {
         TrackWrapper other = (TrackWrapper) thisL;
-        
+
         // keep track of the fix nearest to the required DTG
         FixWrapper nearestInTime = null;
         WorldLocation nearestOffset = null;
         long nearestDelta = Long.MAX_VALUE;
-        
+
         // ok, run back through the data
         Enumeration<Editable> pts = other.getPositionIterator();
         while (pts.hasMoreElements())
@@ -747,7 +766,7 @@ public class UnitCentricView extends ViewPart
           FixWrapper thisF = (FixWrapper) pts.nextElement();
 
           HiResDate hisD = thisF.getDTG();
-          
+
           final boolean useIt;
           if (subjectTime == null)
           {
@@ -773,32 +792,36 @@ public class UnitCentricView extends ViewPart
             if (nearest != null && nearest.length > 0)
             {
               FixWrapper priFix = (FixWrapper) nearest[0];
-              long diff = Math.abs(hisD.getDate().getTime() - subjectTime.getDate().getTime());
-              
-              if(nearestInTime == null)
+              long diff = Math.abs(hisD.getDate().getTime() - subjectTime
+                  .getDate().getTime());
+
+              if (nearestInTime == null)
               {
                 nearestInTime = thisF;
                 nearestDelta = diff;
-                nearestOffset = processOffset(priFix, thisF.getLocation(), origin);
+                nearestOffset = processOffset(priFix, thisF.getLocation(),
+                    origin);
               }
               else
               {
-                if(diff < nearestDelta)
+                if (diff < nearestDelta)
                 {
                   nearestInTime = thisF;
                   nearestDelta = diff;
-                  nearestOffset = processOffset(priFix, thisF.getLocation(), origin);
+                  nearestOffset = processOffset(priFix, thisF.getLocation(),
+                      origin);
                 }
               }
 
-              WorldLocation pos = processOffset(priFix, thisF.getLocation(), origin);
+              WorldLocation pos = processOffset(priFix, thisF.getLocation(),
+                  origin);
 
               doIt.doItTo(thisF, pos);
             }
           }
-          
+
         }
-        if(nearestInTime != null)
+        if (nearestInTime != null)
         {
           doIt.processNearest(nearestInTime, nearestOffset);
         }
@@ -806,43 +829,46 @@ public class UnitCentricView extends ViewPart
     }
   }
 
-  /** convert an absolute location into a location relative to a primary track
+  /**
+   * convert an absolute location into a location relative to a primary track
    * 
    * @param primary
    * @param other
    * @param origin
    * @return
    */
-  private static WorldLocation processOffset(FixWrapper primary, WorldLocation other, WorldLocation origin)
+  private static WorldLocation processOffset(FixWrapper primary,
+      WorldLocation other, WorldLocation origin)
   {
     // ok, work out offset from this
-    final WorldVector delta = other.subtract(primary
-        .getLocation());
-    
+    final WorldVector delta = other.subtract(primary.getLocation());
+
     // we now have to rotate the delta, according to O/S course
     double curBearing = delta.getBearing();
-    
+
     // work out the bearing relative to O/S head
     final double newBearing = curBearing - primary.getCourse();
-    
+
     // update the bearing
     WorldVector newDelta = new WorldVector(newBearing, delta.getRange(), 0d);
 
     final WorldLocation pos = origin.add(newDelta);
-    
+
     return pos;
   }
-  
+
   public static interface IOperateOnMatch
   {
-    /** process this single data object
+    /**
+     * process this single data object
      * 
      * @param rawSec
      * @param offsetLocation
      */
     void doItTo(FixWrapper rawSec, WorldLocation offsetLocation);
 
-    /** process the secondary track position that's nearest to the required time
+    /**
+     * process the secondary track position that's nearest to the required time
      * 
      * @param nearestInTime
      * @param nearestOffset
