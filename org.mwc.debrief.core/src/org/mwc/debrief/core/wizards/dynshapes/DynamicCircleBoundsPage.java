@@ -110,12 +110,12 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     }
     else {
       isPageComplete = (!_txtRadius.getText().isEmpty() && isValidRadius(_txtRadius.getText()));
-    }
-    if(!isPageComplete) {
-      setErrorMessage("Please enter radius in the range 0 to 4000");
-    }
-    else {
-      setErrorMessage(null);
+      if(!isPageComplete) {
+        setErrorMessage("Please enter radius in the range 0 to 4000");
+      }
+      else {
+        setErrorMessage(null);
+      }
     }
     return isPageComplete;
   }
