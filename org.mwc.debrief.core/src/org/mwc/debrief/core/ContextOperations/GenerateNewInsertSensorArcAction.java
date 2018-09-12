@@ -170,7 +170,7 @@ public class GenerateNewInsertSensorArcAction implements
     // we're only going to work with two or more items
     if (subjects.length == 0)
     {
-      goForIt = true;
+      goForIt = false;
     }
 
     if (subjects.length == 1 && subjects[0] instanceof TrackWrapper)
