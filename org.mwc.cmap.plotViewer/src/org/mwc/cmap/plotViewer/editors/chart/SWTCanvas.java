@@ -203,7 +203,7 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
 
     _updateListeners = new ArrayList<ScreenUpdateListener>();
     
-    _myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
+    _myCanvas = new Canvas(parent, SWT.NO_BACKGROUND | SWT.BORDER);
     _myCanvas.addMouseTrackListener(new MouseTrackAdapter()
     {
 
