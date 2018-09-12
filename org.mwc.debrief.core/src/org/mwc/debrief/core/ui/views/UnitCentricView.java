@@ -10,10 +10,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -65,6 +67,14 @@ public class UnitCentricView extends ViewPart
   private Action _normalPaint;
 
   private Action _snailPaint;
+  
+  private Action _showRings;
+  
+  private Action _showGrid;
+
+  private LocalGridPainter _localGrid;
+
+  private RangeRingShape _rangeRings;
 
   public UnitCentricView()
   {
@@ -80,6 +90,14 @@ public class UnitCentricView extends ViewPart
         _myOverviewChart.update();
       }
     };
+    
+    _localGrid = new LocalGridPainter();
+    _localGrid.setDelta(new WorldDistance(30, WorldDistance.KM));
+    _localGrid.setOrigin(new WorldLocation(0d, 0d, 0d));
+    
+    _rangeRings = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
+        new WorldDistance(5, WorldDistance.KM));
+
   }
 
   private long getSnailLength()
@@ -136,9 +154,82 @@ public class UnitCentricView extends ViewPart
     fillLocalPullDown(bars.getMenuManager());
     fillLocalToolBar(bars.getToolBarManager());
   }
+  
+  private static interface DistanceOperation
+  {
+    public void selected(WorldDistance distance);
+  }
 
+  private class DistanceAction extends Action
+  {
+
+    private final WorldDistance _distance;
+    private DistanceOperation _operation;
+
+    public DistanceAction(String title, WorldDistance distance, DistanceOperation operation)
+    {
+      super(title);
+      _distance = distance;
+      _myOverviewChart.repaint();
+      _operation = operation;
+    }
+
+    @Override
+    public void run()
+    {
+      _operation.selected(_distance);
+      _myOverviewChart.update();
+      Display.getCurrent().asyncExec(new Runnable() {
+
+        @Override
+        public void run()
+        {
+        }
+      });
+    }
+
+  }
+  
   private void fillLocalPullDown(final IMenuManager manager)
   {
+    DistanceOperation setRings = new DistanceOperation()
+    {
+      @Override
+      public void selected(WorldDistance distance)
+      {
+        _rangeRings.setRingWidth(distance);
+      }
+    };
+    MenuManager ringRadii = new MenuManager("Ring radii");
+//    ringRadii.setImageDescriptor(CorePlugin.getImageDescriptor(
+//        "icons/16/range_rings.png"));
+
+    ringRadii.add(new DistanceAction("100m", new WorldDistance(100, WorldDistance.METRES), setRings));
+    ringRadii.add(new DistanceAction("500m", new WorldDistance(500, WorldDistance.METRES), setRings));
+    ringRadii.add(new DistanceAction("1 km", new WorldDistance(1, WorldDistance.KM), setRings));
+    ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1, WorldDistance.NM), setRings));
+    ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5, WorldDistance.NM), setRings));
+    ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10, WorldDistance.NM), setRings));
+    
+    manager.add(ringRadii);
+
+    DistanceOperation setGrid = new DistanceOperation()
+    {
+      @Override
+      public void selected(WorldDistance distance)
+      {
+        _localGrid.setDelta(distance);
+      }
+    };
+    MenuManager gridSize = new MenuManager("Grid size");
+    gridSize.add(new DistanceAction("100m", new WorldDistance(100, WorldDistance.METRES), setGrid));
+    gridSize.add(new DistanceAction("500m", new WorldDistance(500, WorldDistance.METRES), setGrid));
+    gridSize.add(new DistanceAction("1 km", new WorldDistance(1, WorldDistance.KM), setGrid));
+    gridSize.add(new DistanceAction("1 nm", new WorldDistance(1, WorldDistance.NM), setGrid));
+    gridSize.add(new DistanceAction("5 nm", new WorldDistance(5, WorldDistance.NM), setGrid));
+    gridSize.add(new DistanceAction("10 nm", new WorldDistance(10, WorldDistance.NM), setGrid));
+    
+    manager.add(gridSize);
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
@@ -147,6 +238,10 @@ public class UnitCentricView extends ViewPart
     manager.add(_snailPaint);
     manager.add(new Separator());
 
+    manager.add(_showRings);
+    manager.add(_showGrid);
+    
+    manager.add(new Separator());
     manager.add(_fitToWindow);
 
     // and the help link
@@ -215,6 +310,30 @@ public class UnitCentricView extends ViewPart
     _snailPaint.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/snail.png"));
 
+    _showRings = new Action("Show range rings", SWT.CHECK)
+    {
+      @Override
+      public void run()
+      {
+        _myOverviewChart.update();
+      }
+    };
+    _showRings.setChecked(false);
+    _showRings.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/range_rings.png"));
+
+    _showGrid = new Action("Show local grid", SWT.CHECK)
+    {
+      @Override
+      public void run()
+      {
+        _myOverviewChart.update();
+      }
+    };
+    _showGrid.setChecked(false);
+    _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/local_grid.png"));
+    
   }
 
   @Override
@@ -391,8 +510,6 @@ public class UnitCentricView extends ViewPart
     @Override
     public void chartFireSelectionChanged(ISelection sel)
     {
-      // TODO Auto-generated method stub
-
     }
 
     private Point oldEnd;
@@ -453,15 +570,16 @@ public class UnitCentricView extends ViewPart
       
       // do we draw local grid
       dest.setLineWidth(0f);
-      LocalGridPainter lg = new LocalGridPainter();
-      lg.setDelta(new WorldDistance(30, WorldDistance.KM));
-      lg.setOrigin(new WorldLocation(0d, 0d, 0d));
-      lg.paint(dest);
       
-      RangeRingShape rrs = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
-          new WorldDistance(5, WorldDistance.KM));
-      rrs.paint(dest);      
+      if (_showGrid.isChecked())
+      {
+        _localGrid.paint(dest);
+      }
 
+      if (_showRings.isChecked())
+      {
+        _rangeRings.paint(dest);
+      }
 
       // get the time
       final boolean isSnail = _snailPaint.isChecked();
