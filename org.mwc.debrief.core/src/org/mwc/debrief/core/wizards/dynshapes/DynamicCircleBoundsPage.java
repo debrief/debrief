@@ -8,6 +8,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -47,7 +48,6 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     composite.setLayout(new GridLayout(2,false));
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
     GridData gd = new GridData(SWT.BEGINNING,SWT.CENTER,true,false);
-    gd.minimumWidth=125;
     new Label(composite,SWT.NONE).setText("Centre:");
     _txtCentre = new CWorldLocation(composite,SWT.NONE);
     _txtCentre.setLayoutData(gd);
@@ -65,7 +65,8 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     new Label(composite,SWT.NONE).setText("Radius (yds): ");
     _txtRadius = new Text(composite,SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
-    
+    gd.widthHint=205;
+    gd.heightHint=20;
     _txtRadius.setLayoutData(gd);
     _txtRadius.addModifyListener(new ModifyListener()
     {

@@ -12,7 +12,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SegmentEvent;
 import org.eclipse.swt.events.SegmentListener;
 import org.eclipse.swt.events.VerifyEvent;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
@@ -37,17 +38,21 @@ public class CWorldLocation extends Composite
   public CWorldLocation(Composite parent, int style)
   {
     super(parent, style);
-    final RowLayout rows = new RowLayout();
+    final GridLayout rows = new GridLayout(2,true);
     rows.marginLeft = rows.marginRight = 0;
     rows.marginTop = rows.marginBottom = 0;
-    rows.fill = false;
-    rows.spacing = 0;
-    rows.pack = false;
     setLayout(rows);
-
+    GridData gd = new GridData();
+    gd.heightHint=40;
+    setLayoutData(gd);
     myLatitude = new FormattedText(this, SWT.BORDER);
     myLongitude = new FormattedText(this, SWT.BORDER);
-
+    GridData data = new GridData();
+    data.widthHint = 80;
+    
+    myLatitude.getControl().setLayoutData(data);
+    data.widthHint = 85;
+    myLongitude.getControl().setLayoutData(data);
     myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
     myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));
 
