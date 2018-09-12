@@ -344,7 +344,7 @@ public class UnitCentricView extends ViewPart
         };
       }
 
-      walkTree(_theLayers, priTrack, subjectTime, paintIt, getSnailLength());
+      walkTree(_theLayers, primary, subjectTime, paintIt, getSnailLength());
 
       // draw in the ownship marker last, so it's on top
       dest.setLineWidth(2f);
@@ -447,27 +447,31 @@ public class UnitCentricView extends ViewPart
               final Watchable[] nearest = primary.getNearestTo(hisD);
               if (nearest != null && nearest.length > 0)
               {
-                final FixWrapper priFix = (FixWrapper) nearest[0];
-                final long diff = Math.abs(hisD.getDate().getTime()
-                    - subjectTime.getDate().getTime());
-
-                if (nearestInTime == null || diff < nearestDelta)
+                final Watchable nItem = nearest[0];
+                if (nItem instanceof FixWrapper)
                 {
-                  nearestInTime = thisF;
-                  nearestDelta = diff;
-                  nearestOffset = processOffset(priFix, thisF.getLocation(),
-                      origin);
+                  final FixWrapper priFix = (FixWrapper) nItem;
+                  final long diff = Math.abs(hisD.getDate().getTime()
+                      - subjectTime.getDate().getTime());
+
+                  if (nearestInTime == null || diff < nearestDelta)
+                  {
+                    nearestInTime = thisF;
+                    nearestDelta = diff;
+                    nearestOffset = processOffset(priFix, thisF.getLocation(),
+                        origin);
+                  }
+
+                  final WorldLocation pos = processOffset(priFix, thisF
+                      .getLocation(), origin);
+
+                  // work out how far back down the leg we are
+                  final long age = subjectTime.getDate().getTime() - thisF
+                      .getDTG().getDate().getTime();
+                  final double proportion = age / (double) snailLength;
+
+                  doIt.doItTo(thisF, pos, proportion);
                 }
-
-                final WorldLocation pos = processOffset(priFix, thisF
-                    .getLocation(), origin);
-
-                // work out how far back down the leg we are
-                final long age = subjectTime.getDate().getTime() - thisF
-                    .getDTG().getDate().getTime();
-                final double proportion = age / (double) snailLength;
-
-                doIt.doItTo(thisF, pos, proportion);
               }
             }
           }
