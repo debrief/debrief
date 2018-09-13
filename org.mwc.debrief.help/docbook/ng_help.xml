@@ -1930,11 +1930,11 @@ and so on....</programlisting></para>
                   </markup>
                 </screen>
           </para>
-          <para> So, in the previous example we're indicating that the track titled <emphasis>F003</emphasis> should be placed into a folder called <emphasis>red</emphasis>. Note: no other changes are made to the line of REP data, we just provide the indication of the target folder. </para>
+          <para> So, in the previous example we&apos;re indicating that the track titled <emphasis>F003</emphasis> should be placed into a folder called <emphasis>red</emphasis>. Note: no other changes are made to the line of REP data, we just provide the indication of the target folder. </para>
         </sect2>
         <sect2 xml:id="managing_lightweight">
           <title>Managing lightweight tracks</title>
-          <para> In addition to loading lightweight tracks directly from REP files, it's possible to convert conventional heavyweight tracks to/from lightweight tracks (via right-click), and to drag lightweight tracks between folders. </para>
+          <para> In addition to loading lightweight tracks directly from REP files, it&apos;s possible to convert conventional heavyweight tracks to/from lightweight tracks (via right-click), and to drag lightweight tracks between folders. </para>
         </sect2>
       </sect1>
 
@@ -3092,11 +3092,95 @@ and so on....</programlisting></para>
           <para>Note: exporting vector plots via the clipboard is limited to MS Windows PCs. But, an equivalent capability allows you to export the vector plot inside an RTF wrapper via the clipboard for pasteing into any Word Processor (on OSX or Linux). The shortcut for this is <guibutton>&lt;shift>&lt;control>&lt;c></guibutton>. </para>
         </sect2>
       </sect1>
+      <sect1 xml:id="ExportingToPPT">
+        <title>Exporting engagements to <indexterm><primary>PowerPoint</primary><secondary>Export process</secondary></indexterm> PowerPoint</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>It&apos;s quite common for analysts to include Debrief screenshots in PowerPoint presentations. On occasion an analyst will record a screencast of a running engagement, to give a dynamic presentation that conveys more information. But, these video recordings can be very large (10&apos;s of Mb), and while it isn&apos;t easy to email them around, it&apos;s practically impossible to get them to a ship.</para>
+          <para>An alternate mechanism is to represent the vessel tracks as animated objects in PowrPoint. These consume very little disk space (typically a couple of kilobytes) - and can be added to an existing PowerPoint briefing at negligible cost incurred.</para>
+          <para>The engagement is exported to a specically configured donor file, formatted as described in <xref linkend="xml_ppt"/></para>
+        </sect2>
+        <sect2>
+          <title>Export process</title>
+          <sect3>
+            <title>Assigning donor template</title>
+            <para>Debrief injects the exported data is into a donor template. You may use one provided by your organisation, or you can use the sample one provided with Debrief, titled <filename>master_template.pptx</filename>, in the <filename>sample_data/other_formats</filename> folder.</para>
+            <para> Assign the donor template by selecting it in the Debrief preferences window: <figure xml:id="donor_prefs">
+                <title>Specifying donor file location</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/DonorPreference.png" scalefit="1" width="80%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure>
+            </para>
+            <para>Note that the preference window also displays the size of the map frame that it found in the donor template.</para>
+          </sect3>
+          <sect3>
+            <title>Resizing plot area</title>
+            <para>To get an optimal quality of export, the Debrief plot area should be resized to the same number of screen pixels as the map element in the donor template (note the the element dimensions displayed on the preference window above). This resizing is performed by you dynamically resizing. Start by loading your Debrief plot, then double-clicking into any area of blank background. This will open the plot properties in the Properties View. Then drag the editor (and/or) Debrief until the plot size displayed matches that in the donor template. <figure xml:id="ppt_plot_size">
+                <title>Controlling Debrief plot size</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/EditorDims.png" scalefit="1" width="80%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure></para>
+          </sect3>
+          <sect3>
+            <title>Collate data</title>
+            <para>Next step is to prepare your plot, as if you were about to give a live debrief, using Debrief&apos;s debrief capability. Zoom in on the area of interest, and ensure the relevant tracks are visible throughout the entire period of interest.</para>
+            <para>Also configure the Time Controller replay settings, so that the scenario moves forward at time steps relevant to the data of interest. These settings are explained more in <link linkend="time_vcr_controls"/>.</para>
+            <para>It may even be worth pressing Play and performing a trial run through the engagement, as a final check that the data (and time controller properties) are configured in the optimal way to convey your message.</para>
+          </sect3>
+          <sect3>
+            <title>Perform export</title>
+            <para>Once you&apos;re happy with your data, n export is performed using these steps: <orderedlist>
+                <listitem>
+                  <para>Click on the down-arrow next to the <guibutton>Play</guibutton> button, and select <guibutton>Export to PPTX</guibutton>. <inlinemediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/pptExportButton.png" width="100%"/>
+                      </imageobject>
+                    </inlinemediaobject></para>
+                </listitem>
+                <listitem>
+                  <para>Collapse the drop-down menu, if necessary</para>
+                </listitem>
+                <listitem>
+                  <para>Click on <guibutton>Play</guibutton>, and let the scenario unfold. Note that the time controller indicates that it is recording the engagement.</para>
+                </listitem>
+                <listitem>
+                  <para>When you click on <guibutton>Pause</guibutton>, the export to PPT dialog will open.<inlinemediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/PPTExportDialog.png" width="100%"/>
+                      </imageobject>
+                    </inlinemediaobject></para>
+                </listitem>
+                <listitem>
+                  <para>Verify that the export location is correct, and give a filename for the file that gets producued.</para>
+                </listitem>
+                <listitem>
+                  <para>Finally, click on <guibutton>Export</guibutton>. If you clicked on <guibutton>Open exported PPTX</guibutton>, 
+                    the presentation will open.</para>
+                </listitem>
+              </orderedlist>
+              Once you have opened the exported file, you can switch to the <guibutton>Animations</guibutton> tab, 
+              then press <guibutton>Preview</guibutton> to watch/verify the dynamict tracks.
+              <figure xml:id="exported_scenario">
+                <title>Sample of exported scenario</title>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ExportedScenario.png" scalefit="1" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </figure></para>
+          </sect3>
+        </sect2>
+      </sect1>
     </chapter>
 
     <chapter xml:id="symbol_sets">
       <title>Symbol sets</title>
-
       <sect1 xml:id="more_sym_sets">
         <title>Introduction</title>
         <para>A set of symbols is provided within <application>Debrief</application>. The symbols <indexterm>
@@ -5951,14 +6035,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
       </sect1>
       <sect1 xml:id="xml_ppt">
-        <title>Export scenario to <indexterm><primary>PowerPoint</primary><secondary>Export format</secondary></indexterm>PowerPoint</title>
+        <title>Master template for export scenario to <indexterm><primary>PowerPoint</primary><secondary>Master template format</secondary></indexterm>PowerPoint</title>
         <sect2>
           <title>Introduction</title>
-          <para>In Summer 2018 the ability to export an engagement/scenario to MS PowerPoint was introduced. In the past analysis had captured engagement to video, then included this video in a presentation. Hey, in the far distant past export video was a capability build into Debrief - though it as dropped since Debrief wasn't able to compress the videos, and they were huge.</para>
+          <para>In Summer 2018 the ability to export an engagement/scenario to MS PowerPoint was introduced. In the past analysis had captured engagement to video, then included this video in a presentation. Hey, in the far distant past export video was a capability build into Debrief - though it as dropped since Debrief wasn&apos;t able to compress the videos, and they were huge.</para>
           <para>The new strategy involves capturing the screen coordinates of scenario participants while Debrief is playing through an engagement, then injecting them as an animation into a specially formatted donor PowerPoint file.</para>
           <para>This section will introduce the donor template file, and how to collate/maintain it.</para>
-          <para>The donor file includes the following elements (named as specified), used as in the image below it: 
-            <variablelist xml:id="donor_elements" spacing="compact">
+          <para>The donor file includes the following elements (named as specified), used as in the image below it: <variablelist xml:id="donor_elements" spacing="compact">
               <title>Designated elements in template file</title>
               <varlistentry>
                 <term>Map Frame</term>
@@ -6012,8 +6095,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
         <sect2 xml:id="PPTX_FolderStructure">
           <title>Folder structure</title>
-          <para>A <filename>pptx</filename> file is actually a renamed <filename>zip</filename> archive. The archive contains a series of folders/files, of which we are interested in two:
-            <figure xml:id="PPTX_FolderStructureDiag">
+          <para>A <filename>pptx</filename> file is actually a renamed <filename>zip</filename> archive. The archive contains a series of folders/files, of which we are interested in two: <figure xml:id="PPTX_FolderStructureDiag">
               <title>PowerPoint folder structure</title>
               <screenshot>
                 <mediaobject>
@@ -6027,22 +6109,20 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <varlistentry>
                 <term>Overall presentation</term>
                 <listitem>
-                  <para>This document contains metadata relating to the whole presentation, including the slide
-                    dimensions.  The slide dimensions are signficant since some element positioning is performed relative
-                    to the size of the slide<screenshot>
-                    <mediaobject>
-                      <imageobject>
-                        <imagedata fileref="figures/SlideDimensions.png" width="100%"/>
-                      </imageobject>
-                    </mediaobject>
-                  </screenshot> </para>
+                  <para>This document contains metadata relating to the whole presentation, including the slide dimensions. The slide dimensions are signficant since some element positioning is performed relative to the size of the slide<screenshot>
+                      <mediaobject>
+                        <imageobject>
+                          <imagedata fileref="figures/SlideDimensions.png" width="100%"/>
+                        </imageobject>
+                      </mediaobject>
+                    </screenshot>
+                  </para>
                 </listitem>
               </varlistentry>
               <varlistentry>
                 <term>Master slide</term>
                 <listitem>
-                  <para>This is the document that represents the specific slide that we&apos;re writing into, and it
-                    contains the named elements detailed above in <xref linkend="donor_elements"/></para>
+                  <para>This is the document that represents the specific slide that we&apos;re writing into, and it contains the named elements detailed above in <xref linkend="donor_elements"/></para>
                 </listitem>
               </varlistentry>
             </variablelist>
@@ -6050,16 +6130,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         </sect2>
         <sect2>
           <title>Master slide</title>
-          <para>Significant elements in the master slide are denoted using their <code>name</code> attribute:
-            <screenshot>
+          <para>Significant elements in the master slide are denoted using their <code>name</code> attribute: <screenshot>
               <mediaobject>
                 <imageobject>
                   <imagedata fileref="figures/ElementName.png" width="100%"/>
                 </imageobject>
               </mediaobject>
-            </screenshot>
-            The donor file is built using the following process:
-            <orderedlist>
+            </screenshot> The donor file is built using the following process: <orderedlist>
               <listitem>
                 <para>Create a one-slide presentation that contains the elements described in the earlier table</para>
               </listitem>
@@ -6070,11 +6147,10 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <para>Expand the zip-file into a new folder (probably via right-click)</para>
               </listitem>
               <listitem>
-                <para>Navigat to the slide1.xml file, located in the folder as detailed above in <xref linkend="PPTX_FolderStructure" /></para>
+                <para>Navigat to the slide1.xml file, located in the folder as detailed above in <xref linkend="PPTX_FolderStructure"/></para>
               </listitem>
               <listitem>
-                <para>Work through each required element, naming the relevant xml element using the ids listed earlier.  Finding the 
-                relevant elements in the XML file can be made easier by inserting recognisable blocks (<emphasis>Trumpton</emphasis>) of text into the element using PowerPoint, then looking for that text in the XML editor.</para>
+                <para>Work through each required element, naming the relevant xml element using the ids listed earlier. Finding the relevant elements in the XML file can be made easier by inserting recognisable blocks (<emphasis>Trumpton</emphasis>) of text into the element using PowerPoint, then looking for that text in the XML editor.</para>
               </listitem>
               <listitem>
                 <para>Re-package the folder into a zip-file</para>
@@ -6082,18 +6158,17 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <listitem>
                 <para>Rename the .<filename>zip</filename> file back to .<filename>pptx</filename></para>
               </listitem>
-            </orderedlist>            
+            </orderedlist>
           </para>
-          <para>One the master slide has been produced, use Debrief preferences to indicate its location:
-            <screenshot>
+          <para>One the master slide has been produced, use Debrief preferences to indicate its location: <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/SlideLocation.png" width="100%"/>
+                  <imagedata fileref="figures/DonorPreference.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
           </para>
-          <para>Note the <emphasis>Map element dimensions</emphasis> attribute in the above screenshot.  Once a master template has been specified, the map element dimensions are retrieved.  This is to allow the analyst to size the Debrief plot to the same dimensions, which will ensure the highest quality animated export - since the Debrief Plot and the target rectangular frame will be of identical proportions.</para>
+          <para>Note the <emphasis>Map element dimensions</emphasis> attribute in the above screenshot. Once a master template has been specified, the map element dimensions are retrieved. This is to allow the analyst to size the Debrief plot to the same dimensions, which will ensure the highest quality animated export - since the Debrief Plot and the target rectangular frame will be of identical proportions.</para>
         </sect2>
       </sect1>
     </chapter>
