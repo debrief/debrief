@@ -45,32 +45,8 @@ import MWC.TacticalData.TrackDataProvider;
 public class UnitCentricView extends ViewPart
 {
 
-  private class PeriodAction extends Action
-  {
-
-    private final long _period;
-    private final PeriodOperation _operation;
-
-    public PeriodAction(final String title, final long period,
-        final PeriodOperation operation)
-    {
-      super(title);
-      _period = period;
-      _myOverviewChart.repaint();
-      _operation = operation;
-    }
-
-    @Override
-    public void run()
-    {
-      _operation.selected(_period);
-      _myOverviewChart.update();
-    }
-  }
-
   private class DistanceAction extends Action
   {
-
     private final WorldDistance _distance;
     private final DistanceOperation _operation;
 
@@ -89,11 +65,6 @@ public class UnitCentricView extends ViewPart
       _operation.selected(_distance);
       _myOverviewChart.update();
     }
-  }
-
-  private static interface PeriodOperation
-  {
-    public void selected(long period);
   }
 
   private static interface DistanceOperation
@@ -124,6 +95,33 @@ public class UnitCentricView extends ViewPart
      */
     void processNearest(final FixWrapper nearestInTime,
         final WorldLocation nearestOffset);
+  }
+
+  private class PeriodAction extends Action
+  {
+    private final long _period;
+    private final PeriodOperation _operation;
+
+    public PeriodAction(final String title, final long period,
+        final PeriodOperation operation)
+    {
+      super(title);
+      _period = period;
+      _myOverviewChart.repaint();
+      _operation = operation;
+    }
+
+    @Override
+    public void run()
+    {
+      _operation.selected(_period);
+      _myOverviewChart.update();
+    }
+  }
+
+  private static interface PeriodOperation
+  {
+    public void selected(long period);
   }
 
   private class UnitCentricChart extends SWTChart
@@ -176,8 +174,8 @@ public class UnitCentricView extends ViewPart
               // ok, ignore
             }
           };
-          walkTree(theLayers, primary, _timeProvider
-              .getTime(), getBounds, getSnailLength());
+          walkTree(theLayers, primary, _timeProvider.getTime(), getBounds,
+              getSnailLength());
 
           // ok, store the data area
           _myOverviewChart.getCanvas().getProjection().setDataArea(area);
@@ -397,11 +395,11 @@ public class UnitCentricView extends ViewPart
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
-    OperateFunction checkIt = new OperateFunction()
+    final OperateFunction checkIt = new OperateFunction()
     {
 
       @Override
-      public void operateOn(Editable item)
+      public void operateOn(final Editable item)
       {
         final LightweightTrackWrapper other = (LightweightTrackWrapper) item;
         if (!other.getVisible())
@@ -687,7 +685,6 @@ public class UnitCentricView extends ViewPart
    */
   protected void fitTargetToWindow()
   {
-    // TODO: resize to show all data
     _myOverviewChart.getCanvas().getProjection().setDataArea(null);
 
     // now, redraw our rectable
@@ -806,8 +803,7 @@ public class UnitCentricView extends ViewPart
   @Override
   public void setFocus()
   {
-    // TODO Auto-generated method stub
-
+    _myOverviewChart.getCanvasControl().setFocus();
   }
 
   /**
