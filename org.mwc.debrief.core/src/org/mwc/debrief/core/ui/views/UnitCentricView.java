@@ -196,7 +196,91 @@ public class UnitCentricView extends ViewPart
       final float newBlue = color.getBlue() + blue * proportion;
       return new Color((int) newRed, (int) newGreen, (int) newBlue);
     }
+    
+    private class SnailPaintOperation implements IOperateOnMatch
+    {
+    
+        private final CanvasType dest;
 
+        private SnailPaintOperation(final CanvasType theDest)
+        {
+          this.dest = theDest;
+        }
+        
+        @Override
+        public void doItTo(final FixWrapper rawSec,
+            final WorldLocation offsetLocation, final double proportion)
+        {
+          dest.setLineWidth(3f);
+
+          // sort out the color
+          final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
+              _myOverviewChart.getCanvas().getBackgroundColor());
+
+          dest.setColor(newCol);
+
+          rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+          // and the line
+          final Point newEnd = dest.toScreen(offsetLocation);
+          if (oldEnd != null)
+          {
+            dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+          }
+          oldEnd = new Point(newEnd);
+        }
+
+        @Override
+        public void processNearest(final FixWrapper nearestInTime,
+            final WorldLocation nearestOffset)
+        {
+          // reset the last object pointer
+          oldEnd = null;
+        }
+    }
+    
+    private class NormalPaintOperation implements IOperateOnMatch
+    {
+      private final CanvasType dest;
+
+      private NormalPaintOperation(final CanvasType theDest)
+      {
+        this.dest = theDest;
+      }
+
+        @Override
+        public void doItTo(final FixWrapper rawSec,
+            final WorldLocation offsetLocation, final double proportion)
+        {
+          dest.setLineWidth(2f);
+          dest.setColor(rawSec.getColor());
+
+          rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+          // and the line
+          final Point newEnd = dest.toScreen(offsetLocation);
+          if (oldEnd != null)
+          {
+            dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+          }
+          //
+          oldEnd = new Point(newEnd);
+        }
+
+        @Override
+        public void processNearest(final FixWrapper nearestInTime,
+            final WorldLocation nearestOffset)
+        {
+          dest.setLineWidth(3);
+          dest.setColor(Color.DARK_GRAY);
+          final Point pt = dest.toScreen(nearestOffset);
+          dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+
+          // reset the last object pointer
+          oldEnd = null;
+        }
+    }
+    
     @Override
     public void paintMe(final CanvasType dest)
     {
@@ -211,6 +295,7 @@ public class UnitCentricView extends ViewPart
       {
         CorePlugin.logError(IStatus.WARNING,
             "Unit centric view is missing track data provider", null);
+        return;
       }
 
       // ok, check we have primary track
@@ -220,12 +305,14 @@ public class UnitCentricView extends ViewPart
             "Unit centric view is missing primary track", null);
         CorePlugin.showMessage("Unit Centric View",
             "Please assign a primary track");
+        return;
       }
 
       if (_timeProvider == null)
       {
         CorePlugin.logError(IStatus.WARNING,
             "Unit centric view is missing time provider", null);
+        return;
       }
 
       checkDataCoverage(_theLayers);
@@ -270,76 +357,11 @@ public class UnitCentricView extends ViewPart
       final IOperateOnMatch paintIt;
       if (isSnail)
       {
-        paintIt = new IOperateOnMatch()
-        {
-          @Override
-          public void doItTo(final FixWrapper rawSec,
-              final WorldLocation offsetLocation, final double proportion)
-          {
-            dest.setLineWidth(3f);
-
-            // sort out the color
-            final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
-                _myOverviewChart.getCanvas().getBackgroundColor());
-
-            dest.setColor(newCol);
-
-            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-            // and the line
-            final Point newEnd = dest.toScreen(offsetLocation);
-            if (oldEnd != null)
-            {
-              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-            }
-            oldEnd = new Point(newEnd);
-          }
-
-          @Override
-          public void processNearest(final FixWrapper nearestInTime,
-              final WorldLocation nearestOffset)
-          {
-            // reset the last object pointer
-            oldEnd = null;
-          }
-        };
+        paintIt = new SnailPaintOperation(dest);
       }
       else
       {
-        paintIt = new IOperateOnMatch()
-        {
-          @Override
-          public void doItTo(final FixWrapper rawSec,
-              final WorldLocation offsetLocation, final double proportion)
-          {
-            dest.setLineWidth(2f);
-            dest.setColor(rawSec.getColor());
-
-            rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-            // and the line
-            final Point newEnd = dest.toScreen(offsetLocation);
-            if (oldEnd != null)
-            {
-              dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-            }
-            //
-            oldEnd = new Point(newEnd);
-          }
-
-          @Override
-          public void processNearest(final FixWrapper nearestInTime,
-              final WorldLocation nearestOffset)
-          {
-            dest.setLineWidth(3);
-            dest.setColor(Color.DARK_GRAY);
-            final Point pt = dest.toScreen(nearestOffset);
-            dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
-
-            // reset the last object pointer
-            oldEnd = null;
-          }
-        };
+        paintIt = new NormalPaintOperation(dest);
       }
 
       walkTree(_theLayers, primary, subjectTime, paintIt, getSnailLength());
