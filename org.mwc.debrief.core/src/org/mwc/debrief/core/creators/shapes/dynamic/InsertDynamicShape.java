@@ -16,7 +16,10 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
 
+import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Layers;
@@ -32,7 +35,7 @@ import MWC.GenericData.WorldLocation;
 public abstract class InsertDynamicShape extends CoreInsertShape
 {
   @Override
-  protected Plottable getPlottable(PlainChart theChart)
+  protected Plottable getPlottable(final PlainChart theChart)
   {
     final Layers theLayers = theChart.getLayers();
     final Date startDate = getTimeControllerDate(theLayers,true);
@@ -41,20 +44,38 @@ public abstract class InsertDynamicShape extends CoreInsertShape
     
   }
   
-  protected abstract DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate);
+  protected DynamicShapeWrapper getDynamicShape(final Date startDate, final Date endDate)
+  {
+    final DynamicShapeWizard wizard = getWizard(startDate, endDate);
+    final WizardDialog wd = new WizardDialog(getShell(), wizard);
+    final DynamicShapeWrapper thisShape;
+    if(wd.open()==Window.OK) {
+      
+      //get all param details from the wizard now.
+      thisShape = wizard.getDynamicShapeWrapper();
+    }
+    else {
+      thisShape = null;
+    }
+    return thisShape;
+  }
+  
+  abstract protected DynamicShapeWizard getWizard(final Date startDate, final Date endDate);
 
   @Override
   protected PlainShape getShape(WorldLocation centre)
   {
-    // TODO Auto-generated method stub
-    return null;
+    // not implemented, since we use our own getPlottable() method
+    throw new IllegalArgumentException(
+        "getShape() should not be called for this class. Not implemented");
   }
 
   @Override
   protected String getShapeName()
   {
-    // TODO Auto-generated method stub
-    return null;
+    // not implemented, since we use our own getPlottable() method
+    throw new IllegalArgumentException(
+        "getShapeName() should not be called for this class. Not implemented");
   }
 
 }

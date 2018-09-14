@@ -16,8 +16,6 @@
 import java.awt.Color;
 import java.util.Date;
 
-import org.eclipse.jface.wizard.Wizard;
-
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.PolygonShape;
@@ -27,7 +25,7 @@ import MWC.GenericData.HiResDate;
  * @author Ayesha
  *
  */
-public class DynamicPolygonWizard extends Wizard
+public class DynamicPolygonWizard extends DynamicShapeWizard 
 {
 
   private DynamicShapeTimingsWizardPage _shapeTimingsPage;
@@ -76,6 +74,7 @@ public class DynamicPolygonWizard extends Wizard
     return true;
   }
   
+  @Override
   public DynamicShapeWrapper getDynamicShapeWrapper()
   {
     return _dynamicShape;
