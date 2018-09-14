@@ -77,7 +77,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     new Label(composite,SWT.NONE).setText("Radius (yds): ");
     _txtRadius = new Text(composite,SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
-    gd.minimumWidth=215;
+    gd.minimumWidth=245;
     gd.heightHint=20;
     _txtRadius.setLayoutData(gd);
     _txtRadius.addModifyListener(new ModifyListener()
