@@ -929,12 +929,6 @@ public final class SensorContactWrapper extends
    */
   public final WorldLocation getCalculatedOrigin(final WatchableList parent)
   {
-    WatchableList theParent = parent;
-    if (theParent == null)
-    {
-      theParent = _mySensor.getHost();
-    }
-
     if ((_calculatedOrigin == null))
     {
       if (_absoluteOrigin != null)
@@ -944,9 +938,10 @@ public final class SensorContactWrapper extends
       }
       else
       {
+        final WatchableList theParent = parent != null ? parent : _mySensor.getHost();
+
         if (theParent != null)
         {
-
           // better calculate it ourselves then
           final TrackWrapper parentTrack = (TrackWrapper) theParent;
 

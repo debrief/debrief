@@ -10,21 +10,40 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.data.time.DateRange;
@@ -43,25 +62,170 @@ import org.mwc.debrief.track_shift.views.StackedDotHelper.SetBackgroundShade;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers.OperateFunction;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
+  public static interface SelectSource
+  {
+    public void select(SensorWrapper source);
+  }
+
+  private static interface SourceProvider
+  {
+    public List<SensorWrapper> getSources();
+  }
+
   private static final int NUM_DOPPLER_STEPS = 30;
+
   private Action calcBaseFreq;
+
+  protected SensorWrapper _activeSource;
 
   public FrequencyResidualsView()
   {
     super(false, true);
   }
 
-  @Override
-  protected void addExtras(final IToolBarManager toolBarManager)
+  private class ToolbarListener implements Listener
   {
-    super.addExtras(toolBarManager);
+    final private ToolBar toolBar;
+    final private SourceProvider sourceProvider;
+    final private ToolItem item;
+
+    private ToolbarListener(ToolBar toolBar, SourceProvider sourceProvider, ToolItem item)
+    {
+      this.toolBar = toolBar;
+      this.sourceProvider = sourceProvider;
+      this.item = item;
+    }
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+
+      final List<SensorWrapper> sources = sourceProvider.getSources();
+      if (sources != null && sources.size() > 0)
+      {
+        if (_activeSource != null)
+        {
+          // ok, we need to include option to clear the active sensor
+          final MenuItem clearItem = new MenuItem(menu, SWT.RADIO);
+          clearItem.setText("Clear active source");
+          clearItem.addSelectionListener(new SelectionAdapter()
+          {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+              _activeSource = null;
+              updateData(false);
+            }
+          });
+        }
+
+        final DecimalFormat df = new DecimalFormat("0.00");
+        for (final SensorWrapper sensor : sources)
+        {
+          final String host = sensor.getHost().getName();
+          final String name = host + "/" + sensor.getName() + " (" + df
+              .format(sensor.getBaseFrequency()) + " Hz)";
+
+          final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+          mitem.setText(name);
+          mitem.setSelection(sensor.equals(_activeSource));
+          mitem.addSelectionListener(new SelectionAdapter()
+          {
+            @Override
+            public void widgetSelected(final SelectionEvent e)
+            {
+              _activeSource = sensor;
+
+              // trigger update of doublets
+              updateData(false);
+            }
+          });
+        }
+      }
+      else
+      {
+        final MenuItem mitem = new MenuItem(menu, SWT.PUSH);
+        mitem.setText("No sources found");
+        mitem.addSelectionListener(new SelectionAdapter()
+        {
+          @Override
+          public void widgetSelected(final SelectionEvent e)
+          {
+            System.out.println("no sources pressed");
+          }
+        });
+      }
+
+      // -------------------------------
+
+      // menu location
+      final Rectangle rect = item.getBounds();
+      Point pt = new Point(rect.x, rect.y + rect.height);
+      pt = toolBar.toDisplay(pt);
+      menu.setLocation(pt.x, pt.y);
+      menu.setVisible(true);
+    }
+  }
+
+  private class SourceDropdown extends ControlContribution
+  {
+    private final SourceProvider sourceProvider;
+
+    private SourceDropdown(final SourceProvider provider)
+    {
+      super("Acoustic Source");
+      sourceProvider = provider;
+    }
+
+    @Override
+    protected Control createControl(Composite parent)
+    {
+      final Composite body = new Composite(parent, SWT.NONE);
+
+      body.setLayout(new FillLayout());
+      body.setSize(24, 24);
+      final ToolBar toolBar = new ToolBar(body, SWT.None);
+      final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+      item.setToolTipText("Acoustic Source");
+      item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+          .getImageDescriptor("icons/24/pulse.png")));
+      
+      Listener itemListener = new ToolbarListener(toolBar, sourceProvider, item);     
+      item.addListener(SWT.Selection, itemListener);
+      return body;
+    }
+  }
+
+  @Override
+  protected void addToolbarExtras(final IToolBarManager toolBarManager)
+  {
+    super.addToolbarExtras(toolBarManager);
+
     toolBarManager.add(calcBaseFreq);
+
+    final SourceProvider sourceProvider = new SourceProvider()
+    {
+      @Override
+      public List<SensorWrapper> getSources()
+      {
+        return getPotentialSources();
+      }
+    };
+    
+    final IContributionItem dropdown = new SourceDropdown(sourceProvider);
+
+    toolBarManager.add(dropdown);
   }
 
   @Override
@@ -85,7 +249,8 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     final long step = (end - start) / NUM_DOPPLER_STEPS;
     for (long t = start; t <= end; t += step)
     {
-      res.add(new TimeSeriesDataItem(new FixedMillisecond(t), curve.valueAt(t)));
+      res.add(new TimeSeriesDataItem(new FixedMillisecond(t), curve.valueAt(
+          t)));
     }
     return res;
   }
@@ -93,10 +258,10 @@ public class FrequencyResidualsView extends BaseStackedDotsView
   protected void calculateBaseFreq()
   {
     // get the currently visible data
-    final TimeSeriesCollection lineData =
-        (TimeSeriesCollection) _linePlot.getDataset();
-    final TimeSeries measured =
-        lineData.getSeries(StackedDotHelper.MEASURED_DATASET);
+    final TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
+        .getDataset();
+    final TimeSeries measured = lineData.getSeries(
+        StackedDotHelper.MEASURED_DATASET);
 
     if (measured != null)
     {
@@ -104,12 +269,12 @@ public class FrequencyResidualsView extends BaseStackedDotsView
       final ArrayList<Double> freqs = new ArrayList<Double>();
 
       // get the visible time range
-      final DateRange curRange =
-          (DateRange) _linePlot.getDomainAxis().getRange();
+      final DateRange curRange = (DateRange) _linePlot.getDomainAxis()
+          .getRange();
 
       // put the data into the storage structures
-      final SensorWrapper subjectSensor =
-          collateData(measured, times, freqs, curRange);
+      final SensorWrapper subjectSensor = collateData(measured, times, freqs,
+          curRange);
 
       if (!times.isEmpty())
       {
@@ -136,9 +301,8 @@ public class FrequencyResidualsView extends BaseStackedDotsView
         if (subjectSensor != null)
         {
           oldFreq = subjectSensor.getBaseFrequency();
-          message =
-              fMessage + "\n" + "Updating base frequency for "
-                  + subjectSensor.getName();
+          message = fMessage + "\n" + "Updating base frequency for "
+              + subjectSensor.getName();
         }
         else
         {
@@ -190,8 +354,8 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 
         if (subjectSensor == null)
         {
-          final SensorContactWrapper cut =
-              (SensorContactWrapper) next.getPayload();
+          final SensorContactWrapper cut = (SensorContactWrapper) next
+              .getPayload();
           subjectSensor = cut.getSensor();
         }
       }
@@ -225,6 +389,38 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     return null;
   }
 
+  private List<SensorWrapper> getPotentialSources()
+  {
+    final List<SensorWrapper> res = new ArrayList<SensorWrapper>();
+    if (_ourLayersSubject != null)
+    {
+      final OperateFunction handleMe = new OperateFunction()
+      {
+
+        @Override
+        public void operateOn(final Editable item)
+        {
+          final TrackWrapper track = (TrackWrapper) item;
+          final BaseLayer sensors = track.getSensors();
+          if (sensors != null)
+          {
+            final Enumeration<Editable> sIter = sensors.elements();
+            while (sIter.hasMoreElements())
+            {
+              final SensorWrapper sensor = (SensorWrapper) sIter.nextElement();
+              if (sensor.getBaseFrequency() > 0)
+              {
+                res.add(sensor);
+              }
+            }
+          }
+        }
+      };
+      _ourLayersSubject.walkVisibleItems(TrackWrapper.class, handleMe);
+    }
+    return res;
+  }
+
   @Override
   protected String getType()
   {
@@ -243,22 +439,22 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     super.makeActions();
 
     // now frequency calculator
-    calcBaseFreq =
-        new Action("Calculate base frequency", IAction.AS_PUSH_BUTTON)
-        {
-          @Override
-          public void run()
-          {
-            super.run();
+    calcBaseFreq = new Action("Calculate base frequency",
+        IAction.AS_PUSH_BUTTON)
+    {
+      @Override
+      public void run()
+      {
+        super.run();
 
-            calculateBaseFreq();
-          }
-        };
+        calculateBaseFreq();
+      }
+    };
     calcBaseFreq.setChecked(true);
-    calcBaseFreq
-        .setToolTipText("Calculate the base frequency of the visible frequency cuts");
-    calcBaseFreq.setImageDescriptor(CorePlugin
-        .getImageDescriptor("icons/24/f_nought.png"));
+    calcBaseFreq.setToolTipText(
+        "Calculate the base frequency of the visible frequency cuts");
+    calcBaseFreq.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/24/f_nought.png"));
   }
 
   public void showMessage(final String title, final String message)
@@ -283,30 +479,33 @@ public class FrequencyResidualsView extends BaseStackedDotsView
     // regenerate the interpolated fix, to ensure we're using up-to-date
     // values
     final boolean updateDoubletsVal = true;
-    
-    final TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot.getDataset();
-    final TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot.getDataset();
+
+    final TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot
+        .getDataset();
+    final TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
+        .getDataset();
 
     final SetBackgroundShade backgroundShader = new SetBackgroundShade()
     {
-      
+
       @Override
-      public void setShade(Paint errorColor)
+      public void setShade(final Paint errorColor)
       {
         _dotPlot.setBackgroundPaint(errorColor);
       }
     };
-    
+
     // have we been created?
     if (_holder == null || _holder.isDisposed())
     {
       return;
     }
-    
+
     // update the current datasets
-    _myHelper.updateFrequencyData(errorData, lineData, _switchableTrackDataProvider,
-        _onlyVisible.isChecked(), this, updateDoubletsVal,
-        backgroundShader, (ColourStandardXYItemRenderer) _linePlot.getRenderer());
+    _myHelper.updateFrequencyData(errorData, lineData,
+        _switchableTrackDataProvider, _onlyVisible.isChecked(), this,
+        updateDoubletsVal, backgroundShader,
+        (ColourStandardXYItemRenderer) _linePlot.getRenderer(), _activeSource);
   }
 
 }

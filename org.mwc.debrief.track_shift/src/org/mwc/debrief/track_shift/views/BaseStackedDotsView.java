@@ -51,7 +51,9 @@ import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -64,9 +66,18 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IMemento;
@@ -715,7 +726,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @param toolBarManager
    */
-  protected void addExtras(final IToolBarManager toolBarManager)
+  protected void addToolbarExtras(final IToolBarManager toolBarManager)
   {
   }
 
@@ -2062,6 +2073,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     accuracyMenu.add(_precisionTwo);
     accuracyMenu.add(_precisionThree);
 
+    addPullDownExtras(manager);
+
     // and the help
     manager.add(new Separator());
     manager.add(CorePlugin.createOpenHelpAction(
@@ -2069,6 +2082,69 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
+  protected void addPullDownExtras(IMenuManager manager)
+  {
+
+  }
+
+  private class DragTrackSegment extends ControlContribution
+  {
+    final private Vector<Action> dragModeActions;
+
+    public DragTrackSegment(Vector<Action> actions)
+    {
+      super("Drag Track Segment");
+      this.dragModeActions = actions;
+    }
+    
+    protected Control createControl(Composite parent)
+    {
+      Composite body = new Composite(parent, SWT.NONE);
+
+      body.setLayout(new FillLayout());
+      body.setSize(24, 24);
+      final ToolBar toolBar = new ToolBar(body, SWT.None);
+      final ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+      item.setToolTipText("Drag Track Segment");
+      item.setImage(CorePlugin.getImageFromRegistry(CorePlugin
+          .getImageDescriptor("icons/24/SelectSegment.png")));
+      item.addListener(SWT.Selection, new Listener()
+      {
+        @Override
+        public void handleEvent(Event event)
+        {
+          final Menu menu = new Menu(toolBar.getShell(), SWT.POP_UP);
+          if (dragModeActions != null && dragModeActions.size() > 0)
+          {
+            for (final Action action : dragModeActions)
+            {
+              final MenuItem mitem = new MenuItem(menu, SWT.RADIO);
+              mitem.setText(action.getText());
+              mitem.setSelection(action.isChecked());
+              mitem.addSelectionListener(new SelectionAdapter()
+              {
+                @Override
+                public void widgetSelected(SelectionEvent e)
+                {
+                  action.run();
+                }
+              });
+            }
+          }
+
+          // menu location
+          org.eclipse.swt.graphics.Rectangle rect = item.getBounds();
+          org.eclipse.swt.graphics.Point pt = new org.eclipse.swt.graphics.Point(rect.x, rect.y + rect.height);
+          pt = toolBar.toDisplay(pt);
+          menu.setLocation(pt.x, pt.y);
+          menu.setVisible(true);
+        }
+      });
+      return body;
+
+    }
+  }
+  
   protected void fillLocalToolBar(final IToolBarManager toolBarManager)
   {
     // Note: we have undo/redo buttons on the toolbar. Let's not bother with them here, there are
@@ -2113,18 +2189,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     // ok, insert separator
     toolBarManager.add(new Separator());
 
-    addExtras(toolBarManager);
+    addToolbarExtras(toolBarManager);
 
     // and a separator
     toolBarManager.add(new Separator());
 
-    final Vector<Action> actions = DragSegment.getDragModes();
-    for (final Iterator<Action> iterator = actions.iterator(); iterator
-        .hasNext();)
-    {
-      final Action action = iterator.next();
-      toolBarManager.add(action);
-    }
+    // add Drop down
+
+    final Vector<Action> dragModeActions = DragSegment.getDragModes();
+    IContributionItem dropdown = new DragTrackSegment(dragModeActions);
+    toolBarManager.add(dropdown);
+
   }
 
   /**
@@ -2186,15 +2261,15 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final double RMS_ZIG_RATIO;
     switch (slicePrecision)
     {
-      case LOW:
-        RMS_ZIG_RATIO = 20;
-        break;
-      case MEDIUM:
-      default:
-        RMS_ZIG_RATIO = 10d;
-        break;
-      case HIGH:
-        RMS_ZIG_RATIO = 5;
+    case LOW:
+      RMS_ZIG_RATIO = 20;
+      break;
+    case MEDIUM:
+    default:
+      RMS_ZIG_RATIO = 10d;
+      break;
+    case HIGH:
+      RMS_ZIG_RATIO = 5;
     }
     return RMS_ZIG_RATIO;
   }

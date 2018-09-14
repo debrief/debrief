@@ -14,8 +14,10 @@
  */
 package Debrief.Wrappers.DynamicTrackShapes;
 
+import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.Enumeration;
 
 import Debrief.Wrappers.TrackWrapper;
@@ -24,13 +26,15 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 
 public class DynamicTrackShapeSetWrapper extends BaseLayer implements
-    Cloneable, DynamicPlottable
+    Cloneable, DynamicPlottable, WatchableList
 {
   // //////////////////////////////////////////////////////////////////////////
   // embedded class, used for editing the projection
@@ -366,6 +370,58 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     {
       add(item);
     }
+  }
+
+  @Override
+  public Color getColor()
+  {
+    return Color.RED;
+  }
+
+  @Override
+  public HiResDate getStartDTG()
+  {
+    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
+  @Override
+  public HiResDate getEndDTG()
+  {
+    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
+  @Override
+  public Watchable[] getNearestTo(HiResDate DTG)
+  {
+    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
+  @Override
+  public void filterListTo(HiResDate start, HiResDate end)
+  {
+    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    Enumeration<Editable> iter = elements();
+    while(iter.hasMoreElements())
+    {
+      final DynamicTrackShapeWrapper item = (DynamicTrackShapeWrapper) iter.nextElement();
+      final HiResDate thisStart = item.getStartDTG();
+      if(thisStart != null)
+      {
+        item.setVisible(period.contains(thisStart));
+      }
+    }
+  }
+
+  @Override
+  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
+  {
+    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
+  @Override
+  public PlainSymbol getSnailShape()
+  {
+    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
 }

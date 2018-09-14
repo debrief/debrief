@@ -4,6 +4,15 @@
 
     <extension point="org.eclipse.ui.views">
         <category id="org.mwc.debrief.core.DebriefCategory" name="Debrief"/>
+        <view
+              allowMultiple="false"
+              category="org.mwc.cmap.plotViewer.CMAP"
+              class="org.mwc.debrief.core.ui.views.UnitCentricView"
+              icon="icons/16/compass.png"
+              id="org.mwc.debrief.core.view.unit_centric"
+              name="Unit Centric View"
+              restorable="true">
+        </view>
     </extension>
 
     <extension point="org.eclipse.ui.editors">
