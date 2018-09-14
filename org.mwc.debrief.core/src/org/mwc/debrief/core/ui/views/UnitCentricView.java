@@ -428,7 +428,7 @@ public class UnitCentricView extends ViewPart
           return;
 
         // is it the primary?
-        if (other != primary)
+        if (!other.equals(primary))
         {
           // keep track of the fix nearest to the required DTG
           FixWrapper nearestInTime = null;
@@ -845,7 +845,7 @@ public class UnitCentricView extends ViewPart
             final Layers provider = (Layers) part;
 
             // is this different to our current one?
-            if (provider != _targetLayers)
+            if (!provider.equals(_targetLayers))
             {
               // ok, start listening to the new one
               _targetLayers = provider;
@@ -860,7 +860,7 @@ public class UnitCentricView extends ViewPart
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            if (part == _targetLayers)
+            if (part.equals(_targetLayers))
             {
               // cancel the listeners
               plotSelected(null, null);
@@ -881,7 +881,7 @@ public class UnitCentricView extends ViewPart
             final TrackDataProvider provider = (TrackDataProvider) part;
 
             // is this different to our current one?
-            if (provider != _trackDataProvider)
+            if (!provider.equals(_trackDataProvider))
             {
               // ok, remember it
               _trackDataProvider = provider;
@@ -902,7 +902,7 @@ public class UnitCentricView extends ViewPart
             final TrackDataProvider provider = (TrackDataProvider) part;
 
             // is this our current one?
-            if (provider == _trackDataProvider)
+            if (provider.equals(_trackDataProvider))
             {
               // ok, drop it
               _trackDataProvider = null;
@@ -923,7 +923,7 @@ public class UnitCentricView extends ViewPart
             final TimeProvider provider = (TimeProvider) part;
 
             // is this different to our current one?
-            if (provider != _timeProvider)
+            if (!provider.equals(_timeProvider))
             {
               if (_timeProvider != null)
               {
@@ -950,7 +950,7 @@ public class UnitCentricView extends ViewPart
             final TimeProvider provider = (TimeProvider) part;
 
             // is this our current one?
-            if (provider == _timeProvider && _timeProvider != null)
+            if (provider.equals(_timeProvider) && _timeProvider != null)
             {
               // ditch the old one
               _timeProvider.removeListener(_timeChangeListener,
