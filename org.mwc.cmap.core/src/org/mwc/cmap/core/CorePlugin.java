@@ -153,6 +153,9 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
       "org.mwc.debrief.track_shift.views.StackedDotsView";
   public static final String FREQ_RESIDUALS =
       "org.mwc.debrief.track_shift.views.FrequencyResidualsView";
+  
+  public static final String UNIT_CENTRIC = 
+      "org.mwc.debrief.core.view.unit_centric";
 
   public static final String GRID_EDITOR = "com.pml.grid.editor";
   public static final String POLYGON_EDITOR =
