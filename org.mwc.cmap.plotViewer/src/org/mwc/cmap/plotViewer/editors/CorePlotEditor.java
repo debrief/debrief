@@ -975,7 +975,7 @@ public abstract class CorePlotEditor extends EditorPart implements
    */
   protected SWTChart createTheChart(final Composite parent)
   {
-    final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+    final SWTChart res = new SWTChart(_myLayers, parent,(PlainProjection) _myGeoHandler)
     {
 
       /**
