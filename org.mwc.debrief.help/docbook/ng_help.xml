@@ -8866,7 +8866,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
               <para>In 2017 the Debrief symbology attributes were extended to allow the provision
               of some optional named parameters. The first of these is the specification of the 
               layer into which the annotation should be inserted.  Note: in the initial
-              implementation spaces are not allowed in the entries.</para>
+              implementation spaces are not allowed in the entries. The second of these is the
+              specification of the SVG Symbol to be used in the track.</para>
             </note>
             <table xml:id="debrief_NamedSym">
               <title>Debrief extended symbology data fields</title>
@@ -8895,9 +8896,23 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                             <primary>Track Data</primary><secondary>Lightweight tracks</secondary></indexterm></para>
                     </entry>
                   </row>
+                  <row>
+                    <entry>
+                      <para>[SYMBOL=SVG_ICON_NAME]</para>
+                    </entry>
+                    <entry>
+                      <para>This annotation places the specified icon as a symbol. Note: spaces not allowed.  
+                        Icon name must be the exact name that appears in the SVG Section.</para>
+                    </entry>
+                  </row>
                 </tbody>
               </tgroup>
             </table>
+            Please, take a look at the following example of the extended symbology at use
+            <screen xml:id="extended_symbology_example">            <markup>
+951212 050700.000 NELSON @C[SYMBOL=missile] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
+951212 050701.000 COLLINGWOOD @C[SYMBOL=torpedo,LAYER=Support] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
+            </markup>      </screen>
           </para>
         </sect2>
         <sect2 xml:id="replay_annotation_format">

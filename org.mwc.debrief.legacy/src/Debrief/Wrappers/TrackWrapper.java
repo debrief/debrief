@@ -99,9 +99,9 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * the TrackWrapper maintains the GUI and data attributes of the whole track iteself, but the
  * responsibility for the fixes within the track are demoted to the FixWrapper
  */
-public class TrackWrapper extends LightweightTrackWrapper implements WatchableList,
-    DraggableItem, HasDraggableComponents, ProvidesContiguousElements,
-    ISecondaryTrack, DynamicPlottable
+public class TrackWrapper extends LightweightTrackWrapper implements
+    WatchableList, DraggableItem, HasDraggableComponents,
+    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable
 {
 
   // //////////////////////////////////////
@@ -164,25 +164,22 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
                             FORMAT), displayExpertProp("EndTimeLabels",
                                 "Start/End time labels",
                                 "Whether to label track start/end with 6-figure DTG",
-                                VISIBILITY), displayExpertProp("SymbolColor",
-                                    "Symbol color",
-                                    "the color of the symbol (when used)",
-                                    FORMAT), displayExpertProp(
-                                        "PlotArrayCentre", "Plot array centre",
-                                        "highlight the sensor array centre when non-zero array length provided",
-                                        VISIBILITY), displayExpertProp(
-                                            "TrackFont", "Track font",
-                                            "the track label font", FORMAT),
-            displayExpertProp("NameVisible", "Name visible",
-                "show the track label", VISIBILITY), displayExpertProp(
-                    "PositionsVisible", "Positions visible",
-                    "show individual Positions", VISIBILITY), displayExpertProp(
-                        "NameAtStart", "Name at start",
-                        "whether to show the track name at the start (or end)",
-                        VISIBILITY), displayExpertProp("LinkPositions",
-                            "Link positions",
-                            "whether to join the track points", VISIBILITY),
-            expertProp("Visible", "whether the track is visible", VISIBILITY),
+                                VISIBILITY), displayExpertProp(
+                                    "PlotArrayCentre", "Plot array centre",
+                                    "highlight the sensor array centre when non-zero array length provided",
+                                    VISIBILITY), displayExpertProp("TrackFont",
+                                        "Track font", "the track label font",
+                                        FORMAT), displayExpertProp(
+                                            "NameVisible", "Name visible",
+                                            "show the track label", VISIBILITY),
+            displayExpertProp("PositionsVisible", "Positions visible",
+                "show individual Positions", VISIBILITY), displayExpertProp(
+                    "NameAtStart", "Name at start",
+                    "whether to show the track name at the start (or end)",
+                    VISIBILITY), displayExpertProp("LinkPositions",
+                        "Link positions", "whether to join the track points",
+                        VISIBILITY), expertProp("Visible",
+                            "whether the track is visible", VISIBILITY),
             displayExpertLongProp("NameLocation", "Name location",
                 "relative location of track label", FORMAT,
                 MWC.GUI.Properties.NullableLocationPropertyEditor.class),
@@ -844,7 +841,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    */
   private boolean _LabelAtStart = true;
 
-
   /**
    * whether to show a time label at the start/end of the track
    *
@@ -900,16 +896,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
    */
   transient private int _ptCtr = 0;
 
-
   /**
    * the list of wrappers we hold
    */
   protected SegmentList _theSegments;
-
-  /**
-   * the symbol to pass on to a snail plotter
-   */
-  private MWC.GUI.Shapes.Symbols.PlainSymbol _theSnailShape;
 
   /**
    * flag for if there is a pending update to track - particularly if it's a relative one
@@ -1891,7 +1881,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   {
   }
 
-
   /**
    * calculate a position the specified distance back along the ownship track (note, we always
    * interpolate the parent track position)
@@ -2327,7 +2316,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return set;
   }
 
-
   /**
    * what is the style used for plotting this track?
    *
@@ -2619,15 +2607,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   }
 
   /**
-   * return the symbol to be used for plotting this track in snail mode
-   */
-  @Override
-  public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
-  {
-    return _theSnailShape;
-  }
-
-  /**
    * get the list of sensors for this track
    */
   public final BaseLayer getSolutions()
@@ -2653,47 +2632,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
       res = period.getStartDTG();
     }
 
-    return res;
-  }
-
-  /**
-   * get the color used to plot the symbol
-   *
-   * @return the color
-   */
-  public final Color getSymbolColor()
-  {
-    return _theSnailShape.getColor();
-  }
-
-
-  public WorldDistance getSymbolLength()
-  {
-    WorldDistance res = null;
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      res = sym.getLength();
-    }
-    return res;
-  }
-
-  /**
-   * get the type of this symbol
-   */
-  public final String getSymbolType()
-  {
-    return _theSnailShape.getType();
-  }
-
-  public WorldDistance getSymbolWidth()
-  {
-    WorldDistance res = null;
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      res = sym.getWidth();
-    }
     return res;
   }
 
@@ -3810,7 +3748,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return new TrackWrapper_Support.IteratorWrapper(res.iterator());
   }
 
-
   /**
    * length of trail to draw
    */
@@ -3851,8 +3788,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     this._endTimeLabels = endTimeLabels;
   }
 
-
-
   @Override
   public final void setInterpolatePoints(final boolean val)
   {
@@ -3863,7 +3798,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     // So, we should clear the lastDTG cached value
     _lastFix = null;
   }
-
 
   /**
    * set the style used for plotting the lines for this track
@@ -3901,7 +3835,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
   {
     _plotArrayCentre = plotArrayCentre;
   }
-
 
   private void setRelativePending()
   {
@@ -3992,51 +3925,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     {
       // setRelativePending();
       sortOutRelativePositions();
-    }
-  }
-
-  public final void setSymbolColor(final Color col)
-  {
-    _theSnailShape.setColor(col);
-  }
-
-
-  public void setSymbolLength(final WorldDistance symbolLength)
-  {
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      sym.setLength(symbolLength);
-    }
-  }
-
-  public final void setSymbolType(final String val)
-  {
-    // is this the type of our symbol?
-    if (val.equals(_theSnailShape.getType()))
-    {
-      // don't bother we're using it already
-    }
-    else
-    {
-      // remember the size of the symbol
-      final double scale = _theSnailShape.getScaleVal();
-      // remember the color of the symbol
-      final Color oldCol = _theSnailShape.getColor();
-
-      // replace our symbol with this new one
-      _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-      _theSnailShape.setColor(oldCol);
-      _theSnailShape.setScaleVal(scale);
-    }
-  }
-
-  public void setSymbolWidth(final WorldDistance symbolWidth)
-  {
-    if (_theSnailShape instanceof WorldScaledSym)
-    {
-      final WorldScaledSym sym = (WorldScaledSym) _theSnailShape;
-      sym.setHeight(symbolWidth);
     }
   }
 
@@ -4622,7 +4510,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
     return visible;
   }
 
-  public PropertyChangeListener[] getPropertyChangeListeners(final String propertyName)
+  public PropertyChangeListener[] getPropertyChangeListeners(
+      final String propertyName)
   {
     return getSupport().getPropertyChangeListeners(propertyName);
   }
