@@ -503,7 +503,7 @@ public class ImportReplay extends PlainImporterBase
       final String test =
           ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
       final String test2 =
-          ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+          ";TEXT: CA[LAYER=Special_Layer,TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
 
       final ImportReplay ir = new ImportReplay();
 
