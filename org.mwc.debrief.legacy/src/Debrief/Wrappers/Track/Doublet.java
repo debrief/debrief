@@ -78,7 +78,7 @@ public class Doublet implements Comparable<Doublet>
         
           };
       double freq = dub.getPredictedMultistaticFrequency(speed_of_sound, transmitter);
-      assertEquals("correct freq", 297.914, freq, 0.001);
+      assertEquals("correct freq", 297.914, freq, 0.01);
     }
 
     public void testCorrected()

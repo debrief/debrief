@@ -124,6 +124,7 @@ import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.TextAnchor;
@@ -1563,9 +1564,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // get the series we want the data item for
             final TimeSeries t = tsc.getSeries(targetSeries);
 
-            // get the data point nearest our target time
-            final TimeSeriesDataItem nearest = t.getDataItem(
-                new FixedMillisecond(newDate.getTime()));
+            final TimeSeriesDataItem nearest;
+            if (t != null)
+            {
+              // get the data point nearest our target time
+              nearest = t.getDataItem(new FixedMillisecond(newDate.getTime()));
+            }
+            else
+            {
+              System.err.println("Couldn't find:" + targetSeries);
+              nearest = null;
+            }
 
             // did we find one?
             if (nearest != null)
@@ -1793,7 +1802,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             // if the dot (error) plot was clicked on, we'll delete
             // the TMA position. This makes sense, since markers are only
             // present on the error plot if TMA points are present
-            seriesName = TMA;
+            
+            // see if we can get the series name from the data
+            if(entity instanceof XYItemEntity)
+            {
+              XYItemEntity xyi = (XYItemEntity) entity;
+              XYDataset dataset = xyi.getDataset();
+              int seriesIndex = xyi.getSeriesIndex();
+              seriesName = (String) dataset.getSeriesKey(seriesIndex);
+            }
+            else
+            {
+              seriesName = TMA;
+            }
           }
           else
           {
@@ -1809,7 +1830,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
 
       private void highlightDataItemNearest(final long dateMillis,
-          final double valueVal, final String seriesName)
+          final double valueVal, String seriesName)
       {
         // clear the nearest on
         _seriesToSearch = null;
@@ -1824,7 +1845,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         }
         else
         {
-          final TimeSeries t = tsc.getSeries(seriesName);
+          TimeSeries t = tsc.getSeries(seriesName);
+          
+          if(t == null)
+          {
+            // ok, we may need to transform the error plot name into 
+            // a line plot name
+            String tmpSeriesName = seriesName.replace(ERROR_VALUES,
+                StackedDotHelper.CALCULATED_VALUES);
+            t = tsc.getSeries(tmpSeriesName);
+            
+            // did it work?
+            if(t != null)
+            {
+              // ok, switch to the new name
+              seriesName = tmpSeriesName;
+            }
+          }
+          
 
           if (t == null)
           {
@@ -3843,33 +3881,45 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final EditableWrapper res;
 
     final TrackSegment seg = fix.getSegment();
-    final TrackWrapper secTrack = seg.getWrapper();
 
-    // check we know the secondary track (we may not, if it's an SATC track)
-    if (secTrack != null)
+    if (seg != null)
     {
-      final EditableWrapper parentP = new EditableWrapper(secTrack, null,
-          layers);
+      final TrackWrapper secTrack = seg.getWrapper();
 
-      // hmm, don't know if we have one or more legs
-      final EditableWrapper leg;
-      if (secTrack.getSegments().size() > 1)
+      // check we know the secondary track (we may not, if it's an SATC track)
+      if (secTrack != null)
       {
-        // ok, we need the in-between item
-        final EditableWrapper segments = new EditableWrapper(secTrack
-            .getSegments(), parentP, layers);
-        leg = new EditableWrapper(seg, segments, layers);
+        final EditableWrapper parentP = new EditableWrapper(secTrack, null,
+            layers);
+
+        // hmm, don't know if we have one or more legs
+        final EditableWrapper leg;
+        if (secTrack.getSegments().size() > 1)
+        {
+          // ok, we need the in-between item
+          final EditableWrapper segments = new EditableWrapper(secTrack
+              .getSegments(), parentP, layers);
+          leg = new EditableWrapper(seg, segments, layers);
+        }
+        else
+        {
+          leg = new EditableWrapper(seg, parentP, layers);
+        }
+        res = new EditableWrapper(fix, leg, layers);
       }
       else
       {
-        leg = new EditableWrapper(seg, parentP, layers);
+        res = null;
       }
-      res = new EditableWrapper(fix, leg, layers);
     }
     else
     {
+      // no parent segment, maybe it's an "infill" fix that
+      // we interpolate using sensor cut DTG, when there isn't 
+      // a nearby TMA fix.
       res = null;
     }
+    
     return res;
   }
 
