@@ -17,8 +17,6 @@ package org.mwc.debrief.core.wizards.dynshapes;
 import java.awt.Color;
 import java.util.Date;
 
-import org.eclipse.jface.wizard.Wizard;
-
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.CircleShape;
@@ -32,7 +30,7 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class DynamicCircleWizard extends Wizard
+public class DynamicCircleWizard extends DynamicShapeWizard 
 {
   
   private DynamicShapeTimingsWizardPage _shapeTimingsPage;
@@ -83,6 +81,8 @@ public class DynamicCircleWizard extends Wizard
     }
     return true;
   }
+  
+  @Override
   public DynamicShapeWrapper getDynamicShapeWrapper()
   {
     return dynamicShape;

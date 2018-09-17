@@ -16,11 +16,9 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
 
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicCircleWizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
 
-import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -29,23 +27,9 @@ import MWC.GenericData.WorldLocation;
  */
 public class InsertDynamicCircle extends InsertDynamicShape
 {
-  
   @Override
-  protected DynamicShapeWrapper getDynamicShape(Date startDate, Date endDate,WorldLocation center)
+  protected DynamicShapeWizard getWizard(final Date startDate, final Date endDate,WorldLocation center)
   {
-    DynamicCircleWizard wizard = new DynamicCircleWizard(startDate,endDate,center);
-    WizardDialog wd = new WizardDialog(getShell(), wizard);
-    final DynamicShapeWrapper thisShape;
-    if(wd.open()==Window.OK) {
-      
-      //get all param details from the wizard now.
-      thisShape = wizard.getDynamicShapeWrapper();
-    }
-    else {
-      thisShape = null;
-    }
-    return thisShape;
+    return new DynamicCircleWizard(startDate, endDate,center);
   }
-
-
 }

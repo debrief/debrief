@@ -16,11 +16,9 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
 
-import org.eclipse.jface.window.Window;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicPolygonWizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
 
-import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -29,20 +27,10 @@ import MWC.GenericData.WorldLocation;
  */
 public class InsertDynamicPolygon extends InsertDynamicShape
 {
-
-  protected DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate,WorldLocation center) {
-    DynamicPolygonWizard wizard = new DynamicPolygonWizard(startDate,endDate);
-    WizardDialog wd = new WizardDialog(getShell(), wizard);
-    final DynamicShapeWrapper thisShape;
-    if(wd.open()==Window.OK) {
-      
-      //get all param details from the wizard now.
-      thisShape = wizard.getDynamicShapeWrapper();
-    }
-    else {
-      thisShape = null;
-    }
-    return thisShape;
+  @Override
+  protected DynamicShapeWizard getWizard(Date startDate, Date endDate,WorldLocation center)
+  {
+    return new DynamicPolygonWizard(startDate,endDate);
   }
 
 }
