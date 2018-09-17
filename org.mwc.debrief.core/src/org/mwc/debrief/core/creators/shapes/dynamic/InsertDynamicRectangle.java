@@ -21,6 +21,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicRectangleWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
+import MWC.GenericData.WorldLocation;
 
 /**
  * @author Ayesha
@@ -29,9 +30,9 @@ import Debrief.Wrappers.DynamicShapeWrapper;
 public class InsertDynamicRectangle extends InsertDynamicShape{
 
   @Override
-  protected DynamicShapeWrapper getDynamicShape(Date startDate, Date endDate)
+  protected DynamicShapeWrapper getDynamicShape(Date startDate, Date endDate,WorldLocation center)
   {
-    DynamicRectangleWizard wizard = new DynamicRectangleWizard(startDate,endDate);
+    DynamicRectangleWizard wizard = new DynamicRectangleWizard(startDate,endDate,center);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {

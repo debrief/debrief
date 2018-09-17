@@ -23,6 +23,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -37,11 +38,15 @@ public abstract class InsertDynamicShape extends CoreInsertShape
     final Layers theLayers = theChart.getLayers();
     final Date startDate = getTimeControllerDate(theLayers,true);
     final Date endDate = getTimeControllerDate(theLayers,false);
-    return getDynamicShape(startDate,endDate);
+    final WorldArea wa = theChart.getCanvas().getProjection().getVisibleDataArea();
+    
+    // get centre of area (at zero depth)
+    final WorldLocation centre = wa.getCentreAtSurface();
+    return getDynamicShape(startDate,endDate,centre);
     
   }
   
-  protected abstract DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate);
+  protected abstract DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate,WorldLocation center);
 
   @Override
   protected PlainShape getShape(WorldLocation centre)

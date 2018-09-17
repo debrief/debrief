@@ -24,6 +24,7 @@ import org.mwc.cmap.core.custom_widget.LocationModifiedListener;
 import org.mwc.cmap.core.custom_widget.LocationModifiedEvent;
 
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author Ayesha
@@ -33,11 +34,13 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
 {
   private CWorldLocation _topLeftLocation;
   private CWorldLocation _bottomRightLocation;
+  private WorldLocation _centre;
   
 
-  protected DynamicRectangleBoundsPage(String pageName)
+  protected DynamicRectangleBoundsPage(String pageName,WorldLocation centre)
   {
     super(pageName);
+    _centre = centre;
     setTitle("Create dynamic rectangle");
     setDescription("This wizard is used to create new dynamic shapes");
   }
@@ -83,9 +86,17 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
         
       }
     });
+    initializeUI();
     setControl(mainComposite);
   }
   
+  
+  private void initializeUI()
+  {
+    _topLeftLocation.setValue(_centre);
+    _bottomRightLocation.setValue(_centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45), 0.05, 0)));
+  }
+
   public WorldLocation getTopLeftLocation() {
     return (WorldLocation)_topLeftLocation.getValue();
   }

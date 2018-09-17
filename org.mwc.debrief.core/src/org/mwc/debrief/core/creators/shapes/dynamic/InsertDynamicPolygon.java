@@ -21,6 +21,7 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicPolygonWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
+import MWC.GenericData.WorldLocation;
 
 /**
  * @author Ayesha
@@ -29,7 +30,7 @@ import Debrief.Wrappers.DynamicShapeWrapper;
 public class InsertDynamicPolygon extends InsertDynamicShape
 {
 
-  protected DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate) {
+  protected DynamicShapeWrapper getDynamicShape(final Date startDate,final Date endDate,WorldLocation center) {
     DynamicPolygonWizard wizard = new DynamicPolygonWizard(startDate,endDate);
     WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;

@@ -37,10 +37,12 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
 
   private CWorldLocation _txtCentre;
   private Text _txtRadius;
-  protected DynamicCircleBoundsPage(String pageName)
+  private WorldLocation _centre;
+  protected DynamicCircleBoundsPage(String pageName,WorldLocation centre)
   {
     super(pageName);
     setTitle("Create Dynamic Circle");
+    _centre = centre;
     setDescription("This wizard is used to create dynamic shapes");
   }
 
@@ -64,6 +66,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     _txtCentre = new CWorldLocation(composite,SWT.NONE);
     _txtCentre.setLayoutData(gd);
     _txtCentre.setToolTipText("Location of centre of the dynamic circle");
+   
     _txtCentre.addLocationModifiedListener(new LocationModifiedListener()
     {
       
@@ -77,6 +80,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     new Label(composite,SWT.NONE).setText("Radius (yds): ");
     _txtRadius = new Text(composite,SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
+    
     gd.minimumWidth=245;
     gd.heightHint=20;
     _txtRadius.setLayoutData(gd);
@@ -89,7 +93,12 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
         setPageComplete(isPageComplete());
       }
     });
+    initializeUI();
     setControl(mainComposite);
+  }
+  private void initializeUI() {
+    _txtRadius.setText("4000");
+    _txtCentre.setValue(_centre);
   }
 
   public WorldLocation getCenter()

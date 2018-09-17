@@ -35,7 +35,6 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   public static final String TIMINGS_PAGE = "Timings";
   public static final String BOUNDS_PAGE = "Bounds";
   public static final String STYLING_PAGE = "Styling";
-  private String pageName;
   private Font font;
   private Font regularFont;
   
@@ -43,7 +42,6 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   protected DynamicShapeBaseWizardPage(String pageName)
   {
     super(pageName);
-    this.pageName = pageName;
   }
 
   protected Composite createBaseControl(Composite parent) {
@@ -69,12 +67,12 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
         .getHeight(), SWT.BOLD));
     regularFont = new Font(Display.getDefault(),
         new FontData(fontData.getName(),fontData.getHeight(),SWT.NORMAL));
-    if(TIMINGS_PAGE.equals(pageName)) {
+    if(TIMINGS_PAGE.equals(getName())) {
       lblTimings.setFont(font); 
       lblBounds.setFont(regularFont);
       lblStyling.setFont(regularFont);
     }
-    else if(BOUNDS_PAGE.equals(pageName)) {
+    else if(BOUNDS_PAGE.equals(getName())) {
       lblBounds.setFont(font);
       lblTimings.setFont(regularFont);
       lblStyling.setFont(regularFont);

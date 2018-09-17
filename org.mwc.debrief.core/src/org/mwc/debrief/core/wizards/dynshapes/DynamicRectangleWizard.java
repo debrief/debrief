@@ -39,17 +39,19 @@ public class DynamicRectangleWizard extends Wizard
   private DynamicShapeWrapper dynamicShape;
   private Date _startDate;
   private Date _endDate;
-  public DynamicRectangleWizard(Date startDate,Date endDate)
+  private WorldLocation _centre;
+  public DynamicRectangleWizard(Date startDate,Date endDate,WorldLocation centre)
   {
     _startDate = startDate;
     _endDate = endDate;
+    _centre = centre;
   }
   
   @Override
   public void addPages()
   {
     _shapeTimingsPage = new DynamicShapeTimingsWizardPage("Timings","Rectangle",_startDate,_endDate);
-    _boundsPage = new DynamicRectangleBoundsPage("Bounds");
+    _boundsPage = new DynamicRectangleBoundsPage("Bounds",_centre);
     _stylingPage = new DynamicShapeStylingPage("Styling", "Rectangle");
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);

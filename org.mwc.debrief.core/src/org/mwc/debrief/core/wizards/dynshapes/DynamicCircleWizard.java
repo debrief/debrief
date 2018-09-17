@@ -42,18 +42,20 @@ public class DynamicCircleWizard extends Wizard
   public static final String SHAPE_NAME = "Circle";
   private Date _startDate;
   private Date _endDate;
+  private WorldLocation _centre;
 
-  public DynamicCircleWizard(Date startDate,Date endDate)
+  public DynamicCircleWizard(Date startDate,Date endDate,WorldLocation centre)
   {
     _startDate = startDate;
     _endDate = endDate;
+    _centre = centre;
         
   }
   @Override
   public void addPages()
   {
     _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,_startDate,_endDate);
-    _boundsPage = new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE);
+    _boundsPage = new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE,_centre);
     _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, SHAPE_NAME);
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);
