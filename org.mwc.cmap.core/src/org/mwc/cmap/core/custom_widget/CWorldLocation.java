@@ -9,8 +9,8 @@ import java.util.Vector;
 import org.eclipse.nebula.widgets.formattedtext.FormattedText;
 import org.eclipse.nebula.widgets.formattedtext.MaskFormatter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SegmentEvent;
-import org.eclipse.swt.events.SegmentListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -56,42 +56,33 @@ public class CWorldLocation extends Composite
     myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
     myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));
 
-    myLatitude.getControl().addSegmentListener(new SegmentListener()
-    {
-      @Override
-      public void getSegments(SegmentEvent event)
-      {
-        valueModified(event);
-        
-      }  
-     
-    });
-    myLongitude.getControl().addSegmentListener(new SegmentListener()
-    {
-      @Override
-      public void getSegments(SegmentEvent event)
-      {
-        valueModified(event);
-        
-      }  
-     
-    });
+    myLatitude.getControl().addModifyListener(new ModifyListener() {
 
+      @Override
+      public void modifyText(ModifyEvent event)
+      {
+        valueModified(event.getSource());
+      }});
+    myLatitude.getControl().addModifyListener(new ModifyListener() {
+
+      @Override
+      public void modifyText(ModifyEvent event)
+      {
+        valueModified(event.getSource());
+      }});
   }
-  
   
   public void addLocationModifiedListener(LocationModifiedListener listener) {
     _locationModifiedListeners.add(listener);
   }
  
   
-  private void valueModified(SegmentEvent e)
+  private void valueModified(final Object source)
   {
-    LocationModifiedEvent event = new LocationModifiedEvent(e.getSource(),myLatitude.getValue(),myLongitude.getValue());
+    LocationModifiedEvent event = new LocationModifiedEvent(source,myLatitude.getValue(),myLongitude.getValue());
     for(LocationModifiedListener listener:_locationModifiedListeners) {
       listener.modifyValue(event);
     }
-    
   }
   
 
