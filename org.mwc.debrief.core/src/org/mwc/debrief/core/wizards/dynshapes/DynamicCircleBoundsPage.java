@@ -35,6 +35,7 @@ import MWC.GenericData.WorldLocation;
 public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
 {
 
+  private static final int MAX_RADIUS = 5000;
   private CWorldLocation _txtCentre;
   private Text _txtRadius;
   private WorldLocation _centre;
@@ -97,7 +98,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     setControl(mainComposite);
   }
   private void initializeUI() {
-    _txtRadius.setText("4000");
+    _txtRadius.setText("" + MAX_RADIUS);
     _txtCentre.setValue(_centre);
   }
 
@@ -120,7 +121,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     else {
       isPageComplete = (!_txtRadius.getText().isEmpty() && isValidRadius(_txtRadius.getText()));
       if(!isPageComplete) {
-        setErrorMessage("Please enter radius in the range 0 to 4000");
+        setErrorMessage("Please enter radius in the range 0 to " + MAX_RADIUS);
       }
       else {
         setErrorMessage(null);
@@ -129,12 +130,22 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     return isPageComplete;
   }
   
-  private boolean isValidRadius(String value) {
-    //radius must be integer in the range 0 to 4000.
-    if(!value.matches("\\\\d+")){
-      int num = Integer.valueOf(value);
-      if(num>0 && num<=4000) {
-        return true;
+  private boolean isValidRadius(String value)
+  {
+    // radius must be integer in the range 0 to 4000.
+    if (!value.matches("\\\\d+"))
+    {
+      try
+      {
+        int num = Integer.valueOf(value);
+        if (num > 0 && num <= MAX_RADIUS)
+        {
+          return true;
+        }
+      }
+      catch (NumberFormatException ne)
+      {
+        return false;
       }
     }
     return false;
