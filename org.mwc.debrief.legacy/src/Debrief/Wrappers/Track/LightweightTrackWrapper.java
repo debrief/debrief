@@ -41,7 +41,6 @@ import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
@@ -729,7 +728,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   }
 
   @Override
-  public PlainSymbol getSnailShape()
+  public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
   {
     return _theSnailShape;
   }

@@ -58,16 +58,8 @@ public class SVGCircle extends SVGElement
 
     final double r = _r / magnitude * wid;
     final double diameter = r * sym_size * 2;
-    if (_fill != null)
+    if (!dontFillObject)
     {
-      if (useDefaultColor)
-      {
-        dest.setColor(defaultColor);
-      }
-      else
-      {
-        dest.setColor(_fill);
-      }
       dest.fillOval((int) (_intX[0] - diameter / 2), (int) (_intY[0] - diameter
           / 2), (int) diameter, (int) diameter);
     }

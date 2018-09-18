@@ -59,7 +59,15 @@ public class SVGPolyline extends SVGElement
   {
     super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
         defaultColor);
-    dest.drawPolyline(_intX, _intY, _intX.length);
+    
+    if (dontFillObject)
+    {
+      dest.drawPolyline(_intX, _intY, _intX.length);
+    }
+    else
+    {
+      dest.fillPolygon(_intX, _intY, _intX.length);
+    }
   }
 
 }

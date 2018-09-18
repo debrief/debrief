@@ -51,7 +51,11 @@ abstract public class SVGElement
   protected java.awt.Color _fill;
 
   // When color is different to black, we will use it.
-  protected boolean useDefaultColor = false;
+  protected boolean useDefaultColor = true;
+
+  // This is the style that forces the element to be non-filled.
+  // If it is false, the element will ALWAYS be filled.
+  protected boolean dontFillObject = false;
 
   public SVGElement(final Element dom)
   {
@@ -72,6 +76,17 @@ abstract public class SVGElement
             "SVG contains a non-valid fill or using #000000 color: "
                 + colorString);
       }
+    }
+    if (getDom().hasAttribute("style"))
+    {
+      // fill: none style forces it to be empty. Else, it will ALWAYS be filled.
+      dontFillObject = getDom().getAttribute("style").contains("fill: none");
+      dontFillObject |= getDom().getAttribute("style").contains(
+          "fill-opacity: 0");
+    }
+    if (getDom().hasAttribute("fill-opacity"))
+    {
+      dontFillObject |= "0".equals(getDom().getAttribute("fill-opacity"));
     }
   }
 
@@ -102,7 +117,7 @@ abstract public class SVGElement
     java.awt.geom.Point2D[] tempCoord =
         new java.awt.geom.Point2D[_originalCoordinates.length];
     // We want the icon to be aligned with the track
-    double initial_rotation_degs = - 90.0 / 180.0 * Math.PI;
+    double initial_rotation_degs = .0; // - 90.0 / 180.0 * Math.PI;
     double current_rotation_deg = initial_rotation_degs + rotation_degs;
 
     // Lets assume that the viewbox is 0 0 100 100
@@ -144,6 +159,15 @@ abstract public class SVGElement
       _intX[i] = (int) tempCoord[i].getX();
       _intY[i] = (int) tempCoord[i].getY();
     }
+
+    if (useDefaultColor)
+    {
+      dest.setColor(defaultColor);
+    }
+    else
+    {
+      dest.setColor(_fill);
+    }
   }
 
   /**
@@ -155,8 +179,8 @@ abstract public class SVGElement
    */
   public java.awt.Color hex2Rgb(String colorStr)
   {
-    return new java.awt.Color(Integer.valueOf(colorStr.substring(1, 3), 16), Integer
-        .valueOf(colorStr.substring(3, 5), 16), Integer.valueOf(colorStr
+    return new java.awt.Color(Integer.valueOf(colorStr.substring(1, 3), 16),
+        Integer.valueOf(colorStr.substring(3, 5), 16), Integer.valueOf(colorStr
             .substring(5, 7), 16));
   }
 }

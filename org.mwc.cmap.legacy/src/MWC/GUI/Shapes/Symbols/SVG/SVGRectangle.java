@@ -57,16 +57,8 @@ public class SVGRectangle extends SVGElement
     super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
         defaultColor);
 
-    if (_fill != null)
+    if (!dontFillObject)
     {
-      if (useDefaultColor)
-      {
-        dest.setColor(defaultColor);
-      }
-      else
-      {
-        dest.setColor(_fill);
-      }
       dest.fillPolygon(_intX, _intY, _intX.length);
     }
     else
