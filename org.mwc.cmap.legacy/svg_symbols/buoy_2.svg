@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
-  <circle id="Oval-2" stroke="#000000" stroke-width="2" fill-opacity="0" cx="27" cy="72" r="22"/>
+  <circle id="Oval-2" fill-opacity="0" cx="27" cy="72" r="24" style="fill: rgb(233, 14, 14); stroke-width: 5;" stroke="#000000"/>
   <circle id="Oval-3" stroke="#000000" stroke-width="3" fill-opacity="0" cx="27" cy="72" r="9"/>
-  <circle id="Oval" stroke="#000000" stroke-width="2" fill-opacity="0" cx="27" cy="72" r="26"/>
-  <polyline style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 2;" points="30.164 45.787 63.096 12.776 63.05 36.277 96.962 2.325 97.093 6.651 62.928 40.836 60.006 19.086 32.414 46.532"/>
   <circle id="origin" cx="27" cy="72" r="2.5" style="fill: rgb(255, 0, 0);"/>
+  <polyline style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 5;" points="30.824 48.061 62.028 15.808 64.034 37.725 98.169 3.323" transform=""/>
 </svg>
