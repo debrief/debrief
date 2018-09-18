@@ -583,7 +583,7 @@ public class PartMonitor implements IPartListener
 			{
 			}
 
-			@SuppressWarnings("rawtypes")
+			@SuppressWarnings({"rawtypes", "unchecked"})
 			public abstract Object getAdapter(Class adapter);
 
 		}
