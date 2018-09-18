@@ -14,6 +14,10 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -68,4 +72,40 @@ public class SVGRectangle extends SVGElement
 
   }
 
+  public static class SVGRectangleTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public void testBasicRectangle()
+    {
+      try
+      {
+        final String contentToLoad =
+            "<rect id=\"Rectangle-2\" fill=\"#000000\" x=\"24.5\" y=\"23\" width=\"52\" height=\"21\"/>";
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        final Document doc = dBuilder.parse(new java.io.ByteArrayInputStream(
+            contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+
+        SVGRectangle newRectangle = new SVGRectangle(doc.getDocumentElement());
+        assertTrue(newRectangle._intX.length == 4);
+        assertTrue(newRectangle._intY.length == 4);
+        assertTrue(newRectangle._originalCoordinates.length == 4);
+        assertEquals(24.5, newRectangle._originalCoordinates[0].getX(), 1e-5);
+        assertEquals(23.0, newRectangle._originalCoordinates[0].getY(), 1e-5);
+        assertEquals(76.5, newRectangle._originalCoordinates[1].getX(), 1e-5);
+        assertEquals(23.0, newRectangle._originalCoordinates[1].getY(), 1e-5);
+        assertEquals(76.5, newRectangle._originalCoordinates[2].getX(), 1e-5);
+        assertEquals(44.0, newRectangle._originalCoordinates[2].getY(), 1e-5);
+        assertEquals(24.5, newRectangle._originalCoordinates[3].getX(), 1e-5);
+        assertEquals(44.0, newRectangle._originalCoordinates[3].getY(), 1e-5);
+      }
+      catch (Exception e)
+      {
+        assertTrue("failed to load a basic rectangle.", false);
+      }
+    }
+
+  }
 }

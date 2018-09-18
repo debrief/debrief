@@ -213,8 +213,8 @@ public final class SymbolFactory
       + "anomaly,bottomed_mine,cleared,countermeasure,decoy,decoy_aw,"
       + "decoy_uw,enemy_subsurface"
       + ",flagged_marker,floating_mine,friend_air,"
-      + "highlights_1,highlights_2,jammer," + "mine_like_object,moored_mine,"
-      + "tagged_marker,torpedo," + "uav_1,uav_2,usv_1,"
+      + "highlights_1,highlights_2,jammer,mine_like_object,moored_mine,"
+      + "tagged_marker,torpedo,uav_1,uav_2,usv_1,"
       + "usv_2,usv_3,usv_4,usv_5,wreck,xxx_contact";
 
   /**
@@ -499,13 +499,14 @@ public final class SymbolFactory
       _theVesselIds.put(CRUISER, "U");
       _theVesselIds.put(FISHING_VESSEL, "V");
       _theVesselIds.put(WRECK, "W");
-      
-      final String[] svgIconsName = SVG_INDEX.split(","); 
+
+      final String[] svgIconsName = SVG_INDEX.split(",");
       // Since we have the SVG Icons properly ordered,
       // we can just add the reserved character
       for (char c = 'a'; c <= 'x'; c++)
       {
-        final String completeName = SVG_FORMAT_PREFIX + ":" + svgIconsName[c-'a'];
+        final String completeName = SVG_FORMAT_PREFIX + ":" + svgIconsName[c
+            - 'a'];
         _theVesselIds.put(completeName, c + "");
       }
 
@@ -627,6 +628,24 @@ public final class SymbolFactory
       newChar = SymbolFactory.findIdForSymbolType("AIRCRAFT");
       assertEquals("correct sym found", newChar, cA);
 
+    }
+
+    /**
+     * Testing string swapping for SVG symbols
+     */
+    public void testSVGFromChar()
+    {
+      final String torpedoCharacter = "s";
+      final String torpedoSymbolGenerated = SymbolFactory.createSymbolFromId(
+          torpedoCharacter);
+      final String expectedTorpedoSymbol = SVG_FORMAT_PREFIX + ":torpedo";
+      assertEquals("Torpedo symbol returned", torpedoSymbolGenerated,
+          expectedTorpedoSymbol);
+
+      final String torpedoCharacterGenerated = SymbolFactory
+          .findIdForSymbolType(expectedTorpedoSymbol);
+      assertEquals("correct symbol found", torpedoCharacter,
+          torpedoCharacterGenerated);
     }
 
   }

@@ -14,6 +14,10 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -59,7 +63,7 @@ public class SVGPolyline extends SVGElement
   {
     super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
         defaultColor);
-    
+
     if (dontFillObject)
     {
       dest.drawPolyline(_intX, _intY, _intX.length);
@@ -68,6 +72,49 @@ public class SVGPolyline extends SVGElement
     {
       dest.fillPolygon(_intX, _intY, _intX.length);
     }
+  }
+
+  public static class SVGPolylineTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public void testBasicSVGPolyline()
+    {
+      try
+      {
+        final String contentToLoad =
+            "<polyline fill=\"#000000\" fill-opacity=\"0\" fill-rule=\"nonzero\" stroke=\"#000000\" stroke-width=\"5\" points=\"5 76 20 47 35 76 50 47 65 76 80 47 95 76\"/>";
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        final Document doc = dBuilder.parse(new java.io.ByteArrayInputStream(
+            contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+
+        SVGPolyline newPolyline = new SVGPolyline(doc.getDocumentElement());
+        assertTrue(newPolyline._intX.length == 7);
+        assertTrue(newPolyline._intY.length == 7);
+        assertTrue(newPolyline._originalCoordinates.length == 7);
+        assertEquals(5.0, newPolyline._originalCoordinates[0].getX(), 1e-5);
+        assertEquals(76.0, newPolyline._originalCoordinates[0].getY(), 1e-5);
+        assertEquals(20.0, newPolyline._originalCoordinates[1].getX(), 1e-5);
+        assertEquals(47.0, newPolyline._originalCoordinates[1].getY(), 1e-5);
+        assertEquals(35.0, newPolyline._originalCoordinates[2].getX(), 1e-5);
+        assertEquals(76.0, newPolyline._originalCoordinates[2].getY(), 1e-5);
+        assertEquals(50.0, newPolyline._originalCoordinates[3].getX(), 1e-5);
+        assertEquals(47.0, newPolyline._originalCoordinates[3].getY(), 1e-5);
+        assertEquals(65.0, newPolyline._originalCoordinates[4].getX(), 1e-5);
+        assertEquals(76.0, newPolyline._originalCoordinates[4].getY(), 1e-5);
+        assertEquals(80.0, newPolyline._originalCoordinates[5].getX(), 1e-5);
+        assertEquals(47.0, newPolyline._originalCoordinates[5].getY(), 1e-5);
+        assertEquals(95.0, newPolyline._originalCoordinates[6].getX(), 1e-5);
+        assertEquals(76.0, newPolyline._originalCoordinates[6].getY(), 1e-5);
+      }
+      catch (Exception e)
+      {
+        assertTrue("failed to load a basic polyline.", false);
+      }
+    }
+
   }
 
 }

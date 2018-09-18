@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,12 +138,24 @@ public class SVGShape extends PlainSymbol
       final Point centre = dest.toScreen(center);
       for (SVGElement element : _elements)
       {
-        element.render(dest, getScaleVal(), centre, directionToUse, _origin, getColor());
+        element.render(dest, getScaleVal(), centre, directionToUse, _origin,
+            getColor());
       }
     }
   }
 
-  /** retrieve the nodes from the SVG document
+  /**
+   * Returns the Elements of the symbol
+   * 
+   * @return
+   */
+  public List<SVGElement> getElements()
+  {
+    return _elements;
+  }
+
+  /**
+   * retrieve the nodes from the SVG document
    * 
    * @param doc
    * @return
@@ -167,7 +180,7 @@ public class SVGShape extends PlainSymbol
         {
           // ok, it's the origin marker. get the origin coords
           parseOrigin(element);
-          
+
           // and determine if the shape should rotate
           parseRotation(element);
         }
@@ -198,11 +211,16 @@ public class SVGShape extends PlainSymbol
       // remove the svg: prefix, if necesary
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
-    
+
       String svgPath = File.separator + fName + SymbolFactory.SVG_EXTENSION;
-      
+
       InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
+      if (inputStream == null)
+      {
+        // Resource doesn't exist
+        throw new FileNotFoundException();
+      }
       final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
           .newInstance();
       final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
@@ -225,10 +243,10 @@ public class SVGShape extends PlainSymbol
 
   private void parseOrigin(Node element)
   {
-    final int x = (int)Double.parseDouble(element.getAttributes().getNamedItem("cx")
-        .getNodeValue());
-    final int y = (int)Double.parseDouble(element.getAttributes().getNamedItem("cy")
-        .getNodeValue());
+    final int x = (int) Double.parseDouble(element.getAttributes().getNamedItem(
+        "cx").getNodeValue());
+    final int y = (int) Double.parseDouble(element.getAttributes().getNamedItem(
+        "cy").getNodeValue());
     _origin = new Point(x, y);
   }
 
@@ -265,4 +283,22 @@ public class SVGShape extends PlainSymbol
     return new SVGShape(_svgFileName);
   }
 
+  public static class SVGShapeTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public SVGShapeTest(final String val)
+    {
+      super(val);
+    }
+
+    public void testLoadingFileDoesntExit()
+    {
+      final String fileDoesntExist = "fileDoesntExit";
+      SVGShape svgShape = new SVGShape(fileDoesntExist);
+      svgShape.paint(null, null, 0);
+
+      assertTrue(svgShape.getElements() == null);
+    }
+  }
 }

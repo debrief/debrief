@@ -14,6 +14,10 @@
  */
 package MWC.GUI.Shapes.Symbols.SVG;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import MWC.GUI.CanvasType;
@@ -72,4 +76,36 @@ public class SVGEllipse extends SVGElement
     }
   }
 
+  public static class SVGEllipseTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public void testBasicSVGLine()
+    {
+      try
+      {
+        final String contentToLoad =
+            "<ellipse id=\"Oval\" fill=\"#000000\" cx=\"50.0111093\" cy=\"44.2182422\" rx=\"31\" ry=\"30.7304336\" transform=\"matrix(1, 0, 0, 1, 0, 0)\"/>";
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+        final Document doc = dBuilder.parse(new java.io.ByteArrayInputStream(
+            contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+
+        SVGEllipse newSVGEllipse = new SVGEllipse(doc.getDocumentElement());
+        assertTrue(newSVGEllipse._intX.length == 1);
+        assertTrue(newSVGEllipse._intY.length == 1);
+        assertTrue(newSVGEllipse._originalCoordinates.length == 1);
+        assertEquals(50.0111093, newSVGEllipse._originalCoordinates[0].getX(), 1e-5);
+        assertEquals(44.2182422, newSVGEllipse._originalCoordinates[0].getY(), 1e-5);
+        assertEquals(31.0, newSVGEllipse._rx, 1e-5);
+        assertEquals(30.7304336, newSVGEllipse._ry, 1e-5);
+      }
+      catch (Exception e)
+      {
+        assertTrue("failed to load a basic ellipse.", false);
+      }
+    }
+
+  }
 }
