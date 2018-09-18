@@ -48,10 +48,10 @@ public class CWorldLocation extends Composite
     myLatitude = new FormattedText(this, SWT.BORDER);
     myLongitude = new FormattedText(this, SWT.BORDER);
     GridData data1 = new GridData();
-    data1.widthHint = 90;
+    data1.widthHint = 95;
     myLatitude.getControl().setLayoutData(data1);
     GridData data2 = new GridData();    
-    data2.widthHint = 100;
+    data2.widthHint = 105;
     myLongitude.getControl().setLayoutData(data2);
     myLatitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(false)));
     myLongitude.setFormatter(new IgnoreTabsMaskFormatter(getFormat().getNebulaPattern(true)));
