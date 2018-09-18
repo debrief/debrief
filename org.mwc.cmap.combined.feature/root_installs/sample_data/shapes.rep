@@ -17,6 +17,31 @@
 ;TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol 
 ;TEXT: EB 21.66 0 0 N 21.52 0 0 W
 
+;TEXT: aB 21.96 0 0 N 19.52 0 0 W Test SVG Symbol a
+;TEXT: bB 21.86 0 0 N 19.52 0 0 W Test SVG Symbol b
+;TEXT: cB 21.76 0 0 N 19.52 0 0 W Test SVG Symbol c
+;TEXT: dB 21.66 0 0 N 19.52 0 0 W Test SVG Symbol d
+;TEXT: eB 21.56 0 0 N 19.52 0 0 W Test SVG Symbol e
+;TEXT: fB 21.46 0 0 N 19.52 0 0 W Test SVG Symbol f
+;TEXT: gB 21.36 0 0 N 19.52 0 0 W Test SVG Symbol g
+;TEXT: hB 21.26 0 0 N 19.52 0 0 W Test SVG Symbol h
+;TEXT: iB 21.16 0 0 N 19.52 0 0 W Test SVG Symbol i
+;TEXT: jB 21.06 0 0 N 19.52 0 0 W Test SVG Symbol j
+;TEXT: kB 20.96 0 0 N 19.52 0 0 W Test SVG Symbol k
+;TEXT: lB 20.86 0 0 N 19.52 0 0 W Test SVG Symbol l
+;TEXT: mB 20.76 0 0 N 19.52 0 0 W Test SVG Symbol m
+;TEXT: nB 20.66 0 0 N 19.52 0 0 W Test SVG Symbol n
+;TEXT: oB 20.56 0 0 N 19.52 0 0 W Test SVG Symbol o
+;TEXT: pB 20.46 0 0 N 19.52 0 0 W Test SVG Symbol p
+;TEXT: qB 20.36 0 0 N 19.52 0 0 W Test SVG Symbol q
+;TEXT: rB 20.26 0 0 N 19.52 0 0 W Test SVG Symbol r
+;TEXT: sB 20.16 0 0 N 19.52 0 0 W Test SVG Symbol s
+;TEXT: tB 20.06 0 0 N 19.52 0 0 W Test SVG Symbol t
+;TEXT: uB 19.96 0 0 N 19.52 0 0 W Test SVG Symbol u
+;TEXT: vB 19.86 0 0 N 19.52 0 0 W Test SVG Symbol v
+;TEXT: wB 19.76 0 0 N 19.52 0 0 W Test SVG Symbol w
+;TEXT: xB 19.66 0 0 N 19.52 0 0 W Test SVG Symbol x
+
 ;TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
 ;TEXT: CA[LAYER=Special_Layer] 21.32 0 0 N 21.88 0 0 W Other layer 2
 ;TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3
@@ -143,6 +168,10 @@
 951212 071400.000 LIGHT_4   @E[LAYER=LIGHT_TRACKS]   22 11  2.28 N 21 44 50.67 W 242.3   2.0      0 
 951212 071500.000 LIGHT_4   @E[LAYER=LIGHT_TRACKS]   22 10 58.07 N 21 45  2.34 W 240.9   2.0      0 
 951212 071600.000 LIGHT_4   @E[LAYER=LIGHT_TRACKS]   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0
+951212 071300.000 LIGHT_5   @C[SYMBOL=missile,LAYER=LIGHT_TRACKS]   22 11  6.64 N 20 44 39.26 W 241.5   2.0      0 
+951212 071400.000 LIGHT_5   @C[SYMBOL=missile,LAYER=LIGHT_TRACKS]   22 11  2.38 N 20 44 50.67 W 242.3   2.0      0 
+951212 071500.000 LIGHT_5   @C[SYMBOL=missile,LAYER=LIGHT_TRACKS]   22 10 58.17 N 20 45  2.34 W 240.9   2.0      0 
+951212 071600.000 LIGHT_5   @C[SYMBOL=missile,LAYER=LIGHT_TRACKS]   22 10 53.64 N 20 45 14.20 W 239.9   2.0      0
 
 
 ;SENSOR: 951212 051100	"NEL STYLE"	@A	22	2	27.78	N	21	1	13.78	W	-13.9	12000	Plain	Cookie	SUBJECT	held	on	Plain	Cookie
