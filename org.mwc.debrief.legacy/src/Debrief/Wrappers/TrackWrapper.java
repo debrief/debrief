@@ -1077,8 +1077,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
       // just check we don't alraedy have it
       if (_myDynamicShapes.contains(swr))
       {
-        MWC.Utilities.Errors.Trace.trace("Don't allow duplicate shape set name:"
-            + swr.getName());
+        MWC.Utilities.Errors.Trace.trace("Not adding shape-set, it's already present"
+            + swr.getName(), false);
       }
       else
       {
@@ -1089,6 +1089,36 @@ public class TrackWrapper extends LightweightTrackWrapper implements WatchableLi
         // tell the sensor about us
         swr.setHost(this);
       }
+    }
+    else if (point instanceof DynamicTrackShapeWrapper)
+    {
+      DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
+      DynamicTrackShapeSetWrapper target = null;
+      final Enumeration<Editable> iter = getDynamicShapes().elements();
+      if (iter != null)
+      {
+        while (iter.hasMoreElements())
+        {
+          final DynamicTrackShapeSetWrapper set =
+              (DynamicTrackShapeSetWrapper) iter.nextElement();
+
+          // is this our sensor?
+          if (set.getName().equals(shape.getSensorName()))
+          {
+            // cool, drop out
+            target = set;
+            break;
+          }
+        } // looping through the sensors
+      } // whether there are any sensors
+      if (target == null)
+      {
+        // then create it
+        target = new DynamicTrackShapeSetWrapper(shape.getSensorName());
+
+        add(target);
+      }
+      target.add(shape);
     }
     // is this a TMA solution track?
     else if (point instanceof TMAWrapper)

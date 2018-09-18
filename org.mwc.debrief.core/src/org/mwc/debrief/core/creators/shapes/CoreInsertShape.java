@@ -23,6 +23,7 @@ import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
 
 import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.*;
@@ -206,4 +207,27 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 * @return the name of this type of shape, eg: rectangle
 	 */
 	abstract protected String getShapeName();
+	
+	protected Date getTimeControllerDate(Layers layers,boolean startDate) {
+    Date timeControllerDate = null;
+    Enumeration<Editable> elements = layers.elements();
+    while(elements.hasMoreElements()) {
+      Editable elem = elements.nextElement();
+      if(elem instanceof TrackWrapper) {
+        TrackWrapper theTrack = (TrackWrapper)elem;
+        if(startDate) {
+          if(timeControllerDate == null || theTrack.getStartDTG().getDate().before(timeControllerDate)) {
+            timeControllerDate = theTrack.getStartDTG().getDate();
+          }
+        }
+        else {
+          if(timeControllerDate == null || theTrack.getEndDTG().getDate().after(timeControllerDate)) {
+            timeControllerDate = theTrack.getEndDTG().getDate();
+          }
+        }
+      }
+    }
+    return timeControllerDate;
+  }
+	
 }

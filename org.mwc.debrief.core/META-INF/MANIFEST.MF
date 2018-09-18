@@ -28,6 +28,7 @@ Export-Package: com.topografix.gpx.v10,
  org.mwc.debrief.core.contenttype,
  org.mwc.debrief.core.creators.chartFeatures,
  org.mwc.debrief.core.creators.shapes,
+ org.mwc.debrief.core.creators.shapes.dynamic,
  org.mwc.debrief.core.editors,
  org.mwc.debrief.core.editors.painters,
  org.mwc.debrief.core.editors.painters.highlighters,
@@ -64,5 +65,7 @@ Require-Bundle: org.mwc.cmap.core,
  org.eclipse.ui.intro,
  org.eclipse.swt,
  org.eclipse.jface,
- org.eclipse.ui.workbench
+ org.eclipse.ui.workbench,
+ org.eclipse.nebula.jface.cdatetime;bundle-version="0.14.0",
+ org.eclipse.nebula.widgets.cdatetime;bundle-version="0.14.0"
 Bundle-ActivationPolicy: lazy

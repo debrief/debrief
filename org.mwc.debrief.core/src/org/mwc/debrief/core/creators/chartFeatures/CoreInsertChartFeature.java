@@ -49,6 +49,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	public static ToolParent _theParent = null;
 	
 	private boolean multiple = false;
+	protected String _selectedLayer;
 
 	/**
 	 * whether this item is a top-level layer
@@ -107,6 +108,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		{
 			// do we know the layer?
 			Layer layer = res.getLayer();
+			
 
 			// is it null? in which case we're adding a new layer
 			if (layer == null)
@@ -124,7 +126,6 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 									null);
 				}
 			}
-
 			// and the data?
 			final Layers data = res.getLayers();
 
@@ -146,7 +147,8 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		{
 			// ok, get our layer name
 			final String myLayer = getLayerName();
-
+			
+			_selectedLayer = myLayer;
 			// drop out if we don't have a target layer (the user may have cancelled)
 			if (myLayer == null)
 				return null;
