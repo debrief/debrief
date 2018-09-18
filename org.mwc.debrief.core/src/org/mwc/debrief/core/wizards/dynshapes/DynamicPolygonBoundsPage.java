@@ -37,13 +37,15 @@ import MWC.GenericData.WorldLocation;
 public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
 {
 
+  private static final String DETAIL_MESSAGE = "The coords are pairs of comma-separated floating point numbers.\r\n"
+      + "Eg: 12.3,234.5 11.3,44.2 12.5,45.6 -12.3,5.78, 3.65432,-14.5";
   private Text _coordinatesPolygon;
 
   protected DynamicPolygonBoundsPage(String pageName)
   {
     super(pageName);
     setTitle("Create dynamic polygon");
-    setDescription("This wizard is used to create new dynamic shapes");
+    setDescription(DETAIL_MESSAGE);
   }
 
   /* (non-Javadoc)
@@ -105,8 +107,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
     boolean isPageComplete =  !_coordinatesPolygon.getText().isEmpty() &&
         isCoordinatesValid(_coordinatesPolygon.getText());
     if(!isPageComplete) {
-      setErrorMessage("The coordinates are a pair of floating point numbers"
-          + " separated by comma and each coordinate separated by WhiteSpace. Eg: 12.3,234.5 11.3,44.2 12.5,45.6 -12.3,5.78, 3.65432,-14.5\r\n"); 
+      setErrorMessage(DETAIL_MESSAGE); 
     }
     else {
       setErrorMessage(null);
