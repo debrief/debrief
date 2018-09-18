@@ -1,17 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 <modelVersion>4.0.0</modelVersion>
  <!--  Change groupId, artifactId and version  -->
-<artifactId>SampleDataTest</artifactId>
-<groupId>SampleDataTest</groupId>
+<artifactId>org.mwc.debrief.ui_test</artifactId>
+<groupId>org.mwc.debrief.ui_test</groupId>
 <version>1.0.0-SNAPSHOT</version>
-<packaging>SampleDataTest</packaging>
+<packaging>rcpttTest</packaging>
  <!--  Change properies below to your values  -->
 <build>
 <plugins>
 <plugin>
 <groupId>org.eclipse.rcptt</groupId>
 <artifactId>rcptt-maven-plugin</artifactId>
-<version>2.0.0-SNAPSHOT</version>
+<version>2.3.0</version>
 <extensions>true</extensions>
 <configuration>
 <aut>
@@ -30,16 +30,16 @@
       <vmArg>-XX:MaxPermSize=256m</vmArg>
    </vmArgs>
 </runner>
-
-</configuration>
-<testOptions>
-    <execTimeout>30min</execTimeout>
-    <testExecTimeout>5min</testExecTimeout>
-</testOptions>
 <suites>
   <suite>TEST_SAMPLE_DATA</suite>
   <suite>TEST_CHART_AND_DRAWING_FEATURES</suite>
 </suites>
+
+<testOptions>
+    <execTimeout>30min</execTimeout>
+    <testExecTimeout>5min</testExecTimeout>
+</testOptions>
+</configuration>
 
 </plugin>
 </plugins>
