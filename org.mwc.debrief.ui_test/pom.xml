@@ -16,8 +16,9 @@
 <configuration>
 <aut>
     <groupId>org.mwc.debrief</groupId>
-    <artifactId>parent</artifactId>
- <vmArgs> 
+	<artifactId>org.mwc.debrief.product</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  <vmArgs> 
     <vmArg>-Xmx1536m</vmArg>  
     <vmArg>-XX:MaxPermSize=256m</vmArg>
     <reuseExistingWorkspace>true</reuseExistingWorkspace> 
