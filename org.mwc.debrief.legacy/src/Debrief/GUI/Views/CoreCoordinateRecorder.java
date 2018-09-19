@@ -31,6 +31,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import net.lingala.zip4j.exception.ZipException;
@@ -153,7 +154,6 @@ public abstract class CoreCoordinateRecorder
       final String exportFile, final String masterTemplateFile,
       final long interval)
   {
-    String errorMessage = null;
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
     td.setName(fileName);
@@ -166,6 +166,7 @@ public abstract class CoreCoordinateRecorder
 
     // start export
     final PlotTracks plotTracks = new PlotTracks();
+    String errorMessage = null;
     String exportedFile = null;
     try
     {
@@ -174,16 +175,19 @@ public abstract class CoreCoordinateRecorder
     catch (final IOException ie)
     {
       errorMessage = "Error exporting to powerpoint (File access problem)";
+      Trace.trace(ie, errorMessage);
     }
     catch (final ZipException ze)
     {
       errorMessage = "Error exporting to powerpoint (Unable to extract ZIP)";
+      Trace.trace(ze, errorMessage);
     }
     catch (final DebriefException de)
     {
       errorMessage =
           "Error exporting to powerpoint (template may be corrupt).\n" + de
               .getMessage();
+      Trace.trace(de, errorMessage);
     }
     retVal.setErrorMessage(errorMessage);
     retVal.setExportedFile(exportedFile);
@@ -287,6 +291,12 @@ public abstract class CoreCoordinateRecorder
         {
           showMessageDialog("File exported to:" + expResult.exportedFile);
         }
+      }
+      else
+      {
+        // export failed.
+        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+            "Exporting to PPTX failed. See error log for more details");
       }
     }
   }
