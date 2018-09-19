@@ -56,7 +56,8 @@ public class SVGCircle extends SVGElement
       final java.awt.Point origin_coords, final double rotation_degs,
       final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint, defaultColor);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
+        defaultColor);
 
     double magnitude = Math.sqrt(100 * 100 + 100 * 100);
 
@@ -73,7 +74,6 @@ public class SVGCircle extends SVGElement
           / 2), (int) diameter, (int) diameter);
     }
   }
-
 
   public static class SVGCircleTest extends junit.framework.TestCase
   {
@@ -104,8 +104,6 @@ public class SVGCircle extends SVGElement
         assertTrue("failed to load a basic circle.", false);
       }
     }
-    
-
 
     public void testBasicSVGElementFilled()
     {
@@ -120,15 +118,13 @@ public class SVGCircle extends SVGElement
             contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
 
         SVGElement newSVGCircle = new SVGCircle(doc.getDocumentElement());
-        assertTrue(!newSVGCircle.dontFillObject);
+        assertFalse(newSVGCircle.dontFillObject);
       }
       catch (Exception e)
       {
         assertTrue("failed to load a basic element - circle filled.", false);
       }
     }
-    
-
 
     public void testBasicSVGElementNotFilled()
     {
@@ -143,14 +139,13 @@ public class SVGCircle extends SVGElement
             contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
 
         SVGElement newSVGCircle = new SVGCircle(doc.getDocumentElement());
-        assertTrue(newSVGCircle.dontFillObject);
+        assert (newSVGCircle.dontFillObject);
       }
       catch (Exception e)
       {
         assertTrue("failed to load a basic element - circle filled.", false);
       }
     }
-
 
     public void testBasicSVGElementNotFilledSecondWay()
     {
@@ -165,7 +160,7 @@ public class SVGCircle extends SVGElement
             contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
 
         SVGElement newSVGCircle = new SVGCircle(doc.getDocumentElement());
-        assertTrue(newSVGCircle.dontFillObject);
+        assert (newSVGCircle.dontFillObject);
       }
       catch (Exception e)
       {

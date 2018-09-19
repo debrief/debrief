@@ -52,10 +52,12 @@ public class SVGEllipse extends SVGElement
   }
 
   @Override
-  public void render(CanvasType dest, double sym_size, java.awt.Point origin_coords,
-      double rotation_degs, final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
+  public void render(CanvasType dest, double sym_size,
+      java.awt.Point origin_coords, double rotation_degs,
+      final java.awt.Point rotationPoint, final java.awt.Color defaultColor)
   {
-    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint, defaultColor);
+    super.render(dest, sym_size, origin_coords, rotation_degs, rotationPoint,
+        defaultColor);
 
     double magnitude = Math.sqrt(100 * 100 + 100 * 100);
 
@@ -93,11 +95,13 @@ public class SVGEllipse extends SVGElement
             contentToLoad.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
 
         SVGEllipse newSVGEllipse = new SVGEllipse(doc.getDocumentElement());
-        assertTrue(newSVGEllipse._intX.length == 1);
-        assertTrue(newSVGEllipse._intY.length == 1);
-        assertTrue(newSVGEllipse._originalCoordinates.length == 1);
-        assertEquals(50.0111093, newSVGEllipse._originalCoordinates[0].getX(), 1e-5);
-        assertEquals(44.2182422, newSVGEllipse._originalCoordinates[0].getY(), 1e-5);
+        assert (newSVGEllipse._intX.length == 1);
+        assert (newSVGEllipse._intY.length == 1);
+        assert (newSVGEllipse._originalCoordinates.length == 1);
+        assertEquals(50.0111093, newSVGEllipse._originalCoordinates[0].getX(),
+            1e-5);
+        assertEquals(44.2182422, newSVGEllipse._originalCoordinates[0].getY(),
+            1e-5);
         assertEquals(31.0, newSVGEllipse._rx, 1e-5);
         assertEquals(30.7304336, newSVGEllipse._ry, 1e-5);
       }

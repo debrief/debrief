@@ -336,13 +336,10 @@ public final class SymbolFactory
       final String thisKey = (String) it.next();
       final String thisSymbolName = (String) keyIterator.next();
 
-      if (thisKey != null)
+      if (thisKey != null && thisKey.equals(charAsString))
       {
-        if (thisKey.equals(charAsString))
-        {
-          res = thisSymbolName;
-          break;
-        }
+        res = thisSymbolName;
+        break;
       }
     }
 
