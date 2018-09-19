@@ -154,7 +154,6 @@ public abstract class CoreCoordinateRecorder
       final String exportFile, final String masterTemplateFile,
       final long interval)
   {
-    String errorMessage = null;
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
     td.setName(fileName);
@@ -167,6 +166,7 @@ public abstract class CoreCoordinateRecorder
 
     // start export
     final PlotTracks plotTracks = new PlotTracks();
+    String errorMessage = null;
     String exportedFile = null;
     try
     {
@@ -291,6 +291,12 @@ public abstract class CoreCoordinateRecorder
         {
           showMessageDialog("File exported to:" + expResult.exportedFile);
         }
+      }
+      else
+      {
+        // export failed.
+        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+            "Exporting to PPTX failed. See error log for more details");
       }
     }
   }
