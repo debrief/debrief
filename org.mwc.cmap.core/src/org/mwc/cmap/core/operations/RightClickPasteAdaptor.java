@@ -35,6 +35,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
@@ -54,6 +55,58 @@ public class RightClickPasteAdaptor
   
   public static class TestPaste extends TestCase
   {
+    public void testCreateAction()
+    {
+      Layers layers = new Layers();
+      BaseLayer layer1 = new BaseLayer();
+      layer1.setName("name");
+      BaseLayer layer2 = new BaseLayer();
+      layer2.setName("name");
+      BaseLayer layer3 = new BaseLayer();
+      layer3.setName("name");
+      Editable[] items = new Editable[] {layer1, layer2, layer3};
+      Clipboard clipboard =     null;
+      Layer destination = null;
+
+      PasteItem action = createAction(destination, layers, clipboard, items);
+      
+      assertEquals("Check empty", 0, layers.size());
+
+      action.run();
+
+      assertEquals("Check not empty", 3, layers.size());
+    }
+    
+    public void testDynamicInValid()
+    {
+      Layers layers = new Layers();
+      BaseLayer layer1 = new BaseLayer();
+      layer1.setName("name");
+      BaseLayer layer2 = new BaseLayer();
+      layer2.setName("name");
+      BaseLayer layer3 = new BaseLayer();
+      layer3.setName("name");
+      Editable[] items = new Editable[] {layer1, layer2, layer3};
+      Clipboard clipboard =     null;
+      DynamicLayer destination = new DynamicLayer();
+
+      PasteItem action = createAction(destination, layers, clipboard, items);
+      
+      assertNull("failed to create action", action);
+    }
+    
+    public void testDynamicValid()
+    {
+      Layers layers = new Layers();
+      DynamicTrackShapeSetWrapper layer1 = new DynamicTrackShapeSetWrapper("title");
+      layer1.setName("name");
+      Editable[] items = new Editable[] {layer1};
+      Clipboard clipboard =     null;
+      DynamicLayer destination = new DynamicLayer();
+      PasteItem action = createAction(destination, layers, clipboard, items);
+      assertNull("failed to create action", action);
+    }
+
     public void testLayers()
     {
       Layers layers = new Layers();
@@ -235,10 +288,8 @@ public class RightClickPasteAdaptor
     	{
     		// just check that the layers are compliant (that we're not trying to paste a dynamic plottable 
     		// into a non-compliant layer
-    		if(theDataList[0] instanceof DynamicPlottable)
+    		if(!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable)
     		{
-    			if(destination instanceof DynamicLayer)
-    			{
     				// create the menu items
     				paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
     						theLayers);
@@ -246,16 +297,6 @@ public class RightClickPasteAdaptor
     	      // formatting
     				paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
     				paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
-    			}
-    		}
-    		else
-    		{
-      		// create the menu items
-      		paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
-      				theLayers);
-          // formatting
-          paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-          paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
     		}
     	}
     }
