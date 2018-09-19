@@ -16,7 +16,6 @@ package org.mwc.debrief.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 
 @Suite.SuiteClasses(
 {
@@ -126,7 +125,8 @@ import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
     Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestSlicing.class,
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestUpdates.class,
-    ExportTrackAsCSV.TestExport.class
+    org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV.TestExport.class,
+    org.mwc.cmap.core.operations.RightClickPasteAdaptor.TestPaste.class
     })
 @RunWith(Suite.class)
 public class AllTests

@@ -14,6 +14,7 @@
  */
 package org.mwc.cmap.core.operations;
 
+import java.awt.Color;
 import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -33,6 +34,7 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
+import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
@@ -42,12 +44,76 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GenericData.WorldLocation;
+import junit.framework.TestCase;
 
 public class RightClickPasteAdaptor
 {
 
   private static final String DUPLICATE_PREFIX = "Copy of ";
   
+  public static class TestPaste extends TestCase
+  {
+    public void testLayers()
+    {
+      Layers layers = new Layers();
+      BaseLayer layer1 = new BaseLayer();
+      layer1.setName("name");
+      BaseLayer layer2 = new BaseLayer();
+      layer2.setName("name");
+      BaseLayer layer3 = new BaseLayer();
+      layer3.setName("name");
+      Editable[] items = new Editable[] {layer1, layer2, layer3};
+      Clipboard clipboard =
+      null;
+      Layer destination = null;
+      PasteItem paste = new PasteLayer(items, clipboard, destination, layers);
+      
+      assertEquals("starts empty", 0, layers.size());
+      
+      paste.run();
+      
+      assertEquals("now not empty", 3, layers.size());
+      
+      Enumeration<Editable> numer = layers.elements();
+      Editable i1 = numer.nextElement();
+      Editable i2 = numer.nextElement();
+      Editable i3 = numer.nextElement();
+      
+      assertEquals("was renamed", "Copy of Copy of name", i3.getName());
+      assertEquals("was renamed", "Copy of name", i2.getName());
+      assertEquals("was renamed", "name", i1.getName());
+    }
+    
+    public void testLabels()
+    {
+      Layers layers = new Layers();
+      BaseLayer shapes = new BaseLayer();
+      LabelWrapper label = new LabelWrapper("label", new WorldLocation(1d,1d,1d), Color.red);
+      LabelWrapper label2 = new LabelWrapper("label", new WorldLocation(1d,1d,1d), Color.red);
+      LabelWrapper label3 = new LabelWrapper("label", new WorldLocation(1d,1d,1d), Color.red);
+      Editable[] items = new Editable[] {label, label2, label3};
+      Clipboard clipboard =
+      null;
+      Layer destination = shapes;
+      PasteItem paste = new PasteItem(items, clipboard, destination, layers);
+      
+      assertEquals("starts empty", 0, shapes.size());
+      
+      paste.run();
+      
+      assertEquals("now not empty", 3, shapes.size());
+      
+      Enumeration<Editable> numer = shapes.elements();
+      Editable i1 = numer.nextElement();
+      Editable i2 = numer.nextElement();
+      Editable i3 = numer.nextElement();
+      
+      assertEquals("was renamed", "Copy of Copy of label", i1.getName());
+      assertEquals("was renamed", "Copy of label", i2.getName());
+      assertEquals("was renamed", "label", i3.getName());
+    }
+  }
   
   /** see if this layer contains an item with the specified name
    * @param name name we're checking against.
@@ -176,13 +242,20 @@ public class RightClickPasteAdaptor
     				// create the menu items
     				paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
     						theLayers);
+    				
+    	      // formatting
+    				paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+    				paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
     			}
     		}
     		else
     		{
-    		// create the menu items
-    		paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
-    				theLayers);
+      		// create the menu items
+      		paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
+      				theLayers);
+          // formatting
+          paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+          paster.setActionDefinitionId(ActionFactory.PASTE.getCommandId());
     		}
     	}
     }
@@ -215,12 +288,8 @@ public class RightClickPasteAdaptor
 			_myClipboard = clipboard;
 			_theDestination = theDestination;
 			_theLayers = theLayers;
-
-			// formatting
-			super.setText("Paste " + toString());
-			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
-			setActionDefinitionId(ActionFactory.PASTE.getCommandId());
 			
+      setText("Paste " + toString());
 		}
 
 		/**
@@ -319,7 +388,6 @@ public class RightClickPasteAdaptor
 				res += _data[0].getName();
 			return res;
 		}
-
 
 		/**
 		 * 

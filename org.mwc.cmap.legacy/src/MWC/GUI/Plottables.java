@@ -168,7 +168,7 @@ import MWC.GenericData.WorldLocation;
  * a list of Plottables
  */
 public class Plottables implements Plottable, Serializable, PlottablesType,
-		PropertyChangeListener
+		PropertyChangeListener, Renamable
 {
 
 	static final long serialVersionUID = 4094060714021604632L;
