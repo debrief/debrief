@@ -551,7 +551,7 @@ public class ImportReplay extends PlainImporterBase
 
   static public final String NARRATIVE_LAYER = NarrativeEntry.NARRATIVE_LAYER;
 
-  static private final String ANNOTATION_LAYER = "Annotations";
+  static public final String ANNOTATION_LAYER = "Annotations";
 
   /**
    * the prefs provider
@@ -1242,6 +1242,46 @@ public class ImportReplay extends PlainImporterBase
     }
     return null;
   }
+  
+  private List<Editable> addElementsToExistingLayer(Layer layerToAddTo,Editable l)
+  {
+    List<Editable> elementsAdded = new ArrayList<>();
+    Enumeration<Editable> tempElements = ((Layer)l).elements();
+    while(tempElements.hasMoreElements()) {
+      Editable elem = tempElements.nextElement();
+      layerToAddTo.add(elem);
+      elementsAdded.add(elem);
+    }
+    return elementsAdded;
+  }
+  
+  public final List<Editable> importThis(final String text,Layers existingLayers) {
+    List<Editable> elementsAdded = new ArrayList<>();
+    String[] lines = text.split("\\r?\\n");
+    for(String line:lines) {
+      if(!line.trim().isEmpty()) {
+        readLine(line.trim());
+      }
+    }
+    Layers tempLayers = getLayers();
+    Enumeration<Editable> tempElements = tempLayers.elements();
+    //now add to the plot's layers object
+    while(tempElements.hasMoreElements()) {
+      Editable l = tempElements.nextElement();
+      Layer existingLayer = existingLayers.findLayer(l.getName());
+      if(existingLayer==null) {
+        Layer layerToAdd = (Layer)l;
+        existingLayers.addThisLayer(layerToAdd);
+        elementsAdded.add(layerToAdd);
+      }
+      else {
+        //get elements in the templayer for an already existing layer and add to it.
+        elementsAdded.addAll(addElementsToExistingLayer(existingLayer,l));
+      }
+    }
+    existingLayers.fireExtended();
+    return elementsAdded;
+  }
 
   /**
    * import data from this stream
@@ -1925,7 +1965,7 @@ public class ImportReplay extends PlainImporterBase
    * @param theLine
    *          the line to parse
    */
-  public HiResDate readLine(final String theLine) throws java.io.IOException
+  public HiResDate readLine(final String theLine)
   {
     HiResDate res = null;
 

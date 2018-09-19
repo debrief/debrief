@@ -14,17 +14,39 @@
  */
 package org.mwc.debrief.data_feed.views;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -32,7 +54,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -286,7 +308,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		super.dispose();
 
 		// and stop listening for part activity
-		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.ditch();
 
 		// also stop listening for time events
 		if (_controllableTime != null)
@@ -340,8 +362,8 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	public void insertData(final String data)
 	{
 		// ok - fire the new string of data into our reader-writer
-		try
-		{
+		/*try
+		{*/
 			// tell it where our data it
 			if (_myLayers != null)
 			{
@@ -362,13 +384,13 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 				}
 
 			}
-		}
+		/*}
 		catch (final IOException e)
 		{
 			CorePlugin.logError(Status.ERROR, "failed whilst reading from real-time data feed",
 					e);
 		}
-
+*/
 	}
 
 	public void showMessage(final String msg)
