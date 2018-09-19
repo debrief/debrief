@@ -38,7 +38,6 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainWrapper;
 import MWC.TacticalData.NarrativeEntry;
 
 /**
@@ -71,7 +70,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     }
   }
   
-  private Action createAction(Layers theLayers, String clipboardContent) {
+  private Action createAction(final Layers theLayers, final String clipboardContent) {
     final Action doPasteAction = new Action("Paste REP")
     {
       @Override
