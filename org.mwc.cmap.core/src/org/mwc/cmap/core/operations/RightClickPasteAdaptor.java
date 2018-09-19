@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.core.operations;
 
+import java.util.Enumeration;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.IAdaptable;
@@ -32,23 +34,64 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.CanEnumerate;
 import MWC.GUI.DynamicLayer;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Renamable;
 
 public class RightClickPasteAdaptor
 {
 
-	// /////////////////////////////////
-	// member variables
-	// ////////////////////////////////
-
-	// /////////////////////////////////
-	// constructor
-	// ////////////////////////////////
+  private static final String DUPLICATE_PREFIX = "Copy of ";
+  
+  
+  /** see if this layer contains an item with the specified name
+   * @param name name we're checking against.
+   * @param destination layer we're looking at
+   * 
+   * @return
+   */
+  private static boolean containsThis(final String name, final CanEnumerate destination)
+  {
+    final Enumeration<Editable> enumeration = destination.elements();
+    while (enumeration.hasMoreElements())
+    {
+      final Editable next = enumeration.nextElement();
+      if (next.getName() != null && next.getName().equals(name))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /** helper method, to find if an item with this name already exists. If it does, we'll 
+   * prepend the duplicate phrase
+   * 
+   * @param editable the item we're going to add
+   * @param enumeration the destination for the add operation
+   */
+  private static void renameIfNecessary(final Editable editable, final CanEnumerate destination)
+  {
+    if (editable instanceof Renamable)
+    {
+      String hisName = editable.getName();
+      while(containsThis(hisName, destination))
+      {
+        hisName = DUPLICATE_PREFIX + hisName;
+      }
+      
+      // did it change?
+      if(!hisName.equals(editable.getName()))
+      {
+        ((Renamable) editable).setName(hisName);
+      }
+    }
+  }
 
 	static public void getDropdownListFor(final IMenuManager manager, final Editable destination,
 			final Layer[] updateLayer, final HasEditables[] parentLayer, final Layers theLayers, final Clipboard _clipboard)
@@ -201,14 +244,15 @@ public class RightClickPasteAdaptor
 					for (int i = 0; i < _data.length; i++)
 					{
 						final Editable editable = _data[i];
+
+						renameIfNecessary(editable,  _theDestination);
+						
+            // add it to the target layer
 						_theDestination.add(editable);
 					}
 
 					// inform the listeners
 					_theLayers.fireExtended(null, _theDestination);
-
-					// now clear the clipboard
-			//		_myClipboard.clearContents();
 
 					return Status.OK_STATUS;
 				}
@@ -260,8 +304,7 @@ public class RightClickPasteAdaptor
 
 	public static class PasteLayer extends PasteItem
 	{
-
-		public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
+    public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
 				final Layers theLayers)
 		{
 			super(items , clipboard, theDestination, theLayers);
@@ -295,20 +338,22 @@ public class RightClickPasteAdaptor
             // extract the layer
             final Layer newLayer = (Layer) thisItem;
 
-						// copy in the new data
-						// do we have a destination layer?
-						if (_theDestination != null)
-						{
-
-							// add it to the target layer
-							_theDestination.add(newLayer);
-						}
+            // copy in the new data
+            // do we have a destination layer?
+            if (_theDestination != null)
+            {
+              renameIfNecessary(thisItem,  _theDestination);
+              
+              // add it to the target layer
+              _theDestination.add(newLayer);
+            }
 						else
 						{
+              // see if the target already contains an item wtih this name (if we can rename it)
+              renameIfNecessary(thisItem,  _theLayers);
+						  
 							// add it to the top level
 							_theLayers.addThisLayer(newLayer);
-							
-							// hmm, any special processing?
 						}
 
 					}

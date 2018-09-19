@@ -457,8 +457,16 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return _theLabel.getString();
 	}
+	
+	
 
-	public String getFileName()
+	@Override
+  public void setName(String name)
+  {
+	  _theLabel.setString(name);
+  }
+
+  public String getFileName()
 	{
 		return _fileName;
 	}

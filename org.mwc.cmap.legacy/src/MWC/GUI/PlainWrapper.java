@@ -163,7 +163,7 @@ import MWC.GenericData.WorldArea;
  * data
  */
 abstract public class PlainWrapper implements Plottable, Serializable,
-    Exportable, SupportsPropertyListeners
+    Exportable, SupportsPropertyListeners, Renamable
 {
 
   // ///////////////////////////////////////////////////////////
