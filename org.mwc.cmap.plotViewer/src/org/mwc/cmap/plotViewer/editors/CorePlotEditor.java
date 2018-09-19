@@ -1326,6 +1326,9 @@ public abstract class CorePlotEditor extends EditorPart implements
     if (!_ignoreDirtyCalls)
     {
       _plotIsDirty = true;
+
+      // fire the modified event
+      firePropertyChange(PROP_DIRTY);
     }
   }
 
