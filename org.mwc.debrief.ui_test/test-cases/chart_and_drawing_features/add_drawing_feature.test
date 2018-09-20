@@ -34,7 +34,7 @@ with [get-view Outline | get-tree] {
         | verify-true
     get-item -path "Chart Features \\(2 items\\)" | get-property "getItemCount()" | equals 2 | verify-true
     get-item -path "Chart Features \\(2 items\\)" | get-property "getItems().TreeItem[0].getText()" 
-        | equals "New ellipse:New ellipse" | verify-true
+        | equals "Ellipse:New ellipse" | verify-true
     get-item -path "Chart Features \\(2 items\\)" | get-property "getItems().TreeItem[1].getText()" | equals Scale 
         | verify-true
 }
