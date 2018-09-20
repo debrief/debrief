@@ -1901,7 +1901,20 @@ public final class StackedDotHelper
       series = new TimeSeries(seriesName);
       collection.addSeries(series);
     }
-    series.add(bFreq);
+    
+    // wrap the "add" event. We still may get duplicate entries, since
+    // multiple series may have the same name - meaning we try to put
+    // multiple cuts into the same time series.
+    try
+    {
+      series.add(bFreq);
+    }
+    catch (SeriesException se)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Mistakenly tried to add duplicate value to series:" + seriesName + " at:" + bFreq.getPeriod(),
+          null);
+    }
   }
 
   public static ArrayList<Zone> sliceOwnship(final TimeSeries osCourse,
@@ -2963,6 +2976,7 @@ public final class StackedDotHelper
    * @param onlyVis
    * @param holder
    * @param logger
+   * @param radiatedSource 
    * @param fZeroMarker
    *
    * @param currentOffset
@@ -2973,9 +2987,9 @@ public final class StackedDotHelper
       final SwitchableTrackProvider tracks, final boolean onlyVis,
       final ErrorLogger logger, final boolean updateDoublets,
       final SetBackgroundShade backShader,
-      final ColourStandardXYItemRenderer lineRend)
+      final ColourStandardXYItemRenderer lineRend, 
+      final SensorWrapper radiatedSource)
   {
-
     // do we have anything?
     if (_primaryTrack == null)
     {
@@ -3004,8 +3018,6 @@ public final class StackedDotHelper
     }
 
     // create the collection of series
-    // final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
-    // final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
     final TimeSeriesCollection baseValuesSeries = new TimeSeriesCollection();
 
     if (_primaryTrack == null)
@@ -3018,6 +3030,27 @@ public final class StackedDotHelper
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
+    
+    // createa list of series, so we can pause their updates
+
+    final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
+    tList.add(measuredValuesColl);
+    tList.add(dotPlotData);
+    tList.add(linePlotData);
+    tList.add(predictedValuesColl);
+    tList.add(baseValuesSeries);
+    
+    // now switch off updates
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(false);
+
+      series.removeAllSeries();
+    }
+
+    // keep track if this is a multi-static engagement
+    final boolean isMultistatic = radiatedSource != null;
+    
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     SensorWrapper lastSensor = null;
@@ -3057,8 +3090,17 @@ public final class StackedDotHelper
         final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
         final String sensorName = thisSensor.getName();
         safelyAddItem(measuredValuesColl, sensorName, mFreq);
-
-        final double baseFreq = thisD.getBaseFrequency();
+        
+        final double baseFreq;
+        if(isMultistatic)
+        {
+          baseFreq = radiatedSource.getBaseFrequency();
+        }
+        else
+        {
+          baseFreq = thisD.getBaseFrequency();          
+        }
+        
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
@@ -3084,8 +3126,19 @@ public final class StackedDotHelper
 
             // did we get a base frequency? We may have a track
             // with a section of data that doesn't have frequency, you see.
-            final double predictedFreq = thisD.getPredictedFrequency(
-                speedOfSound);
+            final double predictedFreq;
+            
+            if(isMultistatic)
+            {
+              predictedFreq = thisD.getPredictedMultistaticFrequency(
+                  speedOfSound, radiatedSource);
+            }
+            else
+            {
+              predictedFreq = thisD.getPredictedFrequency(
+                  speedOfSound);
+            }
+            
             final double thisError = thisD.calculateFreqError(measuredFreq,
                 predictedFreq);
             final Color predictedColor = halfWayColor(calcColor, thisColor);
@@ -3163,6 +3216,12 @@ public final class StackedDotHelper
       lineRend.setSeriesShapesVisible(BaseFreqSeries, false);
       lineRend.setSeriesShapesFilled(BaseFreqSeries, false);
     }
-
+    // now switch on updates
+    for (final TimeSeriesCollection series : tList)
+    {
+      series.setNotify(true);
+    }
   }
+  
+  
 }

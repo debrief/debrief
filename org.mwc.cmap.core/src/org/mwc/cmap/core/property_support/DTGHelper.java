@@ -176,13 +176,13 @@ public class DTGHelper extends EditorHelper
 				long millis = 0;
 
 				// see if they have been set yet
-				if (!_date.equals(UNSET))
+				if (!_date.equals(UNSET) && _date.length() > 0)
 				{
 					final Date date = _dateFormat.parse(_date);
 					millis += date.getTime();
 				}
 
-				if (!_time.equals(UNSET))
+				if (!_time.equals(UNSET) && _time.length() > 0)
 				{
 					// first try with the long format
 					Date time = null;
@@ -193,7 +193,7 @@ public class DTGHelper extends EditorHelper
 					}
 					catch (final ParseException e)
 					{
-						time = _shortTimeFormat.parse(_time);
+            time = _shortTimeFormat.parse(_time);
 					}
 
 					if (time != null)
@@ -204,12 +204,11 @@ public class DTGHelper extends EditorHelper
 				{
 					res = new HiResDate(millis, 0);
 				}
-
 			}
 			catch (final ParseException e)
 			{
 				// fall back on the original value
-				CorePlugin.logError(Status.ERROR, "Failed to produce dtg", e);
+				CorePlugin.logError(Status.ERROR, "Failed to produce dtg from date/time strings", e);
 				res = _originalVal;
 			}
 			return res;
