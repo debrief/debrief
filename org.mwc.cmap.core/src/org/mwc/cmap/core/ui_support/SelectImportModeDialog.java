@@ -25,15 +25,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
@@ -44,7 +39,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSetti
 /**
  * This class demonstrates how to create your own dialog classes. It allows users to input a String
  */
-public class SelectImportModeDialog extends org.eclipse.jface.dialogs.Dialog implements SelectionListener
+public class SelectImportModeDialog extends ThreadSafeDialog<ImportSettings> implements SelectionListener
 {
   private final String message;
   private String input;
@@ -129,23 +124,12 @@ public class SelectImportModeDialog extends org.eclipse.jface.dialogs.Dialog imp
    * 
    * @return String
    */
-  public ImportSettings openDialog()
+  public ImportSettings internalOpenDialog()
   {
     
     create();
-    getShell().setText("Select track mode");
-        
-    
-//    
-//    //centreLocation
-//    Rectangle shellBounds = activeShell.getBounds();
-//    Point dialogSize = shell.getSize();
-//    shell.setLocation(shellBounds.x + (shellBounds.width - dialogSize.x) / 2, shellBounds.y + (shellBounds.height - dialogSize.y) / 2);
-//    
+    getShell().setText("Select track mode");    
     open();
-    
-   
-
     // Return the entered value (will be null if user cancelled)
     ImportSettings res;
     if (_mode == null)
