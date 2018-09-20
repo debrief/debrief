@@ -211,20 +211,45 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
   {
     _selectedImportSettings = null;
 
+    final Object lock = new Object();
+    
     final Display current = Display.getDefault();
-    current.syncExec(new Runnable()
+    
+    current.asyncExec(new Runnable()
     {
       public void run()
       {
-        final Shell active =
-            PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
-        // ok, popup our custom dialog, let user decide
-        final SelectImportModeDialog dialog =
-            new SelectImportModeDialog(active, trackName);
-        // store the value
-        _selectedImportSettings = dialog.open();
+        synchronized (lock)
+        {
+          try {
+              final Shell active =
+                  PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
+              // ok, popup our custom dialog, let user decide
+              final SelectImportModeDialog dialog =
+                  new SelectImportModeDialog(active, trackName);
+              // store the value
+              _selectedImportSettings = dialog.openDialog();
+          }
+          finally
+          {
+            lock.notify();
+          }
+        }
       }
     });
+    
+    synchronized (lock)
+    {
+      try
+      {
+        lock.wait();
+      }
+      catch (InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+    }
+    
     return _selectedImportSettings;
   }
 
