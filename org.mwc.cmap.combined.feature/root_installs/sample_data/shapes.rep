@@ -17,62 +17,62 @@
 ;TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol 
 ;TEXT: EB 21.66 0 0 N 21.52 0 0 W
 
-;TEXT: aB 22.16 0 0 N 19.52 0 0 W merchant a
-;TEXT: bB 22.06 0 0 N 19.52 0 0 W fishing b   
-;TEXT: cB 21.96 0 0 N 19.52 0 0 W pleasure_craft c
-;TEXT: dB 21.86 0 0 N 19.52 0 0 W coastguard_law_enforcement d
-;TEXT: eB 21.76 0 0 N 19.52 0 0 W friend_surface e
-;TEXT: fB 21.66 0 0 N 19.52 0 0 W friend_subsurface f
-;TEXT: gB 21.56 0 0 N 19.52 0 0 W neutral_air g
-;TEXT: hB 21.46 0 0 N 19.52 0 0 W neutral_surface h
-;TEXT: iB 21.36 0 0 N 19.52 0 0 W neutral_subsurface i
-;TEXT: jB 21.26 0 0 N 19.52 0 0 W enemy_air j
-;TEXT: kB 21.16 0 0 N 19.52 0 0 W enemy_surface k
-;TEXT: lB 21.06 0 0 N 19.52 0 0 W enemy_subsurface l
+;TEXT: aB[LAYER=SVG_Annotations] 22.16 0 0 N 19.52 0 0 W merchant a
+;TEXT: bB[LAYER=SVG_Annotations] 22.06 0 0 N 19.52 0 0 W fishing b   
+;TEXT: cB[LAYER=SVG_Annotations] 21.96 0 0 N 19.52 0 0 W pleasure_craft c
+;TEXT: dB[LAYER=SVG_Annotations] 21.86 0 0 N 19.52 0 0 W coastguard_law_enforcement d
+;TEXT: eB[LAYER=SVG_Annotations] 21.76 0 0 N 19.52 0 0 W friend_surface e
+;TEXT: fB[LAYER=SVG_Annotations] 21.66 0 0 N 19.52 0 0 W friend_subsurface f
+;TEXT: gB[LAYER=SVG_Annotations] 21.56 0 0 N 19.52 0 0 W neutral_air g
+;TEXT: hB[LAYER=SVG_Annotations] 21.46 0 0 N 19.52 0 0 W neutral_surface h
+;TEXT: iB[LAYER=SVG_Annotations] 21.36 0 0 N 19.52 0 0 W neutral_subsurface i
+;TEXT: jB[LAYER=SVG_Annotations] 21.26 0 0 N 19.52 0 0 W enemy_air j
+;TEXT: kB[LAYER=SVG_Annotations] 21.16 0 0 N 19.52 0 0 W enemy_surface k
+;TEXT: lB[LAYER=SVG_Annotations] 21.06 0 0 N 19.52 0 0 W enemy_subsurface l
 
-;TEXT: mB 22.16 0 0 N 18.92 0 0 W unknown_air m
-;TEXT: nB 22.06 0 0 N 18.92 0 0 W unknown_surface n
-;TEXT: oB 21.96 0 0 N 18.92 0 0 W unknown_subsurface o
-;TEXT: pB 21.86 0 0 N 18.92 0 0 W buoy_1 p
-;TEXT: qB 21.76 0 0 N 18.92 0 0 W buoy_2 q
-;TEXT: rB 21.66 0 0 N 18.92 0 0 W missile r
-;TEXT: sB 21.56 0 0 N 18.92 0 0 W torpedo s
-;TEXT: tB 21.46 0 0 N 18.92 0 0 W generic_arrow t
-;TEXT: uB 21.36 0 0 N 18.92 0 0 W drop_point u
-;TEXT: vB 21.26 0 0 N 18.92 0 0 W splash_point v
-;TEXT: wB 21.16 0 0 N 18.92 0 0 W vector_1 w
-;TEXT: xB 21.06 0 0 N 18.92 0 0 W vector_2 x
-
-
-;TEXT: @C[SYMBOL=anomaly] 20.76 0 0 N 19.52 0 0 W anomaly
-;TEXT: @C[SYMBOL=bottomed_mine] 20.66 0 0 N 19.52 0 0 W bottomed_mine   
-;TEXT: @C[SYMBOL=cleared] 20.56 0 0 N 19.52 0 0 W cleared
-;TEXT: @C[SYMBOL=countermeasure] 20.46 0 0 N 19.52 0 0 W countermeasure
-;TEXT: @C[SYMBOL=decoy] 20.36 0 0 N 19.52 0 0 W decoy
-;TEXT: @C[SYMBOL=decoy_aw] 20.26 0 0 N 19.52 0 0 W decoy_aw
-;TEXT: @C[SYMBOL=decoy_uw] 20.16 0 0 N 19.52 0 0 W decoy_uw
-;TEXT: @C[SYMBOL=enemy_subsurface] 20.06 0 0 N 19.52 0 0 W enemy_subsurface
-;TEXT: @C[SYMBOL=flagged_marker] 19.96 0 0 N 19.52 0 0 W flagged_marker
-;TEXT: @C[SYMBOL=floating_mine] 19.86 0 0 N 19.52 0 0 W floating_mine
-;TEXT: @C[SYMBOL=friend_air] 19.76 0 0 N 19.52 0 0 W friend_air
-;TEXT: @C[SYMBOL=highlights_1] 19.66 0 0 N 19.52 0 0 W highlights_1
-;TEXT: @C[SYMBOL=usv_5] 19.56 0 0 N 19.52 0 0 W usv_5
+;TEXT: mB[LAYER=SVG_Annotations] 22.16 0 0 N 18.92 0 0 W unknown_air m
+;TEXT: nB[LAYER=SVG_Annotations] 22.06 0 0 N 18.92 0 0 W unknown_surface n
+;TEXT: oB[LAYER=SVG_Annotations] 21.96 0 0 N 18.92 0 0 W unknown_subsurface o
+;TEXT: pB[LAYER=SVG_Annotations] 21.86 0 0 N 18.92 0 0 W buoy_1 p
+;TEXT: qB[LAYER=SVG_Annotations] 21.76 0 0 N 18.92 0 0 W buoy_2 q
+;TEXT: rB[LAYER=SVG_Annotations] 21.66 0 0 N 18.92 0 0 W missile r
+;TEXT: sB[LAYER=SVG_Annotations] 21.56 0 0 N 18.92 0 0 W torpedo s
+;TEXT: tB[LAYER=SVG_Annotations] 21.46 0 0 N 18.92 0 0 W generic_arrow t
+;TEXT: uB[LAYER=SVG_Annotations] 21.36 0 0 N 18.92 0 0 W drop_point u
+;TEXT: vB[LAYER=SVG_Annotations] 21.26 0 0 N 18.92 0 0 W splash_point v
+;TEXT: wB[LAYER=SVG_Annotations] 21.16 0 0 N 18.92 0 0 W vector_1 w
+;TEXT: xB[LAYER=SVG_Annotations] 21.06 0 0 N 18.92 0 0 W vector_2 x
 
 
-;TEXT: @C[SYMBOL=highlights_2] 20.76 0 0 N 18.92 0 0 W highlights_2
-;TEXT: @C[SYMBOL=jammer] 20.66 0 0 N 18.92 0 0 W jammer
-;TEXT: @C[SYMBOL=mine_like_object] 20.56 0 0 N 18.92 0 0 W mine_like_object
-;TEXT: @C[SYMBOL=moored_mine] 20.46 0 0 N 18.92 0 0 W moored_mine
-;TEXT: @C[SYMBOL=tagged_marker] 20.36 0 0 N 18.92 0 0 W tagged_marker
-;TEXT: @C[SYMBOL=torpedo] 20.26 0 0 N 18.92 0 0 W torpedo
-;TEXT: @C[SYMBOL=uav_1] 20.16 0 0 N 18.92 0 0 W uav_1
-;TEXT: @C[SYMBOL=uav_2] 20.06 0 0 N 18.92 0 0 W uav_2
-;TEXT: @C[SYMBOL=usv_1] 19.96 0 0 N 18.92 0 0 W usv_1
-;TEXT: @C[SYMBOL=usv_2] 19.86 0 0 N 18.92 0 0 W usv_2
-;TEXT: @C[SYMBOL=usv_3] 19.76 0 0 N 18.92 0 0 W usv_3
-;TEXT: @C[SYMBOL=usv_4] 19.66 0 0 N 18.92 0 0 W usv_4
-;TEXT: @C[SYMBOL=wreck] 19.56 0 0 N 18.92 0 0 W wreck
-;TEXT: @C[SYMBOL=xxx_contact] 19.46 0 0 N 18.92 0 0 W xxx_contact
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=anomaly] 20.76 0 0 N 19.52 0 0 W anomaly
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=bottomed_mine] 20.66 0 0 N 19.52 0 0 W bottomed_mine   
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=cleared] 20.56 0 0 N 19.52 0 0 W cleared
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=countermeasure] 20.46 0 0 N 19.52 0 0 W countermeasure
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=decoy] 20.36 0 0 N 19.52 0 0 W decoy
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=decoy_aw] 20.26 0 0 N 19.52 0 0 W decoy_aw
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=decoy_uw] 20.16 0 0 N 19.52 0 0 W decoy_uw
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=enemy_subsurface] 20.06 0 0 N 19.52 0 0 W enemy_subsurface
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=flagged_marker] 19.96 0 0 N 19.52 0 0 W flagged_marker
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=floating_mine] 19.86 0 0 N 19.52 0 0 W floating_mine
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=friend_air] 19.76 0 0 N 19.52 0 0 W friend_air
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=highlights_1] 19.66 0 0 N 19.52 0 0 W highlights_1
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=usv_5] 19.56 0 0 N 19.52 0 0 W usv_5
+
+
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=highlights_2] 20.76 0 0 N 18.92 0 0 W highlights_2
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=jammer] 20.66 0 0 N 18.92 0 0 W jammer
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=mine_like_object] 20.56 0 0 N 18.92 0 0 W mine_like_object
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=moored_mine] 20.46 0 0 N 18.92 0 0 W moored_mine
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=tagged_marker] 20.36 0 0 N 18.92 0 0 W tagged_marker
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=torpedo] 20.26 0 0 N 18.92 0 0 W torpedo
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=uav_1] 20.16 0 0 N 18.92 0 0 W uav_1
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=uav_2] 20.06 0 0 N 18.92 0 0 W uav_2
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=usv_1] 19.96 0 0 N 18.92 0 0 W usv_1
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=usv_2] 19.86 0 0 N 18.92 0 0 W usv_2
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=usv_3] 19.76 0 0 N 18.92 0 0 W usv_3
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=usv_4] 19.66 0 0 N 18.92 0 0 W usv_4
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=wreck] 19.56 0 0 N 18.92 0 0 W wreck
+;TEXT: @C[LAYER=SVG_Annotations,SYMBOL=xxx_contact] 19.46 0 0 N 18.92 0 0 W xxx_contact
 
 951212	050000.000	MISSILE_ROTATION	@C[SYMBOL=missile]	22	12	23.63	N	21	32	7.88	W	212.2	4	15
 951212	050100.000	MISSILE_ROTATION	@C[SYMBOL=missile]	22	12	20.02	N	21	32	6.07	W	196.7	4	15
