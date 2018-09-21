@@ -1305,7 +1305,7 @@ public class ImportReplay extends PlainImporterBase
           destination.addThisLayer(layerToAdd);
         }
         else {
-          destination.removeThisEditable(null, l);
+          destination.removeThisLayer(layerToAdd);
         }
       }
       else {
