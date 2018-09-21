@@ -3160,13 +3160,9 @@ and so on....</programlisting></para>
                   <para>Verify that the export location is correct, and give a filename for the file that gets producued.</para>
                 </listitem>
                 <listitem>
-                  <para>Finally, click on <guibutton>Export</guibutton>. If you clicked on <guibutton>Open exported PPTX</guibutton>, 
-                    the presentation will open.</para>
+                  <para>Finally, click on <guibutton>Export</guibutton>. If you clicked on <guibutton>Open exported PPTX</guibutton>, the presentation will open.</para>
                 </listitem>
-              </orderedlist>
-              Once you have opened the exported file, you can switch to the <guibutton>Animations</guibutton> tab, 
-              then press <guibutton>Preview</guibutton> to watch/verify the dynamict tracks.
-              <figure xml:id="exported_scenario">
+              </orderedlist> Once you have opened the exported file, you can switch to the <guibutton>Animations</guibutton> tab, then press <guibutton>Preview</guibutton> to watch/verify the dynamict tracks. <figure xml:id="exported_scenario">
                 <title>Sample of exported scenario</title>
                 <mediaobject>
                   <imageobject>
@@ -3186,14 +3182,34 @@ and so on....</programlisting></para>
         <para>A set of symbols is provided within <application>Debrief</application>. The symbols <indexterm>
             <primary>Symbol Sets</primary>
           </indexterm> can either be attached to a text label, or used to highlight a current vessel location when stepping through tracks.</para>
-        <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any internal characters (as used in the sonar buoys) are not plotted. <figure xml:id="debrief_symbols">
+        <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any internal characters (as used in the sonar buoys) are not plotted.   
+          <figure xml:id="debrief_symbols">
             <title>Symbols provided by <application>Debrief</application></title>
             <mediaobject>
               <imageobject>
                 <imagedata fileref="figures/d3_symbols.gif" scalefit="1" width="100%"/>
               </imageobject>
             </mediaobject>
-          </figure></para>
+          </figure>
+        </para>
+        <para>Debrief also contains a series of symbols that are recorded in SVG files. These files are plain SVG drawings that Debrief reads from file, and then renders at the required location.  Some of the symbols can be assigned directly from their REP file symbology characters, as described in <xref linkend="debrief_Sym" />. The other, non-indexed symbols can be specified from REP file using the extended symbology attributes described in <xref linkend="debrief_NamedSym"/>
+          <figure xml:id="debrief_indexed_svg_symbols">
+            <title>Indexed SVG symbols</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/IndexedSVGSymbols.png" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+          <figure xml:id="debrief_svg_symbols">
+            <title>Non-indexed SVG symbols</title>
+            <mediaobject>
+              <imageobject>
+                <imagedata fileref="figures/NonIndexedSVGSymbols.png" scalefit="1" width="100%"/>
+              </imageobject>
+            </mediaobject>
+          </figure>
+        </para>
         <note>
           <para><indexterm>
               <primary>Scaled symbols</primary>
@@ -6344,21 +6360,158 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 
           <para><indexterm>
               <primary>Symbology data</primary>
-            </indexterm>The symbology data field describes the representation required for this vessel track, specifying the colour of track to use and symbol-type to represent that vehicle. The Symbol style read in is used when tracks are to be shown by using symbol (in 2D or 3D), as described in <xref linkend="symbol_sets"/>.<table xml:id="debrief_Sym">
-              <title>Debrief core symbology data fields</title>
+            </indexterm>The symbology data field describes the representation required for this vessel track, specifying the colour of track to use and symbol-type to represent that vehicle. The Symbol style read in is used when tracks are to be shown by using symbol (in 2D or 3D). Control of when symbols are shown, and examples of the symbols are shown in <xref linkend="symbol_sets"/>. 
+            <table xml:id="debrief_Sym_colors">
+              <title>Debrief symbology color codes</title>
               <tgroup cols="4">
-                <colspec colname="c1"/>
-                <colspec colname="c2"/>
-                <colspec colname="c3"/>
+                <colspec colname="c3" colwidth="20%"/>
                 <colspec colname="c4"/>
+                <colspec colname="newCol3" colwidth="20%"/>
+                <colspec colname="newCol4"/>
                 <thead>
                   <row>
-                    <entry nameend="c2" namest="c1">
-                      <para>Symbol Style</para>
-                    </entry>
-                    <entry nameend="c4" namest="c3">
+                    <entry nameend="newCol4" namest="c3">
                       <para>Colour</para>
                     </entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry>
+                      <para>A</para>
+                    </entry>
+                    <entry>
+                      <para>Blue</para>
+                    </entry>
+                    <entry>
+                      <para>J</para>
+                    </entry>
+                    <entry>
+                      <para>Light Green</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>B</para>
+                    </entry>
+                    <entry>
+                      <para>Green</para>
+                    </entry>
+                    <entry>
+                      <para>K</para>
+                    </entry>
+                    <entry>
+                      <para>Pink</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>C</para>
+                    </entry>
+                    <entry>
+                      <para>Red</para>
+                    </entry>
+                    <entry>
+                      <para>L</para>
+                    </entry>
+                    <entry>
+                      <para>Gold</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>D</para>
+                    </entry>
+                    <entry>
+                      <para>Yellow</para>
+                    </entry>
+                    <entry>
+                      <para>M</para>
+                    </entry>
+                    <entry>
+                      <para>Light Grey</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>E</para>
+                    </entry>
+                    <entry>
+                      <para>Magenta</para>
+                    </entry>
+                    <entry>
+                      <para>N</para>
+                    </entry>
+                    <entry>
+                      <para>Grey</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>F</para>
+                    </entry>
+                    <entry>
+                      <para>Orange</para>
+                    </entry>
+                    <entry>
+                      <para>O</para>
+                    </entry>
+                    <entry>
+                      <para>Dark Grey</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>G</para>
+                    </entry>
+                    <entry>
+                      <para>Purple</para>
+                    </entry>
+                    <entry>
+                      <para>P</para>
+                    </entry>
+                    <entry>
+                      <para>White</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>H</para>
+                    </entry>
+                    <entry>
+                      <para>Cyan</para>
+                    </entry>
+                    <entry>
+                      <para>Q</para>
+                    </entry>
+                    <entry>
+                      <para>Black</para>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry>
+                      <para>I</para>
+                    </entry>
+                    <entry>
+                      <para>Brown </para>
+                    </entry>
+                    <entry/>
+                    <entry/>
+                  </row>
+                </tbody>
+              </tgroup>
+            </table>
+            <table xml:id="debrief_Sym">
+              <title>Debrief symbology symbol codes</title>
+              <tgroup cols="4">
+                <colspec colname="c1" colwidth="20%"/>
+                <colspec colname="c2"/>
+                <colspec colname="newCol3" colwidth="20%"/>
+                <colspec colname="newCol4"/>
+                <thead>
+                  <row>
+                    <entry nameend="c2" namest="c1">Internal Symbols</entry>
+                    <entry namest="newCol3" nameend="newCol4">SVG Symbols</entry>
                   </row>
                 </thead>
                 <tbody>
@@ -6370,10 +6523,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Aircraft</para>
                     </entry>
                     <entry>
-                      <para>@</para>
+                      <para>a</para>
                     </entry>
                     <entry>
-                      <para>White</para>
+                      <para>Merchant</para>
                     </entry>
                   </row>
                   <row>
@@ -6384,10 +6537,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Carrier</para>
                     </entry>
                     <entry>
-                      <para>A</para>
+                      <para>b</para>
                     </entry>
                     <entry>
-                      <para>Blue</para>
+                      <para>Fishing</para>
                     </entry>
                   </row>
                   <row>
@@ -6398,10 +6551,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Destroyer</para>
                     </entry>
                     <entry>
-                      <para>B</para>
+                      <para>c</para>
                     </entry>
                     <entry>
-                      <para>Green</para>
+                      <para>Pleasure_craft</para>
                     </entry>
                   </row>
                   <row>
@@ -6412,10 +6565,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Frigate</para>
                     </entry>
                     <entry>
-                      <para>C</para>
+                      <para>d</para>
                     </entry>
                     <entry>
-                      <para>Red</para>
+                      <para>Coastguard law enforcement</para>
                     </entry>
                   </row>
                   <row>
@@ -6426,10 +6579,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Helicopter</para>
                     </entry>
                     <entry>
-                      <para>D</para>
+                      <para>e</para>
                     </entry>
                     <entry>
-                      <para>Yellow</para>
+                      <para>Friend Surface</para>
                     </entry>
                   </row>
                   <row>
@@ -6440,10 +6593,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Merchant</para>
                     </entry>
                     <entry>
-                      <para>E</para>
+                      <para>f</para>
                     </entry>
                     <entry>
-                      <para>Magenta</para>
+                      <para>Friend Subsurface</para>
                     </entry>
                   </row>
                   <row>
@@ -6454,10 +6607,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Minesweeper</para>
                     </entry>
                     <entry>
-                      <para>F</para>
+                      <para>g</para>
                     </entry>
                     <entry>
-                      <para>Orange</para>
+                      <para>Neutral Air</para>
                     </entry>
                   </row>
                   <row>
@@ -6468,10 +6621,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Torpedo</para>
                     </entry>
                     <entry>
-                      <para>G</para>
+                      <para>h</para>
                     </entry>
                     <entry>
-                      <para>Purple</para>
+                      <para>Neutral Surface</para>
                     </entry>
                   </row>
                   <row>
@@ -6482,10 +6635,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Troop Carrier</para>
                     </entry>
                     <entry>
-                      <para>H</para>
+                      <para>i</para>
                     </entry>
                     <entry>
-                      <para>Cyan</para>
+                      <para>Neutral Subsurface</para>
                     </entry>
                   </row>
                   <row>
@@ -6496,10 +6649,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Submarine</para>
                     </entry>
                     <entry>
-                      <para>I</para>
+                      <para>j</para>
                     </entry>
                     <entry>
-                      <para>Brown </para>
+                      <para>Enemy Air</para>
                     </entry>
                   </row>
                   <row>
@@ -6510,10 +6663,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>TA Frigate</para>
                     </entry>
                     <entry>
-                      <para>J</para>
+                      <para>k</para>
                     </entry>
                     <entry>
-                      <para>Light Green</para>
+                      <para>Enemy Surface</para>
                     </entry>
                   </row>
                   <row>
@@ -6524,10 +6677,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Cruiser</para>
                     </entry>
                     <entry>
-                      <para>K</para>
+                      <para>l</para>
                     </entry>
                     <entry>
-                      <para>Pink</para>
+                      <para>Enemy Subsurface</para>
                     </entry>
                   </row>
                   <row>
@@ -6538,10 +6691,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Fishing Vessel</para>
                     </entry>
                     <entry>
-                      <para>L</para>
+                      <para>m</para>
                     </entry>
                     <entry>
-                      <para>Gold</para>
+                      <para>Unknown Air</para>
                     </entry>
                   </row>
                   <row>
@@ -6552,10 +6705,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Unknown</para>
                     </entry>
                     <entry>
-                      <para>M</para>
+                      <para>n</para>
                     </entry>
                     <entry>
-                      <para>Light Grey</para>
+                      <para>Unknown Surface</para>
                     </entry>
                   </row>
                   <row>
@@ -6566,10 +6719,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Cross</para>
                     </entry>
                     <entry>
-                      <para>N</para>
+                      <para>o</para>
                     </entry>
                     <entry>
-                      <para>Grey</para>
+                      <para>Unknown Subsurface</para>
                     </entry>
                   </row>
                   <row>
@@ -6580,10 +6733,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Square</para>
                     </entry>
                     <entry>
-                      <para>O</para>
+                      <para>p</para>
                     </entry>
                     <entry>
-                      <para>Dark Grey</para>
+                      <para>Buoy_1</para>
                     </entry>
                   </row>
                   <row>
@@ -6594,10 +6747,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Datum</para>
                     </entry>
                     <entry>
-                      <para>P</para>
+                      <para>q</para>
                     </entry>
                     <entry>
-                      <para>White</para>
+                      <para>Buoy_2</para>
                     </entry>
                   </row>
                   <row>
@@ -6608,10 +6761,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Reference Position</para>
                     </entry>
                     <entry>
-                      <para>Q</para>
+                      <para>r</para>
                     </entry>
                     <entry>
-                      <para>Black</para>
+                      <para>Missile</para>
                     </entry>
                   </row>
                   <row>
@@ -6622,10 +6775,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Circle</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>s</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Torpedo</para>
                     </entry>
                   </row>
                   <row>
@@ -6636,10 +6789,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Wreck</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>t</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Generic arrow</para>
                     </entry>
                   </row>
                   <row>
@@ -6650,10 +6803,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Filled Square</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>u</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Drop point</para>
                     </entry>
                   </row>
                   <row>
@@ -6664,10 +6817,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Filled Circle</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>v</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Splash point</para>
                     </entry>
                   </row>
                   <row>
@@ -6678,10 +6831,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>Active Buoy</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>w</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Vector_1</para>
                     </entry>
                   </row>
                   <row>
@@ -6692,10 +6845,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>DIFAR Buoy</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>x</para>
                     </entry>
                     <entry>
-                      <para/>
+                      <para>Vector_2</para>
                     </entry>
                   </row>
                   <row>
@@ -6705,12 +6858,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>LOFAR Buoy</para>
                     </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
+                    <entry/>
+                    <entry/>
                   </row>
                   <row>
                     <entry>
@@ -6719,12 +6868,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>BARRA Buoy</para>
                     </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
+                    <entry/>
+                    <entry/>
                   </row>
                   <row>
                     <entry>
@@ -6733,12 +6878,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Hidar Buoy</para>
                     </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
+                    <entry/>
+                    <entry/>
                   </row>
                   <row>
                     <entry>
@@ -6747,351 +6888,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                     <entry>
                       <para>Kingpin Marker</para>
                     </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>a</para>
-                    </entry>
-                    <entry>
-                      <para>Merchant</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>b</para>
-                    </entry>
-                    <entry>
-                      <para>Fishing</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>c</para>
-                    </entry>
-                    <entry>
-                      <para>Pleasure_craft</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>d</para>
-                    </entry>
-                    <entry>
-                      <para>Coastguard law enforcement</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>e</para>
-                    </entry>
-                    <entry>
-                      <para>Friend Surface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>f</para>
-                    </entry>
-                    <entry>
-                      <para>Friend Subsurface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>g</para>
-                    </entry>
-                    <entry>
-                      <para>Neutral Air</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>h</para>
-                    </entry>
-                    <entry>
-                      <para>Neutral Surface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>i</para>
-                    </entry>
-                    <entry>
-                      <para>Neutral Subsurface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>j</para>
-                    </entry>
-                    <entry>
-                      <para>Enemy Air</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>k</para>
-                    </entry>
-                    <entry>
-                      <para>Enemy Surface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>l</para>
-                    </entry>
-                    <entry>
-                      <para>Enemy Subsurface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>m</para>
-                    </entry>
-                    <entry>
-                      <para>Unknown Air</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>n</para>
-                    </entry>
-                    <entry>
-                      <para>Unknown Surface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>o</para>
-                    </entry>
-                    <entry>
-                      <para>Unknown Subsurface</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>p</para>
-                    </entry>
-                    <entry>
-                      <para>Buoy_1</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>q</para>
-                    </entry>
-                    <entry>
-                      <para>Buoy_2</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>r</para>
-                    </entry>
-                    <entry>
-                      <para>Missile</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>s</para>
-                    </entry>
-                    <entry>
-                      <para>Torpedo</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>t</para>
-                    </entry>
-                    <entry>
-                      <para>Generic arrow</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>u</para>
-                    </entry>
-                    <entry>
-                      <para>Drop point</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>v</para>
-                    </entry>
-                    <entry>
-                      <para>Splash point</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>w</para>
-                    </entry>
-                    <entry>
-                      <para>Vector_1</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry>
-                      <para>x</para>
-                    </entry>
-                    <entry>
-                      <para>Vector_2</para>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
-                    <entry>
-                      <para/>
-                    </entry>
+                    <entry/>
+                    <entry/>
                   </row>
                 </tbody>
               </tgroup>
+
             </table>Here&apos;s an illustration of how the new colors appear against the range of Debrief background colors:<figure xml:id="shades_2015">
               <title>2015 Debrief shades</title>
               <screenshot>
@@ -7240,11 +7042,7 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
               </tgroup>
             </table>
             <note>
-              <para>In 2017 the Debrief symbology attributes were extended to allow the provision
-              of some optional named parameters. The first of these is the specification of the 
-              layer into which the annotation should be inserted.  Note: in the initial
-              implementation spaces are not allowed in the entries. The second of these is the
-              specification of the SVG Symbol to be used in the track.</para>
+              <para>In 2017 the Debrief symbology attributes were extended to allow the provision of some optional named parameters. The first of these is the specification of the layer into which the annotation should be inserted. Note: in the initial implementation spaces are not allowed in the entries. The second of these is the specification of the SVG Symbol to be used in the track.</para>
             </note>
             <table xml:id="debrief_NamedSym">
               <title>Debrief extended symbology data fields</title>
@@ -7277,15 +7075,12 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                       <para>[SYMBOL=SVG_ICON_NAME]</para>
                     </entry>
                     <entry>
-                      <para>This annotation places the specified icon as a symbol. Note: spaces not allowed.  
-                        Icon name must be the exact name that appears in the SVG Section.</para>
+                      <para>This annotation places the specified icon as a symbol. Note: spaces not allowed. Icon name must be the exact name that appears in the SVG Section.</para>
                     </entry>
                   </row>
                 </tbody>
               </tgroup>
-            </table>
-            Please, take a look at the following example of the extended symbology at use
-            <screen xml:id="extended_symbology_example">            <markup>
+            </table> Please, take a look at the following example of the extended symbology at use <screen xml:id="extended_symbology_example">            <markup>
 951212 050700.000 NELSON @C[SYMBOL=missile] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
 951212 050701.000 COLLINGWOOD @C[SYMBOL=torpedo,LAYER=Support] 22 11 10.08 N 21 43 20.34 W 270.5   2.0      0 
             </markup>      </screen>
@@ -7679,6 +7474,17 @@ and entry type can be multi-word if surrounded by quotes (").
               <para>In Autumn 2014 the <filename>dpf</filename> suffix was adopted. The data is still stored in XML format, but the adoption of a unique suffix makes it easier to find Debrief files from a File Explorer.</para>
             </note>
           </para>
+        </sect2>
+      </sect1>
+      <sect1 xml:id="SVG_symbol_format">
+        <title>SVG Symbol Format</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>What we've done</para>
+        </sect2>
+        <sect2>
+          <title>Implementation</title>
+          <para>How to structure SVG files</para>
         </sect2>
       </sect1>
 
