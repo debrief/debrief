@@ -120,6 +120,11 @@ public class SquareSymbol extends PlainSymbol
 		// if we think it is really necessary...
 	}
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new SquareSymbol();
+  }
 	/**
 	 * getBounds
 	 * 
@@ -139,15 +144,6 @@ public class SquareSymbol extends PlainSymbol
 	public String getType()
 	{
 		return SQUARE_SYMBOL;
-	}
-
-	/**
-	 * getMetafile
-	 * 
-	 */
-	public void getMetafile()
-	{
-		// return the metafile
 	}
 
 	/**

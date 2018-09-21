@@ -156,6 +156,7 @@ Export-Package:
    junit.framework,
    MWC.GenericData,
    MWC.GUI",
+ MWC.GUI.Shapes.Symbols.SVG,
  MWC.GUI.Shapes.Symbols.Vessels;uses:="MWC.GUI.Shapes.Symbols,MWC.GenericData,MWC.GUI",
  MWC.GUI.SplitPanel,
  MWC.GUI.Swing;

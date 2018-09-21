@@ -14,6 +14,8 @@
  */
 package MWC.GUI.Shapes.Symbols.Geog;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+
 public class FilledCircleSymbol extends CircleSymbol
 {
 
@@ -30,7 +32,13 @@ public class FilledCircleSymbol extends CircleSymbol
 		super.setFillSymbol(true);
 	}
 	
-	/**
+	@Override
+  public PlainSymbol create()
+  {
+    return new FilledCircleSymbol();
+  }
+
+  /**
 	 * getType
 	 * 
 	 * @return the returned String

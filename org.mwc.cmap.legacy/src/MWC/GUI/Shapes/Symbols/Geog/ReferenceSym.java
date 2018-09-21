@@ -88,6 +88,11 @@ public class ReferenceSym extends PlainSymbol
 
 	private static java.awt.Font _myFont = Defaults.getFont();
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new ReferenceSym();
+  }
 
   private String _leftLabel = "A";
   private String _rightLabel = "A";
@@ -96,15 +101,6 @@ public class ReferenceSym extends PlainSymbol
    * our editor
    */
   transient private Editable.EditorType _myEditor = null;
-
-  ////////////////////////////////
-  // member functions
-  ////////////////////////////////
-
-
-  public void getMetafile()
-  {
-  }
 
   public java.awt.Dimension getBounds()
   {

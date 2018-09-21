@@ -92,9 +92,10 @@ public class WreckSym extends PlainSymbol
   // member functions
   ////////////////////////////////
 
-
-  public void getMetafile()
+  @Override
+  public PlainSymbol create()
   {
+    return new WreckSym();
   }
 
   public java.awt.Dimension getBounds()

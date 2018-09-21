@@ -60,10 +60,6 @@ public class AircraftCarrierSym extends PlainSymbol {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
-  {
-  }
-
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
     final java.awt.Dimension res = new java.awt.Dimension((int)(2 * 4 * getScaleVal()),(int)( 2 * 4 * getScaleVal()));
@@ -108,6 +104,12 @@ public class AircraftCarrierSym extends PlainSymbol {
     return "Carrier";
   }
 
+
+  @Override
+  public PlainSymbol create()
+  {
+    return new AircraftCarrierSym();
+  }
 }
 
 
