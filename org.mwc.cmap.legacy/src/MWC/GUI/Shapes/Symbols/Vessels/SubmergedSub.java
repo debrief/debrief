@@ -65,14 +65,6 @@ public class SubmergedSub extends PlainSymbol {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/**
-   * getMetafile
-   *
-   */
-  public void getMetafile()
-  {
-  }
-
   /**
    * getBounds
    *

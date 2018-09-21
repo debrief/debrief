@@ -103,11 +103,7 @@ import MWC.GenericData.WorldLocation;
  *  the class implements the Serializable interface so that it can be copied.
  *  */
 abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Editable {
-
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-
+  
   /**
 	 * 
 	 */

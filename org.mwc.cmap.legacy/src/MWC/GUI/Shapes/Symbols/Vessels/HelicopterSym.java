@@ -62,10 +62,6 @@ public class HelicopterSym extends PlainSymbol {
   {
     return new HelicopterSym();
   }
-  
-	public void getMetafile()
-  {
-  }
 
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor

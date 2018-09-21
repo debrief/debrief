@@ -133,20 +133,10 @@ public class CircleSymbol extends PlainSymbol
     return res;
   }
 
-  /**
-   * getMetafile
-   *
-   */
-  public void getMetafile()
-  {
-    // return the metafile
-  }
-
   public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
-
 
   /**
    * paint

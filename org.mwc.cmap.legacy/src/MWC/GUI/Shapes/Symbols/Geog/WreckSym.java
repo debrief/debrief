@@ -97,10 +97,6 @@ public class WreckSym extends PlainSymbol
   {
     return new WreckSym();
   }
-  
-  public void getMetafile()
-  {
-  }
 
   public java.awt.Dimension getBounds()
   {

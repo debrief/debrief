@@ -63,17 +63,11 @@ public class AircraftSym extends PlainSymbol {
   {
 	  _myType = type;
   }
-
 	
 	public AircraftSym()
 	{
 	  this(SymbolFactory.AIRCRAFT);
 	}
-
-  public void getMetafile()
-  {
-  }
-	
 
   @Override
   public PlainSymbol create()

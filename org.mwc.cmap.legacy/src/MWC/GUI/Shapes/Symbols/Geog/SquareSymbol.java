@@ -147,15 +147,6 @@ public class SquareSymbol extends PlainSymbol
 	}
 
 	/**
-	 * getMetafile
-	 * 
-	 */
-	public void getMetafile()
-	{
-		// return the metafile
-	}
-
-	/**
 	 * get this symbol as a sequence of lines. The
 	 * 
 	 * @return a collection of paths. Each path is a collection of java.awt.Point

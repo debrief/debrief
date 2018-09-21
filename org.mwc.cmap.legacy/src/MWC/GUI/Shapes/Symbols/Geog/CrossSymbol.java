@@ -87,10 +87,6 @@ public class CrossSymbol extends PlainSymbol {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
-	public void getMetafile()
-  {
-  }
 	
   @Override
   public PlainSymbol create()

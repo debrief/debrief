@@ -102,15 +102,6 @@ public class ReferenceSym extends PlainSymbol
    */
   transient private Editable.EditorType _myEditor = null;
 
-  ////////////////////////////////
-  // member functions
-  ////////////////////////////////
-
-
-  public void getMetafile()
-  {
-  }
-
   public java.awt.Dimension getBounds()
   {
     // sort out the size of the symbol at the current scale factor

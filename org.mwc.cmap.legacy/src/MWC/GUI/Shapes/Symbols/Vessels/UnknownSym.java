@@ -69,10 +69,6 @@ public class UnknownSym extends PlainSymbol {
     this(SymbolFactory.UNKNOWN);
   }
 
-  public void getMetafile()
-  {
-  }
-
   public java.awt.Dimension getBounds(){
     // sort out the size of the symbol at the current scale factor
     final java.awt.Dimension res = new java.awt.Dimension((int)(6 * getScaleVal()),(int)(6 * getScaleVal()));
