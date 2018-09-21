@@ -165,7 +165,6 @@ public class SVGShape extends PlainSymbol
 
     final Element svgRoot = doc.getDocumentElement();
 
-    final SVGElementFactory elementFactory = new SVGElementFactory();
     ArrayList<SVGElement> elements = new ArrayList<SVGElement>();
     for (int i = 0; i < svgRoot.getChildNodes().getLength(); i++)
     {
@@ -186,7 +185,7 @@ public class SVGShape extends PlainSymbol
         }
         else
         {
-          SVGElement newElement = elementFactory.getInstance((Element) element);
+          SVGElement newElement = getInstance((Element) element);
 
           // We are ignoring unknown elements for now.
           if (newElement != null)
@@ -197,6 +196,38 @@ public class SVGShape extends PlainSymbol
       }
     }
     return elements;
+  }
+  
+  private static SVGElement getInstance(final Element svgElement)
+  {
+    final SVGElement answer;
+    switch (svgElement.getNodeName())
+    {
+      case "rect":
+        answer = new SVGRectangle(svgElement);
+        break;
+      case "polygon":
+        answer = new SVGPoligon(svgElement);
+        break;
+      case "circle":
+        answer = new SVGCircle(svgElement);
+        break;
+      case "line":
+        answer = new SVGLine(svgElement);
+        break;
+      case "ellipse":
+        answer = new SVGEllipse(svgElement);
+        break;
+      case "polyline":
+        answer = new SVGPolyline(svgElement);
+        break;
+      default:
+        // We have an unknown type.
+        Trace.trace("Unknown SVG element type encountered:" + svgElement);
+        answer = null;
+        break;
+    }
+    return answer;
   }
 
   /**
