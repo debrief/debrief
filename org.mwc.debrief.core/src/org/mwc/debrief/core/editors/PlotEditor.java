@@ -120,7 +120,6 @@ import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.media.utility.OpenVideoPlayerUtil;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
@@ -874,7 +873,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @Override
   protected SWTChart createTheChart(final Composite parent)
   {
-    final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+    final SWTChart res = new SWTChart(_myLayers, parent,(PlainProjection) _myGeoHandler)
     {
 
       /**
@@ -890,9 +889,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
       @Override
       public SWTCanvas createCanvas(final Composite parent1,
-          final GtProjection projection)
+          final PlainProjection projection)
       {
-        return new CustomisedSWTCanvas(parent1, _myGeoHandler)
+        return new CustomisedSWTCanvas(parent1, (PlainProjection) _myGeoHandler)
         {
 
           /**

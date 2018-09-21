@@ -31,6 +31,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -38,6 +39,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.TrackWrapper.WrappedIterators;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
@@ -50,6 +52,8 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
@@ -369,6 +373,31 @@ public class TrackWrapper_Test extends TestCase
       }
     }
     return ctr;
+  }
+  
+  public void testDuplicateDynamicSetShape()
+  {
+    final TrackWrapper parent = new TrackWrapper();
+    parent.setName("Parent");
+
+    final PlainShape theShape = new RectangleShape(new WorldLocation(2, 2, 2),
+        new WorldLocation(3, 3, 3));
+    final DynamicShapeWrapper fds = new DynamicShapeWrapper("alpha", theShape,
+        Color.RED, new HiResDate(20000), "name");
+
+    final String theName = "set one";
+    DynamicTrackShapeSetWrapper set = new DynamicTrackShapeSetWrapper(theName);
+    set.add(fds);
+
+    assertEquals("is empty", 0, parent.getDynamicShapes().size());
+
+    parent.add(set);
+
+    assertEquals("now has item", 1, parent.getDynamicShapes().size());
+
+    parent.add(set);
+
+    assertEquals("hasn't added duplicate", 1, parent.getDynamicShapes().size());
   }
 
   public void testDecimateAbsoluteDown()
