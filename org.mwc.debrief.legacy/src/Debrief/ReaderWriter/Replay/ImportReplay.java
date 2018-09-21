@@ -426,29 +426,29 @@ public class ImportReplay extends PlainImporterBase
       ImportReplay.initialise(new ImportReplay.testImport.TestParent(
           ImportReplay.IMPORT_AS_OTG, 0L));
       trackImporter.importThis(shape_file, bs, tLayers);
-      //
-      // assertEquals("read in track", 11, tLayers.size());
-      //
-      // TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL_STYLE");
-      // assertNotNull("found track", track);
-      //
-      // // get the positions
-      // Enumeration<Editable> pIter = track.getPositionIterator();
-      // FixWrapper f1 = (FixWrapper) pIter.nextElement();
-      // assertNotNull("found item", f1);
-      // assertEquals("got label", "120500", f1.getLabel());
-      // FixWrapper f2 = (FixWrapper) pIter.nextElement();
-      // assertEquals("got label", "Override label 1", f2.getLabel());
-      // assertEquals("no comment", null, f2.getComment());
-      // FixWrapper f3 = (FixWrapper) pIter.nextElement();
-      // assertEquals("got label", "Override label 2", f3.getLabel());
-      // assertEquals("no comment", null, f3.getComment());
-      // FixWrapper f4 = (FixWrapper) pIter.nextElement();
-      // assertEquals("got label", "Override label 3", f4.getLabel());
-      // assertEquals("no comment", "comment 3", f4.getComment());
-      // FixWrapper f5 = (FixWrapper) pIter.nextElement();
-      // assertEquals("got label", "0504", f5.getLabel());
-      // assertEquals("no comment", "comment 4", f5.getComment());
+      
+       assertEquals("read in track", 14, tLayers.size());
+      
+       TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL STYLE");
+       assertNotNull("found track", track);
+      
+       // get the positions
+       Enumeration<Editable> pIter = track.getPositionIterator();
+       FixWrapper f1 = (FixWrapper) pIter.nextElement();
+       assertNotNull("found item", f1);
+       assertEquals("got label", "120500", f1.getLabel());
+       FixWrapper f2 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 1", f2.getLabel());
+       assertEquals("no comment", null, f2.getComment());
+       FixWrapper f3 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 2", f3.getLabel());
+       assertEquals("no comment", null, f3.getComment());
+       FixWrapper f4 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 3", f4.getLabel());
+       assertEquals("no comment", "comment 3", f4.getComment());
+       FixWrapper f5 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "0504", f5.getLabel());
+       assertEquals("no comment", "comment 4", f5.getComment());
     }
 
     public final void testDRimport()
