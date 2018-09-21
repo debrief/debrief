@@ -103,7 +103,7 @@ public class SVGRectangle extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic rectangle.", false);
+        fail("failed to load a basic rectangle.");
       }
     }
 

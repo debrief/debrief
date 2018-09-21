@@ -111,7 +111,7 @@ public class SVGPolyline extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic polyline.", false);
+        fail("failed to load a basic polyline.");
       }
     }
 

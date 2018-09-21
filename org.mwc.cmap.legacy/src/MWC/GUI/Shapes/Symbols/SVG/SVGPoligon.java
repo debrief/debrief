@@ -77,7 +77,7 @@ public class SVGPoligon extends SVGPolyline
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic poligon.", false);
+        fail("failed to load a basic poligon.");
       }
     }
 

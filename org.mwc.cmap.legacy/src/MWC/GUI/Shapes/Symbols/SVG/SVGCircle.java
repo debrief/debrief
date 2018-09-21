@@ -101,7 +101,7 @@ public class SVGCircle extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic circle.", false);
+        fail("failed to load a basic circle.");
       }
     }
 
@@ -122,7 +122,7 @@ public class SVGCircle extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic element - circle filled.", false);
+        fail("failed to load a basic element - circle filled.");
       }
     }
 
@@ -143,7 +143,7 @@ public class SVGCircle extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic element - circle filled.", false);
+        fail("failed to load a basic element - circle filled.");
       }
     }
 
@@ -164,7 +164,7 @@ public class SVGCircle extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic element - circle filled.", false);
+        fail("failed to load a basic element - circle filled.");
       }
     }
 

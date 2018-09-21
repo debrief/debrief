@@ -88,7 +88,7 @@ public class SVGLine extends SVGElement
       }
       catch (Exception e)
       {
-        assertTrue("failed to load a basic line.", false);
+        fail("failed to load a basic line.");
       }
     }
 
