@@ -15,6 +15,8 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
@@ -118,44 +120,19 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
 
   private boolean isContentImportable(final String content) {
 
-    boolean proceed=false;
-    StringTokenizer tokens = new StringTokenizer(content,"\\r?\\n");
-    int lineCount = 0;
-    while(tokens.hasMoreTokens() && lineCount<=6) {
-      String line = tokens.nextToken().trim();
+    boolean proceed=true;
+    String[] lines = content.split("\\r?\\n");
+    for(int i=0;i<lines.length;i++) {
+      String line = lines[i];
       if(line.startsWith(";") && !line.startsWith(";;")) {
         StringTokenizer lineTokens = new StringTokenizer(line);
         if(lineTokens.hasMoreTokens()) {
           String firstWord = lineTokens.nextToken();
-          switch(firstWord) {
-            case ";CIRCLE:":
-            case ";DYNAMIC_CIRCLE:":
-            case ";RECT:":
-            case ";DYNAMIC_RECT:":
-            case ";BRG:":
-            case ";DYNAMIC_POLY:":
-            case ";ELLIPSE:":
-            case ";FORMAT_FIX:":
-            case ";FORMAT_LAYER_HIDE:":
-            case ";TEXT:":
-            case ";LINE:":
-            case ";FORMAT_TRACK_NAME_AT_END:":
-            case ";NARRATIVE:":
-            case ";NARRATIVE2:":
-            case ";PERIODTEXT:":
-            case ";POLY:":
-            case ";POLYLINE:":
-            case ";SENSOR:":
-            case ";SENSOR2:":
-            case ";SENSOR3:":
-            case ";SENSOR_ARC:":
-            case ";TIMETEXT:":
-            case ";TMA_POS:":
-            case ";TMA_RB:":
-            case";VECTOR:":
-            case ";WHEEL:":
-              proceed = true;break;
-            default:proceed=false;break;
+          String regex = "^;[A-Z_]{3,40}+:$";
+          Pattern pattern = Pattern.compile(regex);
+          Matcher match = pattern.matcher(firstWord);
+          if(!match.matches()) {
+            proceed=false;
           }
         }
       }
@@ -163,12 +140,16 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
         StringTokenizer lineTokens = new StringTokenizer(line);
         if(lineTokens.hasMoreTokens()) {
           String firstWord = lineTokens.nextToken();
-          if(firstWord.matches("\\d{6}+")) {
-            proceed=true;
+          if(!(firstWord.matches("\\d{6}+") || firstWord.matches("\\d{8}+"))) {
+            proceed=false;
           }
         }
+        
       }
-      lineCount++;
+      //we do it only for 6 lines
+      if(i>=6 || !proceed) {
+        break;
+      }
     }
     return proceed;
   }

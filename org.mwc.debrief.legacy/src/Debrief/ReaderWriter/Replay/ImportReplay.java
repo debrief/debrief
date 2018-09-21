@@ -570,7 +570,6 @@ public class ImportReplay extends PlainImporterBase
       //verify undo
       assertNull(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)));
     }
-
   }
 
   private static Vector<PlainLineImporter> _coreImporters;
