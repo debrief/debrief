@@ -128,7 +128,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
         StringTokenizer lineTokens = new StringTokenizer(line);
         if(lineTokens.hasMoreTokens()) {
           String firstWord = lineTokens.nextToken();
-          String regex = "^;[A-Z_]{3,40}+:$";
+          String regex = "^;[A-Z1-9_]{3,40}+:$";
           Pattern pattern = Pattern.compile(regex);
           Matcher match = pattern.matcher(firstWord);
           if(!match.matches()) {
