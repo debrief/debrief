@@ -541,6 +541,36 @@ public class ImportReplay extends PlainImporterBase
       assertEquals("sym type correct", "Hidar", label2.getSymbolType());
       assertEquals("color correct", DebriefColors.PURPLE, label2.getColor());
     }
+    
+    
+    public final void testPasteRep() {
+      String textToPaste =
+";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      ImportReplay testImporter = new ImportReplay();
+      Layers tmpLayers = new Layers();
+      Layers dest = new Layers();
+      testImporter.setLayers(tmpLayers);
+      testImporter.importThis(textToPaste);
+      testImporter.injectContent(tmpLayers, dest, true);
+      assertTrue(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)).elements().hasMoreElements());
+      //test undo
+      testImporter.injectContent(dest, tmpLayers, false);
+      //first load a shapes rep or someother rep file, add more shapes to it and see
+      //if they are added to the correct layer.
+      //verify undo
+      assertNull(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)));
+    }
+
   }
 
   private static Vector<PlainLineImporter> _coreImporters;
@@ -1255,32 +1285,52 @@ public class ImportReplay extends PlainImporterBase
     return elementsAdded;
   }
   
-  public final List<Editable> importThis(final String text,Layers existingLayers) {
-    List<Editable> elementsAdded = new ArrayList<>();
+  public final void importThis(final String text) {
     String[] lines = text.split("\\r?\\n");
     for(String line:lines) {
       if(!line.trim().isEmpty()) {
         readLine(line.trim());
       }
     }
-    Layers tempLayers = getLayers();
-    Enumeration<Editable> tempElements = tempLayers.elements();
+  }
+  
+  public final void injectContent(Layers from,Layers destination,boolean performAdd) {
+    Enumeration<Editable> tempElements = from.elements();
     //now add to the plot's layers object
     while(tempElements.hasMoreElements()) {
       Editable l = tempElements.nextElement();
-      Layer existingLayer = existingLayers.findLayer(l.getName());
+      Layer existingLayer = destination.findLayer(l.getName());
       if(existingLayer==null) {
         Layer layerToAdd = (Layer)l;
-        existingLayers.addThisLayer(layerToAdd);
-        elementsAdded.add(layerToAdd);
+        if(performAdd) {
+          destination.addThisLayer(layerToAdd);
+        }
+        else {
+          destination.removeThisEditable(null, l);
+        }
       }
       else {
         //get elements in the templayer for an already existing layer and add to it.
-        elementsAdded.addAll(addElementsToExistingLayer(existingLayer,l));
+        if(performAdd) {
+          addElementsToExistingLayer(existingLayer,l);
+        }
+        else {
+          if(l instanceof Layer) {
+            //dont directly delete a layer, may be there were some elements previously existing
+            Enumeration<Editable> elements = ((Layer)l).elements();
+            Layer destLayer = destination.findLayer(l.getName());
+            while(elements.hasMoreElements()) {
+              destination.removeThisEditable(destLayer, elements.nextElement());
+            }
+            //in case no more elements are left delete the layer
+            if(destLayer.elements()==null || !destLayer.elements().hasMoreElements()) {
+              destination.removeThisLayer(destLayer);
+            }
+          }
+        }
       }
     }
-    existingLayers.fireExtended();
-    return elementsAdded;
+    destination.fireExtended();
   }
 
   /**

@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -31,14 +30,9 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.DynamicShapeWrapper;
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.TMAContactWrapper;
-import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.TacticalData.NarrativeEntry;
 
 /**
  * Generates a paste REP from clipboard action.
@@ -91,7 +85,6 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     private String _contentToImport;
     private Layers _tempLayers;
     private Layers _layers;
-    private List<Editable> addedElements;
     private ImportReplay _tracker;
     
     public PasteRepOperation(String title,Layers theLayers,String contentToImport)
@@ -108,7 +101,9 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       _tempLayers = new Layers();
       //import to a temp layers object
       _tracker.setLayers(_tempLayers);
-      addedElements = _tracker.importThis(_contentToImport,_layers);
+      _tracker.importThis(_contentToImport);
+      _tracker.injectContent(_tempLayers, _layers, true);
+      
       return Status.OK_STATUS;
     }
    
@@ -116,42 +111,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     public IStatus undo(IProgressMonitor monitor, IAdaptable info)
         throws ExecutionException
     {
-      //iterate through the addedElements and see what got added and remove them
-      for(Editable element:addedElements) {
-        if(element instanceof Layer) {
-          _layers.removeThisLayer((Layer)element);
-        }
-        else {
-          Layer layer = null;
-          if(element instanceof DynamicShapeWrapper) {
-            layer = (Layer)_layers.findLayer(((DynamicShapeWrapper)element).getTrackName());
-          }
-          else if (element instanceof SensorContactWrapper)
-          {
-            layer = (Layer)_layers.findLayer(((SensorContactWrapper)element).getTrackName());
-          }
-          else if (element instanceof DynamicTrackShapeWrapper)
-          {
-            layer = (Layer)_layers.findLayer(((DynamicTrackShapeWrapper)element).getTrackName());
-          }
-          else if (element instanceof TMAContactWrapper)
-          {
-            layer = (Layer)_layers.findLayer(((TMAContactWrapper)element).getTrackName());
-          }
-          else if (element instanceof NarrativeEntry)
-          {
-            layer = _tracker.getLayerFor(ImportReplay.NARRATIVE_LAYER);
-          }
-          else {
-            layer= null;
-          }
-          if(layer!=null) {
-            _layers.removeThisEditable(null, element);
-          }
-        }
-      }
-      _layers.fireExtended();
-      addedElements.clear();
+      _tracker.injectContent(_tempLayers, _layers, false);
       return Status.OK_STATUS;
     }
   }
