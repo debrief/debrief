@@ -1272,16 +1272,13 @@ public class ImportReplay extends PlainImporterBase
     return null;
   }
   
-  private List<Editable> addElementsToExistingLayer(Layer layerToAddTo,Editable l)
+  private void addElementsToExistingLayer(Layer layerToAddTo,Editable l)
   {
-    List<Editable> elementsAdded = new ArrayList<>();
     Enumeration<Editable> tempElements = ((Layer)l).elements();
     while(tempElements.hasMoreElements()) {
       Editable elem = tempElements.nextElement();
       layerToAddTo.add(elem);
-      elementsAdded.add(elem);
     }
-    return elementsAdded;
   }
   
   public final void importThis(final String text) {
