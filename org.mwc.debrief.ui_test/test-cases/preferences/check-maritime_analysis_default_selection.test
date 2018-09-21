@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _tVBEcLKjEeim6Z1_sLeZ9g
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/10/18 12:10 PM
+Save-Time: 9/21/18 4:26 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -53,23 +53,48 @@ get-window Preferences | get-button Cancel | click
 
 get-view Navigator | get-tree | select "sample_data/boat1.rep" | double-click
 
-/*exec-with-options {
-  get-window "Select track mode" |  get-property title | equals "Select track mode" | verify-true
+with [get-window "Select track mode"] {
+    with [get-button "Dead Reckoning (DR) - positions are calculated using recorded course and speed"] {
+        get-property caption | equals "Dead Reckoning (DR) - positions are calculated using recorded course and speed" 
+            | verify-true
+        get-property selected | equals false | verify-true
+    }
     with [get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location"] {
+        get-property caption 
+            | equals "Over The Ground (OTG) - where positions are plotted according to the recorded location" 
+            | verify-true
+        get-property selected | equals true | verify-true
+    }
+    with [get-button OK] {
+        get-property enablement | equals true | verify-true
+        get-property caption | equals OK | verify-true
+    }
+    with [get-button Cancel] {
+        get-property enablement | equals true | verify-true
+        get-property caption | equals Cancel | verify-true
+    }
+}
+get-window "Select track mode" | get-button Cancel | click
+
+get-menu -path "File/Close" | click
+try {
+get-window "Save Resource" | get-button No | click
+}-catch {}
+//exec-with-options {
+  //get-window "Select track mode" |  get-property title | equals "Select track mode" | verify-true
+   /* with [get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location"] {
         get-property "getSelection()" | equals true | verify-true
         get-property "getText()" 
             | equals "Over The Ground (OTG) - where positions are plotted according to the recorded location" 
             | verify-true
-    }
-} -allowStatusDialog*/
+    }*/
+//} -allowStatusDialog
 //set-q7-option eclExecutionDelay 1000  
-exec-with-options -disableJobWaiting -command {
+/*exec-with-options -disableJobWaiting -command {
 
  get-window "select track mode" |  get-button Cancel | click
 
-get-menu -path "File/Close" | click
-get-window "Save Resource" | get-button No | click
-}-allowStatusDialog
+*/
 
 //set-q7-option eclExecutionDelay 0
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
