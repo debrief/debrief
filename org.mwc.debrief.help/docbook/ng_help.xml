@@ -7480,11 +7480,13 @@ and entry type can be multi-word if surrounded by quotes (").
         <title>SVG Symbol Format</title>
         <sect2>
           <title>Introduction</title>
-          <para>What we've done</para>
+          <para>Traditionally, symbols were hard-coded in Java code, within Debrief.  When a new symbol was required, the graphically talented analyst
+          would develop a set of pairs of coordinates for the new shape in Excel, then pass these to the maintainer, for their translation
+          into source code.  Adopting SVG as a standard is seen as a way to get artist-drawn icons and symbols into Debrief.</para>
         </sect2>
         <sect2>
           <title>Implementation</title>
-          <para>How to structure SVG files</para>
+          <para>How to structure SVG files...</para>
         </sect2>
       </sect1>
 
