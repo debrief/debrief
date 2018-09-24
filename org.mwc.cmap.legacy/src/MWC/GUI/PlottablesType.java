@@ -14,16 +14,9 @@
  */
 package MWC.GUI;
 
-import java.util.Enumeration;
-
-public interface PlottablesType {
-
-  /** get the elements in this list of plottables
-   *
-   * @return enumeration of elements
-   */
-  Enumeration<Editable> elements();
-
+public interface PlottablesType extends CanEnumerate
+{
+ 
   /** how big is the list?
    *
    * @return the length of the list

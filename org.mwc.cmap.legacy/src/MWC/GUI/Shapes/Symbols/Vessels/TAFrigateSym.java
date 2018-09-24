@@ -16,6 +16,8 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+
 public class TAFrigateSym extends ScreenScaledSym
 {
 
@@ -34,7 +36,12 @@ public class TAFrigateSym extends ScreenScaledSym
 		this.setScaleVal(2);
 	}
 
-
+  @Override
+  public PlainSymbol create()
+  {
+    return new TAFrigateSym();
+  }
+  
 	protected Vector<double[][]> getCoords()
 	{
 		final Vector<double[][]> hullLines = new Vector<double[][]>();

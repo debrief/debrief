@@ -49,6 +49,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
 public class FishingVesselSym extends ScreenScaledSym
@@ -67,6 +68,12 @@ public class FishingVesselSym extends ScreenScaledSym
 		super.paint(dest, theLocation, direction);
 	}
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new FishingVesselSym();
+  }
+  
 	protected Vector<double[][]> getCoords()
 	{
 		final Vector<double[][]> hullLines = new Vector<double[][]>();

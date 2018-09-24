@@ -549,21 +549,24 @@ public class TrackManager implements TrackDataProvider
 		fireTracksChanged();
 	}
 
-	private void setPrimaryImpl(final WatchableList primary)
-	{
-		_thePrimary = primary;
+  private void setPrimaryImpl(final WatchableList primary)
+  {
+    if (_thePrimary != primary)
+    {
+      _thePrimary = primary;
 
-		// and inform the listeners
-		if (_myDataListeners != null)
-		{
-			final Iterator<TrackDataListener> iter = _myDataListeners.iterator();
-			while (iter.hasNext())
-			{
-				final TrackDataListener list = iter.next();
-				list.tracksUpdated(_thePrimary, _theSecondaries);
-			}
-		}
-	}
+      // and inform the listeners
+      if (_myDataListeners != null)
+      {
+        final Iterator<TrackDataListener> iter = _myDataListeners.iterator();
+        while (iter.hasNext())
+        {
+          final TrackDataListener list = iter.next();
+          list.tracksUpdated(_thePrimary, _theSecondaries);
+        }
+      }
+    }
+  }
 
 	public void setSecondary(final WatchableList secondary)
 	{

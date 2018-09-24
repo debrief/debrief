@@ -16,7 +16,6 @@ package org.mwc.debrief.test;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
 
 @Suite.SuiteClasses(
 {
@@ -94,6 +93,13 @@ import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
     MWC.GUI.Shapes.Symbols.Geog.ReferenceSym.ReferenceTest.class,
     MWC.GUI.Shapes.Symbols.Geog.WreckSym.WreckTest.class,
     MWC.GUI.Shapes.Symbols.SymbolFactory.SymFactoryTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGCircle.SVGCircleTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGEllipse.SVGEllipseTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGPoligon.SVGPolygoneTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGPolyline.SVGPolylineTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGRectangle.SVGRectangleTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGShape.SVGShapeTest.class,
+    MWC.GUI.Shapes.Symbols.SVG.SVGLine.SVGLineTest.class,
     MWC.GUI.Shapes.WheelShape.WheelTest.class,
     MWC.GenericData.Duration.DurationTest.class,
     MWC.GenericData.WorldAcceleration.AccelTest.class,
@@ -126,7 +132,8 @@ import org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV;
     Debrief.Wrappers.Track.DynamicInfillSegment.TestInterp.class,
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestSlicing.class,
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestUpdates.class,
-    ExportTrackAsCSV.TestExport.class
+    org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV.TestExport.class,
+    org.mwc.cmap.core.operations.RightClickPasteAdaptor.TestPaste.class
     })
 @RunWith(Suite.class)
 public class AllTests

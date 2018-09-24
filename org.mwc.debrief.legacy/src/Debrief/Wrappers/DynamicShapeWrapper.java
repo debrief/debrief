@@ -46,14 +46,66 @@ public class DynamicShapeWrapper extends ShapeWrapper
 		this._theTrackName = theTrackName;
 	}
 	
-	/** override the default sort order (name), since
-	 * we wish to sort by DTG
-	 */
-	public int compareTo(Plottable o)
-	{
-		final DynamicShapeWrapper sw = (DynamicShapeWrapper) o;
-		return this.getStartDTG().compareTo(sw.getStartDTG());
-	}
+  /**
+   * override the default sort order (name), since we wish to sort by DTG
+   */
+  public int compareTo(Plottable o)
+  {
+    final int res;
+
+    // the name check logic is quite complex
+    final int nameCheck = this.getName().compareTo(o.getName());
+
+    // if we can provide order, provide it. Otherwise give false order
+    final int nameRes = nameCheck == 0 ? 1 : nameCheck;
+
+    if (o == this)
+    {
+      // same object. duh.
+      res = 0;
+    }
+    else if (o instanceof ShapeWrapper)
+    {
+      ShapeWrapper shape = (ShapeWrapper) o;
+
+      HiResDate myStart = this.getStartDTG();
+      // do I know my date?
+      if (myStart != null)
+      {
+        HiResDate hisStart = shape.getStartDTG();
+
+        // do we know his date?
+        if (hisStart != null)
+        {
+          // compare dates
+          final int dateCompare = myStart.compareTo(shape.getStartDTG());
+          if (dateCompare == 0)
+          {
+            res = nameRes;
+          }
+          else
+          {
+            res = dateCompare;
+          }
+        }
+        else
+        {
+          // put me first
+          res = -1;
+        }
+      }
+      else
+      {
+        // compare names
+        res = nameRes;
+      }
+    }
+    else
+    {
+      res = nameRes;
+    }
+    return res;
+  }
 	
 
 }

@@ -1640,6 +1640,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
   {
     _theLabel.setString(val);
   }
+  
+  @Override
+  public void setName(String name)
+  {
+    setLabel(name);
+  }
 
   @FireReformatted
   public final void setLabelFormat(final String format)
