@@ -412,7 +412,8 @@ public class ImportReplay extends PlainImporterBase
 
     private final static String shape_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
-
+    private final static String boat_file =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
     public void testReadShapes() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
@@ -542,8 +543,9 @@ public class ImportReplay extends PlainImporterBase
       assertEquals("color correct", DebriefColors.PURPLE, label2.getColor());
     }
     
-    
-    public final void testPasteRep() {
+    //verify layers get added and shapes get added on paste
+    //verify that layers are removed when undone
+    public final void testPasteRepShapes() {
       String textToPaste =
 ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
 ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
@@ -562,13 +564,98 @@ public class ImportReplay extends PlainImporterBase
       testImporter.setLayers(tmpLayers);
       testImporter.importThis(textToPaste);
       testImporter.injectContent(tmpLayers, dest, true);
-      assertTrue(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)).elements().hasMoreElements());
+      assertElementsInLayers((Layer)tmpLayers.findLayer(ANNOTATION_LAYER), 8);
+      assertElementsInLayers(tmpLayers.findLayer("Special_Layer"),1);
+      assertElementsInLayers(tmpLayers.findLayer("Other_Special_Layer"),1);
+      assertElementsInLayers(tmpLayers.findLayer(NARRATIVE_LAYER),1);
       //test undo
       testImporter.injectContent(dest, tmpLayers, false);
       //first load a shapes rep or someother rep file, add more shapes to it and see
       //if they are added to the correct layer.
       //verify undo
       assertNull(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)));
+      assertNull(tmpLayers.findLayer("Special_Layer"));
+      assertNull(tmpLayers.findLayer("Other_Special_Layer"));
+      assertNull(tmpLayers.findLayer(NARRATIVE_LAYER));
+    }
+    //verify dynamic layers get added on paste
+    public final void testPasteRepDynamicShapes() {
+      String textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
+    ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
+          ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
+      ImportReplay testImporter = new ImportReplay();
+      Layers tmpLayers = new Layers();
+      Layers dest = new Layers();
+      testImporter.setLayers(tmpLayers);
+      testImporter.importThis(textToPaste);
+      testImporter.injectContent(tmpLayers, dest, true);
+      assertElementsInLayers((Layer)tmpLayers.findLayer("Dynamic A"), 3);
+      testImporter.injectContent(dest, tmpLayers, false);
+      assertNull(((Layer)tmpLayers.findLayer("Dynamic A")));
+      
+    }
+    
+    //test if previously loaded layers remains after pasting new content 
+    public void testPasteRepExistingFile(){
+      String textToPaste =
+          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      try {
+        final Layers tLayers = new Layers();
+
+        // start off with the ownship track
+        final File boatFile = new File(boat_file);
+        assertTrue(boatFile.exists());
+        final InputStream bs = new FileInputStream(boatFile);
+        final ImportReplay trackImporter = new ImportReplay();
+        ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+            ImportReplay.IMPORT_AS_OTG, 0L));
+        trackImporter.importThis(shape_file, bs, tLayers);
+        assertNotNull((Layer)tLayers.findLayer("NELSON"));
+        Layers tmpLayers = new Layers();
+        trackImporter.setLayers(tmpLayers);
+        trackImporter.importThis(textToPaste);
+        trackImporter.injectContent(tmpLayers,tLayers, true);
+        assertNotNull((Layer)tLayers.findLayer("NELSON"));
+        assertElementsInLayers((Layer)tLayers.findLayer(ANNOTATION_LAYER), 8);
+        assertElementsInLayers(tLayers.findLayer("Special_Layer"),1);
+        assertElementsInLayers(tLayers.findLayer("Other_Special_Layer"),1);
+        assertElementsInLayers(tLayers.findLayer(NARRATIVE_LAYER),1);
+        //test undo
+        trackImporter.injectContent(tmpLayers, tLayers, false);
+        //first load a shapes rep or someother rep file, add more shapes to it and see
+        //if they are added to the correct layer.
+        //verify undo
+        assertNull(((Layer)tLayers.findLayer(ANNOTATION_LAYER)));
+        assertNull(tLayers.findLayer("Special_Layer"));
+        assertNull(tLayers.findLayer("Other_Special_Layer"));
+        assertNull(tLayers.findLayer(NARRATIVE_LAYER));
+        
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail(e.getMessage());
+      }
+    }
+    
+    
+    private void assertElementsInLayers(final Layer layer,final int count) {
+      assertTrue(layer.elements().hasMoreElements());
+      Enumeration<Editable> elements = layer.elements();
+      int lineCount=0;
+      while(elements.hasMoreElements()){
+        elements.nextElement();
+       lineCount++;
+      }
+      assertEquals(lineCount,count);
     }
   }
 
