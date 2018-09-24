@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _yCgJwL2EEeiF7-_i47hJpQ
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/21/18 5:05 PM
+Save-Time: 9/24/18 3:11 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -45,6 +45,34 @@ get-view Outline | get-tree | get-cell 5 0 | click
 }
 get-view Properties | get-label "Track:NELSON" | get-property caption | equals "Track:NELSON" | verify-true
 get-tab-folder | get-property activePage | equals "*plot1.dpf" | verify-true
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+
+//Drag in complex plot like sample.dpf for complex data anaylsis
+with [get-view Navigator | get-tree] {
+    select "sample_data/plot1.dpf" | double-click
+    select "sample_data/sample.dpf"
+    get-item -path "sample_data/sample.dpf" | drag-start 39 6
+}
+with [get-editor "plot1.dpf" | get-canvas] {
+    drag-enter 18 156
+    drag-over 150 183 -detail copy
+    drag-exit
+    drag-accept 150 183 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "plot1.dpf" | get-canvas | drop 150 183 -detail copy
+get-view Navigator | get-tree | drag-end -detail copy
+with [get-view Outline | get-tree] {
+    get-item -path "Annotations \\(0 items\\)" | get-property "getText()" | equals "Annotations (0 items)" | verify-true
+    get-item -path "Chart Features \\(6 items\\)" | get-property "getText()" | equals "Chart Features (6 items)" 
+        | verify-true
+    get-item -path "Chart lib:JW_Area_1 \\(181 items\\)" | get-property "getText()" 
+        | equals "Chart lib:JW_Area_1 (181 items)" | verify-true
+    get-item -path "Track:COLLINGWOOD" | get-property "getText()" | equals "Track:COLLINGWOOD" | verify-true
+    get-item -path "Track:NELSON" | get-property "getText()" | equals "Track:NELSON" | verify-true
+    get-item -path "Narratives \\(19 items\\)" | get-property "getText()" | equals "Narratives (19 items)" | verify-true
+}
 get-menu -path "File/Close" | click
 get-window "Save Resource" | get-button No | click
 
