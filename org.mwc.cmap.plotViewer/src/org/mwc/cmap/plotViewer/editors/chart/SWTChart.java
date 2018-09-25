@@ -197,7 +197,6 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
-import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -229,7 +228,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     private static final long serialVersionUID = 1L;
 
     public CustomisedSWTCanvas(final Composite parent,
-        final GeoToolsHandler projection)
+        final PlainProjection projection)
     {
       super(parent, projection);
     }
@@ -573,10 +572,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
    * @param _myProjection
    */
   public SWTChart(final Layers theLayers, final Composite parent,
-      final GeoToolsHandler _myProjection)
+      final PlainProjection myProjection)
   {
     super(theLayers);
-    _theCanvas = createCanvas(parent, (GtProjection) _myProjection);
+    _theCanvas = createCanvas(parent,  myProjection);
 
     // sort out the area of coverage of the plot
     if (theLayers != null)
@@ -789,7 +788,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
    * @return the Canvas to use
    */
   public SWTCanvas createCanvas(final Composite parent,
-      final GtProjection projection)
+      final PlainProjection projection)
   {
     return new CustomisedSWTCanvas(parent, projection)
     {

@@ -857,6 +857,12 @@ public final class TMAContactWrapper extends
 		_labelledEllipse.setLabel(val);
 	}
 
+  @Override
+  public void setName(String name)
+  {
+    setLabel(name);
+  }
+
 	/**
 	 * how far away are we from this point? or return null if it can't be
 	 * calculated

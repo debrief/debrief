@@ -1099,13 +1099,6 @@ public class RightClickCutCopyAdaptor
       final Editable thisOne = items[i];
       final Editable clonedItem = cloneThis(thisOne);
       res[i] = clonedItem;
-
-      // see if we can rename it
-      if (clonedItem instanceof Layer)
-      {
-        final Layer thisL = (Layer) clonedItem;
-        thisL.setName("Copy of " + clonedItem.getName());
-      }
     }
     return res;
   }
