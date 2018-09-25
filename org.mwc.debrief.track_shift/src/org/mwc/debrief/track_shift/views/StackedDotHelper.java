@@ -2010,21 +2010,15 @@ public final class StackedDotHelper
         if (!onlyVis || (onlyVis && scw.getVisible()))
         {
           // is this cut suitable for what we're looking for?
-          if (needBearing)
+          if (needBearing && !scw.getHasBearing())
           {
-            if (!scw.getHasBearing())
-            {
-              continue;
-            }
+            continue;
           }
 
           // aaah, but does it meet the frequency requirement?
-          if (needFrequency)
+          if (needFrequency && !scw.getHasFrequency())
           {
-            if (!scw.getHasFrequency())
-            {
-              continue;
-            }
+            continue;
           }
 
           storeDoubletsForThisCut(scw, res, needFrequency, index, theSegments,
@@ -2154,12 +2148,8 @@ public final class StackedDotHelper
         final boolean isInfill = segment instanceof DynamicInfillSegment;
 
         // check it has values, and is in range
-        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-            || segment.endDTG().lessThan(startDTG))
-        {
-          // ok, we can skip this one
-        }
-        else
+        if (!(segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG)))
         {
           final Enumeration<Editable> points = segment.elements();
           Double lastCourse = null;
@@ -2643,103 +2633,97 @@ public final class StackedDotHelper
           }
 
           // do we have target data?
-          if (thisD.getTarget() != null)
+          if (thisD.getTarget() != null && thisD.getTarget().getFixLocation() != null) 
           {
             // and has this target fix know it's location?
             // (it may not, if it's a relative leg that has been extended)
-            if (thisD.getTarget().getFixLocation() != null)
+            double calculatedBearing = thisD.getCalculatedBearing(null, null);
+
+            // note: now that we're allowing multi-sensor TMA, we should color the
+            // errors acccording to the sensor color (not the target color)
+            final Color error = thisD.getColor();
+            final Color calcColor = thisD.getTarget().getColor();
+            final double thisTrueError = thisD.calculateBearingError(
+                measuredBearing, calculatedBearing);
+
+            if (flipAxes)
             {
-              double calculatedBearing = thisD.getCalculatedBearing(null, null);
-
-              // note: now that we're allowing multi-sensor TMA, we should color the
-              // errors acccording to the sensor color (not the target color)
-              final Color error = thisD.getColor();
-              final Color calcColor = thisD.getTarget().getColor();
-              final double thisTrueError = thisD.calculateBearingError(
-                  measuredBearing, calculatedBearing);
-
-              if (flipAxes)
+              if (calculatedBearing > 180)
               {
-                if (calculatedBearing > 180)
-                {
-                  calculatedBearing -= 360;
-                }
+                calculatedBearing -= 360;
               }
-              else
+            }
+            else
+            {
+              if (calculatedBearing < 0)
               {
-                if (calculatedBearing < 0)
-                {
-                  calculatedBearing += 360;
-                }
+                calculatedBearing += 360;
+              }
+            }
+
+            final Color brgColor;
+            if (bearingToPort)
+            {
+              brgColor = error;
+            }
+            else
+            {
+              brgColor = error.darker();
+            }
+
+            final ColouredDataItem newTrueError = new ColouredDataItem(
+                thisMilli, thisTrueError, brgColor, false, null, true,
+                parentIsNotDynamic, thisD.getTarget());
+
+            final Color halfBearing = halfWayColor(calcColor, brgColor);
+
+            final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
+                calculatedBearing, halfBearing, true, null, true,
+                parentIsNotDynamic, thisD.getTarget());
+
+            final String sensorName = thisD.getSensorCut().getSensorName();
+
+            // ok, get this error
+            final String errorName = multiSensor
+                ? BaseStackedDotsView.ERROR_VALUES + sensorName
+                    : BaseStackedDotsView.ERROR_VALUES;
+            safelyAddItem(dotPlotData, errorName, newTrueError);
+
+            // get the calc series for this one
+            final String calcName = multiSensor
+                ? StackedDotHelper.CALCULATED_VALUES + sensorName
+                    : StackedDotHelper.CALCULATED_VALUES;
+            safelyAddItem(calculatedSeries, calcName, cBearing);
+
+            // and the ambiguous error, if it hasn't been resolved
+            if (!thisD.getHasBeenResolved())
+            {
+              if (flipAxes && ambigBearing>180)
+              {
+                  ambigBearing -= 360;
               }
 
-              final Color brgColor;
+              final Color ambigColor;
               if (bearingToPort)
               {
-                brgColor = error;
+                ambigColor = error.darker();
               }
               else
               {
-                brgColor = error.darker();
+                ambigColor = error;
               }
 
-              final ColouredDataItem newTrueError = new ColouredDataItem(
-                  thisMilli, thisTrueError, brgColor, false, null, true,
-                  parentIsNotDynamic, thisD.getTarget());
+              final double thisAmnigError = thisD.calculateBearingError(
+                  ambigBearing, calculatedBearing);
+              final ColouredDataItem newAmbigError = new ColouredDataItem(
+                  thisMilli, thisAmnigError, ambigColor, false, null, true,
+                  parentIsNotDynamic);
 
-              final Color halfBearing = halfWayColor(calcColor, brgColor);
+              final String ambErrorName = multiSensor
+                  ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
+                      : BaseStackedDotsView.ERROR_VALUES + "_amb_";
 
-              final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
-                  calculatedBearing, halfBearing, true, null, true,
-                  parentIsNotDynamic, thisD.getTarget());
-
-              final String sensorName = thisD.getSensorCut().getSensorName();
-
-              // ok, get this error
-              final String errorName = multiSensor
-                  ? BaseStackedDotsView.ERROR_VALUES + sensorName
-                      : BaseStackedDotsView.ERROR_VALUES;
-              safelyAddItem(dotPlotData, errorName, newTrueError);
-
-              // get the calc series for this one
-              final String calcName = multiSensor
-                  ? StackedDotHelper.CALCULATED_VALUES + sensorName
-                      : StackedDotHelper.CALCULATED_VALUES;
-              safelyAddItem(calculatedSeries, calcName, cBearing);
-
-              // and the ambiguous error, if it hasn't been resolved
-              if (!thisD.getHasBeenResolved())
-              {
-                if (flipAxes)
-                {
-                  if (ambigBearing > 180)
-                  {
-                    ambigBearing -= 360;
-                  }
-                }
-
-                final Color ambigColor;
-                if (bearingToPort)
-                {
-                  ambigColor = error.darker();
-                }
-                else
-                {
-                  ambigColor = error;
-                }
-
-                final double thisAmnigError = thisD.calculateBearingError(
-                    ambigBearing, calculatedBearing);
-                final ColouredDataItem newAmbigError = new ColouredDataItem(
-                    thisMilli, thisAmnigError, ambigColor, false, null, true,
-                    parentIsNotDynamic);
-
-                final String ambErrorName = multiSensor
-                    ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
-                        : BaseStackedDotsView.ERROR_VALUES + "_amb_";
-
-                safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
-              }
+              safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
             }
           }
         }
