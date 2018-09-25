@@ -1810,11 +1810,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
                 final HiResDate endTime = _myStepperProperties
                     .getSliderEndTime();
 
+                // ok, set the filtered time period
                 _slideManager.resetRange(startTime, endTime);
 
                 // ok, set the slider ranges...
-                // _dtgRangeSlider.updateSelectedRanges(startTime, endTime);
-                // no - don't bother. we already do it on new Time Provider
+                _dtgRangeSlider.updateSelectedRanges(startTime, endTime);
 
                 // and set the time again - the slider has
                 // probably forgotten
