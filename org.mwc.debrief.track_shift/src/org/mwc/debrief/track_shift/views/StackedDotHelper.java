@@ -392,7 +392,7 @@ public final class StackedDotHelper
       }
     }
 
-    private SensorContactWrapper[] getAllCutsFrom(
+    private static SensorContactWrapper[] getAllCutsFrom(
         final SensorWrapper secondSensor)
     {
       final SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
@@ -2010,21 +2010,15 @@ public final class StackedDotHelper
         if (!onlyVis || (onlyVis && scw.getVisible()))
         {
           // is this cut suitable for what we're looking for?
-          if (needBearing)
+          if (needBearing && !scw.getHasBearing())
           {
-            if (!scw.getHasBearing())
-            {
               continue;
-            }
           }
 
           // aaah, but does it meet the frequency requirement?
-          if (needFrequency)
+          if (needFrequency && !scw.getHasFrequency())
           {
-            if (!scw.getHasFrequency())
-            {
               continue;
-            }
           }
 
           storeDoubletsForThisCut(scw, res, needFrequency, index, theSegments,
@@ -2154,12 +2148,8 @@ public final class StackedDotHelper
         final boolean isInfill = segment instanceof DynamicInfillSegment;
 
         // check it has values, and is in range
-        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-            || segment.endDTG().lessThan(startDTG))
-        {
-          // ok, we can skip this one
-        }
-        else
+        if (!segment.isEmpty() && segment.startDTG().lessThan(endDTG)
+            && segment.endDTG().greaterThan(startDTG))
         {
           final Enumeration<Editable> points = segment.elements();
           Double lastCourse = null;
@@ -2297,7 +2287,7 @@ public final class StackedDotHelper
     return allCutsColl;
   }
 
-  public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
+  public static List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
       final boolean onlyVis, final TimePeriod targetPeriod)
   {
     final List<SensorContactWrapper> res =
@@ -2710,12 +2700,9 @@ public final class StackedDotHelper
               // and the ambiguous error, if it hasn't been resolved
               if (!thisD.getHasBeenResolved())
               {
-                if (flipAxes)
+                if (flipAxes && ambigBearing > 180)
                 {
-                  if (ambigBearing > 180)
-                  {
                     ambigBearing -= 360;
-                  }
                 }
 
                 final Color ambigColor;
