@@ -87,7 +87,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     private String _contentToImport;
     private Layers _tempLayers;
     private Layers _layers;
-    private ImportReplay _tracker;
+    
     
     public PasteRepOperation(String title,Layers theLayers,String contentToImport)
     {
@@ -99,25 +99,40 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     public IStatus execute(IProgressMonitor monitor, IAdaptable info)
         throws ExecutionException
     {
-      _tracker = new ImportReplay();
+      
+      ImportReplay tracker = new ImportReplay();
       _tempLayers = new Layers();
       //import to a temp layers object
-      _tracker.setLayers(_tempLayers);
-      _tracker.importThis(_contentToImport);
-      _tracker.injectContent(_tempLayers, _layers, true);
+      tracker.setLayers(_tempLayers);
+      final int numLines = getNumLines(_contentToImport);
+      if(numLines!=-1) {
+        tracker.importThis(_contentToImport,numLines);
+        ImportReplay.injectContent(_tempLayers, _layers, true);
+      }
+      
       
       return Status.OK_STATUS;
     }
+    
    
     @Override
     public IStatus undo(IProgressMonitor monitor, IAdaptable info)
         throws ExecutionException
     {
-      _tracker.injectContent(_tempLayers, _layers, false);
+      ImportReplay.injectContent(_tempLayers, _layers, false);
       return Status.OK_STATUS;
+    }
+    private final int getNumLines(final String text) {
+      String[] lines = text.split("\\r?\\n");
+      if(lines!=null) {
+        return lines.length;
+      }
+      return -1;
+      
     }
   }
 
+ 
   private boolean isContentImportable(final String content) {
 
     boolean proceed=true;

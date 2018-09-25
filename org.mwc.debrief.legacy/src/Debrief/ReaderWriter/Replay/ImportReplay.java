@@ -16,6 +16,7 @@ package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -562,14 +563,15 @@ public class ImportReplay extends PlainImporterBase
       Layers tmpLayers = new Layers();
       Layers dest = new Layers();
       testImporter.setLayers(tmpLayers);
-      testImporter.importThis(textToPaste);
-      testImporter.injectContent(tmpLayers, dest, true);
+      int totalLines = textToPaste.split("\\r?\\n").length;
+      testImporter.importThis(textToPaste,totalLines);
+      ImportReplay.injectContent(tmpLayers, dest, true);
       assertElementsInLayers((Layer)tmpLayers.findLayer(ANNOTATION_LAYER), 8);
       assertElementsInLayers(tmpLayers.findLayer("Special_Layer"),1);
       assertElementsInLayers(tmpLayers.findLayer("Other_Special_Layer"),1);
       assertElementsInLayers(tmpLayers.findLayer(NARRATIVE_LAYER),1);
       //test undo
-      testImporter.injectContent(dest, tmpLayers, false);
+      ImportReplay.injectContent(dest, tmpLayers, false);
       //first load a shapes rep or someother rep file, add more shapes to it and see
       //if they are added to the correct layer.
       //verify undo
@@ -587,10 +589,11 @@ public class ImportReplay extends PlainImporterBase
       Layers tmpLayers = new Layers();
       Layers dest = new Layers();
       testImporter.setLayers(tmpLayers);
-      testImporter.importThis(textToPaste);
-      testImporter.injectContent(tmpLayers, dest, true);
+      int totalLines = textToPaste.split("\\r?\\n").length;
+      testImporter.importThis(textToPaste,totalLines);
+      ImportReplay.injectContent(tmpLayers, dest, true);
       assertElementsInLayers((Layer)tmpLayers.findLayer("Dynamic A"), 3);
-      testImporter.injectContent(dest, tmpLayers, false);
+      ImportReplay.injectContent(dest, tmpLayers, false);
       assertNull(((Layer)tmpLayers.findLayer("Dynamic A")));
       
     }
@@ -619,19 +622,20 @@ public class ImportReplay extends PlainImporterBase
         final ImportReplay trackImporter = new ImportReplay();
         ImportReplay.initialise(new ImportReplay.testImport.TestParent(
             ImportReplay.IMPORT_AS_OTG, 0L));
+        int totalLines = textToPaste.split("\\r?\\n").length;
         trackImporter.importThis(shape_file, bs, tLayers);
         assertNotNull((Layer)tLayers.findLayer("NELSON"));
         Layers tmpLayers = new Layers();
         trackImporter.setLayers(tmpLayers);
-        trackImporter.importThis(textToPaste);
-        trackImporter.injectContent(tmpLayers,tLayers, true);
+        trackImporter.importThis(textToPaste,totalLines);
+        ImportReplay.injectContent(tmpLayers,tLayers, true);
         assertNotNull((Layer)tLayers.findLayer("NELSON"));
         assertElementsInLayers((Layer)tLayers.findLayer(ANNOTATION_LAYER), 8);
         assertElementsInLayers(tLayers.findLayer("Special_Layer"),1);
         assertElementsInLayers(tLayers.findLayer("Other_Special_Layer"),1);
         assertElementsInLayers(tLayers.findLayer(NARRATIVE_LAYER),1);
         //test undo
-        trackImporter.injectContent(tmpLayers, tLayers, false);
+        ImportReplay.injectContent(tmpLayers, tLayers, false);
         //first load a shapes rep or someother rep file, add more shapes to it and see
         //if they are added to the correct layer.
         //verify undo
@@ -1359,7 +1363,7 @@ public class ImportReplay extends PlainImporterBase
     return null;
   }
   
-  private void addElementsToExistingLayer(Layer layerToAddTo,Editable l)
+  private final static void addElementsToExistingLayer(final Layer layerToAddTo,final Editable l)
   {
     Enumeration<Editable> tempElements = ((Layer)l).elements();
     while(tempElements.hasMoreElements()) {
@@ -1367,17 +1371,7 @@ public class ImportReplay extends PlainImporterBase
       layerToAddTo.add(elem);
     }
   }
-  
-  public final void importThis(final String text) {
-    String[] lines = text.split("\\r?\\n");
-    for(String line:lines) {
-      if(!line.trim().isEmpty()) {
-        readLine(line.trim());
-      }
-    }
-  }
-  
-  public final void injectContent(Layers from,Layers destination,boolean performAdd) {
+  public final static void injectContent(final Layers from,final Layers destination,final boolean performAdd) {
     Enumeration<Editable> tempElements = from.elements();
     //now add to the plot's layers object
     while(tempElements.hasMoreElements()) {
@@ -1416,71 +1410,83 @@ public class ImportReplay extends PlainImporterBase
     destination.fireExtended();
   }
 
+  public final void importThis(final String text, final int numLines) {
+    final InputStream stream = new ByteArrayInputStream(text.getBytes());
+    importRep(null,stream,numLines);
+  }
+
+  @Override
+  public final void importThis(final String fName, InputStream is) {
+    final int numLines = countLinesFor(fName);
+    importRep(fName,is,numLines);
+  }
   /**
    * import data from this stream
    */
-  @Override
-  public final void importThis(final String fName, final InputStream is)
+  private final void importRep(final String fName,final InputStream is,final int numLines)
   {
     // declare linecounter
     int lineCounter = 0;
-
-    final int numLines = countLinesFor(fName);
-
-    final Reader reader = new InputStreamReader(is);
-    final BufferedReader br = new ReaderMonitor(reader, numLines, fName);
+    final Reader reader;
+    BufferedReader br = null;
     String thisLine = null;
     try
     {
-
-      // check stream is valid
-      if (is.available() > 0)
-      {
-
-        // clear the output list
-        _newLayers.clear();
-        _existingTracksThatMoved.clear();
-
-        // clear the input settings
-        _importSettings = null;
-        _lastImportedItem.clear();
-
-        thisLine = br.readLine();
-
-        // loop through the lines
-        while (thisLine != null)
+        reader = new InputStreamReader(is);
+        if(fName==null) {
+          br = new ReaderMonitor(reader, numLines, "pastedrep");
+        }
+        else {
+          br = new ReaderMonitor(reader, numLines, fName);
+        }
+        // check stream is valid
+        if (is.available() > 0)
         {
-          // keep line counter
-          lineCounter++;
 
-          // catch import problems
-          readLine(thisLine);
+          // clear the output list
+          _newLayers.clear();
+          _existingTracksThatMoved.clear();
 
-          // read another line
+          // clear the input settings
+          _importSettings = null;
+          _lastImportedItem.clear();
+
           thisLine = br.readLine();
+
+          // loop through the lines
+          while (thisLine != null)
+          {
+            // keep line counter
+            lineCounter++;
+
+            // catch import problems
+            readLine(thisLine);
+
+            // read another line
+            thisLine = br.readLine();
+          }
+
+          // see if any importers need to finalise
+          finaliseImporters();
+
+          // lastly have a go at formatting these tracks
+          for (int k = 0; k < _myFormatters.length; k++)
+          {
+            _myFormatters[k].formatLayers(_newLayers);
+          }
+
+          // see if we've modified any existing tracks
+          final Iterator<TrackWrapper> tIter =
+              _existingTracksThatMoved.iterator();
+          while (tIter.hasNext())
+          {
+            final TrackWrapper track = tIter.next();
+
+            // tell it that it has changed
+            track.sortOutRelativePositions();
+          }
+
         }
-
-        // see if any importers need to finalise
-        finaliseImporters();
-
-        // lastly have a go at formatting these tracks
-        for (int k = 0; k < _myFormatters.length; k++)
-        {
-          _myFormatters[k].formatLayers(_newLayers);
-        }
-
-        // see if we've modified any existing tracks
-        final Iterator<TrackWrapper> tIter =
-            _existingTracksThatMoved.iterator();
-        while (tIter.hasNext())
-        {
-          final TrackWrapper track = tIter.next();
-
-          // tell it that it has changed
-          track.sortOutRelativePositions();
-        }
-
-      }
     }
     catch (final java.lang.NumberFormatException e)
     {
