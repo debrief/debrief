@@ -239,7 +239,6 @@ package MWC.GUI.Shapes;
 // Initial revision
 //
 
-import java.awt.Font;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;

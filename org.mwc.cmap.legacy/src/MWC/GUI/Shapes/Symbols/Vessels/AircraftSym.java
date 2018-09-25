@@ -48,6 +48,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
 public class AircraftSym extends PlainSymbol {
@@ -56,9 +57,22 @@ public class AircraftSym extends PlainSymbol {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+  private final String _myType;
 
-	public void getMetafile()
+	public AircraftSym(String type)
   {
+	  _myType = type;
+  }
+	
+	public AircraftSym()
+	{
+	  this(SymbolFactory.AIRCRAFT);
+	}
+
+  @Override
+  public PlainSymbol create()
+  {
+    return new AircraftSym(_myType);
   }
 
   public java.awt.Dimension getBounds(){
@@ -95,7 +109,7 @@ public class AircraftSym extends PlainSymbol {
 
   public String getType()
   {
-    return "Aircraft";
+    return _myType;
   }
 
 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <polygon id="Triangle" points="2.35010568 47.7515023 53.0525389 48.2471438 2.84168792 98.8726085"/>
+  <polygon id="Triangle" points="97.3444182 50.5954742 48.4369218 51.0821703 97.8271283 1.2841265"/>
+  <polygon id="Triangle" points="52.7809306 2.34241134 52.8499777 53.1896664 2.35010568 2.27279407"/>
+  <polygon id="Triangle" points="47.4563513 96.8788372 48.8327381 45.7741672 98.1596416 97.2754576"/>
+  <circle id="origin" cx="50" cy="50" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>

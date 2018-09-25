@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect id="Rectangle-2" fill="#000000" x="24.5" y="23" width="52" height="21"/>
+  <polygon id="Rectangle" fill="#000000" points="7 42.5 95 42.5 87 74 14.5 74" style="pointer-events: none;"/>
+  <circle id="origin" cx="51" cy="58.25" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>

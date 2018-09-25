@@ -336,8 +336,8 @@ public class ImportReplay extends PlainImporterBase
       {testFile};
 
       // add the REP importer
-      MWC.Utilities.ReaderWriter.ImportManager
-          .addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+      MWC.Utilities.ReaderWriter.ImportManager.addImporter(
+          new Debrief.ReaderWriter.Replay.ImportReplay());
 
       // get our thread to import this
       final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
@@ -388,8 +388,8 @@ public class ImportReplay extends PlainImporterBase
       if (checkArea)
       {
         // area of coverage
-        final MWC.GenericData.WorldArea area =
-            _theLayers.elementAt(0).getBounds();
+        final MWC.GenericData.WorldArea area = _theLayers.elementAt(0)
+            .getBounds();
         super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
             11.92276, 0.01);
         super.assertEquals("tl long of first layer", area.getTopLeft()
@@ -406,8 +406,8 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // check those narrative lines got read in
-      final NarrativeWrapper narratives =
-          (NarrativeWrapper) _theLayers.elementAt(2);
+      final NarrativeWrapper narratives = (NarrativeWrapper) _theLayers
+          .elementAt(2);
       assertEquals("have read in both narrative entries", 2, narratives.size());
     }
 
@@ -428,29 +428,29 @@ public class ImportReplay extends PlainImporterBase
       ImportReplay.initialise(new ImportReplay.testImport.TestParent(
           ImportReplay.IMPORT_AS_OTG, 0L));
       trackImporter.importThis(shape_file, bs, tLayers);
-//
-//      assertEquals("read in track", 11, tLayers.size());
-//
-//      TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL_STYLE");
-//      assertNotNull("found track", track);
-//
-//      // get the positions
-//      Enumeration<Editable> pIter = track.getPositionIterator();
-//      FixWrapper f1 = (FixWrapper) pIter.nextElement();
-//      assertNotNull("found item", f1);
-//      assertEquals("got label", "120500", f1.getLabel());
-//      FixWrapper f2 = (FixWrapper) pIter.nextElement();
-//      assertEquals("got label", "Override label 1", f2.getLabel());
-//      assertEquals("no comment", null, f2.getComment());
-//      FixWrapper f3 = (FixWrapper) pIter.nextElement();
-//      assertEquals("got label", "Override label 2", f3.getLabel());
-//      assertEquals("no comment", null, f3.getComment());
-//      FixWrapper f4 = (FixWrapper) pIter.nextElement();
-//      assertEquals("got label", "Override label 3", f4.getLabel());
-//      assertEquals("no comment", "comment 3", f4.getComment());
-//      FixWrapper f5 = (FixWrapper) pIter.nextElement();
-//      assertEquals("got label", "0504", f5.getLabel());
-//      assertEquals("no comment", "comment 4", f5.getComment());
+      
+       assertEquals("read in track", 14, tLayers.size());
+      
+       TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL STYLE");
+       assertNotNull("found track", track);
+      
+       // get the positions
+       Enumeration<Editable> pIter = track.getPositionIterator();
+       FixWrapper f1 = (FixWrapper) pIter.nextElement();
+       assertNotNull("found item", f1);
+       assertEquals("got label", "120500", f1.getLabel());
+       FixWrapper f2 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 1", f2.getLabel());
+       assertEquals("no comment", null, f2.getComment());
+       FixWrapper f3 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 2", f3.getLabel());
+       assertEquals("no comment", null, f3.getComment());
+       FixWrapper f4 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "Override label 3", f4.getLabel());
+       assertEquals("no comment", "comment 3", f4.getComment());
+       FixWrapper f5 = (FixWrapper) pIter.nextElement();
+       assertEquals("got label", "0504", f5.getLabel());
+       assertEquals("no comment", "comment 4", f5.getComment());
     }
 
     public final void testDRimport()
@@ -505,7 +505,7 @@ public class ImportReplay extends PlainImporterBase
       final String test =
           ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
       final String test2 =
-          ";TEXT: CA[LAYER=Special_Layer][TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
+          ";TEXT: CA[LAYER=Special_Layer,TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
 
       final ImportReplay ir = new ImportReplay();
 
@@ -516,8 +516,8 @@ public class ImportReplay extends PlainImporterBase
 
       assertEquals("String not found", null, ir.getThisSymProperty(test2,
           "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(
-          test2, "LAYER"));
+      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test2,
+          "LAYER"));
       assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
           "TEST_ON"));
     }
@@ -526,8 +526,8 @@ public class ImportReplay extends PlainImporterBase
     {
       final String test1 = ";TEXT: 5j 21.42 0 0 N 21.88 0 0 W Other buoy";
 
-      final LabelWrapper label1 =
-          (LabelWrapper) new ImportLabel().readThisLine(test1);
+      final LabelWrapper label1 = (LabelWrapper) new ImportLabel().readThisLine(
+          test1);
 
       // correct symbol
       assertEquals("sym type correct", "Kingpin", label1.getSymbolType());
@@ -536,8 +536,8 @@ public class ImportReplay extends PlainImporterBase
 
       final String test2 = ";TEXT: 4G 21.42 0 0 N 21.88 0 0 W Other buoy";
 
-      final LabelWrapper label2 =
-          (LabelWrapper) new ImportLabel().readThisLine(test2);
+      final LabelWrapper label2 = (LabelWrapper) new ImportLabel().readThisLine(
+          test2);
 
       // correct symbol
       assertEquals("sym type correct", "Hidar", label2.getSymbolType());
@@ -1017,17 +1017,43 @@ public class ImportReplay extends PlainImporterBase
   public final static String replayTrackSymbolFor(final String theSym)
   {
     String res = null;
-    final String colorVal = theSym.substring(0, 1);
+    final String symbolVal = theSym.substring(0, 1);
 
-    res = SymbolFactory.createSymbolFromId(colorVal);
+    res = SymbolFactory.createSymbolFromId(symbolVal);
 
     // did we manage to find it?
     if (res == null)
     {
       res = SymbolFactory.createSymbolFromId(SymbolFactory.DEFAULT_SYMBOL_TYPE);
     }
+    else if (res == SymbolFactory.UNKNOWN)
+    {
+      // TODO: instance of itself?
+      final ImportReplay importer = new ImportReplay();
+      // In case we have an unknown symbol, we test if it is a SVG
+      final String svgSymbol = importer.getSVGSymbol(theSym);
+      if (svgSymbol != null)
+      {
+        res = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgSymbol;
+      }
+    }
 
     return res;
+  }
+
+  /**
+   * ImporterReplays examines the symbol to see if a SVG Icon is specified.
+   * 
+   * @param thisOne
+   * @return the name of the layer to use
+   */
+  final private String getSVGSymbol(final String sym)
+  {
+    // what are we looking for?
+    final String SYMBOL_PREFIX = "SYMBOL";
+
+    // check the symbology
+    return getThisSymProperty(sym, SYMBOL_PREFIX);
   }
 
   /**
@@ -1128,8 +1154,8 @@ public class ImportReplay extends PlainImporterBase
   {
     if (val != null)
     {
-      final java.awt.datatransfer.Clipboard cl =
-          java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+      final java.awt.datatransfer.Clipboard cl = java.awt.Toolkit
+          .getDefaultToolkit().getSystemClipboard();
       final java.awt.datatransfer.StringSelection ss =
           new java.awt.datatransfer.StringSelection(val);
       cl.setContents(ss, ss);
@@ -1332,7 +1358,7 @@ public class ImportReplay extends PlainImporterBase
 
   /**
    * utility method to extract formatted property values from a symbology line, such as: ;TEXT:
-   * CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer
+   * CA[LAYER=Special_Layer,SYMBOL=missile] 21.42 0 0 N 21.88 0 0 W Other layer
    * 
    * @param symbology
    * @param property_name
@@ -1341,8 +1367,15 @@ public class ImportReplay extends PlainImporterBase
   final private String getThisSymProperty(final String symbology,
       final String property_name)
   {
-    final String regexp = "\\[(?<NAME>.*?)\\=(?<VALUE>.*?)\\]";
-    final Matcher m = Pattern.compile(regexp).matcher(symbology);
+    int indexFirstBracket = symbology.indexOf('[');
+    int indexLastBracket = symbology.indexOf(']');
+    if (indexFirstBracket < 0 || indexLastBracket < 0)
+    {
+      return null;
+    }
+    final String regexp = "(?<NAME>.*?)\\=(?<VALUE>[^,]*),?";
+    final Matcher m = Pattern.compile(regexp).matcher(symbology.substring(
+        indexFirstBracket + 1, indexLastBracket));
 
     // did we find any?
     while (m.find())
@@ -1481,12 +1514,9 @@ public class ImportReplay extends PlainImporterBase
           while (tIter.hasNext())
           {
             final TrackWrapper track = tIter.next();
-
-            // tell it that it has changed
             track.sortOutRelativePositions();
           }
-
-        }
+       }
     }
     catch (final java.lang.NumberFormatException e)
     {
@@ -1529,12 +1559,12 @@ public class ImportReplay extends PlainImporterBase
     final String symbology = thisOne.getSymbology();
     if (symbology != null && !symbology.isEmpty() && symbology.length() > 2)
     {
-      shapeWrapper.getShape().setLineStyle(
-          ImportReplay.replayLineStyleFor(symbology.substring(2)));
+      shapeWrapper.getShape().setLineStyle(ImportReplay.replayLineStyleFor(
+          symbology.substring(2)));
       if (symbology.length() > 3)
       {
-        shapeWrapper.getShape().setLineWidth(
-            ImportReplay.replayLineThicknesFor(symbology.substring(3)));
+        shapeWrapper.getShape().setLineWidth(ImportReplay.replayLineThicknesFor(
+            symbology.substring(3)));
       }
       if (symbology.length() >= 5)
       {
@@ -1640,8 +1670,8 @@ public class ImportReplay extends PlainImporterBase
     return res;
   }
 
-  private HiResDate
-      processDynamicShapeWrapper(final DynamicTrackShapeWrapper sw)
+  private HiResDate processDynamicShapeWrapper(
+      final DynamicTrackShapeWrapper sw)
   {
     final HiResDate res = null;
 
@@ -1706,7 +1736,7 @@ public class ImportReplay extends PlainImporterBase
   private HiResDate processReplayFix(final ReplayFix rf)
   {
     final HiResDate res = rf.theFix.getTime();
-    
+
     // do we have a target layer?
     String targetLayer = targetLayerFor(rf.theSymbology);
 
@@ -1734,22 +1764,25 @@ public class ImportReplay extends PlainImporterBase
         folder.setName(targetLayer + "_1");
         addLayer(folder);
       }
-      
+
       // ok, does it contain the track
       final LightweightTrackWrapper track;
       Editable found = folder.find(rf.theTrackName);
-      if(found != null && found instanceof LightweightTrackWrapper)
+      if (found != null && found instanceof LightweightTrackWrapper)
       {
         track = (LightweightTrackWrapper) found;
       }
       else
       {
         final Color thisColor = replayColorFor(rf.theSymbology);
-        track = new LightweightTrackWrapper(rf.theTrackName, true, true, thisColor,
-            LineStylePropertyEditor.SOLID);
+        track = new LightweightTrackWrapper(rf.theTrackName, true, true,
+            thisColor, LineStylePropertyEditor.SOLID);
+
+        // set the sym type for the track
+        final String theSymType = replayTrackSymbolFor(rf.theSymbology);
+        track.setSymbolType(theSymType);
         folder.add(track);
       }
-
 
       // create the wrapper for this annotation
       final FixWrapper thisFix = new FixWrapper(rf.theFix);
@@ -1773,8 +1806,8 @@ public class ImportReplay extends PlainImporterBase
           final boolean isMax = (Long.MAX_VALUE == sampleFreq);
 
           // ok, are we due to import this one?
-          if (lastTime == null
-              || (!isMax && res.getDate().getTime() >= lastTime + sampleFreq))
+          if (lastTime == null || (!isMax && res.getDate().getTime() >= lastTime
+              + sampleFreq))
           {
             // ok, carry on
           }
@@ -1784,10 +1817,10 @@ public class ImportReplay extends PlainImporterBase
           }
         }
       }
-      
+
       final long thisTime = res.getDate().getTime();
       _lastImportedItem.put(rf.theTrackName, thisTime);
-      
+
       // find the track name
       final String theTrack = rf.theTrackName;
       final Color thisColor = replayColorFor(rf.theSymbology);
@@ -1834,13 +1867,13 @@ public class ImportReplay extends PlainImporterBase
             if (freq == null)
             {
               // ok, skip the data
-              _importSettings =
-                  new ImportSettings(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE);
+              _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG,
+                  Long.MAX_VALUE);
             }
             else
             {
-              _importSettings =
-                  new ImportSettings(ImportReplay.IMPORT_AS_OTG, freq);
+              _importSettings = new ImportSettings(ImportReplay.IMPORT_AS_OTG,
+                  freq);
             }
           }
         }
@@ -1952,8 +1985,8 @@ public class ImportReplay extends PlainImporterBase
 
         // see if there is any formatting to be done
         // lastly - see if the layers object has some formatters
-        final Iterator<INewItemListener> newIiter =
-            getLayers().getNewItemListeners().iterator();
+        final Iterator<INewItemListener> newIiter = getLayers()
+            .getNewItemListeners().iterator();
         while (newIiter.hasNext())
         {
           final INewItemListener newI = newIiter.next();
@@ -1969,8 +2002,8 @@ public class ImportReplay extends PlainImporterBase
             .substring(2)));
         if (rf.theSymbology.length() > 3)
         {
-          trkWrapper.setLineThickness(ImportReplay
-              .replayLineThicknesFor(rf.theSymbology.substring(3)));
+          trkWrapper.setLineThickness(ImportReplay.replayLineThicknesFor(
+              rf.theSymbology.substring(3)));
         }
       }
 
@@ -1990,8 +2023,8 @@ public class ImportReplay extends PlainImporterBase
       }
 
       // lastly - see if the layers object has some formatters
-      final Iterator<INewItemListener> newIiter =
-          getLayers().getNewItemListeners().iterator();
+      final Iterator<INewItemListener> newIiter = getLayers()
+          .getNewItemListeners().iterator();
       while (newIiter.hasNext())
       {
         final Layers.INewItemListener newI = newIiter.next();
@@ -2227,8 +2260,8 @@ public class ImportReplay extends PlainImporterBase
 
       // see if the shape symbology specifies a layer
       String targetLayer = targetLayerFor(thisOne.getSymbology());
-      
-      if(targetLayer == null)
+
+      if (targetLayer == null)
       {
         targetLayer = ANNOTATION_LAYER;
       }
@@ -2262,8 +2295,8 @@ public class ImportReplay extends PlainImporterBase
     while (tIter.hasNext())
     {
       final TrackWrapper trackWrapper = tIter.next();
-      final Iterator<SensorWrapper> iter =
-          _pendingSensors.get(trackWrapper).iterator();
+      final Iterator<SensorWrapper> iter = _pendingSensors.get(trackWrapper)
+          .iterator();
       while (iter.hasNext())
       {
         final SensorWrapper thisS = iter.next();

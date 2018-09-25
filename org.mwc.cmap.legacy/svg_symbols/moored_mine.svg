@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect id="Rectangle-10" fill="#000000" x="16" y="92.939" width="68" height="7"/>
+  <rect id="Rectangle-9" fill="#000000" x="47.011" y="73.941" width="6" height="19.221"/>
+  <ellipse id="Oval" fill="#000000" cx="50.0111093" cy="44.2182422" rx="31" ry="30.7304336"/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="75.13 6.365 87.08 17.809 76.384 28.948 64.739 17.841 75.529 6.671"/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="41.823 0.5 58.836 0.45 58.761 15.467 42.328 15.281 42.328 0.301" transform=""/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="12.071 19.617 23.868 7.562 34.775 18.451 23.156 30.234 12.437 19.351" transform=""/>
+  <circle cx="50.011" cy="44.218" rx="2.5" style="fill: rgb(255, 0, 0);" id="origin" r="2.5"/>
+</svg>

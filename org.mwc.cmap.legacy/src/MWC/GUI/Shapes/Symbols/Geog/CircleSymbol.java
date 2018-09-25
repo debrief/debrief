@@ -77,7 +77,12 @@ public class CircleSymbol extends PlainSymbol
      // construct the symbol from a sequence of metafile commands,
      // if we think it is really necessary...
   }
-
+  
+  @Override
+  public PlainSymbol create()
+  {
+    return new CircleSymbol();
+  }
   /**
    * getBounds
    *
@@ -128,20 +133,10 @@ public class CircleSymbol extends PlainSymbol
     return res;
   }
 
-  /**
-   * getMetafile
-   *
-   */
-  public void getMetafile()
-  {
-    // return the metafile
-  }
-
   public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
   }
-
 
   /**
    * paint

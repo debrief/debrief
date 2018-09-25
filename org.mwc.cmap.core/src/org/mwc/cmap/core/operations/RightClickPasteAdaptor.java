@@ -27,7 +27,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -65,7 +64,7 @@ public class RightClickPasteAdaptor
       BaseLayer layer3 = new BaseLayer();
       layer3.setName("name");
       Editable[] items = new Editable[] {layer1, layer2, layer3};
-      Clipboard clipboard =     null;
+      Clipboard clipboard = null;
       Layer destination = null;
 
       PasteItem action = createAction(destination, layers, clipboard, items);
@@ -146,10 +145,8 @@ public class RightClickPasteAdaptor
       LabelWrapper label2 = new LabelWrapper("label", new WorldLocation(1d,1d,1d), Color.red);
       LabelWrapper label3 = new LabelWrapper("label", new WorldLocation(1d,1d,1d), Color.red);
       Editable[] items = new Editable[] {label, label2, label3};
-      Clipboard clipboard =
-      null;
       Layer destination = shapes;
-      PasteItem paste = new PasteItem(items, clipboard, destination, layers);
+      PasteItem paste = new PasteItem(items, destination, layers);
       
       assertEquals("starts empty", 0, shapes.size());
       
@@ -291,8 +288,7 @@ public class RightClickPasteAdaptor
     		if(!(destination instanceof DynamicLayer) || theDataList[0] instanceof DynamicPlottable)
     		{
     				// create the menu items
-    				paster = new PasteItem(theDataList, _clipboard, (Layer) destination,
-    						theLayers);
+    				paster = new PasteItem(theDataList, (Layer) destination, theLayers);
     				
     	      // formatting
     				paster.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
@@ -312,21 +308,17 @@ public class RightClickPasteAdaptor
 
 	public static class PasteItem extends Action
 	{
-		protected Editable[] _data;
+		protected final Editable[] _data;
 
-		protected Clipboard _myClipboard;
+		protected final Layer _theDestination;
 
-		protected Layer _theDestination;
+		protected final Layers _theLayers;
 
-		protected Layers _theLayers;
-
-		public PasteItem(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
-				final Layers theLayers)
+		public PasteItem(final Editable[] items, final Layer theDestination, final Layers theLayers)
 		{
 			// remember stuff
 			// try to take a fresh clone of the data item
 			_data = items;
-			_myClipboard = clipboard;
 			_theDestination = theDestination;
 			_theLayers = theLayers;
 			
@@ -380,10 +372,6 @@ public class RightClickPasteAdaptor
 					// inform the listeners
 					_theLayers.fireExtended(null, _theDestination);
 					
-					// put the contents back in the clipbard
-					final EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(_data,new Transfer[]{transfer});
-					
 					return Status.OK_STATUS;
 				}
 			};
@@ -417,7 +405,7 @@ public class RightClickPasteAdaptor
     public PasteLayer(final Editable[] items, final Clipboard clipboard, final Layer theDestination,
 				final Layers theLayers)
 		{
-			super(items , clipboard, theDestination, theLayers);
+			super(items , theDestination, theLayers);
 		}
 
 		public String toString()
@@ -468,9 +456,6 @@ public class RightClickPasteAdaptor
 					}
 					// inform the listeners
 					_theLayers.fireExtended();
-					
-					// now clear the clipboard
-					_myClipboard.clearContents();
 
 					return Status.OK_STATUS;
 				}
@@ -503,10 +488,6 @@ public class RightClickPasteAdaptor
 						}
 					}
 					
-					// put the contents back in the clipbard
-					final EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(_data,new Transfer[]{transfer});
-
 					return Status.OK_STATUS;
 				}
 			};
