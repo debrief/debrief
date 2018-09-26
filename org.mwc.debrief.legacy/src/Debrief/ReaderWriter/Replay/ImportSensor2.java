@@ -95,7 +95,6 @@ package Debrief.ReaderWriter.Replay;
 import java.text.ParseException;
 import java.util.StringTokenizer;
 
-import junit.framework.Assert;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GenericData.HiResDate;
@@ -117,8 +116,9 @@ public final class ImportSensor2 extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // ;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR
@@ -326,7 +326,21 @@ public final class ImportSensor2 extends AbstractPlainLineImporter
       super(val);
     }
 
-    public final void testImport()
+    public final void testInvalidImport() throws ParseException
+    {
+      final String lineA =
+          ";SENSOR2: 20090022 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
+
+      final ImportSensor2 is2 = new ImportSensor2();
+      final SensorContactWrapper resA =
+          (SensorContactWrapper) is2.readThisLine(lineA);
+      assertEquals("lineA failed", "Contact_bearings", resA
+          .getSensorName());
+      assertEquals("lineA failed", "0414", resA.getLabel());
+    }
+
+    
+    public final void testImport() throws ParseException
     {
       final String lineA =
           ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
@@ -340,18 +354,18 @@ public final class ImportSensor2 extends AbstractPlainLineImporter
       final ImportSensor2 is2 = new ImportSensor2();
       final SensorContactWrapper resA =
           (SensorContactWrapper) is2.readThisLine(lineA);
-      Assert.assertEquals("lineA failed", "Contact_bearings", resA
+      assertEquals("lineA failed", "Contact_bearings", resA
           .getSensorName());
-      Assert.assertEquals("lineA failed", "0414", resA.getLabel());
+      assertEquals("lineA failed", "0414", resA.getLabel());
       final SensorContactWrapper resB =
           (SensorContactWrapper) is2.readThisLine(lineB);
-      Assert.assertEquals("lineB failed", "0414", resB.getLabel());
+      assertEquals("lineB failed", "0414", resB.getLabel());
       final SensorContactWrapper resC =
           (SensorContactWrapper) is2.readThisLine(lineTabs);
-      Assert.assertEquals("lineTabs failed", "0414", resC.getLabel());
+      assertEquals("lineTabs failed", "0414", resC.getLabel());
       final SensorContactWrapper resD =
           (SensorContactWrapper) is2.readThisLine(lineD);
-      Assert.assertEquals("lineD failed", "0414", resD.getLabel());
+      assertEquals("lineD failed", "0414", resD.getLabel());
     }
   }
 

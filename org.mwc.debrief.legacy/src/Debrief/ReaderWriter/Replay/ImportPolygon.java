@@ -121,7 +121,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 	private final String _myType = ";POLY:";
 
 	@Override
-	public final Object readThisLine(final String theLine)
+	public final Object readThisLine(final String theLine) throws ParseException
 	{
 		String line = theLine;
 		// get a stream from the string
@@ -329,7 +329,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 	public static class TestImport extends TestCase
 	{
 
-		public void testNoLabel()
+		public void testNoLabel() throws ParseException
 		{
 			final String line = ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
@@ -353,7 +353,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 
-		public void testLeadingSpace()
+		public void testLeadingSpace() throws ParseException
 		{
 			final String line = "    	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
@@ -382,7 +382,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
 		}
 
-		public void testWithLabel()
+		public void testWithLabel() throws ParseException
 		{
 			final String line = " ;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportPolygon ip = new ImportPolygon();
@@ -406,7 +406,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 
-		public void testWithCompoundLabel()
+		public void testWithCompoundLabel() throws ParseException
 		{
 			final String line = ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E test long label";
 			final ImportPolygon ip = new ImportPolygon();
@@ -414,7 +414,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("test long label", res.getLabel());
 		}
 
-		public void testWithoutEndDate()
+		public void testWithoutEndDate() throws ParseException
 		{
 			final String line = ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
@@ -438,7 +438,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 
-		public void testWithoutDates()
+		public void testWithoutDates() throws ParseException
 		{
 			final String line = ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
 			final ImportPolygon ip = new ImportPolygon();
@@ -462,7 +462,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 			assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
 		}
 
-		public void testExport()
+		public void testExport() throws ParseException
 		{
 			final String line = ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
 			final ImportPolygon ip = new ImportPolygon();

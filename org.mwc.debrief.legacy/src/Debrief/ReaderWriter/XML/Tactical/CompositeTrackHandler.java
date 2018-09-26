@@ -14,6 +14,7 @@
  */
 package Debrief.ReaderWriter.XML.Tactical;
 
+import java.text.ParseException;
 import java.util.Enumeration;
 
 import org.w3c.dom.Document;
@@ -29,6 +30,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -63,7 +65,14 @@ public class CompositeTrackHandler extends TrackHandler
 		{
 			public void setValue(final String name, final String value)
 			{
-				_startTime = DebriefFormatDateTime.parseThis(value);
+				try
+        {
+          _startTime = DebriefFormatDateTime.parseThis(value);
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");        
+        }
 			}
 		});
 

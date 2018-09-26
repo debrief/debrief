@@ -15,6 +15,7 @@
 package org.mwc.debrief.data_feed.views;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.*;
 
 import org.eclipse.core.runtime.*;
@@ -33,6 +34,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
 import MWC.GenericData.*;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -368,6 +370,10 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 			CorePlugin.logError(Status.ERROR, "failed whilst reading from real-time data feed",
 					e);
 		}
+    catch (ParseException e)
+    {
+      Trace.trace(e, "While parsing date from real-time data feed");
+    }
 
 	}
 

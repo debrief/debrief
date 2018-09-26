@@ -78,6 +78,7 @@ package Debrief.ReaderWriter.Replay;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -99,8 +100,9 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // get a stream from the string
@@ -208,7 +210,7 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter
       super(val);
     }
 
-    public void testImportSingleLine()
+    public void testImportSingleLine() throws ParseException
     {
       final String theLine =
           ";NARRATIVE2:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
@@ -223,7 +225,7 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter
       assertEquals("type matches", "GenComment", ne.getType());
     }
 
-    public void testImportQuotedLine()
+    public void testImportQuotedLine() throws ParseException
     {
       final String theLine =
           ";NARRATIVE2:	020421	121857	\"HMS TORBAY\" 	GenComment2	Mk Rge BAAA R121212";

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -1363,6 +1364,13 @@ public class ImportReplay extends PlainImporterBase
       // show the message dialog
       super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+    catch (final ParseException e)
+    {
+      // produce the error message
+      MWC.Utilities.Errors.Trace.trace(e);
+      // show the message dialog
+      super.readError(fName, lineCounter, "Date format error", thisLine);
+    }
     finally
     {
       try
@@ -1960,8 +1968,9 @@ public class ImportReplay extends PlainImporterBase
    * 
    * @param theLine
    *          the line to parse
+   * @throws ParseException 
    */
-  public HiResDate readLine(final String theLine) throws java.io.IOException
+  public HiResDate readLine(final String theLine) throws java.io.IOException, ParseException
   {
     HiResDate res = null;
 
