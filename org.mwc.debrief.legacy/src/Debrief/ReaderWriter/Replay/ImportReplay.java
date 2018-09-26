@@ -2371,7 +2371,8 @@ public class ImportReplay extends PlainImporterBase
     boolean proceed=true;
     String[] lines = content.split("\\r?\\n");
     int lineCount = 0;
-    while((lineCount<=6 && lineCount<lines.length) && proceed) {
+    int maxLines = Math.min(6, lines.length);
+    while(lineCount<maxLines && proceed) {
       String line = lines[lineCount];
       if(line.startsWith(";") && !line.startsWith(";;")) {
         StringTokenizer lineTokens = new StringTokenizer(line);
