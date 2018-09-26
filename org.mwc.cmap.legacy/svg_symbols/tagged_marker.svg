@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <polygon id="Triangle-4" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="87.6449629 34.4089966 37 63.8179932 37 5"/>
+  <rect id="Rectangle-9" x="23" y="0" width="16" height="91" rx="3"/>
+  <rect id="Rectangle-10" x="12" y="84" width="39" height="16" rx="3"/>
+  <circle id="origin" cx="50" cy="50" r="2.5" style="fill: rgb(255, 0, 0);" transform="matrix(0.999999, 0, 0, 1, -18.49996, 42)"/>
+</svg>

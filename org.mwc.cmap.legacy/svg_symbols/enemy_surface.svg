@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <bx:guide x="50.126" y="-15.694" angle="90"/>
+  </defs>
+  <circle id="Oval-2" cx="50" cy="50" r="14.5" style="stroke-dashoffset: 1; stroke: rgb(0, 0, 0); fill: none; stroke-width: 5;"/>
+  <polyline style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 5;" points="51.823 1.799 3.488 50.08 50.021 96.46 96.387 50.111 48.315 1.863"/>
+  <circle id="origin" cx="50" cy="50" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>

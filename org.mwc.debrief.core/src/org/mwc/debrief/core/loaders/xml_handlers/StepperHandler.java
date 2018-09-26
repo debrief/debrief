@@ -52,7 +52,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 {
 
-	private static final String RECT_HIGHLIGHT_SIZE = "RectHighlight_Size";
+  private static final String TOOLBOX_END_TIME = "Toolbox_End_Time";
+
+  private static final String TOOLBOX_START_TIME = "Toolbox_Start_Time";
+
+  private static final String RECT_HIGHLIGHT_SIZE = "RectHighlight_Size";
 
 	private static final String RECT_HIGHLIGHT_COLOR = "RectHighlight_Color";
 
@@ -141,7 +145,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		}
 
 		// ////////////////////////////////////////////////////////////
-		final String start_time = (String) details.properties.get("Toolbox_Start_Time");
+		final String start_time = (String) details.properties.get(TOOLBOX_START_TIME);
 		if (start_time != null)
 		{
 			HiResDate startTime = null;
@@ -153,7 +157,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		}
 
 		// ////////////////////////////////////////////////////////////
-		final String end_time = (String) details.properties.get("Toolbox_End_Time");
+		final String end_time = (String) details.properties.get(TOOLBOX_END_TIME);
 		if (end_time != null)
 		{
 			HiResDate endTime = null;
@@ -517,11 +521,11 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		// Let's not bother with this for now...
 		final HiResDate theStartTime = controller.getSliderStartTime();
 		if (theStartTime != null)
-			details.addProperty("Toolbox_Start_Time",
+			details.addProperty(TOOLBOX_START_TIME,
 					DebriefFormatDateTime.toStringHiRes(theStartTime));
 		final HiResDate theEndTime = controller.getSliderEndTime();
 		if (theEndTime != null)
-			details.addProperty("Toolbox_End_Time",
+			details.addProperty(TOOLBOX_END_TIME,
 					DebriefFormatDateTime.toStringHiRes(theEndTime));
 
 		return details;

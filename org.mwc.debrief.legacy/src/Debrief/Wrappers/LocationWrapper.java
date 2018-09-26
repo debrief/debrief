@@ -91,6 +91,7 @@ package Debrief.Wrappers;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 
 public final class LocationWrapper extends MWC.GUI.PlainWrapper {
   //////////////////////////////////////////////////
@@ -137,6 +138,15 @@ public final class LocationWrapper extends MWC.GUI.PlainWrapper {
 
   public final String getName(){
     return "a location";
+  }
+  
+  
+
+  @Override
+  public void setName(String name)
+  {
+    Trace.trace("Should not be trying to rename Location wrapper");
+    // ignore it
   }
 
   /** does this item have an editor?

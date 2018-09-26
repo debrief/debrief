@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 100 100" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+  <ellipse id="Oval" fill="#000000" cx="50.0111093" cy="44.2182422" rx="31" ry="30.7304336" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="75.13 6.365 87.08 17.809 76.384 28.948 64.739 17.841 75.529 6.671" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="41.823 0.5 58.836 0.45 58.761 15.467 42.328 15.281 42.328 0.301" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+  <polyline style="stroke: rgb(0, 0, 0);" points="12.071 19.617 23.868 7.562 34.775 18.451 23.156 30.234 12.437 19.351" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+  <polyline style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" points="11.885 18.751" transform="matrix(1, 0, 0, 1, 0, 0)"/>
+  <circle cx="50.011" cy="44.218" rx="2.5" style="fill: rgb(255, 0, 0);" id="origin" r="2.5"/>
+</svg>

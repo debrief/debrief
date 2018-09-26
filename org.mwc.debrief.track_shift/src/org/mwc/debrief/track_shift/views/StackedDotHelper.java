@@ -2400,7 +2400,13 @@ public final class StackedDotHelper
       final WatchableList[] primaryTracks = provider.getPrimaryTracks();
       for (final WatchableList priTrk : primaryTracks)
       {
-        if (priTrk instanceof TrackWrapper)
+        if(priTrk == null)
+        {
+          logger.logError(IStatus.INFO,
+              "A primary track must be assigned", null);
+          return;
+        }
+        else if (priTrk instanceof TrackWrapper)
         {
           _primaryTrack = (TrackWrapper) priTrk;
           _primaryTracks.add((TrackWrapper) priTrk);

@@ -239,7 +239,6 @@ package MWC.GUI.Shapes;
 // Initial revision
 //
 
-import java.awt.Font;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
@@ -457,8 +456,16 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		return _theLabel.getString();
 	}
+	
+	
 
-	public String getFileName()
+	@Override
+  public void setName(String name)
+  {
+	  _theLabel.setString(name);
+  }
+
+  public String getFileName()
 	{
 		return _fileName;
 	}

@@ -1305,8 +1305,14 @@ public abstract class CorePlotEditor extends EditorPart implements
     {
       _plotIsDirty = true;
 
-      // fire the modified event
-      firePropertyChange(PROP_DIRTY);
+      // fire the modified event, in the display thread
+      Display.getDefault().syncExec(new Runnable()
+      {
+        public void run()
+        {
+          firePropertyChange(PROP_DIRTY);
+        }
+      });
     }
   }
 
