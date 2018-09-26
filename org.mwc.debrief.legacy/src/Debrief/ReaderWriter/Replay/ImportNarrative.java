@@ -77,6 +77,7 @@ import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
@@ -195,6 +196,11 @@ public final class ImportNarrative extends AbstractPlainLineImporter
     public testImport(final String val)
     {
       super(val);
+    }
+    
+    public void setUp()
+    {
+      DialogFactory.setRunHeadless(true);
     }
 
     public void testImportWithWhitespace1() throws ParseException
