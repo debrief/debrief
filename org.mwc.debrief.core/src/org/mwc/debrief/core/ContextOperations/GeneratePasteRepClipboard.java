@@ -72,7 +72,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
         CorePlugin.run(operation);
       }
     };
-    //doPasteAction.setImageDescriptor();
+    doPasteAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/paste.png"));
     doPasteAction.setToolTipText("Paste REP from clipboard");
     return doPasteAction;
   }
