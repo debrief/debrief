@@ -1493,12 +1493,16 @@ public class ImportReplay extends PlainImporterBase
     try
     {
         reader = new InputStreamReader(is);
-        if(fName==null) {
-          br = new ReaderMonitor(reader, numLines, "pastedrep");
+        final String nameToUse;
+        if(fName != null)
+        {
+          nameToUse = fName;
         }
-        else {
-          br = new ReaderMonitor(reader, numLines, fName);
+        else
+        {
+          nameToUse = "Pasted REP content";
         }
+        br = new ReaderMonitor(reader, numLines, nameToUse);
         // check stream is valid
         if (is.available() > 0)
         {
