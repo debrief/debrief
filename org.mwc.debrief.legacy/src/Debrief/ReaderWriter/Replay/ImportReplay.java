@@ -2370,8 +2370,9 @@ public class ImportReplay extends PlainImporterBase
     }
     boolean proceed=true;
     String[] lines = content.split("\\r?\\n");
-    for(int i=0;i<lines.length;i++) {
-      String line = lines[i];
+    int lineCount = 0;
+    while((lineCount<=6 && lineCount<lines.length) && proceed) {
+      String line = lines[lineCount];
       if(line.startsWith(";") && !line.startsWith(";;")) {
         StringTokenizer lineTokens = new StringTokenizer(line);
         if(lineTokens.hasMoreTokens()) {
@@ -2394,10 +2395,7 @@ public class ImportReplay extends PlainImporterBase
         }
         
       }
-      //we do it only for 6 lines
-      if(i>=6 || !proceed) {
-        break;
-      }
+      lineCount++;
     }
     return proceed;
   }
