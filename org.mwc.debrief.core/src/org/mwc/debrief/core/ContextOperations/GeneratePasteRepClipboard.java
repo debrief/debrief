@@ -14,10 +14,6 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
-import java.util.StringTokenizer;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,7 +54,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       if(val!=null) {
         final String clipBoardContent = (String)val;
         //See if there is plain text on the clipboard
-        if(isContentImportable(clipBoardContent)) {
+        if(ImportReplay.isContentImportable(clipBoardContent)) {
           parent.add(createAction(theLayers, clipBoardContent));
         }
 
@@ -130,42 +126,5 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       return -1;
       
     }
-  }
-
- 
-  private boolean isContentImportable(final String content) {
-
-    boolean proceed=true;
-    String[] lines = content.split("\\r?\\n");
-    for(int i=0;i<lines.length;i++) {
-      String line = lines[i];
-      if(line.startsWith(";") && !line.startsWith(";;")) {
-        StringTokenizer lineTokens = new StringTokenizer(line);
-        if(lineTokens.hasMoreTokens()) {
-          String firstWord = lineTokens.nextToken();
-          String regex = "^;[A-Z1-9_]{3,40}+:$";
-          Pattern pattern = Pattern.compile(regex);
-          Matcher match = pattern.matcher(firstWord);
-          if(!match.matches()) {
-            proceed=false;
-          }
-        }
-      }
-      else {
-        StringTokenizer lineTokens = new StringTokenizer(line);
-        if(lineTokens.hasMoreTokens()) {
-          String firstWord = lineTokens.nextToken();
-          if(!(firstWord.matches("\\d{6}+") || firstWord.matches("\\d{8}+"))) {
-            proceed=false;
-          }
-        }
-        
-      }
-      //we do it only for 6 lines
-      if(i>=6 || !proceed) {
-        break;
-      }
-    }
-    return proceed;
   }
 }

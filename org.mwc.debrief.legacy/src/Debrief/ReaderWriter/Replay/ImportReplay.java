@@ -661,6 +661,33 @@ public class ImportReplay extends PlainImporterBase
       }
       assertEquals(lineCount,count);
     }
+    public void testIsContentImportable() {
+      String textToPaste =
+          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
+          ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
+                ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste = "@B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line ;VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector";
+      assertFalse(isContentImportable(textToPaste));
+      textToPaste = "";
+      assertFalse(isContentImportable(textToPaste));
+      textToPaste = "951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste = "19951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste));
+    }
   }
 
   private static Vector<PlainLineImporter> _coreImporters;
@@ -2337,4 +2364,42 @@ public class ImportReplay extends PlainImporterBase
     // check the symbology
     return getThisSymProperty(sym, LAYER_PREFIX);
   }
+  final public static boolean isContentImportable(final String content) {
+    if(content == null || content.isEmpty()) {
+      return false;
+    }
+    boolean proceed=true;
+    String[] lines = content.split("\\r?\\n");
+    for(int i=0;i<lines.length;i++) {
+      String line = lines[i];
+      if(line.startsWith(";") && !line.startsWith(";;")) {
+        StringTokenizer lineTokens = new StringTokenizer(line);
+        if(lineTokens.hasMoreTokens()) {
+          String firstWord = lineTokens.nextToken();
+          String regex = "^;[A-Z1-9_]{3,40}+:$";
+          Pattern pattern = Pattern.compile(regex);
+          Matcher match = pattern.matcher(firstWord);
+          if(!match.matches()) {
+            proceed=false;
+          }
+        }
+      }
+      else {
+        StringTokenizer lineTokens = new StringTokenizer(line);
+        if(lineTokens.hasMoreTokens()) {
+          String firstWord = lineTokens.nextToken();
+          if(!(firstWord.matches("\\d{6}+") || firstWord.matches("\\d{8}+"))) {
+            proceed=false;
+          }
+        }
+        
+      }
+      //we do it only for 6 lines
+      if(i>=6 || !proceed) {
+        break;
+      }
+    }
+    return proceed;
+  }
+
 }
