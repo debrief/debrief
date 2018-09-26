@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldDistance;
 
 public class ScaledSubmarineSym extends WorldScaledSym
@@ -32,6 +33,12 @@ public class ScaledSubmarineSym extends WorldScaledSym
 	 */
 	private static final long serialVersionUID = 1L;
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new ScaledSubmarineSym();
+  }
+	
 	protected Vector<double[][]> getCoords()
 	{
 		final Vector<double[][]> hullLines = new Vector<double[][]>();

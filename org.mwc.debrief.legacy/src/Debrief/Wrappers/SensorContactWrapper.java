@@ -1644,6 +1644,12 @@ public final class SensorContactWrapper extends
     _theLabel.setString(val);
   }
 
+  @Override
+  public void setName(String name)
+  {
+    setLabel(name);
+  }
+
   /**
    * return the location of the label
    */

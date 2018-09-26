@@ -9,6 +9,6 @@
   </parent>
   <groupId>org.mwc.debrief</groupId>
   <artifactId>org.mwc.cmap.combined.feature</artifactId>
-  <version>1.0.342</version>
+  <version>1.0.343</version>
   <packaging>eclipse-feature</packaging>
 </project>

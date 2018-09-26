@@ -31,7 +31,10 @@
 <suites>
   <suite>TEST_SAMPLE_DATA</suite>
   <suite>TEST_CHART_AND_DRAWING_FEATURES</suite>
-    <suite>VIEW_SOME_DATA</suite>
+  <suite>VIEW_SOME_DATA</suite>
+  <suite>ANALYZING_SENSOR_DATA</suite>
+  <suite>CONTROLLING_WHAT_YOU_VIEW</suite>
+
 </suites>
   
 <testOptions>

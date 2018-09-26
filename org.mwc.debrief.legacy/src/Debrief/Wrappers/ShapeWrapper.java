@@ -255,6 +255,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Renamable;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
@@ -269,7 +270,7 @@ import MWC.GenericData.WorldVector;
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
 		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
-		Editable.DoNotHighlightMe
+		Editable.DoNotHighlightMe, Renamable
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -1091,6 +1092,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public void setLabel(final String val)
 	{
 		_theLabel.setString(val);
+	}
+	
+	@Override
+	public void setName(final String val)
+	{
+	  setLabel(val);
 	}
 
 	public final void setLabelColor(final java.awt.Color theCol)

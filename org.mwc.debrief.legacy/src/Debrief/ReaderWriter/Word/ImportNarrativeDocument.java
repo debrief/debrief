@@ -781,8 +781,7 @@ public class ImportNarrativeDocument
           messageStr = message;
         }
       });
-      
-      ImportNarrativeDocument.setNarrativeHelper(null);
+      setNarrativeHelper(null);
     }
 
     public void testAddFCSToHiddenTrack() throws InterruptedException,

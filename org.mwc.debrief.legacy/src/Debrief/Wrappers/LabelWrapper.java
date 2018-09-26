@@ -485,8 +485,14 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		// ok, inform any listeners
 		getSupport().firePropertyChange(LabelWrapper.TEXT_CHANGED, oldVal, val);
 	}
+	
+	@Override
+  public void setName(String name)
+  {
+	  setLabel(name);
+  }
 
-	public final double rangeFrom(final WorldLocation other)
+  public final double rangeFrom(final WorldLocation other)
 	{
 		return _theLocation.rangeFrom(other);
 	}

@@ -57,8 +57,10 @@ public class HelicopterSym extends PlainSymbol {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public void getMetafile()
+  @Override
+  public PlainSymbol create()
   {
+    return new HelicopterSym();
   }
 
   public java.awt.Dimension getBounds(){

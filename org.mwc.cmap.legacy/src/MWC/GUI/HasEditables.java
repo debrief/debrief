@@ -7,14 +7,8 @@ import java.util.Enumeration;
  * @author ian
  *
  */
-public interface HasEditables
+public interface HasEditables extends CanEnumerate
 {
-  /** get the children
-   * 
-   * @return the elements
-   */
-  Enumeration<Editable> elements();
-
   /** whether the children should be ordered
    * 
    * @return yes/no

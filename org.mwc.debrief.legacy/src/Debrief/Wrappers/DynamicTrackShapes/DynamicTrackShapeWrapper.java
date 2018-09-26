@@ -30,6 +30,7 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
@@ -382,8 +383,15 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		}
 		return builder.toString();
 	}
+	
+	@Override
+  public void setName(String name)
+  {
+	  // ok, this object doesn't have concept of name.  So, we can't rename it
+	  Trace.trace("We can't rename Dynamic Track Shape objects");
+  }
 
-	/**
+  /**
 	 * toString
 	 * 
 	 * @return the returned String

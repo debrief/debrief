@@ -48,6 +48,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
 public class UnknownSym extends PlainSymbol {
@@ -56,9 +57,16 @@ public class UnknownSym extends PlainSymbol {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+  private final String _myType;
 
-	public void getMetafile()
+	public UnknownSym(String type)
   {
+	  _myType = type;
+  }
+	
+  public UnknownSym()
+  {
+    this(SymbolFactory.UNKNOWN);
   }
 
   public java.awt.Dimension getBounds(){
@@ -72,6 +80,11 @@ public class UnknownSym extends PlainSymbol {
     paint(dest, centre, 0.0);
   }
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new UnknownSym(_myType);
+  }
 
   public void paint(final CanvasType dest, final WorldLocation theLocation, final double direction)
   {
@@ -101,7 +114,7 @@ public class UnknownSym extends PlainSymbol {
 
   public String getType()
   {
-    return "Unknown";
+    return _myType;
   }
 
 }
