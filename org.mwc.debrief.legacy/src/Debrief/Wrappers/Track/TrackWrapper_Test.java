@@ -977,7 +977,7 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimateRelative() throws InterruptedException,
       ParseException
   {
-    SimpleDateFormat sdf = new GMTDateFormat("hh:mm:ss");
+    SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
 
     final TrackSegment ts1 = new TrackSegment(TrackSegment.RELATIVE);
     ts1.addFix(createFix(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));

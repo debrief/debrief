@@ -326,17 +326,23 @@ public final class ImportSensor2 extends AbstractPlainLineImporter
       super(val);
     }
 
-    public final void testInvalidImport() throws ParseException
+    public final void testInvalidImport() 
     {
       final String lineA =
           ";SENSOR2: 20090022 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";
 
       final ImportSensor2 is2 = new ImportSensor2();
-      final SensorContactWrapper resA =
-          (SensorContactWrapper) is2.readThisLine(lineA);
-      assertEquals("lineA failed", "Contact_bearings", resA
-          .getSensorName());
-      assertEquals("lineA failed", "0414", resA.getLabel());
+      SensorContactWrapper resA = null;
+      try
+      {
+        resA = (SensorContactWrapper) is2.readThisLine(lineA);
+      }
+      catch (ParseException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      assertNull("should have failed", resA);
     }
 
     
