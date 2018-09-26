@@ -34,97 +34,112 @@ import MWC.GUI.Layers;
 
 /**
  * Generates a paste REP from clipboard action.
+ * 
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
 public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
 {
 
-  /* (non-Javadoc)
-   * @see org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator#generate(org.eclipse.jface.action.IMenuManager, MWC.GUI.Layers, MWC.GUI.Layer[], MWC.GUI.Editable[])
-   */
-  @Override
-  public void generate(IMenuManager parent, Layers theLayers,
-      Layer[] parentLayers, Editable[] subjects)
+  private static class PasteRepOperation extends CMAPOperation
   {
-    //see if there is nothing selected 
-    if(subjects.length==0) {
-      final Clipboard clip = CorePlugin.getDefault().getClipboard();
-      final Object val = clip.getContents(TextTransfer.getInstance());
-      if(val!=null) {
-        final String clipBoardContent = (String)val;
-        //See if there is plain text on the clipboard
-        if(ImportReplay.isContentImportable(clipBoardContent)) {
-          parent.add(createAction(theLayers, clipBoardContent));
-        }
 
-      }
-    }
-  }
-  
-  private static Action createAction(final Layers theLayers, final String clipboardContent) {
-    final Action doPasteAction = new Action("Paste REP from clipboard")
-    {
-      @Override
-      public void run()
-      {
-        PasteRepOperation operation = new PasteRepOperation("Paste from clipboard",theLayers, clipboardContent );
-        CorePlugin.run(operation);
-      }
-    };
-    doPasteAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/16/paste.png"));
-    doPasteAction.setToolTipText("Paste REP from clipboard");
-    return doPasteAction;
-  }
-
-
-  private static class PasteRepOperation extends CMAPOperation{
-
-    private String _contentToImport;
+    private final String _contentToImport;
     private Layers _tempLayers;
-    private Layers _layers;
-    
-    
-    public PasteRepOperation(String title,Layers theLayers,String contentToImport)
+    private final Layers _layers;
+
+    public PasteRepOperation(final String title, final Layers theLayers,
+        final String contentToImport)
     {
       super(title);
       _contentToImport = contentToImport;
       _layers = theLayers;
     }
+
     @Override
-    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-        throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
-      
-      ImportReplay tracker = new ImportReplay();
+
+      final ImportReplay tracker = new ImportReplay();
       _tempLayers = new Layers();
-      //import to a temp layers object
+      // import to a temp layers object
       tracker.setLayers(_tempLayers);
       final int numLines = getNumLines(_contentToImport);
-      if(numLines!=-1) {
-        tracker.importThis(_contentToImport,numLines);
+      if (numLines != -1)
+      {
+        tracker.importThis(_contentToImport, numLines);
         ImportReplay.injectContent(_tempLayers, _layers, true);
       }
-      
-      
+
       return Status.OK_STATUS;
     }
-    
-   
+
+    private final int getNumLines(final String text)
+    {
+      final String[] lines = text.split("\\r?\\n");
+      if (lines != null)
+      {
+        return lines.length;
+      }
+      return -1;
+
+    }
+
     @Override
-    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
     {
       ImportReplay.injectContent(_tempLayers, _layers, false);
       return Status.OK_STATUS;
     }
-    private final int getNumLines(final String text) {
-      String[] lines = text.split("\\r?\\n");
-      if(lines!=null) {
-        return lines.length;
+  }
+
+  private static Action createAction(final Layers theLayers,
+      final String clipboardContent)
+  {
+    final Action doPasteAction = new Action("Paste REP from clipboard")
+    {
+      @Override
+      public void run()
+      {
+        final PasteRepOperation operation = new PasteRepOperation(
+            "Paste from clipboard", theLayers, clipboardContent);
+        CorePlugin.run(operation);
       }
-      return -1;
-      
+    };
+    doPasteAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+        "icons/16/paste.png"));
+    doPasteAction.setToolTipText("Paste REP from clipboard");
+    return doPasteAction;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator#generate(
+   * org.eclipse.jface.action.IMenuManager, MWC.GUI.Layers, MWC.GUI.Layer[], MWC.GUI.Editable[])
+   */
+  @Override
+  public void generate(final IMenuManager parent, final Layers theLayers,
+      final Layer[] parentLayers, final Editable[] subjects)
+  {
+    // see if there is nothing selected
+    if (subjects.length == 0)
+    {
+      final Clipboard clip = CorePlugin.getDefault().getClipboard();
+      final Object val = clip.getContents(TextTransfer.getInstance());
+      if (val != null)
+      {
+        final String clipBoardContent = (String) val;
+        // See if there is plain text on the clipboard
+        if (ImportReplay.isContentImportable(clipBoardContent))
+        {
+          parent.add(createAction(theLayers, clipBoardContent));
+        }
+
+      }
     }
   }
 }
