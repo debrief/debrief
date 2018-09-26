@@ -57,6 +57,7 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
@@ -73,6 +74,12 @@ public class DifarSym extends BuoySym {
     return res;
   }
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new DifarSym();
+  }
+  
   public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);

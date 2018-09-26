@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Legacy Algorithms Plug-in
 Bundle-SymbolicName: org.mwc.cmap.legacy;singleton:=true
-Bundle-Version: 1.0.259
+Bundle-Version: 1.0.260
 Bundle-ClassPath: cmap_legacy.jar,
  libs/openmap.jar,
  libs/jmf.jar,
@@ -156,6 +156,7 @@ Export-Package:
    junit.framework,
    MWC.GenericData,
    MWC.GUI",
+ MWC.GUI.Shapes.Symbols.SVG,
  MWC.GUI.Shapes.Symbols.Vessels;uses:="MWC.GUI.Shapes.Symbols,MWC.GenericData,MWC.GUI",
  MWC.GUI.SplitPanel,
  MWC.GUI.Swing;

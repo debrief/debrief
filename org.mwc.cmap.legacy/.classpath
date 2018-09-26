@@ -7,6 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="svg_symbols"/>
 	<classpathentry exported="true" kind="lib" path="libs/openmap.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jmf.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/vrml97.jar"/>

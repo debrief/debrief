@@ -51,6 +51,8 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+
 public class FrigateSym extends ScreenScaledSym
 {
 
@@ -59,6 +61,12 @@ public class FrigateSym extends ScreenScaledSym
 	 */
 	private static final long serialVersionUID = 1L;
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new FrigateSym();
+  }
+	
 	protected Vector<double[][]> getCoords()
 	{
 		final Vector<double[][]> hullLines = new Vector<double[][]>();

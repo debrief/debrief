@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <rect id="Rectangle-4" x="46" y="38" width="9" height="14"/>
+  <polygon id="Triangle-4" points="50 14 68 39 32 39"/>
+  <ellipse id="Oval" stroke="#000000" stroke-width="3" fill-opacity="0" cx="50.5" cy="67.1818182" rx="18.5" ry="18.1818182"/>
+  <circle id="origin" cx="50.5" cy="67.182" r="2.5" style="fill: rgb(0, 255, 0);"/>
+</svg>

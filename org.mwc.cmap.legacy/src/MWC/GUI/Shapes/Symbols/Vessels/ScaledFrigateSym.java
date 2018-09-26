@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 import java.util.Vector;
 
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldDistance;
 
 public class ScaledFrigateSym extends WorldScaledSym
@@ -37,6 +38,12 @@ public class ScaledFrigateSym extends WorldScaledSym
 		return -133;
 	}
 
+  @Override
+  public PlainSymbol create()
+  {
+    return new ScaledFrigateSym();
+  }
+  
 	/**
 	 * 
 	 */
