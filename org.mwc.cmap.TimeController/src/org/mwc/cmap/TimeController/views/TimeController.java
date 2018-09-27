@@ -157,7 +157,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   
   private static final String ICON_MEDIA_RECORD = "icons/24/media_record.png";
 
-  //private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
+  private static final String ICON_MEDIA_STOP_RECORD = "icons/24/media_stop.png";
   
   private static final String ICON_PULSATING_GIF="icons/16/pulse.gif";
 
@@ -579,7 +579,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         setVCREnabled(false);
 
         _recordButton.setToolTipText(PAUSE_TEXT);
-        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PAUSE));
+        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_STOP_RECORD));
       }
       else {
         stopPlaying();
