@@ -25,8 +25,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.Vector;
@@ -51,14 +49,11 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -67,8 +62,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Scale;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -127,6 +120,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     TimerListener, RelativeProjectionParent
 {
   private static final String PLAY_BUTTON_KEY = "play";
+  
+  private static final String RECORD_BUTTON_KEY = "record";
 
   private static final String ICON_BKMRK_NAV = "icons/bkmrk_nav.gif";
 
@@ -159,8 +154,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private static final String ICON_MEDIA_PAUSE = "icons/24/media_pause.png";
 
   private static final String ICON_MEDIA_PLAY = "icons/24/media_play.png";
+  
+  private static final String ICON_MEDIA_RECORD = "icons/24/media_record.png";
 
-  private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
+  //private static final String ICON_MEDIA_PPTX = "icons/24/media_pptx.png";
   
   private static final String ICON_PULSATING_GIF="icons/16/pulse.gif";
 
@@ -173,6 +170,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
   private PartMonitor _myPartMonitor;
+  private boolean _playing;
 
   /**
    * the automatic timer we are using
@@ -273,7 +271,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * the play button, obviously.
    */
-  private SplitButton _playButton;
+  private Button _playButton;
+  
+  /**
+   * the record button
+   */
+  private Button _recordButton;
 
   private PropertyChangeListener _myDateFormatListener = null;
 
@@ -307,7 +310,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private CoordinateRecorder _coordinateRecorder;
 
-  private MenuItem _doExportItem;
+  //private MenuItem _doExportItem;
 
   private AnimatedGif animatedGif;
 
@@ -555,194 +558,57 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         this, this);
   }
 
-  private static interface SplitButtonSelectionListener
-  {
-
-    /**
-     * Fire if the main area of button is clicked
-     */
-    public void buttonSelected();
-
-    /**
-     * Fire if right arrow is clicked
-     * 
-     * @return false, not show the menu
-     */
-    public boolean showMenu();
-
-  }
-
+  
   /**
    * SplitButton
    */
-  private static class SplitButton extends Button
+  private class RecordButtonListener extends SelectionAdapter
   {
-
-    private List<SplitButtonSelectionListener> listeners =
-        new LinkedList<SplitButtonSelectionListener>();
-    private final static String EMPTY_SPACE = "  ";
-    private final static Color COLOR_WIDGET_NORMAL_SHADOW = Display.getDefault()
-        .getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-    private final static Color COLOR_WIDGET_HIGHLIGHT_SHADOW = Display
-        .getDefault().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-    private final static Color COLOR__BLACK = Display.getDefault()
-        .getSystemColor(SWT.COLOR_BLACK);
-
-    private int x1 = -1;
-    private int y1 = -1;
-    private int x2 = -1;
-    private int y2 = -1;
-    private Menu menu;
-
-    public SplitButton(Composite parent, int style)
+    @Override
+    public void widgetSelected(SelectionEvent e)
     {
-      super(parent, style);
-      setText("");
-      super.addPaintListener(new PaintListener()
+      final boolean isRecording = _recordButton.getSelection();
+      _playing=false;
+      if (isRecording)
       {
+        startPlaying();
+        _coordinateRecorder = new CoordinateRecorder(_myLayers,
+            _targetProjection, _myStepperProperties);
+        
+        _coordinateRecorder.startStepping(getTimeProvider().getTime());
+        setVCREnabled(false);
 
-        @Override
-        public void paintControl(PaintEvent e)
+        _recordButton.setToolTipText(PAUSE_TEXT);
+        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PAUSE));
+      }
+      else {
+        stopPlaying();
+        if (_coordinateRecorder != null)
         {
-          // draw the split line and arrow
-
-          Rectangle rect = getBounds();
-          Color oldForeground = e.gc.getForeground();
-          Color oldBackground = e.gc.getBackground();
-          x1 = e.x + rect.width - 20;
-          y1 = e.y;
-          x2 = e.x + rect.width;
-          y2 = e.y + rect.height;
-          int dx = -e.gc.getClipping().x;
-          int dy = -e.gc.getClipping().y;
-
-          e.gc.setForeground(COLOR_WIDGET_NORMAL_SHADOW);
-          e.gc.setBackground(COLOR_WIDGET_NORMAL_SHADOW);
-          e.gc.setLineWidth(1);
-          e.gc.drawLine(e.x + rect.width - 20 + dx, e.y + 6 + dy, e.x
-              + rect.width - 20 + dx, e.y + rect.height - 6 + dy);
-
-          e.gc.setForeground(COLOR_WIDGET_HIGHLIGHT_SHADOW);
-          e.gc.setBackground(COLOR_WIDGET_HIGHLIGHT_SHADOW);
-          e.gc.setLineWidth(1);
-          e.gc.drawLine(e.x + rect.width - 19 + dx, e.y + 6 + dy, e.x
-              + rect.width - 19 + dx, e.y + rect.height - 6 + dy);
-
-          e.gc.setForeground(COLOR__BLACK);
-          e.gc.setBackground(COLOR__BLACK);
-          e.gc.fillPolygon(new int[]
-          {e.x + rect.width - 15 + dx, e.y + rect.height / 2 - 1 + dy, e.x
-              + rect.width - 8 + dx, e.y + rect.height / 2 - 1 + dy, e.x
-                  + rect.width - 12 + dx, e.y + rect.height / 2 + 3 + dy});
-
-          e.gc.setForeground(oldForeground);
-          e.gc.setBackground(oldBackground);
+          _coordinateRecorder.stopStepping(getTimeProvider().getTime());
+          _coordinateRecorder = null;
         }
-      });
-      super.addListener(SWT.MouseDown, new Listener()
-      {
-
-        @Override
-        public void handleEvent(Event event)
-        {
-          if (isShowMenu(event.x, event.y))
-          {
-
-            for (SplitButtonSelectionListener listener : listeners)
-            {
-              if (!listener.showMenu())
-              {
-                return;
-              }
-            }
-            Button button = (Button) event.widget;
-            Rectangle rect = button.getBounds();
-            Point p = button.toDisplay(rect.x, rect.y + rect.height);
-            final Menu theMenu = getMenu();
-            theMenu.setLocation(p.x - rect.x, p.y - rect.y);
-            theMenu.setVisible(true);
-
-          }
-          else
-          {
-            for (SplitButtonSelectionListener listener : listeners)
-            {
-              listener.buttonSelected();
-            }
-          }
-        }
-      });
-      menu = new Menu(getShell(), SWT.POP_UP);
-
-    }
-
-    private boolean isShowMenu(int x, int y)
-    {
-      return x >= x1 && y >= y1 && x <= x2 && y <= y2;
-    }
-
-    public void addSplitButtonSelectionListener(
-        SplitButtonSelectionListener listener)
-    {
-      listeners.add(listener);
-    }
-
-    @Override
-    public Menu getMenu()
-    {
-      return menu;
-    }
-
-    @Override
-    public void setMenu(Menu menu)
-    {
-      this.menu = menu;
-    }
-
-    @Override
-    protected void checkSubclass()
-    {
-      // Disable the check that prevents subclassing of SWT components
-    }
-
-    @Override
-    public void setText(String string)
-    {
-      if (string != null)
-      {
-        super.setText(string + EMPTY_SPACE);
+        _recordButton.setToolTipText(PLAY_TEXT);
+        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
+        setVCREnabled(true);
       }
     }
-
-    @Override
-    public String getText()
-    {
-      return super.getText().trim();
-    }
-
   }
-
-  private class MySplitButtonListener implements SplitButtonSelectionListener
+  private class PlayButtonListener extends SelectionAdapter
   {
-    @Override
+    /*//@Override
     public boolean showMenu()
     {
       return true;
-    }
+    }*/
 
     @Override
-    public void buttonSelected()
+    public void widgetSelected(SelectionEvent se)
     {
       final boolean playing = _playButton.getSelection();
+      _playing=true;
       if (playing)
       {
-        if (_doExportItem.getSelection())
-        {
-          // get ready for recording
-          _coordinateRecorder = new CoordinateRecorder(_myLayers,
-              _targetProjection, _myStepperProperties);
-          _coordinateRecorder.startStepping(getTimeProvider().getTime());
-        }
 
         // and start playing
         startPlaying();
@@ -765,12 +631,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
 
         // do any export tidying up, if we have to
-        if (_coordinateRecorder != null)
-        {
-          _coordinateRecorder.stopStepping(getTimeProvider().getTime());
-          _coordinateRecorder = null;
-        }
+        
       }
+      
     }
   }
 
@@ -781,7 +644,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   {
     // first create the button holder
     _btnPanel = new Composite(_wholePanel, SWT.BORDER);
-    _btnPanel.setLayout(new GridLayout(7, false));
+    _btnPanel.setLayout(new GridLayout(8, false));
 
     final Button eBwd = new Button(_btnPanel, SWT.NONE);
     addTimeButtonListener(eBwd, new RepeatingTimeButtonListener(false,
@@ -802,19 +665,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     listener = new RepeatingTimeButtonListener(false, STEP_SIZE.NORMAL, true);
     addTimeButtonListener(sBwd, listener);
 
-    _playButton = new SplitButton(_btnPanel, SWT.TOGGLE | SWT.NONE);
+    _playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 
     // configure the drop-down menu
-    Menu exportMenu = new Menu(_playButton);
+    /*Menu exportMenu = new Menu(_playButton);
     _doExportItem = new MenuItem(exportMenu, SWT.CHECK);
     _doExportItem.setText("Export to PPTX");
     _doExportItem.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PPTX));
 
-    _playButton.setMenu(exportMenu);
+    _playButton.setMenu(exportMenu);*/
     _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
     _playButton.setToolTipText(PLAY_TEXT);
-    _playButton.addSplitButtonSelectionListener(new MySplitButtonListener());
-
+    _playButton.addSelectionListener(new PlayButtonListener());
+//    _playButton.addSplitButtonSelectionListener(new MySplitButtonListener());
+    
+    _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
+    _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
+    _recordButton.addSelectionListener(new RecordButtonListener());
+    
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
     listener = new RepeatingTimeButtonListener(true, STEP_SIZE.NORMAL, true);
@@ -852,6 +720,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _buttonList.put("lBwd", lBwd);
     _buttonList.put("sBwd", sBwd);
     _buttonList.put(PLAY_BUTTON_KEY, _playButton);
+    _buttonList.put(RECORD_BUTTON_KEY, _recordButton);
     _buttonList.put("sFwd", _forwardButton);
     _buttonList.put("lFwd", lFwd);
     _buttonList.put("eFwd", eFwd);
@@ -1891,11 +1760,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   protected void setVCREnabled(final boolean enable)
   {
+    System.out.println("Enable?"+enable);
     for (String key : _buttonList.keySet())
     {
-      if (!key.equals(PLAY_BUTTON_KEY))
+      System.out.println("_playkeypressed"+_playing+", key:"+key);
+      Button item = _buttonList.get(key);
+      if ((!key.equals(PLAY_BUTTON_KEY) && _playing) || (!key.equals(RECORD_BUTTON_KEY)&&!_playing))
       {
-        Button item = _buttonList.get(key);
         item.setEnabled(enable);
       }
     }
