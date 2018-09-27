@@ -167,6 +167,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private static final String PLAY_TEXT = "Start automatically moving forward";
 
+  private static final String STOP_TEXT = "Stop recording, start export process";
+
+  private static final String RECORD_TEXT = "Start recording screen positions, for export";
+
+
   private static final String OP_LIST_MARKER_ID = "OPERATION_LIST_MARKER";
 
   private PartMonitor _myPartMonitor;
@@ -578,7 +583,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         _coordinateRecorder.startStepping(getTimeProvider().getTime());
         setVCREnabled(false);
 
-        _recordButton.setToolTipText(PAUSE_TEXT);
+        _recordButton.setToolTipText(STOP_TEXT);
         _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_STOP_RECORD));
       }
       else {
@@ -588,7 +593,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           _coordinateRecorder.stopStepping(getTimeProvider().getTime());
           _coordinateRecorder = null;
         }
-        _recordButton.setToolTipText(PLAY_TEXT);
+        _recordButton.setToolTipText(RECORD_TEXT);
         _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
         setVCREnabled(true);
       }
@@ -682,6 +687,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _recordButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
     _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
     _recordButton.addSelectionListener(new RecordButtonListener());
+    _recordButton.setToolTipText(RECORD_TEXT);
     
     _forwardButton = new Button(_btnPanel, SWT.NONE);
     _forwardButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_FORWARD));
