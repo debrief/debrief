@@ -95,10 +95,12 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     }
   }
 
-  private static Action createAction(final Layers theLayers,
+  private static Action doPasteAction;
+
+  public static Action createAction(final Layers theLayers,
       final String clipboardContent)
   {
-    final Action doPasteAction = new Action("Paste REP from clipboard")
+    doPasteAction = new Action("Paste REP from clipboard")
     {
       @Override
       public void run()
@@ -111,8 +113,11 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     doPasteAction.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/paste.png"));
     doPasteAction.setToolTipText("Paste REP from clipboard");
+    
     return doPasteAction;
   }
+  
+  
 
   /*
    * (non-Javadoc)
