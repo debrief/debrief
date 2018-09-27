@@ -1423,14 +1423,31 @@ public class ImportReplay extends PlainImporterBase
     return null;
   }
   
-  private final static void addElementsToExistingLayer(final Layer layerToAddTo,final Editable l)
+  private final static void addElementsToExistingLayer(final Layer layerToAddTo, final Editable newItems)
   {
-    Enumeration<Editable> tempElements = ((Layer)l).elements();
-    while(tempElements.hasMoreElements()) {
-      Editable elem = tempElements.nextElement();
-      layerToAddTo.add(elem);
+    // special handling. If we're adding a track to a track, we'll add the individual
+    // elements, not the segments
+    if (layerToAddTo instanceof LightweightTrackWrapper
+        && newItems instanceof LightweightTrackWrapper)
+    {
+      final LightweightTrackWrapper track = (TrackWrapper) newItems;
+      final Enumeration<Editable> positions = track.getPositionIterator();
+      while (positions.hasMoreElements())
+      {
+        layerToAddTo.add(positions.nextElement());
+      }
+    }
+    else
+    {
+      final Enumeration<Editable> tempElements = ((Layer) newItems).elements();
+      while (tempElements.hasMoreElements())
+      {
+        Editable elem = tempElements.nextElement();
+        layerToAddTo.add(elem);
+      }
     }
   }
+  
   public final static void injectContent(final Layers from,final Layers destination,final boolean performAdd) {
     Enumeration<Editable> tempElements = from.elements();
     //now add to the plot's layers object
