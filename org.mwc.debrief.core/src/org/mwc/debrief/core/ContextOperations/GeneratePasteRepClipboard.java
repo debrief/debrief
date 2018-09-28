@@ -34,7 +34,7 @@ import MWC.GUI.Layers;
 
 /**
  * Generates a paste REP from clipboard action.
- * 
+ *
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
@@ -44,8 +44,20 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
   private static class PasteRepOperation extends CMAPOperation
   {
 
+    private static final int getNumLines(final String text)
+    {
+      final String[] lines = text.split("\\r?\\n");
+      if (lines != null)
+      {
+        return lines.length;
+      }
+      return -1;
+
+    }
+
     private final String _contentToImport;
     private Layers _tempLayers;
+
     private final Layers _layers;
 
     public PasteRepOperation(final String title, final Layers theLayers,
@@ -75,17 +87,6 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       return Status.OK_STATUS;
     }
 
-    private static final int getNumLines(final String text)
-    {
-      final String[] lines = text.split("\\r?\\n");
-      if (lines != null)
-      {
-        return lines.length;
-      }
-      return -1;
-
-    }
-
     @Override
     public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
         throws ExecutionException
@@ -111,15 +112,13 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     doPasteAction.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/paste.png"));
     doPasteAction.setToolTipText("Paste REP from clipboard");
-    
+
     return doPasteAction;
   }
-  
-  
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator#generate(
    * org.eclipse.jface.action.IMenuManager, MWC.GUI.Layers, MWC.GUI.Layer[], MWC.GUI.Editable[])
