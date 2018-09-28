@@ -16,6 +16,7 @@ package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -412,7 +413,8 @@ public class ImportReplay extends PlainImporterBase
 
     private final static String shape_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
-
+    private final static String boat_file =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
     public void testReadShapes() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
@@ -541,6 +543,151 @@ public class ImportReplay extends PlainImporterBase
       assertEquals("sym type correct", "Hidar", label2.getSymbolType());
       assertEquals("color correct", DebriefColors.PURPLE, label2.getColor());
     }
+    
+    //verify layers get added and shapes get added on paste
+    //verify that layers are removed when undone
+    public final void testPasteRepShapes() {
+      String textToPaste =
+";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      ImportReplay testImporter = new ImportReplay();
+      Layers tmpLayers = new Layers();
+      Layers dest = new Layers();
+      testImporter.setLayers(tmpLayers);
+      int totalLines = textToPaste.split("\\r?\\n").length;
+      testImporter.importThis(textToPaste,totalLines);
+      ImportReplay.injectContent(tmpLayers, dest, true);
+      assertElementsInLayers((Layer)tmpLayers.findLayer(ANNOTATION_LAYER), 8);
+      assertElementsInLayers(tmpLayers.findLayer("Special_Layer"),1);
+      assertElementsInLayers(tmpLayers.findLayer("Other_Special_Layer"),1);
+      assertElementsInLayers(tmpLayers.findLayer(NARRATIVE_LAYER),1);
+      //test undo
+      ImportReplay.injectContent(dest, tmpLayers, false);
+      //first load a shapes rep or someother rep file, add more shapes to it and see
+      //if they are added to the correct layer.
+      //verify undo
+      assertNull(((Layer)tmpLayers.findLayer(ANNOTATION_LAYER)));
+      assertNull(tmpLayers.findLayer("Special_Layer"));
+      assertNull(tmpLayers.findLayer("Other_Special_Layer"));
+      assertNull(tmpLayers.findLayer(NARRATIVE_LAYER));
+    }
+    //verify dynamic layers get added on paste
+    public final void testPasteRepDynamicShapes() {
+      String textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
+    ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
+          ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
+      ImportReplay testImporter = new ImportReplay();
+      Layers tmpLayers = new Layers();
+      Layers dest = new Layers();
+      testImporter.setLayers(tmpLayers);
+      int totalLines = textToPaste.split("\\r?\\n").length;
+      testImporter.importThis(textToPaste,totalLines);
+      ImportReplay.injectContent(tmpLayers, dest, true);
+      assertElementsInLayers((Layer)tmpLayers.findLayer("Dynamic A"), 3);
+      ImportReplay.injectContent(dest, tmpLayers, false);
+      assertNull(((Layer)tmpLayers.findLayer("Dynamic A")));
+      
+    }
+    
+    //test if previously loaded layers remains after pasting new content 
+    public void testPasteRepExistingFile(){
+      String textToPaste =
+          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      try {
+        final Layers tLayers = new Layers();
+
+        // start off with the ownship track
+        final File boatFile = new File(boat_file);
+        assertTrue(boatFile.exists());
+        final InputStream bs = new FileInputStream(boatFile);
+        final ImportReplay trackImporter = new ImportReplay();
+        ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+            ImportReplay.IMPORT_AS_OTG, 0L));
+        int totalLines = textToPaste.split("\\r?\\n").length;
+        trackImporter.importThis(shape_file, bs, tLayers);
+        assertNotNull((Layer)tLayers.findLayer("NELSON"));
+        Layers tmpLayers = new Layers();
+        trackImporter.setLayers(tmpLayers);
+        trackImporter.importThis(textToPaste,totalLines);
+        ImportReplay.injectContent(tmpLayers,tLayers, true);
+        assertNotNull((Layer)tLayers.findLayer("NELSON"));
+        assertElementsInLayers((Layer)tLayers.findLayer(ANNOTATION_LAYER), 8);
+        assertElementsInLayers(tLayers.findLayer("Special_Layer"),1);
+        assertElementsInLayers(tLayers.findLayer("Other_Special_Layer"),1);
+        assertElementsInLayers(tLayers.findLayer(NARRATIVE_LAYER),1);
+        //test undo
+        ImportReplay.injectContent(tmpLayers, tLayers, false);
+        //first load a shapes rep or someother rep file, add more shapes to it and see
+        //if they are added to the correct layer.
+        //verify undo
+        assertNull(((Layer)tLayers.findLayer(ANNOTATION_LAYER)));
+        assertNull(tLayers.findLayer("Special_Layer"));
+        assertNull(tLayers.findLayer("Other_Special_Layer"));
+        assertNull(tLayers.findLayer(NARRATIVE_LAYER));
+        
+      }catch(Exception e) {
+        e.printStackTrace();
+        fail(e.getMessage());
+      }
+    }
+    
+    
+    private void assertElementsInLayers(final Layer layer,final int count) {
+      assertTrue(layer.elements().hasMoreElements());
+      Enumeration<Editable> elements = layer.elements();
+      int lineCount=0;
+      while(elements.hasMoreElements()){
+        elements.nextElement();
+       lineCount++;
+      }
+      assertEquals(lineCount,count);
+    }
+    public void testIsContentImportable() {
+      String textToPaste =
+          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
+          ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
+                ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste = "@B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line ;VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector";
+      assertFalse(isContentImportable(textToPaste));
+      textToPaste = "";
+      assertFalse(isContentImportable(textToPaste));
+      textToPaste = "951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste));
+      textToPaste = "19951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste));
+    }
   }
 
   private static Vector<PlainLineImporter> _coreImporters;
@@ -551,7 +698,7 @@ public class ImportReplay extends PlainImporterBase
 
   static public final String NARRATIVE_LAYER = NarrativeEntry.NARRATIVE_LAYER;
 
-  static private final String ANNOTATION_LAYER = "Annotations";
+  static public final String ANNOTATION_LAYER = "Annotations";
 
   /**
    * the prefs provider
@@ -1275,72 +1422,149 @@ public class ImportReplay extends PlainImporterBase
     }
     return null;
   }
+  
+  private final static void addElementsToExistingLayer(final Layer layerToAddTo, final Editable newItems)
+  {
+    // special handling. If we're adding a track to a track, we'll add the individual
+    // elements, not the segments
+    if (layerToAddTo instanceof LightweightTrackWrapper
+        && newItems instanceof LightweightTrackWrapper)
+    {
+      final LightweightTrackWrapper track = (TrackWrapper) newItems;
+      final Enumeration<Editable> positions = track.getPositionIterator();
+      while (positions.hasMoreElements())
+      {
+        layerToAddTo.add(positions.nextElement());
+      }
+    }
+    else
+    {
+      final Enumeration<Editable> tempElements = ((Layer) newItems).elements();
+      while (tempElements.hasMoreElements())
+      {
+        Editable elem = tempElements.nextElement();
+        layerToAddTo.add(elem);
+      }
+    }
+  }
+  
+  public final static void injectContent(final Layers from,final Layers destination,final boolean performAdd) {
+    Enumeration<Editable> tempElements = from.elements();
+    //now add to the plot's layers object
+    while(tempElements.hasMoreElements()) {
+      Editable l = tempElements.nextElement();
+      Layer existingLayer = destination.findLayer(l.getName());
+      if(existingLayer==null) {
+        Layer layerToAdd = (Layer)l;
+        if(performAdd) {
+          destination.addThisLayer(layerToAdd);
+        }
+        else {
+          destination.removeThisLayer(layerToAdd);
+        }
+      }
+      else {
+        //get elements in the templayer for an already existing layer and add to it.
+        if(performAdd) {
+          addElementsToExistingLayer(existingLayer,l);
+        }
+        else {
+          if(l instanceof Layer) {
+            //dont directly delete a layer, may be there were some elements previously existing
+            Enumeration<Editable> elements = ((Layer)l).elements();
+            Layer destLayer = destination.findLayer(l.getName());
+            while(elements.hasMoreElements()) {
+              destination.removeThisEditable(destLayer, elements.nextElement());
+            }
+            //in case no more elements are left delete the layer
+            if(destLayer.elements()==null || !destLayer.elements().hasMoreElements()) {
+              destination.removeThisLayer(destLayer);
+            }
+          }
+        }
+      }
+    }
+    destination.fireExtended();
+  }
 
+  public final void importThis(final String text, final int numLines) {
+    final InputStream stream = new ByteArrayInputStream(text.getBytes());
+    importRep(null,stream,numLines);
+  }
+
+  @Override
+  public final void importThis(final String fName, InputStream is) {
+    final int numLines = countLinesFor(fName);
+    importRep(fName,is,numLines);
+  }
   /**
    * import data from this stream
    */
-  @Override
-  public final void importThis(final String fName, final InputStream is)
+  private final void importRep(final String fName,final InputStream is,final int numLines)
   {
     // declare linecounter
     int lineCounter = 0;
-
-    final int numLines = countLinesFor(fName);
-
-    final Reader reader = new InputStreamReader(is);
-    final BufferedReader br = new ReaderMonitor(reader, numLines, fName);
+    final Reader reader;
+    BufferedReader br = null;
     String thisLine = null;
     try
     {
-
-      // check stream is valid
-      if (is.available() > 0)
-      {
-
-        // clear the output list
-        _newLayers.clear();
-        _existingTracksThatMoved.clear();
-
-        // clear the input settings
-        _importSettings = null;
-        _lastImportedItem.clear();
-
-        thisLine = br.readLine();
-
-        // loop through the lines
-        while (thisLine != null)
+        reader = new InputStreamReader(is);
+        final String nameToUse;
+        if(fName != null)
         {
-          // keep line counter
-          lineCounter++;
+          nameToUse = fName;
+        }
+        else
+        {
+          nameToUse = "Pasted REP content";
+        }
+        br = new ReaderMonitor(reader, numLines, nameToUse);
+        // check stream is valid
+        if (is.available() > 0)
+        {
 
-          // catch import problems
-          readLine(thisLine);
+          // clear the output list
+          _newLayers.clear();
+          _existingTracksThatMoved.clear();
 
-          // read another line
+          // clear the input settings
+          _importSettings = null;
+          _lastImportedItem.clear();
+
           thisLine = br.readLine();
-        }
 
-        // see if any importers need to finalise
-        finaliseImporters();
+          // loop through the lines
+          while (thisLine != null)
+          {
+            // keep line counter
+            lineCounter++;
 
-        // lastly have a go at formatting these tracks
-        for (int k = 0; k < _myFormatters.length; k++)
-        {
-          _myFormatters[k].formatLayers(_newLayers);
-        }
+            // catch import problems
+            readLine(thisLine);
 
-        // see if we've modified any existing tracks
-        final Iterator<TrackWrapper> tIter = _existingTracksThatMoved
-            .iterator();
-        while (tIter.hasNext())
-        {
-          final TrackWrapper track = tIter.next();
+            // read another line
+            thisLine = br.readLine();
+          }
 
-          // tell it that it has changed
-          track.sortOutRelativePositions();
-        }
+          // see if any importers need to finalise
+          finaliseImporters();
 
-      }
+          // lastly have a go at formatting these tracks
+          for (int k = 0; k < _myFormatters.length; k++)
+          {
+            _myFormatters[k].formatLayers(_newLayers);
+          }
+
+          // see if we've modified any existing tracks
+          final Iterator<TrackWrapper> tIter =
+              _existingTracksThatMoved.iterator();
+          while (tIter.hasNext())
+          {
+            final TrackWrapper track = tIter.next();
+            track.sortOutRelativePositions();
+          }
+       }
     }
     catch (final java.lang.NumberFormatException e)
     {
@@ -1961,7 +2185,7 @@ public class ImportReplay extends PlainImporterBase
    * @param theLine
    *          the line to parse
    */
-  public HiResDate readLine(final String theLine) throws java.io.IOException
+  public HiResDate readLine(final String theLine)
   {
     HiResDate res = null;
 
@@ -2161,4 +2385,41 @@ public class ImportReplay extends PlainImporterBase
     // check the symbology
     return getThisSymProperty(sym, LAYER_PREFIX);
   }
+  final public static boolean isContentImportable(final String content) {
+    if(content == null || content.isEmpty()) {
+      return false;
+    }
+    boolean proceed=true;
+    String[] lines = content.split("\\r?\\n");
+    int lineCount = 0;
+    int maxLines = Math.min(6, lines.length);
+    while(lineCount<maxLines && proceed) {
+      String line = lines[lineCount];
+      if(line.startsWith(";") && !line.startsWith(";;")) {
+        StringTokenizer lineTokens = new StringTokenizer(line);
+        if(lineTokens.hasMoreTokens()) {
+          String firstWord = lineTokens.nextToken();
+          String regex = "^;[A-Z1-9_]{3,40}+:$";
+          Pattern pattern = Pattern.compile(regex);
+          Matcher match = pattern.matcher(firstWord);
+          if(!match.matches()) {
+            proceed=false;
+          }
+        }
+      }
+      else {
+        StringTokenizer lineTokens = new StringTokenizer(line);
+        if(lineTokens.hasMoreTokens()) {
+          String firstWord = lineTokens.nextToken();
+          if(!(firstWord.matches("\\d{6}+") || firstWord.matches("\\d{8}+"))) {
+            proceed=false;
+          }
+        }
+        
+      }
+      lineCount++;
+    }
+    return proceed;
+  }
+
 }
