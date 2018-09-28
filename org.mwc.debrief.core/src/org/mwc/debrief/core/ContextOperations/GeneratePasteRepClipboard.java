@@ -75,7 +75,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       return Status.OK_STATUS;
     }
 
-    private final int getNumLines(final String text)
+    private static final int getNumLines(final String text)
     {
       final String[] lines = text.split("\\r?\\n");
       if (lines != null)
