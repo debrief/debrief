@@ -95,12 +95,10 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
     }
   }
 
-  private static Action doPasteAction;
-
   public static Action createAction(final Layers theLayers,
       final String clipboardContent)
   {
-    doPasteAction = new Action("Paste REP from clipboard")
+    final Action doPasteAction = new Action("Paste REP from clipboard")
     {
       @Override
       public void run()
