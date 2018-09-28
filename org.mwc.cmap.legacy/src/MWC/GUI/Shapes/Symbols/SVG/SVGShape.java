@@ -243,9 +243,12 @@ public class SVGShape extends PlainSymbol
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
 
-      String svgPath = File.separator + fName + SymbolFactory.SVG_EXTENSION;
+      // retrieve symbol from relevant folder
+      final String svgPath =
+          File.separator + "svg_symbols" + File.separator + fName
+              + SymbolFactory.SVG_EXTENSION;
 
-      InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
+      final InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
       if (inputStream == null)
       {
