@@ -245,10 +245,18 @@ public class SVGShape extends PlainSymbol
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
 
-      // retrieve symbol from relevant folder
-      final String svgPath =
-          File.separator + SVG_SYMBOL_FOLDER + File.separator + fName
-              + SymbolFactory.SVG_EXTENSION;
+      // retrieve symbol from relevant folder (operating system dependent)
+      final String system = System.getProperty("os.name");
+      final String filePath = File.separator + fName + SymbolFactory.SVG_EXTENSION;
+      final String svgPath;
+      if(system.startsWith("Win"))
+      {
+        svgPath = File.separator + SVG_SYMBOL_FOLDER + filePath;
+      }
+      else
+      {
+        svgPath = filePath;
+      }
 
       final InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
