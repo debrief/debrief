@@ -932,10 +932,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         }
 
         final ViewerCell viewerCell = _treeViewer.getCell(pt);
-        // click on visibility column and check image only.
-        if (viewerCell != null && viewerCell.getColumnIndex() == 1 && viewerCell
-            .getImageBounds() != null && viewerCell.getImageBounds().contains(
-                pt))
+        // click on visibility column.
+        if (viewerCell != null && viewerCell.getColumnIndex() == 1 )
         {
           final Object element = viewerCell.getElement();
           if (element instanceof EditableWrapper)
