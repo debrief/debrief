@@ -293,21 +293,21 @@ public class ImportReplay extends PlainImporterBase
       fileName = fileRoot + File.separator + fileName;
 
       // and check the file exists
-      final java.io.File iFile = new File(fileName);
+      final File iFile = new File(fileName);
       assertTrue("Test file not found", iFile.exists());
     }
 
     private final void doReadRep(final String mode, final Long freq,
         final int LAYER_COUNT, final int NUM_FIXES, final boolean checkArea)
     {
-      java.io.File testFile = null;
+      File testFile = null;
 
       // specify the parent object - so our processing can retrieve the
       // OTG setting
       ImportReplay.initialise(new TestParent(mode, freq));
 
       // can we load it directly
-      testFile = new java.io.File(fileName);
+      testFile = new File(fileName);
 
       if (!testFile.exists())
       {
@@ -319,7 +319,7 @@ public class ImportReplay extends PlainImporterBase
           final java.net.URL imLoc = loader.getResource(fileName);
           if (imLoc != null)
           {
-            testFile = new java.io.File(imLoc.getFile());
+            testFile = new File(imLoc.getFile());
           }
         }
         else
@@ -2194,7 +2194,7 @@ public class ImportReplay extends PlainImporterBase
    *          the line to parse
    * @throws ParseException 
    */
-  public HiResDate readLine(final String theLine) throws java.io.IOException, ParseException
+  public HiResDate readLine(final String theLine) throws IOException, ParseException
   {
     HiResDate res = null;
 
