@@ -382,9 +382,13 @@ public class RangeRingShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-			String thisLabel = ""
-					+ (getRingWidth().getValue() + getRingWidth().getValue() * i);
-			thisLabel += " " + getRingWidth().getUnitsLabel();
+      final double ringWidth = getRingWidth().getValue();
+      
+      // if the width is an integer, we don't need the decimal place
+      final String widthStr = ringWidth == (int) ringWidth ? ""
+          + (int) ringWidth * (i + 1) : "" + ringWidth * (i + 1);
+			
+      final String thisLabel = widthStr + " " + getRingWidth().getUnitsLabel();
 
 			final int strWidth = dest.getStringWidth(null, thisLabel);
 			final int strHeight = dest.getStringHeight(null);

@@ -48,6 +48,7 @@ import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewInsertSensorArcAction;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensor;
 import org.mwc.debrief.core.ContextOperations.GenerateNewSensorContact;
+import org.mwc.debrief.core.ContextOperations.GeneratePasteRepClipboard;
 import org.mwc.debrief.core.ContextOperations.GenerateSensorRangePlot;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromCuts;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegmentFromInfillSegment;
@@ -321,8 +322,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     RightClickSupport.addRightClickGenerator(new RainbowShadeSonarCuts());
     RightClickSupport.addRightClickGenerator(new InterpolateTrack());
     RightClickSupport.addRightClickGenerator(new CopyBearingsToClipboard());
+    RightClickSupport.addRightClickGenerator(new GeneratePasteRepClipboard());
     RightClickSupport.addRightClickGenerator(new GenerateNewInsertSensorArcAction());
-    
+ 
 
     // and the Replay importer/exporter (used to export items from the
     // layer-manager)
