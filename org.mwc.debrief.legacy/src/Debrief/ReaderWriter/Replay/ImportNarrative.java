@@ -73,9 +73,11 @@ package Debrief.ReaderWriter.Replay;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
@@ -94,8 +96,9 @@ public final class ImportNarrative extends AbstractPlainLineImporter
 
 
   /** read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // get a stream from the string
@@ -194,8 +197,13 @@ public final class ImportNarrative extends AbstractPlainLineImporter
     {
       super(val);
     }
+    
+    public void setUp()
+    {
+      DialogFactory.setRunHeadless(true);
+    }
 
-    public void testImportWithWhitespace1()
+    public void testImportWithWhitespace1() throws ParseException
     {
       final String theLine = "  ;NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
       final ImportNarrative in = new ImportNarrative();
@@ -208,7 +216,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
       assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
     }
     
-    public void testImportWithWhitespace2()
+    public void testImportWithWhitespace2() throws ParseException
     {
       final String theLine = "\t;NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
       final ImportNarrative in = new ImportNarrative();
@@ -222,7 +230,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
     }
 
     
-    public void testImportSingleLine()
+    public void testImportSingleLine() throws ParseException
     {
       final String theLine = ";NARRATIVE:	020421	121857	HMS_TORBAY 	GenComment	Mk Rge BAAA R121212";
       final ImportNarrative in = new ImportNarrative();
@@ -235,7 +243,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
       assertEquals("found track name", "HMS_TORBAY", ne.getTrackName());
     }
 
-    public void testImportQuotedLine()
+    public void testImportQuotedLine() throws ParseException
     {
       final String theLine = ";NARRATIVE:	020421	121857	\"HMS TORBAY\" 	GenComment	Mk Rge BAAA R121212";
       final ImportNarrative in = new ImportNarrative();
@@ -291,8 +299,9 @@ public final class ImportNarrative extends AbstractPlainLineImporter
   /** do some narrative import checking
    *
    * @param args
+   * @throws ParseException 
    */
-  public static void main(final String[] args)
+  public static void main(final String[] args) throws ParseException
   {
     final testImport ti = new testImport("tester");
     ti.testImportSingleLine();

@@ -15,6 +15,7 @@
 
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -37,8 +38,9 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // ;SENSOR3: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C
@@ -260,7 +262,7 @@ public final class ImportSensor3 extends AbstractPlainLineImporter
       super(val);
     }
 
-    public final void testImport()
+    public final void testImport() throws ParseException
     {
       // final String lineA =
       // ";SENSOR2: 20090722 041434.000 NONSUCH @B NULL 59.3 300.8 49.96 NULL Contact_bearings 0414";

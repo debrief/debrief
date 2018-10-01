@@ -116,8 +116,9 @@ final class ImportSensor extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // ;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRR XXX YYY.....YYY

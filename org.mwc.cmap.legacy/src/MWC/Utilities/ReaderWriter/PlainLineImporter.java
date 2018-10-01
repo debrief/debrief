@@ -76,6 +76,7 @@
 
 package MWC.Utilities.ReaderWriter;
 
+import java.text.ParseException;
 
 /** interface describing behavior for an import function which reads a line 
  * of data at a time
@@ -106,8 +107,9 @@ public interface PlainLineImporter
 
 
 	/** parse this line and return the object created
+	 * @throws ParseException  on malformed date/numbers
 	 */
-  public Object readThisLine(String theLine);
+  public Object readThisLine(String theLine) throws ParseException;
 	
 	/** @return the comment identifier for this line
 	 */

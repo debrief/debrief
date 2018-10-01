@@ -161,6 +161,7 @@ package Debrief.Wrappers;
 import java.awt.Color;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -889,7 +890,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
       super(val);
     }
 
-    public void testMeasuredData()
+    public void testMeasuredData() throws ParseException
     {
       TrackWrapper tw = new TrackWrapper();
       tw.setName("SENSOR");

@@ -22,6 +22,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -407,7 +409,7 @@ public final class StackedDotHelper
       return res;
     }
 
-    public Layers getData()
+    public Layers getData() throws ParseException, IOException
     {
       final Layers layers = new Layers();
       final ImportReplay importer = new ImportReplay();
@@ -504,7 +506,7 @@ public final class StackedDotHelper
       return layers;
     }
 
-    public TrackDataHelper getTrackData()
+    public TrackDataHelper getTrackData() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -587,8 +589,8 @@ public final class StackedDotHelper
 
       return prov;
     }
-
-    public void testGetSinglePointCourseData()
+    
+    public void testGetSinglePointCourseData() throws ParseException, IOException
     {
       TrackDataHelper data = getTrackDataWithSingle();
       data.setSwitch(true);
@@ -608,7 +610,7 @@ public final class StackedDotHelper
 
     }
 
-    public void testGetCourseData()
+    public void testGetCourseData() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -753,7 +755,7 @@ public final class StackedDotHelper
       // return prov;
     }
 
-    public void testSwitchedUpdateBearings() throws ExecutionException
+    public void testSwitchedUpdateBearings() throws ExecutionException, ParseException, IOException
     {
       final StackedDotHelper helper = new StackedDotHelper();
       final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
@@ -907,7 +909,7 @@ public final class StackedDotHelper
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
     }
 
-    public void testUpdateBearings() throws ExecutionException
+    public void testUpdateBearings() throws ExecutionException, ParseException, IOException
     {
       final StackedDotHelper helper = new StackedDotHelper();
       final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
@@ -1200,7 +1202,7 @@ public final class StackedDotHelper
       return res;
     }
 
-    public TrackDataHelper getTrackDataWithSingle()
+    public TrackDataHelper getTrackDataWithSingle() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");

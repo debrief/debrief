@@ -1,5 +1,6 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class TA_Modules_DataHandler extends TA_ForeAft_DataHandler
       _messages.clear();
     }
 
-    public void testImportLong()
+    public void testImportLong() throws ParseException
     {
       final String str =
           ";TA_MODULES: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 14.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00 12.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00";
@@ -49,7 +50,7 @@ public class TA_Modules_DataHandler extends TA_ForeAft_DataHandler
       testResults(message2, "Heading", "10.0", "Acoustic Modules / 8");
     }
 
-    public void testImportShort()
+    public void testImportShort() throws ParseException
     {
       final String str =
           ";TA_MODULES: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00 14.75 10.00  12.75 3.00 14.75 10.00 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0 0.0";

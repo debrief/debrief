@@ -36,12 +36,45 @@ public class DebriefFormatDateTime
     {
       super(val);
     }
+    
+    /** todo - fix this. it fails on the CI server, since the server is in a 
+     * different time-zone or daylight savings mode
+     * @throws ParseException 
+     */
+    public void testMalformedDate() 
+    {
+      String message = null;
+      try
+      {
+        parseThis("700001", "010000");
+      }
+      catch (ParseException e)
+      {
+        message = e.getMessage();
+      }
+      assertNotNull("exception not thrown", message);
+      
+      message = null;
+      
+      try
+      {
+        parseThis("700100", "010000");
+      }
+      catch (ParseException e)
+      {
+        message = e.getMessage();
+      }
+      assertNotNull("exception not thrown", message);
+
+      message = null;
+    }
 
     /** todo - fix this. it fails on the CI server, since the server is in a 
      * different time-zone or daylight savings mode
+     * @throws ParseException 
      */
     @SuppressWarnings("deprecation")
-    public void notTestPadding()
+    public void notTestPadding() throws ParseException
     {
       HiResDate val = parseThis("700101", "010000");
       assertEquals("correct date", new Date(70, 00, 01, 02, 00, 00), val
@@ -200,8 +233,9 @@ public class DebriefFormatDateTime
 
   /**
    * parse a date string using our format
+   * @throws ParseException on malformed date
    */
-  public synchronized static HiResDate parseThis(final String rawText)
+  public synchronized static HiResDate parseThis(final String rawText) throws ParseException
   {
     // make sure our two and four-digit date bits are initialised
     initialisePatterns();
@@ -244,22 +278,14 @@ public class DebriefFormatDateTime
       // next determine if we have a 4-figure year value (in which case the
       // space will be in column 9
       final int spaceIndex = secondPart.indexOf(" ");
-
-      try
+      
+      if (spaceIndex > 6)
       {
-        if (spaceIndex > 6)
-        {
-          date = FOUR_DIGIT_YEAR_FORMAT.parse(secondPart);
-        }
-        else
-        {
-          date = TWO_DIGIT_YEAR_FORMAT.parse(secondPart);
-        }
+        date = FOUR_DIGIT_YEAR_FORMAT.parse(secondPart);
       }
-      catch (final ParseException e1)
+      else
       {
-        MWC.Utilities.Errors.Trace.trace(e1, "Whilst reading this date:"
-            + secondPart);
+        date = TWO_DIGIT_YEAR_FORMAT.parse(secondPart);
       }
 
       int micros = 0;
@@ -300,9 +326,10 @@ public class DebriefFormatDateTime
 
   /**
    * parse a date string using our format
+   * @throws ParseException  on malformed date
    */
   public static HiResDate parseThis(final String dateToken,
-      final String timeToken)
+      final String timeToken) throws ParseException
   {
     // do we have millis?
     final int decPoint = timeToken.indexOf(".");
