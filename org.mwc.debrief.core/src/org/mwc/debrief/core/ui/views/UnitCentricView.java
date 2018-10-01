@@ -33,6 +33,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GUI.Shapes.RangeRingShape;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -92,9 +93,18 @@ public class UnitCentricView extends ViewPart
      *
      * @param nearestInTime
      * @param nearestOffset
+     * @param primaryHeadingDegs TODO
      */
     void processNearest(final FixWrapper nearestInTime,
-        final WorldLocation nearestOffset);
+        final WorldLocation nearestOffset, double primaryHeadingDegs);
+
+
+    /** render the primary track
+     * 
+     * @param primary
+     * @param origin
+     */
+    void handlePrimary(final WatchableList primary, final WorldLocation origin);
   }
 
   private class PeriodAction extends Action
@@ -169,9 +179,16 @@ public class UnitCentricView extends ViewPart
 
             @Override
             public void processNearest(final FixWrapper nearestInTime,
-                final WorldLocation nearestOffset)
+                final WorldLocation nearestOffset, double primaryHeadingDegs)
             {
               // ok, ignore
+            }
+
+            @Override
+            public void handlePrimary(WatchableList primary,
+                WorldLocation origin)
+            {
+           // ok, ignore
             }
           };
           walkTree(theLayers, primary, _timeProvider.getTime(), getBounds,
@@ -232,10 +249,29 @@ public class UnitCentricView extends ViewPart
 
         @Override
         public void processNearest(final FixWrapper nearestInTime,
-            final WorldLocation nearestOffset)
+            final WorldLocation nearestOffset, double primaryHeadingDegs)
         {
+          final double hisCourseDegs = nearestInTime.getCourseDegs();
+          // sort out the secondary's relative heading
+          final double relativeHeading = (360 - primaryHeadingDegs) +  hisCourseDegs;
+          
+          // draw the snail marker
+          WatchableList track = nearestInTime.getTrackWrapper();
+          PlainSymbol sym = track.getSnailShape();
+          sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(relativeHeading));
+          
           // reset the last object pointer
           oldEnd = null;
+        }
+
+        @Override
+        public void handlePrimary(WatchableList primary, WorldLocation origin)
+        {
+          final PlainSymbol sym = primary.getSnailShape();
+          if(sym != null)
+          {
+            sym.paint(dest, origin);
+          }
         }
     }
     
@@ -269,15 +305,34 @@ public class UnitCentricView extends ViewPart
 
         @Override
         public void processNearest(final FixWrapper nearestInTime,
-            final WorldLocation nearestOffset)
+            final WorldLocation nearestOffset, double primaryHeadingDegs)
         {
-          dest.setLineWidth(3);
-          dest.setColor(Color.DARK_GRAY);
-          final Point pt = dest.toScreen(nearestOffset);
-          dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+//          dest.setLineWidth(3);
+//          dest.setColor(Color.DARK_GRAY);
+//          final Point pt = dest.toScreen(nearestOffset);
+//          dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
+          
+          final double hisCourseDegs = nearestInTime.getCourseDegs();
+          // sort out the secondary's relative heading
+          final double relativeHeading = (360 - primaryHeadingDegs) +  hisCourseDegs;
+          
+          // draw the snail marker
+          WatchableList track = nearestInTime.getTrackWrapper();
+          PlainSymbol sym = track.getSnailShape();
+          sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(relativeHeading));
 
           // reset the last object pointer
           oldEnd = null;
+        }
+
+        @Override
+        public void handlePrimary(WatchableList primary, WorldLocation origin)
+        {
+          final PlainSymbol sym = primary.getSnailShape();
+          if(sym != null)
+          {
+            sym.paint(dest, origin);
+          }
         }
     }
     
@@ -365,15 +420,7 @@ public class UnitCentricView extends ViewPart
       }
 
       walkTree(_theLayers, primary, subjectTime, paintIt, getSnailLength());
-
-      // draw in the ownship marker last, so it's on top
-      dest.setLineWidth(2f);
-      final Point pt = _myOverviewChart.getCanvas().getProjection().toScreen(
-          new WorldLocation(0d, 0d, 0d));
-      dest.setColor(primary.getColor());
-      dest.drawOval(pt.x - 4, pt.y - 4, 8, 8);
-      dest.drawLine(pt.x, pt.y - 12, pt.x, pt.y + 5);
-
+      
       if (priTrack != null)
       {
         // restore interpolation on the primary track
@@ -428,11 +475,16 @@ public class UnitCentricView extends ViewPart
           return;
 
         // is it the primary?
-        if (!other.equals(primary))
+        if (other.equals(primary))
+        {
+          doIt.handlePrimary(primary, origin);
+        }
+        else
         {
           // keep track of the fix nearest to the required DTG
           FixWrapper nearestInTime = null;
           WorldLocation nearestOffset = null;
+          double primaryHeading = Double.MIN_VALUE;
           long nearestDelta = Long.MAX_VALUE;
 
           // ok, run back through the data
@@ -480,6 +532,7 @@ public class UnitCentricView extends ViewPart
                     nearestDelta = diff;
                     nearestOffset = processOffset(priFix, thisF.getLocation(),
                         origin);
+                    primaryHeading = priFix.getCourseDegs();
                   }
 
                   final WorldLocation pos = processOffset(priFix, thisF
@@ -497,7 +550,7 @@ public class UnitCentricView extends ViewPart
           }
           if (nearestInTime != null)
           {
-            doIt.processNearest(nearestInTime, nearestOffset);
+            doIt.processNearest(nearestInTime, nearestOffset, primaryHeading);
           }
         }
       }
