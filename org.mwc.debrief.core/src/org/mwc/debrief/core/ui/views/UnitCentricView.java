@@ -91,9 +91,9 @@ public class UnitCentricView extends ViewPart
     /**
      * process the secondary track position that's nearest to the required time
      *
-     * @param nearestInTime
-     * @param nearestOffset
-     * @param primaryHeadingDegs TODO
+     * @param nearestInTime the nearest point in time on this secondary track
+     * @param nearestOffset the relative location of this secondary track
+     * @param primaryHeadingDegs current heading of primary track
      */
     void processNearest(final FixWrapper nearestInTime,
         final WorldLocation nearestOffset, double primaryHeadingDegs);
@@ -101,8 +101,8 @@ public class UnitCentricView extends ViewPart
 
     /** render the primary track
      * 
-     * @param primary
-     * @param origin
+     * @param primary the primary track
+     * @param origin the point we use as origin (typically 0,0,0)
      */
     void handlePrimary(final WatchableList primary, final WorldLocation origin);
   }
@@ -307,11 +307,6 @@ public class UnitCentricView extends ViewPart
         public void processNearest(final FixWrapper nearestInTime,
             final WorldLocation nearestOffset, double primaryHeadingDegs)
         {
-//          dest.setLineWidth(3);
-//          dest.setColor(Color.DARK_GRAY);
-//          final Point pt = dest.toScreen(nearestOffset);
-//          dest.drawRect(pt.x - 3, pt.y - 3, 7, 7);
-          
           final double hisCourseDegs = nearestInTime.getCourseDegs();
           // sort out the secondary's relative heading
           final double relativeHeading = (360 - primaryHeadingDegs) +  hisCourseDegs;
@@ -483,7 +478,7 @@ public class UnitCentricView extends ViewPart
         {
           // keep track of the fix nearest to the required DTG
           FixWrapper nearestInTime = null;
-          WorldLocation nearestOffset = null;
+          WorldLocation relativeLocation = null;
           double primaryHeading = Double.MIN_VALUE;
           long nearestDelta = Long.MAX_VALUE;
 
@@ -530,7 +525,7 @@ public class UnitCentricView extends ViewPart
                   {
                     nearestInTime = thisF;
                     nearestDelta = diff;
-                    nearestOffset = processOffset(priFix, thisF.getLocation(),
+                    relativeLocation = processOffset(priFix, thisF.getLocation(),
                         origin);
                     primaryHeading = priFix.getCourseDegs();
                   }
@@ -550,7 +545,7 @@ public class UnitCentricView extends ViewPart
           }
           if (nearestInTime != null)
           {
-            doIt.processNearest(nearestInTime, nearestOffset, primaryHeading);
+            doIt.processNearest(nearestInTime, relativeLocation, primaryHeading);
           }
         }
       }
