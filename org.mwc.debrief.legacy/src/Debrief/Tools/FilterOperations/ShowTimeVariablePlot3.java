@@ -923,6 +923,22 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
             while (it.hasNext())
             {
               final Watchable thisSecondary = (Watchable) it.next();
+              
+              // if it's a fix, hide it if the parent segment is hidden
+              if(thisSecondary instanceof FixWrapper)
+              {
+                final FixWrapper fw=  (FixWrapper) thisSecondary;
+                final Editable parent = fw.getSegment();
+                if(parent != null && parent instanceof TrackSegment)
+                {
+                  final TrackSegment ts =(TrackSegment) parent;
+                  if(!ts.getVisible())
+                  {
+                    // ok, the parent segment is hidden, skip this point
+                    continue;
+                  }
+                }
+              }               
 
               // / get the colour
               Color thisColor = thisSecondary.getColor();
