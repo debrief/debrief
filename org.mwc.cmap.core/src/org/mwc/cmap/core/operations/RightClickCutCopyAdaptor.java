@@ -386,7 +386,6 @@ public class RightClickCutCopyAdaptor
         private Plottable findAdjacentEditable(final Editable thisE,
             final Enumeration<Editable> numer)
         {
-          boolean matched = false;
           Plottable res = null;
 
           // put them into a list, so we can sort them properly
@@ -401,47 +400,38 @@ public class RightClickCutCopyAdaptor
 
           // okm now sort them out
           Collections.sort(list, comparator);
-
-          for (final Editable item : list)
+          
+          int indexOf = list.indexOf(thisE);
+          if(indexOf== -1 || list.size()<1)
           {
-            final Plottable seg = (Plottable) item;
-            if (!matched)
-            {
-              if (seg.equals(thisE))
-              {
-                if (res != null)
-                {
-                  // SPECIAL HANDLING, if previous was an infill, we need to
-                  // move back one more step - since the infill
-                  // will get deleted when its "after" segment
-                  // is deleted
-                  if (res instanceof DynamicInfillSegment)
-                  {
-                    final DynamicInfillSegment fill =
-                        (DynamicInfillSegment) res;
-                    res = fill.getBeforeSegment();
-                  }
-
-                  // ok, we have a previous, and this matches
-                  break;
-                }
-                else
-                {
-                  // ok, it's the first item. we need to move to the next one
-                  matched = true;
-                }
-              }
-            }
-            else
-            {
-              // ok, we've matched the item, but we didn't have a previous item. So, we want to
-              // move onto the next one, then return
-              res = seg;
-              break;
-            }
-            res = seg;
+              return res;
           }
-          return res;
+          
+          
+          
+          if(indexOf==(list.size()-1) && list.size()>1)
+          {
+            //last item of the list 
+             res = (Plottable) list.get(list.size()-2);
+             if (res instanceof DynamicInfillSegment)
+             {
+               final DynamicInfillSegment fill =
+                   (DynamicInfillSegment) res;
+               res = fill.getBeforeSegment();
+             }
+             return res;
+          }
+          
+          //next item of the list 
+           res = (Plottable) list.get(indexOf+1);
+           if (res instanceof DynamicInfillSegment)
+           {
+             final DynamicInfillSegment fill =
+                 (DynamicInfillSegment) res;
+             res = fill.getAfterSegment();
+           }
+           return res;
+
         }
 
         @Override
