@@ -246,7 +246,8 @@ public class PlotTracks
       throw new DebriefException("donor file does not exist");
     }
 
-    /** use standard O/S temp folder
+    /**
+     * use standard O/S temp folder
      * 
      */
     final Path temp_unpack_path = Files.createTempDirectory("Debrief_to_pptx_");
@@ -486,7 +487,7 @@ public class PlotTracks
           "a|off").attr("x"));
       final int temp_shape_y = Integer.parseInt(temp_shape_tag.selectFirst(
           "a|off").attr("y"));
-
+      
       String animation_path;
       final Element path_tag = temp_shape_tag.selectFirst("a|path");
       for (final Element child : path_tag.children())
@@ -509,7 +510,22 @@ public class PlotTracks
       float prev_anim_y = tempCoordinates[1];
       prev_anim_x = prev_anim_x - TailX - arrow_center_x_small;
       prev_anim_y = prev_anim_y - TailY - arrow_center_y_small;
+      
+      float toSubX = prev_anim_x;
+      float toSubY = prev_anim_y;
+      
+      // We calculate the first position for the marker
+      tempCoordinates = coordinateTransformation(first_x, first_y,
+          dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
 
+      float[] tempCoordinates2 = coordinateTransformation(arrow_off_x, arrow_off_y,
+          dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
+      // Get Shape offsets and exts
+      /*int temp_shape_x = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("x"));
+      int temp_shape_y = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("y"));*/
+      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0]) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1]) + "");
+      
       final ArrayList<Element> track_anim_objs = new ArrayList<>();
 
       for (final TrackPoint coordinate : coordinates)
@@ -525,9 +541,9 @@ public class PlotTracks
         anim_x = anim_x - TailX - arrow_center_x_small;
         anim_y = anim_y - TailY - arrow_center_y_small;
 
-        animation_path = "M " + String.format("%.4f", prev_anim_x) + " "
-            + String.format("%.4f", prev_anim_y) + " L " + String.format("%.4f",
-                anim_x) + " " + String.format("%.4f", anim_y);
+        animation_path = "M " + String.format("%.4f", (prev_anim_x - toSubX)) + " "
+            + String.format("%.4f", (prev_anim_y - toSubY)) + " L " + String.format("%.4f",
+                (anim_x - toSubX)) + " " + String.format("%.4f", (anim_y - toSubY));
         prev_anim_x = anim_x;
         prev_anim_y = anim_y;
 
@@ -548,7 +564,7 @@ public class PlotTracks
             dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
         x_int = tempCoordinatesInt[0];
         y_int = tempCoordinatesInt[1];
-
+        
         // remove the offsets for the track object
         x_int = x_int - temp_shape_x;
         y_int = y_int - temp_shape_y;
