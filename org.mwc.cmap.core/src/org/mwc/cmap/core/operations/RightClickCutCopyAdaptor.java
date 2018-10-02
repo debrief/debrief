@@ -767,7 +767,7 @@ public class RightClickCutCopyAdaptor
 
     }
 
-    private void doUndo()
+    private static void doUndo()
     {
       final IOperationHistory history = CorePlugin.getHistory();
       try
@@ -781,7 +781,7 @@ public class RightClickCutCopyAdaptor
       }
     }
 
-    private boolean isContactThere(final TrackWrapper tw,
+    private static boolean isContactThere(final TrackWrapper tw,
         final TMAContactWrapper scwa1)
     {
       boolean itemFound;
@@ -804,7 +804,7 @@ public class RightClickCutCopyAdaptor
       return itemFound;
     }
 
-    private boolean
+    private static boolean
         isPositionThere(final TrackWrapper tw, final FixWrapper fw2)
     {
       boolean itemFound;
@@ -822,7 +822,7 @@ public class RightClickCutCopyAdaptor
       return itemFound;
     }
 
-    private boolean isSensorThere(final TrackWrapper tw,
+    private static boolean isSensorThere(final TrackWrapper tw,
         final SensorContactWrapper scwa1)
     {
       boolean itemFound;
