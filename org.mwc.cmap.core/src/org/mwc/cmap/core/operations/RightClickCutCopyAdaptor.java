@@ -386,7 +386,7 @@ public class RightClickCutCopyAdaptor
         private Plottable findAdjacentEditable(final Editable thisE,
             final Enumeration<Editable> numer)
         {
-          Plottable res = null;
+          final Plottable res;
 
           // put them into a list, so we can sort them properly
           final List<Editable> list = new ArrayList<Editable>();
@@ -398,40 +398,52 @@ public class RightClickCutCopyAdaptor
           final Comparator<Editable> comparator =
               new OutlineNameSorter.EditableComparer();
 
-          // okm now sort them out
+          // ok now sort them out
           Collections.sort(list, comparator);
           
-          int indexOf = list.indexOf(thisE);
-          if(indexOf== -1 || list.size()<1)
+          // find the item that's about to be deleted
+          final int indexOf = list.indexOf(thisE);
+          
+          // where is it in the list?
+          if(indexOf== -1 || list.size()<=1)
           {
-              return res;
+            // ok, empty list (or there's only us in the list)
+            res = null;
           }
-          
-          
-          
-          if(indexOf==(list.size()-1) && list.size()>1)
+          else if(indexOf==(list.size()-1) && list.size()>1)
           {
-            //last item of the list 
-             res = (Plottable) list.get(list.size()-2);
-             if (res instanceof DynamicInfillSegment)
-             {
-               final DynamicInfillSegment fill =
-                   (DynamicInfillSegment) res;
-               res = fill.getBeforeSegment();
-             }
-             return res;
+            // last item on the list, can't move down. use previous
+            final Plottable previous = (Plottable) list.get(list.size() - 2);
+            
+            // special handling for dynamic infill. It will get deleted 
+            // when it's before/after leg get deleted.
+            if (previous instanceof DynamicInfillSegment)
+            {
+              final DynamicInfillSegment fill = (DynamicInfillSegment) previous;
+              res = fill.getBeforeSegment();
+            }
+            else
+            {
+              res = previous;
+            }
           }
-          
-          //next item of the list 
-           res = (Plottable) list.get(indexOf+1);
-           if (res instanceof DynamicInfillSegment)
-           {
-             final DynamicInfillSegment fill =
-                 (DynamicInfillSegment) res;
-             res = fill.getAfterSegment();
-           }
-           return res;
+          else
+          {
+            // mid-list, just take next item of the list
+            final Plottable next = (Plottable) list.get(indexOf + 1);
 
+            // aah, not if it's an infill that's about to be deleted?
+            if (next instanceof DynamicInfillSegment)
+            {
+              final DynamicInfillSegment fill = (DynamicInfillSegment) next;
+              res = fill.getAfterSegment();
+            }
+            else
+            {
+              res = next;
+            }
+          }          
+          return res;
         }
 
         @Override
