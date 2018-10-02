@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
@@ -13,6 +14,9 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -29,6 +33,7 @@ import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
@@ -43,7 +48,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
 
-public class UnitCentricView extends ViewPart
+public class UnitCentricView extends ViewPart implements ISelectionProvider
 {
 
   private class DistanceAction extends Action
@@ -424,6 +429,8 @@ public class UnitCentricView extends ViewPart
     }
   }
 
+  private static StructuredSelection _propsAsSelection;
+
   /**
    * convert an absolute location into a location relative to a primary track
    *
@@ -687,6 +694,15 @@ public class UnitCentricView extends ViewPart
         WorldDistance.NM), setRings));
     ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10,
         WorldDistance.NM), setRings));
+    ringRadii.add(new Action("Format range rings") {
+
+      @Override
+      public void run()
+      {
+        formatItem(_rangeRings);
+      }
+      
+    });
 
     manager.add(ringRadii);
 
@@ -730,6 +746,33 @@ public class UnitCentricView extends ViewPart
     periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail));
 
     manager.add(periodSize);
+  }
+
+  /** open the provided item in the properties view
+   * 
+   * @param _rangeRings2
+   */
+  private static void formatItem(RangeRingShape rangeRings)
+  {
+    // do we have any data?
+    if(rangeRings.hasEditor())
+    {
+      EditorType editor = rangeRings.getInfo();
+      PropertyDescriptor[] props = editor.getPropertyDescriptors();
+      if (props != null)
+      {
+//        // get the editable thingy
+//        if(_props)
+//           _propsAsSelection = new StructuredSelection(props);
+//
+//        CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
+//            this, this);
+      }
+      else
+      {
+        System.out.println("we haven't got any properties yet");
+      }
+    }
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
@@ -1010,6 +1053,34 @@ public class UnitCentricView extends ViewPart
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
+  }
+
+  @Override
+  public void addSelectionChangedListener(ISelectionChangedListener listener)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public ISelection getSelection()
+  {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public void removeSelectionChangedListener(ISelectionChangedListener listener)
+  {
+    // TODO Auto-generated method stub
+    
+  }
+
+  @Override
+  public void setSelection(ISelection selection)
+  {
+    // TODO Auto-generated method stub
+    
   }
 
 }
