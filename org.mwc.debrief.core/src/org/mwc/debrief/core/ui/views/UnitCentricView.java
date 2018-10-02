@@ -7,7 +7,6 @@ import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -35,9 +34,8 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
-import MWC.GUI.Properties.ClassWithProperty;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
-import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Properties.ClassWithProperty;
 import MWC.GUI.Shapes.RangeRingShape;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
@@ -51,11 +49,6 @@ import MWC.TacticalData.TrackDataProvider;
 
 public class UnitCentricView extends ViewPart implements PropertyChangeListener
 {
-
-  /**
-   * helper - to let the user edit us
-   */
-  private final SelectionHelper _selectionHelper;
 
   private class DistanceAction extends Action
   {
@@ -100,6 +93,16 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
         final double proportion);
 
     /**
+     * render the primary track
+     *
+     * @param primary
+     *          the primary track
+     * @param origin
+     *          the point we use as origin (typically 0,0,0)
+     */
+    void handlePrimary(final WatchableList primary, final WorldLocation origin);
+
+    /**
      * process the secondary track position that's nearest to the required time
      *
      * @param nearestInTime
@@ -111,16 +114,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
      */
     void processNearest(final FixWrapper nearestInTime,
         final WorldLocation nearestOffset, double primaryHeadingDegs);
-
-    /**
-     * render the primary track
-     * 
-     * @param primary
-     *          the primary track
-     * @param origin
-     *          the point we use as origin (typically 0,0,0)
-     */
-    void handlePrimary(final WatchableList primary, final WorldLocation origin);
   }
 
   private class PeriodAction extends Action
@@ -152,6 +145,129 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
 
   private class UnitCentricChart extends SWTChart
   {
+
+    private class NormalPaintOperation implements IOperateOnMatch
+    {
+      private final CanvasType dest;
+
+      private NormalPaintOperation(final CanvasType theDest)
+      {
+        this.dest = theDest;
+      }
+
+      @Override
+      public void doItTo(final FixWrapper rawSec,
+          final WorldLocation offsetLocation, final double proportion)
+      {
+        dest.setLineWidth(2f);
+        dest.setColor(rawSec.getColor());
+
+        rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+        // and the line
+        final Point newEnd = dest.toScreen(offsetLocation);
+        if (oldEnd != null)
+        {
+          dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+        }
+        //
+        oldEnd = new Point(newEnd);
+      }
+
+      @Override
+      public void handlePrimary(final WatchableList primary,
+          final WorldLocation origin)
+      {
+        final PlainSymbol sym = primary.getSnailShape();
+        if (sym != null)
+        {
+          sym.paint(dest, origin);
+        }
+      }
+
+      @Override
+      public void processNearest(final FixWrapper nearestInTime,
+          final WorldLocation nearestOffset, final double primaryHeadingDegs)
+      {
+        final double hisCourseDegs = nearestInTime.getCourseDegs();
+        // sort out the secondary's relative heading
+        final double relativeHeading = (360 - primaryHeadingDegs)
+            + hisCourseDegs;
+
+        // draw the snail marker
+        final WatchableList track = nearestInTime.getTrackWrapper();
+        final PlainSymbol sym = track.getSnailShape();
+        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
+            relativeHeading));
+
+        // reset the last object pointer
+        oldEnd = null;
+      }
+    }
+
+    private class SnailPaintOperation implements IOperateOnMatch
+    {
+
+      private final CanvasType dest;
+
+      private SnailPaintOperation(final CanvasType theDest)
+      {
+        this.dest = theDest;
+      }
+
+      @Override
+      public void doItTo(final FixWrapper rawSec,
+          final WorldLocation offsetLocation, final double proportion)
+      {
+        dest.setLineWidth(3f);
+
+        // sort out the color
+        final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
+            _myOverviewChart.getCanvas().getBackgroundColor());
+
+        dest.setColor(newCol);
+
+        rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+
+        // and the line
+        final Point newEnd = dest.toScreen(offsetLocation);
+        if (oldEnd != null)
+        {
+          dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
+        }
+        oldEnd = new Point(newEnd);
+      }
+
+      @Override
+      public void handlePrimary(final WatchableList primary,
+          final WorldLocation origin)
+      {
+        final PlainSymbol sym = primary.getSnailShape();
+        if (sym != null)
+        {
+          sym.paint(dest, origin);
+        }
+      }
+
+      @Override
+      public void processNearest(final FixWrapper nearestInTime,
+          final WorldLocation nearestOffset, final double primaryHeadingDegs)
+      {
+        final double hisCourseDegs = nearestInTime.getCourseDegs();
+        // sort out the secondary's relative heading
+        final double relativeHeading = (360 - primaryHeadingDegs)
+            + hisCourseDegs;
+
+        // draw the snail marker
+        final WatchableList track = nearestInTime.getTrackWrapper();
+        final PlainSymbol sym = track.getSnailShape();
+        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
+            relativeHeading));
+
+        // reset the last object pointer
+        oldEnd = null;
+      }
+    }
 
     /**
      *
@@ -194,15 +310,16 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
             }
 
             @Override
-            public void processNearest(final FixWrapper nearestInTime,
-                final WorldLocation nearestOffset, double primaryHeadingDegs)
+            public void handlePrimary(final WatchableList primary,
+                final WorldLocation origin)
             {
               // ok, ignore
             }
 
             @Override
-            public void handlePrimary(WatchableList primary,
-                WorldLocation origin)
+            public void processNearest(final FixWrapper nearestInTime,
+                final WorldLocation nearestOffset,
+                final double primaryHeadingDegs)
             {
               // ok, ignore
             }
@@ -228,127 +345,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
       final float newGreen = color.getGreen() + green * proportion;
       final float newBlue = color.getBlue() + blue * proportion;
       return new Color((int) newRed, (int) newGreen, (int) newBlue);
-    }
-
-    private class SnailPaintOperation implements IOperateOnMatch
-    {
-
-      private final CanvasType dest;
-
-      private SnailPaintOperation(final CanvasType theDest)
-      {
-        this.dest = theDest;
-      }
-
-      @Override
-      public void doItTo(final FixWrapper rawSec,
-          final WorldLocation offsetLocation, final double proportion)
-      {
-        dest.setLineWidth(3f);
-
-        // sort out the color
-        final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
-            _myOverviewChart.getCanvas().getBackgroundColor());
-
-        dest.setColor(newCol);
-
-        rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-        // and the line
-        final Point newEnd = dest.toScreen(offsetLocation);
-        if (oldEnd != null)
-        {
-          dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-        }
-        oldEnd = new Point(newEnd);
-      }
-
-      @Override
-      public void processNearest(final FixWrapper nearestInTime,
-          final WorldLocation nearestOffset, double primaryHeadingDegs)
-      {
-        final double hisCourseDegs = nearestInTime.getCourseDegs();
-        // sort out the secondary's relative heading
-        final double relativeHeading = (360 - primaryHeadingDegs)
-            + hisCourseDegs;
-
-        // draw the snail marker
-        WatchableList track = nearestInTime.getTrackWrapper();
-        PlainSymbol sym = track.getSnailShape();
-        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
-            relativeHeading));
-
-        // reset the last object pointer
-        oldEnd = null;
-      }
-
-      @Override
-      public void handlePrimary(WatchableList primary, WorldLocation origin)
-      {
-        final PlainSymbol sym = primary.getSnailShape();
-        if (sym != null)
-        {
-          sym.paint(dest, origin);
-        }
-      }
-    }
-
-    private class NormalPaintOperation implements IOperateOnMatch
-    {
-      private final CanvasType dest;
-
-      private NormalPaintOperation(final CanvasType theDest)
-      {
-        this.dest = theDest;
-      }
-
-      @Override
-      public void doItTo(final FixWrapper rawSec,
-          final WorldLocation offsetLocation, final double proportion)
-      {
-        dest.setLineWidth(2f);
-        dest.setColor(rawSec.getColor());
-
-        rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-        // and the line
-        final Point newEnd = dest.toScreen(offsetLocation);
-        if (oldEnd != null)
-        {
-          dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-        }
-        //
-        oldEnd = new Point(newEnd);
-      }
-
-      @Override
-      public void processNearest(final FixWrapper nearestInTime,
-          final WorldLocation nearestOffset, double primaryHeadingDegs)
-      {
-        final double hisCourseDegs = nearestInTime.getCourseDegs();
-        // sort out the secondary's relative heading
-        final double relativeHeading = (360 - primaryHeadingDegs)
-            + hisCourseDegs;
-
-        // draw the snail marker
-        WatchableList track = nearestInTime.getTrackWrapper();
-        PlainSymbol sym = track.getSnailShape();
-        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
-            relativeHeading));
-
-        // reset the last object pointer
-        oldEnd = null;
-      }
-
-      @Override
-      public void handlePrimary(WatchableList primary, WorldLocation origin)
-      {
-        final PlainSymbol sym = primary.getSnailShape();
-        if (sym != null)
-        {
-          sym.paint(dest, origin);
-        }
-      }
     }
 
     @Override
@@ -574,6 +570,11 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
     theLayers.walkVisibleItems(LightweightTrackWrapper.class, checkIt);
   }
 
+  /**
+   * helper - to let the user edit us
+   */
+  private final SelectionHelper _selectionHelper;
+
   private UnitCentricChart _myOverviewChart;
 
   private final FlatProjection _myProjection;
@@ -593,7 +594,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
 
   protected TimeProvider _timeProvider;
 
-  protected PropertyChangeListener _timeChangeListener;
+  final private PropertyChangeListener _timeChangeListener;
 
   private Action _normalPaint;
 
@@ -682,7 +683,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
 
     // force us to stop listening to shape
     stopListeningIfDifferentTo(null);
-    
+
     // cancel any listeners
     if (_myPartMonitor != null)
     {
@@ -777,68 +778,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
     manager.add(periodSize);
   }
 
-  /**
-   * open the provided item in the properties view
-   * 
-   * @param _rangeRings2
-   */
-  private void formatItem(final ClassWithProperty toFormat)
-  {
-    // also grab focus, so we're the current selection provider
-    setFocus();
-    
-    // get editable perspective on this item
-    Editable editable = (Editable) toFormat;
-    
-    // do we have any data?
-    if (editable.hasEditor() && editable.getInfo()
-        .getPropertyDescriptors() != null)
-    {
-      
-      // ok, see if we're already listening to something
-      stopListeningIfDifferentTo(editable);
-      
-      // ok, start listening to the new item
-      toFormat.addPropertyListener(this);
-      
-      // now fire the selection
-      final EditableWrapper wrappedEditable = new EditableWrapper(editable);
-      final StructuredSelection _propsAsSelection = new StructuredSelection(
-          wrappedEditable);
-
-      _selectionHelper.fireNewSelection(_propsAsSelection);
-    }
-    else
-    {
-      CorePlugin.logError(Status.WARNING, "No editable properties found for:"
-          + editable, null);
-    }
-  }
-
-  private void stopListeningIfDifferentTo(final Editable editable)
-  {
-    ISelection sel = _selectionHelper.getSelection();
-    if(sel != null && sel instanceof StructuredSelection)
-    {
-      StructuredSelection struct = (StructuredSelection) sel;
-      Object firstItem = struct.getFirstElement();
-      if(firstItem instanceof EditableWrapper)
-      {
-        EditableWrapper wrapper = (EditableWrapper) firstItem;
-        Editable oldEd = wrapper.getEditable();
-        if(!oldEd.equals(editable))
-        {
-          // ok, stop listening to it
-          if(oldEd instanceof ClassWithProperty)
-          {
-            ClassWithProperty shape = (ClassWithProperty) oldEd;
-            shape.removePropertyListener(this);
-          }
-        }
-      }
-    }
-  }
-
   private void fillLocalToolBar(final IToolBarManager manager)
   {
     manager.add(_normalPaint);
@@ -866,6 +805,44 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
 
     // now, redraw our rectable
     _myOverviewChart.repaint();
+  }
+
+  /**
+   * open the provided item in the properties view
+   *
+   * @param _rangeRings2
+   */
+  private void formatItem(final ClassWithProperty toFormat)
+  {
+    // also grab focus, so we're the current selection provider
+    setFocus();
+
+    // get editable perspective on this item
+    final Editable editable = (Editable) toFormat;
+
+    // do we have any data?
+    if (editable.hasEditor() && editable.getInfo()
+        .getPropertyDescriptors() != null)
+    {
+
+      // ok, see if we're already listening to something
+      stopListeningIfDifferentTo(editable);
+
+      // ok, start listening to the new item
+      toFormat.addPropertyListener(this);
+
+      // now fire the selection
+      final EditableWrapper wrappedEditable = new EditableWrapper(editable);
+      final StructuredSelection _propsAsSelection = new StructuredSelection(
+          wrappedEditable);
+
+      _selectionHelper.fireNewSelection(_propsAsSelection);
+    }
+    else
+    {
+      CorePlugin.logError(IStatus.WARNING, "No editable properties found for:"
+          + editable, null);
+    }
   }
 
   private long getSnailLength()
@@ -975,15 +952,50 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
 
     // and trigger repaint
     _myOverviewChart.repaint();
-    
+
     // and stop listening
     stopListeningIfDifferentTo(null);
+  }
+
+  @Override
+  public void propertyChange(final PropertyChangeEvent evt)
+  {
+    // ok, update the plot
+    _myOverviewChart.update();
   }
 
   @Override
   public void setFocus()
   {
     _myOverviewChart.getCanvasControl().setFocus();
+  }
+
+  /** if the selection is different to this, stop listening to it.
+   * 
+   * @param editable the new item (or null to clear the listeners anyway)
+   */
+  private void stopListeningIfDifferentTo(final Editable editable)
+  {
+    final ISelection sel = _selectionHelper.getSelection();
+    if (sel != null && sel instanceof StructuredSelection)
+    {
+      final StructuredSelection struct = (StructuredSelection) sel;
+      final Object firstItem = struct.getFirstElement();
+      if (firstItem instanceof EditableWrapper)
+      {
+        final EditableWrapper wrapper = (EditableWrapper) firstItem;
+        final Editable oldEd = wrapper.getEditable();
+        if (!oldEd.equals(editable))
+        {
+          // ok, stop listening to it
+          if (oldEd instanceof ClassWithProperty)
+          {
+            final ClassWithProperty shape = (ClassWithProperty) oldEd;
+            shape.removePropertyListener(this);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -1120,13 +1132,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener
     // ok we're all ready now. just try and see if the current part is valid
     _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
         .getActivePage());
-  }
-
-  @Override
-  public void propertyChange(PropertyChangeEvent evt)
-  {
-    // ok, update the plot
-    _myOverviewChart.update();
   }
 
 }
