@@ -16,6 +16,7 @@ package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -38,8 +39,7 @@ import MWC.Utilities.Errors.Trace;
 
 public class SVGShape extends PlainSymbol
 {
-
-  private static final String SVG_SYMBOL_FOLDER = "svg_symbols";
+	private static final String SVG_SYMBOL_FOLDER = "svg_symbols";
 
   /**
    * Version ID.
@@ -245,14 +245,25 @@ public class SVGShape extends PlainSymbol
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
 
-      final String svgPath = "/" + fName + SymbolFactory.SVG_EXTENSION;
-
+      // retrieve symbol from relevant folder (operating system dependent)
+      final String system = System.getProperty("os.name");
+      final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
+      final String svgPath;
+      if(system.startsWith("Win"))
+      {
+        svgPath = "/" + SVG_SYMBOL_FOLDER + filePath;
+      }
+      else
+      {
+        svgPath = filePath;
+      }
+  
       final InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
       if (inputStream == null)
       {
         // Resource doesn't exist
-        Trace.trace(null, "Failed to open SVG file " + _svgFileName + " from " + svgPath);
+        Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
         return null;
       }
       else
