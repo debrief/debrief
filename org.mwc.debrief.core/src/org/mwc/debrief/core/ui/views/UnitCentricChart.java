@@ -213,6 +213,10 @@ class UnitCentricChart extends SWTChart
     // just ignore it
   }
 
+  /** check we have a valid data area for the layers
+   * 
+   * @param theLayers
+   */
   private void checkDataCoverage(final Layers theLayers)
   {
 
@@ -317,7 +321,13 @@ class UnitCentricChart extends SWTChart
           "Unit centric view is missing time provider", null);
       return;
     }
+    
+    // ok, checks done. Now get on with paint
+    doPaint(dest);
+  }
 
+  private void doPaint(final CanvasType dest)
+  {
     checkDataCoverage(_theLayers);
 
     final WatchableList primary = _provider.getTrackDataProvider()

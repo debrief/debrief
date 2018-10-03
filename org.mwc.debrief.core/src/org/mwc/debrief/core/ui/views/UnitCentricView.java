@@ -184,7 +184,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     return pos;
   }
 
-  static void walkTree(final Layers theLayers, final WatchableList primary,
+  public static void walkTree(final Layers theLayers, final WatchableList primary,
       final HiResDate subjectTime, final IOperateOnMatch doIt,
       final long snailLength)
   {
