@@ -13,5 +13,17 @@
         <name>Debrief update site</name>
 
         <packaging>eclipse-repository</packaging>
+       
+        <build>
+        <plugins>
+        <plugin>
+		      <groupId>org.eclipse.tycho</groupId>
+		      <artifactId>tycho-packaging-plugin</artifactId>
+		      <configuration>
+		        <archiveSite>true</archiveSite>
+		      </configuration>
+		    </plugin>
+		    </plugins>
+        </build>
 </project>
 
