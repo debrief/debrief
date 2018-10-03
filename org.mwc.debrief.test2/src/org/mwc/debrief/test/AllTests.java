@@ -133,7 +133,13 @@ import org.junit.runners.Suite;
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestSlicing.class,
     org.mwc.debrief.track_shift.views.StackedDotHelper.TestUpdates.class,
     org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV.TestExport.class,
-    org.mwc.cmap.core.operations.RightClickPasteAdaptor.TestPaste.class
+    org.mwc.cmap.core.operations.RightClickPasteAdaptor.TestPaste.class,
+    Debrief.ReaderWriter.powerPoint.test.FindMapTest.class,
+    Debrief.ReaderWriter.powerPoint.test.JUnitTests.class,
+    Debrief.ReaderWriter.powerPoint.test.PackPresentationTest.class,
+    Debrief.ReaderWriter.powerPoint.test.PlotTracksTest.class,
+    Debrief.ReaderWriter.powerPoint.test.TrackParserTest.class,
+    Debrief.ReaderWriter.powerPoint.test.UnpackFunctionTest.class
     })
 @RunWith(Suite.class)
 public class AllTests

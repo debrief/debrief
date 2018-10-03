@@ -30,13 +30,17 @@ public class JUnitTests
   final private String[] trackFiles = new String[]
   {"long_tracks.txt", "multi_tracks.txt", "scenario_long_range.txt",
       "scenario_short_range.txt", "speed_change.txt"};
-  final private String trackFolder = "track_data";
+  final private String trackFolder = Utils.testFolder + File.separator
+      + "track_data";
+  final private String donorFolder = Utils.testFolder + File.separator
+      + "donor_files";
   final private String resultsFolder = Utils.testFolder;
   final private String slide1Path = "ppt" + File.separator + "slides"
       + File.separator + "slide1.xml";
 
   @Test
-  public void integrationTests() throws IOException, ZipException, DebriefException
+  public void integrationTests() throws IOException, ZipException,
+      DebriefException
   {
     for (String donor : donorFiles)
     {
@@ -53,7 +57,8 @@ public class JUnitTests
 
         final PlotTracks plotter = new PlotTracks();
 
-        String pptxGenerated = plotter.export(trackData, donor, "output_test.pptx");
+        String pptxGenerated = plotter.export(trackData, donorFolder
+            + File.separator + donor, "output_test.pptx");
 
         String cleanTrackName = track.substring(0, track.lastIndexOf('.'));
         String expectedPptx = resultsFolder + File.separator + donor.substring(
@@ -62,10 +67,8 @@ public class JUnitTests
 
         final File generatedPptxTemporaryFolder = new File(pptxGenerated
             .substring(0, pptxGenerated.lastIndexOf('.')) + "generated");
-        if (!generatedPptxTemporaryFolder.exists())
-        {
-          generatedPptxTemporaryFolder.mkdir();
-        }
+        FileUtils.deleteDirectory(generatedPptxTemporaryFolder);
+        generatedPptxTemporaryFolder.mkdir();
         final File expectedPptxTemporaryFolder = new File(expectedPptx
             .substring(0, expectedPptx.lastIndexOf('.')) + "expected");
         if (!expectedPptxTemporaryFolder.exists())
