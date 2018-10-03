@@ -1,7 +1,5 @@
 package org.mwc.debrief.core.ui.views;
 
-import java.awt.Color;
-import java.awt.Point;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
@@ -13,6 +11,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
@@ -20,43 +19,49 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.preferences.SelectionHelper;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.debrief.core.ui.views.UnitCentricChart.UnitDataProvider;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
-import MWC.GUI.Chart.Painters.LocalGridPainter;
-import MWC.GUI.Shapes.RangeRingShape;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Properties.ClassWithProperty;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
 
-public class UnitCentricView extends ViewPart
+public class UnitCentricView extends ViewPart implements PropertyChangeListener,
+    UnitDataProvider
 {
 
-  private class DistanceAction extends Action
+  /** combine a selected distance with an application using that distance
+   * 
+   * @author ian
+   *
+   */
+  private static class DistanceAction extends Action
   {
     private final WorldDistance _distance;
     private final DistanceOperation _operation;
+    private final UnitCentricChart _myOverviewChart;
 
     public DistanceAction(final String title, final WorldDistance distance,
-        final DistanceOperation operation)
+        final DistanceOperation operation, UnitCentricChart myOverviewChart)
     {
       super(title);
       _distance = distance;
-      _myOverviewChart.repaint();
+      _myOverviewChart = myOverviewChart;
+//      _myOverviewChart.repaint();
       _operation = operation;
     }
 
@@ -68,11 +73,21 @@ public class UnitCentricView extends ViewPart
     }
   }
 
+  /** a distance related operation, populated from
+   * drop-down list of distances
+   * @author ian
+   *
+   */
   private static interface DistanceOperation
   {
     public void selected(WorldDistance distance);
   }
 
+  /** while walking the tree, some matches have been found,
+   * operate on them
+   * @author ian
+   *
+   */
   public static interface IOperateOnMatch
   {
     /**
@@ -89,35 +104,41 @@ public class UnitCentricView extends ViewPart
         final double proportion);
 
     /**
+     * render the primary track
+     *
+     * @param primary
+     *          the primary track
+     * @param origin
+     *          the point we use as origin (typically 0,0,0)
+     */
+    void handlePrimary(final WatchableList primary, final WorldLocation origin);
+
+    /**
      * process the secondary track position that's nearest to the required time
      *
-     * @param nearestInTime the nearest point in time on this secondary track
-     * @param nearestOffset the relative location of this secondary track
-     * @param primaryHeadingDegs current heading of primary track
+     * @param nearestInTime
+     *          the nearest point in time on this secondary track
+     * @param nearestOffset
+     *          the relative location of this secondary track
+     * @param primaryHeadingDegs
+     *          current heading of primary track
      */
     void processNearest(final FixWrapper nearestInTime,
         final WorldLocation nearestOffset, double primaryHeadingDegs);
-
-
-    /** render the primary track
-     * 
-     * @param primary the primary track
-     * @param origin the point we use as origin (typically 0,0,0)
-     */
-    void handlePrimary(final WatchableList primary, final WorldLocation origin);
   }
 
-  private class PeriodAction extends Action
+  private static class PeriodAction extends Action
   {
     private final long _period;
     private final PeriodOperation _operation;
+    private final UnitCentricChart _myOverviewChart;
 
     public PeriodAction(final String title, final long period,
-        final PeriodOperation operation)
+        final PeriodOperation operation, final UnitCentricChart chart)
     {
       super(title);
       _period = period;
-      _myOverviewChart.repaint();
+      _myOverviewChart = chart;
       _operation = operation;
     }
 
@@ -132,296 +153,6 @@ public class UnitCentricView extends ViewPart
   private static interface PeriodOperation
   {
     public void selected(long period);
-  }
-
-  private class UnitCentricChart extends SWTChart
-  {
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    private Point oldEnd;
-
-    public UnitCentricChart(final Composite parent)
-    {
-      super(null, parent, _myProjection);
-    }
-
-    @Override
-    public void chartFireSelectionChanged(final ISelection sel)
-    {
-      // just ignore it
-    }
-
-    private void checkDataCoverage(final Layers theLayers)
-    {
-
-      // check if we have null data area
-      if ((_myOverviewChart.getCanvas().getProjection().getDataArea() == null)
-          && (_trackDataProvider != null))
-      {
-        final WatchableList primary = _trackDataProvider.getPrimaryTrack();
-        if (primary != null && primary instanceof WatchableList)
-        {
-          final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
-          final WorldArea area = new WorldArea(origin, origin);
-          final IOperateOnMatch getBounds = new IOperateOnMatch()
-          {
-
-            @Override
-            public void doItTo(final FixWrapper rawSec,
-                final WorldLocation offsetLocation, final double proportion)
-            {
-              area.extend(offsetLocation);
-            }
-
-            @Override
-            public void processNearest(final FixWrapper nearestInTime,
-                final WorldLocation nearestOffset, double primaryHeadingDegs)
-            {
-              // ok, ignore
-            }
-
-            @Override
-            public void handlePrimary(WatchableList primary,
-                WorldLocation origin)
-            {
-           // ok, ignore
-            }
-          };
-          walkTree(theLayers, primary, _timeProvider.getTime(), getBounds,
-              getSnailLength());
-
-          // ok, store the data area
-          _myOverviewChart.getCanvas().getProjection().setDataArea(area);
-        }
-      }
-    }
-
-    protected Color colorFor(final Color color, final float proportion,
-        final Color backgroundColor)
-    {
-      // merge the foreground to the background
-      final int red = backgroundColor.getRed() - color.getRed();
-      final int green = backgroundColor.getGreen() - color.getGreen();
-      final int blue = backgroundColor.getBlue() - color.getBlue();
-
-      final float newRed = color.getRed() + red * proportion;
-      final float newGreen = color.getGreen() + green * proportion;
-      final float newBlue = color.getBlue() + blue * proportion;
-      return new Color((int) newRed, (int) newGreen, (int) newBlue);
-    }
-    
-    private class SnailPaintOperation implements IOperateOnMatch
-    {
-    
-        private final CanvasType dest;
-
-        private SnailPaintOperation(final CanvasType theDest)
-        {
-          this.dest = theDest;
-        }
-        
-        @Override
-        public void doItTo(final FixWrapper rawSec,
-            final WorldLocation offsetLocation, final double proportion)
-        {
-          dest.setLineWidth(3f);
-
-          // sort out the color
-          final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
-              _myOverviewChart.getCanvas().getBackgroundColor());
-
-          dest.setColor(newCol);
-
-          rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-          // and the line
-          final Point newEnd = dest.toScreen(offsetLocation);
-          if (oldEnd != null)
-          {
-            dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-          }
-          oldEnd = new Point(newEnd);
-        }
-
-        @Override
-        public void processNearest(final FixWrapper nearestInTime,
-            final WorldLocation nearestOffset, double primaryHeadingDegs)
-        {
-          final double hisCourseDegs = nearestInTime.getCourseDegs();
-          // sort out the secondary's relative heading
-          final double relativeHeading = (360 - primaryHeadingDegs) +  hisCourseDegs;
-          
-          // draw the snail marker
-          WatchableList track = nearestInTime.getTrackWrapper();
-          PlainSymbol sym = track.getSnailShape();
-          sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(relativeHeading));
-          
-          // reset the last object pointer
-          oldEnd = null;
-        }
-
-        @Override
-        public void handlePrimary(WatchableList primary, WorldLocation origin)
-        {
-          final PlainSymbol sym = primary.getSnailShape();
-          if(sym != null)
-          {
-            sym.paint(dest, origin);
-          }
-        }
-    }
-    
-    private class NormalPaintOperation implements IOperateOnMatch
-    {
-      private final CanvasType dest;
-
-      private NormalPaintOperation(final CanvasType theDest)
-      {
-        this.dest = theDest;
-      }
-
-        @Override
-        public void doItTo(final FixWrapper rawSec,
-            final WorldLocation offsetLocation, final double proportion)
-        {
-          dest.setLineWidth(2f);
-          dest.setColor(rawSec.getColor());
-
-          rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
-
-          // and the line
-          final Point newEnd = dest.toScreen(offsetLocation);
-          if (oldEnd != null)
-          {
-            dest.drawLine(oldEnd.x, oldEnd.y, newEnd.x, newEnd.y);
-          }
-          //
-          oldEnd = new Point(newEnd);
-        }
-
-        @Override
-        public void processNearest(final FixWrapper nearestInTime,
-            final WorldLocation nearestOffset, double primaryHeadingDegs)
-        {
-          final double hisCourseDegs = nearestInTime.getCourseDegs();
-          // sort out the secondary's relative heading
-          final double relativeHeading = (360 - primaryHeadingDegs) +  hisCourseDegs;
-          
-          // draw the snail marker
-          WatchableList track = nearestInTime.getTrackWrapper();
-          PlainSymbol sym = track.getSnailShape();
-          sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(relativeHeading));
-
-          // reset the last object pointer
-          oldEnd = null;
-        }
-
-        @Override
-        public void handlePrimary(WatchableList primary, WorldLocation origin)
-        {
-          final PlainSymbol sym = primary.getSnailShape();
-          if(sym != null)
-          {
-            sym.paint(dest, origin);
-          }
-        }
-    }
-    
-    @Override
-    public void paintMe(final CanvasType dest)
-    {
-      if (_theLayers == null)
-      {
-        CorePlugin.logError(IStatus.WARNING,
-            "Unit centric view is missing layers", null);
-        return;
-      }
-
-      if (_trackDataProvider == null)
-      {
-        CorePlugin.logError(IStatus.WARNING,
-            "Unit centric view is missing track data provider", null);
-        return;
-      }
-
-      // ok, check we have primary track
-      if (_trackDataProvider.getPrimaryTrack() == null)
-      {
-        CorePlugin.logError(IStatus.WARNING,
-            "Unit centric view is missing primary track", null);
-        CorePlugin.showMessage("Unit Centric View",
-            "Please assign a primary track");
-        return;
-      }
-
-      if (_timeProvider == null)
-      {
-        CorePlugin.logError(IStatus.WARNING,
-            "Unit centric view is missing time provider", null);
-        return;
-      }
-
-      checkDataCoverage(_theLayers);
-
-      final WatchableList primary = _trackDataProvider.getPrimaryTrack();
-
-      // is it a track?
-      final TrackWrapper priTrack = primary instanceof TrackWrapper
-          ? (TrackWrapper) primary : null;
-
-      // remember if we've overridden the interpolation
-      final boolean oldInterp;
-      if (priTrack != null)
-      {
-        oldInterp = priTrack.getInterpolatePoints();
-        priTrack.setInterpolatePoints(true);
-      }
-      else
-      {
-        oldInterp = false;
-      }
-
-      // reset the last point we were looking at
-      oldEnd = null;
-
-      // do we draw local grid
-      dest.setLineWidth(0f);
-
-      if (_showGrid.isChecked())
-      {
-        _localGrid.paint(dest);
-      }
-
-      if (_showRings.isChecked())
-      {
-        _rangeRings.paint(dest);
-      }
-
-      // get the time
-      final boolean isSnail = _snailPaint.isChecked();
-      final HiResDate subjectTime = _timeProvider.getTime();
-      final IOperateOnMatch paintIt;
-      if (isSnail)
-      {
-        paintIt = new SnailPaintOperation(dest);
-      }
-      else
-      {
-        paintIt = new NormalPaintOperation(dest);
-      }
-
-      walkTree(_theLayers, primary, subjectTime, paintIt, getSnailLength());
-      
-      if (priTrack != null)
-      {
-        // restore interpolation on the primary track
-        priTrack.setInterpolatePoints(oldInterp);
-      }
-    }
   }
 
   /**
@@ -453,9 +184,9 @@ public class UnitCentricView extends ViewPart
     return pos;
   }
 
-  private static void walkTree(final Layers theLayers,
-      final WatchableList primary, final HiResDate subjectTime,
-      final IOperateOnMatch doIt, final long snailLength)
+  public static void walkTree(final Layers theLayers, final WatchableList primary,
+      final HiResDate subjectTime, final IOperateOnMatch doIt,
+      final long snailLength)
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
@@ -525,8 +256,8 @@ public class UnitCentricView extends ViewPart
                   {
                     nearestInTime = thisF;
                     nearestDelta = diff;
-                    relativeLocation = processOffset(priFix, thisF.getLocation(),
-                        origin);
+                    relativeLocation = processOffset(priFix, thisF
+                        .getLocation(), origin);
                     primaryHeading = priFix.getCourseDegs();
                   }
 
@@ -545,13 +276,19 @@ public class UnitCentricView extends ViewPart
           }
           if (nearestInTime != null)
           {
-            doIt.processNearest(nearestInTime, relativeLocation, primaryHeading);
+            doIt.processNearest(nearestInTime, relativeLocation,
+                primaryHeading);
           }
         }
       }
     };
     theLayers.walkVisibleItems(LightweightTrackWrapper.class, checkIt);
   }
+
+  /**
+   * helper - to let the user edit us
+   */
+  private final SelectionHelper _selectionHelper;
 
   private UnitCentricChart _myOverviewChart;
 
@@ -572,7 +309,7 @@ public class UnitCentricView extends ViewPart
 
   protected TimeProvider _timeProvider;
 
-  protected PropertyChangeListener _timeChangeListener;
+  final private PropertyChangeListener _timeChangeListener;
 
   private Action _normalPaint;
 
@@ -581,10 +318,6 @@ public class UnitCentricView extends ViewPart
   private Action _showRings;
 
   private Action _showGrid;
-
-  private final LocalGridPainter _localGrid;
-
-  private final RangeRingShape _rangeRings;
 
   public UnitCentricView()
   {
@@ -601,13 +334,8 @@ public class UnitCentricView extends ViewPart
       }
     };
 
-    _localGrid = new LocalGridPainter();
-    _localGrid.setDelta(new WorldDistance(30, WorldDistance.KM));
-    _localGrid.setOrigin(new WorldLocation(0d, 0d, 0d));
-
-    _rangeRings = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
-        new WorldDistance(5, WorldDistance.KM));
-
+    // sort out the selection helper
+    _selectionHelper = new SelectionHelper();
   }
 
   private void contributeToActionBars()
@@ -624,7 +352,7 @@ public class UnitCentricView extends ViewPart
     CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.OverviewChart");
 
     // hey, first create the chart
-    _myOverviewChart = new UnitCentricChart(parent)
+    _myOverviewChart = new UnitCentricChart(parent, this)
     {
 
       /**
@@ -643,6 +371,9 @@ public class UnitCentricView extends ViewPart
       }
     };
 
+    // and the selection provider bits
+    getSite().setSelectionProvider(_selectionHelper);
+
     makeActions();
     contributeToActionBars();
 
@@ -653,6 +384,9 @@ public class UnitCentricView extends ViewPart
   public void dispose()
   {
     super.dispose();
+
+    // force us to stop listening to shape
+    stopListeningIfDifferentTo(null, _selectionHelper, this);
 
     // cancel any listeners
     if (_myPartMonitor != null)
@@ -668,25 +402,31 @@ public class UnitCentricView extends ViewPart
       @Override
       public void selected(final WorldDistance distance)
       {
-        _rangeRings.setRingWidth(distance);
+        _myOverviewChart.getRings().setRingWidth(distance);
       }
     };
     final MenuManager ringRadii = new MenuManager("Ring radii");
-    // ringRadii.setImageDescriptor(CorePlugin.getImageDescriptor(
-    // "icons/16/range_rings.png"));
 
     ringRadii.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setRings));
+        WorldDistance.METRES), setRings, _myOverviewChart));
     ringRadii.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setRings));
+        WorldDistance.METRES), setRings, _myOverviewChart));
     ringRadii.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setRings));
+        WorldDistance.KM), setRings, _myOverviewChart));
     ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setRings));
+        WorldDistance.NM), setRings, _myOverviewChart));
     ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setRings));
+        WorldDistance.NM), setRings, _myOverviewChart));
     ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setRings));
+        WorldDistance.NM), setRings, _myOverviewChart));
+    ringRadii.add(new Action("Format range rings")
+    {
+      @Override
+      public void run()
+      {
+        formatItem(_myOverviewChart.getRings());
+      }
+    });
 
     manager.add(ringRadii);
 
@@ -695,22 +435,30 @@ public class UnitCentricView extends ViewPart
       @Override
       public void selected(final WorldDistance distance)
       {
-        _localGrid.setDelta(distance);
+        _myOverviewChart.getGrid().setDelta(distance);
       }
     };
     final MenuManager gridSize = new MenuManager("Grid size");
     gridSize.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setGrid));
+        WorldDistance.METRES), setGrid, _myOverviewChart));
     gridSize.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setGrid));
+        WorldDistance.METRES), setGrid, _myOverviewChart));
     gridSize.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setGrid));
+        WorldDistance.KM), setGrid, _myOverviewChart));
     gridSize.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setGrid));
+        WorldDistance.NM), setGrid, _myOverviewChart));
     gridSize.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setGrid));
+        WorldDistance.NM), setGrid, _myOverviewChart));
     gridSize.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setGrid));
+        WorldDistance.NM), setGrid, _myOverviewChart));
+    gridSize.add(new Action("Format grid")
+    {
+      @Override
+      public void run()
+      {
+        formatItem(_myOverviewChart.getGrid());
+      }
+    });
 
     manager.add(gridSize);
 
@@ -723,11 +471,11 @@ public class UnitCentricView extends ViewPart
       }
     };
     final MenuManager periodSize = new MenuManager("Snail length");
-    periodSize.add(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail));
-    periodSize.add(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail));
-    periodSize.add(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail));
-    periodSize.add(new PeriodAction("1 Hour", 1000 * 60 * 60 * 1, setSnail));
-    periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail));
+    periodSize.add(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail, _myOverviewChart));
+    periodSize.add(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail, _myOverviewChart));
+    periodSize.add(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail, _myOverviewChart));
+    periodSize.add(new PeriodAction("1 Hour", 1000 * 60 * 60 * 1, setSnail, _myOverviewChart));
+    periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail, _myOverviewChart));
 
     manager.add(periodSize);
   }
@@ -761,7 +509,52 @@ public class UnitCentricView extends ViewPart
     _myOverviewChart.repaint();
   }
 
-  private long getSnailLength()
+  /**
+   * open the provided item in the properties view
+   *
+   * @param _rangeRings2
+   */
+  private void formatItem(final ClassWithProperty toFormat)
+  {
+    // also grab focus, so we're the current selection provider
+    setFocus();
+
+    // get editable perspective on this item
+    final Editable editable = (Editable) toFormat;
+
+    // do we have any data?
+    if (editable.hasEditor() && editable.getInfo()
+        .getPropertyDescriptors() != null)
+    {
+
+      // ok, see if we're already listening to something
+      stopListeningIfDifferentTo(editable, _selectionHelper, this);
+
+      // ok, start listening to the new item
+      toFormat.addPropertyListener(this);
+
+      // now fire the selection
+      final EditableWrapper wrappedEditable = new EditableWrapper(editable);
+      final StructuredSelection _propsAsSelection = new StructuredSelection(
+          wrappedEditable);
+
+      _selectionHelper.fireNewSelection(_propsAsSelection);
+    }
+    else
+    {
+      CorePlugin.logError(IStatus.WARNING, "No editable properties found for:"
+          + editable, null);
+    }
+  }
+
+  @Override
+  public PlainProjection getProjection()
+  {
+    return _myProjection;
+  }
+
+  @Override
+  public long getSnailLength()
   {
     final boolean doSnail = _snailPaint.isChecked();
     if (doSnail)
@@ -772,6 +565,18 @@ public class UnitCentricView extends ViewPart
     {
       return Long.MAX_VALUE;
     }
+  }
+
+  @Override
+  public TimeProvider getTimeProvider()
+  {
+    return _timeProvider;
+  }
+
+  @Override
+  public TrackDataProvider getTrackDataProvider()
+  {
+    return _trackDataProvider;
   }
 
   private void makeActions()
@@ -799,6 +604,8 @@ public class UnitCentricView extends ViewPart
       {
         _snailPaint.setChecked(false);
 
+        _myOverviewChart.setSnailMode(false);
+
         // and repaint
         _myOverviewChart.update();
       }
@@ -815,6 +622,8 @@ public class UnitCentricView extends ViewPart
       {
         _normalPaint.setChecked(false);
 
+        _myOverviewChart.setSnailMode(true);
+
         // and repaint
         _myOverviewChart.update();
       }
@@ -828,6 +637,7 @@ public class UnitCentricView extends ViewPart
       @Override
       public void run()
       {
+        _myOverviewChart.getRings().setVisible(_showRings.isChecked());
         _myOverviewChart.update();
       }
     };
@@ -840,6 +650,7 @@ public class UnitCentricView extends ViewPart
       @Override
       public void run()
       {
+        _myOverviewChart.getGrid().setVisible(_showGrid.isChecked());
         _myOverviewChart.update();
       }
     };
@@ -868,12 +679,51 @@ public class UnitCentricView extends ViewPart
 
     // and trigger repaint
     _myOverviewChart.repaint();
+
+    // and stop listening
+    stopListeningIfDifferentTo(null, _selectionHelper, this);
+  }
+
+  @Override
+  public void propertyChange(final PropertyChangeEvent evt)
+  {
+    // ok, update the plot
+    _myOverviewChart.update();
   }
 
   @Override
   public void setFocus()
   {
     _myOverviewChart.getCanvasControl().setFocus();
+  }
+
+  /**
+   * if the selection is different to this, stop listening to it.
+   *
+   * @param editable
+   *          the new item (or null to clear the listeners anyway)
+   */
+  private static void stopListeningIfDifferentTo(final Editable editable, final SelectionHelper helper,
+      final PropertyChangeListener listener)
+  {
+    final ISelection sel = helper.getSelection();
+    if (sel != null && sel instanceof StructuredSelection)
+    {
+      final StructuredSelection struct = (StructuredSelection) sel;
+      final Object firstItem = struct.getFirstElement();
+      if (firstItem instanceof EditableWrapper)
+      {
+        final EditableWrapper wrapper = (EditableWrapper) firstItem;
+        final Editable oldEd = wrapper.getEditable();
+        final boolean editableHasChanged = !oldEd.equals(editable);
+        if (editableHasChanged && oldEd instanceof ClassWithProperty)
+        {
+          // ok, stop listening to it
+          final ClassWithProperty shape = (ClassWithProperty) oldEd;
+          shape.removePropertyListener(listener);
+        }
+      }
+    }
   }
 
   /**
