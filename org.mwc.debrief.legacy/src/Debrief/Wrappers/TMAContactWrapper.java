@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: TMAContactWrapper.java,v $
 // @author $Author: ian.mayo $
@@ -103,7 +103,6 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
@@ -126,1326 +125,1346 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  */
 
 public final class TMAContactWrapper extends
-		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		Watchable, CanvasType.MultiLineTooltipProvider,
-		Editable.DoNotHighlightMe
+    SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
+    Watchable, CanvasType.MultiLineTooltipProvider, Editable.DoNotHighlightMe
 {
-	// ///////////////////////////////////////////
-	// member variables
-	// ///////////////////////////////////////////
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
-	/**
-	 * the name of the parent track (the host vessel)
-	 */
-	String _parentTrackName;
-
-	/**
-	 * long _DTG
-	 */
-	HiResDate _DTG;
-
-	/**
-	 * bearing to target
-	 * 
-	 */
-	double _targetBrgRads = 0;
-
-	/**
-	 * range to target
-	 * 
-	 */
-	WorldDistance _targetRange = null;
-
-	/**
-	 * the depth estimate for the target
-	 */
-	double _targetDepth;
-
-	/**
-	 * track name (for this solution)
-	 */
-	String _trackName;
-
-	/**
-	 * whether to show the symbol
-	 */
-	private boolean _showSymbol = false;
-
-	/**
-	 * whether to show the bearing line
-	 */
-	private Boolean _showLine = null;
-
-	/**
-	 * our editor
-	 */
-	transient private EditorType _myEditor;
-
-	/**
-	 * the parent object (which supplies our colour, should we need it)
-	 */
-	private TMAWrapper _myTMATrack;
-
-	/**
-	 * the ellipse respresenting the solution
-	 */
-	EllipseShape _theEllipse;
-
-	/**
-	 * the wrapper object containing the labelled ellipse
-	 */
-	ShapeWrapper _labelledEllipse = null;
-
-	/**
-	 * the wrapper object containing the symbol
-	 */
-	private LabelWrapper _symbolWrapper = null;
-
-	/**
-	 * the course parameter
-	 */
-	double _targetCourseDegs = 0d;
-
-	/**
-	 * the speed paramter
-	 */
-	double _targetSpeedKts = 0d;
-
-	/**
-	 * the symbol to use to plot the target location
-	 */
-	private String _theSymbol;
-
-	/**
-	 * whether to show the target vector
-	 */
-	private boolean _showVector;
-
-	/**
-	 * the original location we read in (used to decide whether we are storing
-	 * relative or absolute)
-	 */
-	private WorldLocation _originalLocation;
-
-	// ///////////////////////////////////////////
-	// constructor
-	// ///////////////////////////////////////////
-
-	/**
-	 * default constructor, used when we read in from XML
-	 */
-	public TMAContactWrapper()
-	{
-		this(null, null, null, null, 0d, 0d, 0d, 0d, 0d, null, null, null, null);
-	}
-
-	private TMAContactWrapper(final String solutionName, final String trackName,
-			final HiResDate DTG, final WorldLocation location, final double rangeYds,
-			final double bearingDegs, final double courseDegs, final double speedKts,
-			final double depthMetres, final Color color, final String label,
-			final EllipseShape theEllipse, final String theSymbol)
-	{
-		final WorldLocation emptyLocation = null;
-
-		_originalLocation = location;
-
-		// ok, do we have an ellipse?
-		if (theEllipse != null)
-		{
-			// yes, store it
-			_theEllipse = theEllipse;
-		}
-		else
-		{
-			// no, create it afresh
-			_theEllipse = new EllipseShape(emptyLocation, 0d, new WorldDistance(0d,
-					WorldDistance.DEGS), new WorldDistance(0d, WorldDistance.DEGS));
-		}
-
-		// update the ellipse with our origin
-		_theEllipse.setCentre(location);
-		
-		// create the shape wrapper to contain the ellipse
-		_labelledEllipse = new ShapeWrapper(label, _theEllipse, color, DTG);
-
-		// store the admin infomration
-		_trackName = solutionName;
-		_parentTrackName = trackName;
-		_targetDepth = depthMetres;
-		_targetBrgRads = Conversions.Degs2Rads(bearingDegs);
-		_targetRange = new WorldDistance(rangeYds, WorldDistance.YARDS);
-		_DTG = DTG;
-
-		// now the course/speed
-		_targetCourseDegs = courseDegs;
-		_targetSpeedKts = speedKts;
-
-		// and the gui parameters
-		setSymbol(theSymbol);
-		setColor(color);
-		setVisible(true);
-		setLabelVisible(true);
-		setLabelLocation(Integer.valueOf(LocationPropertyEditor.CENTRE));
-		// setLineVisible(true);
-		setEllipseVisible(true);
-		setVectorVisible(false);
-	}
-
-	/**
-	 * build a new sensor contact wrapper using range and bearing
-	 * 
-	 * @param solutionName
-	 * @param trackName
-	 * @param DTG
-	 * @param rangeYds
-	 * @param bearingDegs
-	 * @param color
-	 * @param label
-	 * @param depthMetres
-	 */
-	public TMAContactWrapper(final String solutionName, final String trackName,
-			final HiResDate DTG, final double rangeYds, final double bearingDegs,
-			final double courseDegs, final double speedKts, final double depthMetres,
-			final Color color, final String label, final EllipseShape theEllipse,
-			final String theSymbol)
-	{
-		this(solutionName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
-				speedKts, depthMetres, color, label, theEllipse, theSymbol);
-	}
-
-	/**
-	 * build a new sensor contact wrapper using a target location
-	 * 
-	 * @param sensorName
-	 * @param trackName
-	 * @param DTG
-	 * @param location
-	 * @param color
-	 * @param label
-	 * @param depthMetres
-	 */
-	public TMAContactWrapper(final String sensorName, final String trackName,
-			final HiResDate DTG, final WorldLocation location,
-			final double courseDegs, final double speedKts, final double depthMetres,
-			final Color color, final String label, final EllipseShape theEllipse,
-			final String theSymbol)
-	{
-		this(sensorName, trackName, DTG, location, 0d, 0d, courseDegs, speedKts,
-				depthMetres, color, label, theEllipse, theSymbol);
-	}
-
-	// ///////////////////////////////////////////
-	// accessor methods
-	// ///////////////////////////////////////////
-	/**
-	 * return the coordinates for the centre of the ellipse
-	 */
-	public final WorldLocation getCentre(
-			final WatchableList parentWatchable)
-	{
-	  TrackWrapper parent = (TrackWrapper) parentWatchable;
-	  
-		// declare the reuslts object, and add our offset to it
-		WorldLocation origin = null;
-
-		// are we working with absolute TMA solutions?
-		if (_originalLocation != null)
-			origin = new WorldLocation(_originalLocation);
-
-		// do we know our origin
-		if (origin == null)
-		{
-			// right, we'll have to retrieve the centre
-			// get the origin
-			final Watchable[] list = parent.getNearestTo(_DTG, false);
-			Watchable wa = null;
-			if (list.length > 0)
-				wa = list[0];
-
-			// did we find it?
-			if (wa != null)
-			{
-				// check we have an offset
-				if (_targetRange != null)
-				{
-					final WorldVector targetPosVector = new WorldVector(_targetBrgRads,
-							_targetRange, null);
-					// yes, add it to the origin
-					origin = wa.getLocation().add(targetPosVector);
-				}
-			}
-		}
-
-		return origin;
-	}
-
-	/**
-	 * return the coordinates of the sensor end of the bearing line
-	 */
-	public final WorldLocation getSensorEnd(
-			final WatchableList parentWatchable)
-	{
-		WorldLocation res = null;
-    TrackWrapper parent = (TrackWrapper) parentWatchable;
-
-		// check we have the parent
-		if (parent != null)
-		{
-			// right, we'll have to retrieve the centre
-			// get the origin
-			final Watchable[] list = parent.getNearestTo(_DTG, false);
-			if (list.length > 0)
-			{
-				res = list[0].getLocation();
-			}
-		}
-
-		return res;
-	}
-
-	/**
-	 * getTrackName
-	 * 
-	 * @return the returned String
-	 */
-	public final String getTrackName()
-	{
-		return _parentTrackName;
-	}
-
-	/**
-	 * getDTG
-	 * 
-	 * @return the returned long
-	 */
-	public final HiResDate getDTG()
-	{
-		return _DTG;
-	}
-
-	/**
-	 * set the time
-	 */
-	public final void setDTG(final HiResDate val)
-	{
-    _DTG = val;
-	}
-
-	@FireReformatted
-	public final void setColor(final Color val)
-	{
-		super.setColor(val);
-
-		// set the colour of the ellipse
-		_labelledEllipse.setColor(val);
-		_labelledEllipse.setLabelColor(val);
-	}
-
-	/**
-	 * member function to meet requirements of comparable interface *
-	 */
-	public final int compareTo(final Plottable o)
-	{
-		final TMAContactWrapper other = (TMAContactWrapper) o;
-		int res = 0;
-		if (_DTG.lessThan(other._DTG))
-			res = -1;
-		else if (_DTG.greaterThan(other._DTG))
-			res = 1;
-		else
-		{
-			// just check if this is actually the same object (in which case return 0)
-			if (o == this)
-			{
-				// we need a correct implementation of compare to for when we're finding
-				// the position
-				// of an item which is actually in the list - otherwise it won't get
-				// found and we can't
-				// delete it.
-				res = 0;
-			}
-			else
-			{
-				// same times, make the newer item appear later. This is to overcome the
-				// problem we experience where only the first contact at a particular
-				// DTG gets recorded for a sensor
-				res = 1;
-			}
-		}
-
-		return res;
-
-	}
-
-	// ///////////////////////////////////////////
-	// member methods to meet requirements of Plottable interface
-	// ///////////////////////////////////////////
-
-	/**
-	 * paint this object to the specified canvas
-	 */
-	public final void paint(final CanvasType dest)
-	{
-		// DUFF METHOD TO MEET INTERFACE REQUIREMENTS
-	}
-
-	/**
-	 * let the ellipse position itself relative to the parent track. We've
-	 * refactored this code out of the paint method, since when we plot ellipses
-	 * in snail mode first, they won't have had the ellipse safely configured
-	 * 
-	 * @param track
-	 */
-	public WorldLocation locateEllipseCentre(final WatchableList track)
-	{
-		// do we need an origin
-		final WorldLocation centre = getCentre(track);
-
-		// update the centre of the ellipse - we need to use it elsewhere (range
-		// from calcs)
-		_theEllipse.setCentre(centre);
-
-		return centre;
-	}
-
-	/**
-	 * paint this object to the specified canvas
-	 * 
-	 * @param track
-	 *          the parent list (from which we calculate origins if required)
-	 * @param dest
-	 *          where we're painting it to
-	 * @param keep_simple
-	 *          whether to allow a change in line style
-	 */
-	public final void paint(final WatchableList track,
-			final CanvasType dest, final boolean keep_simple, final int alpha)
-	{
-		// are we visible?
-		if (!getVisible())
-			return;
-
-		// do we know who our parents are?
-		if (track == null)
-		{
-			Trace
-					.trace("failed to find track for solution data");
-			return;
-		}
-
-		final TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
-				track.getStartDTG(), track.getEndDTG());
-		if (!parentPeriod.contains(this.getTime()))
-		{
-			// nope, we're outside the parent track period - we can't plot ourselves
-			return;
-		}
-
-		final WorldLocation centre = locateEllipseCentre(track);
-
-		// ok, we have the centre - convert it to a point
-		final Point centrePt = new Point(dest.toScreen(centre));
-
-		// and convert to screen coords
-		final WorldLocation theFarEnd = getSensorEnd(track);
-		final Point farEnd = dest.toScreen(theFarEnd);
-
-		// retrieve (& store) our color
-		final Color myColor = getColor();
-
-		// set the colour
-		dest.setColor(myColor);
-
-		// do we draw the line?
-		if (this.getLineVisible())
-		{
-			// draw the line
-			dest.drawLine(centrePt.x, centrePt.y, farEnd.x, farEnd.y);
-		}
-
-		// do we draw the ellipse?
-		if (_theEllipse.getVisible() || _labelledEllipse.getLabelVisible())
-		{
-			// update the label vis on the ellipse?
-			// _labelledEllipse.setLabelVisible(_showLabel);
-
-			// _theEllipse.setVisible(_showEllipse);
-
-			_labelledEllipse.setVisible(true);
-
-			// and set the colour of the ellipse
-			_labelledEllipse.setColor(myColor);
-
-			// and paint it
-			_labelledEllipse.paint(dest);
-		}
-
-		// do we draw the symbol?
-		if (_showSymbol)
-		{
-			// ok, we only create the symbol wrapper when we really need to, see if
-			// this
-			// is the first time we have had to paint the symbol
-			if (this._symbolWrapper == null)
-			{
-				// ok then, let's create it!
-				_symbolWrapper = new LabelWrapper("", centre, myColor);
-				_symbolWrapper.setLabelVisible(false);
-			}
-
-			// ok, update the symbol with the current graphic properties
-			_symbolWrapper.setColor(myColor);
-			_symbolWrapper.setSymbolType(getSymbol());
-
-			_symbolWrapper.paint(dest);
-		}
-
-		// do we draw the target vector?
-		if (getVectorVisible())
-		{
-			// ok, what's the stretch factor?
-			final double _vectorStretch = 4;
-
-			// and now plot the vector
-			final double crse = getCourse();
-			final double spd = getSpeed();
-
-			//
-			final int dx = (int) (Math.sin(crse) * spd * _vectorStretch);
-			final int dy = (int) (Math.cos(crse) * spd * _vectorStretch);
-
-			// produce the end of the stick (just to establish the length in data
-			// units)
-			final Point p2 = new Point(centrePt.x + dx, centrePt.y - dy);
-
-			// how long is the stalk in data units?
-			final WorldLocation w3 = dest.toWorld(p2);
-			final double len = w3.rangeFrom(centre);
-
-			// now sort out the real end of this stalk
-			final WorldLocation stalkEnd = centre.add(new WorldVector(crse, len, 0));
-			// and get this in screen coordinates
-			final Point pStalkEnd = dest.toScreen(stalkEnd);
-
-			// and plot the stalk itself
-			dest.drawLine(centrePt.x, centrePt.y, pStalkEnd.x, pStalkEnd.y);
-
-		}
-
-	}
-
-	/**
-	 * method to reset the colour, so that we take that of our parent
-	 */
-	public final void resetColor()
-	{
-		setColor(null);
-	}
-
-	/**
-	 * find the name of this solution track
-	 */
-	public final String getSolutionName()
-	{
-		return _trackName;
-	}
-
-	/**
-	 * find the data area occupied by this item
-	 */
-	public final WorldArea getBounds()
-	{
-		WorldArea res = null;
-
-		// do we have an area in the ellipse?
-		if (_theEllipse.getCentre() != null)
-		{
-			// yes, start with that.
-			res = _theEllipse.getBounds();
-
-			// note: consider adding in the bearing line, if we store the "source"
-			// location for the bearing line
-		}
-
-		return res;
-	}
-
-	/**
-	 * find the data area occupied by this item, using the current track locations
-	 */
-	public final WorldArea getBounds(final WatchableList track)
-	{
-		WorldArea res = null;
-
-		// get a fresh centre for the ellipse
-		_theEllipse.setCentre(getCentre(track));
-
-		// and get the bounds
-		res = _theEllipse.getBounds();
-
-		return res;
-	}
-
-	/**
-	 * it this Label item currently visible?
-	 */
-	public final boolean getLabelVisible()
-	{
-		return _labelledEllipse.getLabelVisible();
-	}
-
-	/**
-	 * set the Label visibility
-	 */
-	public final void setLabelVisible(final boolean val)
-	{
-		_labelledEllipse.setLabelVisible(val);
-	}
-
-	/**
-	 * it the bearing line item currently visible?
-	 */
-	public final boolean getLineVisible()
-	{
-		boolean res;
-		if (_showLine != null)
-			res = _showLine.booleanValue();
-		else
-			res = _myTMATrack.getShowBearingLines();
-
-		return res;
-	}
-
-	/**
-	 * convenience method, used to determine if we have our own, custom setting
-	 * for line visibility
-	 * 
-	 * @return the data-value used for whether a line is shown (or null if we just
-	 *         use the parent setting)
-	 */
-	public final Boolean getRawLineVisible()
-	{
-		return _showLine;
-	}
-
-	/**
-	 * set the bearing line visibility
-	 */
-	public final void setLineVisible(final boolean val)
-	{
-		_showLine = Boolean.valueOf(val);
-	}
-
-	/**
-	 * forget about any custom setting for the line visibility. just do what our
-	 * parent says
-	 */
-	public void clearLineVisibleFlag()
-	{
-		_showLine = null;
-	}
-
-	/**
-	 * it the Ellipse item currently visible?
-	 */
-	public final boolean getEllipseVisible()
-	{
-		return _theEllipse.getVisible();
-	}
-
-	/**
-	 * set the Ellipse visibility
-	 */
-	public final void setEllipseVisible(final boolean val)
-	{
-		_theEllipse.setVisible(val);
-	}
-
-	/**
-	 * it the Symbol item currently visible?
-	 */
-	public final boolean getSymbolVisible()
-	{
-		return _showSymbol;
-	}
-
-	/**
-	 * set the Symbol visibility
-	 */
-	public final void setSymbolVisible(final boolean val)
-	{
-		_showSymbol = val;
-	}
-
-	/**
-	 * whether to show the target vector
-	 * 
-	 * @param b
-	 */
-	public void setVectorVisible(final boolean b)
-	{
-		_showVector = b;
-	}
-
-	/**
-	 * whether to show the target vector
-	 */
-	public boolean getVectorVisible()
-	{
-		return _showVector;
-	}
-
-	/**
-	 * return the location of the label
-	 * 
-	 * @see MWC.GUI.Properties.LocationPropertyEditor
-	 */
-	public final void setLabelLocation(final Integer loc)
-	{
-		_labelledEllipse.setLabelLocation(loc);
-	}
-
-	/**
-	 * update the location of the label
-	 * 
-	 * @see MWC.GUI.Properties.LocationPropertyEditor
-	 */
-	public final Integer getLabelLocation()
-	{
-		return _labelledEllipse.getLabelLocation();
-
-	}
-
-	/**
-	 * inform us of our sensor
-	 */
-	public final void setTMATrack(final TMAWrapper tma_track)
-	{
-		_myTMATrack = tma_track;
-	}
-
-	/**
-	 * find out about the sensor
-	 * 
-	 * @return
-	 */
-	public TMAWrapper getTMATrack()
-	{
-		return _myTMATrack;
-	}
-
-	/**
-	 * get the label for this data item
-	 */
-	public final String getLabel()
-	{
-		return _labelledEllipse.getLabel();
-	}
-
-	/**
-	 * set the label for this data item
-	 */
-	public final void setLabel(final String val)
-	{
-		_labelledEllipse.setLabel(val);
-	}
+  // ///////////////////////////////////////////
+  // member variables
+  // ///////////////////////////////////////////
+
+  static public final class TestSensorContact extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public TestSensorContact(final String val)
+    {
+      super(val);
+    }
+
+    public final void testMyCalcs()
+    {
+      // setup our object to be tested using an absolute location
+      final WorldLocation origin = new WorldLocation(2, 2, 0);
+      final EllipseShape es = new EllipseShape(null, 0, new WorldDistance(
+          Conversions.Yds2Degs(100), WorldDistance.DEGS), new WorldDistance(
+              Conversions.Yds2Degs(50), WorldDistance.DEGS));
+      final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+      final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
+          "blank track", theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es,
+          "some symbol");
+
+      /**
+       * test the distance calcs
+       */
+
+      // ok, now test that we find the distance from the origin
+      final double dist = Conversions.Degs2Yds(ed.rangeFrom(origin));
+      assertEquals("find nearest from origin", dist, 0d, 0.001);
+
+    }
+
+    public final void testMyParams()
+    {
+      final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+
+      // setup our object to be tested using an absolute location
+      final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
+          "blank track", theDTG, 3000, 55, 5d, 6d, 1d, Color.red, "my label",
+          null, "some symbol");
+
+      final TMAWrapper wrap = new TMAWrapper("tma");
+      ed.setTMATrack(wrap);
+
+      // check the editable parameters
+      Editable.editableTesterSupport.testParams(ed, this);
+    }
+
+    public final void testObjectConstruction()
+    {
+      // setup our object to be tested using an absolute location
+      final WorldLocation origin = new WorldLocation(2, 2, 0);
+      final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
+      final EllipseShape theEllipse = new EllipseShape(origin, 45,
+          new WorldDistance(10, WorldDistance.DEGS), new WorldDistance(5,
+              WorldDistance.DEGS));
+      final TMAContactWrapper ed_abs = new TMAContactWrapper("blank sensor",
+          "blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
+          theEllipse, "some symbol");
+
+      assertEquals("correct sensor name", ed_abs._trackName, "blank sensor");
+      assertEquals("correct track name", ed_abs._parentTrackName,
+          "blank track");
+      assertEquals("correct DTG", ed_abs._DTG, theDTG);
+      assertEquals("correct origin", ed_abs._theEllipse.getCentre(), origin);
+      assertEquals("right course", ed_abs._targetCourseDegs, 5d, 0.001);
+      assertEquals("right course", ed_abs.getCourse(), Conversions.Degs2Rads(
+          5d), 0.001);
+      assertEquals("right speed", ed_abs._targetSpeedKts, 6d, 0.001);
+      assertEquals("right speed", ed_abs.getSpeed(), 6d, 0.001);
+      assertEquals("right depth", ed_abs._targetDepth, 1d, 0.001);
+      assertEquals("right depth", ed_abs.getDepth(), 1d, 0.001);
+      assertEquals("correct colour", ed_abs._labelledEllipse.getColor(),
+          Color.pink);
+      assertEquals("correct colour", ed_abs.getColor(), Color.pink);
+      assertEquals("correct label", ed_abs._labelledEllipse.getLabel(),
+          "my label");
+      assertEquals("correct label", ed_abs.getLabel(), "my label");
+      assertEquals("correct ellipse", ed_abs._theEllipse, theEllipse);
+      assertEquals("correct ellipse", ed_abs._labelledEllipse.getShape(),
+          theEllipse);
+      assertEquals("correct symbol", ed_abs._theSymbol, "some symbol");
+
+      // setup our object to be tested using an relative location
+      final TMAContactWrapper ed_rel = new TMAContactWrapper("blank sensor",
+          "blank track", theDTG, 3000, 55, 5d, 6d, 1d, Color.pink, "my label",
+          theEllipse, "some symbol");
+
+      assertEquals("correct sensor name", ed_rel._trackName, "blank sensor");
+      assertEquals("correct track name", ed_rel._parentTrackName,
+          "blank track");
+      assertEquals("correct DTG", ed_rel._DTG, theDTG);
+      assertEquals("correct origin", ed_rel._theEllipse.getCentre(), null);
+      assertEquals("correct range", 3000, ed_rel._targetRange.getValueIn(
+          WorldDistance.YARDS), 0.001);
+      assertEquals("correct bearing", ed_rel._targetCourseDegs, 5d, 0.001);
+      assertEquals("right course", ed_rel._targetCourseDegs, 5d, 0.001);
+      assertEquals("right course", ed_rel.getCourse(), Conversions.Degs2Rads(
+          5d), 0.001);
+      assertEquals("right speed", ed_rel._targetSpeedKts, 6d, 0.001);
+      assertEquals("right speed", ed_rel.getSpeed(), 6d, 0.001);
+      assertEquals("right depth", ed_rel._targetDepth, 1d, 0.001);
+      assertEquals("right depth", ed_rel.getDepth(), 1d, 0.001);
+      assertEquals("correct colour", ed_rel._labelledEllipse.getColor(),
+          Color.pink);
+      assertEquals("correct colour", ed_rel.getColor(), Color.pink);
+      assertEquals("correct label", ed_rel._labelledEllipse.getLabel(),
+          "my label");
+      assertEquals("correct label", ed_rel.getLabel(), "my label");
+      assertEquals("correct ellipse", ed_rel._theEllipse, theEllipse);
+      assertEquals("correct ellipse", ed_rel._labelledEllipse.getShape(),
+          theEllipse);
+      assertEquals("correct symbol", ed_rel._theSymbol, "some symbol");
+
+    }
+
+  }
+
+  // //////////////////////////////////////////////////////////////////////////
+  // embedded class, used for editing the projection
+  // //////////////////////////////////////////////////////////////////////////
+  /**
+   * the definition of what is editable about this object
+   */
+  public final class TMAContactInfo extends EditorType
+  {
+
+    private static final String SOLUTION = "Solution";
+
+    /**
+     * constructor for editable details of a set of Layers
+     *
+     * @param data
+     *          the Layers themselves
+     */
+    public TMAContactInfo(final TMAContactWrapper data)
+    {
+      super(data, data.getName(), SOLUTION);
+    }
+
+    /**
+     * getMethodDescriptors
+     *
+     * @return the returned MethodDescriptor[]
+     */
+    @Override
+    public final MethodDescriptor[] getMethodDescriptors()
+    {
+      // just add the reset color field first
+      final Class<TMAContactWrapper> c = TMAContactWrapper.class;
+      final MethodDescriptor[] mds =
+      {method(c, "resetColor", null, "Reset Color"),};
+      return mds;
+    }
+
+    /**
+     * The things about these Layers which are editable. We don't really use this list, since we
+     * have our own custom editor anyway
+     *
+     * @return property descriptions
+     */
+    @Override
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {prop("Label", "the label for this data item", EditorType.FORMAT), prop(
+            "Visible", "whether this solution is visible", EditorType.FORMAT),
+            displayProp("LabelVisible", "Label visible",
+                "whether the label for this solution is visible",
+                EditorType.FORMAT), displayProp("LineVisible", "Line visible",
+                    "whether the bearing line (from ownship track to solution centre) for this solution is visible",
+                    EditorType.FORMAT), displayProp("EllipseVisible",
+                        "Ellipse visible",
+                        "whether the ellipse for this solution is visible",
+                        EditorType.FORMAT), displayProp("SymbolVisible",
+                            "Symbol visible",
+                            "whether the symbol for this solution is visible",
+                            EditorType.FORMAT), displayProp("VectorVisible",
+                                "Vector visible",
+                                "whether the target vector for this solution is visible",
+                                EditorType.FORMAT), displayProp("Color",
+                                    "the color for this solution",
+                                    EditorType.FORMAT), longProp("Symbol",
+                                        "the symbol to use for this solution",
+                                        SymbolFactoryPropertyEditor.class,
+                                        EditorType.FORMAT), displayLongProp(
+                                            "LabelLocation", "Label location",
+                                            "the label location",
+                                            LocationPropertyEditor.class,
+                                            EditorType.FORMAT), prop("Maxima",
+                                                "the maxima for the ellipse",
+                                                SOLUTION), prop("Minima",
+                                                    "the minima for the ellipse",
+                                                    SOLUTION), prop(
+                                                        "Orientation",
+                                                        "the minima for the ellipse",
+                                                        SOLUTION), displayProp(
+                                                            "TargetCourse",
+                                                            "Target course",
+                                                            "the course of the solution",
+                                                            SOLUTION),
+            displayProp("TargetSpeed", "Target speed",
+                "the speed of the solution", SOLUTION), prop("Depth",
+                    "the depth of the solution", SOLUTION)};
+
+        // see if we need to add rng/brg or origin data
+        final TMAContactWrapper tc = (TMAContactWrapper) getData();
+        final PropertyDescriptor[] res1;
+        if (tc.getOrigin() == null)
+        {
+          // has origin
+          final PropertyDescriptor[] res2 =
+          {prop("Range", "range to centre of solution", SPATIAL), prop(
+              "Bearing", "bearing to centre of solution (degs)", SPATIAL)};
+          res1 = res2;
+        }
+        else
+        {
+          // rng, brg data
+          final PropertyDescriptor[] res2 =
+          {prop("Origin", "centre of solution", SPATIAL)};
+          res1 = res2;
+        }
+
+        final PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
+            + res1.length];
+        System.arraycopy(res, 0, res3, 0, res.length);
+        System.arraycopy(res1, 0, res3, res.length, res1.length);
+
+        return res3;
+      }
+      catch (final IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+
+  }
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * the name of the parent track (the host vessel)
+   */
+  String _parentTrackName;
+
+  /**
+   * long _DTG
+   */
+  HiResDate _DTG;
+
+  /**
+   * bearing to target
+   *
+   */
+  double _targetBrgRads = 0;
+
+  /**
+   * range to target
+   *
+   */
+  WorldDistance _targetRange = null;
+
+  /**
+   * the depth estimate for the target
+   */
+  double _targetDepth;
+
+  /**
+   * track name (for this solution)
+   */
+  String _trackName;
+
+  /**
+   * whether to show the symbol
+   */
+  private boolean _showSymbol = false;
+
+  /**
+   * whether to show the bearing line
+   */
+  private Boolean _showLine = null;
+
+  /**
+   * our editor
+   */
+  transient private EditorType _myEditor;
+
+  /**
+   * the parent object (which supplies our colour, should we need it)
+   */
+  private TMAWrapper _myTMATrack;
+
+  /**
+   * the ellipse respresenting the solution
+   */
+  EllipseShape _theEllipse;
+
+  /**
+   * the wrapper object containing the labelled ellipse
+   */
+  ShapeWrapper _labelledEllipse = null;
+
+  /**
+   * the wrapper object containing the symbol
+   */
+  private LabelWrapper _symbolWrapper = null;
+
+  /**
+   * the course parameter
+   */
+  double _targetCourseDegs = 0d;
+
+  /**
+   * the speed paramter
+   */
+  double _targetSpeedKts = 0d;
+
+  /**
+   * the symbol to use to plot the target location
+   */
+  private String _theSymbol;
+
+  // ///////////////////////////////////////////
+  // constructor
+  // ///////////////////////////////////////////
+
+  /**
+   * whether to show the target vector
+   */
+  private boolean _showVector;
+
+  /**
+   * the original location we read in (used to decide whether we are storing relative or absolute)
+   */
+  private WorldLocation _originalLocation;
+
+  /**
+   * default constructor, used when we read in from XML
+   */
+  public TMAContactWrapper()
+  {
+    this(null, null, null, null, 0d, 0d, 0d, 0d, 0d, null, null, null, null);
+  }
+
+  /**
+   * build a new sensor contact wrapper using range and bearing
+   *
+   * @param solutionName
+   * @param trackName
+   * @param DTG
+   * @param rangeYds
+   * @param bearingDegs
+   * @param color
+   * @param label
+   * @param depthMetres
+   */
+  public TMAContactWrapper(final String solutionName, final String trackName,
+      final HiResDate DTG, final double rangeYds, final double bearingDegs,
+      final double courseDegs, final double speedKts, final double depthMetres,
+      final Color color, final String label, final EllipseShape theEllipse,
+      final String theSymbol)
+  {
+    this(solutionName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
+        speedKts, depthMetres, color, label, theEllipse, theSymbol);
+  }
+
+  /**
+   * build a new sensor contact wrapper using a target location
+   *
+   * @param sensorName
+   * @param trackName
+   * @param DTG
+   * @param location
+   * @param color
+   * @param label
+   * @param depthMetres
+   */
+  public TMAContactWrapper(final String sensorName, final String trackName,
+      final HiResDate DTG, final WorldLocation location,
+      final double courseDegs, final double speedKts, final double depthMetres,
+      final Color color, final String label, final EllipseShape theEllipse,
+      final String theSymbol)
+  {
+    this(sensorName, trackName, DTG, location, 0d, 0d, courseDegs, speedKts,
+        depthMetres, color, label, theEllipse, theSymbol);
+  }
+
+  private TMAContactWrapper(final String solutionName, final String trackName,
+      final HiResDate DTG, final WorldLocation location, final double rangeYds,
+      final double bearingDegs, final double courseDegs, final double speedKts,
+      final double depthMetres, final Color color, final String label,
+      final EllipseShape theEllipse, final String theSymbol)
+  {
+    final WorldLocation emptyLocation = null;
+
+    _originalLocation = location;
+
+    // ok, do we have an ellipse?
+    if (theEllipse != null)
+    {
+      // yes, store it
+      _theEllipse = theEllipse;
+    }
+    else
+    {
+      // no, create it afresh
+      _theEllipse = new EllipseShape(emptyLocation, 0d, new WorldDistance(0d,
+          WorldDistance.DEGS), new WorldDistance(0d, WorldDistance.DEGS));
+    }
+
+    // update the ellipse with our origin
+    _theEllipse.setCentre(location);
+
+    // create the shape wrapper to contain the ellipse
+    _labelledEllipse = new ShapeWrapper(label, _theEllipse, color, DTG);
+
+    // store the admin infomration
+    _trackName = solutionName;
+    _parentTrackName = trackName;
+    _targetDepth = depthMetres;
+    _targetBrgRads = Conversions.Degs2Rads(bearingDegs);
+    _targetRange = new WorldDistance(rangeYds, WorldDistance.YARDS);
+    _DTG = DTG;
+
+    // now the course/speed
+    _targetCourseDegs = courseDegs;
+    _targetSpeedKts = speedKts;
+
+    // and the gui parameters
+    setSymbol(theSymbol);
+    setColor(color);
+    setVisible(true);
+    setLabelVisible(true);
+    setLabelLocation(Integer.valueOf(LocationPropertyEditor.CENTRE));
+    // setLineVisible(true);
+    setEllipseVisible(true);
+    setVectorVisible(false);
+  }
+
+  public EllipseShape buildGetEllipse()
+  {
+    return _theEllipse;
+  }
+
+  /**
+   * retrieve the original ellipse origin as read in
+   *
+   * @return
+   */
+  public WorldLocation buildGetOrigin()
+  {
+    return _originalLocation;
+  }
+
+  public void buildSetEllipse(final double orientationDegs,
+      final WorldDistance maxima, final WorldDistance minima)
+  {
+    _theEllipse.setOrientation(orientationDegs);
+    _theEllipse.setMaxima(maxima);
+    _theEllipse.setMinima(minima);
+  }
+
+  public void buildSetOrigin(final WorldLocation origin)
+  {
+    // store the origin as an indication of whether this is an absolute or
+    // relative ellipse
+    _originalLocation = origin;
+
+    // and get on with the normal processing
+    _theEllipse.setCentre(origin);
+  }
+
+  public void buildSetTargetState(final double courseDegs,
+      final double speedKts, final double depth)
+  {
+    _targetCourseDegs = courseDegs;
+    _targetSpeedKts = speedKts;
+    _targetDepth = depth;
+  }
+
+  // ///////////////////////////////////////////
+  // member methods to meet requirements of Plottable interface
+  // ///////////////////////////////////////////
+
+  public void buildSetVector(final double theBearingDegs,
+      final WorldDistance theRange, final double theDepth)
+  {
+    _targetBrgRads = Conversions.Degs2Rads(theBearingDegs);
+    _targetRange = theRange;
+    _targetDepth = theDepth;
+  }
+
+  /**
+   * forget about any custom setting for the line visibility. just do what our parent says
+   */
+  public void clearLineVisibleFlag()
+  {
+    _showLine = null;
+  }
+
+  /**
+   * member function to meet requirements of comparable interface *
+   */
+  @Override
+  public final int compareTo(final Plottable o)
+  {
+    final TMAContactWrapper other = (TMAContactWrapper) o;
+    int res = 0;
+    if (_DTG.lessThan(other._DTG))
+      res = -1;
+    else if (_DTG.greaterThan(other._DTG))
+      res = 1;
+    else
+    {
+      // just check if this is actually the same object (in which case return 0)
+      if (o == this)
+      {
+        // we need a correct implementation of compare to for when we're finding
+        // the position
+        // of an item which is actually in the list - otherwise it won't get
+        // found and we can't
+        // delete it.
+        res = 0;
+      }
+      else
+      {
+        // same times, make the newer item appear later. This is to overcome the
+        // problem we experience where only the first contact at a particular
+        // DTG gets recorded for a sensor
+        res = 1;
+      }
+    }
+
+    return res;
+
+  }
+
+  /**
+   * method to provide the actual colour value stored in this fix
+   *
+   * @return fix colour, including null if applicable
+   */
+  @Override
+  public final Color getActualColor()
+  {
+    return super.getColor();
+  }
+
+  public double getBearing()
+  {
+    return Conversions.Rads2Degs(getBearingRads());
+  }
+
+  public double getBearingRads()
+  {
+    return _targetBrgRads;
+  }
+
+  /**
+   * find the data area occupied by this item
+   */
+  @Override
+  public final WorldArea getBounds()
+  {
+    WorldArea res = null;
+
+    // do we have an area in the ellipse?
+    if (_theEllipse.getCentre() != null)
+    {
+      // yes, start with that.
+      res = _theEllipse.getBounds();
+
+      // note: consider adding in the bearing line, if we store the "source"
+      // location for the bearing line
+    }
+
+    return res;
+  }
+
+  /**
+   * find the data area occupied by this item, using the current track locations
+   */
+  public final WorldArea getBounds(final WatchableList track)
+  {
+    WorldArea res = null;
+
+    // get a fresh centre for the ellipse
+    _theEllipse.setCentre(getCentre(track));
+
+    // and get the bounds
+    res = _theEllipse.getBounds();
+
+    return res;
+  }
+
+  // ///////////////////////////////////////////
+  // accessor methods
+  // ///////////////////////////////////////////
+  /**
+   * return the coordinates for the centre of the ellipse
+   */
+  public final WorldLocation getCentre(final WatchableList parentWatchable)
+  {
+    final TrackWrapper parent = (TrackWrapper) parentWatchable;
+
+    // declare the reuslts object, and add our offset to it
+    WorldLocation origin = null;
+
+    // are we working with absolute TMA solutions?
+    if (_originalLocation != null)
+      origin = new WorldLocation(_originalLocation);
+
+    // do we know our origin
+    if (origin == null)
+    {
+      // right, we'll have to retrieve the centre
+      // get the origin
+      final Watchable[] list = parent.getNearestTo(_DTG, false);
+      Watchable wa = null;
+      if (list.length > 0)
+        wa = list[0];
+
+      // did we find it?
+      if (wa != null)
+      {
+        // check we have an offset
+        if (_targetRange != null)
+        {
+          final WorldVector targetPosVector = new WorldVector(_targetBrgRads,
+              _targetRange, null);
+          // yes, add it to the origin
+          origin = wa.getLocation().add(targetPosVector);
+        }
+      }
+    }
+
+    return origin;
+  }
+
+  /**
+   * get the colour (or that of our parent, if we don't have one
+   */
+  @Override
+  public final Color getColor()
+  {
+    Color res = super.getColor();
+
+    // has our colour been set?
+    if (res == null)
+    {
+      // no, get the colour from our parent
+      res = _myTMATrack.getColor();
+    }
+
+    return res;
+  }
+
+  /**
+   * get the current course of the watchable (rads)
+   *
+   * @return course in radians
+   */
+  @Override
+  public final double getCourse()
+  {
+    return Conversions.Degs2Rads(_targetCourseDegs);
+  }
+
+  /**
+   * get the current depth of the watchable (m)
+   *
+   * @return depth in metres
+   */
+  @Override
+  public final double getDepth()
+  {
+    return _targetDepth;
+  }
+
+  /**
+   * getDTG
+   *
+   * @return the returned long
+   */
+  @Override
+  public final HiResDate getDTG()
+  {
+    return _DTG;
+  }
+
+  /**
+   * get the ellipse itself
+   */
+  public final EllipseShape getEllipse()
+  {
+    return _theEllipse;
+  }
+
+  /**
+   * it the Ellipse item currently visible?
+   */
+  public final boolean getEllipseVisible()
+  {
+    return _theEllipse.getVisible();
+  }
+
+  /**
+   * getInfo
+   *
+   * @return the returned MWC.GUI.Editable.EditorType
+   */
+  @Override
+  public final EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new TMAContactInfo(this);
+
+    return _myEditor;
+  }
+
+  /**
+   * get the label for this data item
+   */
+  public final String getLabel()
+  {
+    return _labelledEllipse.getLabel();
+  }
+
+  /**
+   * update the location of the label
+   *
+   * @see MWC.GUI.Properties.LocationPropertyEditor
+   */
+  public final Integer getLabelLocation()
+  {
+    return _labelledEllipse.getLabelLocation();
+
+  }
+
+  /**
+   * it this Label item currently visible?
+   */
+  public final boolean getLabelVisible()
+  {
+    return _labelledEllipse.getLabelVisible();
+  }
+
+  /**
+   * it the bearing line item currently visible?
+   */
+  public final boolean getLineVisible()
+  {
+    boolean res;
+    if (_showLine != null)
+      res = _showLine.booleanValue();
+    else
+      res = _myTMATrack.getShowBearingLines();
+
+    return res;
+  }
+
+  // ////////////////////////////////////////////////////////////
+  // methods to support Watchable interface
+  // ////////////////////////////////////////////////////////////
+  /**
+   * get the current location of the watchable
+   *
+   * @return the location
+   */
+  @Override
+  public final WorldLocation getLocation()
+  {
+    return this.getCentre(null);
+  }
+
+  public WorldDistance getMaxima()
+  {
+    return _theEllipse.getMaxima();
+  }
+
+  public WorldDistance getMinima()
+  {
+    return _theEllipse.getMinima();
+  }
 
   @Override
-  public void setName(String name)
+  public final String getMultiLineName()
+  {
+    final int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(
+        WorldDistance.YARDS) + (int) _theEllipse.getMinima().getValueIn(
+            WorldDistance.YARDS);
+
+    String maxMinStr = "n/a";
+
+    if (dataAvailable > 0)
+    {
+      final String maxStr = "" + (int) _theEllipse.getMaxima().getValueIn(
+          WorldDistance.YARDS) + "yds";
+      final String minStr = "" + (int) _theEllipse.getMinima().getValueIn(
+          WorldDistance.YARDS) + "yds";
+      maxMinStr = "Max:" + maxStr + " Min:" + minStr;
+    }
+    else
+    {
+      maxMinStr = "Ellipse not set";
+    }
+
+    final String res = "<u>TMA Solution: " + DebriefFormatDateTime
+        .toStringHiRes(_DTG) + "</u>\n" + GeneralFormat.formatStatus(
+            _targetCourseDegs, _targetSpeedKts, _targetDepth) + "\n" + maxMinStr
+        + "\n" + getLabel();
+    return res;
+
+  }
+
+  /**
+   * get the name of this entry, using the formatted DTG
+   */
+  @Override
+  public final String getName()
+  {
+    return getLabel();
+  }
+
+  public double getOrientation()
+  {
+    return _theEllipse.getOrientation();
+  }
+
+  public WorldLocation getOrigin()
+  {
+    return _originalLocation;
+  }
+
+  public WorldDistance getRange()
+  {
+    return _targetRange;
+  }
+
+  /**
+   * convenience method, used to determine if we have our own, custom setting for line visibility
+   *
+   * @return the data-value used for whether a line is shown (or null if we just use the parent
+   *         setting)
+   */
+  public final Boolean getRawLineVisible()
+  {
+    return _showLine;
+  }
+
+  /**
+   * return the coordinates of the sensor end of the bearing line
+   */
+  public final WorldLocation getSensorEnd(final WatchableList parentWatchable)
+  {
+    WorldLocation res = null;
+    final TrackWrapper parent = (TrackWrapper) parentWatchable;
+
+    // check we have the parent
+    if (parent != null)
+    {
+      // right, we'll have to retrieve the centre
+      // get the origin
+      final Watchable[] list = parent.getNearestTo(_DTG, false);
+      if (list.length > 0)
+      {
+        res = list[0].getLocation();
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * find the name of this solution track
+   */
+  public final String getSolutionName()
+  {
+    return _trackName;
+  }
+
+  /**
+   * get the current speed of the watchable (kts)
+   *
+   * @return speed in knots
+   */
+  @Override
+  public final double getSpeed()
+  {
+    return _targetSpeedKts;
+  }
+
+  public String getSymbol()
+  {
+    return _theSymbol;
+  }
+
+  /**
+   * it the Symbol item currently visible?
+   */
+  public final boolean getSymbolVisible()
+  {
+    return _showSymbol;
+  }
+
+  /**
+   * get the current course of the watchable (degs)
+   *
+   * @return course in degs
+   */
+  public final double getTargetCourse()
+  {
+    return _targetCourseDegs;
+  }
+
+  /**
+   * @return the _targetSpeedKts
+   */
+  public WorldSpeed getTargetSpeed()
+  {
+    return new WorldSpeed(_targetSpeedKts, WorldSpeed.Kts);
+  }
+
+  /**
+   * find out the time of this watchable
+   */
+  @Override
+  public final HiResDate getTime()
+  {
+    return this.getDTG();
+  }
+
+  /**
+   * find out about the sensor
+   *
+   * @return
+   */
+  public TMAWrapper getTMATrack()
+  {
+    return _myTMATrack;
+  }
+
+  /**
+   * getTrackName
+   *
+   * @return the returned String
+   */
+  public final String getTrackName()
+  {
+    return _parentTrackName;
+  }
+
+  /**
+   * whether to show the target vector
+   */
+  public boolean getVectorVisible()
+  {
+    return _showVector;
+  }
+
+  /**
+   * whether there is any edit information for this item this is a convenience function to save
+   * creating the EditorType data first
+   *
+   * @return yes/no
+   */
+  @Override
+  public final boolean hasEditor()
+  {
+    return true;
+  }
+
+  /**
+   * let the ellipse position itself relative to the parent track. We've refactored this code out of
+   * the paint method, since when we plot ellipses in snail mode first, they won't have had the
+   * ellipse safely configured
+   *
+   * @param track
+   */
+  public WorldLocation locateEllipseCentre(final WatchableList track)
+  {
+    // do we need an origin
+    final WorldLocation centre = getCentre(track);
+
+    // update the centre of the ellipse - we need to use it elsewhere (range
+    // from calcs)
+    _theEllipse.setCentre(centre);
+
+    return centre;
+  }
+
+  /**
+   * paint this object to the specified canvas
+   */
+  @Override
+  public final void paint(final CanvasType dest)
+  {
+    // DUFF METHOD TO MEET INTERFACE REQUIREMENTS
+  }
+
+  /**
+   * paint this object to the specified canvas
+   *
+   * @param track
+   *          the parent list (from which we calculate origins if required)
+   * @param dest
+   *          where we're painting it to
+   * @param keep_simple
+   *          whether to allow a change in line style
+   */
+  @Override
+  public final void paint(final WatchableList track, final CanvasType dest,
+      final boolean keep_simple, final int alpha)
+  {
+    // are we visible?
+    if (!getVisible())
+      return;
+
+    // do we know who our parents are?
+    if (track == null)
+    {
+      Trace.trace("failed to find track for solution data");
+      return;
+    }
+
+    final TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(track
+        .getStartDTG(), track.getEndDTG());
+    if (!parentPeriod.contains(this.getTime()))
+    {
+      // nope, we're outside the parent track period - we can't plot ourselves
+      return;
+    }
+
+    final WorldLocation centre = locateEllipseCentre(track);
+
+    // ok, we have the centre - convert it to a point
+    final Point centrePt = new Point(dest.toScreen(centre));
+
+    // and convert to screen coords
+    final WorldLocation theFarEnd = getSensorEnd(track);
+    final Point farEnd = dest.toScreen(theFarEnd);
+
+    // retrieve (& store) our color
+    final Color myColor = getColor();
+
+    // set the colour
+    dest.setColor(myColor);
+
+    // do we draw the line?
+    if (this.getLineVisible())
+    {
+      // draw the line
+      dest.drawLine(centrePt.x, centrePt.y, farEnd.x, farEnd.y);
+    }
+
+    // do we draw the ellipse?
+    if (_theEllipse.getVisible() || _labelledEllipse.getLabelVisible())
+    {
+      // update the label vis on the ellipse?
+      // _labelledEllipse.setLabelVisible(_showLabel);
+
+      // _theEllipse.setVisible(_showEllipse);
+
+      _labelledEllipse.setVisible(true);
+
+      // and set the colour of the ellipse
+      _labelledEllipse.setColor(myColor);
+
+      // and paint it
+      _labelledEllipse.paint(dest);
+    }
+
+    // do we draw the symbol?
+    if (_showSymbol)
+    {
+      // ok, we only create the symbol wrapper when we really need to, see if
+      // this
+      // is the first time we have had to paint the symbol
+      if (this._symbolWrapper == null)
+      {
+        // ok then, let's create it!
+        _symbolWrapper = new LabelWrapper("", centre, myColor);
+        _symbolWrapper.setLabelVisible(false);
+      }
+
+      // ok, update the symbol with the current graphic properties
+      _symbolWrapper.setColor(myColor);
+      _symbolWrapper.setSymbolType(getSymbol());
+
+      _symbolWrapper.paint(dest);
+    }
+
+    // do we draw the target vector?
+    if (getVectorVisible())
+    {
+      // ok, what's the stretch factor?
+      final double _vectorStretch = 4;
+
+      // and now plot the vector
+      final double crse = getCourse();
+      final double spd = getSpeed();
+
+      //
+      final int dx = (int) (Math.sin(crse) * spd * _vectorStretch);
+      final int dy = (int) (Math.cos(crse) * spd * _vectorStretch);
+
+      // produce the end of the stick (just to establish the length in data
+      // units)
+      final Point p2 = new Point(centrePt.x + dx, centrePt.y - dy);
+
+      // how long is the stalk in data units?
+      final WorldLocation w3 = dest.toWorld(p2);
+      final double len = w3.rangeFrom(centre);
+
+      // now sort out the real end of this stalk
+      final WorldLocation stalkEnd = centre.add(new WorldVector(crse, len, 0));
+      // and get this in screen coordinates
+      final Point pStalkEnd = dest.toScreen(stalkEnd);
+
+      // and plot the stalk itself
+      dest.drawLine(centrePt.x, centrePt.y, pStalkEnd.x, pStalkEnd.y);
+
+    }
+
+  }
+
+  /**
+   * how far away are we from this point? or return null if it can't be calculated
+   */
+  @Override
+  public final double rangeFrom(final WorldLocation other)
+  {
+    // return the distance from each end
+    double res = Plottable.INVALID_RANGE;
+
+    if (getVisible())
+    {
+      // has the ellipse range been calculated?
+      res = this._theEllipse.rangeFrom(other);
+    }
+
+    return res;
+  }
+
+  /**
+   * method to reset the colour, so that we take that of our parent
+   */
+  public final void resetColor()
+  {
+    setColor(null);
+  }
+
+  public void setBearing(final double val)
+  {
+    setBearingRads(Conversions.Degs2Rads(val));
+  }
+
+  public void setBearingRads(final double valRads)
+  {
+    _targetBrgRads = valRads;
+  }
+
+  @Override
+  @FireReformatted
+  public final void setColor(final Color val)
+  {
+    super.setColor(val);
+
+    // set the colour of the ellipse
+    _labelledEllipse.setColor(val);
+    _labelledEllipse.setLabelColor(val);
+  }
+
+  public final void setDepth(final double val)
+  {
+    _targetDepth = val;
+  }
+
+  /**
+   * set the time
+   */
+  public final void setDTG(final HiResDate val)
+  {
+    _DTG = val;
+  }
+
+  /**
+   * set the Ellipse visibility
+   */
+  public final void setEllipseVisible(final boolean val)
+  {
+    _theEllipse.setVisible(val);
+  }
+
+  /**
+   * set the label for this data item
+   */
+  public final void setLabel(final String val)
+  {
+    _labelledEllipse.setLabel(val);
+  }
+
+  /**
+   * return the location of the label
+   *
+   * @see MWC.GUI.Properties.LocationPropertyEditor
+   */
+  public final void setLabelLocation(final Integer loc)
+  {
+    _labelledEllipse.setLabelLocation(loc);
+  }
+
+  /**
+   * set the Label visibility
+   */
+  public final void setLabelVisible(final boolean val)
+  {
+    _labelledEllipse.setLabelVisible(val);
+  }
+
+  /**
+   * set the bearing line visibility
+   */
+  public final void setLineVisible(final boolean val)
+  {
+    _showLine = Boolean.valueOf(val);
+  }
+
+  public void setMaxima(final WorldDistance val)
+  {
+    _theEllipse.setMaxima(val);
+  }
+
+  public void setMinima(final WorldDistance val)
+  {
+    _theEllipse.setMinima(val);
+  }
+
+  @Override
+  public void setName(final String name)
   {
     setLabel(name);
   }
 
-	/**
-	 * how far away are we from this point? or return null if it can't be
-	 * calculated
-	 */
-	public final double rangeFrom(final WorldLocation other)
-	{
-		// return the distance from each end
-		double res = Plottables.INVALID_RANGE;
-
-		if (getVisible())
-		{
-			// has the ellipse range been calculated?
-			res = this._theEllipse.rangeFrom(other);
-		}
-
-		return res;
-	}
-
-	/**
-	 * getInfo
-	 * 
-	 * @return the returned MWC.GUI.Editable.EditorType
-	 */
-	public final EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new TMAContactInfo(this);
-
-		return _myEditor;
-	}
-
-	/**
-	 * method to provide the actual colour value stored in this fix
-	 * 
-	 * @return fix colour, including null if applicable
-	 */
-	public final Color getActualColor()
-	{
-		return super.getColor();
-	}
-
-	/**
-	 * get the colour (or that of our parent, if we don't have one
-	 */
-	public final Color getColor()
-	{
-		Color res = super.getColor();
-
-		// has our colour been set?
-		if (res == null)
-		{
-			// no, get the colour from our parent
-			res = _myTMATrack.getColor();
-		}
-
-		return res;
-	}
-
-	/**
-	 * whether there is any edit information for this item this is a convenience
-	 * function to save creating the EditorType data first
-	 * 
-	 * @return yes/no
-	 */
-	public final boolean hasEditor()
-	{
-		return true;
-	}
-
-	/**
-	 * get the name of this entry, using the formatted DTG
-	 */
-	public final String getName()
-	{
-		return getLabel();
-	}
-
-	public final String getMultiLineName()
-	{
-		final int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(
-				WorldDistance.YARDS)
-				+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS);
-
-		String maxMinStr = "n/a";
-
-		if (dataAvailable > 0)
-		{
-			final String maxStr = ""
-					+ (int) _theEllipse.getMaxima().getValueIn(WorldDistance.YARDS)
-					+ "yds";
-			final String minStr = ""
-					+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS)
-					+ "yds";
-			maxMinStr = "Max:" + maxStr + " Min:" + minStr;
-		}
-		else
-		{
-			maxMinStr = "Ellipse not set";
-		}
-
-		final String res = "<u>TMA Solution: "
-				+ DebriefFormatDateTime.toStringHiRes(_DTG)
-				+ "</u>\n"
-				+ GeneralFormat.formatStatus(_targetCourseDegs, _targetSpeedKts,
-						_targetDepth) + "\n" + maxMinStr + "\n" + getLabel();
-		return res;
-
-	}
-
-	/**
-	 * toString
-	 * 
-	 * @return the returned String
-	 */
-	public final String toString()
-	{
-		return getName();
-	}
-
-	/**
-	 * get the ellipse itself
-	 */
-	public final EllipseShape getEllipse()
-	{
-		return _theEllipse;
-	}
-
-	// ////////////////////////////////////////////////////////////
-	// methods to support Watchable interface
-	// ////////////////////////////////////////////////////////////
-	/**
-	 * get the current location of the watchable
-	 * 
-	 * @return the location
-	 */
-	public final WorldLocation getLocation()
-	{
-		return this.getCentre(null);
-	}
-
-	/**
-	 * get the current course of the watchable (rads)
-	 * 
-	 * @return course in radians
-	 */
-	public final double getCourse()
-	{
-		return Conversions.Degs2Rads(_targetCourseDegs);
-	}
-
-	/**
-	 * get the current course of the watchable (degs)
-	 * 
-	 * @return course in degs
-	 */
-	public final double getTargetCourse()
-	{
-		return _targetCourseDegs;
-	}
-
-	public WorldLocation getOrigin()
-	{
-		return _originalLocation;
-	}
-
-	public void setOrigin(final WorldLocation loc)
-	{
-		_originalLocation = loc;
-	}
-
-	public WorldDistance getRange()
-	{
-		return _targetRange;
-	}
-
-	public void setRange(final WorldDistance val)
-	{
-		_targetRange = val;
-	}
-
-	public double getBearingRads()
-	{
-		return _targetBrgRads;
-	}
-
-	public double getBearing()
-	{
-		return Conversions.Rads2Degs(getBearingRads());
-	}
-
-	public void setBearing(final double val)
-	{
-		setBearingRads(Conversions.Degs2Rads(val));
-	}
-
-	public void setBearingRads(final double valRads)
-	{
-		_targetBrgRads = valRads;
-	}
-
-	/**
-	 * get the current speed of the watchable (kts)
-	 * 
-	 * @return speed in knots
-	 */
-	public final double getSpeed()
-	{
-		return _targetSpeedKts;
-	}
-
-	public WorldDistance getMaxima()
-	{
-		return _theEllipse.getMaxima();
-	}
-
-	public void setMaxima(final WorldDistance val)
-	{
-		_theEllipse.setMaxima(val);
-	}
-
-	public WorldDistance getMinima()
-	{
-		return _theEllipse.getMinima();
-	}
-
-	public void setMinima(final WorldDistance val)
-	{
-		_theEllipse.setMinima(val);
-	}
-
-	public double getOrientation()
-	{
-		return _theEllipse.getOrientation();
-	}
-
-	public void setOrientation(final double val)
-	{
-		_theEllipse.setOrientation(val);
-	}
-
-	/**
-	 * @param courseDegs
-	 *          the _targetCourseDegs to set
-	 */
-	public void setTargetCourse(final double courseDegs)
-	{
-		_targetCourseDegs = courseDegs;
-	}
-
-	/**
-	 * @return the _targetSpeedKts
-	 */
-	public WorldSpeed getTargetSpeed()
-	{
-		return new WorldSpeed(_targetSpeedKts, WorldSpeed.Kts);
-	}
-
-	/**
-	 * @param speedKts
-	 *          the _targetSpeedKts to set
-	 */
-	public void setTargetSpeed(final WorldSpeed speedKts)
-	{
-		_targetSpeedKts = speedKts.getValueIn(WorldSpeed.Kts);
-	}
-
-	/**
-	 * get the current depth of the watchable (m)
-	 * 
-	 * @return depth in metres
-	 */
-	public final double getDepth()
-	{
-		return _targetDepth;
-	}
-
-	public final void setDepth(final double val)
-	{
-		_targetDepth = val;
-	}
-
-	/**
-	 * find out the time of this watchable
-	 */
-	public final HiResDate getTime()
-	{
-		return this.getDTG();
-	}
-
-	public String getSymbol()
-	{
-		return _theSymbol;
-	}
-
-	public void setSymbol(final String val)
-	{
-		String theVal = val;
-		// just check we have a valid symbol
-		if ((theVal == null) || (theVal.length() == 0))
-			theVal = SymbolFactory.SUBMARINE;
-		_theSymbol = theVal;
-	}
-
-	public EllipseShape buildGetEllipse()
-	{
-		return _theEllipse;
-	}
-
-	/**
-	 * retrieve the original ellipse origin as read in
-	 * 
-	 * @return
-	 */
-	public WorldLocation buildGetOrigin()
-	{
-		return _originalLocation;
-	}
-
-	public void buildSetOrigin(final WorldLocation origin)
-	{
-		// store the origin as an indication of whether this is an absolute or
-		// relative ellipse
-		_originalLocation = origin;
-
-		// and get on with the normal processing
-		_theEllipse.setCentre(origin);
-	}
-
-	public void buildSetTargetState(final double courseDegs, final double speedKts,
-			final double depth)
-	{
-		_targetCourseDegs = courseDegs;
-		_targetSpeedKts = speedKts;
-		_targetDepth = depth;
-	}
-
-	public void buildSetEllipse(final double orientationDegs, final WorldDistance maxima,
-			final WorldDistance minima)
-	{
-		_theEllipse.setOrientation(orientationDegs);
-		_theEllipse.setMaxima(maxima);
-		_theEllipse.setMinima(minima);
-	}
-
-	// //////////////////////////////////////////////////////////////////////////
-	// embedded class, used for editing the projection
-	// //////////////////////////////////////////////////////////////////////////
-	/**
-	 * the definition of what is editable about this object
-	 */
-	public final class TMAContactInfo extends EditorType
-	{
-
-		private static final String SOLUTION = "Solution";
-
-		/**
-		 * constructor for editable details of a set of Layers
-		 * 
-		 * @param data
-		 *          the Layers themselves
-		 */
-		public TMAContactInfo(final TMAContactWrapper data)
-		{
-			super(data, data.getName(), SOLUTION);
-		}
-
-		/**
-		 * The things about these Layers which are editable. We don't really use
-		 * this list, since we have our own custom editor anyway
-		 * 
-		 * @return property descriptions
-		 */
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
-						prop("Label", "the label for this data item", EditorType.FORMAT),
-						prop("Visible", "whether this solution is visible",
-								EditorType.FORMAT),
-						displayProp("LabelVisible", "Label visible",
-								"whether the label for this solution is visible",
-								EditorType.FORMAT),
-						displayProp("LineVisible", "Line visible",
-								"whether the bearing line (from ownship track to solution centre) for this solution is visible",
-								EditorType.FORMAT),
-						displayProp("EllipseVisible", "Ellipse visible",
-								"whether the ellipse for this solution is visible",
-								EditorType.FORMAT),
-						displayProp("SymbolVisible", "Symbol visible",
-								"whether the symbol for this solution is visible",
-								EditorType.FORMAT),
-						displayProp("VectorVisible", "Vector visible",
-								"whether the target vector for this solution is visible",
-								EditorType.FORMAT),
-						displayProp("Color", "the color for this solution", EditorType.FORMAT),
-						longProp("Symbol", "the symbol to use for this solution",
-								SymbolFactoryPropertyEditor.class, EditorType.FORMAT),
-						displayLongProp("LabelLocation", "Label location", "the label location",
-								LocationPropertyEditor.class,
-								EditorType.FORMAT),
-						prop("Maxima", "the maxima for the ellipse", SOLUTION),
-						prop("Minima", "the minima for the ellipse", SOLUTION),
-						prop("Orientation", "the minima for the ellipse", SOLUTION),
-						displayProp("TargetCourse", "Target course", "the course of the solution", SOLUTION),
-						displayProp("TargetSpeed", "Target speed", "the speed of the solution", SOLUTION),
-						prop("Depth", "the depth of the solution", SOLUTION) };
-
-				// see if we need to add rng/brg or origin data
-				final TMAContactWrapper tc = (TMAContactWrapper) getData();
-				final PropertyDescriptor[] res1;
-				if (tc.getOrigin() == null)
-				{
-					// has origin
-					final PropertyDescriptor[] res2 =
-					{ prop("Range", "range to centre of solution", SPATIAL),
-							prop("Bearing", "bearing to centre of solution (degs)", SPATIAL) };
-					res1 = res2;
-				}
-				else
-				{
-					// rng, brg data
-					final PropertyDescriptor[] res2 =
-					{ prop("Origin", "centre of solution", SPATIAL) };
-					res1 = res2;
-				}
-
-				final PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
-						+ res1.length];
-				System.arraycopy(res, 0, res3, 0, res.length);
-				System.arraycopy(res1, 0, res3, res.length, res1.length);
-
-				return res3;
-			}
-			catch (final IntrospectionException e)
-			{
-				return super.getPropertyDescriptors();
-			}
-		}
-
-		/**
-		 * getMethodDescriptors
-		 * 
-		 * @return the returned MethodDescriptor[]
-		 */
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class<TMAContactWrapper> c = TMAContactWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "resetColor", null, "Reset Color"), };
-			return mds;
-		}
-
-	}
-
-	// ////////////////////////////////////////////////////
-	// nested class
-	// /////////////////////////////////////////////////////
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-
-	static public final class TestSensorContact extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public TestSensorContact(final String val)
-		{
-			super(val);
-		}
-
-		public final void testObjectConstruction()
-		{
-			// setup our object to be tested using an absolute location
-			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
-			final EllipseShape theEllipse = new EllipseShape(origin, 45, new WorldDistance(
-					10, WorldDistance.DEGS), new WorldDistance(5, WorldDistance.DEGS));
-			final TMAContactWrapper ed_abs = new TMAContactWrapper("blank sensor",
-					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
-					theEllipse, "some symbol");
-
-			assertEquals("correct sensor name", ed_abs._trackName, "blank sensor");
-			assertEquals("correct track name", ed_abs._parentTrackName, "blank track");
-			assertEquals("correct DTG", ed_abs._DTG, theDTG);
-			assertEquals("correct origin", ed_abs._theEllipse.getCentre(), origin);
-			assertEquals("right course", ed_abs._targetCourseDegs, 5d, 0.001);
-			assertEquals("right course", ed_abs.getCourse(),
-					Conversions.Degs2Rads(5d), 0.001);
-			assertEquals("right speed", ed_abs._targetSpeedKts, 6d, 0.001);
-			assertEquals("right speed", ed_abs.getSpeed(), 6d, 0.001);
-			assertEquals("right depth", ed_abs._targetDepth, 1d, 0.001);
-			assertEquals("right depth", ed_abs.getDepth(), 1d, 0.001);
-			assertEquals("correct colour", ed_abs._labelledEllipse.getColor(),
-					Color.pink);
-			assertEquals("correct colour", ed_abs.getColor(), Color.pink);
-			assertEquals("correct label", ed_abs._labelledEllipse.getLabel(),
-					"my label");
-			assertEquals("correct label", ed_abs.getLabel(), "my label");
-			assertEquals("correct ellipse", ed_abs._theEllipse, theEllipse);
-			assertEquals("correct ellipse", ed_abs._labelledEllipse.getShape(),
-					theEllipse);
-			assertEquals("correct symbol", ed_abs._theSymbol, "some symbol");
-
-			// setup our object to be tested using an relative location
-			final TMAContactWrapper ed_rel = new TMAContactWrapper("blank sensor",
-					"blank track", theDTG, 3000, 55, 5d, 6d, 1d, Color.pink, "my label",
-					theEllipse, "some symbol");
-
-			assertEquals("correct sensor name", ed_rel._trackName, "blank sensor");
-			assertEquals("correct track name", ed_rel._parentTrackName, "blank track");
-			assertEquals("correct DTG", ed_rel._DTG, theDTG);
-			assertEquals("correct origin", ed_rel._theEllipse.getCentre(), null);
-			assertEquals("correct range", 3000, ed_rel._targetRange
-					.getValueIn(WorldDistance.YARDS), 0.001);
-			assertEquals("correct bearing", ed_rel._targetCourseDegs, 5d, 0.001);
-			assertEquals("right course", ed_rel._targetCourseDegs, 5d, 0.001);
-			assertEquals("right course", ed_rel.getCourse(),
-					Conversions.Degs2Rads(5d), 0.001);
-			assertEquals("right speed", ed_rel._targetSpeedKts, 6d, 0.001);
-			assertEquals("right speed", ed_rel.getSpeed(), 6d, 0.001);
-			assertEquals("right depth", ed_rel._targetDepth, 1d, 0.001);
-			assertEquals("right depth", ed_rel.getDepth(), 1d, 0.001);
-			assertEquals("correct colour", ed_rel._labelledEllipse.getColor(),
-					Color.pink);
-			assertEquals("correct colour", ed_rel.getColor(), Color.pink);
-			assertEquals("correct label", ed_rel._labelledEllipse.getLabel(),
-					"my label");
-			assertEquals("correct label", ed_rel.getLabel(), "my label");
-			assertEquals("correct ellipse", ed_rel._theEllipse, theEllipse);
-			assertEquals("correct ellipse", ed_rel._labelledEllipse.getShape(),
-					theEllipse);
-			assertEquals("correct symbol", ed_rel._theSymbol, "some symbol");
-
-		}
-
-		public final void testMyParams()
-		{
-			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
-
-			// setup our object to be tested using an absolute location
-			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
-					"blank track", theDTG, 3000, 55, 5d, 6d, 1d, Color.red, "my label",
-					null, "some symbol");
-
-			final TMAWrapper wrap = new TMAWrapper("tma");
-			ed.setTMATrack(wrap);
-
-			// check the editable parameters
-			Editable.editableTesterSupport.testParams(ed, this);
-		}
-
-		public final void testMyCalcs()
-		{
-			// setup our object to be tested using an absolute location
-			final WorldLocation origin = new WorldLocation(2, 2, 0);
-			final EllipseShape es = new EllipseShape(null, 0, new WorldDistance(
-					Conversions.Yds2Degs(100), WorldDistance.DEGS),
-					new WorldDistance(Conversions.Yds2Degs(50),
-							WorldDistance.DEGS));
-			final HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
-			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
-					"blank track", theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es,
-					"some symbol");
-
-			/**
-			 * test the distance calcs
-			 */
-
-			// ok, now test that we find the distance from the origin
-			final double dist = Conversions.Degs2Yds(ed.rangeFrom(origin));
-			assertEquals("find nearest from origin", dist, 0d, 0.001);
-
-		}
-
-	}
-
-	public void buildSetVector(final double theBearingDegs, final WorldDistance theRange,
-			final double theDepth)
-	{
-		_targetBrgRads = Conversions.Degs2Rads(theBearingDegs);
-		_targetRange = theRange;
-		_targetDepth = theDepth;
-	}
+  public void setOrientation(final double val)
+  {
+    _theEllipse.setOrientation(val);
+  }
+
+  public void setOrigin(final WorldLocation loc)
+  {
+    _originalLocation = loc;
+  }
+
+  public void setRange(final WorldDistance val)
+  {
+    _targetRange = val;
+  }
+
+  public void setSymbol(final String val)
+  {
+    String theVal = val;
+    // just check we have a valid symbol
+    if ((theVal == null) || (theVal.length() == 0))
+      theVal = SymbolFactory.SUBMARINE;
+    _theSymbol = theVal;
+  }
+
+  /**
+   * set the Symbol visibility
+   */
+  public final void setSymbolVisible(final boolean val)
+  {
+    _showSymbol = val;
+  }
+
+  /**
+   * @param courseDegs
+   *          the _targetCourseDegs to set
+   */
+  public void setTargetCourse(final double courseDegs)
+  {
+    _targetCourseDegs = courseDegs;
+  }
+
+  /**
+   * @param speedKts
+   *          the _targetSpeedKts to set
+   */
+  public void setTargetSpeed(final WorldSpeed speedKts)
+  {
+    _targetSpeedKts = speedKts.getValueIn(WorldSpeed.Kts);
+  }
+
+  /**
+   * inform us of our sensor
+   */
+  public final void setTMATrack(final TMAWrapper tma_track)
+  {
+    _myTMATrack = tma_track;
+  }
+
+  // ////////////////////////////////////////////////////
+  // nested class
+  // /////////////////////////////////////////////////////
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * whether to show the target vector
+   *
+   * @param b
+   */
+  public void setVectorVisible(final boolean b)
+  {
+    _showVector = b;
+  }
+
+  /**
+   * toString
+   *
+   * @return the returned String
+   */
+  @Override
+  public final String toString()
+  {
+    return getName();
+  }
 
 }
