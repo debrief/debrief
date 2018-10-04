@@ -718,15 +718,15 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           _snailLength = period;
         }
       };
-      ActionContributionItem pa1 = new ActionContributionItem(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail));
+      ActionContributionItem pa1 = new ActionContributionItem(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail,_myOverviewChart));
       pa1.fill(snailMenu, 0);
-      ActionContributionItem pa2 = new ActionContributionItem(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail));
+      ActionContributionItem pa2 = new ActionContributionItem(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail,_myOverviewChart));
       pa2.fill(snailMenu, 1);
-      ActionContributionItem pa3 = new ActionContributionItem(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail));
+      ActionContributionItem pa3 = new ActionContributionItem(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail,_myOverviewChart));
       pa3.fill(snailMenu, 2);
-      ActionContributionItem pa4 = new ActionContributionItem(new PeriodAction("1 Hour", 1000 * 60 * 60, setSnail));
+      ActionContributionItem pa4 = new ActionContributionItem(new PeriodAction("1 Hour", 1000 * 60 * 60, setSnail,_myOverviewChart));
       pa4.fill(snailMenu, 3);
-      ActionContributionItem pa5 = new ActionContributionItem(new PeriodAction("2 Hours", 1000 * 60 * 60*2, setSnail));
+      ActionContributionItem pa5 = new ActionContributionItem(new PeriodAction("2 Hours", 1000 * 60 * 60*2, setSnail,_myOverviewChart));
       pa5.fill(snailMenu, 4);
 
       return snailMenu;
@@ -755,26 +755,26 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         @Override
         public void selected(final WorldDistance distance)
         {
-          _localGrid.setDelta(distance);
+          _myOverviewChart.getGrid().setDelta(distance);
         }
       };
       ActionContributionItem pa1 = new ActionContributionItem(new DistanceAction("100m", new WorldDistance(100,
-          WorldDistance.METRES), setGrid));
+          WorldDistance.METRES), setGrid,_myOverviewChart));
       pa1.fill(gridMenu, 0);
       ActionContributionItem pa2 = new ActionContributionItem(new DistanceAction("500m", new WorldDistance(500,
-          WorldDistance.METRES), setGrid));
+          WorldDistance.METRES), setGrid,_myOverviewChart));
       pa2.fill(gridMenu, 1);
       ActionContributionItem pa3 = new ActionContributionItem(new DistanceAction("1 km", new WorldDistance(1,
-          WorldDistance.KM), setGrid));
+          WorldDistance.KM), setGrid,_myOverviewChart));
       pa3.fill(gridMenu, 2);
       ActionContributionItem pa4 = new ActionContributionItem(new DistanceAction("1 nm", new WorldDistance(1,
-          WorldDistance.NM), setGrid));
+          WorldDistance.NM), setGrid,_myOverviewChart));
       pa4.fill(gridMenu, 3);
       ActionContributionItem pa5 = new ActionContributionItem(new DistanceAction("5 nm", new WorldDistance(5,
-          WorldDistance.NM), setGrid));
+          WorldDistance.NM), setGrid,_myOverviewChart));
       pa5.fill(gridMenu, 4);
       ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
-          WorldDistance.NM), setGrid));
+          WorldDistance.NM), setGrid,_myOverviewChart));
       pa6.fill(gridMenu, 5);
       return gridMenu;
     }
@@ -802,26 +802,26 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         @Override
         public void selected(final WorldDistance distance)
         {
-          _rangeRings.setRingWidth(distance);
+          _myOverviewChart.getRings().setRingWidth(distance);
         }
       };
       ActionContributionItem pa1 = new ActionContributionItem(new DistanceAction("100m", new WorldDistance(100,
-          WorldDistance.METRES), setRings));
+          WorldDistance.METRES), setRings,_myOverviewChart));
       pa1.fill(ringsMenu, 0);
       ActionContributionItem pa2 = new ActionContributionItem(new DistanceAction("500m", new WorldDistance(500,
-          WorldDistance.METRES), setRings));
+          WorldDistance.METRES), setRings,_myOverviewChart));
       pa2.fill(ringsMenu, 1);
       ActionContributionItem pa3 = new ActionContributionItem(new DistanceAction("1 km", new WorldDistance(1,
-          WorldDistance.KM), setRings));
+          WorldDistance.KM), setRings,_myOverviewChart));
       pa3.fill(ringsMenu, 2);
       ActionContributionItem pa4 = new ActionContributionItem(new DistanceAction("1 nm", new WorldDistance(1,
-          WorldDistance.NM), setRings));
+          WorldDistance.NM), setRings,_myOverviewChart));
       pa4.fill(ringsMenu, 3);
       ActionContributionItem pa5 = new ActionContributionItem(new DistanceAction("5 nm", new WorldDistance(5,
-          WorldDistance.NM), setRings));
+          WorldDistance.NM), setRings,_myOverviewChart));
       pa5.fill(ringsMenu, 4);
       ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
-          WorldDistance.NM), setRings));
+          WorldDistance.NM), setRings,_myOverviewChart));
       pa6.fill(ringsMenu, 5);
       return ringsMenu;
     }
