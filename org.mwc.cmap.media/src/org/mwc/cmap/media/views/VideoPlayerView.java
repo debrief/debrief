@@ -45,6 +45,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
@@ -55,6 +56,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -690,10 +692,8 @@ public class VideoPlayerView extends ViewPart
         fireNewTime = true;
         FileDialog fd = new FileDialog(getViewSite().getShell(), SWT.OPEN);
         fd.setText("Open Movie");
-        String[] filterExt =
-        {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
-            "*.wma", "*.wmv","*.mp3", "*.*"};
-        fd.setFilterExtensions(filterExt);
+
+        fd.setFilterExtensions(CorePlugin.SUPPORTED_MEDIA_FORMATS);
         String selected = fd.open();
         VideoPlayerView.this.open(selected, new Date());
       }
@@ -842,24 +842,31 @@ public class VideoPlayerView extends ViewPart
     return _currentFilename;
   }
 
-  public void open(String currentFilename, Date videoStartTime)
+  public void open(final String currentFilename, final Date videoStartTime)
   {
     if (currentFilename != null)
     {
-      if (!player.open(currentFilename))
-      {
-        movieOpened(null, null);
-        MessageBox message = new MessageBox(getSite().getShell(),
-            SWT.ICON_WARNING | SWT.OK);
-        message.setText("Video player: " + new File(currentFilename).getName());
-        message.setMessage("This file format isn't supported.");
-        message.open();
-      }
-      else
-      {
-        _currentFilename = currentFilename;
-        setVideoStartTime(videoStartTime);
-      }
+      Display.getCurrent().asyncExec(new Runnable() {
+
+        @Override
+        public void run()
+        {
+          if (!player.open(currentFilename))
+          {
+            movieOpened(null, null);
+            MessageBox message = new MessageBox(getSite().getShell(),
+                SWT.ICON_WARNING | SWT.OK);
+            message.setText("Video player: " + new File(currentFilename).getName());
+            message.setMessage("This file format isn't supported.");
+            message.open();
+          }
+          else
+          {
+            _currentFilename = currentFilename;
+            setVideoStartTime(videoStartTime);
+          }
+        }
+      });
     }
   }
 }

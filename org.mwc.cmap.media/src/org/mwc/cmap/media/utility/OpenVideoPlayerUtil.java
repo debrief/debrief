@@ -4,17 +4,21 @@ import java.io.File;
 import java.util.Date;
 
 import org.eclipse.jface.window.Window;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.cmap.media.dialog.VideoPlayerStartTimeDialog;
 import org.mwc.cmap.media.views.VideoPlayerView;
 
+import MWC.GenericData.HiResDate;
+
 public class OpenVideoPlayerUtil
 {
-  public static void openVideoPlayer(final String fileName)
+  public static void openVideoPlayer(final String fileName, final Date scenarioStart)
   {
     //#2940 #6
     //if we cannot get the start time from filename open the dialog
@@ -25,6 +29,16 @@ public class OpenVideoPlayerUtil
       if(startTime>0) {
         start = new Date(startTime);
       }
+      else
+      {
+        start = scenarioStart;
+      }
+
+      if(start == null)
+      {
+        start = new Date();
+      }
+      
       VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
       dialog.setStartTime(start);
       dialog.setBlockOnOpen(true);
