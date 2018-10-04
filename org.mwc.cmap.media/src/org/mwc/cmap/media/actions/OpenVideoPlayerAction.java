@@ -27,6 +27,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
@@ -36,9 +37,8 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.media.Activator;
+import org.mwc.cmap.media.dialog.VideoPlayerStartTimeDialog;
 import org.mwc.cmap.media.views.VideoPlayerView;
-
-import MWC.GenericData.HiResDate;
 
 public class OpenVideoPlayerAction extends AbstractHandler
 {
@@ -96,7 +96,7 @@ public class OpenVideoPlayerAction extends AbstractHandler
           IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
           if(editor != null)
           {
-            TimeProvider timeC = editor.getAdapter(TimeProvider.class);
+            TimeProvider timeC = (TimeProvider) editor.getAdapter(TimeProvider.class);
             if(timeC != null)
             {
               startTime = timeC.getTime().getDate();
@@ -105,7 +105,17 @@ public class OpenVideoPlayerAction extends AbstractHandler
           
           if(startTime == null)
           {
-            startTime = new Date();
+            VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
+            dialog.setStartTime(new Date());
+            dialog.setBlockOnOpen(true);
+            if(dialog.open()==Window.OK) {
+              startTime = dialog.getStartTime();
+            }
+            else
+            {
+              // ok, cancelled
+              return null;
+            }
           }
           
           if (foundVpv != null)
