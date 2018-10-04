@@ -559,7 +559,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       public void run()
       {
 
-        //_showRings.setChecked(!_showRings.isChecked());
+        _showRings.setChecked(!_showRings.isChecked());
         _myOverviewChart.getRings().setVisible(_showRings.isChecked());
         _myOverviewChart.update();
       }
@@ -575,7 +575,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       @Override
       public void run()
       {
-        //_showGrid.setChecked(!_showGrid.isChecked());
+        _showGrid.setChecked(!_showGrid.isChecked());
         _myOverviewChart.getGrid().setVisible(_showGrid.isChecked());
         _myOverviewChart.update();
       }
