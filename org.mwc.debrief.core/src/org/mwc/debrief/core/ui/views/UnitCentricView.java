@@ -533,7 +533,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         "icons/16/normal.png"));
     _normalPaint.setChecked(true);
 
-    _snailPaint = new ToggleAction("Snail Painter", SWT.RADIO)
+    _snailPaint = new ToggleAction("Snail Painter", SWT.PUSH)
     {
       @Override
       public void run()
@@ -715,6 +715,18 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       return parent;
     }
     
+    private ActionContributionItem createAction(String name, WorldDistance distance, WorldDistance existingDistance,
+        DistanceOperation setRings, UnitCentricChart myOverviewChart)
+    {
+      final DistanceAction distanceAction = new DistanceAction(name, distance, setRings,myOverviewChart);
+      ActionContributionItem action = new ActionContributionItem(distanceAction);
+      if(distance.equals(existingDistance))
+      {
+        distanceAction.setChecked(true);
+      }
+      return action;
+    }
+    
     @Override
     public Menu getMenu(Control parent)
     {
@@ -728,23 +740,29 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           _myOverviewChart.getRings().setRingWidth(distance);
         }
       };
-      ActionContributionItem pa1 = new ActionContributionItem(new DistanceAction("100m", new WorldDistance(100,
-          WorldDistance.METRES), setRings,_myOverviewChart));
+      
+      WorldDistance currentLen = _myOverviewChart.getRings().getRingWidth();
+      
+      ActionContributionItem pa1 = createAction("100m", new WorldDistance(100,
+          WorldDistance.METRES),currentLen, setRings,_myOverviewChart);
       pa1.fill(ringsMenu, 0);
-      ActionContributionItem pa2 = new ActionContributionItem(new DistanceAction("500m", new WorldDistance(500,
-          WorldDistance.METRES), setRings,_myOverviewChart));
+      
+      
+      
+      ActionContributionItem pa2 = createAction("500m", new WorldDistance(500,
+          WorldDistance.METRES),currentLen, setRings,_myOverviewChart);
       pa2.fill(ringsMenu, 1);
-      ActionContributionItem pa3 = new ActionContributionItem(new DistanceAction("1 km", new WorldDistance(1,
-          WorldDistance.KM), setRings,_myOverviewChart));
+      ActionContributionItem pa3 = createAction("1 km", new WorldDistance(1,
+          WorldDistance.KM),currentLen, setRings,_myOverviewChart);
       pa3.fill(ringsMenu, 2);
-      ActionContributionItem pa4 = new ActionContributionItem(new DistanceAction("1 nm", new WorldDistance(1,
-          WorldDistance.NM), setRings,_myOverviewChart));
+      ActionContributionItem pa4 = createAction("1 nm", new WorldDistance(1,
+          WorldDistance.NM), currentLen, setRings,_myOverviewChart);
       pa4.fill(ringsMenu, 3);
-      ActionContributionItem pa5 = new ActionContributionItem(new DistanceAction("5 nm", new WorldDistance(5,
-          WorldDistance.NM), setRings,_myOverviewChart));
+      ActionContributionItem pa5 = createAction("5 nm", new WorldDistance(5,
+          WorldDistance.NM),currentLen, setRings,_myOverviewChart);
       pa5.fill(ringsMenu, 4);
-      ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
-          WorldDistance.NM), setRings,_myOverviewChart));
+      ActionContributionItem pa6 = createAction("10 nm", new WorldDistance(10,
+          WorldDistance.NM),currentLen, setRings,_myOverviewChart);
       pa6.fill(ringsMenu, 5);
       ActionContributionItem pa7 = new ActionContributionItem(new Action("Format rings")
       {
