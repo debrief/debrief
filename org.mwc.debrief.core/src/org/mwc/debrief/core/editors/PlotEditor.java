@@ -1640,15 +1640,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private boolean isVideoFile(final String fileName)
   {
-    String[] supportedVideoFormats = new String[]
-    {"avi"};
+    // NOTE: this is a copy of the formats listed in VideoPlayerView.
+    String[] supportedVideoFormats = CorePlugin.SUPPORTED_MEDIA_FORMATS;
     for(String format:supportedVideoFormats) {
-      if(format.equalsIgnoreCase(getFileNameExtension(fileName))) {
+      // trim the file wildcard
+      final String formatExtension = getFileNameExtension(format);
+      
+      final String fileNameExtension = getFileNameExtension(fileName);
+      if(formatExtension.equalsIgnoreCase(fileNameExtension)) {
         return true;
       }
     }
-
-    
     return false;
   }
 
@@ -1661,12 +1663,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // ok, iterate through the files
     if(fileNames.length==1 && isVideoFile(fileNames[0]))
     {
-      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0]);
+      // get the current plot start-time
+      Date startTime = _timeManager.getTime().getDate();
+      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0], startTime);
     }
     else {
       for (int i = 0; i < fileNames.length; i++)
       {
-  
         final String thisFilename = fileNames[i];
         loadThisFile(thisFilename);
       }
