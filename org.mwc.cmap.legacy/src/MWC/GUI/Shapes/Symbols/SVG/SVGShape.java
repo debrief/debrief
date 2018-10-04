@@ -250,43 +250,46 @@ public class SVGShape extends PlainSymbol
       
       InputStream pluginResource = SVGShape.class.getResourceAsStream("/" + SVG_SYMBOL_FOLDER + filePath);
 
-      InputStream inputStream = pluginResource!=null ? pluginResource : SVGShape.class.getResourceAsStream(svgPath);
+      try (InputStream inputStream = pluginResource!=null ? pluginResource : SVGShape.class.getResourceAsStream(svgPath);) {
 
-      if (inputStream == null)
-      {
-        // Resource doesn't exist
-        Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
-        return null;
+          if (inputStream == null)
+          {
+            // Resource doesn't exist
+            Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
+            return null;
+          }
+          else
+          {
+            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+                .newInstance();
+            try
+            {
+              final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+              final Document doc = dBuilder.parse(inputStream);
+              // read this -
+              // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+              doc.getDocumentElement().normalize();
+    
+              return doc;
+            }
+            catch (ParserConfigurationException e)
+            {
+              Trace.trace(e,  "While configuring parser");
+              return null;
+            }
+            catch (SAXException e)
+            {
+              Trace.trace(e,  "While parsing SVG file");
+              return null;
+            }
+            
+          }
       }
-      else
+      catch (IOException e)
       {
-        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-            .newInstance();
-        try
-        {
-          final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-          final Document doc = dBuilder.parse(inputStream);
-          // read this -
-          // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-          doc.getDocumentElement().normalize();
 
-          return doc;
-        }
-        catch (ParserConfigurationException e)
-        {
-          Trace.trace(e,  "While configuring parser");
-          return null;
-        }
-        catch (SAXException e)
-        {
-          Trace.trace(e,  "While parsing SVG file");
-          return null;
-        }
-        catch (IOException e)
-        {
-          Trace.trace(e,  "While reading document");
-          return null;
-        }
+        Trace.trace(e,  "While reading document");
+        return null;
       }
   }
 
