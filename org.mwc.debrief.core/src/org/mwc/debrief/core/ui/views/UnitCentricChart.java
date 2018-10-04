@@ -384,4 +384,9 @@ class UnitCentricChart extends SWTChart
   {
     _snailMode = val;
   }
+
+  public boolean isSnailMode()
+  {
+    return _snailMode;
+  }
 }
