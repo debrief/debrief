@@ -6,14 +6,16 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -44,8 +46,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     UnitDataProvider
 {
 
-  /** combine a selected distance with an application using that distance
-   * 
+  /**
+   * combine a selected distance with an application using that distance
+   *
    * @author ian
    *
    */
@@ -56,12 +59,13 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     private final UnitCentricChart _myOverviewChart;
 
     public DistanceAction(final String title, final WorldDistance distance,
-        final DistanceOperation operation, UnitCentricChart myOverviewChart)
+        final DistanceOperation operation,
+        final UnitCentricChart myOverviewChart)
     {
       super(title);
       _distance = distance;
       _myOverviewChart = myOverviewChart;
-//      _myOverviewChart.repaint();
+      // _myOverviewChart.repaint();
       _operation = operation;
     }
 
@@ -73,8 +77,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     }
   }
 
-  /** a distance related operation, populated from
-   * drop-down list of distances
+  /**
+   * a distance related operation, populated from drop-down list of distances
+   * 
    * @author ian
    *
    */
@@ -83,8 +88,69 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     public void selected(WorldDistance distance);
   }
 
-  /** while walking the tree, some matches have been found,
-   * operate on them
+  private class GridMenuCreator implements IMenuCreator
+  {
+    @Override
+    public void dispose()
+    {
+      // no need to dispose not dynamic
+    }
+
+    @Override
+    public Menu getMenu(final Control parent)
+    {
+      final Menu gridMenu = new Menu(parent);
+
+      final DistanceOperation setGrid = new DistanceOperation()
+      {
+        @Override
+        public void selected(final WorldDistance distance)
+        {
+          _myOverviewChart.getGrid().setDelta(distance);
+        }
+      };
+
+      int ctr = 0;
+      
+      WorldDistance currentLen = _myOverviewChart.getGrid().getDelta();
+
+      createAction("100m", new WorldDistance(100, WorldDistance.METRES),
+          currentLen, setGrid, _myOverviewChart, gridMenu, ctr++);
+      createAction("500m", new WorldDistance(500, WorldDistance.METRES),
+          currentLen, setGrid, _myOverviewChart, gridMenu, ctr++);
+      createAction("1 km", new WorldDistance(1, WorldDistance.KM), currentLen,
+          setGrid, _myOverviewChart, gridMenu, ctr++);
+      createAction("1 nm", new WorldDistance(1, WorldDistance.NM), currentLen,
+          setGrid, _myOverviewChart, gridMenu, ctr++);
+      createAction("5 nm", new WorldDistance(5, WorldDistance.NM), currentLen,
+          setGrid, _myOverviewChart, gridMenu, ctr++);
+      createAction("10 nm", new WorldDistance(10, WorldDistance.NM), currentLen,
+          setGrid, _myOverviewChart, gridMenu, ctr++);
+      
+      final ActionContributionItem pa7 = new ActionContributionItem(new Action(
+          "Format grid")
+      {
+        @Override
+        public void run()
+        {
+          formatItem(_myOverviewChart.getGrid());
+        }
+      });
+      pa7.fill(gridMenu, 6);
+
+      return gridMenu;
+    }
+
+    @Override
+    public Menu getMenu(final Menu parent)
+    {
+      return parent;
+    }
+  }
+
+  /**
+   * while walking the tree, some matches have been found, operate on them
+   * 
    * @author ian
    *
    */
@@ -145,6 +211,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     @Override
     public void run()
     {
+      setChecked(true);
       _operation.selected(_period);
       _myOverviewChart.update();
     }
@@ -153,6 +220,170 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   private static interface PeriodOperation
   {
     public void selected(long period);
+  }
+
+  private static ActionContributionItem createAction(final String name,
+      final WorldDistance distance, final WorldDistance existingDistance,
+      final DistanceOperation setRings,
+      final UnitCentricChart myOverviewChart, Menu menu, int index)
+  {
+    final DistanceAction distanceAction = new DistanceAction(name, distance,
+        setRings, myOverviewChart);
+    final ActionContributionItem action = new ActionContributionItem(
+        distanceAction);
+    if (distance.equals(existingDistance))
+    {
+      distanceAction.setChecked(true);
+    }
+    action.fill(menu, index);
+    return action;
+  }
+  
+  private class ShowRingsMenuCreator implements IMenuCreator
+  {
+
+
+    @Override
+    public void dispose()
+    {
+      // no need to dispose not dynamic
+    }
+
+    @Override
+    public Menu getMenu(final Control parent)
+    {
+      final Menu ringsMenu = new Menu(parent);
+
+      final DistanceOperation setRings = new DistanceOperation()
+      {
+        @Override
+        public void selected(final WorldDistance distance)
+        {
+          _myOverviewChart.getRings().setRingWidth(distance);
+        }
+      };
+
+      final WorldDistance currentLen = _myOverviewChart.getRings()
+          .getRingWidth();
+      
+      // ctr for menu items
+      int ctr = 0;
+
+      createAction("100m", new WorldDistance(100, WorldDistance.METRES),
+          currentLen, setRings, _myOverviewChart, ringsMenu, ctr++);
+      createAction("500m", new WorldDistance(500, WorldDistance.METRES),
+          currentLen, setRings, _myOverviewChart, ringsMenu, ctr++);
+      createAction("1 km", new WorldDistance(1, WorldDistance.KM), currentLen,
+          setRings, _myOverviewChart, ringsMenu, ctr++);
+      createAction("1 nm", new WorldDistance(1, WorldDistance.NM), currentLen,
+          setRings, _myOverviewChart, ringsMenu, ctr++);
+      createAction("5 nm", new WorldDistance(5, WorldDistance.NM), currentLen,
+          setRings, _myOverviewChart, ringsMenu, ctr++);
+      createAction("10 nm", new WorldDistance(10, WorldDistance.NM), currentLen,
+          setRings,
+          _myOverviewChart, ringsMenu, ctr++);
+      final ActionContributionItem pa7 = new ActionContributionItem(new Action(
+          "Format rings")
+      {
+        @Override
+        public void run()
+        {
+          formatItem(_myOverviewChart.getRings());
+        }
+      });
+      pa7.fill(ringsMenu, ctr++);
+
+      return ringsMenu;
+    }
+
+    @Override
+    public Menu getMenu(final Menu parent)
+    {
+      return parent;
+    }
+  }
+
+  private class SnailDropDownMenuCreator implements IMenuCreator
+  {
+    @Override
+    public void dispose()
+    {
+      // no need to dispose not dynamic
+    }
+
+    @Override
+    public Menu getMenu(final Control parent)
+    {
+      final Menu snailMenu = new Menu(parent);
+
+      final PeriodOperation setSnail = new PeriodOperation()
+      {
+        @Override
+        public void selected(final long period)
+        {
+          _snailLength = period;
+        }
+      };
+      final ActionContributionItem pa1 = new ActionContributionItem(
+          new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail,
+              _myOverviewChart));
+      pa1.fill(snailMenu, 0);
+      final ActionContributionItem pa2 = new ActionContributionItem(
+          new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail,
+              _myOverviewChart));
+      pa2.fill(snailMenu, 1);
+      final ActionContributionItem pa3 = new ActionContributionItem(
+          new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail,
+              _myOverviewChart));
+      pa3.fill(snailMenu, 2);
+      final ActionContributionItem pa4 = new ActionContributionItem(
+          new PeriodAction("1 Hour", 1000 * 60 * 60, setSnail,
+              _myOverviewChart));
+      pa4.fill(snailMenu, 3);
+      final ActionContributionItem pa5 = new ActionContributionItem(
+          new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail,
+              _myOverviewChart));
+      pa5.fill(snailMenu, 4);
+
+      return snailMenu;
+    }
+
+    @Override
+    public Menu getMenu(final Menu parent)
+    {
+      return parent;
+    }
+  }
+
+  private static abstract class ToggleAction extends Action
+  {
+    private boolean checked;
+
+    public ToggleAction(final String title, final int style)
+    {
+      super(title, style);
+    }
+
+    @Override
+    public boolean isChecked()
+    {
+      return checked;
+    }
+
+    @Override
+    public void setChecked(final boolean checked)
+    {
+      super.setChecked(checked);
+      this.checked = checked;
+      if (checked)
+      {
+        firePropertyChange(CHECKED, Boolean.FALSE, Boolean.TRUE);
+      }
+      else
+      {
+        firePropertyChange(CHECKED, Boolean.TRUE, Boolean.FALSE);
+      }
+    }
   }
 
   /**
@@ -184,9 +415,38 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     return pos;
   }
 
-  public static void walkTree(final Layers theLayers, final WatchableList primary,
-      final HiResDate subjectTime, final IOperateOnMatch doIt,
-      final long snailLength)
+  /**
+   * if the selection is different to this, stop listening to it.
+   *
+   * @param editable
+   *          the new item (or null to clear the listeners anyway)
+   */
+  private static void stopListeningIfDifferentTo(final Editable editable,
+      final SelectionHelper helper, final PropertyChangeListener listener)
+  {
+    final ISelection sel = helper.getSelection();
+    if (sel != null && sel instanceof StructuredSelection)
+    {
+      final StructuredSelection struct = (StructuredSelection) sel;
+      final Object firstItem = struct.getFirstElement();
+      if (firstItem instanceof EditableWrapper)
+      {
+        final EditableWrapper wrapper = (EditableWrapper) firstItem;
+        final Editable oldEd = wrapper.getEditable();
+        final boolean editableHasChanged = !oldEd.equals(editable);
+        if (editableHasChanged && oldEd instanceof ClassWithProperty)
+        {
+          // ok, stop listening to it
+          final ClassWithProperty shape = (ClassWithProperty) oldEd;
+          shape.removePropertyListener(listener);
+        }
+      }
+    }
+  }
+
+  public static void walkTree(final Layers theLayers,
+      final WatchableList primary, final HiResDate subjectTime,
+      final IOperateOnMatch doIt, final long snailLength)
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
@@ -341,7 +601,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   private void contributeToActionBars()
   {
     final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
     fillLocalToolBar(bars.getToolBarManager());
   }
 
@@ -393,91 +652,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     {
       _myPartMonitor.ditch();
     }
-  }
-
-  private void fillLocalPullDown(final IMenuManager manager)
-  {
-    final DistanceOperation setRings = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getRings().setRingWidth(distance);
-      }
-    };
-    final MenuManager ringRadii = new MenuManager("Ring radii");
-
-    ringRadii.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new Action("Format range rings")
-    {
-      @Override
-      public void run()
-      {
-        formatItem(_myOverviewChart.getRings());
-      }
-    });
-
-    manager.add(ringRadii);
-
-    final DistanceOperation setGrid = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getGrid().setDelta(distance);
-      }
-    };
-    final MenuManager gridSize = new MenuManager("Grid size");
-    gridSize.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new Action("Format grid")
-    {
-      @Override
-      public void run()
-      {
-        formatItem(_myOverviewChart.getGrid());
-      }
-    });
-
-    manager.add(gridSize);
-
-    final PeriodOperation setSnail = new PeriodOperation()
-    {
-      @Override
-      public void selected(final long period)
-      {
-        _snailLength = period;
-      }
-    };
-    final MenuManager periodSize = new MenuManager("Snail length");
-    periodSize.add(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("1 Hour", 1000 * 60 * 60 * 1, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail, _myOverviewChart));
-
-    manager.add(periodSize);
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
@@ -596,16 +770,15 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     _fitToWindow.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/fit_to_win.png"));
 
-    _normalPaint = new Action("Normal Painter", SWT.RADIO)
+    _normalPaint = new ToggleAction("Normal Painter", SWT.PUSH)
     {
 
       @Override
       public void run()
       {
         _snailPaint.setChecked(false);
-
+        _normalPaint.setChecked(true);
         _myOverviewChart.setSnailMode(false);
-
         // and repaint
         _myOverviewChart.update();
       }
@@ -615,45 +788,57 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         "icons/16/normal.png"));
     _normalPaint.setChecked(true);
 
-    _snailPaint = new Action("Snail Painter", SWT.RADIO)
+    _snailPaint = new ToggleAction("Snail Painter", SWT.PUSH)
     {
       @Override
       public void run()
       {
+
         _normalPaint.setChecked(false);
+        // _snailPaint.setChecked(true);
 
         _myOverviewChart.setSnailMode(true);
-
         // and repaint
         _myOverviewChart.update();
       }
     };
+    final SnailDropDownMenuCreator snailDropDownMenu =
+        new SnailDropDownMenuCreator();
+    _snailPaint.setMenuCreator(snailDropDownMenu);
     _snailPaint.setChecked(false);
     _snailPaint.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/snail.png"));
 
-    _showRings = new Action("Show range rings", SWT.CHECK)
+    _showRings = new ToggleAction("Show range rings", SWT.CHECK)
     {
       @Override
       public void run()
       {
+
+        _showRings.setChecked(!_showRings.isChecked());
         _myOverviewChart.getRings().setVisible(_showRings.isChecked());
         _myOverviewChart.update();
       }
     };
+    final ShowRingsMenuCreator ringRadiiMenuCreator =
+        new ShowRingsMenuCreator();
+    _showRings.setMenuCreator(ringRadiiMenuCreator);
     _showRings.setChecked(false);
     _showRings.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/range_rings.png"));
 
-    _showGrid = new Action("Show local grid", SWT.CHECK)
+    _showGrid = new ToggleAction("Show local grid", SWT.CHECK)
     {
       @Override
       public void run()
       {
+        _showGrid.setChecked(!_showGrid.isChecked());
         _myOverviewChart.getGrid().setVisible(_showGrid.isChecked());
         _myOverviewChart.update();
       }
     };
+    final GridMenuCreator gridMenuCreator = new GridMenuCreator();
+    _showGrid.setMenuCreator(gridMenuCreator);
     _showGrid.setChecked(false);
     _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/local_grid.png"));
@@ -695,35 +880,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   public void setFocus()
   {
     _myOverviewChart.getCanvasControl().setFocus();
-  }
-
-  /**
-   * if the selection is different to this, stop listening to it.
-   *
-   * @param editable
-   *          the new item (or null to clear the listeners anyway)
-   */
-  private static void stopListeningIfDifferentTo(final Editable editable, final SelectionHelper helper,
-      final PropertyChangeListener listener)
-  {
-    final ISelection sel = helper.getSelection();
-    if (sel != null && sel instanceof StructuredSelection)
-    {
-      final StructuredSelection struct = (StructuredSelection) sel;
-      final Object firstItem = struct.getFirstElement();
-      if (firstItem instanceof EditableWrapper)
-      {
-        final EditableWrapper wrapper = (EditableWrapper) firstItem;
-        final Editable oldEd = wrapper.getEditable();
-        final boolean editableHasChanged = !oldEd.equals(editable);
-        if (editableHasChanged && oldEd instanceof ClassWithProperty)
-        {
-          // ok, stop listening to it
-          final ClassWithProperty shape = (ClassWithProperty) oldEd;
-          shape.removePropertyListener(listener);
-        }
-      }
-    }
   }
 
   /**
