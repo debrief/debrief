@@ -160,6 +160,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -169,13 +171,15 @@ import java.text.DecimalFormat;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.ClassWithProperty;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class GridPainter implements Plottable, Serializable
+public class GridPainter implements Plottable, Serializable, ClassWithProperty
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -205,6 +209,13 @@ public class GridPainter implements Plottable, Serializable
 	 * whether this grid is visible
 	 */
 	protected boolean _isOn;
+	
+
+  /**
+   * property change support for this shape, this allows us to store a list of objects which are
+   * intererested in modification to this
+   */
+  private final PropertyChangeSupport _pSupport;
 
 	/**
 	 * are we plotting lat/long labels?
@@ -241,18 +252,38 @@ public class GridPainter implements Plottable, Serializable
 		GRID_TYPE_NAME = "Grid";
 		_myName = GRID_TYPE_NAME;
 
+    // declare the property support
+    _pSupport = new PropertyChangeSupport(this);
+		
 		setDelta(new WorldDistance(1, WorldDistance.DEGS));
 		// make it visible to start with
 		setVisible(true);
 	}
+	
 
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
+  public void removePropertyListener(final PropertyChangeListener list)
+  {
+    _pSupport.removePropertyChangeListener(list);
+  }
+	
+  public void addPropertyListener(final PropertyChangeListener list)
+  {
+    _pSupport.addPropertyChangeListener(list);
+  }
 
+  protected void firePropertyChange(final String name, final Object oldValue,
+      final Object newValue)
+  {
+    if (_pSupport != null)
+      _pSupport.firePropertyChange(name, oldValue, newValue);
+  }
+	
 	public void setVisible(final boolean val)
 	{
 		_isOn = val;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
 	}
 
 	public boolean getVisible()
@@ -263,6 +294,9 @@ public class GridPainter implements Plottable, Serializable
 	public void setColor(final Color val)
 	{
 		_myColor = val;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
 	}
 
 	public Color getColor()
@@ -280,6 +314,9 @@ public class GridPainter implements Plottable, Serializable
 	{
 		if (val != null)
 			_myDelta = val;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
 	}
 
 	/**
@@ -300,6 +337,9 @@ public class GridPainter implements Plottable, Serializable
 	public void setFont(final Font theFont)
 	{
 		_theFont = theFont;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, theFont);
 	}
 
 	/**
@@ -316,11 +356,11 @@ public class GridPainter implements Plottable, Serializable
 	public void setPlotLabels(final boolean val)
 	{
 		_plotLabels = val;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
 	}
 
-	/**
-	 * whether to plot the labels or not
-	 */
 	public void setName(final String name)
 	{
 		_myName = name;

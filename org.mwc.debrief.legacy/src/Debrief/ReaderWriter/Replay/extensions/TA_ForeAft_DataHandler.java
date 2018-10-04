@@ -1,5 +1,6 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -17,7 +18,7 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
     //
     private final List<String> _messages = new ArrayList<String>();
 
-    public void testImport()
+    public void testImport() throws ParseException
     {
       final String str =
           ";TA_FORE_AFT: 100112 120000 \"SENSOR ALPHA\" \"TA ARRAY\" 12.75 3.00\t14.75 10.00";
@@ -82,7 +83,7 @@ public class TA_ForeAft_DataHandler extends Core_TA_Handler
   }
 
   @Override
-  public Object readThisLine(final String theLine)
+  public Object readThisLine(final String theLine) throws ParseException
   {
 
     // should look like:

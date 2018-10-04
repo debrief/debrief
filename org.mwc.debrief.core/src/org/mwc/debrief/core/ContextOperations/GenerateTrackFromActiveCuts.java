@@ -267,7 +267,7 @@ public class GenerateTrackFromActiveCuts implements RightClickContextItemGenerat
 				}
 			}
 		}
-		else
+		else if(subjects.length > 1)
 		{
 			// more than one item = maybe it's a series of sensor cuts
 			

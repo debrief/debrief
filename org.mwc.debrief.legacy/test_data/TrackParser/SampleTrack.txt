@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/0" creator="DebriefNG" version="1.0">
+   <name>Exported DebriefNG tracks</name>
+   <trk>
+      <name>COLLINGWOOD</name>
+      <trkseg>
+         <trkpt lat="56.0" lon="511.0">
+            <ele>0.0</ele>
+            <time>1995-12-12T05:05:00Z</time>
+            <course>358.5000</course>
+            <speed>1.8006</speed>
+         </trkpt>
+      </trkseg>
+   <extensions>
+<color>java.awt.Color[r=0,g=100,b=189]</color>
+</extensions>
+</trk>
+   <trk>
+      <name>NELSON</name>
+      <trkseg>
+         <trkpt lat="585.0" lon="304.0">
+            <ele>0.0</ele>
+            <time>1995-12-12T05:05:00Z</time>
+            <course>269.4000</course>
+            <speed>1.0289</speed>
+         </trkpt>
+      </trkseg>
+   <extensions>
+<color>java.awt.Color[r=224,g=28,b=62]</color>
+</extensions>
+</trk>
+<extensions>
+<dimensions height="634" width="690"/>
+<interval millis="200"/>
+<NarrativeEntries>
+<Entry Text="COMEX. Rule amendment Charlie 3" dateStr="120500.00" elapsed="0"/>
+<Entry Text="CONFIRMED. OBTAIN SOLUTION" dateStr="121003.00" elapsed="12120"/>
+</NarrativeEntries>
+</extensions>
+</gpx>
+

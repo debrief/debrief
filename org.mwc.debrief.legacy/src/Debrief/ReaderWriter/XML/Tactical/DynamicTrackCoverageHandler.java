@@ -14,11 +14,14 @@
  */
 package Debrief.ReaderWriter.XML.Tactical;
 
+import java.text.ParseException;
+
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 abstract public class DynamicTrackCoverageHandler extends
@@ -71,7 +74,14 @@ abstract public class DynamicTrackCoverageHandler extends
 		{
 			public void setValue(final String name, final String value)
 			{
-				_theContact.setStartDTG(parseThisDate(value));
+				try
+        {
+          _theContact.setStartDTG(parseThisDate(value));
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");
+        }
 			}
 		});
 		
@@ -79,7 +89,14 @@ abstract public class DynamicTrackCoverageHandler extends
 		{
 			public void setValue(final String name, final String value)
 			{
-				_theContact.setEndDTG(parseThisDate(value));
+				try
+        {
+          _theContact.setEndDTG(parseThisDate(value));
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");
+        }
 			}
 		});
 		

@@ -471,7 +471,7 @@ public class MWCXMLReader extends DefaultHandler {
 		return res;
 	}
 
-	static public HiResDate parseThisDate(final String val) {
+	static public HiResDate parseThisDate(final String val) throws ParseException {
 		return DebriefFormatDateTime.parseThis(val);
 	}
 

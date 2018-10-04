@@ -43,6 +43,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TacticalDataWrapper;
+import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.BaseLayer;
@@ -60,65 +61,37 @@ import MWC.TacticalData.NarrativeWrapper;
  */
 public class SelectAllChildren implements RightClickContextItemGenerator
 {
-  private static class SelectChildrenAtFrequencyOperation extends
-      SelectChildrenOperation
+  private static class SelectInfillsOperation extends SelectChildrenOperation
   {
-
-    @SuppressWarnings("unused")
-    private final long _interval;
-
-    public SelectChildrenAtFrequencyOperation(final Layers theLayers,
-        final HasEditables selected, final long interval)
+    public SelectInfillsOperation(final Layers theLayers,
+        final SegmentList selected)
     {
       super(theLayers, selected);
-      _interval = interval;
     }
 
     @Override
     protected List<EditableWrapper> itemsFor(final HasEditables parent)
     {
       final List<EditableWrapper> res = new ArrayList<>();
-
-      final TrackSegment wrap = (TrackSegment) parent;
-      final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
-          _theLayers);
-      final EditableWrapper segment = new EditableWrapper(wrap, track,
-          _theLayers);
-
-      final Enumeration<Editable> items = wrap.elements();
-      long lastStamp = -1;
-      while (items.hasMoreElements())
+      
+      final Enumeration<Editable> segs = parent.elements();
+      while(segs.hasMoreElements())
       {
-        final Editable item = items.nextElement();
-
-        final FixWrapper fix = (FixWrapper) item;
-        final long time = fix.getDateTimeGroup().getDate().getTime();
-
-        // is this the first element?
-        if (lastStamp == -1)
+        final TrackSegment seg = (TrackSegment) segs.nextElement();
+        if(seg instanceof DynamicInfillSegment)
         {
-          // wrap the fix
-          res.add(new EditableWrapper(item, segment, _theLayers));
+          // produce the top level item
+          final EditableWrapper track = new EditableWrapper(seg.getWrapper(), null,
+              _theLayers);
+          
+          // and now wrap this segment
+          final EditableWrapper segment = new EditableWrapper(seg, track,
+              _theLayers);
 
-          // remember how many intervals there have been
-          lastStamp = time / _interval;
-        }
-        else
-        {
-          // find the new number of intervals
-          final long hour = time / _interval;
-
-          // have we passed a new interval?
-          if (hour > lastStamp)
-          {
-            // store this new interval
-            lastStamp = hour;
-
-            // wrap the fix
-            res.add(new EditableWrapper(item, segment, _theLayers));
-          }
+          res.add(segment);
         }
       }
+
       return res;
     }
   }
@@ -299,26 +272,67 @@ public class SelectAllChildren implements RightClickContextItemGenerator
 
   }
 
-  /**
-   * the list of tags shown in the drop-down list
-   */
-  private final String _stringTags[] =
-  {"5 Mins", "15 Mins", "30 Mins", "60 Mins", "2 Hours", "6 Hours", "12 Hours",
-      "24 Hours", "48 Hours", "72 Hours"};
+  private static class SelectChildrenAtFrequencyOperation extends
+      SelectChildrenOperation
+  {
+    private final long _interval;
 
-  /**
-   * the values to use for the tags in the list
-   */
-  private final long _freqs[] =
-  {TimeFrequencyPropertyEditor._5_MINS, TimeFrequencyPropertyEditor._15_MINS,
-      TimeFrequencyPropertyEditor._30_MINS,
-      TimeFrequencyPropertyEditor._60_MINS, 2
-          * TimeFrequencyPropertyEditor._60_MINS, 6
-              * TimeFrequencyPropertyEditor._60_MINS, 12
-                  * TimeFrequencyPropertyEditor._60_MINS, 24
-                      * TimeFrequencyPropertyEditor._60_MINS, 48
-                          * TimeFrequencyPropertyEditor._60_MINS, 72
-                              * TimeFrequencyPropertyEditor._60_MINS};
+    public SelectChildrenAtFrequencyOperation(final Layers theLayers,
+        final HasEditables selected, final long interval)
+    {
+      super(theLayers, selected);
+      _interval = interval;
+    }
+
+    @Override
+    protected List<EditableWrapper> itemsFor(final HasEditables parent)
+    {
+      final List<EditableWrapper> res = new ArrayList<>();
+
+      final TrackSegment wrap = (TrackSegment) parent;
+      final EditableWrapper track = new EditableWrapper(wrap.getWrapper(), null,
+          _theLayers);
+      final EditableWrapper segment = new EditableWrapper(wrap, track,
+          _theLayers);
+
+      final Enumeration<Editable> items = wrap.elements();
+      long lastStamp = -1;
+      while (items.hasMoreElements())
+      {
+        final Editable item = items.nextElement();
+
+        final FixWrapper fix = (FixWrapper) item;
+        final long time = fix.getDateTimeGroup().getDate().getTime();
+
+        // is this the first element?
+        if (lastStamp == -1)
+        {
+          // wrap the fix
+          res.add(new EditableWrapper(item, segment, _theLayers));
+
+          // remember how many intervals there have been
+          lastStamp = time / _interval;
+        }
+        else
+        {
+          // find the new number of intervals
+          final long hour = time / _interval;
+
+          // have we passed a new interval?
+          if (hour > lastStamp)
+          {
+            // store this new interval
+            lastStamp = hour;
+
+            // wrap the fix
+            res.add(new EditableWrapper(item, segment, _theLayers));
+          }
+        }
+      }
+      return res;
+    }
+  }
+
 
   /**
    * @param parent
@@ -339,7 +353,28 @@ public class SelectAllChildren implements RightClickContextItemGenerator
 
       // does it have any children?
       if (selected instanceof HasEditables)
-      {   
+      {
+        // ok, generate the select- all operation
+        final IUndoableOperation action = getOperation(theLayers,
+            (HasEditables) selected);
+
+        // and now wrap it in an action
+        final Action doIt = new Action("Select all Children")
+        {
+          @Override
+          public void run()
+          {
+            runIt(action);
+          }
+        };
+        doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+            "icons/16/show.png"));
+
+        // ok, go for it
+        parent.add(doIt);
+
+        // now for the time-related children
+
         // are the children time-stamped?
         final TimePeriod coverage = timePeriodFor(selected);
         if (coverage != null)
@@ -349,43 +384,47 @@ public class SelectAllChildren implements RightClickContextItemGenerator
           // and the new drop-down list of interpolation frequencies
           final MenuManager newMenu = new MenuManager(
               "Select child elements with this interval");
-          
+
           // commented out, API not present indigo
           // newMenu.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-          //    "icons/16/show.png"));
-
+          // "icons/16/show.png"));
           
-          // ok, generate the operation
-          final IUndoableOperation action = getOperation(theLayers,
-              (HasEditables) selected);
-
-          // and now wrap it in an action
-          final Action doIt = new Action("Select all Children")
-          {
-            @Override
-            public void run()
-            {
-              runIt(action);
-            }
-          };
-          doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-              "icons/16/show.png"));
-
-          // ok, go for it
-          parent.add(doIt);
           
 
-          for (int i = 0; i < _freqs.length; i++)
+          /**
+           * the list of tags shown in the drop-down list
+           */
+          final String stringTags[] =
+          {"5 Mins", "15 Mins", "30 Mins", "60 Mins", "2 Hours", "6 Hours",
+              "12 Hours", "24 Hours", "48 Hours", "72 Hours"};
+
+          /**
+           * the values to use for the tags in the list
+           */
+          final long freqs[] =
+          {TimeFrequencyPropertyEditor._5_MINS,
+              TimeFrequencyPropertyEditor._15_MINS,
+              TimeFrequencyPropertyEditor._30_MINS,
+              TimeFrequencyPropertyEditor._60_MINS, 2
+                  * TimeFrequencyPropertyEditor._60_MINS, 6
+                      * TimeFrequencyPropertyEditor._60_MINS, 12
+                          * TimeFrequencyPropertyEditor._60_MINS, 24
+                              * TimeFrequencyPropertyEditor._60_MINS, 48
+                                  * TimeFrequencyPropertyEditor._60_MINS, 72
+                                      * TimeFrequencyPropertyEditor._60_MINS};
+          
+
+          for (int i = 0; i < freqs.length; i++)
           {
             // convert from microseconds to milliseconds
-            final long thisLen = _freqs[i] / 1000;
+            final long thisLen = freqs[i] / 1000;
 
             if (thisLen < coverage.getExtent())
             {
               final IUndoableOperation op = getTimedOperation(theLayers,
                   (HasEditables) selected, thisLen);
               // create the new menu item
-              final Action selectItem = new Action(_stringTags[i])
+              final Action selectItem = new Action(stringTags[i])
               {
                 @Override
                 public void run()
@@ -399,29 +438,56 @@ public class SelectAllChildren implements RightClickContextItemGenerator
           }
           parent.add(newMenu);
         }
-        else
+
+        // also offer to select infills, if it's a composite track with infills
+        if (selected instanceof SegmentList)
         {
-          // ok, generate the operation
-          final IUndoableOperation action = getOperation(theLayers,
-              (HasEditables) selected);
-
-          // and now wrap it in an action
-          final Action doIt = new Action("Select all child elements")
+          SegmentList segments = (SegmentList) selected;
+          if (hasInfills(segments))
           {
-            @Override
-            public void run()
+            final IUndoableOperation op = new SelectInfillsOperation(theLayers,
+                segments);
+            // create the new menu item
+            final Action selectItem = new Action(
+                "Select infills segments in this track")
             {
-              runIt(action);
-            }
-          };
-          doIt.setImageDescriptor(DebriefPlugin.getImageDescriptor(
-              "icons/16/show.png"));
+              @Override
+              public void run()
+              {
+                runIt(op);
+              }
+            };
+            
+            // give the item a dynamic infill icon
+            selectItem.setImageDescriptor(DebriefPlugin.getImageDescriptor(
+                "icons/16/track_segment.png"));
 
-          // ok, go for it
-          parent.add(doIt);
+            parent.add(selectItem);
+          }
         }
+
       }
     }
+  }
+
+  /**
+   * does this list contain any dynamic infills?
+   * 
+   * @param segments
+   * @return
+   */
+  private static boolean hasInfills(final SegmentList segments)
+  {
+    final Enumeration<Editable> segs = segments.elements();
+    while (segs.hasMoreElements())
+    {
+      final TrackSegment seg = (TrackSegment) segs.nextElement();
+      if (seg instanceof DynamicInfillSegment)
+      {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
@@ -466,7 +532,7 @@ public class SelectAllChildren implements RightClickContextItemGenerator
     CorePlugin.run(operation);
   }
 
-  private TimePeriod timePeriodFor(final Editable selected)
+  private static TimePeriod timePeriodFor(final Editable selected)
   {
     TimePeriod res;
     if (selected instanceof TrackSegment)

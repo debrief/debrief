@@ -176,8 +176,9 @@ public final class ImportFix extends AbstractPlainLineImporter
 	// ////////////////////////////////////////////////
 
 	/**
+	 * @throws ParseException on malformed date
    */
-	public final Object readThisLine(final String theLine)
+	public final Object readThisLine(final String theLine) throws ParseException
 	{
 
 		// get a stream from the string
@@ -415,7 +416,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			super(val);
 		}
 
-		public void testDecimalVals()
+		public void testDecimalVals() throws ParseException
 		{
 			// test the secs component
 			String iLine = "951212 051600 CARPET   @C   22 0 45 N 22 0 1.45 W 239.9   2.0      0 ";
@@ -488,7 +489,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 
 		}
 
-		public void testValues()
+		public void testValues() throws ParseException
 		{
 			String iLine = "951212 051600 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final AbstractPlainLineImporter iff = new ImportFix();
@@ -601,7 +602,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 			assertEquals("exported line matches", iLine, oLine);
 		}
 
-		public void testHiResParse()
+		public void testHiResParse() throws ParseException
 		{
 			String val = "700101 000000";
 			HiResDate ers = DebriefFormatDateTime.parseThis(val);
@@ -648,7 +649,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		}
 		
 
-		public void testPaddingStrings()
+		public void testPaddingStrings() throws ParseException
 		{
 			String iLine = "0101 01 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			AbstractPlainLineImporter iff = new ImportFix();
@@ -672,7 +673,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 		}
 
 
-		public void testMilliSecValues()
+		public void testMilliSecValues() throws ParseException
 		{
 			String iLine = "700101 000001 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			AbstractPlainLineImporter iff = new ImportFix();
@@ -697,7 +698,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 
 		// TODO FIX-TEST
 		@SuppressWarnings("deprecation")
-		public void NtestPadding()
+		public void NtestPadding() throws ParseException
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final AbstractPlainLineImporter iff = new ImportFix();
@@ -793,7 +794,7 @@ public final class ImportFix extends AbstractPlainLineImporter
 
 		}
 
-		public void testHiResValues()
+		public void testHiResValues() throws ParseException
 		{
 			String iLine = "951212 051600.000100 CARPET   @C   22 10 53.54 N 21 45 14.20 W 239.9   2.0      0 ";
 			final AbstractPlainLineImporter iff = new ImportFix();

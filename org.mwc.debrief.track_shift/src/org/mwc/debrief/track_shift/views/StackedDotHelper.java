@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -100,7 +101,7 @@ public final class StackedDotHelper
    *
    */
   private abstract static class PrivatePropertyChangeListener implements
-      PropertyChangeListener
+  PropertyChangeListener
   {
     private final TrackWrapper _track;
     private final String _property;
@@ -244,7 +245,7 @@ public final class StackedDotHelper
 
       final SensorContactWrapper[] contactArr = contacts.toArray(
           new SensorContactWrapper[]
-          {});
+              {});
       final RelativeTMASegment newLeg = new RelativeTMASegment(contactArr,
           new WorldVector(1, 1, 0), new WorldSpeed(12, WorldSpeed.Kts), 12d,
           theLayers, Color.red);
@@ -345,7 +346,7 @@ public final class StackedDotHelper
         if (switchMe)
         {
           return new WatchableList[]
-          {_primary};
+              {_primary};
         }
         else
         {
@@ -377,7 +378,7 @@ public final class StackedDotHelper
         else
         {
           return new WatchableList[]
-          {_primary};
+              {_primary};
         }
       }
 
@@ -397,7 +398,7 @@ public final class StackedDotHelper
         final SensorWrapper secondSensor)
     {
       final SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
-          .size()];
+                                                                  .size()];
       final Enumeration<Editable> sIter = secondSensor.elements();
       int ctr = 0;
       while (sIter.hasMoreElements())
@@ -408,112 +409,104 @@ public final class StackedDotHelper
       return res;
     }
 
-    public Layers getData()
+    public Layers getData() throws ParseException, IOException
     {
       final Layers layers = new Layers();
       final ImportReplay importer = new ImportReplay();
       importer.setLayers(layers);
 
-      try
-      {
-        importer.readLine(
-            "100112 120000 SUBJECT VC 60 06 00.00 N 000 15 00.00 E 320.00  9.00  0.00");
-        importer.readLine(
-            "100112 120000 SENSOR FA 60 10 48.00 N 000 12 00.00 E 200.00  12.00  0.00");
-        importer.readLine(
-            ";SENSOR2: 100112 120016 SENSOR @A NULL 162.64 237.36 150.910 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120015 SENSOR @A NULL 166.15 233.85 150.920 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120020 SUBJECT VC 60 06 02.30 N 000 14 56.13 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120020 SENSOR FA 60 10 44.24 N 000 11 57.25 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120020 SENSOR @A NULL 162.39 237.61 150.909 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120020 SENSOR @A NULL 165.99 234.01 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120040 SUBJECT VC 60 06 04.60 N 000 14 52.26 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120040 SENSOR FA 60 10 40.48 N 000 11 54.50 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120040 SENSOR @A NULL 162.13 237.87 150.908 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120040 SENSOR @A NULL 165.82 234.18 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120100 SUBJECT VC 60 06 06.89 N 000 14 48.39 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120100 SENSOR FA 60 10 36.72 N 000 11 51.75 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120100 SENSOR @A NULL 161.87 238.13 150.907 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        // miss this tail measurement
-        // importer.readLine(
-        // ";SENSOR2: 100112 120100 SENSOR @A NULL 165.64 234.36 150.918 NULL \"tail sensor\"
-        // SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120120 SUBJECT VC 60 06 09.19 N 000 14 44.53 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120120 SENSOR FA 60 10 32.96 N 000 11 49.00 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120120 SENSOR @A NULL 161.59 238.41 150.906 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        // importer.readLine(
-        // ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\"
-        // SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120140 SUBJECT VC 60 06 11.49 N 000 14 40.66 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120140 SENSOR FA 60 10 29.21 N 000 11 46.25 E 200.00  12.00  0.00 ");
-        // importer.readLine(
-        // ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\"
-        // SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120140 SENSOR @A NULL 165.27 234.73 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120200 SUBJECT VC 60 06 13.79 N 000 14 36.79 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120200 SENSOR FA 60 10 25.45 N 000 11 43.49 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120200 SENSOR @A NULL 160.99 239.01 150.904 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120200 SENSOR @A NULL 165.08 234.92 150.917 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120220 SUBJECT VC 60 06 16.09 N 000 14 32.92 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120220 SENSOR FA 60 10 21.69 N 000 11 40.74 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120220 SENSOR @A NULL 160.67 239.33 150.902 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120220 SENSOR @A NULL 164.87 235.13 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120240 SUBJECT VC 60 06 18.39 N 000 14 29.05 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120240 SENSOR FA 60 10 17.93 N 000 11 37.99 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120240 SENSOR @A NULL 160.33 239.67 150.901 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120240 SENSOR @A NULL 164.66 235.34 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
-        importer.readLine(
-            "100112 120300 SUBJECT VC 60 06 20.68 N 000 14 25.18 E 320.00  9.00  0.00 ");
-        importer.readLine(
-            "100112 120300 SENSOR FA 60 10 14.17 N 000 11 35.24 E 200.00  12.00  0.00 ");
-        importer.readLine(
-            ";SENSOR2: 100112 120300 SENSOR @A NULL 159.98 240.02 150.900 NULL \"hull sensor\" SUBJECT held on hull sensor");
-        importer.readLine(
-            ";SENSOR2: 100112 120300 SENSOR @A NULL 164.44 235.56 150.915 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120000 SUBJECT VC 60 06 00.00 N 000 15 00.00 E 320.00  9.00  0.00");
+      importer.readLine(
+          "100112 120000 SENSOR FA 60 10 48.00 N 000 12 00.00 E 200.00  12.00  0.00");
+      importer.readLine(
+          ";SENSOR2: 100112 120016 SENSOR @A NULL 162.64 237.36 150.910 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120015 SENSOR @A NULL 166.15 233.85 150.920 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120020 SUBJECT VC 60 06 02.30 N 000 14 56.13 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120020 SENSOR FA 60 10 44.24 N 000 11 57.25 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120020 SENSOR @A NULL 162.39 237.61 150.909 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120020 SENSOR @A NULL 165.99 234.01 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120040 SUBJECT VC 60 06 04.60 N 000 14 52.26 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120040 SENSOR FA 60 10 40.48 N 000 11 54.50 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120040 SENSOR @A NULL 162.13 237.87 150.908 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120040 SENSOR @A NULL 165.82 234.18 150.919 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120100 SUBJECT VC 60 06 06.89 N 000 14 48.39 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120100 SENSOR FA 60 10 36.72 N 000 11 51.75 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120100 SENSOR @A NULL 161.87 238.13 150.907 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      // miss this tail measurement
+      // importer.readLine(
+      // ";SENSOR2: 100112 120100 SENSOR @A NULL 165.64 234.36 150.918 NULL \"tail sensor\"
+      // SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120120 SUBJECT VC 60 06 09.19 N 000 14 44.53 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120120 SENSOR FA 60 10 32.96 N 000 11 49.00 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120120 SENSOR @A NULL 161.59 238.41 150.906 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      // importer.readLine(
+      // ";SENSOR2: 100112 120120 SENSOR @A NULL 165.46 234.54 150.918 NULL \"tail sensor\"
+      // SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120140 SUBJECT VC 60 06 11.49 N 000 14 40.66 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120140 SENSOR FA 60 10 29.21 N 000 11 46.25 E 200.00  12.00  0.00 ");
+      // importer.readLine(
+      // ";SENSOR2: 100112 120140 SENSOR @A NULL 161.29 238.71 150.905 NULL \"hull sensor\"
+      // SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120140 SENSOR @A NULL 165.27 234.73 150.918 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120200 SUBJECT VC 60 06 13.79 N 000 14 36.79 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120200 SENSOR FA 60 10 25.45 N 000 11 43.49 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120200 SENSOR @A NULL 160.99 239.01 150.904 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120200 SENSOR @A NULL 165.08 234.92 150.917 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120220 SUBJECT VC 60 06 16.09 N 000 14 32.92 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120220 SENSOR FA 60 10 21.69 N 000 11 40.74 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120220 SENSOR @A NULL 160.67 239.33 150.902 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120220 SENSOR @A NULL 164.87 235.13 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120240 SUBJECT VC 60 06 18.39 N 000 14 29.05 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120240 SENSOR FA 60 10 17.93 N 000 11 37.99 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120240 SENSOR @A NULL 160.33 239.67 150.901 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120240 SENSOR @A NULL 164.66 235.34 150.916 NULL \"tail sensor\" SUBJECT held on tail sensor");
+      importer.readLine(
+          "100112 120300 SUBJECT VC 60 06 20.68 N 000 14 25.18 E 320.00  9.00  0.00 ");
+      importer.readLine(
+          "100112 120300 SENSOR FA 60 10 14.17 N 000 11 35.24 E 200.00  12.00  0.00 ");
+      importer.readLine(
+          ";SENSOR2: 100112 120300 SENSOR @A NULL 159.98 240.02 150.900 NULL \"hull sensor\" SUBJECT held on hull sensor");
+      importer.readLine(
+          ";SENSOR2: 100112 120300 SENSOR @A NULL 164.44 235.56 150.915 NULL \"tail sensor\" SUBJECT held on tail sensor");
 
-        importer.storePendingSensors();
+      importer.storePendingSensors();
 
-      }
-      catch (final IOException e)
-      {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
 
       return layers;
     }
 
-    public TrackDataHelper getTrackData()
+    public TrackDataHelper getTrackData() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -584,7 +577,7 @@ public final class StackedDotHelper
       assertEquals("has fixes", 8, fixes.size());
 
       final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
-      {})[0];
+          {})[0];
       @SuppressWarnings("deprecation")
       final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
       assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
@@ -597,27 +590,27 @@ public final class StackedDotHelper
       return prov;
     }
     
-    public void testGetSinglePointCourseData()
+    public void testGetSinglePointCourseData() throws ParseException, IOException
     {
       TrackDataHelper data = getTrackDataWithSingle();
       data.setSwitch(true);
-      
+
       WatchableList primary = data.getPrimaryTracks()[1];
       ISecondaryTrack secondary = (ISecondaryTrack) data.getSecondaryTracks()[0];
       TimeSeries series = StackedDotHelper.getSinglePointCourseData((TrackWrapper) primary, secondary, false);
       assertNotNull("has data", series);
       assertEquals("correct num points", 8, series.getItemCount());
-      
+
       List<?> items = series.getItems();
       for(Object t: items)
       {
         TimeSeriesDataItem item = (TimeSeriesDataItem) t;
         assertEquals("correct course", 200d, item.getValue());
       }
-      
+
     }
 
-    public void testGetCourseData()
+    public void testGetCourseData() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -747,7 +740,7 @@ public final class StackedDotHelper
       assertEquals("has fixes", 42, fixes.size());
 
       final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
-      {})[0];
+          {})[0];
       @SuppressWarnings("deprecation")
       final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
       assertEquals("valid first time", "12 Dec 2014 12:03:40 GMT", toTime);
@@ -762,7 +755,7 @@ public final class StackedDotHelper
       // return prov;
     }
 
-    public void testSwitchedUpdateBearings() throws ExecutionException
+    public void testSwitchedUpdateBearings() throws ExecutionException, ParseException, IOException
     {
       final StackedDotHelper helper = new StackedDotHelper();
       final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
@@ -916,7 +909,7 @@ public final class StackedDotHelper
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
     }
 
-    public void testUpdateBearings() throws ExecutionException
+    public void testUpdateBearings() throws ExecutionException, ParseException, IOException
     {
       final StackedDotHelper helper = new StackedDotHelper();
       final TimeSeriesCollection dotPlotData = new TimeSeriesCollection();
@@ -1209,7 +1202,7 @@ public final class StackedDotHelper
       return res;
     }
 
-    public TrackDataHelper getTrackDataWithSingle()
+    public TrackDataHelper getTrackDataWithSingle() throws ParseException, IOException
     {
       final Layers layers = getData();
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
@@ -1302,7 +1295,7 @@ public final class StackedDotHelper
       assertEquals("has fixes", 8, fixes.size());
 
       final FixWrapper firstFix = (FixWrapper) fixes.toArray(new Editable[]
-      {})[0];
+          {})[0];
       @SuppressWarnings("deprecation")
       final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
       assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
@@ -1528,15 +1521,15 @@ public final class StackedDotHelper
       final PropertyChangeListener newListener =
           new PrivatePropertyChangeListener(segment.getWrapper(),
               PlainWrapper.LOCATION_CHANGED)
-          {
-            @Override
-            public void propertyChange(final PropertyChangeEvent evt)
-            {
-              final FixWrapper tmpFix = FixWrapper.interpolateFix(beforeF,
-                  afterF, requiredTime);
-              toUse.setLocation(tmpFix.getLocation());
-            }
-          };
+      {
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          final FixWrapper tmpFix = FixWrapper.interpolateFix(beforeF,
+              afterF, requiredTime);
+          toUse.setLocation(tmpFix.getLocation());
+        }
+      };
       segment.getWrapper().addPropertyChangeListener(
           PlainWrapper.LOCATION_CHANGED, newListener);
     }
@@ -1618,7 +1611,7 @@ public final class StackedDotHelper
           final FixWrapper thisTgtFix = (FixWrapper) enumer.nextElement();
 
           double thisCourse = ownshipCourse;
-          
+
           // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
           if (flipAxes && thisCourse > 180)
           {
@@ -1901,7 +1894,7 @@ public final class StackedDotHelper
       series = new TimeSeries(seriesName);
       collection.addSeries(series);
     }
-    
+
     // wrap the "add" event. We still may get duplicate entries, since
     // multiple series may have the same name - meaning we try to put
     // multiple cuts into the same time series.
@@ -1994,7 +1987,7 @@ public final class StackedDotHelper
 
     final ColouredDataItem amBearing = new ColouredDataItem(thisMilli,
         theBearing, color, false, null, showSymbol, parentIsNotDynamic, thisD
-            .getSensorCut());
+        .getSensorCut());
     return amBearing;
   }
 
@@ -2019,21 +2012,15 @@ public final class StackedDotHelper
         if (!onlyVis || (onlyVis && scw.getVisible()))
         {
           // is this cut suitable for what we're looking for?
-          if (needBearing)
+          if (needBearing && !scw.getHasBearing())
           {
-            if (!scw.getHasBearing())
-            {
-              continue;
-            }
+            continue;
           }
 
           // aaah, but does it meet the frequency requirement?
-          if (needFrequency)
+          if (needFrequency && !scw.getHasFrequency())
           {
-            if (!scw.getHasFrequency())
-            {
-              continue;
-            }
+            continue;
           }
 
           storeDoubletsForThisCut(scw, res, needFrequency, index, theSegments,
@@ -2117,24 +2104,24 @@ public final class StackedDotHelper
     final String seriesName = multiSensor ? BaseStackedDotsView.MEASURED_VALUES
         + sensor.getName() : BaseStackedDotsView.MEASURED_VALUES;
 
-    double theBearing = measuredBearing;
+        double theBearing = measuredBearing;
 
-    // put the measured bearing back in the positive domain
-    if (theBearing < 0)
-    {
-      theBearing += 360d;
-    }
+        // put the measured bearing back in the positive domain
+        if (theBearing < 0)
+        {
+          theBearing += 360d;
+        }
 
-    // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
-    if (flipAxes && theBearing > 180)
-    {
-      theBearing -= 360;
-    }
+        // stop, stop, stop - do we wish to plot bearings in the +/- 180 domain?
+        if (flipAxes && theBearing > 180)
+        {
+          theBearing -= 360;
+        }
 
-    final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
-        theBearing, bearingColor, false, null, true, parentIsNotDynamic, thisD
+        final ColouredDataItem mBearing = new ColouredDataItem(thisMilli,
+            theBearing, bearingColor, false, null, true, parentIsNotDynamic, thisD
             .getSensorCut());
-    safelyAddItem(measuredValuesColl, seriesName, mBearing);
+        safelyAddItem(measuredValuesColl, seriesName, mBearing);
 
   }
 
@@ -2163,12 +2150,8 @@ public final class StackedDotHelper
         final boolean isInfill = segment instanceof DynamicInfillSegment;
 
         // check it has values, and is in range
-        if (segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
-            || segment.endDTG().lessThan(startDTG))
-        {
-          // ok, we can skip this one
-        }
-        else
+        if (!(segment.isEmpty() || segment.startDTG().greaterThan(endDTG)
+            || segment.endDTG().lessThan(startDTG)))
         {
           final Enumeration<Editable> points = segment.elements();
           Double lastCourse = null;
@@ -2649,7 +2632,7 @@ public final class StackedDotHelper
           {
             final String ambSeriesName = multiSensor
                 ? BaseStackedDotsView.MEASURED_VALUES + sensor.getName() + "(A)"
-                : BaseStackedDotsView.MEASURED_VALUES + "(A)";
+                    : BaseStackedDotsView.MEASURED_VALUES + "(A)";
             final ColouredDataItem amBearing = storeAmbiguousCut(ambigBearing,
                 flipAxes, bearingToPort, thisColor, thisD, grayShade, thisMilli,
                 parentIsNotDynamic);
@@ -2658,103 +2641,97 @@ public final class StackedDotHelper
           }
 
           // do we have target data?
-          if (thisD.getTarget() != null)
+          if (thisD.getTarget() != null && thisD.getTarget().getFixLocation() != null) 
           {
             // and has this target fix know it's location?
             // (it may not, if it's a relative leg that has been extended)
-            if (thisD.getTarget().getFixLocation() != null)
+            double calculatedBearing = thisD.getCalculatedBearing(null, null);
+
+            // note: now that we're allowing multi-sensor TMA, we should color the
+            // errors acccording to the sensor color (not the target color)
+            final Color error = thisD.getColor();
+            final Color calcColor = thisD.getTarget().getColor();
+            final double thisTrueError = thisD.calculateBearingError(
+                measuredBearing, calculatedBearing);
+
+            if (flipAxes)
             {
-              double calculatedBearing = thisD.getCalculatedBearing(null, null);
-
-              // note: now that we're allowing multi-sensor TMA, we should color the
-              // errors acccording to the sensor color (not the target color)
-              final Color error = thisD.getColor();
-              final Color calcColor = thisD.getTarget().getColor();
-              final double thisTrueError = thisD.calculateBearingError(
-                  measuredBearing, calculatedBearing);
-
-              if (flipAxes)
+              if (calculatedBearing > 180)
               {
-                if (calculatedBearing > 180)
-                {
-                  calculatedBearing -= 360;
-                }
+                calculatedBearing -= 360;
               }
-              else
+            }
+            else
+            {
+              if (calculatedBearing < 0)
               {
-                if (calculatedBearing < 0)
-                {
-                  calculatedBearing += 360;
-                }
+                calculatedBearing += 360;
+              }
+            }
+
+            final Color brgColor;
+            if (bearingToPort)
+            {
+              brgColor = error;
+            }
+            else
+            {
+              brgColor = error.darker();
+            }
+
+            final ColouredDataItem newTrueError = new ColouredDataItem(
+                thisMilli, thisTrueError, brgColor, false, null, true,
+                parentIsNotDynamic, thisD.getTarget());
+
+            final Color halfBearing = halfWayColor(calcColor, brgColor);
+
+            final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
+                calculatedBearing, halfBearing, true, null, true,
+                parentIsNotDynamic, thisD.getTarget());
+
+            final String sensorName = thisD.getSensorCut().getSensorName();
+
+            // ok, get this error
+            final String errorName = multiSensor
+                ? BaseStackedDotsView.ERROR_VALUES + sensorName
+                    : BaseStackedDotsView.ERROR_VALUES;
+            safelyAddItem(dotPlotData, errorName, newTrueError);
+
+            // get the calc series for this one
+            final String calcName = multiSensor
+                ? StackedDotHelper.CALCULATED_VALUES + sensorName
+                    : StackedDotHelper.CALCULATED_VALUES;
+            safelyAddItem(calculatedSeries, calcName, cBearing);
+
+            // and the ambiguous error, if it hasn't been resolved
+            if (!thisD.getHasBeenResolved())
+            {
+              if (flipAxes && ambigBearing>180)
+              {
+                  ambigBearing -= 360;
               }
 
-              final Color brgColor;
+              final Color ambigColor;
               if (bearingToPort)
               {
-                brgColor = error;
+                ambigColor = error.darker();
               }
               else
               {
-                brgColor = error.darker();
+                ambigColor = error;
               }
 
-              final ColouredDataItem newTrueError = new ColouredDataItem(
-                  thisMilli, thisTrueError, brgColor, false, null, true,
-                  parentIsNotDynamic, thisD.getTarget());
+              final double thisAmnigError = thisD.calculateBearingError(
+                  ambigBearing, calculatedBearing);
+              final ColouredDataItem newAmbigError = new ColouredDataItem(
+                  thisMilli, thisAmnigError, ambigColor, false, null, true,
+                  parentIsNotDynamic);
 
-              final Color halfBearing = halfWayColor(calcColor, brgColor);
+              final String ambErrorName = multiSensor
+                  ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
+                      : BaseStackedDotsView.ERROR_VALUES + "_amb_";
 
-              final ColouredDataItem cBearing = new ColouredDataItem(thisMilli,
-                  calculatedBearing, halfBearing, true, null, true,
-                  parentIsNotDynamic, thisD.getTarget());
-
-              final String sensorName = thisD.getSensorCut().getSensorName();
-
-              // ok, get this error
-              final String errorName = multiSensor
-                  ? BaseStackedDotsView.ERROR_VALUES + sensorName
-                  : BaseStackedDotsView.ERROR_VALUES;
-              safelyAddItem(dotPlotData, errorName, newTrueError);
-
-              // get the calc series for this one
-              final String calcName = multiSensor
-                  ? StackedDotHelper.CALCULATED_VALUES + sensorName
-                  : StackedDotHelper.CALCULATED_VALUES;
-              safelyAddItem(calculatedSeries, calcName, cBearing);
-
-              // and the ambiguous error, if it hasn't been resolved
-              if (!thisD.getHasBeenResolved())
-              {
-                if (flipAxes)
-                {
-                  if (ambigBearing > 180)
-                  {
-                    ambigBearing -= 360;
-                  }
-                }
-
-                final Color ambigColor;
-                if (bearingToPort)
-                {
-                  ambigColor = error.darker();
-                }
-                else
-                {
-                  ambigColor = error;
-                }
-
-                final double thisAmnigError = thisD.calculateBearingError(
-                    ambigBearing, calculatedBearing);
-                final ColouredDataItem newAmbigError = new ColouredDataItem(
-                    thisMilli, thisAmnigError, ambigColor, false, null, true,
-                    parentIsNotDynamic);
-
-                final String ambErrorName = multiSensor
-                    ? BaseStackedDotsView.ERROR_VALUES + "_amb_" + sensorName
-                    : BaseStackedDotsView.ERROR_VALUES + "_amb_";
-
-                safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
-              }
+              safelyAddItem(dotPlotData, ambErrorName, newAmbigError);
             }
           }
         }
@@ -3036,7 +3013,7 @@ public final class StackedDotHelper
     // final TimeSeries correctedValues = new TimeSeries("Corrected");
     final TimeSeriesCollection predictedValuesColl = new TimeSeriesCollection();
 
-    
+
     // createa list of series, so we can pause their updates
 
     final List<TimeSeriesCollection> tList = new Vector<TimeSeriesCollection>();
@@ -3045,7 +3022,7 @@ public final class StackedDotHelper
     tList.add(linePlotData);
     tList.add(predictedValuesColl);
     tList.add(baseValuesSeries);
-    
+
     // now switch off updates
     for (final TimeSeriesCollection series : tList)
     {
@@ -3056,7 +3033,7 @@ public final class StackedDotHelper
 
     // keep track if this is a multi-static engagement
     final boolean isMultistatic = radiatedSource != null;
-    
+
     // ok, run through the points on the primary track
     final Iterator<Doublet> iter = _primaryDoublets.iterator();
     SensorWrapper lastSensor = null;
@@ -3088,7 +3065,7 @@ public final class StackedDotHelper
 
         final ColouredDataItem mFreq = new ColouredDataItem(thisMilli,
             measuredFreq, thisColor, false, null, true, true, thisD
-                .getSensorCut());
+            .getSensorCut());
 
         // final ColouredDataItem corrFreq = new ColouredDataItem(
         // new FixedMillisecond(currentTime.getDate().getTime()),
@@ -3096,7 +3073,7 @@ public final class StackedDotHelper
         final SensorWrapper thisSensor = thisD.getSensorCut().getSensor();
         final String sensorName = thisSensor.getName();
         safelyAddItem(measuredValuesColl, sensorName, mFreq);
-        
+
         final double baseFreq;
         if(isMultistatic)
         {
@@ -3106,7 +3083,7 @@ public final class StackedDotHelper
         {
           baseFreq = thisD.getBaseFrequency();          
         }
-        
+
         if (!Double.isNaN(baseFreq))
         {
           // have we changed sensor?
@@ -3133,7 +3110,7 @@ public final class StackedDotHelper
             // did we get a base frequency? We may have a track
             // with a section of data that doesn't have frequency, you see.
             final double predictedFreq;
-            
+
             if(isMultistatic)
             {
               predictedFreq = thisD.getPredictedMultistaticFrequency(
@@ -3144,13 +3121,13 @@ public final class StackedDotHelper
               predictedFreq = thisD.getPredictedFrequency(
                   speedOfSound);
             }
-            
+
             final double thisError = thisD.calculateFreqError(measuredFreq,
                 predictedFreq);
             final Color predictedColor = halfWayColor(calcColor, thisColor);
             final ColouredDataItem pFreq = new ColouredDataItem(thisMilli,
                 predictedFreq, predictedColor, true, null, true, true, thisD
-                    .getTarget());
+                .getTarget());
 
             final ColouredDataItem eFreq = new ColouredDataItem(thisMilli,
                 thisError, thisColor, false, null, true, true);
@@ -3228,6 +3205,6 @@ public final class StackedDotHelper
       series.setNotify(true);
     }
   }
-  
-  
+
+
 }

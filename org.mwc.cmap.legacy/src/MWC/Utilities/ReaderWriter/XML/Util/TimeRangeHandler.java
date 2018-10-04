@@ -15,6 +15,8 @@
 package MWC.Utilities.ReaderWriter.XML.Util;
 
 
+import java.text.ParseException;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -27,8 +29,8 @@ package MWC.Utilities.ReaderWriter.XML.Util;
 import org.xml.sax.Attributes;
 
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 abstract public class TimeRangeHandler extends MWCXMLReader
 {
@@ -60,9 +62,23 @@ abstract public class TimeRangeHandler extends MWCXMLReader
       final String nm = attributes.getLocalName(i);
       final String val = attributes.getValue(i);
       if (nm.equals("Start"))
-        _start = parseThisDate(val);
+        try
+        {
+          _start = parseThisDate(val);
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing start date");
+        }
       else if (nm.equals("End"))
-        _end = parseThisDate(val);
+        try
+        {
+          _end = parseThisDate(val);
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing end date");
+        }
 
     }
 

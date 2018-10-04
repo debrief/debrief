@@ -154,11 +154,12 @@ public class RangeRingShape extends PlainShape implements Editable
 				{ 
 						displayProp("NumRings", "Number of rings", "the number of rings to plot"),
 						displayProp("RingWidth", "Ring width", "the width of the range rings"),
-						prop("Centre", "the centre of the Wheel"),
-						displayProp("RangeLabelLocation", "Range label location", "where to position the labels")
-				};
-
-				res[3].setPropertyEditorClass(LabelLocationPropertyEditor.class);
+						prop("Centre", "the centre of the range rings"),
+						prop("Color", "Color of the range rings"),
+            displayLongProp("RangeLabelLocation", "Range label location",
+                "where to position the labels",
+                LabelLocationPropertyEditor.class)				
+        };
 
 				return res;
 
@@ -382,9 +383,13 @@ public class RangeRingShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-			String thisLabel = ""
-					+ (getRingWidth().getValue() + getRingWidth().getValue() * i);
-			thisLabel += " " + getRingWidth().getUnitsLabel();
+      final double ringWidth = getRingWidth().getValue();
+      
+      // if the width is an integer, we don't need the decimal place
+      final String widthStr = ringWidth == (int) ringWidth ? ""
+          + (int) ringWidth * (i + 1) : "" + ringWidth * (i + 1);
+			
+      final String thisLabel = widthStr + " " + getRingWidth().getUnitsLabel();
 
 			final int strWidth = dest.getStringWidth(null, thisLabel);
 			final int strHeight = dest.getStringHeight(null);
@@ -455,7 +460,10 @@ public class RangeRingShape extends PlainShape implements Editable
 	public void setRangeLabelLocation(final int rangeLabelLocation)
 	{
 		_rangeLabelLocation = rangeLabelLocation;
-	}
+
+	   // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.TEXT_CHANGED, null, rangeLabelLocation);
+}
 
 	public WorldDistance getRingWidth()
 	{
@@ -470,7 +478,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, ringWidth);
 	}
 
 	public BoundedInteger getNumRings()
@@ -495,6 +503,9 @@ public class RangeRingShape extends PlainShape implements Editable
 	public void setWheelColor(final Color val)
 	{
 		super.setColor(val);
+		
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.COLOR_CHANGED, null, null);
 	}
 
 	public void shift(final WorldVector vector)

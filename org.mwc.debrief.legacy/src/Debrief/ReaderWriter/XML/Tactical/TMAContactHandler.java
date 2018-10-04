@@ -26,6 +26,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import java.awt.Color;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.Enumeration;
 
 import org.w3c.dom.Document;
@@ -42,6 +43,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
@@ -102,7 +104,14 @@ abstract public class TMAContactHandler extends
     {
       public void setValue(final String name, final String value)
       {
-          _thisSolution.setDTG(DebriefFormatDateTime.parseThis(value));
+          try
+          {
+            _thisSolution.setDTG(DebriefFormatDateTime.parseThis(value));
+          }
+          catch (ParseException e)
+          {
+            Trace.trace(e, "While parsing date");
+          }
       }
     });
 
