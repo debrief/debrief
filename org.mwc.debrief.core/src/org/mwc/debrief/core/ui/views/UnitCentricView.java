@@ -746,6 +746,16 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
           WorldDistance.NM), setRings,_myOverviewChart));
       pa6.fill(ringsMenu, 5);
+      ActionContributionItem pa7 = new ActionContributionItem(new Action("Format rings")
+      {
+        @Override
+        public void run()
+        {
+          formatItem(_myOverviewChart.getRings());
+        }
+      });
+      pa7.fill(ringsMenu, 6);
+
       return ringsMenu;
     }
     @Override
