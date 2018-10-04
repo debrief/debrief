@@ -15,7 +15,6 @@
 package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -241,56 +240,60 @@ public class SVGShape extends PlainSymbol
    */
   private Document getDocument()
   {
-      // remove the svg: prefix, if necesary
-      final String fName = _svgFileName.contains("svg:") ? _svgFileName
-          .substring(4) : _svgFileName;
+    // remove the svg: prefix, if necesary
+    final String fName = _svgFileName.contains("svg:") ? _svgFileName.substring(
+        4) : _svgFileName;
 
-      final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
-      final String svgPath = filePath;
-      
-      InputStream pluginResource = SVGShape.class.getResourceAsStream("/" + SVG_SYMBOL_FOLDER + filePath);
+    final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
+    final String svgPath = filePath;
 
-      try (InputStream inputStream = pluginResource!=null ? pluginResource : SVGShape.class.getResourceAsStream(svgPath);) {
+    final InputStream pluginResource = SVGShape.class.getResourceAsStream("/"
+        + SVG_SYMBOL_FOLDER + filePath);
 
-          if (inputStream == null)
-          {
-            // Resource doesn't exist
-            Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
-            return null;
-          }
-          else
-          {
-            final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-                .newInstance();
-            try
-            {
-              final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-              final Document doc = dBuilder.parse(inputStream);
-              // read this -
-              // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-              doc.getDocumentElement().normalize();
-    
-              return doc;
-            }
-            catch (ParserConfigurationException e)
-            {
-              Trace.trace(e,  "While configuring parser");
-              return null;
-            }
-            catch (SAXException e)
-            {
-              Trace.trace(e,  "While parsing SVG file");
-              return null;
-            }
-            
-          }
-      }
-      catch (IOException e)
+    try (InputStream inputStream = pluginResource != null ? pluginResource
+        : SVGShape.class.getResourceAsStream(svgPath);)
+    {
+
+      if (inputStream == null)
       {
-
-        Trace.trace(e,  "While reading document");
+        // Resource doesn't exist
+        Trace.trace(new FileNotFoundException(_svgFileName),
+            "Failed to open SVG file " + _svgFileName + " from " + svgPath);
         return null;
       }
+      else
+      {
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        try
+        {
+          final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+          final Document doc = dBuilder.parse(inputStream);
+          // read this -
+          // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+          doc.getDocumentElement().normalize();
+
+          return doc;
+        }
+        catch (ParserConfigurationException e)
+        {
+          Trace.trace(e, "While configuring parser");
+          return null;
+        }
+        catch (SAXException e)
+        {
+          Trace.trace(e, "While parsing SVG file");
+          return null;
+        }
+
+      }
+    }
+    catch (IOException e)
+    {
+
+      Trace.trace(e, "While reading document");
+      return null;
+    }
   }
 
   private void parseOrigin(Node element)
