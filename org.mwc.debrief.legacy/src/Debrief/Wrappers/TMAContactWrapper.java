@@ -269,18 +269,17 @@ public final class TMAContactWrapper extends
 
 		// update the ellipse with our origin
 		_theEllipse.setCentre(location);
-
+		
 		// create the shape wrapper to contain the ellipse
 		_labelledEllipse = new ShapeWrapper(label, _theEllipse, color, DTG);
 
 		// store the admin infomration
 		_trackName = solutionName;
 		_parentTrackName = trackName;
-		_DTG = DTG;
 		_targetDepth = depthMetres;
-
 		_targetBrgRads = Conversions.Degs2Rads(bearingDegs);
 		_targetRange = new WorldDistance(rangeYds, WorldDistance.YARDS);
+		_DTG = DTG;
 
 		// now the course/speed
 		_targetCourseDegs = courseDegs;
@@ -434,7 +433,7 @@ public final class TMAContactWrapper extends
 	 */
 	public final void setDTG(final HiResDate val)
 	{
-		_DTG = val;
+    _DTG = val;
 	}
 
 	@FireReformatted
@@ -445,7 +444,6 @@ public final class TMAContactWrapper extends
 		// set the colour of the ellipse
 		_labelledEllipse.setColor(val);
 		_labelledEllipse.setLabelColor(val);
-
 	}
 
 	/**
@@ -937,7 +935,7 @@ public final class TMAContactWrapper extends
 	 */
 	public final String getName()
 	{
-		return DebriefFormatDateTime.toStringHiRes(_DTG);
+		return getLabel();
 	}
 
 	public final String getMultiLineName()
