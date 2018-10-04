@@ -765,11 +765,11 @@ public class VideoPlayerView extends ViewPart
 
     if (videoName != null)
     {
-      VideoPlayerView.this.setPartName("Video player: " + videoName);
+      VideoPlayerView.this.setPartName("Media player: " + videoName);
     }
     else
     {
-      VideoPlayerView.this.setPartName("Video player");
+      VideoPlayerView.this.setPartName("Media player");
     }
     play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
     play.setToolTipText("Play");
@@ -856,7 +856,7 @@ public class VideoPlayerView extends ViewPart
             movieOpened(null, null);
             MessageBox message = new MessageBox(getSite().getShell(),
                 SWT.ICON_WARNING | SWT.OK);
-            message.setText("Video player: " + new File(currentFilename).getName());
+            message.setText("Media player: " + new File(currentFilename).getName());
             message.setMessage("This file format isn't supported.");
             message.open();
           }
