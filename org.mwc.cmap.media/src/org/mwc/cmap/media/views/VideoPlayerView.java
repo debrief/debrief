@@ -105,7 +105,7 @@ public class VideoPlayerView extends ViewPart
 
   private PartMonitor _myPartMonitor;
 
-  private String _selected;
+  private String _currentFilename;
 
   private PropertyChangeListener _propertyChangeListener =
       new PropertyChangeListener()
@@ -165,7 +165,7 @@ public class VideoPlayerView extends ViewPart
   public void setVideoStartTime(Date date)
   {
     startTime = date;
-    PlatformUI.getPreferenceStore().setValue(_selected, date
+    PlatformUI.getPreferenceStore().setValue(_currentFilename, date
         .getTime());
     fireNewTime(new HiResDate(date));
   }
@@ -351,7 +351,6 @@ public class VideoPlayerView extends ViewPart
       {
         fireNewTime = true;
         player.reopen();
-        
       }
     });
     stopBtn.setBackground(composite.getDisplay().getSystemColor(SWT.COLOR_WHITE));
@@ -446,7 +445,7 @@ public class VideoPlayerView extends ViewPart
                   break;
                 }
               }
-              if (supported && !fileName.equals(_selected))
+              if (supported && !fileName.equals(_currentFilename))
               {
                 initializePlayer(fileName);
               }
@@ -468,7 +467,7 @@ public class VideoPlayerView extends ViewPart
     {
       // try to get the start time from last video start time.
       long lastStartTime = PlatformUI.getPreferenceStore().getLong(
-          _selected);
+          _currentFilename);
       VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
       dialog.setStartTime(lastStartTime > 0 ? new Date(lastStartTime) : null);
       dialog.setBlockOnOpen(true);
@@ -674,6 +673,9 @@ public class VideoPlayerView extends ViewPart
     startTimeDialog.setBlockOnOpen(true);
     if(startTimeDialog.open()==Window.OK) {
       setVideoStartTime(startTimeDialog.getStartTime());
+      
+      // ok, and update the play time
+      updatePlayTime(0);
     }
   }
 
@@ -779,7 +781,14 @@ public class VideoPlayerView extends ViewPart
           videoName);
       if (start == null)
       {
-        start = new Date();
+        if(startTime != null)
+        {
+          start = startTime;
+        }
+        else
+        {
+          start = new Date();
+        }
       }
       startTime = start;
     }
@@ -811,7 +820,7 @@ public class VideoPlayerView extends ViewPart
       }
       if (player.open(memento.getString(STATE_VIDEO_FILE)))
       {
-        _selected = memento.getString(STATE_VIDEO_FILE);
+        _currentFilename = memento.getString(STATE_VIDEO_FILE);
         try
         {
           // Issue #545 - We don't need set position
@@ -830,25 +839,25 @@ public class VideoPlayerView extends ViewPart
 
   public String getSelected()
   {
-    return _selected;
+    return _currentFilename;
   }
 
-  public void open(String selected, Date videoStartTime)
+  public void open(String currentFilename, Date videoStartTime)
   {
-    if (selected != null)
+    if (currentFilename != null)
     {
-      if (!player.open(selected))
+      if (!player.open(currentFilename))
       {
         movieOpened(null, null);
         MessageBox message = new MessageBox(getSite().getShell(),
             SWT.ICON_WARNING | SWT.OK);
-        message.setText("Video player: " + new File(selected).getName());
+        message.setText("Video player: " + new File(currentFilename).getName());
         message.setMessage("This file format isn't supported.");
         message.open();
       }
       else
       {
-        _selected = selected;
+        _currentFilename = currentFilename;
         setVideoStartTime(videoStartTime);
       }
     }
