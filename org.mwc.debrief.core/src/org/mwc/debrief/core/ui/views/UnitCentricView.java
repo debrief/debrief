@@ -8,6 +8,8 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -15,6 +17,8 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -114,6 +118,7 @@ public class UnitCentricView extends ViewPart
     @Override
     public void run()
     {
+      setChecked(true);
       _operation.selected(_period);
       _myOverviewChart.update();
     }
@@ -565,7 +570,7 @@ public class UnitCentricView extends ViewPart
   private void contributeToActionBars()
   {
     final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
+   // fillLocalPullDown(bars.getMenuManager());
     fillLocalToolBar(bars.getToolBarManager());
   }
 
@@ -743,14 +748,15 @@ public class UnitCentricView extends ViewPart
     _fitToWindow.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/fit_to_win.png"));
 
-    _normalPaint = new Action("Normal Painter", SWT.RADIO)
+    _normalPaint = new ToggleAction("Normal Painter", SWT.PUSH)
     {
+      
 
       @Override
       public void run()
       {
         _snailPaint.setChecked(false);
-
+        _normalPaint.setChecked(true);
         // and repaint
         _myOverviewChart.update();
       }
@@ -760,47 +766,213 @@ public class UnitCentricView extends ViewPart
         "icons/16/normal.png"));
     _normalPaint.setChecked(true);
 
-    _snailPaint = new Action("Snail Painter", SWT.RADIO)
+    _snailPaint = new ToggleAction("Snail Painter", SWT.RADIO)
     {
       @Override
       public void run()
       {
+        
         _normalPaint.setChecked(false);
-
+        _snailPaint.setChecked(true);
+        
         // and repaint
         _myOverviewChart.update();
       }
     };
+    SnailDropDownMenuCreator snailDropDownMenu = new SnailDropDownMenuCreator();
+    _snailPaint.setMenuCreator(snailDropDownMenu);
     _snailPaint.setChecked(false);
     _snailPaint.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/snail.png"));
 
-    _showRings = new Action("Show range rings", SWT.CHECK)
+    _showRings = new ToggleAction("Show range rings", SWT.CHECK)
     {
       @Override
       public void run()
       {
+        _showRings.setChecked(!_showRings.isChecked());
         _myOverviewChart.update();
       }
     };
+    ShowRingsMenuCreator ringRadiiMenuCreator = new ShowRingsMenuCreator();
+    _showRings.setMenuCreator(ringRadiiMenuCreator);
     _showRings.setChecked(false);
     _showRings.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/range_rings.png"));
 
-    _showGrid = new Action("Show local grid", SWT.CHECK)
+    _showGrid = new ToggleAction("Show local grid", SWT.CHECK)
     {
       @Override
       public void run()
       {
+        _showGrid.setChecked(!_showGrid.isChecked());
         _myOverviewChart.update();
       }
     };
+    GridMenuCreator gridMenuCreator = new GridMenuCreator();
+    _showGrid.setMenuCreator(gridMenuCreator);
     _showGrid.setChecked(false);
     _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/local_grid.png"));
 
   }
+  
+  private static abstract class ToggleAction extends Action{
+    private boolean checked;
+    public ToggleAction(String title,int style) {
+      super(title,style);
+    }
+    @Override
+    public void setChecked(boolean checked)
+    {
+      super.setChecked(checked);
+      this.checked=checked;
+      if (checked) {
+        firePropertyChange(CHECKED, Boolean.FALSE, Boolean.TRUE);
+      } else {
+        firePropertyChange(CHECKED, Boolean.TRUE, Boolean.FALSE);
+      }
+    }
+    @Override
+    public boolean isChecked()
+    {
+      return checked;
+    }
+  }
+  
+  private class SnailDropDownMenuCreator implements IMenuCreator{
+    @Override
+    public Menu getMenu(Menu parent)
+    {
+      return parent;
+    }
+    
+    @Override
+    public Menu getMenu(Control parent)
+    {
+      Menu snailMenu = new Menu(parent);
+      
+     final PeriodOperation setSnail = new PeriodOperation()
+      {
+        @Override
+        public void selected(final long period)
+        {
+          _snailLength = period;
+        }
+      };
+      ActionContributionItem pa1 = new ActionContributionItem(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail));
+      pa1.fill(snailMenu, 0);
+      ActionContributionItem pa2 = new ActionContributionItem(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail));
+      pa2.fill(snailMenu, 1);
+      ActionContributionItem pa3 = new ActionContributionItem(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail));
+      pa3.fill(snailMenu, 2);
+      ActionContributionItem pa4 = new ActionContributionItem(new PeriodAction("1 Hour", 1000 * 60 * 60, setSnail));
+      pa4.fill(snailMenu, 3);
+      ActionContributionItem pa5 = new ActionContributionItem(new PeriodAction("2 Hours", 1000 * 60 * 60*2, setSnail));
+      pa5.fill(snailMenu, 4);
 
+      return snailMenu;
+    }
+    @Override
+    public void dispose()
+    {
+      //no need to dispose not dynamic
+    }
+  }
+  
+  private class GridMenuCreator implements IMenuCreator{
+    @Override
+    public Menu getMenu(Menu parent)
+    {
+      return parent;
+    }
+    
+    @Override
+    public Menu getMenu(Control parent)
+    {
+      Menu gridMenu = new Menu(parent);
+      
+      final DistanceOperation setGrid = new DistanceOperation()
+      {
+        @Override
+        public void selected(final WorldDistance distance)
+        {
+          _localGrid.setDelta(distance);
+        }
+      };
+      ActionContributionItem pa1 = new ActionContributionItem(new DistanceAction("100m", new WorldDistance(100,
+          WorldDistance.METRES), setGrid));
+      pa1.fill(gridMenu, 0);
+      ActionContributionItem pa2 = new ActionContributionItem(new DistanceAction("500m", new WorldDistance(500,
+          WorldDistance.METRES), setGrid));
+      pa2.fill(gridMenu, 1);
+      ActionContributionItem pa3 = new ActionContributionItem(new DistanceAction("1 km", new WorldDistance(1,
+          WorldDistance.KM), setGrid));
+      pa3.fill(gridMenu, 2);
+      ActionContributionItem pa4 = new ActionContributionItem(new DistanceAction("1 nm", new WorldDistance(1,
+          WorldDistance.NM), setGrid));
+      pa4.fill(gridMenu, 3);
+      ActionContributionItem pa5 = new ActionContributionItem(new DistanceAction("5 nm", new WorldDistance(5,
+          WorldDistance.NM), setGrid));
+      pa5.fill(gridMenu, 4);
+      ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
+          WorldDistance.NM), setGrid));
+      pa6.fill(gridMenu, 5);
+      return gridMenu;
+    }
+    @Override
+    public void dispose()
+    {
+      //no need to dispose not dynamic
+    }
+  }
+
+  private class ShowRingsMenuCreator implements IMenuCreator{
+    @Override
+    public Menu getMenu(Menu parent)
+    {
+      return parent;
+    }
+    
+    @Override
+    public Menu getMenu(Control parent)
+    {
+      Menu ringsMenu = new Menu(parent);
+      
+      final DistanceOperation setRings = new DistanceOperation()
+      {
+        @Override
+        public void selected(final WorldDistance distance)
+        {
+          _rangeRings.setRingWidth(distance);
+        }
+      };
+      ActionContributionItem pa1 = new ActionContributionItem(new DistanceAction("100m", new WorldDistance(100,
+          WorldDistance.METRES), setRings));
+      pa1.fill(ringsMenu, 0);
+      ActionContributionItem pa2 = new ActionContributionItem(new DistanceAction("500m", new WorldDistance(500,
+          WorldDistance.METRES), setRings));
+      pa2.fill(ringsMenu, 1);
+      ActionContributionItem pa3 = new ActionContributionItem(new DistanceAction("1 km", new WorldDistance(1,
+          WorldDistance.KM), setRings));
+      pa3.fill(ringsMenu, 2);
+      ActionContributionItem pa4 = new ActionContributionItem(new DistanceAction("1 nm", new WorldDistance(1,
+          WorldDistance.NM), setRings));
+      pa4.fill(ringsMenu, 3);
+      ActionContributionItem pa5 = new ActionContributionItem(new DistanceAction("5 nm", new WorldDistance(5,
+          WorldDistance.NM), setRings));
+      pa5.fill(ringsMenu, 4);
+      ActionContributionItem pa6 = new ActionContributionItem(new DistanceAction("10 nm", new WorldDistance(10,
+          WorldDistance.NM), setRings));
+      pa6.fill(ringsMenu, 5);
+      return ringsMenu;
+    }
+    @Override
+    public void dispose()
+    {
+      //no need to dispose not dynamic
+    }
+  }
   /**
    * ok, a new plot is selected - better show it then
    *
