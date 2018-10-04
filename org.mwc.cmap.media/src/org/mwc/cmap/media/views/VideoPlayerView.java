@@ -690,7 +690,7 @@ public class VideoPlayerView extends ViewPart
         fd.setText("Open Movie");
         String[] filterExt =
         {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
-            "*.wma", "*.*"};
+            "*.wma", "*.wmv","*.mp3", "*.*"};
         fd.setFilterExtensions(filterExt);
         String selected = fd.open();
         VideoPlayerView.this.open(selected, new Date());
@@ -840,7 +840,6 @@ public class VideoPlayerView extends ViewPart
       if (!player.open(selected))
       {
         movieOpened(null, null);
-        setVideoStartTime(videoStartTime);
         MessageBox message = new MessageBox(getSite().getShell(),
             SWT.ICON_WARNING | SWT.OK);
         message.setText("Video player: " + new File(selected).getName());
