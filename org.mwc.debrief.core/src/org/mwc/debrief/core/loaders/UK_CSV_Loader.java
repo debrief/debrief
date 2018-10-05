@@ -327,7 +327,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
   public void loadFile(final IAdaptable target, final InputStream inputStream,
       final String fileName, final CompleteListener listener)
   {
-    final Layers theLayers = target.getAdapter(Layers.class);
+    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
     final IPlotLoader finalLoader = this;
     try
     {
