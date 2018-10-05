@@ -26,7 +26,7 @@ import net.lingala.zip4j.exception.ZipException;
 public class JUnitTests
 {
   final private String[] donorFiles = new String[]
-  {"donor.pptx", "designed.pptx"};
+  {"master_template.pptx"};
   final private String[] trackFiles = new String[]
   {"long_tracks.txt", "multi_tracks.txt", "scenario_long_range.txt",
       "scenario_short_range.txt", "speed_change.txt"};
