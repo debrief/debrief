@@ -12,6 +12,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -47,6 +48,15 @@ import MWC.TacticalData.TrackDataProvider;
 public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     UnitDataProvider
 {
+  private static final String IMG_SNAIL = "icons/16/snail.png";
+  private static final String IMG_SNAIL_SELECTED = "icons/16/snail_selected.png";
+  private static final String IMG_NORMAL = "icons/16/normal.png";
+  private static final String IMG_NORMAL_SELECTED = "icons/16/normal_selected.png";
+  private static final String IMG_RINGS_SELECTED = "icons/16/rings_selected.png";
+  private static final String IMG_RINGS = "icons/16/range_rings.png";
+  private static final String IMG_GRID_SELECTED = "icons/16/grid_selected.png";
+  private static final String IMG_GRID = "icons/16/local_grid.png";
+  
 
   /** combine a selected distance with an application using that distance
    * 
@@ -600,7 +610,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     _fitToWindow.setImageDescriptor(CorePlugin.getImageDescriptor(
         "icons/16/fit_to_win.png"));
 
-    _normalPaint = new ToggleAction("Normal Painter", SWT.PUSH)
+    _normalPaint = new ToggleAction("Normal Painter", SWT.RADIO, IMG_NORMAL,IMG_NORMAL_SELECTED)
     {
       
 
@@ -615,18 +625,17 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       }
 
     };
-    _normalPaint.setImageDescriptor(CorePlugin.getImageDescriptor(
-        "icons/16/normal.png"));
     _normalPaint.setChecked(true);
+    _normalPaint.setImageDescriptor(CorePlugin.getImageDescriptor(IMG_NORMAL_SELECTED));
 
-    _snailPaint = new ToggleAction("Snail Painter", SWT.PUSH)
+    _snailPaint = new ToggleAction("Snail Painter", SWT.RADIO,IMG_SNAIL,IMG_SNAIL_SELECTED)
     {
       @Override
       public void run()
       {
         
         _normalPaint.setChecked(false);
-       // _snailPaint.setChecked(true);
+        _snailPaint.setChecked(true);
 
         _myOverviewChart.setSnailMode(true);
         // and repaint
@@ -636,10 +645,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     SnailDropDownMenuCreator snailDropDownMenu = new SnailDropDownMenuCreator();
     _snailPaint.setMenuCreator(snailDropDownMenu);
     _snailPaint.setChecked(false);
-    _snailPaint.setImageDescriptor(CorePlugin.getImageDescriptor(
-        "icons/16/snail.png"));
-
-    _showRings = new ToggleAction("Show range rings", SWT.CHECK)
+    _snailPaint.setImageDescriptor(CorePlugin.getImageDescriptor(IMG_SNAIL));
+    _showRings = new ToggleAction("Show range rings", SWT.CHECK,IMG_RINGS,IMG_RINGS_SELECTED)
     {
       @Override
       public void run()
@@ -652,11 +659,10 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     };
     ShowRingsMenuCreator ringRadiiMenuCreator = new ShowRingsMenuCreator();
     _showRings.setMenuCreator(ringRadiiMenuCreator);
-    _showRings.setChecked(false);
-    _showRings.setImageDescriptor(CorePlugin.getImageDescriptor(
-        "icons/16/range_rings.png"));
+    _showRings.setChecked(true);
+    _showRings.setImageDescriptor(CorePlugin.getImageDescriptor(IMG_RINGS_SELECTED));
 
-    _showGrid = new ToggleAction("Show local grid", SWT.CHECK)
+    _showGrid = new ToggleAction("Show local grid", SWT.CHECK,IMG_GRID,IMG_GRID_SELECTED)
     {
       @Override
       public void run()
@@ -668,9 +674,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     };
     GridMenuCreator gridMenuCreator = new GridMenuCreator();
     _showGrid.setMenuCreator(gridMenuCreator);
-    _showGrid.setChecked(false);
-    _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(
-"icons/16/local_grid.png"));
+    _showGrid.setChecked(true);
+    _showGrid.setImageDescriptor(CorePlugin.getImageDescriptor(IMG_GRID_SELECTED));
+    
 
   }
   
@@ -678,8 +684,12 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   
   private static abstract class ToggleAction extends Action{
     private boolean checked;
-    public ToggleAction(String title,int style) {
+    private ImageDescriptor _checkedImage;
+    private ImageDescriptor _defaultImage;
+    public ToggleAction(String title,int style,String defaultImage,String selectedImage) {
       super(title,style);
+      _defaultImage = CorePlugin.getImageDescriptor(defaultImage);
+      _checkedImage = CorePlugin.getImageDescriptor(selectedImage);
     }
     @Override
     public void setChecked(boolean checked)
@@ -687,8 +697,10 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       super.setChecked(checked);
       this.checked=checked;
       if (checked) {
+        setImageDescriptor(_checkedImage);
         firePropertyChange(CHECKED, Boolean.FALSE, Boolean.TRUE);
       } else {
+        setImageDescriptor(_defaultImage);
         firePropertyChange(CHECKED, Boolean.TRUE, Boolean.FALSE);
       }
     }
