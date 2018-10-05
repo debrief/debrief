@@ -107,7 +107,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     
     boolean tripped = false;
     
-    public void testSingleLineBad() throws ParseException 
+    public void testSingleLineBad1() throws ParseException 
     {
       final String line =
           "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
@@ -118,6 +118,25 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
         fix = UK_CSV_Loader.readLine(line);
       }
       catch (NumberFormatException e)
+      {
+        tripped = true;
+      }
+      assertNull("didn't manage to produce fix", fix);
+      assertTrue("parse exception thrown", tripped);
+    }
+    
+    public void testSingleLineBad2() throws ParseException 
+    {
+      final String line =
+          "22.1862861, -21.6978806,19951212T050000Z";
+      
+      tripped = false;
+      FixWrapper fix = null;
+      try
+      {
+        fix = UK_CSV_Loader.readLine(line);
+      }
+      catch (ArrayIndexOutOfBoundsException e)
       {
         tripped = true;
       }
