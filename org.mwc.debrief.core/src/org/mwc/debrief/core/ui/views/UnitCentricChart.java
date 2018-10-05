@@ -311,7 +311,7 @@ class UnitCentricChart extends SWTChart
       CorePlugin.logError(IStatus.WARNING,
           "Unit centric view is missing primary track", null);
       dest.setColor(new Color(200, 0, 0));
-      dest.drawText("Please assign a primary track",5,10);
+      dest.drawText("Please assign a primary track",50,50);
       return;
     }
     
