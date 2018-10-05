@@ -546,8 +546,8 @@ public class PlotTracks
       // Get Shape offsets and exts
       /*int temp_shape_x = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("x"));
       int temp_shape_y = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("y"));*/
-      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0]) + "");
-      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1]) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy) + "");
       
       // Adding color to the track
       final String colorHexValue = track.getColorAsString().toUpperCase();
