@@ -143,6 +143,7 @@ import org.mwc.debrief.core.actions.RadioHandler;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.interfaces.IPlotLoader.BaseLoader;
+import org.mwc.debrief.core.interfaces.IPlotLoader.CompleteListener;
 import org.mwc.debrief.core.interfaces.IPlotLoader.DeferredPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.ReplayLoader;
@@ -2201,6 +2202,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private void loadThisStream(final InputStream is, final String fileName)
   {
+    final CompleteListener listener = new CompleteListener() 
+    {
+      @Override
+      public void complete(final IPlotLoader loader)
+      {
+        loadingComplete(loader);
+      }
+    };
+    
     // right, see if any of them will do our edit
     final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
     // did we find any?
@@ -2212,11 +2222,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         for (int i = 0; i < loaders.length; i++)
         {
           final IPlotLoader thisLoader = loaders[i];
-
+          
           // get it to load. Just in case it's an asychronous load
           // operation, we
           // rely on it calling us back (loadingComplete)
-          thisLoader.loadFile(this, is, fileName);
+          thisLoader.loadFile(this, is, fileName, listener);
 
           // special handling - popup a dialog to allow sensor name/color to be
           // set if there's just one sensor

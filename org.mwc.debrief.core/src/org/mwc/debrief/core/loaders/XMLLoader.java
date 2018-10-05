@@ -67,10 +67,12 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
+  public void loadFile(final IAdaptable target, final InputStream inputStream,
+      final String fileName, final CompleteListener listener)
 	{
 
-			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+    final IPlotLoader finalLoader = this;
+			final Layers theLayers = (Layers) target.getAdapter(Layers.class);
 
 			try
 			{
@@ -97,7 +99,9 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 
 								// ok - get loading going
 
-								doTheLoad(theLayers, inputStream, fileName, thePlot, thePlot);
+								IControllableViewport view = target.getAdapter(IControllableViewport.class);
+                PlotEditor plot = target.getAdapter(PlotEditor.class);
+                doTheLoad(theLayers, inputStream, fileName, view, plot);
 
 								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);
@@ -111,7 +115,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							finally
 							{
 								// and inform the plot editor
-								thePlot.loadingComplete(this);
+								listener.complete(finalLoader);
 
 								// ok, allow the layers object to inform anybody what's
 								// happening

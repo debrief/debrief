@@ -27,6 +27,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -45,7 +46,6 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -66,10 +66,12 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
 	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final InputStream inputStream, final String fileName,
-			Layers layers, CompleteListener completeListener)
+	@Override
+  public void loadFile(final IAdaptable target, final InputStream inputStream,
+      final String fileName, final CompleteListener listener)
 	{
-		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+		final Layers theLayers = (Layers) target.getAdapter(Layers.class);
+    final IPlotLoader finalLoader = this;
 
 		try
 		{
@@ -105,7 +107,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 									+ fileName, null);
 
 							// and inform the plot editor
-							thePlot.loadingComplete(this);
+              listener.complete(finalLoader);
 
 							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
@@ -174,7 +176,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 			{
 
 				// ok, we know we have a header line, so skip it.
-				String skipHeader = br.readLine();
+				br.readLine();
 				
 				// ok, now the first real line
 				thisLine = br.readLine();
@@ -324,8 +326,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 		  InputStream stream = new java.io.ByteArrayInputStream(testInput.getBytes(Charset.forName("UTF-8")));
 		 
       UK_CSV_Loader loader = new UK_CSV_Loader();
-      Layers layers = new Layers();
-      loader.loadFile(stream, "test_file.csv", layers, this);
+      loader.loadFile(null, stream, "test_file.csv", this);
 //
 //		  // check the input
 //		  
@@ -440,7 +441,6 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
       // TODO Auto-generated method stub
       
     }
-
 	}
 
 }
