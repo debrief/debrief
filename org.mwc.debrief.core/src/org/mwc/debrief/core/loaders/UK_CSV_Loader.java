@@ -31,7 +31,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -52,16 +51,8 @@ import junit.framework.TestCase;
 public class UK_CSV_Loader extends CoreLoader
 {
 
-  public final static class TestLogImport extends TestCase implements
-      CompleteListener
+  public final static class TestLogImport extends TestCase
   {
-    private IPlotLoader msgReceived;
-
-    @Override
-    public void complete(final IPlotLoader loader)
-    {
-      msgReceived = loader;
-    }
 
     public void testGetName() throws ParseException
     {
@@ -85,14 +76,10 @@ public class UK_CSV_Loader extends CoreLoader
           .getBytes(Charset.forName("UTF-8")));
 
       final Layers layers = new Layers();
-      final UK_CSV_Loader loader = new UK_CSV_Loader();
 
       assertEquals("layers empty", 0, layers.size());
-      assertNull("message not sent, yet", msgReceived);
 
-      UK_CSV_Loader.doImport(stream, "test_file.csv", this, layers, loader);
-
-      assertNotNull("message set", msgReceived);
+      UK_CSV_Loader.importThis(layers,"test_file.csv", stream);
 
       assertEquals("layers not empty", 1, layers.size());
 
@@ -190,38 +177,6 @@ public class UK_CSV_Loader extends CoreLoader
     final DateFormat sdf = new GMTDateFormat("yyyyMMdd'T'HHmmss'Z'",
         Locale.ENGLISH);
     return sdf.parse(date);
-  }
-
-  private static void doImport(final InputStream inputStream,
-      final String fileName, final CompleteListener listener,
-      final Layers theLayers, final IPlotLoader finalLoader)
-  {
-    // right, better suspend the LayerManager extended updates from
-    // firing
-    theLayers.suspendFiringExtended(true);
-
-    try
-    {
-      // ok, go for it.
-      importThis(theLayers, fileName, inputStream);
-
-      // and inform the plot editor
-      listener.complete(finalLoader);
-    }
-    catch (final RuntimeException e)
-    {
-      CorePlugin.showMessage("Import CSV Track file", "Failed to read:"
-          + fileName + ". Please see error log.");
-      DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
-          e);
-    }
-    finally
-    {
-      // ok, allow the layers object to inform anybody what's
-      // happening
-      // again
-      theLayers.suspendFiringExtended(false);
-    }
   }
 
   private static String getName(final String thisLine) throws ParseException
@@ -361,23 +316,31 @@ public class UK_CSV_Loader extends CoreLoader
 
   public UK_CSV_Loader()
   {
-    super("CSV Track format");
+    super("CSV Track format", "csv");
   }
 
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final InputStream inputStream, final String fileName,
-      final CompleteListener listener)
+      final Layers theLayers, final InputStream inputStream,
+      final String fileName)
   {
-    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
-    final IPlotLoader finalLoader = this;
     return new IRunnableWithProgress()
     {
       @Override
       public void run(final IProgressMonitor pm)
       {
-        doImport(inputStream, fileName, listener, theLayers, finalLoader);
-      }
+        try
+        {
+          // ok, go for it.
+          importThis(theLayers, fileName, inputStream);
+        }
+        catch (final RuntimeException e)
+        {
+          CorePlugin.showMessage("Import CSV Track file", "Failed to read:"
+              + fileName + ". Please see error log.");
+          DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
+              e);
+        }      }
     };
   }
 

@@ -23,8 +23,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.cmap.core.wizards.ImportNMEADialog;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
-import org.mwc.debrief.core.interfaces.IPlotLoader.CompleteListener;
 
 import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import MWC.GUI.Layers;
@@ -36,7 +34,7 @@ public class NMEALoader extends CoreLoader
 
   public NMEALoader(String fileType)
   {
-    super("NMEA");
+    super("NMEA", null);
   }
 
   /*
@@ -47,13 +45,12 @@ public class NMEALoader extends CoreLoader
    */
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final InputStream inputStream, final String fileName,
-      final CompleteListener listener)
+      Layers layers, final InputStream inputStream,
+      final String fileName)
   {
 
     // ok, we'll need somewhere to put the data
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
-    final IPlotLoader finalLoader = this;
 
     return new IRunnableWithProgress()
     {
@@ -62,9 +59,6 @@ public class NMEALoader extends CoreLoader
 
         try
         {
-          DebriefPlugin.logError(Status.INFO, "about to start loading:"
-              + fileName, null);
-
           final ImportNMEADialog dialog = new ImportNMEADialog();
           if (dialog.open() != Dialog.CANCEL)
           {
@@ -75,9 +69,6 @@ public class NMEALoader extends CoreLoader
             // ok - get loading going
             ImportNMEA importer = new ImportNMEA(theLayers);
             importer.importThis(fileName, inputStream, osFreq, tgtFreq);
-
-            DebriefPlugin.logError(Status.INFO,
-                "Successfully completed loading:" + fileName, null);
           }
           else
           {
@@ -85,30 +76,10 @@ public class NMEALoader extends CoreLoader
                 + fileName, null);
           }
         }
-        catch (final RuntimeException e)
-        {
-          DebriefPlugin.logError(Status.ERROR, "Problem loading AIS datafile:"
-              + fileName, e);
-        }
         catch (final Exception e)
         {
           DebriefPlugin.logError(Status.ERROR, "Problem loading AIS datafile:"
               + fileName, e);
-        }
-        finally
-        {
-          // and inform the plot editor
-          listener.complete(finalLoader);
-
-          DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-          // ok, allow the layers object to inform anybody what's
-          // happening
-          // again
-          theLayers.suspendFiringExtended(false);
-
-          // and trigger an update ourselves
-          // theLayers.fireExtended();
         }
       }
     };
