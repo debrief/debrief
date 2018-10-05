@@ -110,6 +110,11 @@ public class PlotTracks
       {
         returnValue = "Corrupted Time or missing";
       }
+      else if (shapes[4] == null)
+      {
+        returnValue =
+            "Corrupted footprint or missing (old version of the master template)";
+      }
 
       try
       {
@@ -196,12 +201,17 @@ public class PlotTracks
     }
   }
 
-  private void addShapeMarkerObjects(final Element spTreeobj,
-      final ArrayList<Element> shape_objs, final ArrayList<Element> arrow_objs)
+  private void addShapeMarkerFootPrintsObjects(final Element spTreeobj,
+      final ArrayList<Element> arrow_objs,
+      final ArrayList<ArrayList<Element>> all_footprints_objs)
   {
-    for (final Element shape : shape_objs)
+    for (final ArrayList<Element> footprintsTracks : all_footprints_objs)
     {
-      spTreeobj.insertChildren(spTreeobj.childNodeSize(), shape);
+      // Each track has their own list
+      for (final Element footPrint : footprintsTracks)
+      {
+        spTreeobj.insertChildren(spTreeobj.childNodeSize(), footPrint);
+      }
     }
     for (final Element arrow : arrow_objs)
     {
@@ -246,7 +256,8 @@ public class PlotTracks
       throw new DebriefException("donor file does not exist");
     }
 
-    /** use standard O/S temp folder
+    /**
+     * use standard O/S temp folder
      * 
      */
     final Path temp_unpack_path = Files.createTempDirectory("Debrief_to_pptx_");
@@ -396,6 +407,7 @@ public class PlotTracks
     final Element arrow_tag = shapes_temp[1];
     final Element time_tag = shapes_temp[2];
     final Element narrative_tag = shapes_temp[3];
+    final Element footprint_tag = shapes_temp[4];
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
@@ -409,6 +421,12 @@ public class PlotTracks
     final Element anim_tag = timeAnimTemp[0];
     final Element anim_tag_upper = timeAnimTemp[1];
     final Element anim_insertion_tag_upper = timeAnimTemp[2];
+
+    // Get Footprint ellipse size
+    int footprint_x_size = Integer.parseInt(footprint_tag.selectFirst("a|ext")
+        .attr("cx"));
+    int footprint_y_size = Integer.parseInt(footprint_tag.selectFirst("a|ext")
+        .attr("cy"));
 
     int trackCount = 0;
     int current_shape_id = Integer.parseInt(shape_tag.selectFirst("p|cNvPr")
@@ -425,6 +443,12 @@ public class PlotTracks
     final ArrayList<Element> shape_objs = new ArrayList<>();
     final ArrayList<Element> arrow_objs = new ArrayList<>();
     final ArrayList<ArrayList<Element>> all_animation_objs = new ArrayList<>();
+    final ArrayList<ArrayList<Element>> all_footprints_objs = new ArrayList<>();
+
+    // FOOT PRINTS initial id.
+    int initialFootprintId = Integer.parseInt(footprint_tag.selectFirst(
+        "p|cNvPr").attr("id"));
+    int footprint_count = initialFootprintId;
 
     for (final Track track : trackData.getTracks())
     {
@@ -510,7 +534,11 @@ public class PlotTracks
       prev_anim_x = prev_anim_x - TailX - arrow_center_x_small;
       prev_anim_y = prev_anim_y - TailY - arrow_center_y_small;
 
+      // Adding color to the track
+      final String colorHexValue = track.getColorAsString().toUpperCase();
+
       final ArrayList<Element> track_anim_objs = new ArrayList<>();
+      final ArrayList<Element> footprints_objs = new ArrayList<>();
 
       for (final TrackPoint coordinate : coordinates)
       {
@@ -549,6 +577,19 @@ public class PlotTracks
         x_int = tempCoordinatesInt[0];
         y_int = tempCoordinatesInt[1];
 
+        final Element temp_footprint_tag = footprint_tag.clone();
+        // We substract the ellipse size from the coordinate.
+        temp_footprint_tag.selectFirst("a|off").attr("x", (x_int
+            - footprint_x_size / 2) + "");
+        temp_footprint_tag.selectFirst("a|off").attr("y", (y_int
+            - footprint_y_size / 2) + "");
+        // Adding color to the footprint
+        temp_footprint_tag.selectFirst("a|srgbClr").attr("val", colorHexValue);
+        temp_footprint_tag.selectFirst("p|cNvPr").attr("id", footprint_count
+            + "");
+        footprints_objs.add(temp_footprint_tag);
+        footprint_count++;
+
         // remove the offsets for the track object
         x_int = x_int - temp_shape_x;
         y_int = y_int - temp_shape_y;
@@ -568,8 +609,7 @@ public class PlotTracks
       }
 
       all_animation_objs.add(track_anim_objs);
-      // Adding color to the track
-      final String colorHexValue = track.getColorAsString().toUpperCase();
+      all_footprints_objs.add(footprints_objs);
       temp_shape_tag.selectFirst("a|srgbClr").attr("val", colorHexValue);
 
       // changing arrow to rect callout -
@@ -595,14 +635,43 @@ public class PlotTracks
 
     // Adding all shape and arrow objects
     final Element spTreeobj = soup.selectFirst("p|spTree");
-    addShapeMarkerObjects(spTreeobj, shape_objs, arrow_objs);
+    addShapeMarkerFootPrintsObjects(spTreeobj, arrow_objs, all_footprints_objs);
     addAnimationObjects(all_animation_objs, anim_tag_upper,
         anim_insertion_tag_upper);
+    addAnimationFootPrints(time_anim_tag_first, anim_insertion_tag_upper,
+        trackData, intervalDuration, initialFootprintId);
     createTimeNarrativeShapes(spTreeobj, trackData, time_tag,
         time_anim_tag_first, anim_insertion_tag_upper, time_anim_tag_big,
         time_anim_tag_big_insertion, narrative_tag);
     writeSoup(slide_path, soup);
     return new PackPresentation().pack(output_filename, temp_unpack_path);
+  }
+
+  private void addAnimationFootPrints(Element time_anim_tag_first,
+      Element anim_insertion_tag_upper, TrackData trackData,
+      final int intervalDuration_in, final int initialFootprintId_in)
+  {
+    int intervalDuration = intervalDuration_in;
+    int initialFootprintId = initialFootprintId_in;
+    // Create parent animation object for all time box
+    for (Track track : trackData.getTracks())
+    {
+      int time_delay = intervalDuration;
+      for (int i = 0; i < track.getSegments().size(); i++)
+      {
+        // handle animation objs for time
+        Element temp_time_anim = time_anim_tag_first.clone();
+        temp_time_anim.selectFirst("p|spTgt").attr("spid", initialFootprintId
+            + "");
+        temp_time_anim.selectFirst("p|cond").attr("delay", time_delay + "");
+        temp_time_anim.selectFirst("p|cTn").attr("nodeType", "withEffect");
+        anim_insertion_tag_upper.insertChildren(anim_insertion_tag_upper
+            .childNodeSize(), temp_time_anim);
+        time_delay += intervalDuration;
+
+        initialFootprintId++;
+      }
+    }
   }
 
   /**
@@ -860,36 +929,47 @@ public class PlotTracks
     Element arrow_tag = null;
     Element time_tag = null;
     Element narrative_tag = null;
+    Element footprint_tag = null;
 
     // retrieve the sample arrow and path tag
     final Elements all_shape_tags = soup.select("p|sp");
+    ArrayList<Element> toRemove = new ArrayList<>();
     for (final Element shape : all_shape_tags)
     {
       final String name = shape.select("p|cNvPr").get(0).attr("name");
       if ("track".equals(name))
       {
         shape_tag = shape;
+        toRemove.add(shape_tag);
       }
       else if ("marker".equals(name))
       {
         arrow_tag = shape;
+        toRemove.add(arrow_tag);
       }
       else if ("time".equals(name))
       {
         time_tag = shape;
+        toRemove.add(time_tag);
       }
       else if ("narrative".equals(name))
       {
         narrative_tag = shape;
+        toRemove.add(narrative_tag);
+      }
+      else if ("footprint".equals(name))
+      {
+        footprint_tag = shape;
+        toRemove.add(footprint_tag);
       }
     }
 
-    shape_tag.remove();
-    arrow_tag.remove();
-    time_tag.remove();
-    narrative_tag.remove();
+    for (Element toRemoveElement : toRemove)
+    {
+      toRemoveElement.remove();
+    }
     return new Element[]
-    {shape_tag, arrow_tag, time_tag, narrative_tag};
+    {shape_tag, arrow_tag, time_tag, narrative_tag, footprint_tag};
   }
 
   private void writeSoup(final String slide_path, final Document soup)

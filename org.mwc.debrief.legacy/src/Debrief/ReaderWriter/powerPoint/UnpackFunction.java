@@ -20,8 +20,8 @@ public class UnpackFunction
     return unpackFunction(pptx_path, "");
   }
 
-  public String unpackFunction(final String pptx_path, final String unpack_path_in)
-      throws ZipException, DebriefException
+  public String unpackFunction(final String pptx_path,
+      final String unpack_path_in) throws ZipException, DebriefException
   {
     final String unpack_path;
     if (unpack_path_in.isEmpty())
@@ -36,12 +36,13 @@ public class UnpackFunction
     // check if unpack_path is directory or not
     if (!Files.exists(Paths.get(pptx_path)) || pptx_path.isEmpty())
     {
-      throw new DebriefException("The PPTX master template hasn't been assigned");
+      throw new DebriefException(
+          "The PPTX master template hasn't been assigned");
     }
 
     if (!pptx_path.endsWith("pptx"))
     {
-      throw new DebriefException("pptx_path provided is not a pptx file");
+      throw new DebriefException("The PPTX master provided is not a pptx file");
     }
 
     // Unpack the pptx file
