@@ -227,7 +227,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       sensor.removeElement(sensor.elements().nextElement());
 
       assertEquals("now empty", 0, sensor.size());
-      ;
 
       // give it some freq data
       sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
@@ -259,7 +258,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       sensor.removeElement(sensor.elements().nextElement());
 
       assertEquals("now empty", 0, sensor.size());
-      ;
 
       // give it some freq data
       sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
