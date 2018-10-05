@@ -420,7 +420,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   private static final String IMG_GRID_SELECTED = "icons/16/grid_selected.png";
 
   private static final String IMG_GRID = "icons/16/local_grid.png";
-
+  
+  
   /**
    * convert an absolute location into a location relative to a primary track
    *
@@ -663,7 +664,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   {
     // declare our context sensitive help
     CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.OverviewChart");
-
     // hey, first create the chart
     _myOverviewChart = new UnitCentricChart(parent, this)
     {
@@ -1081,6 +1081,12 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
 
               // and trigger update
               _myOverviewChart.update();
+              if(_trackDataProvider.getPrimaryTrack()==null) {
+                CorePlugin.logError(IStatus.WARNING,
+                    "Unit centric view is missing primary track", null);
+                CorePlugin.showMessage("Unit Centric View",
+                    "Please assign a primary track");
+              }
             }
           }
         });
