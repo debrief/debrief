@@ -91,7 +91,7 @@ public class CSVExportDropdownRegistry implements DropdownProvider
       assertEquals("has 3 lines", 3, fields.get("SectionC").size());
     }
 
-    public void testLoad()
+    public void testLoad() throws FileNotFoundException
     {
       final String filename =
           "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/ExportWizard.csv";
@@ -123,7 +123,18 @@ public class CSVExportDropdownRegistry implements DropdownProvider
     if (ourInstance == null)
     {
       ourInstance = new CSVExportDropdownRegistry();
-      ourInstance.load();
+      try
+      {
+        ourInstance.load();
+      }
+      catch (FileNotFoundException e)
+      {
+        CorePlugin.logError(IStatus.WARNING,
+            Messages.ExportCSVRegistry_FileNotFound, null);
+        CorePlugin.showMessage("Export to CSV", "CSV wizard settings file missing:\n" + ourInstance.getFileName()
+        +"\n\nPlease provide file using Preferences page");
+        ourInstance = null;
+      }
     }
     return ourInstance;
   }
@@ -202,8 +213,9 @@ public class CSVExportDropdownRegistry implements DropdownProvider
 
   /**
    * Load data from file
+   * @throws FileNotFoundException 
    */
-  private void load()
+  private void load() throws FileNotFoundException
   {
     if (getFileName() == null || getFileName().trim().length() == 0)
     {
@@ -212,8 +224,6 @@ public class CSVExportDropdownRegistry implements DropdownProvider
       return;
     }
 
-    try
-    {
       final BufferedReader br = new BufferedReader(new FileReader(
           getFileName()));
       try
@@ -242,16 +252,11 @@ public class CSVExportDropdownRegistry implements DropdownProvider
         CorePlugin.logError(IStatus.WARNING,
             Messages.ExportCSVRegistry_ErrorOnReading, e);
       }
-    }
-    catch (final FileNotFoundException e)
-    {
-      CorePlugin.logError(IStatus.WARNING,
-          Messages.ExportCSVRegistry_FileNotFound, null);
-    }
+
 
   }
 
-  public void reload()
+  public void reload() throws FileNotFoundException
   {
     clear();
     load();
