@@ -33,6 +33,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -46,7 +47,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
-import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -103,6 +103,26 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
       assertNotNull("found track", track);
 
       assertEquals("all points", 4, track.numFixes());
+    }
+    
+    boolean tripped = false;
+    
+    public void testSingleLineBad() throws ParseException 
+    {
+      final String line =
+          "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+      
+      FixWrapper fix = null;
+      try
+      {
+        fix = UK_CSV_Loader.readLine(line);
+      }
+      catch (NumberFormatException e)
+      {
+        tripped = true;
+      }
+      assertNull("didn't manage to produce fix", fix);
+      assertTrue("parse exception thrown", tripped);
     }
 
     public void testSingleLine() throws ParseException
@@ -175,7 +195,9 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     }
     catch (final RuntimeException e)
     {
-      Trace.trace(e, "Problem loading datafile:" + fileName);
+      CorePlugin.showMessage("Import CSV Track file", "Failed to read:" + fileName + ". Please see error log.");
+      DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
+          e);
     }
     finally
     {
@@ -263,6 +285,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     }
     catch (final NumberFormatException e)
     {
+      CorePlugin.showMessage("Import CSV", "Incorrectly formatter number at line " + lineCounter);
       DebriefPlugin.logError(IStatus.INFO,
           "Number format exception reading line " + lineCounter + " in "
               + fName, e);
@@ -291,7 +314,7 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
   }
 
   private static FixWrapper readLine(final String thisLine)
-      throws ParseException
+      throws ParseException, NumberFormatException
   {
     // sample line
     // final String line = "22.1862861,
