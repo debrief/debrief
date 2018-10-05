@@ -23,13 +23,13 @@ public class MsDocXLoader extends CoreLoader
       final Layers theLayers, final InputStream inputStream,
       final String fileName)
   {
+    final TrackDataProvider trackData = (TrackDataProvider) target
+        .getAdapter(TrackDataProvider.class);
+
     return new IRunnableWithProgress()
     {
       public void run(final IProgressMonitor pm)
       {
-        final TrackDataProvider trackData = (TrackDataProvider) target
-            .getAdapter(TrackDataProvider.class);
-
         // ok. we'll pass it to the rider import. If that fails, we can offer it to the
         // plain importer
         ImportRiderNarrativeDocument iw = new ImportRiderNarrativeDocument(
