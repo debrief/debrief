@@ -15,13 +15,13 @@
 package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
+import java.text.ParseException;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.FlatFile.ImportSATC;
 import MWC.GUI.Layers;
@@ -33,7 +33,7 @@ public class SATCLoader extends CoreLoader
 
   public SATCLoader(String fileType)
   {
-    super("SATC Scenario");
+    super("SATC Scenario", null);
   }
 
   /*
@@ -43,35 +43,25 @@ public class SATCLoader extends CoreLoader
    * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
    */
   @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target, final InputStream inputStream,
-      final String fileName, final CompleteListener listener)
+  protected IRunnableWithProgress getImporter(final IAdaptable target, final Layers theLayers,
+      final InputStream inputStream, final String fileName)
   {
-
-    // ok, we'll need somewhere to put the data
-    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
-    final IPlotLoader finalLoader = this;
     return new IRunnableWithProgress()
     {
       @Override
       public void run(final IProgressMonitor pm)
 
       {
-        // right, better suspend the LayerManager extended updates from
-        // firing
-        theLayers.suspendFiringExtended(true);
-
         try
         {
-          DebriefPlugin.logError(Status.INFO, "about to start loading:"
-              + fileName, null);
-
           // ok - get loading going
           ImportSATC importer = new ImportSATC(theLayers);
           importer.importThis(fileName, inputStream);
-
-          DebriefPlugin.logError(Status.INFO, "completed loading:" + fileName,
-              null);
-
+        }
+        catch(ParseException pe)
+        {
+          DebriefPlugin.logError(Status.ERROR, "Problem loading SATC datafile:"
+              + fileName, pe);
         }
         catch (final RuntimeException e)
         {
@@ -82,18 +72,6 @@ public class SATCLoader extends CoreLoader
         {
           DebriefPlugin.logError(Status.ERROR, "Problem loading SATC datafile:"
               + fileName, e);
-        }
-        finally
-        {
-          // and inform the plot editor
-          listener.complete(finalLoader);
-
-          DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-          // ok, allow the layers object to inform anybody what's
-          // happening
-          // again
-          theLayers.suspendFiringExtended(false);
         }
       }
     };

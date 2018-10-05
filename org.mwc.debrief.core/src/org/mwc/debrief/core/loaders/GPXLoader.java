@@ -18,11 +18,8 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.gpx.ImportGPX;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import MWC.GUI.Layers;
 
@@ -35,56 +32,23 @@ public class GPXLoader extends CoreLoader
 {
   public GPXLoader(String fileType)
   {
-    super("GPX");
+    super("GPX", "gpx");
   }
 
   @Override
-  protected IRunnableWithProgress getImporter(final IAdaptable target, final InputStream inputStream,
-      final String fileName, final CompleteListener listener)
+  protected IRunnableWithProgress getImporter(final IAdaptable target,
+      final Layers layers, final InputStream inputStream, final String fileName)
   {
-    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
-    final IPlotLoader finalLoader = this;
-
     return new IRunnableWithProgress()
     {
       @Override
       public void run(final IProgressMonitor pm)
       {
-        // right, better suspend the LayerManager extended updates from
-        // firing
-        theLayers.suspendFiringExtended(true);
 
-        try
-        {
           // ok - get loading going
+          ImportGPX.doImport(layers, inputStream, fileName);
 
-          // double check, is this a KMZ
-          if (fileName.toLowerCase().endsWith(".gpx"))
-          {
-            // ok - get loading going
-            ImportGPX.doImport(theLayers, inputStream, fileName);
-          }
-
-          // and inform the plot editor
-          listener.complete(finalLoader);
-        }
-        catch (final RuntimeException e)
-        {
-          DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-              + fileName, e);
-        }
-        finally
-        {
-          // and inform the plot editor
-          listener.complete(finalLoader);
-
-          // ok, allow the layers object to inform anybody what's
-          // happening
-          // again
-          theLayers.suspendFiringExtended(false);
-        }
       }
-
     };
   }
 }
