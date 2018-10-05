@@ -509,25 +509,20 @@ public final class StackedDotHelper
     public TrackDataHelper getTrackData() throws ParseException, IOException
     {
       final Layers layers = getData();
+      
       final TrackWrapper ownship = (TrackWrapper) layers.findLayer("SENSOR");
       assertNotNull("found ownship", ownship);
 
       final BaseLayer sensors = ownship.getSensors();
       assertEquals("has all sensors", 2, sensors.size());
 
-      // get the tail
-      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
-          "tail sensor");
-      assertNotNull("found tail", tailSensor);
+      SensorContactWrapper[] tailItems = checkTailSensor(sensors);
+
+      SensorContactWrapper[] hullItems = checkHullSensor(sensors);
+      
       final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
           "hull sensor");
       assertNotNull("found hull", hullSensor);
-
-      // give it it's offset
-      tailSensor.setSensorOffset(new ArrayLength(1000));
-
-      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
-      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
 
       // note: we've commented out some
       assertEquals("got all cuts", 8, tailItems.length);
@@ -564,6 +559,18 @@ public final class StackedDotHelper
         e.printStackTrace();
       }
 
+      final TrackWrapper tma = checkTMA(layers, newName);
+
+      // and now the track data object
+      final TrackDataHelper prov = new TrackDataHelper();
+      prov.setPrimary(ownship);
+      prov.addSecondary(tma);
+
+      return prov;
+    }
+
+    private TrackWrapper checkTMA(final Layers layers, final String newName)
+    {
       // get the TMA
       final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
       assertNotNull("found it", tma);
@@ -581,13 +588,7 @@ public final class StackedDotHelper
       @SuppressWarnings("deprecation")
       final String toTime = firstFix.getDateTimeGroup().getDate().toGMTString();
       assertEquals("valid first time", "12 Jan 2010 12:00:15 GMT", toTime);
-
-      // and now the track data object
-      final TrackDataHelper prov = new TrackDataHelper();
-      prov.setPrimary(ownship);
-      prov.addSecondary(tma);
-
-      return prov;
+      return tma;
     }
     
     public void testGetSinglePointCourseData() throws ParseException, IOException
@@ -1233,23 +1234,10 @@ public final class StackedDotHelper
         }
       }
 
+      checkHullSensor(sensors);
+
       // get the tail
-      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
-          "tail sensor");
-      assertNotNull("found tail", tailSensor);
-      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
-          "hull sensor");
-      assertNotNull("found hull", hullSensor);
-
-      // give it it's offset
-      tailSensor.setSensorOffset(new ArrayLength(1000));
-
-      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
-      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
-
-      // note: we've commented out some
-      assertEquals("got all cuts", 8, tailItems.length);
-      assertEquals("got all cuts", 9, hullItems.length);
+      final SensorContactWrapper[] tailItems = checkTailSensor(sensors);
 
       final String newName = "TMA_LEG";
 
@@ -1308,6 +1296,32 @@ public final class StackedDotHelper
       prov.setSwitch(false);
 
       return prov;
+    }
+
+    private SensorContactWrapper[] checkTailSensor(final BaseLayer sensors)
+    {
+      final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
+          "tail sensor");
+      assertNotNull("found tail", tailSensor);
+
+      // give it it's offset
+      tailSensor.setSensorOffset(new ArrayLength(1000));
+
+      final SensorContactWrapper[] tailItems = getAllCutsFrom(tailSensor);
+
+      // note: we've commented out some
+      assertEquals("got all cuts", 8, tailItems.length);
+      return tailItems;
+    }
+
+    private SensorContactWrapper[] checkHullSensor(final BaseLayer sensors)
+    {
+      final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
+          "hull sensor");
+      assertNotNull("found hull", hullSensor);
+      final SensorContactWrapper[] hullItems = getAllCutsFrom(hullSensor);
+      assertEquals("got all cuts", 9, hullItems.length);
+      return hullItems;
     }
   }
 
