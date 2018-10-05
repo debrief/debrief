@@ -474,14 +474,14 @@ public class PlotTracks
 
       // TailX and TailY contains the offset(relative distance from the centre and not
       // the absolute)
-      float TailX = arrow_ext_cx * (float) (arrow_pointer_x / 100000.0);
-      float TailY = arrow_ext_cy * (float) (arrow_pointer_y / 100000.0);
+      float TailXUnscalled = arrow_ext_cx * (float) (arrow_pointer_x / 100000.0);
+      float TailYUnscalled = arrow_ext_cy * (float) (arrow_pointer_y / 100000.0);
 
-      float[] tempCoordinates = coordinateTransformation(TailX, TailY, Float
+      float[] tempCoordinates = coordinateTransformation(TailXUnscalled, TailYUnscalled, Float
           .parseFloat(slide_dimen_x), Float.parseFloat(slide_dimen_y), 0, 0, 1,
           1, 0);
-      TailX = tempCoordinates[0];
-      TailY = tempCoordinates[1];
+      float TailX = tempCoordinates[0];
+      float TailY = tempCoordinates[1];
 
       // Scaling centre coordinates of call out values to 0...1
       tempCoordinates = coordinateTransformation(arrow_center_x, arrow_center_y,
@@ -546,8 +546,8 @@ public class PlotTracks
       // Get Shape offsets and exts
       /*int temp_shape_x = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("x"));
       int temp_shape_y = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("y"));*/
-      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx) + "");
-      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx / 2 - TailXUnscalled) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy / 2 - TailYUnscalled) + "");
       
       // Adding color to the track
       final String colorHexValue = track.getColorAsString().toUpperCase();
