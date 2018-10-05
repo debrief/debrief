@@ -56,7 +56,7 @@ import junit.framework.TestCase;
 public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 {
 
-  public static class TestLogImport extends TestCase implements CompleteListener
+  public final static class TestLogImport extends TestCase implements CompleteListener
   {
     private IPlotLoader msgReceived;
 
@@ -408,7 +408,6 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     finally
     {
     }
-    // ok, load the data...
     DebriefPlugin.logError(IStatus.INFO, "Successfully loaded .LOG file", null);
   }
 
