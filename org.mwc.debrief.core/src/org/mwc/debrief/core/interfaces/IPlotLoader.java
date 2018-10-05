@@ -21,13 +21,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.editors.PlotEditor;
 
 /**
  * Interface for classes which are capable of populating a plot from a file
@@ -37,20 +37,30 @@ import org.mwc.debrief.core.editors.PlotEditor;
  */
 public interface IPlotLoader extends INamedItem
 {
+  
+  /** callback for classes that want to know the import is complete
+   * 
+   */
+  public interface CompleteListener
+  {
+    void complete(IPlotLoader loader);
+  }
+  
 	/**
 	 * load the supplied editor input into the plot
 	 * 
-	 * @param thePlot
+	 * @param target
 	 *          the plot destination
 	 * @param inputStream
 	 *          the file source
 	 * @param fileName
 	 *          file suffix that must match
+	 * @param listener TODO
 	 * @param firstLine
 	 *           String that the first line of text must start with
 	 */
-	public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
-			final String fileName);
+	public void loadFile(final IAdaptable target, final InputStream inputStream,
+			final String fileName, final CompleteListener listener);
 
 	/**
 	 * test whether this loader can load the suppled input source
@@ -201,8 +211,8 @@ public interface IPlotLoader extends INamedItem
 			return _myLoader;
 		}
 
-		public void loadFile(final PlotEditor thePlot,
-				final InputStream inputStream, final String fileName)
+		public void loadFile(final IAdaptable target,
+				final InputStream inputStream, final String fileName, final CompleteListener listener)
 		{
 			if (_myLoader == null)
 			{
@@ -228,7 +238,7 @@ public interface IPlotLoader extends INamedItem
 			if (_myLoader != null)
 			{
 				// we either had it already, or we're trying to load it now. go for it
-				_myLoader.loadFile(thePlot, inputStream, fileName);
+				_myLoader.loadFile(target, inputStream, fileName, listener);
 			}
 			else
 			{

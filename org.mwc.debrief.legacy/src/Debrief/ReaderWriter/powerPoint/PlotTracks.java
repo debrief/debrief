@@ -202,7 +202,7 @@ public class PlotTracks
   }
 
   private void addShapeMarkerFootPrintsObjects(final Element spTreeobj,
-      final ArrayList<Element> shape_objs, final ArrayList<Element> arrow_objs,
+      final ArrayList<Element> arrow_objs,
       final ArrayList<ArrayList<Element>> all_footprints_objs)
   {
     for (final ArrayList<Element> footprintsTracks : all_footprints_objs)
@@ -645,8 +645,7 @@ public class PlotTracks
 
     // Adding all shape and arrow objects
     final Element spTreeobj = soup.selectFirst("p|spTree");
-    addShapeMarkerFootPrintsObjects(spTreeobj, shape_objs, arrow_objs,
-        all_footprints_objs);
+    addShapeMarkerFootPrintsObjects(spTreeobj, arrow_objs, all_footprints_objs);
     addAnimationObjects(all_animation_objs, anim_tag_upper,
         anim_insertion_tag_upper);
     addAnimationFootPrints(time_anim_tag_first, anim_insertion_tag_upper,
@@ -660,8 +659,10 @@ public class PlotTracks
 
   private void addAnimationFootPrints(Element time_anim_tag_first,
       Element anim_insertion_tag_upper, TrackData trackData,
-      int intervalDuration, int initialFootprintId)
+      final int intervalDuration_in, final int initialFootprintId_in)
   {
+    int intervalDuration = intervalDuration_in;
+    int initialFootprintId = initialFootprintId_in;
     // Create parent animation object for all time box
     for (Track track : trackData.getTracks())
     {

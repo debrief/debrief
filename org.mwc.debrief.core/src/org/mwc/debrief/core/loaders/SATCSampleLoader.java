@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -33,7 +34,6 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.Wrappers.SensorContactWrapper;
@@ -181,12 +181,13 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
    * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
    */
   @Override
-  public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
-      final String fileName)
+  public void loadFile(final IAdaptable target, final InputStream inputStream,
+      final String fileName, final CompleteListener listener)
   {
 
     // ok, we'll need somewhere to put the data
-    final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
+    final IPlotLoader finalLoader = this;
 
     try
     {
@@ -232,7 +233,7 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
             finally
             {
               // and inform the plot editor
-              thePlot.loadingComplete(this);
+              listener.complete(finalLoader);
 
               DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
