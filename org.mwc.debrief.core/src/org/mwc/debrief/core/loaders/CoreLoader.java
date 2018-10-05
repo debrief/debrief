@@ -52,7 +52,6 @@ public abstract class CoreLoader extends BaseLoader
   public void loadFile(final IAdaptable target, final InputStream inputStream,
       final String fileName, final CompleteListener listener)
   {
-
     // ok, get reading
     if (_suffix == null || fileName.toLowerCase().endsWith(_suffix))
     {
@@ -114,13 +113,12 @@ public abstract class CoreLoader extends BaseLoader
   /**
    * get the importer code
    * 
-   * @param layers
-   *          TODO
+   * @param layers the destination for the data
    * @return a runnable that will perform the import process
    * @throws Exception
    */
   abstract protected IRunnableWithProgress getImporter(final IAdaptable target,
-      Layers layers, final InputStream inputStream, final String fileName)
+      final Layers layers, final InputStream inputStream, final String fileName)
       throws Exception;
 
 }
