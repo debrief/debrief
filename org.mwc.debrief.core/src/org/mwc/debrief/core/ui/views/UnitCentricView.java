@@ -8,9 +8,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuCreator;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -355,7 +353,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   private void contributeToActionBars()
   {
     final IActionBars bars = getViewSite().getActionBars();
-    fillLocalPullDown(bars.getMenuManager());
     fillLocalToolBar(bars.getToolBarManager());
   }
 
@@ -407,91 +404,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     {
       _myPartMonitor.ditch();
     }
-  }
-
-  private void fillLocalPullDown(final IMenuManager manager)
-  {
-    final DistanceOperation setRings = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getRings().setRingWidth(distance);
-      }
-    };
-    final MenuManager ringRadii = new MenuManager("Ring radii");
-
-    ringRadii.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setRings, _myOverviewChart));
-    ringRadii.add(new Action("Format range rings")
-    {
-      @Override
-      public void run()
-      {
-        formatItem(_myOverviewChart.getRings());
-      }
-    });
-
-    manager.add(ringRadii);
-
-    final DistanceOperation setGrid = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getGrid().setDelta(distance);
-      }
-    };
-    final MenuManager gridSize = new MenuManager("Grid size");
-    gridSize.add(new DistanceAction("100m", new WorldDistance(100,
-        WorldDistance.METRES), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("500m", new WorldDistance(500,
-        WorldDistance.METRES), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("1 km", new WorldDistance(1,
-        WorldDistance.KM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("1 nm", new WorldDistance(1,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("5 nm", new WorldDistance(5,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new DistanceAction("10 nm", new WorldDistance(10,
-        WorldDistance.NM), setGrid, _myOverviewChart));
-    gridSize.add(new Action("Format grid")
-    {
-      @Override
-      public void run()
-      {
-        formatItem(_myOverviewChart.getGrid());
-      }
-    });
-
-    manager.add(gridSize);
-
-    final PeriodOperation setSnail = new PeriodOperation()
-    {
-      @Override
-      public void selected(final long period)
-      {
-        _snailLength = period;
-      }
-    };
-    final MenuManager periodSize = new MenuManager("Snail length");
-    periodSize.add(new PeriodAction("5 Mins", 1000 * 60 * 5, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("15 Mins", 1000 * 60 * 15, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("30 Mins", 1000 * 60 * 30, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("1 Hour", 1000 * 60 * 60 * 1, setSnail, _myOverviewChart));
-    periodSize.add(new PeriodAction("2 Hours", 1000 * 60 * 60 * 2, setSnail, _myOverviewChart));
-
-    manager.add(periodSize);
   }
 
   private void fillLocalToolBar(final IToolBarManager manager)
