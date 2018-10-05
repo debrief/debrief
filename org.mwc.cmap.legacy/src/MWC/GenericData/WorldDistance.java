@@ -234,7 +234,14 @@ public boolean equals(final Object obj) {
    */
   public String toString()
   {
-    final String res = _myDistance + " " + getLabelFor(_myUnits);
+    // check if it's a whole number
+    final boolean isWhole = Double.isFinite(_myDistance) && Double.compare(
+        _myDistance, StrictMath.rint(_myDistance)) == 0;
+
+    // if it's whole, we don't need decimal places
+    final String number = isWhole ? ("" + (int) _myDistance) : "" + _myDistance;
+
+    final String res = number + " " + getLabelFor(_myUnits);
 
     return res;
   }
@@ -304,7 +311,7 @@ public boolean equals(final Object obj) {
     {
       WorldDistance da = new WorldDistance(12, METRES);
       String res = da.toString();
-      assertEquals("correct output format", res, "12.0 m");
+      assertEquals("correct output format", res, "12 m");
 
       da = new WorldDistance(1.75, KM);
       res = da.toString();
