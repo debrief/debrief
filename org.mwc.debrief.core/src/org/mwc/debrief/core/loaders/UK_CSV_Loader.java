@@ -46,6 +46,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -116,8 +117,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
    * 
    * @param theLayers
    */
-  private final static void importThis(final Layers theLayers, final String fName,
-      final java.io.InputStream is)
+  private final static void importThis(final Layers theLayers,
+      final String fName, final java.io.InputStream is)
   {
     // declare linecounter
     int lineCounter = 0;
@@ -139,10 +140,10 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
         while (br.read() != -1)
         {
           final String thisLine = br.readLine();
-          
+
           // keep line counter (use it for error reporting)
           lineCounter++;
-          
+
           // catch import problems
           FixWrapper fw = readLine(thisLine);
 
@@ -153,26 +154,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
             // have we created a parent track yet?
             if (tw == null)
             {
-              String trackName = getName(thisLine);
-
-              Layer matchingLayer = theLayers.findLayer(trackName);
-
-              // is this name already in use?
-              if (matchingLayer != null)
-              {
-                // oops, there's already a track/layer with this name. create
-                // another
-                trackName = trackName + "_" + (int) (Math.random() * 1000);
-              }
-
-              // ok, create the track
-              tw = new TrackWrapper();
-
-              // give it the name
-              tw.setName(trackName);
-
-              // set the default color
-              tw.setColor(DebriefColors.BLUE);
+              // sort out the track
+              tw = createParentTrack(theLayers, thisLine);
 
               // store it
               theLayers.addThisLayer(tw);
@@ -182,10 +165,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
             tw.addFix(fw);
           }
         }
-
         final long end = System.currentTimeMillis();
         System.out.print(" |Elapsed:" + (end - start) + " ");
-
       }
     }
     catch (IOException fe)
@@ -225,6 +206,33 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     }
   }
 
+  private static TrackWrapper createParentTrack(final Layers theLayers,
+      final String thisLine) throws ParseException
+  {
+    TrackWrapper tw;
+    String trackName = getName(thisLine);
+
+    Layer matchingLayer = theLayers.findLayer(trackName);
+
+    // is this name already in use?
+    if (matchingLayer != null)
+    {
+      // oops, there's already a track/layer with this name. create
+      // another
+      trackName = trackName + "_" + (int) (Math.random() * 1000);
+    }
+
+    // ok, create the track
+    tw = new TrackWrapper();
+
+    // give it the name
+    tw.setName(trackName);
+
+    // set the default color
+    tw.setColor(DebriefColors.BLUE);
+    return tw;
+  }
+
   private static String getName(String thisLine) throws ParseException
   {
     // ok, segment the line
@@ -236,9 +244,11 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
   private static FixWrapper readLine(String thisLine) throws ParseException
   {
     // sample line
-    // final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n"; 
+    // final String line = "22.1862861,
+    // -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT
+    // ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s. I'll 'll duplicate to get more
+    // content.\"\r\n";
 
-    
     // ok, segment the line
     String[] blocks = thisLine.split(",");
     Date date = dateFor(blocks[2]);
@@ -249,7 +259,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     WorldSpeed speed = new WorldSpeed(speedM_Sec, WorldSpeed.M_sec);
 
     Fix theFix = new Fix(new HiResDate(date), new WorldLocation(lat, lon, 0),
-        Conversions.Degs2Rads(courseDegs), speed.getValueIn(WorldSpeed.ft_sec)/3d);
+        Conversions.Degs2Rads(courseDegs), speed.getValueIn(WorldSpeed.ft_sec)
+            / 3d);
     FixWrapper res = new FixWrapper(theFix);
 
     // reset the name (to put the time in as a label)
@@ -260,14 +271,14 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 
   private static Date dateFor(String date) throws ParseException
   {
-    final DateFormat sdf = new GMTDateFormat(
-        "yyyyMMdd'T'HHmmss'Z'", Locale.ENGLISH);
+    final DateFormat sdf = new GMTDateFormat("yyyyMMdd'T'HHmmss'Z'",
+        Locale.ENGLISH);
     return sdf.parse(date);
   }
 
-  private void doImport(final InputStream inputStream, final String fileName,
-      final CompleteListener listener, final Layers theLayers,
-      final IPlotLoader finalLoader)
+  private static void doImport(final InputStream inputStream,
+      final String fileName, final CompleteListener listener,
+      final Layers theLayers, final IPlotLoader finalLoader)
   {
     // right, better suspend the LayerManager extended updates from
     // firing
@@ -275,21 +286,15 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 
     try
     {
-
-      // quick check, is this a .log file
-      if (fileName.toLowerCase().endsWith(".csv"))
-      {
-        // ok, go for it.
-        importThis(theLayers, fileName, inputStream);
-      }
-
+      // ok, go for it.
+      importThis(theLayers, fileName, inputStream);
+      
       // and inform the plot editor
       listener.complete(finalLoader);
     }
     catch (final RuntimeException e)
     {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-          + fileName, e);
+      Trace.trace(e, "Problem loading datafile:" + fileName);
     }
     finally
     {
@@ -304,19 +309,29 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
   {
     private IPlotLoader msgReceived;
 
+    public void testGetName() throws ParseException
+    {
+      final String line =
+          "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+      final String name = UK_CSV_Loader.getName(line);
+      assertEquals("Correct name", "NELSON", name);
+    }
+    
     public void testSingleLine() throws ParseException
     {
-      final String line = "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n"; 
-      FixWrapper fix = UK_CSV_Loader.readLine(line);   
+      final String line =
+          "22.1862861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
+      FixWrapper fix = UK_CSV_Loader.readLine(line);
       assertNotNull(fix);
-      
+
       // test the params
       assertEquals("lat", 22.1862861, fix.getLocation().getLat());
       assertEquals("lon", -21.6978806, fix.getLocation().getLong());
       assertEquals("depth", 0d, fix.getLocation().getDepth());
       assertEquals("date", 818744400000L, fix.getDTG().getDate().getTime());
       assertEquals("course", 269.7, fix.getCourseDegs());
-      assertEquals("speed", new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(WorldSpeed.Kts), fix.getSpeed(), 0.001);
+      assertEquals("speed", new WorldSpeed(2, WorldSpeed.M_sec).getValueIn(
+          WorldSpeed.Kts), fix.getSpeed(), 0.001);
     }
 
     public void testImport() throws ParseException
@@ -338,15 +353,15 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
       assertEquals("layers empty", 0, layers.size());
       assertNull("message not sent, yet", msgReceived);
 
-      loader.doImport(stream, "test_file.csv", this, layers, loader);
+      UK_CSV_Loader.doImport(stream, "test_file.csv", this, layers, loader);
 
       assertNotNull("message set", msgReceived);
-      
+
       assertEquals("layers not empty", 1, layers.size());
-      
+
       TrackWrapper track = (TrackWrapper) layers.findLayer("NELSON");
       assertNotNull("found track", track);
-      
+
       assertEquals("all points", 4, track.numFixes());
     }
 
