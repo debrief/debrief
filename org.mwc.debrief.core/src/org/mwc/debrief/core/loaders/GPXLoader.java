@@ -14,17 +14,12 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.gpx.ImportGPX;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -36,110 +31,60 @@ import MWC.GUI.Layers;
  * @date August 21, 2012
  * @category gpx
  */
-public class GPXLoader extends IPlotLoader.BaseLoader
+public class GPXLoader extends CoreLoader
 {
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
-	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
-	 */
-	@Override
-	public void loadFile(final IAdaptable target, final InputStream inputStream,
-			final String fileName, final CompleteListener listener)
-	{
+  public GPXLoader(String fileType)
+  {
+    super("GPX");
+  }
 
-		final Layers theLayers = (Layers) target.getAdapter(Layers.class);
-		final IPlotLoader finalLoader = this;
+  @Override
+  protected IRunnableWithProgress getImporter(final IAdaptable target, final InputStream inputStream,
+      final String fileName, final CompleteListener listener)
+  {
+    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
+    final IPlotLoader finalLoader = this;
 
-		try
-		{
-			// hmm, is there anything in the file?
-			final int numAvailable = inputStream.available();
-			if (numAvailable > 0)
-			{
+    return new IRunnableWithProgress()
+    {
+      @Override
+      public void run(final IProgressMonitor pm)
+      {
+        // right, better suspend the LayerManager extended updates from
+        // firing
+        theLayers.suspendFiringExtended(true);
 
-				final IWorkbench wb = PlatformUI.getWorkbench();
-				final IProgressService ps = wb.getProgressService();
-				ps.busyCursorWhile(new IRunnableWithProgress()
-				{
-					@Override
-					public void run(final IProgressMonitor pm)
-					{
-						// right, better suspend the LayerManager extended updates from
-						// firing
-						theLayers.suspendFiringExtended(true);
+        try
+        {
+          // ok - get loading going
 
-						try
-						{
-							DebriefPlugin.logError(Status.INFO, "about to start loading:"
-									+ fileName, null);
+          // double check, is this a KMZ
+          if (fileName.toLowerCase().endsWith(".gpx"))
+          {
+            // ok - get loading going
+            ImportGPX.doImport(theLayers, inputStream, fileName);
+          }
 
-							// ok - get loading going
+          // and inform the plot editor
+          listener.complete(finalLoader);
+        }
+        catch (final RuntimeException e)
+        {
+          DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+              + fileName, e);
+        }
+        finally
+        {
+          // and inform the plot editor
+          listener.complete(finalLoader);
 
-							// double check, is this a KMZ
-							if (fileName.toLowerCase().endsWith(".gpx"))
-							{
-								// ok - get loading going
-								ImportGPX.doImport(theLayers, inputStream, fileName);
-							}
+          // ok, allow the layers object to inform anybody what's
+          // happening
+          // again
+          theLayers.suspendFiringExtended(false);
+        }
+      }
 
-							DebriefPlugin.logError(Status.INFO, "completed loading:"
-									+ fileName, null);
-
-							// and inform the plot editor
-              listener.complete(finalLoader);
-
-							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-							DebriefPlugin.logError(Status.INFO, "completed loading:"
-									+ fileName, null);
-
-							DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-						}
-						catch (final RuntimeException e)
-						{
-							DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-									+ fileName, e);
-						}
-						finally
-						{
-							// and inform the plot editor
-              listener.complete(finalLoader);
-
-							// ok, allow the layers object to inform anybody what's
-							// happening
-							// again
-							theLayers.suspendFiringExtended(false);
-
-							// and trigger an update ourselves
-							// theLayers.fireExtended();
-						}
-					}
-				});
-
-			}
-
-		}
-		catch (final InvocationTargetException e)
-		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-					+ fileName, e);
-		}
-		catch (final InterruptedException e)
-		{
-			DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-					+ fileName, e);
-		}
-		catch (final IOException e)
-		{
-			DebriefPlugin
-					.logError(Status.ERROR, "Problem loading GPX:" + fileName, e);
-		}
-
-		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded GPX file", null);
-	}
+    };
+  }
 }

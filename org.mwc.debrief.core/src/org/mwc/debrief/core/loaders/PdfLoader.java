@@ -1,107 +1,74 @@
 package org.mwc.debrief.core.loaders;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import MWC.GUI.Layers;
 
-public class PdfLoader extends IPlotLoader.BaseLoader
+public class PdfLoader extends CoreLoader
 {
 
+  public PdfLoader(String fileType)
+  {
+    super("pdf");
+  }
+
   @Override
-  public void loadFile(final IAdaptable target, final InputStream inputStream,
-      final String fileName, final CompleteListener listener)
+  protected IRunnableWithProgress getImporter(final IAdaptable target,
+      final InputStream inputStream, final String fileName,
+      final CompleteListener listener)
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
     final IPlotLoader finalLoader = this;
 
-    try
+    return new IRunnableWithProgress()
     {
-
-      // hmm, is there anything in the file?
-      final int numAvailable = inputStream.available();
-      if (numAvailable > 0)
+      @Override
+      public void run(final IProgressMonitor pm)
       {
+        // right, better suspend the LayerManager extended updates from
+        // firing
+        theLayers.suspendFiringExtended(true);
 
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IProgressService ps = wb.getProgressService();
-        ps.busyCursorWhile(new IRunnableWithProgress()
+        try
         {
-          public void run(final IProgressMonitor pm)
+          // ok, get reading
+          if (fileName.toLowerCase().endsWith(".pdf"))
           {
-            // right, better suspend the LayerManager extended updates from
-            // firing
-            theLayers.suspendFiringExtended(true);
-
-            try
-            {
-              // ok, get reading
-              if (fileName.toLowerCase().endsWith(".pdf"))
-              {
-                ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
-                ArrayList<String> strings = iw.importFromPdf(fileName, inputStream);
-                iw.processThese(strings);
-              }
-
-              // and inform the plot editor
-              listener.complete(finalLoader);
-
-            }
-            catch (final RuntimeException e)
-            {
-              DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-                  + fileName, e);
-            }
-            finally
-            {
-              // ok, allow the layers object to inform anybody what's
-              // happening
-              // again
-              theLayers.suspendFiringExtended(false);
-
-              // and trigger an update ourselves
-              // theLayers.fireExtended();
-            }
+            ImportNarrativeDocument iw = new ImportNarrativeDocument(theLayers);                
+            ArrayList<String> strings = iw.importFromPdf(fileName, inputStream);
+            iw.processThese(strings);
           }
-        });
 
+          // and inform the plot editor
+          listener.complete(finalLoader);
+
+        }
+        catch (final RuntimeException e)
+        {
+          DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+              + fileName, e);
+        }
+        finally
+        {
+          // ok, allow the layers object to inform anybody what's
+          // happening
+          // again
+          theLayers.suspendFiringExtended(false);
+
+          // and trigger an update ourselves
+          // theLayers.fireExtended();
+        }
       }
-
-    }
-    catch (final InvocationTargetException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading PDF document:"
-          + fileName, e);
-    }
-    catch (final InterruptedException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading PDF document:"
-          + fileName, e);
-    }
-    catch (final IOException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading PDF document:"
-          + fileName, e);
-    }
-    finally
-    {
-    }
-    // }
-    // ok, load the data...
-    DebriefPlugin.logError(Status.INFO, "Successfully loaded PDF document", null);
+    };
   }
 
 }
