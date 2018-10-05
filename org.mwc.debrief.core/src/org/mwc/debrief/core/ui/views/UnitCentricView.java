@@ -767,17 +767,6 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     {
       return parent;
     }
-    private ActionContributionItem createAction(String name, WorldDistance distance, WorldDistance existingDistance,
-        DistanceOperation setGrid, UnitCentricChart myOverviewChart)
-    {
-      final DistanceAction distanceAction = new DistanceAction(name, distance, setGrid,myOverviewChart);
-      ActionContributionItem action = new ActionContributionItem(distanceAction);
-      if(distance.equals(existingDistance))
-      {
-        distanceAction.setChecked(true);
-      }
-      return action;
-    }
     
     @Override
     public Menu getMenu(Control parent)
@@ -792,25 +781,19 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           _myOverviewChart.getGrid().setDelta(distance);
         }
       };
-      int ctr=0;
-      WorldDistance currentLen = _myOverviewChart.getRings().getRingWidth();
-      ActionContributionItem pa1 = createAction("100m", new WorldDistance(100,WorldDistance.METRES), currentLen, setGrid, _myOverviewChart);
-      pa1.fill(gridMenu, ctr++);
-      ActionContributionItem pa2 = createAction("500m", new WorldDistance(500,
-          WorldDistance.METRES), currentLen,setGrid,_myOverviewChart);
-      pa2.fill(gridMenu, ctr++);
-      ActionContributionItem pa3 = createAction("1 km", new WorldDistance(1,
-          WorldDistance.KM),currentLen, setGrid,_myOverviewChart);
-      pa3.fill(gridMenu, ctr++);
-      ActionContributionItem pa4 = createAction("1 nm", new WorldDistance(1,
-          WorldDistance.NM), currentLen,setGrid,_myOverviewChart);
-      pa4.fill(gridMenu, ctr++);
-      ActionContributionItem pa5 = createAction("5 nm", new WorldDistance(5,
-          WorldDistance.NM), currentLen,setGrid,_myOverviewChart);
-      pa5.fill(gridMenu, ctr++);
-      ActionContributionItem pa6 = createAction("10 nm", new WorldDistance(10,
-          WorldDistance.NM), currentLen,setGrid,_myOverviewChart);
-      pa6.fill(gridMenu, ctr++);
+      
+
+      WorldDistance currentLen = _myOverviewChart.getGrid().getDelta();
+      
+      final DistanceActionBuilder builder = new DistanceActionBuilder(currentLen, setGrid, _myOverviewChart, gridMenu);
+
+      builder.create(new WorldDistance(100, WorldDistance.METRES));
+      builder.create(new WorldDistance(500, WorldDistance.METRES));
+      builder.create(new WorldDistance(1, WorldDistance.KM));
+      builder.create(new WorldDistance(1, WorldDistance.NM));
+      builder.create(new WorldDistance(5, WorldDistance.NM));
+      builder.create(new WorldDistance(10, WorldDistance.NM));
+
       ActionContributionItem pa7 = new ActionContributionItem(new Action("Format grid")
       {
         @Override
@@ -819,7 +802,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           formatItem(_myOverviewChart.getGrid());
         }
       });
-      pa7.fill(gridMenu, ctr++);
+      pa7.fill(gridMenu, gridMenu.getItemCount());
 
       return gridMenu;
     }
@@ -829,24 +812,53 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       //no need to dispose not dynamic
     }
   }
+  
+  
+  /** helper class, to create actions that use a distance operation
+   * 
+   * @author ian
+   *
+   */
+  private static class DistanceActionBuilder
+  {
+    private final WorldDistance _existing;
+    private final DistanceOperation _operation;
+    private final UnitCentricChart _chart;
+    private final Menu _menu;
+
+    private DistanceActionBuilder(final WorldDistance existingDistance,
+        final DistanceOperation operation,
+        final UnitCentricChart myOverviewChart, final Menu menu)
+    {
+      _existing = existingDistance;
+      _operation = operation;
+      _chart = myOverviewChart;
+      _menu = menu;
+    }
+
+    private ActionContributionItem create(final WorldDistance distance)
+    {
+      final DistanceAction distanceAction = new DistanceAction(distance
+          .toString(), distance, _operation, _chart);
+      
+      // is this actually the current value?
+      if (distance.equals(_existing))
+      {
+        // yes, mark as ticked
+        distanceAction.setChecked(true);
+      }
+      final ActionContributionItem action = new ActionContributionItem(
+          distanceAction);
+      action.fill(_menu, _menu.getItemCount());
+      return action;
+    }
+  }
 
   private class ShowRingsMenuCreator implements IMenuCreator{
     @Override
     public Menu getMenu(Menu parent)
     {
       return parent;
-    }
-    
-    private ActionContributionItem createAction(String name, WorldDistance distance, WorldDistance existingDistance,
-        DistanceOperation setRings, UnitCentricChart myOverviewChart)
-    {
-      final DistanceAction distanceAction = new DistanceAction(name, distance, setRings,myOverviewChart);
-      ActionContributionItem action = new ActionContributionItem(distanceAction);
-      if(distance.equals(existingDistance))
-      {
-        distanceAction.setChecked(true);
-      }
-      return action;
     }
     
     @Override
@@ -863,28 +875,20 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         }
       };
       
-      WorldDistance currentLen = _myOverviewChart.getRings().getRingWidth();
-      
-      int ctr=0;
-      ActionContributionItem pa1 = createAction("100m", new WorldDistance(100,
-          WorldDistance.METRES),currentLen, setRings,_myOverviewChart);
-      pa1.fill(ringsMenu, ctr++);
-      ActionContributionItem pa2 = createAction("500m", new WorldDistance(500,
-          WorldDistance.METRES),currentLen, setRings,_myOverviewChart);
-      pa2.fill(ringsMenu, ctr++);
-      ActionContributionItem pa3 = createAction("1 km", new WorldDistance(1,
-          WorldDistance.KM),currentLen, setRings,_myOverviewChart);
-      pa3.fill(ringsMenu, ctr++);
-      ActionContributionItem pa4 = createAction("1 nm", new WorldDistance(1,
-          WorldDistance.NM), currentLen, setRings,_myOverviewChart);
-      pa4.fill(ringsMenu, ctr++);
-      ActionContributionItem pa5 = createAction("5 nm", new WorldDistance(5,
-          WorldDistance.NM),currentLen, setRings,_myOverviewChart);
-      pa5.fill(ringsMenu, ctr++);
-      ActionContributionItem pa6 = createAction("10 nm", new WorldDistance(10,
-          WorldDistance.NM),currentLen, setRings,_myOverviewChart);
-      pa6.fill(ringsMenu, ctr++);
-      ActionContributionItem pa7 = new ActionContributionItem(new Action("Format rings")
+      final WorldDistance currentLen = _myOverviewChart.getRings()
+          .getRingWidth();
+
+      final DistanceActionBuilder builder = new DistanceActionBuilder(
+          currentLen, setRings, _myOverviewChart, ringsMenu);
+
+      builder.create(new WorldDistance(100, WorldDistance.METRES));
+      builder.create(new WorldDistance(500, WorldDistance.METRES));
+      builder.create(new WorldDistance(1, WorldDistance.KM));
+      builder.create(new WorldDistance(1, WorldDistance.NM));
+      builder.create(new WorldDistance(5, WorldDistance.NM));
+      builder.create(new WorldDistance(10, WorldDistance.NM));
+      ActionContributionItem pa7 = new ActionContributionItem(new Action(
+          "Format rings")
       {
         @Override
         public void run()
@@ -892,7 +896,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           formatItem(_myOverviewChart.getRings());
         }
       });
-      pa7.fill(ringsMenu, ctr++);
+      pa7.fill(ringsMenu, ringsMenu.getItemCount());
 
       return ringsMenu;
     }
