@@ -394,7 +394,7 @@ public final class StackedDotHelper
       }
     }
 
-    private SensorContactWrapper[] getAllCutsFrom(
+    private static SensorContactWrapper[] getAllCutsFrom(
         final SensorWrapper secondSensor)
     {
       final SensorContactWrapper[] res = new SensorContactWrapper[secondSensor
@@ -569,7 +569,7 @@ public final class StackedDotHelper
       return prov;
     }
 
-    private TrackWrapper checkTMA(final Layers layers, final String newName)
+    private static TrackWrapper checkTMA(final Layers layers, final String newName)
     {
       // get the TMA
       final TrackWrapper tma = (TrackWrapper) layers.findLayer(newName);
@@ -808,6 +808,39 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
+      checkUpdatedData(dotPlotData, linePlotData);
+      assertEquals("series correct length", 8, linePlotData.getSeries(6)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(7)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(8)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(9)
+          .getItemCount());
+      assertEquals("series correct length", 8, linePlotData.getSeries(10)
+          .getItemCount());
+      assertEquals("series correct length", 9, linePlotData.getSeries(11)
+          .getItemCount());
+
+      // ok, hide a sensor, and recalculate
+      final TrackWrapper primary = (TrackWrapper) switcher
+          .getPrimaryTracks()[0];
+      final SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
+          .elements().nextElement();
+      firstSensor.setVisible(true);
+
+      onlyVis = false;
+
+      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
+          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
+          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
+          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
+          overviewSpeedRenderer, overviewCourseRenderer, backShader);
+    }
+
+    private static void checkUpdatedData(final TimeSeriesCollection dotPlotData,
+        final TimeSeriesCollection linePlotData)
+    {
       // have a look at what's happened
       assertEquals("has error data", 8, dotPlotData.getSeriesCount());
 
@@ -881,33 +914,6 @@ public final class StackedDotHelper
           .getItemCount());
       assertEquals("series correct length", 9, linePlotData.getSeries(5)
           .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(6)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(7)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(8)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(9)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(10)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(11)
-          .getItemCount());
-
-      // ok, hide a sensor, and recalculate
-      final TrackWrapper primary = (TrackWrapper) switcher
-          .getPrimaryTracks()[0];
-      final SensorWrapper firstSensor = (SensorWrapper) primary.getSensors()
-          .elements().nextElement();
-      firstSensor.setVisible(true);
-
-      onlyVis = false;
-
-      helper.updateBearingData(dotPlotData, linePlotData, switcher, onlyVis,
-          showCourse, flipAxes, logger, updateDoublets, targetCourseSeries,
-          targetSpeedSeries, measuredValuesColl, ambigValuesColl,
-          ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
-          overviewSpeedRenderer, overviewCourseRenderer, backShader);
     }
 
     public void testUpdateBearings() throws ExecutionException, ParseException, IOException
@@ -952,61 +958,7 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
-      // have a look at what's happened
-
-      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
-      assertEquals("has error data", 4, dotPlotData.getSeriesCount());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
-          .getSeries(0).getKey());
-      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
-          .getSeries(1).getKey());
-      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
-          .getSeries(2).getKey());
-      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
-          .getSeries(3).getKey());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
-          .getItemCount());
-      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
-          .getItemCount());
-      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
-          .getItemCount());
-      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
-          .getItemCount());
-
-      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
-      assertEquals("has error data", 6, linePlotData.getSeriesCount());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "M_tail sensor", linePlotData
-          .getSeries(0).getKey());
-      assertEquals("series correct name", "M_hull sensor", linePlotData
-          .getSeries(1).getKey());
-      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
-          .getSeries(2).getKey());
-      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
-          .getSeries(3).getKey());
-      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
-          .getSeries(4).getKey());
-      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
-          .getSeries(5).getKey());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct length", 8, linePlotData.getSeries(0)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(1)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(2)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(3)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(4)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(5)
-          .getItemCount());
+      checkUpdates2(dotPlotData, linePlotData);
 
       // ok, hide a sensor, and recalculate
       final TrackWrapper primary = (TrackWrapper) switcher
@@ -1025,59 +977,7 @@ public final class StackedDotHelper
 
       // have a look at what's happened
 
-      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
-      assertEquals("has error data", 4, dotPlotData.getSeriesCount());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "ERRORStail sensor", dotPlotData
-          .getSeries(0).getKey());
-      assertEquals("series correct name", "ERRORS_amb_tail sensor", dotPlotData
-          .getSeries(1).getKey());
-      assertEquals("series correct name", "ERRORShull sensor", dotPlotData
-          .getSeries(2).getKey());
-      assertEquals("series correct name", "ERRORS_amb_hull sensor", dotPlotData
-          .getSeries(3).getKey());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct length", 8, dotPlotData.getSeries(0)
-          .getItemCount());
-      assertEquals("series correct length", 8, dotPlotData.getSeries(1)
-          .getItemCount());
-      assertEquals("series correct length", 9, dotPlotData.getSeries(2)
-          .getItemCount());
-      assertEquals("series correct length", 9, dotPlotData.getSeries(3)
-          .getItemCount());
-
-      // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
-      assertEquals("has error data", 6, linePlotData.getSeriesCount());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct name", "M_tail sensor", linePlotData
-          .getSeries(0).getKey());
-      assertEquals("series correct name", "M_hull sensor", linePlotData
-          .getSeries(1).getKey());
-      assertEquals("series correct name", "M_tail sensor(A)", linePlotData
-          .getSeries(2).getKey());
-      assertEquals("series correct name", "M_hull sensor(A)", linePlotData
-          .getSeries(3).getKey());
-      assertEquals("series correct name", "Calculatedtail sensor", linePlotData
-          .getSeries(4).getKey());
-      assertEquals("series correct name", "Calculatedhull sensor", linePlotData
-          .getSeries(5).getKey());
-
-      // note: even though TMA only has 9 fixes, we get 10 errors since we interpolate
-      assertEquals("series correct length", 8, linePlotData.getSeries(0)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(1)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(2)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(3)
-          .getItemCount());
-      assertEquals("series correct length", 8, linePlotData.getSeries(4)
-          .getItemCount());
-      assertEquals("series correct length", 9, linePlotData.getSeries(5)
-          .getItemCount());
+      checkUpdates2(dotPlotData, linePlotData);
 
       onlyVis = true;
 
@@ -1137,6 +1037,15 @@ public final class StackedDotHelper
           ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
           overviewSpeedRenderer, overviewCourseRenderer, backShader);
 
+      checkUpdates2(dotPlotData, linePlotData);
+
+    }
+
+    private static void checkUpdates2(final TimeSeriesCollection dotPlotData,
+        final TimeSeriesCollection linePlotData)
+    {
+      // have a look at what's happened
+
       // error plot. the data is ambiguous, so we've got 4 sets of errors (two sensors, port & stbd)
       assertEquals("has error data", 4, dotPlotData.getSeriesCount());
 
@@ -1190,7 +1099,6 @@ public final class StackedDotHelper
           .getItemCount());
       assertEquals("series correct length", 9, linePlotData.getSeries(5)
           .getItemCount());
-
     }
 
     public FixWrapper getShiftedFix(FixWrapper fix)
@@ -1298,7 +1206,7 @@ public final class StackedDotHelper
       return prov;
     }
 
-    private SensorContactWrapper[] checkTailSensor(final BaseLayer sensors)
+    private static SensorContactWrapper[] checkTailSensor(final BaseLayer sensors)
     {
       final SensorWrapper tailSensor = (SensorWrapper) sensors.find(
           "tail sensor");
@@ -1314,7 +1222,7 @@ public final class StackedDotHelper
       return tailItems;
     }
 
-    private SensorContactWrapper[] checkHullSensor(final BaseLayer sensors)
+    private static SensorContactWrapper[] checkHullSensor(final BaseLayer sensors)
     {
       final SensorWrapper hullSensor = (SensorWrapper) sensors.find(
           "hull sensor");
@@ -2303,7 +2211,7 @@ public final class StackedDotHelper
     return allCutsColl;
   }
 
-  public List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
+  public static List<SensorContactWrapper> getBearings(final TrackWrapper primaryTrack,
       final boolean onlyVis, final TimePeriod targetPeriod)
   {
     final List<SensorContactWrapper> res =
@@ -2337,13 +2245,6 @@ public final class StackedDotHelper
     } // if there are sensors
 
     return res;
-  }
-
-  public TreeSet<Doublet> getDoublets(final boolean onlyVis,
-      final boolean needBearing, final boolean needFrequency)
-  {
-    return getDoublets(_primaryTracks, _secondaryTrack, onlyVis, needBearing,
-        needFrequency);
   }
 
   public TrackWrapper getPrimaryTrack()
