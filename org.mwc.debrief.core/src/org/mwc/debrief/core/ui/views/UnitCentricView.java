@@ -407,21 +407,23 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       _myPartMonitor.ditch();
     }
   }
+  
+  final DistanceOperation setGridOperation = new DistanceOperation()
+  {
+    @Override
+    public void selected(final WorldDistance distance)
+    {
+      _myOverviewChart.getGrid().setDelta(distance);
+    }
+  };
+  
 
   private void fillLocalPullDown(final IMenuManager manager)
   {
-    final DistanceOperation setRings = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getRings().setRingWidth(distance);
-      }
-    };
     final MenuManager ringRadii = new MenuManager("Ring radii");
     
     final DistanceActionBuilder ringBuilder = new DistanceActionBuilder(_myOverviewChart
-        .getRings().getRingWidth(), setRings, _myOverviewChart, null);
+        .getRings().getRingWidth(), setRingsOperation, _myOverviewChart, null);
     
     ringRadii.add(ringBuilder.createAction(new WorldDistance(100,
         WorldDistance.METRES)));
@@ -443,17 +445,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
 
     manager.add(ringRadii);
 
-    final DistanceOperation setGrid = new DistanceOperation()
-    {
-      @Override
-      public void selected(final WorldDistance distance)
-      {
-        _myOverviewChart.getGrid().setDelta(distance);
-      }
-    };
-    
     final DistanceActionBuilder gridBuilder = new DistanceActionBuilder(_myOverviewChart
-        .getGrid().getDelta(), setGrid, _myOverviewChart, null);
+        .getGrid().getDelta(), setGridOperation, _myOverviewChart, null);
 
     
     final MenuManager gridSize = new MenuManager("Grid size");
@@ -778,19 +771,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     {
       Menu gridMenu = new Menu(parent);
       
-      final DistanceOperation setGrid = new DistanceOperation()
-      {
-        @Override
-        public void selected(final WorldDistance distance)
-        {
-          _myOverviewChart.getGrid().setDelta(distance);
-        }
-      };
-      
-
       WorldDistance currentLen = _myOverviewChart.getGrid().getDelta();
       
-      final DistanceActionBuilder builder = new DistanceActionBuilder(currentLen, setGrid, _myOverviewChart, gridMenu);
+      final DistanceActionBuilder builder = new DistanceActionBuilder(currentLen, setGridOperation, _myOverviewChart, gridMenu);
 
       builder.createContribution(new WorldDistance(100, WorldDistance.METRES));
       builder.createContribution(new WorldDistance(500, WorldDistance.METRES));
@@ -864,6 +847,15 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       return distanceAction;
     }
   }
+  
+  final DistanceOperation setRingsOperation = new DistanceOperation()
+  {
+    @Override
+    public void selected(final WorldDistance distance)
+    {
+      _myOverviewChart.getRings().setRingWidth(distance);
+    }
+  };
 
   private class ShowRingsMenuCreator implements IMenuCreator{
     @Override
@@ -877,20 +869,11 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     {
       Menu ringsMenu = new Menu(parent);
       
-      final DistanceOperation setRings = new DistanceOperation()
-      {
-        @Override
-        public void selected(final WorldDistance distance)
-        {
-          _myOverviewChart.getRings().setRingWidth(distance);
-        }
-      };
-      
       final WorldDistance currentLen = _myOverviewChart.getRings()
           .getRingWidth();
 
       final DistanceActionBuilder builder = new DistanceActionBuilder(
-          currentLen, setRings, _myOverviewChart, ringsMenu);
+          currentLen, setRingsOperation, _myOverviewChart, ringsMenu);
 
       builder.createContribution(new WorldDistance(100, WorldDistance.METRES));
       builder.createContribution(new WorldDistance(500, WorldDistance.METRES));
