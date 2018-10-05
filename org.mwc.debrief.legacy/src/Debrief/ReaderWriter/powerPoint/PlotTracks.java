@@ -540,12 +540,7 @@ public class PlotTracks
       // We calculate the first position for the marker
       tempCoordinates = coordinateTransformation(first_x, first_y,
           dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
-
-      float[] tempCoordinates2 = coordinateTransformation(arrow_off_x, arrow_off_y,
-          dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
       // Get Shape offsets and exts
-      /*int temp_shape_x = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("x"));
-      int temp_shape_y = Integer.parseInt(temp_arrow_tag.selectFirst("a|off").attr("y"));*/
       temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx / 2 - TailXUnscalled) + "");
       temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy / 2 - TailYUnscalled) + "");
       
