@@ -99,8 +99,8 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 
 								// ok - get loading going
 
-								IControllableViewport view = target.getAdapter(IControllableViewport.class);
-                PlotEditor plot = target.getAdapter(PlotEditor.class);
+								IControllableViewport view = (IControllableViewport) target.getAdapter(IControllableViewport.class);
+                PlotEditor plot = (PlotEditor) target.getAdapter(PlotEditor.class);
                 doTheLoad(theLayers, inputStream, fileName, view, plot);
 
 								DebriefPlugin.logError(Status.INFO,
