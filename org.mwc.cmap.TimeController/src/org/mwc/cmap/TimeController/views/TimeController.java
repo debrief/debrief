@@ -1089,16 +1089,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           }
           else
           {
+            final HiResDate timeToUse;
             if (newDTG.greaterThan(timeP.getEndDTG()))
             {
-              fireNewTime(timeP.getEndDTG());
-              stopPlayingRecorder(timeP.getEndDTG());
+              // ok, we've passed the end, use the last point
+              timeToUse = timeP.getEndDTG();
             }
             else
             {
-              fireNewTime(timeP.getStartDTG());
-              stopPlayingRecorder(timeP.getStartDTG());          
+              // ok, we're before the start, use the first point
+              timeToUse = timeP.getStartDTG();
             }
+            fireNewTime(timeToUse);
+            
+            // and stop recording
+            stopPlayingRecorder(timeToUse);
             stopPlayingTimer();
           }
         }
@@ -1129,6 +1134,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         {
           _playButton.setToolTipText(PLAY_TEXT);
           _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
+          
+          // and update the VCR buttons
+          setVCREnabled(true);          
         }
       });
     }
@@ -1589,7 +1597,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            if (_layerPainterManager != part)
+            if (!part.equals(_layerPainterManager))
             {
               // ok, insert the painter mode actions, together with
               // our standard
@@ -1607,7 +1615,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            if (_layerPainterManager.equals(part))
+            if (part.equals(_layerPainterManager))
             {
               _layerPainterManager = null;
             }
@@ -1766,10 +1774,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   protected void setVCREnabled(final boolean enable)
   {
-    System.out.println("Enable?"+enable);
     for (String key : _buttonList.keySet())
     {
-      System.out.println("_playkeypressed"+_playing+", key:"+key);
       Button item = _buttonList.get(key);
       if ((!key.equals(PLAY_BUTTON_KEY) && _playing) || (!key.equals(RECORD_BUTTON_KEY)&&!_playing))
       {

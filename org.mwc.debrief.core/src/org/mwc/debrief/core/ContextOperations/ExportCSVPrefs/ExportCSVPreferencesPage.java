@@ -16,9 +16,11 @@ package org.mwc.debrief.core.ContextOperations.ExportCSVPrefs;
 
 import java.awt.Desktop;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -221,8 +223,18 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
 
   private void reloadDataFromFile()
   {
-    CSVExportDropdownRegistry.getRegistry().setFileName(getFileName());
-    CSVExportDropdownRegistry.getRegistry().reload();
+    final CSVExportDropdownRegistry registry = CSVExportDropdownRegistry
+        .getRegistry();
+    registry.setFileName(getFileName());
+    try
+    {
+      registry.reload();
+    }
+    catch (FileNotFoundException e)
+    {
+      CorePlugin.logError(Status.ERROR, "Can't find registry file:" + registry
+          .getFileName(), e);
+    }
   }
 
   @Override

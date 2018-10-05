@@ -758,6 +758,25 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               // is this fix visible?
               if (thisSecondary.getVisible())
               {
+                
+                // if it's a fix, hide it if the parent segment is hidden
+                if(thisSecondary instanceof FixWrapper)
+                {
+                  final FixWrapper fw=  (FixWrapper) thisSecondary;
+                  final Editable parent = fw.getSegment();
+                  if(parent != null && parent instanceof TrackSegment)
+                  {
+                    final TrackSegment ts =(TrackSegment) parent;
+                    if(!ts.getVisible())
+                    {
+                      connectToPrevious = false;
+                      
+                      // ok, the parent segment is hidden, skip this point
+                      continue;
+                    }
+                  }
+                }    
+                
                 // the point on the primary track we work with
                 Watchable thisPrimary = null;
 
@@ -919,7 +938,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
             HiResDate lastTime = null;
 
             Watchable prevFix = null;
-
+            
             while (it.hasNext())
             {
               final Watchable thisSecondary = (Watchable) it.next();
@@ -934,6 +953,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                   final TrackSegment ts =(TrackSegment) parent;
                   if(!ts.getVisible())
                   {
+                    connectToPrevious = false;
+                    
                     // ok, the parent segment is hidden, skip this point
                     continue;
                   }

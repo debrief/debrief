@@ -16,7 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
 public class Utils {
-	public static final String testFolder = "expected_test_results";
+	public static final String testFolder = "../org.mwc.debrief.legacy/test_data";
 
 	public static boolean compareDirectoriesStructures(File generatedPptxTemporaryFolder,
 			File expectedPptxTemporaryFolder) {

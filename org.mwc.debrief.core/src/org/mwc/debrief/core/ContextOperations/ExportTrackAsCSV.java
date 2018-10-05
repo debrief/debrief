@@ -506,7 +506,12 @@ public class ExportTrackAsCSV implements RightClickContextItemGenerator
     {
       // get the set of fields we need
       final DropdownProvider reg = CSVExportDropdownRegistry.getRegistry();
-
+      
+      if(reg == null)
+      {
+        return Status.CANCEL_STATUS;
+      }
+      
       // the wizard needs some other data
       final String unit = _subject.getName();
 
