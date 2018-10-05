@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -30,9 +29,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -53,10 +49,11 @@ import junit.framework.TestCase;
 /**
  * @author ian.mayo
  */
-public class UK_CSV_Loader extends IPlotLoader.BaseLoader
+public class UK_CSV_Loader extends CoreLoader
 {
 
-  public final static class TestLogImport extends TestCase implements CompleteListener
+  public final static class TestLogImport extends TestCase implements
+      CompleteListener
   {
     private IPlotLoader msgReceived;
 
@@ -104,14 +101,14 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 
       assertEquals("all points", 4, track.numFixes());
     }
-    
+
     boolean tripped = false;
-    
-    public void testSingleLineBad1() throws ParseException 
+
+    public void testSingleLineBad1() throws ParseException
     {
       final String line =
           "22.18a62861, -21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT ALPHA,NELSON,19951212,For planning,PUBLIC,\"Quite a long s.  I'll 'll duplicate to get more content.\"\r\n";
-      
+
       FixWrapper fix = null;
       try
       {
@@ -124,12 +121,11 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
       assertNull("didn't manage to produce fix", fix);
       assertTrue("parse exception thrown", tripped);
     }
-    
-    public void testSingleLineBad2() throws ParseException 
+
+    public void testSingleLineBad2() throws ParseException
     {
-      final String line =
-          "22.1862861, -21.6978806,19951212T050000Z";
-      
+      final String line = "22.1862861, -21.6978806,19951212T050000Z";
+
       tripped = false;
       FixWrapper fix = null;
       try
@@ -214,7 +210,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     }
     catch (final RuntimeException e)
     {
-      CorePlugin.showMessage("Import CSV Track file", "Failed to read:" + fileName + ". Please see error log.");
+      CorePlugin.showMessage("Import CSV Track file", "Failed to read:"
+          + fileName + ". Please see error log.");
       DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
           e);
     }
@@ -304,7 +301,8 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
     }
     catch (final NumberFormatException e)
     {
-      CorePlugin.showMessage("Import CSV", "Incorrectly formatter number at line " + lineCounter);
+      CorePlugin.showMessage("Import CSV",
+          "Incorrectly formatter number at line " + lineCounter);
       DebriefPlugin.logError(IStatus.INFO,
           "Number format exception reading line " + lineCounter + " in "
               + fName, e);
@@ -363,52 +361,24 @@ public class UK_CSV_Loader extends IPlotLoader.BaseLoader
 
   public UK_CSV_Loader()
   {
+    super("CSV Track format");
   }
 
   @Override
-  public void loadFile(final IAdaptable target, final InputStream inputStream,
-      final String fileName, final CompleteListener listener)
+  protected IRunnableWithProgress getImporter(final IAdaptable target,
+      final InputStream inputStream, final String fileName,
+      final CompleteListener listener)
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
     final IPlotLoader finalLoader = this;
-    try
+    return new IRunnableWithProgress()
     {
-      // hmm, is there anything in the file?
-      final int numAvailable = inputStream.available();
-      if (numAvailable > 0)
+      @Override
+      public void run(final IProgressMonitor pm)
       {
-
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IProgressService ps = wb.getProgressService();
-        ps.busyCursorWhile(new IRunnableWithProgress()
-        {
-          @Override
-          public void run(final IProgressMonitor pm)
-          {
-            doImport(inputStream, fileName, listener, theLayers, finalLoader);
-          }
-        });
+        doImport(inputStream, fileName, listener, theLayers, finalLoader);
       }
-    }
-    catch (final InvocationTargetException e)
-    {
-      DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
-          e);
-    }
-    catch (final InterruptedException e)
-    {
-      DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
-          e);
-    }
-    catch (final IOException e)
-    {
-      DebriefPlugin.logError(IStatus.ERROR, "Problem loading log:" + fileName,
-          e);
-    }
-    finally
-    {
-    }
-    DebriefPlugin.logError(IStatus.INFO, "Successfully loaded .LOG file", null);
+    };
   }
 
 }
