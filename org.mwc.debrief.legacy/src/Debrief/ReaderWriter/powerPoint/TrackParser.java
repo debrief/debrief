@@ -107,7 +107,9 @@ public class TrackParser
 
       for (final Element entry : entries)
       {
-        final ExportNarrativeEntry entryInstance = new ExportNarrativeEntry(entry.attr("Text"),entry.attr("dateStr"),entry.attr("elapsed"), null);
+        final ExportNarrativeEntry entryInstance = new ExportNarrativeEntry(
+            entry.attr("Text"), entry.attr("dateStr"), entry.attr("elapsed"),
+            null);
         trackData.getNarrativeEntries().add(entryInstance);
       }
     }
@@ -120,14 +122,16 @@ public class TrackParser
    *          TrackData instance where we are going to insert the info
    * @param soup
    *          Soup file
-   * @throws ParseException 
+   * @throws ParseException
    */
-  private void parseTracks(final TrackData trackData, final Document soup) throws ParseException
+  private void parseTracks(final TrackData trackData, final Document soup)
+      throws ParseException
   {
     final Elements tracks = soup.select("trk");
     for (final Element track : tracks)
     {
-      final Track currentTrack = new Track(track.selectFirst("name").text(), track.selectFirst("color").text());
+      final Track currentTrack = new Track(track.selectFirst("name").text(),
+          track.selectFirst("color").text());
 
       for (final Element coordinate : track.select("trkpt"))
       {
@@ -137,7 +141,8 @@ public class TrackParser
 
         final DateFormat dateTimeFormatter = new SimpleDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst("time").text());
+        final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst(
+            "time").text());
         point.setTime(dateTime);
 
         point.setCourse(Float.parseFloat(coordinate.selectFirst("course")
