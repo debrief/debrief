@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -14,7 +15,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
@@ -25,12 +25,13 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
 {
 
   @Override
-  public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
-      final String fileName)
+  public void loadFile(final IAdaptable target, final InputStream inputStream,
+      final String fileName, final CompleteListener listener)
   {
-    final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
-    final TrackDataProvider trackData = (TrackDataProvider) thePlot.getAdapter(TrackDataProvider.class);
-    
+    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
+    final TrackDataProvider trackData = (TrackDataProvider) target.getAdapter(TrackDataProvider.class);
+    final IPlotLoader finalLoader = this;
+
     try
     {
 
@@ -62,7 +63,7 @@ public class MsDocLoader extends IPlotLoader.BaseLoader
               }
 
               // and inform the plot editor
-              thePlot.loadingComplete(this);
+              listener.complete(finalLoader);
 
               // hey, it worked. now nvopen the narrative viewer
               Display.getDefault().asyncExec(new Runnable()
