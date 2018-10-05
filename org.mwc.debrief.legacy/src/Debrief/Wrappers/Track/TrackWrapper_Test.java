@@ -905,25 +905,25 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimateAbsolute() throws InterruptedException
   {
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(0 * 1000000l, 31, 34));
-    ts1.addFix(createFix(1 * 1000000l, 32, 33));
-    ts1.addFix(createFix(2 * 1000000l, 33, 32));
-    ts1.addFix(createFix(3 * 1000000l, 34, 31));
-    ts1.addFix(createFix(4 * 1000000l, 35, 30));
+    ts1.addFix(createFix(0 * 1000000L, 31, 34));
+    ts1.addFix(createFix(1 * 1000000L, 32, 33));
+    ts1.addFix(createFix(2 * 1000000L, 33, 32));
+    ts1.addFix(createFix(3 * 1000000L, 34, 31));
+    ts1.addFix(createFix(4 * 1000000L, 35, 30));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(5 * 1000000l, 35, 33));
-    ts2.addFix(createFix(6 * 1000000l, 36, 34));
-    ts2.addFix(createFix(7 * 1000000l, 37, 35));
-    ts2.addFix(createFix(8 * 1000000l, 38, 36));
-    ts2.addFix(createFix(9 * 1000000l, 39, 37));
+    ts2.addFix(createFix(5 * 1000000L, 35, 33));
+    ts2.addFix(createFix(6 * 1000000L, 36, 34));
+    ts2.addFix(createFix(7 * 1000000L, 37, 35));
+    ts2.addFix(createFix(8 * 1000000L, 38, 36));
+    ts2.addFix(createFix(9 * 1000000L, 39, 37));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(10 * 1000000l, 32, 37));
-    ts3.addFix(createFix(11 * 1000000l, 31, 36));
-    ts3.addFix(createFix(12 * 1000000l, 30, 35));
-    ts3.addFix(createFix(13 * 1000000l, 29, 34));
-    ts3.addFix(createFix(24 * 1000000l, 28, 33));
+    ts3.addFix(createFix(10 * 1000000L, 32, 37));
+    ts3.addFix(createFix(11 * 1000000L, 31, 36));
+    ts3.addFix(createFix(12 * 1000000L, 30, 35));
+    ts3.addFix(createFix(13 * 1000000L, 29, 34));
+    ts3.addFix(createFix(24 * 1000000L, 28, 33));
 
     final TrackWrapper tw = new TrackWrapper();
     tw.add(ts1);
@@ -1025,25 +1025,25 @@ public class TrackWrapper_Test extends TestCase
 
     assertNotNull("returned an area", layers.getBounds());
     assertEquals("correct location",
-        " 50\u00B051'17.63\"N 001\u00B020'32.10\"W ", layers.getBounds()
+        " 50°51'17.63\"N 001°20'32.10\"W ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 51\u00B012'08.27\"N 001\u00B058'07.62\"W ", layers.getBounds()
+        " 51°12'08.27\"N 001°58'07.62\"W ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 50\u00B030'26.99\"N 000\u00B042'56.58\"W ", layers.getBounds()
+        " 50°30'26.99\"N 000°42'56.58\"W ", layers.getBounds()
             .getBottomRight().toString());
 
     // ok, now put the track in the layers
     layers.addThisLayer(track);
     assertEquals("correct location",
-        " 10\u00B000'00.00\"N 020\u00B000'00.00\"E ", layers.getBounds()
+        " 10°00'00.00\"N 020°00'00.00\"E ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 10\u00B000'42.43\"N 019\u00B059'16.92\"E ", layers.getBounds()
+        " 10°00'42.43\"N 019°59'16.92\"E ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 09\u00B059'17.57\"N 020\u00B000'43.08\"E ", layers.getBounds()
+        " 09°59'17.57\"N 020°00'43.08\"E ", layers.getBounds()
             .getBottomRight().toString());
 
   }
