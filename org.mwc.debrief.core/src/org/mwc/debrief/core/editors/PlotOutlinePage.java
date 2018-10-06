@@ -178,7 +178,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
    * 
    * @author ian.mayo
    */
-  private static final class SelectionOperation extends AbstractOperation
+  private static class SelectionOperation extends AbstractOperation
   {
     /**
      * the selected items
@@ -427,7 +427,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     {
       final Plottable pl = (Plottable) item;
       pl.setVisible(on);
-      
+
       // and update property
       EditorType info = item.getInfo();
       if (info != null)
@@ -605,104 +605,70 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     }
   }
 
+  abstract private class EnabledAction extends Action
+  {
+    final MyTreeViewer treeViewer;
+
+    private EnabledAction(final MyTreeViewer treeViewer)
+    {
+      this.treeViewer = treeViewer;
+    }
+
+    @Override
+    public final boolean isEnabled()
+    {
+      final Tree control = (Tree) treeViewer.getControl();
+      final int count = control.getSelectionCount();
+      return count > 0;
+    }
+
+    abstract protected void doIt(SelectionContext selection);
+  }
+
   public void connectActions()
   {
     final IActionBars actionBars = getSite().getActionBars();
 
-    actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(), new Action()
-    {
-      @Override
-      public boolean isEnabled()
-      {
-        final Tree control = (Tree) _treeViewer.getControl();
-        final int count = control.getSelectionCount();
-        return count > 0;
-      }
-
-      @Override
-      public void run()
-      {
-        // get the selected item
-        final StructuredSelection sel = (StructuredSelection) _treeViewer
-            .getSelection();
-
-        if (!sel.isEmpty())
+    actionBars.setGlobalActionHandler(ActionFactory.DELETE.getId(),
+        new EnabledAction(_treeViewer)
         {
-          final SelectionContext selectionContext = SelectionContext.create(
-              sel);
-          final DeleteItem deleteItem = new DeleteItem(selectionContext.eList,
-              selectionContext.parentLayers, _myLayers,
-              selectionContext.updateLayers);
-          deleteItem.run();
-        }
-
-      }
-
-    });
-    actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), new Action()
-    {
-      @Override
-      public boolean isEnabled()
-      {
-        final Tree control = (Tree) _treeViewer.getControl();
-        final int count = control.getSelectionCount();
-        return count > 0;
-      }
-
-      @Override
-      public void run()
-      {
-        // get the selected item
-        final StructuredSelection sel = (StructuredSelection) _treeViewer
-            .getSelection();
-
-        if (!sel.isEmpty())
+          @Override
+          protected void doIt(SelectionContext selectionContext)
+          {
+            final DeleteItem deleteItem = new DeleteItem(selectionContext.eList,
+                selectionContext.parentLayers, _myLayers,
+                selectionContext.updateLayers);
+            deleteItem.run();
+          }
+        });
+    actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+        new EnabledAction(_treeViewer)
         {
-          final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
-
-          final SelectionContext selectionContext = SelectionContext.create(
-              sel);
-          final CopyItem copyItem = new CopyItem(selectionContext.eList,
-              theClipboard, selectionContext.parentLayers, _myLayers,
-              selectionContext.updateLayers);
-          copyItem.run();
-        }
-
-      }
-
-    });
-    actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(), new Action()
-    {
-      @Override
-      public boolean isEnabled()
-      {
-        final Tree control = (Tree) _treeViewer.getControl();
-        final int count = control.getSelectionCount();
-        return count > 0;
-      }
-
-      @Override
-      public void run()
-      {
-        // get the selected item
-        final StructuredSelection sel = (StructuredSelection) _treeViewer
-            .getSelection();
-
-        if (!sel.isEmpty())
+          @Override
+          protected void doIt(SelectionContext selectionContext)
+          {
+            final Clipboard theClipboard = CorePlugin.getDefault()
+                .getClipboard();
+            final CopyItem copyItem = new CopyItem(selectionContext.eList,
+                theClipboard, selectionContext.parentLayers, _myLayers,
+                selectionContext.updateLayers);
+            copyItem.run();
+          }
+        });
+    actionBars.setGlobalActionHandler(ActionFactory.CUT.getId(),
+        new EnabledAction(_treeViewer)
         {
-          final Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
-
-          final SelectionContext selectionContext = SelectionContext.create(
-              sel);
-          final CutItem cutItem = new CutItem(selectionContext.eList,
-              theClipboard, selectionContext.parentLayers, _myLayers,
-              selectionContext.updateLayers);
-          cutItem.run();
-        }
-
-      }
-
-    });
+          @Override
+          protected void doIt(SelectionContext selectionContext)
+          {
+            final Clipboard theClipboard = CorePlugin.getDefault()
+                .getClipboard();
+            final CutItem cutItem = new CutItem(selectionContext.eList,
+                theClipboard, selectionContext.parentLayers, _myLayers,
+                selectionContext.updateLayers);
+            cutItem.run();
+          }
+        });
 
     actionBars.setGlobalActionHandler(ActionFactory.PASTE.getId(), new Action()
     {
@@ -713,11 +679,12 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         final Object val = _clipboard.getContents(TextTransfer.getInstance());
         if (val != null)
         {
-            final String clipBoardContent = (String) val;
-            // See if there is plain text on the clipboard
-            if (ImportReplay.isContentImportable(clipBoardContent)) {
-              return true;
-            }
+          final String clipBoardContent = (String) val;
+          // See if there is plain text on the clipboard
+          if (ImportReplay.isContentImportable(clipBoardContent))
+          {
+            return true;
+          }
         }
         final EditableTransfer transfer = EditableTransfer.getInstance();
         final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
@@ -751,11 +718,13 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         final Object val = _clipboard.getContents(TextTransfer.getInstance());
         if (val != null)
         {
-            final String clipBoardContent = (String) val;
-            // See if there is plain text on the clipboard
-            if (ImportReplay.isContentImportable(clipBoardContent)) {
-              GeneratePasteRepClipboard.createAction(_myLayers, clipBoardContent).run();
-            }
+          final String clipBoardContent = (String) val;
+          // See if there is plain text on the clipboard
+          if (ImportReplay.isContentImportable(clipBoardContent))
+          {
+            GeneratePasteRepClipboard.createAction(_myLayers, clipBoardContent)
+                .run();
+          }
         }
         final EditableTransfer transfer = EditableTransfer.getInstance();
         final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
@@ -952,7 +921,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
         final ViewerCell viewerCell = _treeViewer.getCell(pt);
         // click on visibility column.
-        if (viewerCell != null && viewerCell.getColumnIndex() == 1 )
+        if (viewerCell != null && viewerCell.getColumnIndex() == 1)
         {
           final Object element = viewerCell.getElement();
           if (element instanceof EditableWrapper)
@@ -987,7 +956,6 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       }
     });
     // and declare our context sensitive help
-    // FIXME
     CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
 
     processNewLayers();
@@ -1580,62 +1548,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       @Override
       public void run()
       {
-
-        final AbstractOperation doIt = new SelectionOperation("Make secondary",
-            new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.setSecondary(list);
-                  }
-                }
-              }
-            }, new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.removeSecondary(list);
-                  }
-                }
-              }
-            }, new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.setSecondary(list);
-                  }
-                }
-              }
-            }, _treeViewer, _myLayers);
+        final AbstractOperation doIt = getSelectionOperation(true);
         CorePlugin.run(doIt);
-
       }
     };
     _makeSecondary.setText("Make Secondary");
@@ -1650,59 +1564,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
 
-        final AbstractOperation doIt = new SelectionOperation(
-            "Add as secondary", new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.addSecondary(list);
-                  }
-                }
-              }
-            }, new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.removeSecondary(list);
-                  }
-                }
-              }
-            }, new IOperateOn()
-            {
-              @Override
-              public void doItTo(final Editable item)
-              {
-                // is it a watchable-list?
-                if (item instanceof WatchableList)
-                {
-                  final WatchableList list = (WatchableList) item;
-
-                  // make it the primary
-                  if (_theTrackDataListener != null)
-                  {
-                    _theTrackDataListener.addSecondary(list);
-                  }
-                }
-              }
-            }, _treeViewer, _myLayers);
+        final AbstractOperation doIt = getSelectionOperation(false);
         CorePlugin.run(doIt);
 
       }
@@ -1831,6 +1693,62 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     handlerService.activateHandler(CollapseAllHandler.COMMAND_ID,
         new ActionHandler(_collapseAllAction));
   }
+
+  private static void doSecondary(TrackManager theTrackDataListener,
+      WatchableList list, final boolean replaceSecondary)
+  {
+    if (replaceSecondary)
+    {
+      theTrackDataListener.setSecondary(list);
+    }
+    else
+    {
+      theTrackDataListener.addSecondary(list);
+    }
+  }
+  
+  abstract private class DoWatchable implements IOperateOn
+  {
+    @Override
+    final public void doItTo(final Editable item)
+    {
+      // is it a watchable-list?
+      if (item instanceof WatchableList)
+      {
+        final WatchableList list = (WatchableList) item;
+
+        // make it the primary
+        if (_theTrackDataListener != null)
+        {
+          apply(list);
+        }
+      }
+    }
+    abstract protected void apply(WatchableList list);
+  }
+
+  private SelectionOperation getSelectionOperation(
+      final boolean replaceSecondary)
+  {
+    final IOperateOn execute = new DoWatchable()
+    {
+      @Override
+      protected void apply(WatchableList list)
+      {
+        doSecondary(_theTrackDataListener, list, replaceSecondary);
+      }
+    };
+    final IOperateOn undo = new DoWatchable()
+    {
+      @Override
+      protected void apply(WatchableList list)
+      {
+         _theTrackDataListener.removeSecondary(list);
+      }
+    };
+    return new SelectionOperation("Add as secondary", execute, undo, execute,
+        _treeViewer, _myLayers);
+  };
 
   void processNewData(final Layers theData, final Editable newItem,
       final HasEditables parentLayer)
