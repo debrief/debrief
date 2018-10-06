@@ -188,7 +188,6 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
-import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
@@ -1694,14 +1693,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @SuppressWarnings("rawtypes")
   public Object getAdapter(final Class adapter)
   {
-    Object res = null;
+    final Object res;
 
     if (adapter == Layers.class)
     {
-      if (_myLayers != null)
-      {
-        res = _myLayers;
-      }
+      res = _myLayers != null ? _myLayers : null;
     }
     else if (adapter == TrackManager.class)
     {
@@ -1741,7 +1737,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
     else if (adapter == IGotoMarker.class)
     {
-      return new IGotoMarker()
+      res = new IGotoMarker()
       {
         @Override
         public void gotoMarker(final IMarker marker)
@@ -1754,23 +1750,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             _timeManager.setTime(this, tNow, true);
           }
         }
-
       };
     }
-
     else if (adapter == IRollingNarrativeProvider.class)
     {
       // so, do we have any narrative data?
       final Layer narr = _myLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
-      if (narr != null)
-      {
-        // did we find it?
-        // cool, cast to object
-        final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
-
-        res = wrapper;
-      }
+      res = narr != null ? narr : null;
     }
     else if (adapter == RelativeProjectionParent.class)
     {
@@ -1778,7 +1765,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         _myRelativeWrapper = new RelativeProjectionParent()
         {
-
           private Watchable getFirstPosition(final TrackDataProvider provider,
               final TimeManager manager)
           {
@@ -1858,8 +1844,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       res = _propertySheetPage;
     }
-    // did we find anything?
-    if (res == null)
+    else if(PlotEditor.class.equals(adapter))
+    {
+      return this;
+    }
+    else
     {
       // nope, see if the parent can find anything
       res = super.getAdapter(adapter);
