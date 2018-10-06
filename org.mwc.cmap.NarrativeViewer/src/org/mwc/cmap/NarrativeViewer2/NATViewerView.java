@@ -878,21 +878,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     }
   }
 
-  /**
-   * the user has selected a new time
-   * 
-   */
-  @Override
-  public void propertyChange(final PropertyChangeEvent evt)
-  {
-    // are we syncing with time?
-    if (_followTime.isChecked())
-    {
-
-    }
-  }
-
-  private void refreshColor(final Layer layer)
+  public static boolean doRefreshColor(final Layer layer, 
+      IRollingNarrativeProvider myRollingNarrative)
   {
     if (layer instanceof TrackWrapper)
     {
@@ -900,7 +887,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       final String name = track.getName();
       final Color color = track.getColor();
       boolean refresh = false;
-      final NarrativeEntry[] entries = _myRollingNarrative.getNarrativeHistory(
+      final NarrativeEntry[] entries = myRollingNarrative.getNarrativeHistory(
           new String[]
           {});
       for (final NarrativeEntry entry : entries)
@@ -927,10 +914,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           }
         }
       }
-      if (refresh)
-      {
-        myViewer.refresh();
-      }
+      return refresh;
+    }
+    return false;
+  }
+  
+  private void refreshColor(final Layer layer)
+  {
+    if(doRefreshColor(layer, _myRollingNarrative))
+    {
+      myViewer.refresh();
     }
   }
 
@@ -1259,6 +1252,11 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
     }
+  }
+
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
   }
 
 }

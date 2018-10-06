@@ -830,9 +830,10 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
           LayerHandler.NARRATIVE_LAYER);
       // correct final count
-      assertEquals("Got num lines", 364, narrLayer.size());
       
       BaseLayer fcsLayer = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+
+      assertEquals("Got num lines", 364, narrLayer.size());
 
       final Object[] solutions = fcsLayer.getData().toArray();
 
@@ -889,10 +890,10 @@ public class ImportNarrativeDocument
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
-      final InputStream is = new FileInputStream(testI);
 
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
+      final InputStream is = new FileInputStream(testI);
       final HWPFDocument doc = new HWPFDocument(is);
       final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);

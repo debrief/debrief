@@ -53,6 +53,7 @@ import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
+import org.mwc.cmap.NarrativeViewer2.NATViewerView;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -729,52 +730,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   @Override
   public void propertyChange(final PropertyChangeEvent evt)
   {
-    // are we syncing with time?
-    if (_followTime.isChecked())
-    {
-
-    }
   }
-
+  
   private void refreshColor(final Layer layer)
   {
-    if (layer instanceof TrackWrapper)
+    if(NATViewerView.doRefreshColor(layer, _myRollingNarrative))
     {
-      final TrackWrapper track = (TrackWrapper) layer;
-      final String name = track.getName();
-      final Color color = track.getColor();
-      boolean refresh = false;
-      final NarrativeEntry[] entries = _myRollingNarrative.getNarrativeHistory(
-          new String[]
-          {});
-      for (final NarrativeEntry entry : entries)
-      {
-        if (entry.getTrackName() != null && entry.getTrackName().equals(name))
-        {
-          // special handling for rider narratives
-          if (entry.getType() != null && entry.getType().equals(
-              ImportRiderNarrativeDocument.RIDER_SOURCE))
-          {
-            // don't over-write the color. We leave rider narratives unchanged
-          }
-          else if (!internalEquals(color, entry.getColor()))
-          {
-            if (color == null)
-            {
-              entry.setColor(Color.DARK_GRAY);
-            }
-            else
-            {
-              entry.setColor(color);
-            }
-            refresh = true;
-          }
-        }
-      }
-      if (refresh)
-      {
-        myViewer.refresh();
-      }
+      myViewer.refresh();
     }
   }
 
