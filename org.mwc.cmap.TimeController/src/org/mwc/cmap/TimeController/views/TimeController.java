@@ -577,36 +577,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       if (isRecording)
       {
         startPlaying();
-        _coordinateRecorder = new CoordinateRecorder(_myLayers,
-            _targetProjection, _myStepperProperties);
-        
-        _coordinateRecorder.startStepping(getTimeProvider().getTime());
-        setVCREnabled(false);
-
-        _recordButton.setToolTipText(STOP_TEXT);
-        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_STOP_RECORD));
+        startRecording();
       }
       else {
         stopPlaying();
-        if (_coordinateRecorder != null)
-        {
-          _coordinateRecorder.stopStepping(getTimeProvider().getTime());
-          _coordinateRecorder = null;
-        }
-        _recordButton.setToolTipText(RECORD_TEXT);
-        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
-        setVCREnabled(true);
+        stopRecording(getTimeProvider().getTime());
       }
     }
   }
   private class PlayButtonListener extends SelectionAdapter
   {
-    /*//@Override
-    public boolean showMenu()
-    {
-      return true;
-    }*/
-
     @Override
     public void widgetSelected(SelectionEvent se)
     {
@@ -614,7 +594,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       _playing=true;
       if (playing)
       {
-
         // and start playing
         startPlaying();
 
@@ -634,11 +613,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         // ok, set the tooltip & image
         _playButton.setToolTipText(PLAY_TEXT);
         _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
-
-        // do any export tidying up, if we have to
-        
       }
-      
     }
   }
 
@@ -732,7 +707,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _buttonList.put("eFwd", eFwd);
   }
 
-  private void addTimeButtonListener(final Button button,
+  private static void addTimeButtonListener(final Button button,
       final RepeatingTimeButtonListener listener)
   {
     button.addListener(SWT.MouseDown, listener);
@@ -1103,7 +1078,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             fireNewTime(timeToUse);
             
             // and stop recording
-            stopPlayingRecorder(timeToUse);
+            stopRecording(timeToUse);
             stopPlayingTimer();
           }
         }
@@ -1114,10 +1089,26 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   }
   
-  private void stopPlayingRecorder(HiResDate timeNow) {
+  private void stopRecording(HiResDate timeNow) 
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        // switch the button
+        _recordButton.setToolTipText(RECORD_TEXT);
+        _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_RECORD));
+
+        // and update the VCR buttons
+        setVCREnabled(true);          
+      }
+    });
+
     if(_coordinateRecorder!=null) {
       
       _coordinateRecorder.stopStepping(timeNow);
+      _coordinateRecorder = null;
     }
   }
 
@@ -3173,6 +3164,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   public TimeProvider getTimeProvider()
   {
     return _myTemporalDataset;
+  }
+
+  private void startRecording()
+  {
+    _coordinateRecorder = new CoordinateRecorder(_myLayers,
+        _targetProjection, _myStepperProperties);
+    
+    _coordinateRecorder.startStepping(getTimeProvider().getTime());
+    setVCREnabled(false);
+
+    _recordButton.setToolTipText(STOP_TEXT);
+    _recordButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_STOP_RECORD));
   }
 
 }
