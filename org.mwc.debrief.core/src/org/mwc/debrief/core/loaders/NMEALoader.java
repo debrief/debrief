@@ -32,7 +32,7 @@ import MWC.GUI.Layers;
 public class NMEALoader extends CoreLoader
 {
 
-  public NMEALoader(String fileType)
+  public NMEALoader()
   {
     super("NMEA", null);
   }
