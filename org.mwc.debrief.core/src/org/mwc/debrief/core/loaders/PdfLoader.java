@@ -13,7 +13,7 @@ import MWC.GUI.Layers;
 public class PdfLoader extends CoreLoader
 {
 
-  public PdfLoader(String fileType)
+  public PdfLoader()
   {
     super("pdf", "pdf");
   }

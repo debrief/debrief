@@ -35,9 +35,9 @@ import MWC.GUI.Layers;
 public class ReplayLoader extends CoreLoader
 {
 
-  public ReplayLoader(String fileType)
+  public ReplayLoader()
   {
-    super("Replay", null);
+    super("Replay", ".rep");
   }
 
   /**
