@@ -67,6 +67,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
@@ -591,6 +592,7 @@ public class ImportNarrativeDocument
         }
         catch (final NumberFormatException e)
         {
+          Trace.trace(e, "While parsing date for narrative entry");
         }
 
         final boolean probHasContent = entry.length() > 8;
