@@ -13,7 +13,7 @@ import MWC.TacticalData.TrackDataProvider;
 public class MsDocXLoader extends CoreLoader
 {
 
-  public MsDocXLoader(String fileType)
+  public MsDocXLoader()
   {
     super(".docx", ".docx");
   }

@@ -31,7 +31,7 @@ import MWC.GUI.Layers;
 public class SATCLoader extends CoreLoader
 {
 
-  public SATCLoader(String fileType)
+  public SATCLoader()
   {
     super("SATC Scenario", null);
   }

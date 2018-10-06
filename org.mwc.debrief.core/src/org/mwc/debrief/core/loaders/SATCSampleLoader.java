@@ -44,7 +44,7 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class SATCSampleLoader extends CoreLoader
 {
 
-  public SATCSampleLoader(String fileType)
+  public SATCSampleLoader()
   {
     super("SATC Sample", null);
   }

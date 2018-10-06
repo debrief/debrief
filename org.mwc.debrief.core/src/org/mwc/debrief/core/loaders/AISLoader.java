@@ -30,7 +30,7 @@ import MWC.GUI.Layers;
 public class AISLoader extends CoreLoader
 {
 
-  public AISLoader(String fileType)
+  public AISLoader()
   {
     super("AIS", null);
   }

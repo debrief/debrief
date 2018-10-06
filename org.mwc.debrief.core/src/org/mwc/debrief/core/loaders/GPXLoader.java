@@ -30,7 +30,7 @@ import MWC.GUI.Layers;
  */
 public class GPXLoader extends CoreLoader
 {
-  public GPXLoader(String fileType)
+  public GPXLoader()
   {
     super("GPX", "gpx");
   }
