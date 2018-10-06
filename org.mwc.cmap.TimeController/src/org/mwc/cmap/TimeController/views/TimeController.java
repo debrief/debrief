@@ -1772,7 +1772,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     }
   }
 
-  public void fireNewTime(final HiResDate dtg)
+  private void fireNewTime(final HiResDate dtg)
   {
     if (!_firingNewTime)
     {
@@ -3134,7 +3134,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
     if (_coordinateRecorder != null)
     {
-
       _coordinateRecorder.stopStepping(timeNow);
       _coordinateRecorder = null;
     }
