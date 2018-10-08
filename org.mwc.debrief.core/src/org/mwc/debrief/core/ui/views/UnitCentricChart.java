@@ -215,6 +215,13 @@ class UnitCentricChart extends SWTChart
     _rangeRings = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
         new WorldDistance(5, WorldDistance.KM));
   }
+  
+  @Override
+  public boolean supportsRightClick()
+  {
+    // no - unit centric view doesn't support right clik
+    return false;
+  }
 
   @Override
   public void chartFireSelectionChanged(final ISelection sel)
@@ -327,6 +334,7 @@ class UnitCentricChart extends SWTChart
       priTrack.setInterpolatePoints(oldInterp);
     }
   }
+
 
   public LocalGridPainter getGrid()
   {
