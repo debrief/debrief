@@ -193,7 +193,8 @@ public class ConvertLightweightTrackToTrack implements
         selection[i] = light;
       }
 
-      
+      assertEquals("have single layer before operation",  1, theLayers.size());
+
       // ok, now do the interpolation
       final ConvertIt ct = new ConvertIt("convert it", theLayers, selection);
 
@@ -205,6 +206,8 @@ public class ConvertLightweightTrackToTrack implements
       {
         fail("Exception thrown");
       }
+      
+      assertEquals("have new layers",  5, theLayers.size());
 
       // check the track got generated
       final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("track:2");
