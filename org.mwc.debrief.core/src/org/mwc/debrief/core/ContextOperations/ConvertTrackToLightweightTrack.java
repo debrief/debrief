@@ -257,33 +257,27 @@ public class ConvertTrackToLightweightTrack implements
       holder.setName("Trk");
       theLayers.addThisLayer(holder);
 
-      WorldLocation lastLoc = null;
-      for (int i = 0; i < 4; i++)
+      TrackWrapper track = new TrackWrapper();
+      track.setName("BIG ONE");
+      
+      
+      final int NUM_FIXES = 4;
+      for (int i = 0; i < NUM_FIXES; i++)
       {
         final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
             'W', 0);
-        if (lastLoc != null)
-        {
-          // ok, add the line
-          final LineShape ls = new LineShape(lastLoc, thisLoc);
-
-          final long theDate1 = 20000000 + i * 60000;
-          final long theDate2 = 20000000 + i * 61000;
-
-          final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red,
-              new HiResDate(theDate1));
-          sw.setTime_Start(new HiResDate(theDate1));
-          sw.setTimeEnd(new HiResDate(theDate2));
-          holder.add(sw);
-        }
-
-        // and remember the last location
-        lastLoc = thisLoc;
+        Fix theFix = new Fix(new HiResDate(i * 10000), thisLoc, 2 * i, NUM_FIXES * i);
+        FixWrapper fixW = new FixWrapper(theFix);
+        track.addFix(fixW);
       }
+      theLayers.addThisLayer(track);
+
+      assertEquals("heavy track present", 2, theLayers.size());
+      assertEquals("holder empty", 0, holder.size());
 
       // ok, now do the interpolation
       final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[]
-      {holder}, null);
+      {track}, holder);
 
       try
       {
@@ -294,15 +288,21 @@ public class ConvertTrackToLightweightTrack implements
         fail("Exception thrown");
       }
 
+      assertEquals("heavy track gone", 1, theLayers.size());
+      
+      assertEquals("holder not empty", 1, holder.size());
+      
       // check the track got generated
-      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+      final LightweightTrackWrapper tw = (LightweightTrackWrapper) holder.elements().nextElement();
 
       // did we find it?
       assertNotNull("track generated", tw);
-
-      // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", tw.numFixes(), 4);
-
+      
+      assertEquals("correct name", "BIG ONE", tw.getName());
+      assertEquals("correct size", track.numFixes(), tw.numFixes());
+      assertEquals("correct size", NUM_FIXES, tw.numFixes());
+      assertEquals("correct color", track.getColor(), tw.getColor());
+      assertEquals("correct name", track.getName(), tw.getName());
     }
 
     public testMe(final String val)
