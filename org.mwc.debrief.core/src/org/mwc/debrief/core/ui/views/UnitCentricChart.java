@@ -119,7 +119,7 @@ class UnitCentricChart extends SWTChart
 
       dest.setColor(newCol);
 
-      rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+      rawSec.paintMe(dest, offsetLocation, newCol);
 
       // and the line
       final Point newEnd = dest.toScreen(offsetLocation);
