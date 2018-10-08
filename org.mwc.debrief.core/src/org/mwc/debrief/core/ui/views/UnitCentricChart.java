@@ -13,6 +13,7 @@ import org.mwc.debrief.core.ui.views.UnitCentricView.IOperateOnMatch;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layers;
@@ -29,18 +30,60 @@ import MWC.TacticalData.TrackDataProvider;
 class UnitCentricChart extends SWTChart
 {
 
-  /** implement the normal painter (all points)
-   * 
+  abstract private class CorePaintOperation implements IOperateOnMatch
+  {
+    protected final CanvasType dest;
+
+    private CorePaintOperation(final CanvasType dest)
+    {
+      this.dest = dest;
+    }
+
+    @Override
+    public void handlePrimary(final WatchableList primary,
+        final WorldLocation origin)
+    {
+      final PlainSymbol sym = primary.getSnailShape();
+      if (sym != null)
+      {
+        sym.paint(dest, origin);
+      }
+    }
+
+    @Override
+    public void processNearest(final FixWrapper nearestInTime,
+        final WorldLocation nearestOffset, final double primaryHeadingDegs)
+    {
+      final double hisCourseDegs = nearestInTime.getCourseDegs();
+      // sort out the secondary's relative heading
+      final double relativeHeading = (360 - primaryHeadingDegs) + hisCourseDegs;
+
+      // draw the snail marker
+      final WatchableList track = nearestInTime.getTrackWrapper();
+      final PlainSymbol sym = track.getSnailShape();
+
+      sym.setColor(track.getColor());
+
+      sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
+          relativeHeading));
+
+      // reset the last object pointer
+      oldEnd = null;
+    }
+
+  }
+
+  /**
+   * implement the normal painter (all points)
+   *
    * @author ian
    *
    */
-  private class NormalPaintOperation implements IOperateOnMatch
+  private class NormalPaintOperation extends CorePaintOperation
   {
-    private final CanvasType dest;
-
     private NormalPaintOperation(final CanvasType theDest)
     {
-      this.dest = theDest;
+      super(theDest);
     }
 
     @Override
@@ -61,57 +104,37 @@ class UnitCentricChart extends SWTChart
       //
       oldEnd = new Point(newEnd);
     }
-
-    @Override
-    public void handlePrimary(final WatchableList primary,
-        final WorldLocation origin)
-    {
-      final PlainSymbol sym = primary.getSnailShape();
-      if (sym != null)
-      {
-        sym.paint(dest, origin);
-      }
-    }
-
-    @Override
-    public void processNearest(final FixWrapper nearestInTime,
-        final WorldLocation nearestOffset, final double primaryHeadingDegs)
-    {
-      final double hisCourseDegs = nearestInTime.getCourseDegs();
-      // sort out the secondary's relative heading
-      final double relativeHeading = (360 - primaryHeadingDegs) + hisCourseDegs;
-
-      // draw the snail marker
-      final WatchableList track = nearestInTime.getTrackWrapper();
-      final PlainSymbol sym = track.getSnailShape();
-      sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
-          relativeHeading));
-
-      // reset the last object pointer
-      oldEnd = null;
-    }
   }
 
-  /** implement the snail painter operation
-   * 
+  /**
+   * implement the snail painter operation
+   *
    * @author ian
    *
    */
-  private class SnailPaintOperation implements IOperateOnMatch
+  private class SnailPaintOperation extends CorePaintOperation
   {
-
-    private final CanvasType dest;
 
     private SnailPaintOperation(final CanvasType theDest)
     {
-      this.dest = theDest;
+      super(theDest);
     }
 
     @Override
     public void doItTo(final FixWrapper rawSec,
         final WorldLocation offsetLocation, final double proportion)
     {
-      dest.setLineWidth(3f);
+      // try to use the same line width
+      final LightweightTrackWrapper track = (LightweightTrackWrapper) rawSec
+          .getTrackWrapper();
+      if (track != null)
+      {
+        dest.setLineWidth(track.getLineThickness());
+      }
+      else
+      {
+        dest.setLineWidth(3f);
+      }
 
       // sort out the color
       final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
@@ -129,40 +152,11 @@ class UnitCentricChart extends SWTChart
       }
       oldEnd = new Point(newEnd);
     }
-
-    @Override
-    public void handlePrimary(final WatchableList primary,
-        final WorldLocation origin)
-    {
-      final PlainSymbol sym = primary.getSnailShape();
-      if (sym != null)
-      {
-        sym.paint(dest, origin);
-      }
-    }
-
-    @Override
-    public void processNearest(final FixWrapper nearestInTime,
-        final WorldLocation nearestOffset, final double primaryHeadingDegs)
-    {
-      final double hisCourseDegs = nearestInTime.getCourseDegs();
-      // sort out the secondary's relative heading
-      final double relativeHeading = (360 - primaryHeadingDegs) + hisCourseDegs;
-
-      // draw the snail marker
-      final WatchableList track = nearestInTime.getTrackWrapper();
-      final PlainSymbol sym = track.getSnailShape();
-      sym.setColor(track.getColor());
-      sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
-          relativeHeading));
-
-      // reset the last object pointer
-      oldEnd = null;
-    }
   }
 
-  /** helper class that provides background data
-   * 
+  /**
+   * helper class that provides background data
+   *
    * @author ian
    *
    */
@@ -183,6 +177,20 @@ class UnitCentricChart extends SWTChart
    *
    */
   private static final long serialVersionUID = 1L;
+
+  protected static Color colorFor(final Color color, final float proportion,
+      final Color backgroundColor)
+  {
+    // merge the foreground to the background
+    final int red = backgroundColor.getRed() - color.getRed();
+    final int green = backgroundColor.getGreen() - color.getGreen();
+    final int blue = backgroundColor.getBlue() - color.getBlue();
+
+    final float newRed = color.getRed() + red * proportion;
+    final float newGreen = color.getGreen() + green * proportion;
+    final float newBlue = color.getBlue() + blue * proportion;
+    return new Color((int) newRed, (int) newGreen, (int) newBlue);
+  }
 
   private final LocalGridPainter _localGrid;
 
@@ -214,8 +222,9 @@ class UnitCentricChart extends SWTChart
     // just ignore it
   }
 
-  /** check we have a valid data area for the layers
-   * 
+  /**
+   * check we have a valid data area for the layers
+   *
    * @param theLayers
    */
   private void checkDataCoverage(final Layers theLayers)
@@ -263,69 +272,6 @@ class UnitCentricChart extends SWTChart
         getCanvas().getProjection().setDataArea(area);
       }
     }
-  }
-
-  protected static Color colorFor(final Color color, final float proportion,
-      final Color backgroundColor)
-  {
-    // merge the foreground to the background
-    final int red = backgroundColor.getRed() - color.getRed();
-    final int green = backgroundColor.getGreen() - color.getGreen();
-    final int blue = backgroundColor.getBlue() - color.getBlue();
-
-    final float newRed = color.getRed() + red * proportion;
-    final float newGreen = color.getGreen() + green * proportion;
-    final float newBlue = color.getBlue() + blue * proportion;
-    return new Color((int) newRed, (int) newGreen, (int) newBlue);
-  }
-
-  public LocalGridPainter getGrid()
-  {
-    return _localGrid;
-  }
-
-  public RangeRingShape getRings()
-  {
-    return _rangeRings;
-  }
-
-  @Override
-  public void paintMe(final CanvasType dest)
-  {
-    if (_theLayers == null)
-    {
-      CorePlugin.logError(IStatus.WARNING,
-          "Unit centric view is missing layers", null);
-      return;
-    }
-
-    if (_provider.getTrackDataProvider() == null)
-    {
-      CorePlugin.logError(IStatus.WARNING,
-          "Unit centric view is missing track data provider", null);
-      return;
-    }
-
-    // ok, check we have primary track
-    if (_provider.getTrackDataProvider().getPrimaryTrack() == null)
-    {
-      CorePlugin.logError(IStatus.WARNING,
-          "Unit centric view is missing primary track", null);
-      dest.setColor(new Color(200, 0, 0));
-      dest.drawText("Please assign a primary track",50,50);
-      return;
-    }
-    
-
-    if (_provider.getTimeProvider() == null)
-    {
-      CorePlugin.logError(IStatus.WARNING,
-          "Unit centric view is missing time provider", null);
-      return;
-    }
-    
-    // ok, checks done. Now get on with paint
-    doPaint(dest);
   }
 
   private void doPaint(final CanvasType dest)
@@ -382,13 +328,61 @@ class UnitCentricChart extends SWTChart
     }
   }
 
-  public void setSnailMode(final boolean val)
+  public LocalGridPainter getGrid()
   {
-    _snailMode = val;
+    return _localGrid;
+  }
+
+  public RangeRingShape getRings()
+  {
+    return _rangeRings;
   }
 
   public boolean isSnailMode()
   {
     return _snailMode;
+  }
+
+  @Override
+  public void paintMe(final CanvasType dest)
+  {
+    if (_theLayers == null)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Unit centric view is missing layers", null);
+      return;
+    }
+
+    if (_provider.getTrackDataProvider() == null)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Unit centric view is missing track data provider", null);
+      return;
+    }
+
+    // ok, check we have primary track
+    if (_provider.getTrackDataProvider().getPrimaryTrack() == null)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Unit centric view is missing primary track", null);
+      dest.setColor(new Color(200, 0, 0));
+      dest.drawText("Please assign a primary track", 50, 50);
+      return;
+    }
+
+    if (_provider.getTimeProvider() == null)
+    {
+      CorePlugin.logError(IStatus.WARNING,
+          "Unit centric view is missing time provider", null);
+      return;
+    }
+
+    // ok, checks done. Now get on with paint
+    doPaint(dest);
+  }
+
+  public void setSnailMode(final boolean val)
+  {
+    _snailMode = val;
   }
 }
