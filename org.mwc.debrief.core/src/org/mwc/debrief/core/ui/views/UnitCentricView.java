@@ -160,6 +160,10 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       builder.createContribution(new WorldDistance(5, WorldDistance.NM));
       builder.createContribution(new WorldDistance(10, WorldDistance.NM));
 
+      // inject the separator
+      Separator sep = new Separator();
+      sep.fill(gridMenu, gridMenu.getItemCount());
+
       final ActionContributionItem pa7 = new ActionContributionItem(new Action(
           "Format grid")
       {
@@ -279,6 +283,11 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
       builder.createContribution(new WorldDistance(1, WorldDistance.NM));
       builder.createContribution(new WorldDistance(5, WorldDistance.NM));
       builder.createContribution(new WorldDistance(10, WorldDistance.NM));
+
+      // inject the separator
+      Separator sep = new Separator();
+      sep.fill(ringsMenu, ringsMenu.getItemCount());
+
       final ActionContributionItem pa7 = new ActionContributionItem(new Action(
           "Format rings")
       {
@@ -418,8 +427,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
   private static final String IMG_GRID_SELECTED = "icons/16/grid_selected.png";
 
   private static final String IMG_GRID = "icons/16/local_grid.png";
-  
-  
+
   /**
    * convert an absolute location into a location relative to a primary track
    *
@@ -995,7 +1003,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
 
               // and trigger update
               _myOverviewChart.update();
-              if(_trackDataProvider.getPrimaryTrack()==null) {
+              if (_trackDataProvider.getPrimaryTrack() == null)
+              {
                 CorePlugin.logError(IStatus.WARNING,
                     "Unit centric view is missing primary track", null);
                 CorePlugin.showMessage("Unit Centric View",
