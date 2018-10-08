@@ -15,8 +15,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
-import java.util.Date;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -34,19 +32,14 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.LineStylePropertyEditor;
-import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -245,98 +238,6 @@ public class ConvertLightweightTrackToTrack implements
     {
       super(val);
     }
-  }
-
-  public static TrackWrapper generateTrackFor(final BaseLayer layer)
-  {
-    TrackWrapper res = new TrackWrapper();
-    res.setName("T_" + layer.getName());
-
-    Color trackColor = null;
-
-    // ok, step through the points
-    final Enumeration<Editable> numer = layer.elements();
-
-    // remember the last line viewed, since we want to add both of it's points
-    ShapeWrapper lastLine = null;
-
-    while (numer.hasMoreElements())
-    {
-      final Plottable pl = (Plottable) numer.nextElement();
-      if (pl instanceof LabelWrapper)
-      {
-        final LabelWrapper label = (LabelWrapper) pl;
-
-        // just check we know the track color
-        if (trackColor == null)
-          trackColor = label.getColor();
-
-        HiResDate dtg = label.getStartDTG();
-        if (dtg == null)
-          dtg = new HiResDate(new Date());
-
-        final WorldLocation loc = label.getBounds().getCentre();
-        final Fix newFix = new Fix(dtg, loc, 0, 0);
-        final FixWrapper fw = new FixWrapper(newFix);
-
-        if (label.getColor() != trackColor)
-          fw.setColor(label.getColor());
-
-        res.add(fw);
-        fw.setTrackWrapper(res);
-
-        // forget the last-line, clearly we've moved on to other things
-        lastLine = null;
-
-      }
-      else if (pl instanceof ShapeWrapper)
-      {
-        final ShapeWrapper sw = (ShapeWrapper) pl;
-        final PlainShape shape = sw.getShape();
-        if (shape instanceof LineShape)
-        {
-          final LineShape line = (LineShape) shape;
-          // just check we know the track color
-          if (trackColor == null)
-            trackColor = line.getColor();
-
-          final HiResDate dtg = sw.getStartDTG();
-          final WorldLocation loc = line.getLine_Start();
-          final Fix newFix = new Fix(dtg, loc, 0, 0);
-          final FixWrapper fw = new FixWrapper(newFix);
-
-          if (line.getColor() != trackColor)
-            fw.setColor(line.getColor());
-          fw.setTrackWrapper(res);
-          res.add(fw);
-
-          // and remember this line
-          lastLine = sw;
-
-        }
-      }
-    }
-
-    // did we have a trailing line item?
-    if (lastLine != null)
-    {
-      final HiResDate dtg = lastLine.getEndDTG();
-      final LineShape line = (LineShape) lastLine.getShape();
-      final WorldLocation loc = line.getLineEnd();
-      final Fix newFix = new Fix(dtg, loc, 0, 0);
-      final FixWrapper fw = new FixWrapper(newFix);
-      fw.setTrackWrapper(res);
-      res.add(fw);
-    }
-
-    // update the track color
-    res.setColor(trackColor);
-
-    // did we find any?
-    if (res.numFixes() == 0)
-      res = null;
-
-    return res;
   }
 
   /**
