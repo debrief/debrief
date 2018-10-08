@@ -182,15 +182,30 @@ public class ConvertLightweightTrackToTrack implements
       holder.setName("Trk");
       theLayers.addThisLayer(holder);
 
-      Editable[] selection = new Editable[4];
+      final int NUM_TRACKS = 4;
+      final int NUM_POSITIONS = 5;
+      Editable[] selection = new Editable[NUM_TRACKS];
       
-      for (int i = 0; i < 4; i++)
+      LightweightTrackWrapper firstTrack = null;
+      
+      for (int j = 0; j < NUM_TRACKS; j++)
       {
-        final LightweightTrackWrapper light = new LightweightTrackWrapper("track:" + i, true, true, Color.RED, LineStylePropertyEditor.DOTTED);
-        Fix theFix = new Fix(new HiResDate(i), new WorldLocation(1,i,0),12d, 12d);
-        light.addFix(new FixWrapper(theFix));
+        final LightweightTrackWrapper light = new LightweightTrackWrapper("track:" + j, true, true, Color.RED, LineStylePropertyEditor.DOTTED);
+        
+        for (int i = 0; i < NUM_POSITIONS; i++)
+        {
+          Fix theFix = new Fix(new HiResDate(i * 1000), new WorldLocation(1,i,0),12d, 12d);
+          light.addFix(new FixWrapper(theFix));
+        }
+        
         holder.add(light);
-        selection[i] = light;
+        selection[j] = light;
+        
+        if(firstTrack == null)
+        {
+          firstTrack = light;
+        }
+        
       }
 
       assertEquals("have single layer before operation",  1, theLayers.size());
@@ -210,13 +225,19 @@ public class ConvertLightweightTrackToTrack implements
       assertEquals("have new layers",  5, theLayers.size());
 
       // check the track got generated
-      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("track:2");
+      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("track:0");
 
       // did we find it?
       assertNotNull("track generated", tw);
 
       // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", tw.numFixes(), 1);
+      
+      assertEquals("correct name", "track:0", tw.getName());
+      assertEquals("correct size", firstTrack.numFixes(), tw.numFixes());
+      assertEquals("correct size", NUM_POSITIONS, tw.numFixes());
+      assertEquals("correct color", firstTrack.getColor(), tw.getColor());
+      assertEquals("correct name", firstTrack.getName(), tw.getName());
+      
 
     }
 
