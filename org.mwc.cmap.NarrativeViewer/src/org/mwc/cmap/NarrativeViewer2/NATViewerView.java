@@ -19,26 +19,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.eclipse.core.commands.operations.IUndoableOperation;
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.TrayDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceConverter;
@@ -59,15 +52,14 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.NarrativeViewer.preferences.NarrativeViewerPrefsPage;
+import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -92,8 +84,7 @@ import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class NATViewerView extends ViewPart implements PropertyChangeListener,
-    ISelectionProvider
+public class NATViewerView extends ViewPart implements ISelectionProvider
 {
   NatNarrativeViewer myViewer;
 
@@ -361,99 +352,24 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
    */
   private void addDateFormats(final IMenuManager menuManager)
   {
-    // ok, second menu for the DTG formats
-    final MenuManager formatMenu = new MenuManager("DTG Format");
-
-    // and store it
-    menuManager.add(formatMenu);
-
-    // and now the date formats
-    final String[] formats = DateFormatPropertyEditor.getTagList();
-    for (int i = 0; i < formats.length; i++)
+    final TimeController.TimeFormatAction action = new TimeController.TimeFormatAction()
     {
-      final String thisFormat = formats[i];
-
-      // the properties manager is expecting the integer index of the new
-      // format, not the string value.
-      // so store it as an integer index
-      final Integer thisIndex = new Integer(i);
-
-      // and create a new action to represent the change
-      final Action newFormat = new Action(thisFormat, IAction.AS_RADIO_BUTTON)
+      @Override
+      public void apply(final int index, final String format)
       {
-        @Override
-        public void run()
+        myViewer.setTimeFormatter(new TimeFormatter()
         {
-          super.run();
-          final String theFormat = DateFormatPropertyEditor
-              .getTagList()[thisIndex];
-
-          myViewer.setTimeFormatter(new TimeFormatter()
+          @Override
+          public String format(final HiResDate time)
           {
-            @Override
-            public String format(final HiResDate time)
-            {
-              final String res = toStringHiRes(time, theFormat);
-              return res;
-            }
-          });
-        }
-
-      };
-      formatMenu.add(newFormat);
-    }
-  }
-
-  protected void addMarker()
-  {
-    try
-    {
-      // right, do we have an editor with a file?
-      final IEditorInput input = _currentEditor.getEditorInput();
-      if (input instanceof IFileEditorInput)
-      {
-        // aaah, and is there a file present?
-        final IFileEditorInput ife = (IFileEditorInput) input;
-        final IResource file = ife.getFile();
-
-        final StructuredSelection selection = myViewer.getSelection();
-        if (selection.getFirstElement() instanceof NarrativeEntry)
-        {
-
-          final NarrativeEntry entry = (NarrativeEntry) selection
-              .getFirstElement();
-          final long tNow = entry.getDTG().getMicros();
-          final String currentText = FormatDateTime.toString(tNow / 1000);
-          if (file != null)
-          {
-            // yup, get the description
-            final InputDialog inputD = new InputDialog(getViewSite().getShell(),
-                "Add bookmark at this DTG",
-                "Enter description of this bookmark", currentText, null);
-            inputD.open();
-
-            final String content = inputD.getValue();
-            if (content != null)
-            {
-              final IMarker marker = file.createMarker(IMarker.BOOKMARK);
-              final Map<String, Object> attributes =
-                  new HashMap<String, Object>(4);
-              attributes.put(IMarker.MESSAGE, content);
-              attributes.put(IMarker.LOCATION, currentText);
-              attributes.put(IMarker.LINE_NUMBER, "" + tNow);
-              attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
-              marker.setAttributes(attributes);
-            }
+            final String res = toStringHiRes(time, format);
+            return res;
           }
-        }
-
+        });        
       }
-    }
-    catch (final CoreException e)
-    {
-      e.printStackTrace();
-    }
-
+    };
+    
+    TimeController.addDateFormats(menuManager, action);
   }
 
   @Override
@@ -669,7 +585,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     return null;
   }
 
-  private boolean internalEquals(final Color color1, final Color color2)
+  private static boolean internalEquals(final Color color1, final Color color2)
   {
     if (color1 == null && color2 == null)
     {
@@ -809,7 +725,17 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       @Override
       public void runWithEvent(final Event event)
       {
-        addMarker();
+        final StructuredSelection selection = (StructuredSelection) myViewer.
+            getSelection();
+        if (selection.getFirstElement() instanceof NarrativeEntry)
+        {
+          final NarrativeEntry entry = (NarrativeEntry) selection
+              .getFirstElement();
+          final long tNow = entry.getDTG().getMicros();
+          final String currentText = FormatDateTime.toString(tNow / 1000);
+          TimeController.addMarker(_currentEditor, _myTemporalDataset,
+              getViewSite().getShell(), currentText);
+        }
       }
     };
     _setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(
@@ -951,21 +877,8 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     }
   }
 
-  /**
-   * the user has selected a new time
-   * 
-   */
-  @Override
-  public void propertyChange(final PropertyChangeEvent evt)
-  {
-    // are we syncing with time?
-    if (_followTime.isChecked())
-    {
-
-    }
-  }
-
-  private void refreshColor(final Layer layer)
+  public static boolean doRefreshColor(final Layer layer, 
+      IRollingNarrativeProvider myRollingNarrative)
   {
     if (layer instanceof TrackWrapper)
     {
@@ -973,7 +886,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       final String name = track.getName();
       final Color color = track.getColor();
       boolean refresh = false;
-      final NarrativeEntry[] entries = _myRollingNarrative.getNarrativeHistory(
+      final NarrativeEntry[] entries = myRollingNarrative.getNarrativeHistory(
           new String[]
           {});
       for (final NarrativeEntry entry : entries)
@@ -1000,10 +913,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           }
         }
       }
-      if (refresh)
-      {
-        myViewer.refresh();
-      }
+      return refresh;
+    }
+    return false;
+  }
+  
+  private void refreshColor(final Layer layer)
+  {
+    if(doRefreshColor(layer, _myRollingNarrative))
+    {
+      myViewer.refresh();
     }
   }
 
@@ -1333,5 +1252,4 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       }
     }
   }
-
 }

@@ -64,6 +64,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Scale;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IFileEditorInput;
@@ -920,11 +921,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       formatMenu.add(newFormat);
     }
   }
+  
+  public static interface TimeFormatAction
+  {
+     public void apply(final int index, final String format);
+  }
 
   /**
    * @param menuManager
    */
-  private void addDateFormats(final IMenuManager menuManager)
+  public static void addDateFormats(final IMenuManager menuManager, final TimeFormatAction action)
   {
     // ok, second menu for the DTG formats
     final MenuManager formatMenu = new MenuManager("DTG Format");
@@ -950,38 +956,30 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         public void run()
         {
           super.run();
-          _myStepperProperties.setPropertyValue(
-              TimeControlProperties.DTG_FORMAT_ID, thisIndex);
-
-          // todo: we need to tell the plot that it's changed - fake
-          // this by
-          // firing a quick formatting change
-          _myLayers.fireReformatted(null);
-
+          action.apply(thisIndex,  thisFormat);
         }
-
       };
       formatMenu.add(newFormat);
     }
   }
 
-  protected void addMarker()
+  public static void addMarker(final IEditorPart currentEditor, final TimeProvider myTemporalDataset, final Shell shell,
+      final String currentText)
   {
     try
     {
       // right, do we have an editor with a file?
-      final IEditorInput input = _currentEditor.getEditorInput();
+      final IEditorInput input = currentEditor.getEditorInput();
       if (input instanceof IFileEditorInput)
       {
         // aaah, and is there a file present?
         final IFileEditorInput ife = (IFileEditorInput) input;
         final IResource file = ife.getFile();
-        final String currentText = _timeLabel.getText();
-        final long tNow = _myTemporalDataset.getTime().getMicros();
+        final long tNow = myTemporalDataset.getTime().getMicros();
         if (file != null)
         {
           // yup, get the description
-          final InputDialog inputD = new InputDialog(getViewSite().getShell(),
+          final InputDialog inputD = new InputDialog(shell,
               "Add bookmark at this DTG", "Enter description of this bookmark",
               currentText, null);
           inputD.open();
@@ -999,7 +997,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             marker.setAttributes(attributes);
           }
         }
-
       }
     }
     catch (final CoreException e)
@@ -2014,8 +2011,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       menuManager.add(new Separator());
     }
 
+    TimeFormatAction formatAction = new TimeFormatAction() {
+      @Override
+      public void apply(int index, String format)
+      {
+        _myStepperProperties.setPropertyValue(
+            TimeControlProperties.DTG_FORMAT_ID, index);
+
+        // todo: we need to tell the plot that it's changed - fake
+        // this by
+        // firing a quick formatting change
+        _myLayers.fireReformatted(null);
+      }};
     // add the list of DTG formats for the DTG slider
-    addDateFormats(menuManager);
+    addDateFormats(menuManager, formatAction);
 
     // add the list of DTG formats for the DTG slider
     addBiSliderResolution(menuManager);
@@ -2046,7 +2055,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       @Override
       public void runWithEvent(final Event event)
       {
-        addMarker();
+        addMarker(_currentEditor, _myTemporalDataset, getViewSite()
+            .getShell(), _timeLabel.getText());
       }
     };
     _setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(

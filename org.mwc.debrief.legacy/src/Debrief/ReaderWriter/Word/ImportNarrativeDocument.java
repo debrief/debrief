@@ -67,6 +67,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
@@ -591,6 +592,7 @@ public class ImportNarrativeDocument
         }
         catch (final NumberFormatException e)
         {
+          Trace.trace(e, "While parsing date for narrative entry");
         }
 
         final boolean probHasContent = entry.length() > 8;
@@ -828,9 +830,10 @@ public class ImportNarrativeDocument
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
           LayerHandler.NARRATIVE_LAYER);
       // correct final count
-      assertEquals("Got num lines", 364, narrLayer.size());
       
       BaseLayer fcsLayer = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+
+      assertEquals("Got num lines", 364, narrLayer.size());
 
       final Object[] solutions = fcsLayer.getData().toArray();
 
@@ -887,10 +890,10 @@ public class ImportNarrativeDocument
       final File testI = new File(testFile);
       assertTrue(testI.exists());
 
-      final InputStream is = new FileInputStream(testI);
 
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
+      final InputStream is = new FileInputStream(testI);
       final HWPFDocument doc = new HWPFDocument(is);
       final ArrayList<String> strings = importer.importFromWord(doc);
       importer.processThese(strings);

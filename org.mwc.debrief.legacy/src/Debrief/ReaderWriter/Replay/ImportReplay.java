@@ -373,6 +373,7 @@ public class ImportReplay extends PlainImporterBase
         }
         catch (final java.lang.InterruptedException e)
         {
+          System.out.println("thread interrupted");
         }
       }
 
@@ -416,7 +417,7 @@ public class ImportReplay extends PlainImporterBase
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
     private final static String boat_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
-    public void testReadShapes() throws InterruptedException, IOException
+    public static void testReadShapes() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -474,7 +475,7 @@ public class ImportReplay extends PlainImporterBase
       doReadRep(ImportReplay.IMPORT_AS_OTG, Long.MAX_VALUE, 3, 1, false);
     }
 
-    public void testTrailingComment()
+    public static void testTrailingComment()
     {
       final String test1 = " LABEL // COMMENT";
       assertEquals("LABEL", getLabel(test1));
@@ -501,29 +502,27 @@ public class ImportReplay extends PlainImporterBase
       assertEquals(null, getComment(test6));
     }
 
-    public final void testParseSymbology()
+    public final static void testParseSymbology()
     {
       final String test =
           ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer";
       final String test2 =
           ";TEXT: CA[LAYER=Special_Layer,TEST_ON=OFF] 21.42 0 0 N 21.88 0 0 W Other layer";
 
-      final ImportReplay ir = new ImportReplay();
-
-      assertEquals("String not found", null, ir.getThisSymProperty(test,
+      assertEquals("String not found", null, getThisSymProperty(test,
           "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test,
+      assertEquals("String found", "Special_Layer", getThisSymProperty(test,
           "LAYER"));
 
-      assertEquals("String not found", null, ir.getThisSymProperty(test2,
+      assertEquals("String not found", null, getThisSymProperty(test2,
           "LAYDER"));
-      assertEquals("String found", "Special_Layer", ir.getThisSymProperty(test2,
+      assertEquals("String found", "Special_Layer", getThisSymProperty(test2,
           "LAYER"));
-      assertEquals("String found", "OFF", ir.getThisSymProperty(test2,
+      assertEquals("String found", "OFF", getThisSymProperty(test2,
           "TEST_ON"));
     }
 
-    public final void testParseSymbologyColor()
+    public final static void testParseSymbologyColor()
     {
       final String test1 = ";TEXT: 5j 21.42 0 0 N 21.88 0 0 W Other buoy";
 
@@ -547,19 +546,7 @@ public class ImportReplay extends PlainImporterBase
     
     //verify layers get added and shapes get added on paste
     //verify that layers are removed when undone
-    public final void testPasteRepShapes() {
-      String textToPaste =
-";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
-";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
-";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
-";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
-";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
-";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
-";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
-";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
-";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
-";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
-";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+    public final static void testPasteRepShapes() {
       ImportReplay testImporter = new ImportReplay();
       Layers tmpLayers = new Layers();
       Layers dest = new Layers();
@@ -582,7 +569,7 @@ public class ImportReplay extends PlainImporterBase
       assertNull(tmpLayers.findLayer(NARRATIVE_LAYER));
     }
     //verify dynamic layers get added on paste
-    public final void testPasteRepDynamicShapes() {
+    public final static void testPasteRepDynamicShapes() {
       String textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
     ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
           ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
@@ -598,21 +585,22 @@ public class ImportReplay extends PlainImporterBase
       assertNull(((Layer)tmpLayers.findLayer("Dynamic A")));
       
     }
-    
+
+    static private final String textToPaste =
+        ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
+        ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
+        ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
+        ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
+        ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
+        ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
+        ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
+        ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
+        ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
+        ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
+        ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+
     //test if previously loaded layers remains after pasting new content 
-    public void testPasteRepExistingFile(){
-      String textToPaste =
-          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
-          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
-          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
-          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
-          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
-          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
-          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
-          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
-          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
-          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
-          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+    public static void testPasteRepExistingFile(){
       try {
         final Layers tLayers = new Layers();
 
@@ -652,7 +640,7 @@ public class ImportReplay extends PlainImporterBase
     }
     
     
-    private void assertElementsInLayers(final Layer layer,final int count) {
+    private static void assertElementsInLayers(final Layer layer,final int count) {
       assertTrue(layer.elements().hasMoreElements());
       Enumeration<Editable> elements = layer.elements();
       int lineCount=0;
@@ -662,32 +650,20 @@ public class ImportReplay extends PlainImporterBase
       }
       assertEquals(lineCount,count);
     }
-    public void testIsContentImportable() {
-      String textToPaste =
-          ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
-          ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
-          ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
-          ";TEXT: @E 21.7 0 0 N 21.5 0 0 W test text\r\n"+ 
-          ";TEXT: WB 21.72 0 0 N 21.52 0 0 W wreck symbol\r\n"+ 
-          ";TEXT: CA[LAYER=Special_Layer] 21.42 0 0 N 21.88 0 0 W Other layer\r\n"+
-          ";TEXT: CA[LAYER=Other_Special_Layer] 21.22 0 0 N 21.88 0 0 W Other layer 3\r\n"+
-          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse\r\n"+
-          ";POLY: @GA30 21.9 0 0 N 21.5 0 0 W 22 0 0 N 21.8 0 0 W 22.1 0 0 N 21.5 0 0 W test poly\r\n"+
-          ";POLYLINE: @C 21.1 0 0 N 21.5 0 0 W 21.2 0 0 N 21.8 0 0 W 21.3 0 0 N 21.5 0 0 W test polyline\r\n"+
-          ";NARRATIVE:  951212 050200 NEL_STYLE comment 3\r\n";
+    public static void testIsContentImportable() {
       assertTrue(isContentImportable(textToPaste));
-      textToPaste =";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
+      String textToPaste2 = ";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"+
           ";DYNAMIC_CIRCLE: @A \"Dynamic A\" 951212 052100.000 21 00 0 N 20 53 0 W 2000 dynamic A circ 12\r\n"+
                 ";DYNAMIC_POLY: @A \"Dynamic A\" 951212 052600.000 20 35 0 N 21 02 0 W 20 35 0 N 20 55 0 W 20 42 0 N 20 52 0 W 20 45 0 N 21 00 0 W  dynamic A POLY 170";
-      assertTrue(isContentImportable(textToPaste));
-      textToPaste = "@B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line ;VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector";
-      assertFalse(isContentImportable(textToPaste));
-      textToPaste = "";
-      assertFalse(isContentImportable(textToPaste));
-      textToPaste = "951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
-      assertTrue(isContentImportable(textToPaste));
-      textToPaste = "19951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
-      assertTrue(isContentImportable(textToPaste));
+      assertTrue(isContentImportable(textToPaste2));
+      textToPaste2 = "@B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line ;VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector";
+      assertFalse(isContentImportable(textToPaste2));
+      textToPaste2 = "";
+      assertFalse(isContentImportable(textToPaste2));
+      textToPaste2 = "951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste2));
+      textToPaste2 = "19951212 050000.000 \"NEL STYLE\"   @C      22 12 10.63 N 21 31 52.37 W 269.7   2.0      0 ";
+      assertTrue(isContentImportable(textToPaste2));
     }
   }
 
@@ -1056,10 +1032,8 @@ public class ImportReplay extends PlainImporterBase
     }
     else if (res == SymbolFactory.UNKNOWN)
     {
-      // TODO: instance of itself?
-      final ImportReplay importer = new ImportReplay();
       // In case we have an unknown symbol, we test if it is a SVG
-      final String svgSymbol = importer.getSVGSymbol(theSym);
+      final String svgSymbol = getSVGSymbol(theSym);
       if (svgSymbol != null)
       {
         res = SymbolFactory.SVG_FORMAT_PREFIX + ":" + svgSymbol;
@@ -1075,7 +1049,7 @@ public class ImportReplay extends PlainImporterBase
    * @param thisOne
    * @return the name of the layer to use
    */
-  final private String getSVGSymbol(final String sym)
+  final private static String getSVGSymbol(final String sym)
   {
     // what are we looking for?
     final String SYMBOL_PREFIX = "SYMBOL";
@@ -1194,7 +1168,7 @@ public class ImportReplay extends PlainImporterBase
    * some importers may need to finalize, if there is end of import processing to conduct. Trigger
    * that here
    */
-  private void finaliseImporters()
+  private static void finaliseImporters()
   {
     if (_extensionImporters != null)
     {
@@ -1392,7 +1366,7 @@ public class ImportReplay extends PlainImporterBase
    * @param property_name
    * @return
    */
-  final private String getThisSymProperty(final String symbology,
+  final private static String getThisSymProperty(final String symbology,
       final String property_name)
   {
     int indexFirstBracket = symbology.indexOf('[');
@@ -1608,7 +1582,7 @@ public class ImportReplay extends PlainImporterBase
     }
   }
 
-  private void proccessShapeWrapper(final PlainLineImporter thisOne,
+  private static void proccessShapeWrapper(final PlainLineImporter thisOne,
       final Object thisObject)
   {
     final ShapeWrapper shapeWrapper = (ShapeWrapper) thisObject;
@@ -2386,7 +2360,7 @@ public class ImportReplay extends PlainImporterBase
    * @param thisOne
    * @return the name of the layer to use
    */
-  final private String targetLayerFor(final String sym)
+  final private static String targetLayerFor(final String sym)
   {
     // what are we looking for?
     final String LAYER_PREFIX = "LAYER";
