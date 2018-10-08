@@ -73,7 +73,7 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class NViewerView extends ViewPart implements PropertyChangeListener,
+public class NViewerView extends ViewPart implements
     ISelectionProvider
 {
   private NarrativeViewer myViewer;
@@ -706,15 +706,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
     menuManager.add(CorePlugin.createOpenHelpAction(
         "org.mwc.debrief.help.Narrative", null, this));
 
-  }
-
-  /**
-   * the user has selected a new time
-   * 
-   */
-  @Override
-  public void propertyChange(final PropertyChangeEvent evt)
-  {
   }
   
   private void refreshColor(final Layer layer)

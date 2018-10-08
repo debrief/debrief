@@ -84,8 +84,7 @@ import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
-public class NATViewerView extends ViewPart implements PropertyChangeListener,
-    ISelectionProvider
+public class NATViewerView extends ViewPart implements ISelectionProvider
 {
   NatNarrativeViewer myViewer;
 
@@ -1253,11 +1252,4 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
       }
     }
   }
-
-  @Override
-  public void propertyChange(PropertyChangeEvent evt)
-  {
-    // ignore, we don't need it.
-  }
-
 }
