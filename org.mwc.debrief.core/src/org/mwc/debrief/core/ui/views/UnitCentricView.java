@@ -486,9 +486,144 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     }
   }
 
+  /**
+   * we need to allow a custom way of walking through the data if we have a single point track.
+   *
+   */
+  private static interface TrackWalker
+  {
+    /**
+     * are there any secondaries remaining?
+     * 
+     * @return yes / no
+     */
+    boolean hasMoreSecondaries();
+
+    /**
+     * get the next secondary item
+     * 
+     * @return the next secondary item
+     */
+    FixWrapper getNext();
+
+    /**
+     * get the time for this secondary item
+     * 
+     * @param thisF
+     * @return the time for this secondary item
+     */
+    HiResDate timeFor(FixWrapper thisF);
+  }
+
+  /** walk through the data, with a normal secondary track
+   * 
+   * @author ian
+   *
+   */
+  private static class NormalWalker implements TrackWalker
+  {
+    private final Enumeration<Editable> _secondaries;
+
+    private NormalWalker(LightweightTrackWrapper secondary)
+    {
+      _secondaries = secondary.getPositionIterator();
+    }
+
+    @Override
+    public boolean hasMoreSecondaries()
+    {
+      return _secondaries.hasMoreElements();
+    }
+
+    @Override
+    public FixWrapper getNext()
+    {
+      return (FixWrapper) _secondaries.nextElement();
+    }
+
+    @Override
+    public HiResDate timeFor(FixWrapper thisF)
+    {
+      return thisF.getDateTimeGroup();
+    }
+  }
+
+  /** we need to make a single-point secondary track look like a
+   * track that's as long as the primary track needs it to be.  Mock
+   *  this behaviour.
+   * @author ian
+   *
+   */
+  private static class SingleSecondaryWalker implements TrackWalker
+  {
+    private final Enumeration<Editable> _primaries;
+    private final FixWrapper _secondaryFix;
+    private FixWrapper _cached;
+
+    private SingleSecondaryWalker(LightweightTrackWrapper primary,
+        LightweightTrackWrapper secondary, HiResDate subjectTime, boolean snailMode)
+    {
+      _secondaryFix = (FixWrapper) secondary.getPositionIterator()
+          .nextElement();
+      
+      // is it even visible?
+      if (!snailMode || _secondaryFix.getDateTimeGroup().lessThan(subjectTime))
+      {
+        // ok, he's alive. we can work
+        _primaries = primary.getPositionIterator();
+      }
+      else
+      {
+        // nope, he hasn't been born yet.
+        _primaries = null;
+      }
+    }
+
+    @Override
+    public boolean hasMoreSecondaries()
+    {
+      final boolean res;
+      // do we have any data?
+      if (_primaries != null)
+      {
+        // yes, see if there are any left
+        res = _primaries.hasMoreElements();
+      }
+      else
+      {
+        // no, we're invalid. Just say there aren't any
+        res = false;
+      }
+      return res;
+    }
+
+    @Override
+    public FixWrapper getNext()
+    {
+      // get the next primary fix.  Cache it, 
+      // since we'll need it's time
+      _cached = (FixWrapper) _primaries.nextElement();
+      
+      // return our normal point
+      return _secondaryFix;
+    }
+
+    @Override
+    public HiResDate timeFor(FixWrapper thisF)
+    {
+      // retrieve the DTG for the last primary point we looked at 
+      HiResDate res = _cached.getDateTimeGroup();
+      
+      // reset the cache, to be sure we don't abuse it.
+      _cached = null;
+      
+      return res;
+    }
+  }
+
   public static void walkTree(final Layers theLayers,
       final WatchableList primary, final HiResDate subjectTime,
-      final IOperateOnMatch doIt, final long snailLength)
+      final IOperateOnMatch doIt, final long snailLength, final boolean snailMode)
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
@@ -505,6 +640,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         // is it the primary?
         if (other.equals(primary))
         {
+          // ok, primary track. Let it do it's special processing
           doIt.handlePrimary(primary, origin);
         }
         else
@@ -515,17 +651,31 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           double primaryHeading = Double.MIN_VALUE;
           long nearestDelta = Long.MAX_VALUE;
 
-          // ok, run back through the data
-          final Enumeration<Editable> pts = other.getPositionIterator();
-          while (pts.hasMoreElements())
+          // special handling, for single-point tracks.
+          final boolean isSingle = other.isSinglePointTrack();
+          final TrackWalker walker;
+          if (isSingle)
           {
-            final FixWrapper thisF = (FixWrapper) pts.nextElement();
+            walker = new SingleSecondaryWalker(
+                (LightweightTrackWrapper) primary, other, subjectTime, snailMode);
+          }
+          else
+          {
+            walker = new NormalWalker(other);
+          }
 
-            final HiResDate hisD = thisF.getDTG();
+          // ok, run back through the data
+          while (walker.hasMoreSecondaries())
+          {
+            final FixWrapper thisF = walker.getNext();
+
+            final HiResDate hisD = walker.timeFor(thisF);
 
             final boolean useIt;
             if (subjectTime == null)
             {
+              // null-time given. it's a special case, such as trying to find the
+              // bounds of the whole unit-centric data
               useIt = true;
             }
             else
@@ -567,8 +717,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
                       .getLocation(), origin);
 
                   // work out how far back down the leg we are
-                  final long age = subjectTime.getDate().getTime() - thisF
-                      .getDTG().getDate().getTime();
+                  final long age = subjectTime.getDate().getTime() - hisD
+                      .getDate().getTime();
                   final double proportion = age / (double) snailLength;
 
                   doIt.doItTo(thisF, pos, proportion);

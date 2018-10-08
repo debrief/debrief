@@ -264,30 +264,31 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
       }
     });
 
-    _myCanvas.addMouseListener(new MouseAdapter()
+    if (isSupportsRightClick())
     {
-
-      /**
-       * @param e
-       */
-      public void mouseUp(final MouseEvent e)
+      _myCanvas.addMouseListener(new MouseAdapter()
       {
-        if (e.button == 3)
-        {
-          // cool, right-had button. process it
-          final MenuManager mmgr = new MenuManager();
-          final Point display = Display.getCurrent().getCursorLocation();
-          final Point scrPoint = _myCanvas.toControl(display);
-          final WorldLocation targetLoc =
-              getProjection().toWorld(
-                  new java.awt.Point(scrPoint.x, scrPoint.y));
-          fillContextMenu(mmgr, scrPoint, targetLoc);
-          final Menu thisM = mmgr.createContextMenu(_myCanvas);
-          thisM.setVisible(true);
-        }
-      }
 
-    });
+        /**
+         * @param e
+         */
+        public void mouseUp(final MouseEvent e)
+        {
+          if (e.button == 3)
+          {
+            // cool, right-had button. process it
+            final MenuManager mmgr = new MenuManager();
+            final Point display = Display.getCurrent().getCursorLocation();
+            final Point scrPoint = _myCanvas.toControl(display);
+            final WorldLocation targetLoc = getProjection().toWorld(
+                new java.awt.Point(scrPoint.x, scrPoint.y));
+            fillContextMenu(mmgr, scrPoint, targetLoc);
+            final Menu thisM = mmgr.createContextMenu(_myCanvas);
+            thisM.setVisible(true);
+          }
+        }
+      });
+    }
   }
 
   /**
@@ -301,6 +302,15 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
     _deferPaints = defer;
   }
 
+  /** whether this item should support right-click editing
+   * 
+   * @return
+   */
+  protected boolean isSupportsRightClick()
+  {
+    return true;
+  }
+  
   /**
    * ok - insert the right-hand button related items
    * 

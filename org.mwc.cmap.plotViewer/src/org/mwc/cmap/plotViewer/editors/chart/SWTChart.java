@@ -242,6 +242,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
         MenuManager menuManager, Plottable selected, Layer theParentLayer);
 
     @Override
+    protected boolean isSupportsRightClick()
+    {
+      return supportsRightClick();
+    }
+
+    @Override
     protected void fillContextMenu(final MenuManager mmgr, final Point scrPoint,
         final WorldLocation loc)
     {
@@ -500,6 +506,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
     }
 
     return swtImageData;
+  }
+
+  /** whether the canvas should support right-click editing
+   * 
+   * @return
+   */
+  public boolean supportsRightClick()
+  {
+    return true;
   }
 
   /**
