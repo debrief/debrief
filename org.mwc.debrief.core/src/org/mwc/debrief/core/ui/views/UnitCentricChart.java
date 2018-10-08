@@ -152,6 +152,7 @@ class UnitCentricChart extends SWTChart
       // draw the snail marker
       final WatchableList track = nearestInTime.getTrackWrapper();
       final PlainSymbol sym = track.getSnailShape();
+      sym.setColor(track.getColor());
       sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
           relativeHeading));
 
@@ -256,7 +257,7 @@ class UnitCentricChart extends SWTChart
           }
         };
         UnitCentricView.walkTree(theLayers, primary, _provider.getTimeProvider()
-            .getTime(), getBounds, _provider.getSnailLength());
+            .getTime(), getBounds, _provider.getSnailLength(), false);
 
         // ok, store the data area
         getCanvas().getProjection().setDataArea(area);
@@ -372,7 +373,7 @@ class UnitCentricChart extends SWTChart
     }
 
     UnitCentricView.walkTree(_theLayers, primary, subjectTime, paintIt,
-        _provider.getSnailLength());
+        _provider.getSnailLength(), _snailMode);
 
     if (priTrack != null)
     {
