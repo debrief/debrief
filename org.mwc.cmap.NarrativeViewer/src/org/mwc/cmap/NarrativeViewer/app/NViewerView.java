@@ -14,7 +14,6 @@
  */
 package org.mwc.cmap.NarrativeViewer.app;
 
-import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
@@ -62,8 +61,6 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.gridharness.data.FormatDateTime;
 
-import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -236,6 +233,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
         }
       }
 
+      @SuppressWarnings("unlikely-arg-type")
       @Override
       public void dataReformatted(final Layers theData,
           final Layer changedLayer)
@@ -568,19 +566,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
   public ISelection getSelection()
   {
     return null;
-  }
-
-  private boolean internalEquals(final Color color1, final Color color2)
-  {
-    if (color1 == null && color2 == null)
-    {
-      return true;
-    }
-    if (color1 != null)
-    {
-      return color1.equals(color2);
-    }
-    return color2.equals(color1);
   }
 
   private void populateMenu()

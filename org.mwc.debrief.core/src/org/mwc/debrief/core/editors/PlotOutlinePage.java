@@ -607,7 +607,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
 
   abstract private class EnabledAction extends Action
   {
-    final MyTreeViewer treeViewer;
+    final private MyTreeViewer treeViewer;
 
     private EnabledAction(final MyTreeViewer treeViewer)
     {

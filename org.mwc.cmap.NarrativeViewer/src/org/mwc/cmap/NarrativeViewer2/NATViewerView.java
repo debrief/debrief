@@ -1257,6 +1257,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   @Override
   public void propertyChange(PropertyChangeEvent evt)
   {
+    // ignore, we don't need it.
   }
 
 }

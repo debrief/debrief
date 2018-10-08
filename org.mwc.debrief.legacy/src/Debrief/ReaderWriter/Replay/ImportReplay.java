@@ -586,7 +586,7 @@ public class ImportReplay extends PlainImporterBase
       
     }
 
-    static final String textToPaste =
+    static private final String textToPaste =
         ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"+
         ";VECTOR: @C 21.6 12 0 N 21.5 11 0 W 5000 270 test vector\r\n"+
         ";CIRCLE: @D    21.8 0 0 N 21.0 0 0 W 2000 test circle\r\n"+
