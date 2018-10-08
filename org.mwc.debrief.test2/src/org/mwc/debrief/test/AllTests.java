@@ -139,7 +139,9 @@ import org.junit.runners.Suite;
     Debrief.ReaderWriter.powerPoint.test.PackPresentationTest.class,
     Debrief.ReaderWriter.powerPoint.test.PlotTracksTest.class,
     Debrief.ReaderWriter.powerPoint.test.TrackParserTest.class,
-    Debrief.ReaderWriter.powerPoint.test.UnpackFunctionTest.class
+    Debrief.ReaderWriter.powerPoint.test.UnpackFunctionTest.class,
+    org.mwc.debrief.core.ContextOperations.ConvertLightweightTrackToTrack.testMe.class,
+    org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack.testMe.class
     })
 @RunWith(Suite.class)
 public class AllTests
