@@ -44,6 +44,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
@@ -181,33 +182,20 @@ public class ConvertLightweightTrackToTrack implements
       holder.setName("Trk");
       theLayers.addThisLayer(holder);
 
-      WorldLocation lastLoc = null;
+      Editable[] selection = new Editable[4];
+      
       for (int i = 0; i < 4; i++)
       {
-        final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
-            'W', 0);
-        if (lastLoc != null)
-        {
-          // ok, add the line
-          final LineShape ls = new LineShape(lastLoc, thisLoc);
-
-          final long theDate1 = 20000000 + i * 60000;
-          final long theDate2 = 20000000 + i * 61000;
-
-          final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red,
-              new HiResDate(theDate1));
-          sw.setTime_Start(new HiResDate(theDate1));
-          sw.setTimeEnd(new HiResDate(theDate2));
-          holder.add(sw);
-        }
-
-        // and remember the last location
-        lastLoc = thisLoc;
+        final LightweightTrackWrapper light = new LightweightTrackWrapper("track:" + i, true, true, Color.RED, LineStylePropertyEditor.DOTTED);
+        Fix theFix = new Fix(new HiResDate(i), new WorldLocation(1,i,0),12d, 12d);
+        light.addFix(new FixWrapper(theFix));
+        holder.add(light);
+        selection[i] = light;
       }
 
+      
       // ok, now do the interpolation
-      final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[]
-      {holder});
+      final ConvertIt ct = new ConvertIt("convert it", theLayers, selection);
 
       try
       {
@@ -219,13 +207,13 @@ public class ConvertLightweightTrackToTrack implements
       }
 
       // check the track got generated
-      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("track:2");
 
       // did we find it?
       assertNotNull("track generated", tw);
 
       // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", tw.numFixes(), 4);
+      assertEquals("right num of fixes generated", tw.numFixes(), 1);
 
     }
 
