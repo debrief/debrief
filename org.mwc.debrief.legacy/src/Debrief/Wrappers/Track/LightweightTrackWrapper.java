@@ -100,11 +100,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                         LineStylePropertyEditor.class)};
 
         PropertyDescriptor[] res;
-        
+
         // SPECIAL CASE: if we have a world scaled symbol, provide
         // editors for
         // the symbol size
-        final LightweightTrackWrapper item = (LightweightTrackWrapper) this.getData();
+        final LightweightTrackWrapper item = (LightweightTrackWrapper) this
+            .getData();
         if (item._theSnailShape instanceof WorldScaledSym)
         {
           // yes = better create height/width editors
@@ -122,14 +123,14 @@ public class LightweightTrackWrapper extends PlainWrapper implements
         }
         else
         {
-          
+
           // yes = better create height/width editors
           final PropertyDescriptor[] _coreDescriptorsWithSymbols =
               new PropertyDescriptor[_coreDescriptors.length + 1];
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
               _coreDescriptors.length);
-          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
-              "Snail symbol size", "Size of symbol", FORMAT,
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp(
+              "SnailSymbolSize", "Snail symbol size", "Size of symbol", FORMAT,
               SymbolScalePropertyEditor.class);
 
           // and now use the new value
@@ -425,11 +426,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       sym.setLength(symbolLength);
     }
   }
-  
-  
+
   public void setSnailSymbolSize(final double scaleVal)
   {
-    if(_theSnailShape != null)
+    if (_theSnailShape != null)
     {
       _theSnailShape.setScaleVal(scaleVal);
     }
@@ -603,7 +603,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public HiResDate getEndDTG()
   {
-    return ((FixWrapper) _thePositions.last()).getTime();
+    final HiResDate res = _thePositions.isEmpty() ? null
+        : ((FixWrapper) _thePositions.last()).getTime();
+    return res;
+
   }
 
   @Override
@@ -776,7 +779,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
     return res;
   }
-  
+
   /**
    * get the type of this symbol
    */
@@ -784,7 +787,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     return _theSnailShape.getType();
   }
-  
+
   public final double getSnailSymbolSize()
   {
     return _theSnailShape.getScaleVal();
@@ -804,7 +807,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public HiResDate getStartDTG()
   {
-    return ((FixWrapper) _thePositions.first()).getTime();
+    final HiResDate res = _thePositions.isEmpty() ? null
+        : ((FixWrapper) _thePositions.first()).getTime();
+    return res;
   }
 
   /**
