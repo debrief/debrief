@@ -177,13 +177,17 @@ public class PlotTracks
 
   private void addAnimationObjects(
       final ArrayList<ArrayList<Element>> all_animation_objs,
-      final Element anim_tag_upper, final Element anim_insertion_tag_upper)
+      final Element anim_tag_upper, final Element anim_insertion_tag_upper,
+      final TrackData trackData, final int intervalDuration)
   {
     int track_num = 1;
     for (final ArrayList<Element> track_anim_objs : all_animation_objs)
     {
       final Element anim_tag_upper_temp = anim_tag_upper.clone();
       anim_tag_upper_temp.tagName("p:seq");
+      anim_tag_upper_temp.selectFirst("p|cond").attr("delay", trackData
+          .getTracks().get(track_num - 1).getStepsToSkip() * intervalDuration
+          + "");
       final Element parent_temp = anim_tag_upper_temp.selectFirst(
           "p|animMotion").parent();
       anim_tag_upper_temp.selectFirst("p|animMotion").remove();
@@ -474,12 +478,14 @@ public class PlotTracks
 
       // TailX and TailY contains the offset(relative distance from the centre and not
       // the absolute)
-      float TailXUnscalled = arrow_ext_cx * (float) (arrow_pointer_x / 100000.0);
-      float TailYUnscalled = arrow_ext_cy * (float) (arrow_pointer_y / 100000.0);
+      float TailXUnscalled = arrow_ext_cx * (float) (arrow_pointer_x
+          / 100000.0);
+      float TailYUnscalled = arrow_ext_cy * (float) (arrow_pointer_y
+          / 100000.0);
 
-      float[] tempCoordinates = coordinateTransformation(TailXUnscalled, TailYUnscalled, Float
-          .parseFloat(slide_dimen_x), Float.parseFloat(slide_dimen_y), 0, 0, 1,
-          1, 0);
+      float[] tempCoordinates = coordinateTransformation(TailXUnscalled,
+          TailYUnscalled, Float.parseFloat(slide_dimen_x), Float.parseFloat(
+              slide_dimen_y), 0, 0, 1, 1, 0);
       float TailX = tempCoordinates[0];
       float TailY = tempCoordinates[1];
 
@@ -510,7 +516,7 @@ public class PlotTracks
           "a|off").attr("x"));
       final int temp_shape_y = Integer.parseInt(temp_shape_tag.selectFirst(
           "a|off").attr("y"));
-      
+
       String animation_path;
       final Element path_tag = temp_shape_tag.selectFirst("a|path");
       for (final Element child : path_tag.children())
@@ -533,17 +539,19 @@ public class PlotTracks
       float prev_anim_y = tempCoordinates[1];
       prev_anim_x = prev_anim_x - TailX - arrow_center_x_small;
       prev_anim_y = prev_anim_y - TailY - arrow_center_y_small;
-      
+
       float toSubX = prev_anim_x;
       float toSubY = prev_anim_y;
-      
+
       // We calculate the first position for the marker
       tempCoordinates = coordinateTransformation(first_x, first_y,
           dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
       // Get Shape offsets and exts
-      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx / 2 - TailXUnscalled) + "");
-      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy / 2 - TailYUnscalled) + "");
-      
+      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0]
+          - arrow_ext_cx / 2 - TailXUnscalled) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1]
+          - arrow_ext_cy / 2 - TailYUnscalled) + "");
+
       // Adding color to the track
       final String colorHexValue = track.getColorAsString().toUpperCase();
 
@@ -563,9 +571,10 @@ public class PlotTracks
         anim_x = anim_x - TailX - arrow_center_x_small;
         anim_y = anim_y - TailY - arrow_center_y_small;
 
-        animation_path = "M " + String.format("%.4f", (prev_anim_x - toSubX)) + " "
-            + String.format("%.4f", (prev_anim_y - toSubY)) + " L " + String.format("%.4f",
-                (anim_x - toSubX)) + " " + String.format("%.4f", (anim_y - toSubY));
+        animation_path = "M " + String.format("%.4f", (prev_anim_x - toSubX))
+            + " " + String.format("%.4f", (prev_anim_y - toSubY)) + " L "
+            + String.format("%.4f", (anim_x - toSubX)) + " " + String.format(
+                "%.4f", (anim_y - toSubY));
         prev_anim_x = anim_x;
         prev_anim_y = anim_y;
 
@@ -647,7 +656,7 @@ public class PlotTracks
     final Element spTreeobj = soup.selectFirst("p|spTree");
     addShapeMarkerFootPrintsObjects(spTreeobj, arrow_objs, all_footprints_objs);
     addAnimationObjects(all_animation_objs, anim_tag_upper,
-        anim_insertion_tag_upper);
+        anim_insertion_tag_upper, trackData, intervalDuration);
     addAnimationFootPrints(time_anim_tag_first, anim_insertion_tag_upper,
         trackData, intervalDuration, initialFootprintId);
     createTimeNarrativeShapes(spTreeobj, trackData, time_tag,
@@ -666,7 +675,7 @@ public class PlotTracks
     // Create parent animation object for all time box
     for (Track track : trackData.getTracks())
     {
-      int time_delay = intervalDuration;
+      int time_delay = intervalDuration * (1 + track.getStepsToSkip());
       for (int i = 0; i < track.getSegments().size(); i++)
       {
         // handle animation objs for time

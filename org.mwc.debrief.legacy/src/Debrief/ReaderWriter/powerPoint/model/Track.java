@@ -7,18 +7,20 @@ import java.util.Objects;
 public class Track
 {
   private final String name;
+  private final int stepsToSkip;
   private final ArrayList<TrackPoint> segments = new ArrayList<>();
   private final Color color;
 
-  public Track(String name, String color)
+  public Track(final String name, final String color, final int stepsToSkip_in)
   {
-    this(name, makeColor(color));
+    this(name, makeColor(color), stepsToSkip_in);
   }
 
-  public Track(String name, Color color)
+  public Track(final String name, final Color color, final int stepsToSkip_in)
   {
     this.name = name;
     this.color = color;
+    this.stepsToSkip = stepsToSkip_in;
   }
 
   public Color getColor()
@@ -45,6 +47,11 @@ public class Track
   public ArrayList<TrackPoint> getSegments()
   {
     return segments;
+  }
+
+  public int getStepsToSkip()
+  {
+    return stepsToSkip;
   }
 
   private static Color makeColor(final String colorStr)

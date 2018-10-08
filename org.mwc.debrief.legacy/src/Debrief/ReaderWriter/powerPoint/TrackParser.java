@@ -131,7 +131,7 @@ public class TrackParser
     for (final Element track : tracks)
     {
       final Track currentTrack = new Track(track.selectFirst("name").text(),
-          track.selectFirst("color").text());
+          track.selectFirst("color").text(), 0);
 
       for (final Element coordinate : track.select("trkpt"))
       {

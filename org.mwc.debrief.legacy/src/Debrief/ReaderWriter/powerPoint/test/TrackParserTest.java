@@ -42,7 +42,7 @@ public class TrackParserTest
         {new ExportNarrativeEntry("COMEX. Rule amendment Charlie 3", "120500.00",
             "0", null), new ExportNarrativeEntry("CONFIRMED. OBTAIN SOLUTION", "121003.00",
                 "12120", null)}));
-    Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189));
+    Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189), 0);
 
     final DateFormat dateTimeFormatter = new SimpleDateFormat(
         "yyyy-MM-dd'T'HH:mm:ss'Z'");
@@ -57,7 +57,7 @@ public class TrackParserTest
     track1.getSegments().add(trackPoint);
     expectedResult.getTracks().add(track1);
 
-    Track track2 = new Track("NELSON", new Color(224, 28, 62));
+    Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
     trackPoint = new TrackPoint();
     trackPoint.setCourse((float) 269.4);
     trackPoint.setElevation((float) .0);

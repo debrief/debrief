@@ -227,7 +227,11 @@ public abstract class CoreCoordinateRecorder
           Track tp = _tracks.get(track.getName());
           if (tp == null)
           {
-            tp = new Track(track.getName(), track.getColor());
+            int waitingSteps = 0;
+            for (Track previousTracks : _tracks.values()) {
+              waitingSteps = Math.max(waitingSteps, previousTracks.getSegments().size());
+            }
+            tp = new Track(track.getName(), track.getColor(), waitingSteps);
             _tracks.put(track.getName(), tp);
           }
           final Point point = _projection.toScreen(fix.getLocation());
