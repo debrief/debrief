@@ -174,11 +174,6 @@ public class ConvertLightweightTrackToTrack implements
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
     public final static void testIWork()
     {
       final Layers theLayers = new Layers();
@@ -232,6 +227,11 @@ public class ConvertLightweightTrackToTrack implements
       // check we've got the right number of fixes
       assertEquals("right num of fixes generated", tw.numFixes(), 4);
 
+    }
+
+    public testMe(final String val)
+    {
+      super(val);
     }
   }
 

@@ -250,11 +250,6 @@ public class ConvertTrackToLightweightTrack implements
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
     public final static void testIWork()
     {
       final Layers theLayers = new Layers();
@@ -308,6 +303,11 @@ public class ConvertTrackToLightweightTrack implements
       // check we've got the right number of fixes
       assertEquals("right num of fixes generated", tw.numFixes(), 4);
 
+    }
+
+    public testMe(final String val)
+    {
+      super(val);
     }
   }
 
@@ -489,6 +489,17 @@ public class ConvertTrackToLightweightTrack implements
 
   }
 
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   *
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
+  {
+    CorePlugin.run(operation);
+  }
+
   private Action toNewLayer(final Layers theLayers, final Editable[] subjects,
       final String title)
   {
@@ -523,16 +534,5 @@ public class ConvertTrackToLightweightTrack implements
 
       }
     };
-  }
-
-  /**
-   * put the operation firer onto the undo history. We've refactored this into a separate method so
-   * testing classes don't have to simulate the CorePlugin
-   *
-   * @param operation
-   */
-  protected void runIt(final IUndoableOperation operation)
-  {
-    CorePlugin.run(operation);
   }
 }
