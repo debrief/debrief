@@ -94,54 +94,65 @@ public class ConvertTrackToLightweightTrack implements
       _newLightweights = new Vector<LightweightTrackWrapper>();
       _oldTracks = new Vector<TrackWrapper>();
 
-      // right, get going through the track
-      for (int i = 0; i < _subjects.length; i++)
+      // suspend firing updates, to improve performance
+      _layers.suspendFiringExtended(true);
+
+      try
       {
-        final Editable thisE = _subjects[i];
-        if (thisE instanceof TrackWrapper)
+        // right, get going through the track
+        for (int i = 0; i < _subjects.length; i++)
         {
-          final TrackWrapper oldTrack = (TrackWrapper) thisE;
-
-          // generate the new object
-          final LightweightTrackWrapper newTrack = new LightweightTrackWrapper(
-              oldTrack.getName(), oldTrack.getVisible(), oldTrack
-                  .getNameVisible(), oldTrack.getColor(), oldTrack
-                      .getLineStyle());
-
-          _newLightweights.add(newTrack);
-          _oldTracks.add(oldTrack);
-
-          // switch off the old layer
-          oldTrack.setVisible(false);
-
-          // put it into the layer
-          _targetLayer.add(newTrack);
-
-          newTrack.setName(oldTrack.getName());
-          final Color hisColor = oldTrack.getCustomColor();
-          if (hisColor != null)
+          final Editable thisE = _subjects[i];
+          if (thisE instanceof TrackWrapper)
           {
-            newTrack.setColor(hisColor);
-          }
-          else
-          {
-            newTrack.setColor(DebriefColors.GOLD);
-          }
+            final TrackWrapper oldTrack = (TrackWrapper) thisE;
 
-          final Enumeration<Editable> numer = oldTrack.getPositionIterator();
-          while (numer.hasMoreElements())
-          {
-            final FixWrapper fix = (FixWrapper) numer.nextElement();
-            newTrack.add(fix);
-          }
+            // generate the new object
+            final LightweightTrackWrapper newTrack =
+                new LightweightTrackWrapper(oldTrack.getName(), oldTrack
+                    .getVisible(), oldTrack.getNameVisible(), oldTrack
+                        .getColor(), oldTrack.getLineStyle());
 
-          // actually, ditch the old track
-          _layers.removeThisLayer(oldTrack);
+            _newLightweights.add(newTrack);
+            _oldTracks.add(oldTrack);
+
+            // switch off the old layer
+            oldTrack.setVisible(false);
+
+            // put it into the layer
+            _targetLayer.add(newTrack);
+
+            newTrack.setName(oldTrack.getName());
+            final Color hisColor = oldTrack.getCustomColor();
+            if (hisColor != null)
+            {
+              newTrack.setColor(hisColor);
+            }
+            else
+            {
+              newTrack.setColor(DebriefColors.GOLD);
+            }
+
+            final Enumeration<Editable> numer = oldTrack.getPositionIterator();
+            while (numer.hasMoreElements())
+            {
+              final FixWrapper fix = (FixWrapper) numer.nextElement();
+              newTrack.add(fix);
+            }
+
+            // actually, ditch the old track
+            _layers.removeThisLayer(oldTrack);
+          }
         }
       }
+      finally
+      {
+        // allow updates to flow
+        _layers.suspendFiringExtended(false);
 
-      // sorted, do the update
-      _layers.fireExtended();
+        // sorted, do the update
+        _layers.fireExtended();
+      }
 
       return Status.OK_STATUS;
     }
@@ -465,7 +476,8 @@ public class ConvertTrackToLightweightTrack implements
       }
 
       // and a spare one, which creates a new layer
-      final Action convertToTrackInNewLayer = toNewLayer(theLayers, subjects, title);
+      final Action convertToTrackInNewLayer = toNewLayer(theLayers, subjects,
+          title);
 
       // ok - flash up the menu item
       listing.add(convertToTrackInNewLayer);

@@ -82,47 +82,58 @@ public class ConvertLightweightTrackToTrack implements
       _newTracks = new Vector<TrackWrapper>();
       _oldLightweights = new Vector<LightweightTrackWrapper>();
 
-      // right, get going through the track
-      for (int i = 0; i < _subjects.length; i++)
+      // we don't want to fire updates as each track gets updated
+      _layers.suspendFiringExtended(true);
+
+      try
       {
-        final Editable thisE = _subjects[i];
-        if (thisE instanceof LightweightTrackWrapper
-            && !(thisE instanceof TrackWrapper))
+        // right, get going through the track
+        for (int i = 0; i < _subjects.length; i++)
         {
-          final LightweightTrackWrapper oldLightweight =
-              (LightweightTrackWrapper) thisE;
-
-          // switch off the layer
-          oldLightweight.setVisible(false);
-
-          final TrackWrapper newTrack = new TrackWrapper();
-
-          _newTracks.add(newTrack);
-          _oldLightweights.add(oldLightweight);
-          _layers.addThisLayer(newTrack);
-
-          newTrack.setName(oldLightweight.getName());
-          final Color hisColor = oldLightweight.getCustomColor();
-          if (hisColor != null)
+          final Editable thisE = _subjects[i];
+          if (thisE instanceof LightweightTrackWrapper
+              && !(thisE instanceof TrackWrapper))
           {
-            newTrack.setColor(hisColor);
-          }
-          else
-          {
-            newTrack.setColor(DebriefColors.GOLD);
-          }
+            final LightweightTrackWrapper oldLightweight =
+                (LightweightTrackWrapper) thisE;
 
-          final Iterator<FixWrapper> numer = oldLightweight.iterator();
-          while (numer.hasNext())
-          {
-            final FixWrapper fix = numer.next();
-            newTrack.add(fix);
+            // switch off the layer
+            oldLightweight.setVisible(false);
+
+            final TrackWrapper newTrack = new TrackWrapper();
+
+            _newTracks.add(newTrack);
+            _oldLightweights.add(oldLightweight);
+            _layers.addThisLayer(newTrack);
+
+            newTrack.setName(oldLightweight.getName());
+            final Color hisColor = oldLightweight.getCustomColor();
+            if (hisColor != null)
+            {
+              newTrack.setColor(hisColor);
+            }
+            else
+            {
+              newTrack.setColor(DebriefColors.GOLD);
+            }
+
+            final Iterator<FixWrapper> numer = oldLightweight.iterator();
+            while (numer.hasNext())
+            {
+              final FixWrapper fix = numer.next();
+              newTrack.add(fix);
+            }
           }
         }
       }
+      finally
+      {
+        // allow updates to be fired
+        _layers.suspendFiringExtended(false);
 
-      // sorted, do the update
-      _layers.fireExtended();
+        // sorted, force an update
+        _layers.fireExtended();
+      }
 
       return Status.OK_STATUS;
     }
