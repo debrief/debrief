@@ -255,7 +255,7 @@ public class ConvertTrackToLightweightTrack implements
       super(val);
     }
 
-    public final void testIWork()
+    public final static void testIWork()
     {
       final Layers theLayers = new Layers();
       final BaseLayer holder = new BaseLayer();
