@@ -152,6 +152,8 @@ public class TrackParser
         point.setSpeed(Float.parseFloat(coordinate.selectFirst("speed")
             .text()));
 
+        point.setFormattedTime(coordinate.selectFirst("time").text());
+
         currentTrack.getSegments().add(point);
       }
       trackData.getTracks().add(currentTrack);
