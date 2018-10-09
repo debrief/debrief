@@ -26,8 +26,6 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.mwc.cmap.core.CorePlugin;
@@ -142,41 +140,49 @@ public class EditableWrapper implements IPropertySource
     }
 
     @Override
-    public IStatus
-        execute(final IProgressMonitor monitor, final IAdaptable info)
-            throws ExecutionException
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
     {
+      final Object oldValue = _property.getValue();
+
       // get the value, if it worked
       _property.setValue(_newValue);
 
-      // ok, and tell any listeners that want to know
-      // - the only listener I can think of is the Java3d properties viewer
-      _property._subject.getInfo().fireChanged(_property.getEditable(),
-          _property.getDisplayName(), _oldValue, _newValue);
+      final Object newValue = _property.getValue();
 
-      // fire the reformatted event for the parent layer
-      // - note, we may not have the layers object if this editable isn't a plot
-      // object
-      // (it could be an xy plot)
-      if (_wholeLayers != null)
+      // there's a chance that some operations arent' commutative, that when we 
+      // assign a value, then retrieve it, they're different.  The answer to it
+      // is to compare the getValue() from before and after the operation.
+      if (newValue == null || !newValue.equals(oldValue))
       {
-        // right, we can fire a change if we like. have a look
-        final Annotation[] ann = _property.getAnnotationsForSetter();
-        if(PlainWrapper.hasFireExtendedAnnotation(ann))
-        {
-          _wholeLayers.fireExtended(null, _topLevelLayer);
-        }
-        else if(PlainWrapper.hasFireReformattedAnnotation(ann))
-        {
-          _wholeLayers.fireReformatted(_topLevelLayer);
-        }
-        else
-        {
-          _wholeLayers.fireModified(_topLevelLayer);
-        }
+        // ok, and tell any listeners that want to know
+        // - the only listener I can think of is the Java3d properties viewer
+        _property._subject.getInfo().fireChanged(_property.getEditable(),
+            _property.getDisplayName(), _oldValue, _newValue);
 
+        // fire the reformatted event for the parent layer
+        // - note, we may not have the layers object if this editable isn't a plot
+        // object
+        // (it could be an xy plot)
+        if (_wholeLayers != null)
+        {
+          // right, we can fire a change if we like. have a look
+          final Annotation[] ann = _property.getAnnotationsForSetter();
+          if (PlainWrapper.hasFireExtendedAnnotation(ann))
+          {
+            _wholeLayers.fireExtended(null, _topLevelLayer);
+          }
+          else if (PlainWrapper.hasFireReformattedAnnotation(ann))
+          {
+            _wholeLayers.fireReformatted(_topLevelLayer);
+          }
+          else
+          {
+            _wholeLayers.fireModified(_topLevelLayer);
+          }
+
+        }
       }
-
       return Status.OK_STATUS;
     }
 
@@ -558,7 +564,7 @@ public class EditableWrapper implements IPropertySource
     return _myDescriptors;
   }
 
-  private void addPropertyEditors(final Vector<IPropertyDescriptor> list,
+  private static void addPropertyEditors(final Vector<IPropertyDescriptor> list,
       final EditorType editor)
   {
     final PropertyDescriptor[] properties = editor.getPropertyDescriptors();
@@ -585,7 +591,7 @@ public class EditableWrapper implements IPropertySource
     }
   }
 
-  private void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
+  private static void addAdditionalPropertyEditors(final Vector<IPropertyDescriptor> list, final BeanInfo editor)
   {
     final BeanInfo[] others = editor.getAdditionalBeanInfo();
     if (others != null)
@@ -709,50 +715,6 @@ public class EditableWrapper implements IPropertySource
 
   }
   
-  /**
-   * determine if the font objects are effectively equal
-   * 
-   * @param fontOne
-   *          first font
-   * @param fontTwo
-   *          second font
-   * @return if they can be treated as equal
-   */
-  private static boolean fontsAreEqual(final Font fontOne, final Font fontTwo)
-  {
-    final boolean res;
-    if (fontOne == null)
-    {
-      res = false;
-    }
-    else
-    {
-      final FontData[] newD = fontTwo.getFontData();
-      final FontData[] oldD = fontOne.getFontData();
-
-      // compare all the font definitions
-      for (final FontData newData : newD)
-      {
-        for (final FontData oldData : oldD)
-        {          
-          // note, we were using FontData.equals, but it was falsley
-          // returning false on MS Windows
-          
-          // ok - is it a match?
-          if(newData.getHeight()== oldData.getHeight() &&
-             newData.getName().equals(oldData.getName()) &&
-             newData.getStyle() == oldData.getStyle())
-          {
-            // ok, we can drop out.
-            return true;
-          }
-        }
-      }
-      res = false;
-    }
-    return res;
-  }
-  
   /*
    * (non-Javadoc)
    * 
@@ -774,16 +736,8 @@ public class EditableWrapper implements IPropertySource
     final Object oldVal = thisProp.getValue();
 
     // only apply change if it's a new value
-
     final boolean valueChanged;
-    if (value instanceof Font)
-    {
-      // special handling for fonts.  This is because, within some Debiref
-      // objects the font is stored as an AWT font.  But, it's converted to an
-      // SWT font.  This round trip means that identical fonts can appear to be different
-      valueChanged = !fontsAreEqual((Font) value, (Font) oldVal);
-    }
-    else if (thisProp != null)
+    if (thisProp != null)
     {
       // see if the helpers can help
       EditorHelper helper = thisProp.getHelper();
