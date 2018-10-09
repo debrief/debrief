@@ -406,6 +406,8 @@ class UnitCentricChart extends SWTChart
     {
       CorePlugin.logError(IStatus.WARNING,
           "Unit centric view is missing layers", null);
+      dest.setColor(new Color(200, 0, 0));
+      dest.drawText("Please open a plot", 50, 50);
       return;
     }
 
@@ -413,6 +415,8 @@ class UnitCentricChart extends SWTChart
     {
       CorePlugin.logError(IStatus.WARNING,
           "Unit centric view is missing track data provider", null);
+      dest.setColor(new Color(200, 0, 0));
+      dest.drawText("Please open a plot containing track data", 50, 50);
       return;
     }
 
