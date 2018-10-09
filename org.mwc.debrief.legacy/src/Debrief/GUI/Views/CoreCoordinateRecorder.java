@@ -20,7 +20,6 @@ import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
@@ -220,18 +219,17 @@ public abstract class CoreCoordinateRecorder
       @Override
       public void operateOn(final Editable item)
       {
-        final TrackWrapper track = (TrackWrapper) item;
+        final LightweightTrackWrapper track = (LightweightTrackWrapper) item;
         final Watchable[] items = track.getNearestTo(timeNow);
-        if (items != null && items.length > 0)
+        if (items != null && items.length > 0 && items[0] != null)
         {
           final FixWrapper fix = (FixWrapper) items[0];
           Track tp = _tracks.get(track.getName());
           if (tp == null)
           {
-            int waitingSteps = 0;
-            for (Track previousTracks : _tracks.values()) {
-              waitingSteps = Math.max(waitingSteps, previousTracks.getSegments().size());
-            }
+            // the _times list will have received a value before
+            // we get called, so we decrement by one.
+            int waitingSteps = _times.size() - 1;
             tp = new Track(track.getName(), track.getColor(), waitingSteps);
             _tracks.put(track.getName(), tp);
           }
