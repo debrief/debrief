@@ -5,6 +5,7 @@ package Debrief.GUI.Views;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,7 +33,6 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -139,15 +139,17 @@ public abstract class CoreCoordinateRecorder
   private final long _worldIntervalMillis;
 
   private final long _modelIntervalMillis;
+  private final DateFormat _dateFormat;
 
   public CoreCoordinateRecorder(final Layers layers,
       final PlainProjection plainProjection, final long worldIntervalMillis,
-      final long modelIntervalMillis)
+      final long modelIntervalMillis, final String dateFormat)
   {
     _myLayers = layers;
     _projection = plainProjection;
     _worldIntervalMillis = worldIntervalMillis;
     _modelIntervalMillis = modelIntervalMillis;
+    _dateFormat = new GMTDateFormat(dateFormat);
   }
 
   private ExportResult exportFile(final String fileName,
@@ -205,8 +207,7 @@ public abstract class CoreCoordinateRecorder
       return;
 
     // get the new time.
-    final String time = FormatRNDateTime.toMediumString(timeNow.getDate()
-        .getTime());
+    final String time = _dateFormat.format(timeNow.getDate());
     if (startTime == null)
     {
       startTime = time;
