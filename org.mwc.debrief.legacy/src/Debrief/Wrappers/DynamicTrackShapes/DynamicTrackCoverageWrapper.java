@@ -9,12 +9,12 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.ExtendedCanvasType;
 import MWC.GUI.ShapeCanvasType;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -70,14 +70,22 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 			throw new RuntimeException("Error parsing arcs");
 		}
 		arcs = arcs.trim();
-		String[] elements = arcs.split(" ");
-		if (elements.length % 4 != 0)
+
+		StringTokenizer tokens = new StringTokenizer(arcs, " ");
+		ArrayList<String> elements = new ArrayList<String>();
+		while(tokens.hasMoreTokens())
 		{
-			throw new RuntimeException("Error parsing arcs");
+		  String token = tokens.nextToken();
+	    elements.add(token);
+		}
+		
+		if (elements.size() % 4 != 0)
+		{
+			throw new IllegalArgumentException("Wrong number of elements in arcs property");
 		}
 		List<DynamicShape> values = new ArrayList<DynamicShape>();
 		int index = 0;
-		while (index < elements.length)
+		while (index < elements.size())
 		{
 			int minAngleDegs = getValue(elements, index++);
 			int maxAngleDegs = getValue(elements, index++);
@@ -212,12 +220,16 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	    }
 	  }
 
-		public void paint(CanvasType dest, Watchable hostState, Color color, boolean semiTransparent)
-		{
+	  
+	  
+	  
+		@Override
+    public void paint(CanvasType dest, Color color, boolean semiTransparent,
+        WorldLocation originWd, double courseDegs)
+    {
 			// update the color
 			dest.setColor(color);
 
-			WorldLocation originWd = hostState.getLocation();
 			// get the host origin in screen coords
 			final Point originPt = dest.toScreen(originWd);
 
@@ -237,8 +249,7 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 			long minOffsetPt = originPt.y - minPt.y;
 			long maxOffsetPt = originPt.y - maxPt.y;
 			
-			double course = Math.toDegrees(hostState.getCourse());
-			Area area = makeDonutSectionArea(minOffsetPt, maxOffsetPt, minAngleDegs, maxAngleDegs, course);
+			Area area = makeDonutSectionArea(minOffsetPt, maxOffsetPt, minAngleDegs, maxAngleDegs, courseDegs);
 			
 			final AffineTransform af = AffineTransform.getTranslateInstance(originPt.x, originPt.y);
 	    Shape shape = af.createTransformedShape(area);
