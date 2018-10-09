@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 
@@ -20,6 +19,7 @@ import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TrackParserTest
 {
@@ -44,7 +44,7 @@ public class TrackParserTest
                 "12120", null)}));
     Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189), 0);
 
-    final DateFormat dateTimeFormatter = new SimpleDateFormat(
+    final DateFormat dateTimeFormatter = new GMTDateFormat(
         "yyyy-MM-dd'T'HH:mm:ss'Z'");
     TrackPoint trackPoint = new TrackPoint();
     trackPoint.setCourse((float) 358.5);

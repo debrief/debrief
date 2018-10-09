@@ -2,7 +2,6 @@ package Debrief.ReaderWriter.powerPoint;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.jsoup.Jsoup;
@@ -15,6 +14,7 @@ import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TrackParser
 {
@@ -139,7 +139,7 @@ public class TrackParser
         point.setLongitude(Float.parseFloat(coordinate.attr("lon")));
         point.setLatitude(Float.parseFloat(coordinate.attr("lat")));
 
-        final DateFormat dateTimeFormatter = new SimpleDateFormat(
+        final DateFormat dateTimeFormatter = new GMTDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss'Z'");
         final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst(
             "time").text());

@@ -10,6 +10,7 @@ public class TrackPoint
   private Date time;
   private float course;
   private float speed;
+  private String formattedTime;
 
   public float getCourse()
   {
@@ -69,6 +70,16 @@ public class TrackPoint
   public void setTime(final Date time)
   {
     this.time = time;
+  }
+  
+  public String getFormattedTime()
+  {
+    return formattedTime;
+  }
+
+  public void setFormattedTime(String formattedTime)
+  {
+    this.formattedTime = formattedTime;
   }
 
   @Override

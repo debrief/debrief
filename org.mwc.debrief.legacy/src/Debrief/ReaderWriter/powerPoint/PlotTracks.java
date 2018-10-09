@@ -8,11 +8,8 @@ import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -726,9 +723,7 @@ public class PlotTracks
     final ArrayList<TrackPoint> coordinates = firstItem.getSegments();
     for (final TrackPoint coordinate : coordinates)
     {
-      final Date timestamp = coordinate.getTime();
-      final DateFormat formatter = new SimpleDateFormat("yy MMM ddHHmm");
-      final String timestampString = formatter.format(timestamp);
+      final String timestampString = coordinate.getFormattedTime();
       final Element temp_time_tag = time_tag.clone();
       temp_time_tag.selectFirst("p|cNvPr").attr("id", current_time_id + "");
       temp_time_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst(

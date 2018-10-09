@@ -247,6 +247,7 @@ public abstract class CoreCoordinateRecorder
           trackPoint.setLongitude((float) point.getX());
           trackPoint.setElevation((float) fix.getLocation().getDepth());
           trackPoint.setTime(fix.getDTG().getDate());
+          trackPoint.setFormattedTime(_times.get(_times.size() - 1));
           tp.getSegments().add(trackPoint);
         }
       }
