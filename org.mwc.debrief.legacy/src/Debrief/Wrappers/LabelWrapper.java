@@ -207,6 +207,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
@@ -227,923 +228,984 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
-		DraggableItem, Editable.DoNotHighlightMe
+public class LabelWrapper extends MWC.GUI.PlainWrapper implements
+    MWC.GenericData.WatchableList, MWC.GenericData.Watchable, DraggableItem,
+    Editable.DoNotHighlightMe, CanPlotFaded
 {
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////
+  // member variables
+  // //////////////////////////////////////////////////////////
 
-	/**
-	 * property name to indicate that the symbol visibility has been changed
-	 */
-	public static final String SYMBOL_VIS_CHANGED = "SYMBOL_VIS_CHANGE";
+  /**
+   * property name to indicate that the symbol visibility has been changed
+   */
+  public static final String SYMBOL_VIS_CHANGED = "SYMBOL_VIS_CHANGE";
 
-	/**
-	 * property name to indicate that the symbol visibility has been changed
-	 */
-	public static final String LABEL_VIS_CHANGED = "LABEL_VIS_CHANGE";
+  /**
+   * property name to indicate that the symbol visibility has been changed
+   */
+  public static final String LABEL_VIS_CHANGED = "LABEL_VIS_CHANGE";
 
-	// keep track of versions
-	static final long serialVersionUID = 1;
+  // keep track of versions
+  static final long serialVersionUID = 1;
 
-	/**
-	 * the label
-	 */
-	private final MWC.GUI.Shapes.TextLabel _theLabel;
+  /**
+   * the label
+   */
+  private final MWC.GUI.Shapes.TextLabel _theLabel;
 
-	/**
-	 * the symbol for this label
-	 */
-	MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
+  /**
+   * the symbol for this label
+   */
+  MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
 
-	/**
-	 * the origin for this text label
-	 */
-	private WorldLocation _theLocation;
+  /**
+   * the origin for this text label
+   */
+  private WorldLocation _theLocation;
 
-	/**
-	 * the time period this object covers
-	 */
-	private TimePeriod _theTimePeriod;
+  /**
+   * the time period this object covers
+   */
+  private TimePeriod _theTimePeriod;
 
-	/**
-	 * our editor
-	 */
-	transient private Editable.EditorType _myEditor = null;
+  /**
+   * our editor
+   */
+  transient private Editable.EditorType _myEditor = null;
 
-	/**
-	 * whether we plot in the symbol
-	 */
-	private boolean _plotSymbol = true;
+  /**
+   * whether we plot in the symbol
+   */
+  private boolean _plotSymbol = true;
 
-	/**
-	 * an editable parent class, if applicable
-	 */
-	Editable _myParent = null;
+  /**
+   * an editable parent class, if applicable
+   */
+  Editable _myParent = null;
 
-	/**
-	 * whether to show the label
-	 */
-	private boolean _showLabel = true;
+  /**
+   * whether to show the label
+   */
+  private boolean _showLabel = true;
 
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	public LabelWrapper(final String label, final WorldLocation location,
-			final java.awt.Color theColor)
-	{
-		this(label, location, theColor, null, null);
-	}
+  // ///////////////////////////////////////////////////////////
+  // constructor
+  // //////////////////////////////////////////////////////////
+  public LabelWrapper(final String label, final WorldLocation location,
+      final java.awt.Color theColor)
+  {
+    this(label, location, theColor, null, null);
+  }
 
-	/**
-	 * constructor with date info
-	 * 
-	 * @param label
-	 *          the text to display
-	 * @param location
-	 *          the location to centre the label on
-	 * @param theColor
-	 *          the colour to plot the text
-	 * @param startDTG
-	 *          the start (or centre) time of the label
-	 * @param endDTG
-	 *          the end time, or null if single date value
-	 */
-	public LabelWrapper(final String label, final WorldLocation location,
-			final java.awt.Color theColor, final HiResDate startDTG,
-			final HiResDate endDTG)
-	{
-		_theLocation = location;
-		_theLabel = new MWC.GUI.Shapes.TextLabel(location, label);
-		_theLabel.setColor(theColor);
-		_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
-		_theShape.setColor(theColor);
-		_theLabel.setFont(Defaults.getFont());
+  /**
+   * constructor with date info
+   * 
+   * @param label
+   *          the text to display
+   * @param location
+   *          the location to centre the label on
+   * @param theColor
+   *          the colour to plot the text
+   * @param startDTG
+   *          the start (or centre) time of the label
+   * @param endDTG
+   *          the end time, or null if single date value
+   */
+  public LabelWrapper(final String label, final WorldLocation location,
+      final java.awt.Color theColor, final HiResDate startDTG,
+      final HiResDate endDTG)
+  {
+    _theLocation = location;
+    _theLabel = new MWC.GUI.Shapes.TextLabel(location, label);
+    _theLabel.setColor(theColor);
+    _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Square");
+    _theShape.setColor(theColor);
+    _theLabel.setFont(Defaults.getFont());
 
-		// and the dates
-		_theTimePeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
+    // and the dates
+    _theTimePeriod = new TimePeriod.BaseTimePeriod(startDTG, endDTG);
 
-	}
+  }
 
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////////////////////////
 
-	public final void paint(final CanvasType dest)
-	{
-		if (getVisible())
-		{
-			if (_plotSymbol)
-			{
-			  // update the line width
-			  final float lineWid = dest.getLineWidth();
-			  
-			  // assign the line widht
-			  _theShape.setLineWid(dest);
-			  
-				// first paint the symbol
-				_theShape.paint(dest, _theLocation);
-				
-				// and restore the line width
-				dest.setLineWidth(lineWid);
+  public final void paintMe(final CanvasType dest, final WorldLocation centre,
+      final Color theColor)
+  {
 
-				// also indicate to the text that we are using an offset
-				_theLabel.setFixedOffset(_theShape.getBounds());
-			} else
-			{
-				// indicate to the shape that we don't need an offset
-				_theLabel.setFixedOffset(new java.awt.Dimension(0, 0));
-			}
+    if (_plotSymbol)
+    {
+      // store the color
+      final Color oldColor = _theShape.getColor();
 
-			// do we want to paint the label?
-			if (_showLabel == true)
-			{
-				// now paint the text
-				_theLabel.paint(dest);
-			}
-		}
-	}
+      if (!theColor.equals(oldColor))
+      {
+        _theShape.setColor(theColor);
+      }
 
-	public final WorldArea getBounds()
-	{
-		// get the bounds from the data object (or its location object)
-		return _theLabel.getBounds();
-	}
+      // update the line width
+      final float lineWid = dest.getLineWidth();
 
-	/**
-	 * return the origin point for the label
-	 */
-	public final WorldLocation getLocation()
-	{
-		return _theLabel.getLocation();
-	}
+      // assign the line widht
+      _theShape.setLineWid(dest);
 
-	/**
-	 * set the origin point for the label
-	 */
-	public final void setLocation(final WorldLocation val)
-	{
-		// remember the existing location
-		final WorldLocation oldVal = _theLocation;
+      // first paint the symbol
+      _theShape.paint(dest, centre);
 
-		// set the new location
-		_theLabel.setLocation(val);
-		_theLocation = val;
+      // and restore the line width
+      dest.setLineWidth(lineWid);
 
-		// fire the update event
-		getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldVal, val);
-	}
+      // also indicate to the text that we are using an offset
+      _theLabel.setFixedOffset(_theShape.getBounds());
 
-	public final String toString()
-	{
-		return "Label: " + getName();
-	}
+      // restore it
+      if (!theColor.equals(oldColor))
+      {
+        _theShape.setColor(oldColor);
+      }
+    }
+    else
+    {
+      // indicate to the shape that we don't need an offset
+      _theLabel.setFixedOffset(new java.awt.Dimension(0, 0));
+    }
 
-	public final String getName()
-	{
-		return _theLabel.getString();
-	}
+    // do we want to paint the label?
+    if (_showLabel == true)
+    {
+      final Color oldColor = _theLabel.getColor();
+      if (!theColor.equals(oldColor))
+      {
+        _theShape.setColor(theColor);
+      }
 
-	/**
-	 * does this item have an editor?
-	 */
-	public final boolean hasEditor()
-	{
-		return true;
-	}
+      final WorldLocation oldLoc = _theLabel.getLocation();
+      if (!oldLoc.equals(centre))
+      {
+        _theLabel.setLocation(centre);
+      }
 
-	public final Editable.EditorType getInfo()
-	{
-		if (_myEditor == null)
-			_myEditor = new labelInfo(this, this.getName());
+      // now paint the text
+      _theLabel.paint(dest);
 
-		return _myEditor;
-	}
+      if (!theColor.equals(oldColor))
+      {
+        _theShape.setColor(oldColor);
+      }
+      if (!oldLoc.equals(centre))
+      {
+        _theLabel.setLocation(oldLoc);
+      }
+    }
 
-	/**
-	 * if this item has a parent class which should be returned within the
-	 * editable data, then specify it here
-	 */
-	public final void setParent(final Editable parent)
-	{
-		_myParent = parent;
-	}
+  }
 
-	public final Editable getParent()
-	{
-		return _myParent;
-	}
+  public final void paint(final CanvasType dest)
+  {
+    if (getVisible())
+    {
+      paintMe(dest, _theLocation, _theShape.getColor());
+    }
+  }
 
-	public final void setLabelLocation(final Integer loc)
-	{
-		_theLabel.setRelativeLocation(loc);
-	}
+  public final WorldArea getBounds()
+  {
+    // get the bounds from the data object (or its location object)
+    return _theLabel.getBounds();
+  }
 
-	public final Integer getLabelLocation()
-	{
-		return _theLabel.getRelativeLocation();
-	}
+  /**
+   * return the origin point for the label
+   */
+  public final WorldLocation getLocation()
+  {
+    return _theLabel.getLocation();
+  }
 
-	public final void setFont(final Font theFont)
-	{
-		_theLabel.setFont(theFont);
-	}
+  /**
+   * set the origin point for the label
+   */
+  public final void setLocation(final WorldLocation val)
+  {
+    // remember the existing location
+    final WorldLocation oldVal = _theLocation;
 
-	public final Font getFont()
-	{
-		return _theLabel.getFont();
-	}
+    // set the new location
+    _theLabel.setLocation(val);
+    _theLocation = val;
 
-	@FireReformatted
-	public final void setColor(final java.awt.Color theCol)
-	{
-		_theLabel.setColor(theCol);
-		_theShape.setColor(theCol);
+    // fire the update event
+    getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED, oldVal, val);
+  }
 
-		super.setColor(theCol);
-	}
+  public final String toString()
+  {
+    return "Label: " + getName();
+  }
 
-	public final java.awt.Color getColor()
-	{
-		return _theLabel.getColor();
-	}
+  public final String getName()
+  {
+    return _theLabel.getString();
+  }
 
-	public final String getLabel()
-	{
-		return _theLabel.getString();
-	}
+  /**
+   * does this item have an editor?
+   */
+  public final boolean hasEditor()
+  {
+    return true;
+  }
 
-	@FireReformatted
-	public final void setLabel(final String val)
-	{
-		final String oldVal = _theLabel.getString();
+  public final Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor = new labelInfo(this, this.getName());
 
-		// do the update
-		_theLabel.setString(val);
+    return _myEditor;
+  }
 
-		// ok, inform any listeners
-		getSupport().firePropertyChange(LabelWrapper.TEXT_CHANGED, oldVal, val);
-	}
-	
-	@Override
+  /**
+   * if this item has a parent class which should be returned within the editable data, then specify
+   * it here
+   */
+  public final void setParent(final Editable parent)
+  {
+    _myParent = parent;
+  }
+
+  public final Editable getParent()
+  {
+    return _myParent;
+  }
+
+  public final void setLabelLocation(final Integer loc)
+  {
+    _theLabel.setRelativeLocation(loc);
+  }
+
+  public final Integer getLabelLocation()
+  {
+    return _theLabel.getRelativeLocation();
+  }
+
+  public final void setFont(final Font theFont)
+  {
+    _theLabel.setFont(theFont);
+  }
+
+  public final Font getFont()
+  {
+    return _theLabel.getFont();
+  }
+
+  @FireReformatted
+  public final void setColor(final java.awt.Color theCol)
+  {
+    _theLabel.setColor(theCol);
+    _theShape.setColor(theCol);
+
+    super.setColor(theCol);
+  }
+
+  public final java.awt.Color getColor()
+  {
+    return _theLabel.getColor();
+  }
+
+  public final String getLabel()
+  {
+    return _theLabel.getString();
+  }
+
+  @FireReformatted
+  public final void setLabel(final String val)
+  {
+    final String oldVal = _theLabel.getString();
+
+    // do the update
+    _theLabel.setString(val);
+
+    // ok, inform any listeners
+    getSupport().firePropertyChange(LabelWrapper.TEXT_CHANGED, oldVal, val);
+  }
+
+  @Override
   public void setName(String name)
   {
-	  setLabel(name);
+    setLabel(name);
   }
 
   public final double rangeFrom(final WorldLocation other)
-	{
-		return _theLocation.rangeFrom(other);
-	}
-
-	// ///////////////////////////////////
-	// manage the time period
-	// ///////////////////////////////////
-	public final TimePeriod getTimePeriod()
-	{
-		return _theTimePeriod;
-	}
-
-	public final void setTimePeriod(final TimePeriod val)
-	{
-		_theTimePeriod = val;
-	}
-
-	// ///////////////////////////////////
-	// watchable list implementations
-	// ///////////////////////////////////
-
-	/**
-	 * return the symbol to be used for plotting this track in snail mode
-	 */
-	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
-	{
-		return _theShape;
-	}
-
-	/**
-	 * get the symbol itself
-	 * 
-	 * @return
-	 */
-	public final PlainSymbol getShape()
-	{
-		return _theShape;
-	}
-
-	public final HiResDate getStartDTG()
-	{
-		return _theTimePeriod.getStartDTG();
-	}
-
-	public final HiResDate getEndDTG()
-	{
-		return _theTimePeriod.getEndDTG();
-	}
-
-	/**
-	 * get the threshold for which points should be visible
-	 * 
-	 * @return time either side in milliseconds
-	 */
-	private long getThreshold()
-	{
-		long res = MWC.GenericData.WatchableList.TIME_THRESHOLD;
-		final String appThreshold = Debrief.GUI.Frames.Application
-				.getThisProperty("STEP_THRESHOLD");
-
-		if (appThreshold != null)
-		{
-			// aaah, we actually get a zero length string in SWT, check for that
-			if (appThreshold.length() > 0)
-			{
-				try
-				{
-					// get actual value (in seconds)
-					res = Long.parseLong(appThreshold);
-					// convert to millis
-					res *= 1000;
-				} catch (final Exception e)
-				{
-					MWC.Utilities.Errors.Trace.trace(e,
-							"Retrieving step threshold from properties");
-				}
-			}
-		}
-
-		return res;
-	}
-
-	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
-	{
-		boolean res = false;
-
-		// special case, have we been asked for an invalid time period?
-		if (DTG == TimePeriod.INVALID_DATE)
-		{
-			res = true;
-		} else
-		{
-
-			// see if we are within the threshold of plotting
-			final HiResDate myStart = getStartDTG();
-			final HiResDate myEnd = getEndDTG();
-
-			// do we have an end point?
-			if (getEndDTG() != null)
-			{
-				// check if we are in the range
-				if ((DTG.greaterThanOrEqualTo(myStart))
-						&& (DTG.lessThanOrEqualTo(myEnd)))
-					res = true;
-			} else
-			{
-				// see if there is just a start (centre) time
-				if (myStart != null)
-				{
-					final long sep = Math.abs(DTG.getMicros() - myStart.getMicros());
-					if (sep <= getThreshold())
-						res = true;
-				} else
-				{
-					// start and end must equal -1
-					res = true;
-				}
-			}
-		}
-		if (res == true)
-		{
-			// produce a new LabelWrapper, with the indicated time
-			return new MWC.GenericData.Watchable[]
-			{ this };
-		} else
-			return new MWC.GenericData.Watchable[]
-			{};
-
-	}
-
-	/**
-	 * method to fulfil requirements of Watchable
-	 */
-	public final HiResDate getTime()
-	{
-		return getStartDTG();
-	}
-
-	public final void filterListTo(final HiResDate start, final HiResDate end)
-	{
-		final HiResDate myStart = _theTimePeriod.getStartDTG();
-		final HiResDate myEnd = _theTimePeriod.getEndDTG();
-
-		// are we in the time period
-		if (myStart != null)
-		{
-			// do we have an end time?
-			if (myEnd != null)
-			{
-				// we must check both ends to see if we overlap
-				if ((myStart.lessThan(end)) && (myEnd.greaterThan(start)))
-				{
-					setVisible(true);
-				} else
-				{
-					setVisible(false);
-				}
-			} else
-			{
-				// we just have a centre time, see if it is in the area
-				if ((myStart.greaterThan(start)) && (myStart.lessThan(end)))
-				{
-					setVisible(true);
-				} else
-				{
-					setVisible(false);
-				}
-			}
-		} else
-		{
-			// we must be visible if we are'nt time related
-			setVisible(true);
-		}
-
-		// if we have a property support class, fire the filtered event
-		if (getSupport() != null)
-			getSupport().firePropertyChange(
-					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
-
-	}
-
-	/**
-	 * return the set of items which fall inside the indicated period. If an items
-	 * has an "alive" period which overlaps this period then it will be returned.
-	 * If the item has no time set, then return it as being valid
-	 */
-	public final java.util.Collection<Editable> getItemsBetween(final HiResDate start,
-			final HiResDate end)
-	{
-		java.util.Vector<Editable> res = null;
-
-		if (this.getStartDTG() != null)
-		{
-			// are we inside this period
-			final HiResDate startTime = getStartDTG();
-			final HiResDate endTime = getEndDTG();
-
-			// have any dates been set?
-			if (startTime != null)
-			{
-				// do we have a finish time?
-				if (endTime != null)
-				{
-					// we have start and finish times, see if we overlap the period at all
-					if ((startTime.lessThanOrEqualTo(end))
-							&& (endTime.greaterThanOrEqualTo(start)))
-					{
-						res = new Vector<Editable>(0, 1);
-					}
-				} else
-				{
-					// we don't have a finish time, see if we are inside the period
-					if ((startTime.greaterThanOrEqualTo(start))
-							&& (startTime.lessThanOrEqualTo(end)))
-					{
-						res = new Vector<Editable>(0, 1);
-					}
-				}
-
-				// do we have any valid data?
-				if (res != null)
-				{
-					// yes, do we have an end time?
-					if (endTime != null)
-					{
-						// HI-RES NOT DONE - WHAT ON EARTH IS HAPPENING IN THIS NEXT
-						// SECTION?
-
-						// produce data from the last of our start time and the period
-						// start, to the first
-						// of our finish time and the period end
-						final long st = Math.max(startTime.getMicros(), start.getMicros());
-						final long en = Math.min(endTime.getMicros(), end.getMicros());
-
-						// work through this dataset, in minutes
-						for (long i = st; i <= en; i += 60 * 1000 * 1000)
-						{
-							res.addElement(new LabelWrapper(this.getLabel(), this
-									.getLocation(), this.getColor(), new HiResDate(0, i),
-									new HiResDate(0, i)));
-						}
-					} else
-					{
-						// HI-RES NOT DONE - WHAT ON EARTH IS HAPPENING IN THIS NEXT
-						// SECTION?
-
-						// produce data from the last of our start time and the data start
-						// time, to the end time of the
-						// data
-						final long st = Math.max(startTime.getMicros(), start.getMicros());
-
-						// work through this dataset, in minutes
-						for (long i = st; i <= end.getMicros(); i += 60 * 1000 * 1000)
-						{
-							res.addElement(new LabelWrapper(this.getLabel(), this
-									.getLocation(), this.getColor(), new HiResDate(0, i),
-									new HiResDate(0, i)));
-						}
-					}
-				}
-
-			} else
-			{
-				// no dates have been set - just say yes we are visible
-				res = new Vector<Editable>(0, 1);
-				res.add(this);
-			}
-		} else
-		{
-			// no times are set - just return ourselves
-			res = new Vector<Editable>(0, 1);
-			res.add(this);
-		}
-
-		return res;
-	}
-
-	// /////////////////////////////////////
-	// watchable implementations
-	// /////////////////////////////////////
-
-	public final double getCourse()
-	{
-		return 0;
-	}
-
-	public final double getSpeed()
-	{
-		return 0;
-	}
-
-	public final double getDepth()
-	{
-		return _theLocation.getDepth();
-	}
-
-	// ////////////////////////////////////////////////////
-	// bean accessor methods
-	// ///////////////////////////////////////////////////
-
-	/**
-	 * we've got this extra time accessor so we can have nicely named properties
-	 * in the editor
-	 */
-	public final void setTimeStart(final HiResDate val)
-	{
-		_theTimePeriod.setStartDTG(val);
-	}
-
-	/**
-	 * we've got this extra time accessor so we can have nicely named properties
-	 * in the editor
-	 */
-	public final void setTime_End(final HiResDate val)
-	{
-		_theTimePeriod.setEndDTG(val);
-	}
-
-	/**
-	 * we've got this extra time accessor so we can have nicely named properties
-	 * in the editor
-	 */
-	public final HiResDate getTimeStart()
-	{
-		return _theTimePeriod.getStartDTG();
-	}
-
-	/**
-	 * we've got this extra time accessor so we can have nicely named properties
-	 * in the editor
-	 */
-	public final HiResDate getTime_End()
-	{
-		return _theTimePeriod.getEndDTG();
-	}
-
-	public final void setLabelVisible(final Boolean val)
-	{
-		setLabelVisible(val.booleanValue());
-	}
-
-	public final boolean getLabelVisible()
-	{
-		return _showLabel;
-	}
-
-	public final void setLabelVisible(final boolean val)
-	{
-		_showLabel = val;
-
-		// ok, inform any listeners
-		getSupport().firePropertyChange(LabelWrapper.LABEL_VIS_CHANGED, null,
-				new Boolean(val));
-	}
-
-	public final void setSymbolVisible(final boolean val)
-	{
-		_plotSymbol = val;
-
-		// ok, inform any listeners
-		getSupport().firePropertyChange(LabelWrapper.SYMBOL_VIS_CHANGED, null,
-				new Boolean(val));
-	}
-
-	public final boolean getSymbolVisible()
-	{
-		return _plotSymbol;
-	}
-
-	public final String getSymbolType()
-	{
-		return _theShape.getType();
-	}
-
-	public final void setSymbolType(final String val)
-	{
-		// is this the type of our symbol?
-		if (val.equals(_theShape.getType()))
-		{
-			// don't bother we're using it already
-		} else
-		{
-			// remember the size of the symbol
-			final double scale = _theShape.getScaleVal();
-			// replace our symbol with this new one
-			_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-			if (_theShape == null)
-			{
-				MWC.Utilities.Errors.Trace.trace("Unable to create symbol of type:"
-						+ val);
-			} else
-			{
-				_theShape.setColor(this.getColor());
-
-				// update the size
-				_theShape.setScaleVal(scale);
-			}
-		}
-	}
-
-	public final void setSymbolSize(final Double val)
-	{
-		_theShape.setScaleVal(val.doubleValue());
-	}
-
-	public final Double getSymbolSize()
-	{
-		return new Double(_theShape.getScaleVal());
-	}
-
-	// ////////////////////////////////////////////////////
-	// bean info for this class
-	// ///////////////////////////////////////////////////
-	public final class labelInfo extends Editable.EditorType
-	{
-
-		public labelInfo(final LabelWrapper data, final String theName)
-		{
-			super(data, theName, "Label:");
-		}
-
-		public final BeanInfo[] getAdditionalBeanInfo()
-		{
-
-			java.util.Vector<BeanInfo> list = null;
-
-			// see if we have a parent class
-			BeanInfo[] res = null;
-			BeanInfo sampler = null;
-
-			// see if our parent has any properties
-			if (_myParent != null)
-			{
-				// create list
-				list = new Vector<BeanInfo>(0, 1);
-
-				// add this item to the list
-				list.addElement(_myParent.getInfo());
-
-				// take a copy of the data, for us to use as a sample later on
-				sampler = _myParent.getInfo();
-			}
-
-			// see if our symbol has any properties
-
-			// has it got an editor?
-			if (_theShape.hasEditor())
-			{
-				final BeanInfo info = _theShape.getInfo();
-
-				// do we need to create our list?
-				if (list == null)
-					list = new Vector<BeanInfo>(0, 1);
-
-				// remember it
-				list.addElement(info);
-			}
-
-			if (list != null)
-			{
-				// create the dummy list to show toArray what we are after
-				final BeanInfo[] dummy = new BeanInfo[]
-				{ sampler };
-
-				// put the list onto the array
-				res = list.toArray(dummy);
-			}
-
-			return res;
-		}
-
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{ 
-						prop("Color", "the label color", FORMAT), 
-						prop("Label", "the text showing"),
-						prop("Font", "the label font", FORMAT),
-						displayProp("SymbolVisible", "Symbol visible", "whether a symbol is plotted", FORMAT),
-						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
-						prop("Location", "the location of the origin of the label", SPATIAL),
-						displayProp("SymbolType", "Symbol type", "the type of symbol plotted for this label", FORMAT),
-						displayProp("SymbolSize", "Symbol size", "the scale of the symbol", FORMAT),
-						displayProp("LabelVisible", "Label visible", "whether the label is plotted", FORMAT),
-						prop("Visible", "whether the label and symbol are plotted", FORMAT),
-						displayProp("TimeStart", "Time start", "the start DTG", TEMPORAL),
-						displayProp("Time_End", "Time end", "the end DTG", TEMPORAL)
-				};
-
-				// set the custom editors
-				res[4]
-						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
-				res[6]
-						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
-				res[7]
-						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
-
-				return res;
-
-			} catch (final IntrospectionException e)
-			{
-				System.err.println("Problem generating property editors (see below)");
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
-			}
-		}
-
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
-			// just add the reset color field first
-			final Class<ShapeWrapper> c = ShapeWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "exportThis", null, "Export Shape") };
-			return mds;
-		}
-
-	}
-
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	// testing for this class
-	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
-		static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-		public testMe(final String val)
-		{
-			super(val);
-		}
-
-		public final void testMyParams()
-		{
-			MWC.GUI.Editable ed = new LabelWrapper(null, null, null);
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
-			ed = null;
-		}
-
-		public final void testWatchables()
-		{
-			final WatchableList.TestWatchables tw = new WatchableList.TestWatchables()
-			{
-				/**
-				 * get an example of this kind of list with both dates set
-				 * 
-				 * @return
-				 */
-				public WatchableList getBothDates(final HiResDate startDate,
-						final HiResDate endDate)
-				{
-					return new LabelWrapper("both", null, Color.red, startDate, endDate)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-					};
-				}
-
-				/**
-				 * get an example of this kind of list with no dates set
-				 * 
-				 * @return
-				 */
-				public WatchableList getNullDates()
-				{
-					return new LabelWrapper("both", null, Color.red, null, null)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-					};
-				}
-
-				/**
-				 * get an example of this kind of list with only start date set
-				 * 
-				 * @return
-				 */
-				public WatchableList getStartDateOnly(final HiResDate startDate)
-				{
-					return new LabelWrapper("both", null, Color.red, startDate, null)
-					{
-						/**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-					};
-				}
-			};
-
-			tw.doTest(this);
-		}
-	}
-
-	public static void main(final String[] args)
-	{
-		final testMe tm = new testMe("testing");
-		tm.testWatchables();
-
-		final JFrame jf = new JFrame("here");
-		final Layers theData = new Layers();
-		final SwingChart sc = new SwingChart(theData);
-		final RectangleShape rect = new RectangleShape(new WorldLocation(50.679199,
-				-1.0351547, 0), new WorldLocation(50.4545845, -0.6318624, 0));
-		final ShapeWrapper sw = new ShapeWrapper("here", rect, Color.blue, null);
-		sw.setLabelVisible(false);
-		final LabelWrapper lw = new LabelWrapper("there\nand here\nand there again",
-				new WorldLocation(50.6114132, -0.7973965, 0), Color.red);
-		final Layer misc = new BaseLayer();
-		lw.setLabelLocation(new Integer(
-				MWC.GUI.Properties.LocationPropertyEditor.TOP));
-		misc.setName("misc");
-		misc.add(sw);
-		misc.add(lw);
-		theData.addThisLayer(misc);
-
-		jf.getContentPane().setLayout(new BorderLayout());
-		jf.getContentPane().add("Center", sc.getPanel());
-
-		final SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null, null);
-		props.addEditor(lw.getInfo(), misc);
-		jf.getContentPane().add("West", props);
-
-		jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		jf.setSize(900, 600);
-		jf.setVisible(true);
-
-	}
-
-	public void shift(final WorldVector vector)
-	{
-		// ok, shift it
-		final WorldLocation oldCentre = getLocation();
-		final WorldLocation newCentre = oldCentre.add(vector);
-		setLocation(newCentre);
-	}
-
-	public void findNearestHotSpotIn(final Point cursorPos, final WorldLocation cursorLoc,
-			final LocationConstruct currentNearest, final Layer parentLayer, final Layers theData)
-	{
-		// calculate the distance
-		final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
-				WorldDistance.DEGS);
-
-		// see if we're closer
-		currentNearest.checkMe(this, thisDist, this.getLocation(), parentLayer);
-	}
+  {
+    return _theLocation.rangeFrom(other);
+  }
+
+  // ///////////////////////////////////
+  // manage the time period
+  // ///////////////////////////////////
+  public final TimePeriod getTimePeriod()
+  {
+    return _theTimePeriod;
+  }
+
+  public final void setTimePeriod(final TimePeriod val)
+  {
+    _theTimePeriod = val;
+  }
+
+  // ///////////////////////////////////
+  // watchable list implementations
+  // ///////////////////////////////////
+
+  /**
+   * return the symbol to be used for plotting this track in snail mode
+   */
+  public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
+  {
+    return _theShape;
+  }
+
+  /**
+   * get the symbol itself
+   * 
+   * @return
+   */
+  public final PlainSymbol getShape()
+  {
+    return _theShape;
+  }
+
+  public final HiResDate getStartDTG()
+  {
+    return _theTimePeriod.getStartDTG();
+  }
+
+  public final HiResDate getEndDTG()
+  {
+    return _theTimePeriod.getEndDTG();
+  }
+
+  /**
+   * get the threshold for which points should be visible
+   * 
+   * @return time either side in milliseconds
+   */
+  private long getThreshold()
+  {
+    long res = MWC.GenericData.WatchableList.TIME_THRESHOLD;
+    final String appThreshold = Debrief.GUI.Frames.Application.getThisProperty(
+        "STEP_THRESHOLD");
+
+    if (appThreshold != null)
+    {
+      // aaah, we actually get a zero length string in SWT, check for that
+      if (appThreshold.length() > 0)
+      {
+        try
+        {
+          // get actual value (in seconds)
+          res = Long.parseLong(appThreshold);
+          // convert to millis
+          res *= 1000;
+        }
+        catch (final Exception e)
+        {
+          MWC.Utilities.Errors.Trace.trace(e,
+              "Retrieving step threshold from properties");
+        }
+      }
+    }
+
+    return res;
+  }
+
+  public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
+  {
+    boolean res = false;
+
+    // special case, have we been asked for an invalid time period?
+    if (DTG == TimePeriod.INVALID_DATE)
+    {
+      res = true;
+    }
+    else
+    {
+
+      // see if we are within the threshold of plotting
+      final HiResDate myStart = getStartDTG();
+      final HiResDate myEnd = getEndDTG();
+
+      // do we have an end point?
+      if (getEndDTG() != null)
+      {
+        // check if we are in the range
+        if ((DTG.greaterThanOrEqualTo(myStart)) && (DTG.lessThanOrEqualTo(
+            myEnd)))
+          res = true;
+      }
+      else
+      {
+        // see if there is just a start (centre) time
+        if (myStart != null)
+        {
+          final long sep = Math.abs(DTG.getMicros() - myStart.getMicros());
+          if (sep <= getThreshold())
+            res = true;
+        }
+        else
+        {
+          // start and end must equal -1
+          res = true;
+        }
+      }
+    }
+    if (res == true)
+    {
+      // produce a new LabelWrapper, with the indicated time
+      return new MWC.GenericData.Watchable[]
+      {this};
+    }
+    else
+      return new MWC.GenericData.Watchable[]
+      {};
+
+  }
+
+  /**
+   * method to fulfil requirements of Watchable
+   */
+  public final HiResDate getTime()
+  {
+    return getStartDTG();
+  }
+
+  public final void filterListTo(final HiResDate start, final HiResDate end)
+  {
+    final HiResDate myStart = _theTimePeriod.getStartDTG();
+    final HiResDate myEnd = _theTimePeriod.getEndDTG();
+
+    // are we in the time period
+    if (myStart != null)
+    {
+      // do we have an end time?
+      if (myEnd != null)
+      {
+        // we must check both ends to see if we overlap
+        if ((myStart.lessThan(end)) && (myEnd.greaterThan(start)))
+        {
+          setVisible(true);
+        }
+        else
+        {
+          setVisible(false);
+        }
+      }
+      else
+      {
+        // we just have a centre time, see if it is in the area
+        if ((myStart.greaterThan(start)) && (myStart.lessThan(end)))
+        {
+          setVisible(true);
+        }
+        else
+        {
+          setVisible(false);
+        }
+      }
+    }
+    else
+    {
+      // we must be visible if we are'nt time related
+      setVisible(true);
+    }
+
+    // if we have a property support class, fire the filtered event
+    if (getSupport() != null)
+      getSupport().firePropertyChange(
+          MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
+
+  }
+
+  /**
+   * return the set of items which fall inside the indicated period. If an items has an "alive"
+   * period which overlaps this period then it will be returned. If the item has no time set, then
+   * return it as being valid
+   */
+  public final java.util.Collection<Editable> getItemsBetween(
+      final HiResDate start, final HiResDate end)
+  {
+    java.util.Vector<Editable> res = null;
+
+    if (this.getStartDTG() != null)
+    {
+      // are we inside this period
+      final HiResDate startTime = getStartDTG();
+      final HiResDate endTime = getEndDTG();
+
+      // have any dates been set?
+      if (startTime != null)
+      {
+        // do we have a finish time?
+        if (endTime != null)
+        {
+          // we have start and finish times, see if we overlap the period at all
+          if ((startTime.lessThanOrEqualTo(end)) && (endTime
+              .greaterThanOrEqualTo(start)))
+          {
+            res = new Vector<Editable>(0, 1);
+          }
+        }
+        else
+        {
+          // we don't have a finish time, see if we are inside the period
+          if ((startTime.greaterThanOrEqualTo(start)) && (startTime
+              .lessThanOrEqualTo(end)))
+          {
+            res = new Vector<Editable>(0, 1);
+          }
+        }
+
+        // do we have any valid data?
+        if (res != null)
+        {
+          // yes, do we have an end time?
+          if (endTime != null)
+          {
+            // HI-RES NOT DONE - WHAT ON EARTH IS HAPPENING IN THIS NEXT
+            // SECTION?
+
+            // produce data from the last of our start time and the period
+            // start, to the first
+            // of our finish time and the period end
+            final long st = Math.max(startTime.getMicros(), start.getMicros());
+            final long en = Math.min(endTime.getMicros(), end.getMicros());
+
+            // work through this dataset, in minutes
+            for (long i = st; i <= en; i += 60 * 1000 * 1000)
+            {
+              res.addElement(new LabelWrapper(this.getLabel(), this
+                  .getLocation(), this.getColor(), new HiResDate(0, i),
+                  new HiResDate(0, i)));
+            }
+          }
+          else
+          {
+            // HI-RES NOT DONE - WHAT ON EARTH IS HAPPENING IN THIS NEXT
+            // SECTION?
+
+            // produce data from the last of our start time and the data start
+            // time, to the end time of the
+            // data
+            final long st = Math.max(startTime.getMicros(), start.getMicros());
+
+            // work through this dataset, in minutes
+            for (long i = st; i <= end.getMicros(); i += 60 * 1000 * 1000)
+            {
+              res.addElement(new LabelWrapper(this.getLabel(), this
+                  .getLocation(), this.getColor(), new HiResDate(0, i),
+                  new HiResDate(0, i)));
+            }
+          }
+        }
+
+      }
+      else
+      {
+        // no dates have been set - just say yes we are visible
+        res = new Vector<Editable>(0, 1);
+        res.add(this);
+      }
+    }
+    else
+    {
+      // no times are set - just return ourselves
+      res = new Vector<Editable>(0, 1);
+      res.add(this);
+    }
+
+    return res;
+  }
+
+  // /////////////////////////////////////
+  // watchable implementations
+  // /////////////////////////////////////
+
+  public final double getCourse()
+  {
+    return 0;
+  }
+
+  public final double getSpeed()
+  {
+    return 0;
+  }
+
+  public final double getDepth()
+  {
+    return _theLocation.getDepth();
+  }
+
+  // ////////////////////////////////////////////////////
+  // bean accessor methods
+  // ///////////////////////////////////////////////////
+
+  /**
+   * we've got this extra time accessor so we can have nicely named properties in the editor
+   */
+  public final void setTimeStart(final HiResDate val)
+  {
+    _theTimePeriod.setStartDTG(val);
+  }
+
+  /**
+   * we've got this extra time accessor so we can have nicely named properties in the editor
+   */
+  public final void setTime_End(final HiResDate val)
+  {
+    _theTimePeriod.setEndDTG(val);
+  }
+
+  /**
+   * we've got this extra time accessor so we can have nicely named properties in the editor
+   */
+  public final HiResDate getTimeStart()
+  {
+    return _theTimePeriod.getStartDTG();
+  }
+
+  /**
+   * we've got this extra time accessor so we can have nicely named properties in the editor
+   */
+  public final HiResDate getTime_End()
+  {
+    return _theTimePeriod.getEndDTG();
+  }
+
+  public final void setLabelVisible(final Boolean val)
+  {
+    setLabelVisible(val.booleanValue());
+  }
+
+  public final boolean getLabelVisible()
+  {
+    return _showLabel;
+  }
+
+  public final void setLabelVisible(final boolean val)
+  {
+    _showLabel = val;
+
+    // ok, inform any listeners
+    getSupport().firePropertyChange(LabelWrapper.LABEL_VIS_CHANGED, null,
+        new Boolean(val));
+  }
+
+  public final void setSymbolVisible(final boolean val)
+  {
+    _plotSymbol = val;
+
+    // ok, inform any listeners
+    getSupport().firePropertyChange(LabelWrapper.SYMBOL_VIS_CHANGED, null,
+        new Boolean(val));
+  }
+
+  public final boolean getSymbolVisible()
+  {
+    return _plotSymbol;
+  }
+
+  public final String getSymbolType()
+  {
+    return _theShape.getType();
+  }
+
+  public final void setSymbolType(final String val)
+  {
+    // is this the type of our symbol?
+    if (val.equals(_theShape.getType()))
+    {
+      // don't bother we're using it already
+    }
+    else
+    {
+      // remember the size of the symbol
+      final double scale = _theShape.getScaleVal();
+      // replace our symbol with this new one
+      _theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
+      if (_theShape == null)
+      {
+        MWC.Utilities.Errors.Trace.trace("Unable to create symbol of type:"
+            + val);
+      }
+      else
+      {
+        _theShape.setColor(this.getColor());
+
+        // update the size
+        _theShape.setScaleVal(scale);
+      }
+    }
+  }
+
+  public final void setSymbolSize(final Double val)
+  {
+    _theShape.setScaleVal(val.doubleValue());
+  }
+
+  public final Double getSymbolSize()
+  {
+    return new Double(_theShape.getScaleVal());
+  }
+
+  // ////////////////////////////////////////////////////
+  // bean info for this class
+  // ///////////////////////////////////////////////////
+  public final class labelInfo extends Editable.EditorType
+  {
+
+    public labelInfo(final LabelWrapper data, final String theName)
+    {
+      super(data, theName, "Label:");
+    }
+
+    public final BeanInfo[] getAdditionalBeanInfo()
+    {
+
+      java.util.Vector<BeanInfo> list = null;
+
+      // see if we have a parent class
+      BeanInfo[] res = null;
+      BeanInfo sampler = null;
+
+      // see if our parent has any properties
+      if (_myParent != null)
+      {
+        // create list
+        list = new Vector<BeanInfo>(0, 1);
+
+        // add this item to the list
+        list.addElement(_myParent.getInfo());
+
+        // take a copy of the data, for us to use as a sample later on
+        sampler = _myParent.getInfo();
+      }
+
+      // see if our symbol has any properties
+
+      // has it got an editor?
+      if (_theShape.hasEditor())
+      {
+        final BeanInfo info = _theShape.getInfo();
+
+        // do we need to create our list?
+        if (list == null)
+          list = new Vector<BeanInfo>(0, 1);
+
+        // remember it
+        list.addElement(info);
+      }
+
+      if (list != null)
+      {
+        // create the dummy list to show toArray what we are after
+        final BeanInfo[] dummy = new BeanInfo[]
+        {sampler};
+
+        // put the list onto the array
+        res = list.toArray(dummy);
+      }
+
+      return res;
+    }
+
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final PropertyDescriptor[] res =
+        {prop("Color", "the label color", FORMAT), prop("Label",
+            "the text showing"), prop("Font", "the label font", FORMAT),
+            displayProp("SymbolVisible", "Symbol visible",
+                "whether a symbol is plotted", FORMAT), displayProp(
+                    "LabelLocation", "Label location",
+                    "the relative location of the label", FORMAT), prop(
+                        "Location", "the location of the origin of the label",
+                        SPATIAL), displayProp("SymbolType", "Symbol type",
+                            "the type of symbol plotted for this label",
+                            FORMAT), displayProp("SymbolSize", "Symbol size",
+                                "the scale of the symbol", FORMAT), displayProp(
+                                    "LabelVisible", "Label visible",
+                                    "whether the label is plotted", FORMAT),
+            prop("Visible", "whether the label and symbol are plotted", FORMAT),
+            displayProp("TimeStart", "Time start", "the start DTG", TEMPORAL),
+            displayProp("Time_End", "Time end", "the end DTG", TEMPORAL)};
+
+        // set the custom editors
+        res[4].setPropertyEditorClass(
+            MWC.GUI.Properties.LocationPropertyEditor.class);
+        res[6].setPropertyEditorClass(
+            MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
+        res[7].setPropertyEditorClass(
+            MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
+
+        return res;
+
+      }
+      catch (final IntrospectionException e)
+      {
+        System.err.println("Problem generating property editors (see below)");
+        e.printStackTrace();
+        return super.getPropertyDescriptors();
+      }
+    }
+
+    public final MethodDescriptor[] getMethodDescriptors()
+    {
+      // just add the reset color field first
+      final Class<ShapeWrapper> c = ShapeWrapper.class;
+      final MethodDescriptor[] mds =
+      {method(c, "exportThis", null, "Export Shape")};
+      return mds;
+    }
+
+  }
+
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  // ////////////////////////////////////////////////////////////////////////////////////////////////
+  static public final class testMe extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public testMe(final String val)
+    {
+      super(val);
+    }
+
+    public final void testMyParams()
+    {
+      MWC.GUI.Editable ed = new LabelWrapper(null, null, null);
+      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    public final void testWatchables()
+    {
+      final WatchableList.TestWatchables tw = new WatchableList.TestWatchables()
+      {
+        /**
+         * get an example of this kind of list with both dates set
+         * 
+         * @return
+         */
+        public WatchableList getBothDates(final HiResDate startDate,
+            final HiResDate endDate)
+        {
+          return new LabelWrapper("both", null, Color.red, startDate, endDate)
+          {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+
+          };
+        }
+
+        /**
+         * get an example of this kind of list with no dates set
+         * 
+         * @return
+         */
+        public WatchableList getNullDates()
+        {
+          return new LabelWrapper("both", null, Color.red, null, null)
+          {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+          };
+        }
+
+        /**
+         * get an example of this kind of list with only start date set
+         * 
+         * @return
+         */
+        public WatchableList getStartDateOnly(final HiResDate startDate)
+        {
+          return new LabelWrapper("both", null, Color.red, startDate, null)
+          {
+            /**
+             * 
+             */
+            private static final long serialVersionUID = 1L;
+
+          };
+        }
+      };
+
+      tw.doTest(this);
+    }
+  }
+
+  public static void main(final String[] args)
+  {
+    final testMe tm = new testMe("testing");
+    tm.testWatchables();
+
+    final JFrame jf = new JFrame("here");
+    final Layers theData = new Layers();
+    final SwingChart sc = new SwingChart(theData);
+    final RectangleShape rect = new RectangleShape(new WorldLocation(50.679199,
+        -1.0351547, 0), new WorldLocation(50.4545845, -0.6318624, 0));
+    final ShapeWrapper sw = new ShapeWrapper("here", rect, Color.blue, null);
+    sw.setLabelVisible(false);
+    final LabelWrapper lw = new LabelWrapper("there\nand here\nand there again",
+        new WorldLocation(50.6114132, -0.7973965, 0), Color.red);
+    final Layer misc = new BaseLayer();
+    lw.setLabelLocation(new Integer(
+        MWC.GUI.Properties.LocationPropertyEditor.TOP));
+    misc.setName("misc");
+    misc.add(sw);
+    misc.add(lw);
+    theData.addThisLayer(misc);
+
+    jf.getContentPane().setLayout(new BorderLayout());
+    jf.getContentPane().add("Center", sc.getPanel());
+
+    final SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null,
+        null);
+    props.addEditor(lw.getInfo(), misc);
+    jf.getContentPane().add("West", props);
+
+    jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    jf.setSize(900, 600);
+    jf.setVisible(true);
+
+  }
+
+  public void shift(final WorldVector vector)
+  {
+    // ok, shift it
+    final WorldLocation oldCentre = getLocation();
+    final WorldLocation newCentre = oldCentre.add(vector);
+    setLocation(newCentre);
+  }
+
+  public void findNearestHotSpotIn(final Point cursorPos,
+      final WorldLocation cursorLoc, final LocationConstruct currentNearest,
+      final Layer parentLayer, final Layers theData)
+  {
+    // calculate the distance
+    final WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
+        WorldDistance.DEGS);
+
+    // see if we're closer
+    currentNearest.checkMe(this, thisDist, this.getLocation(), parentLayer);
+  }
 
 }
