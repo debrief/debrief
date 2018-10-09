@@ -261,6 +261,7 @@ import java.util.Vector;
 
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
+import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Defaults;
@@ -291,7 +292,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  */
 public class FixWrapper extends PlainWrapper implements Watchable,
     CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
-    CreateEditorForParent
+    CreateEditorForParent, CanPlotFaded
 {
 
   // //////////////////////////////////////
@@ -1384,6 +1385,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * @param dest
    * @param centre
    */
+  @Override
   public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {

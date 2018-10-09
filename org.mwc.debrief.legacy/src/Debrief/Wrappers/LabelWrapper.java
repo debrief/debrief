@@ -207,6 +207,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 
 import MWC.GUI.BaseLayer;
+import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
@@ -228,7 +229,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
 public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
-		DraggableItem, Editable.DoNotHighlightMe
+		DraggableItem, Editable.DoNotHighlightMe, CanPlotFaded
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -329,39 +330,84 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
+	
+  public final void paintMe(final CanvasType dest, final WorldLocation centre,
+      final Color theColor)
+  {
+    
+    if (_plotSymbol)
+    {
+      // store the color
+      final Color oldColor = _theShape.getColor();
+      
+      if(!theColor.equals(oldColor))
+      {
+        _theShape.setColor(theColor);;
+      }
+      
+      // update the line width
+      final float lineWid = dest.getLineWidth();
+      
+      // assign the line widht
+      _theShape.setLineWid(dest);
+      
+      // first paint the symbol
+      _theShape.paint(dest, centre);
+      
+      // and restore the line width
+      dest.setLineWidth(lineWid);
+
+      // also indicate to the text that we are using an offset
+      _theLabel.setFixedOffset(_theShape.getBounds());
+      
+      // restore it
+      if(!theColor.equals(oldColor))
+      {
+        _theShape.setColor(oldColor);
+      }
+      
+    } else
+    {
+      // indicate to the shape that we don't need an offset
+      _theLabel.setFixedOffset(new java.awt.Dimension(0, 0));
+    }
+
+    // do we want to paint the label?
+    if (_showLabel == true)
+    {
+      final Color oldColor = _theLabel.getColor();
+      if(!theColor.equals(oldColor))
+      {
+        _theShape.setColor(theColor);
+      }
+      
+      final WorldLocation oldLoc = _theLabel.getLocation();
+      if(!oldLoc.equals(centre))
+      {
+        _theLabel.setLocation(centre);
+      }
+      
+      // now paint the text
+      _theLabel.paint(dest);
+      
+      if(!theColor.equals(oldColor))
+      {
+        _theShape.setColor(oldColor);
+      }
+      if(!oldLoc.equals(centre))
+      {
+        _theLabel.setLocation(oldLoc);
+      }
+    }
+
+  }
+
 
 	public final void paint(final CanvasType dest)
 	{
 		if (getVisible())
 		{
-			if (_plotSymbol)
-			{
-			  // update the line width
-			  final float lineWid = dest.getLineWidth();
-			  
-			  // assign the line widht
-			  _theShape.setLineWid(dest);
-			  
-				// first paint the symbol
-				_theShape.paint(dest, _theLocation);
-				
-				// and restore the line width
-				dest.setLineWidth(lineWid);
-
-				// also indicate to the text that we are using an offset
-				_theLabel.setFixedOffset(_theShape.getBounds());
-			} else
-			{
-				// indicate to the shape that we don't need an offset
-				_theLabel.setFixedOffset(new java.awt.Dimension(0, 0));
-			}
-
-			// do we want to paint the label?
-			if (_showLabel == true)
-			{
-				// now paint the text
-				_theLabel.paint(dest);
-			}
+		  paintMe(dest, _theLocation, _theShape.getColor());		  
 		}
 	}
 
