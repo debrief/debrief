@@ -24,7 +24,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final TimeControlPreferences timePreferences)
   {
     super(layers, plainProjection, timePreferences.getAutoInterval()
-        .getMillis(), timePreferences.getSmallStep().getMillis());
+        .getMillis(), timePreferences.getSmallStep().getMillis(),
+        timePreferences.getDTGFormat());
   }
 
   private String getMasterTemplateFile()
