@@ -21,6 +21,7 @@ import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -251,7 +252,7 @@ public abstract class CoreCoordinateRecorder
         }
       }
     };
-    _myLayers.walkVisibleItems(TrackWrapper.class, outputIt);
+    _myLayers.walkVisibleItems(LightweightTrackWrapper.class, outputIt);
   }
 
   protected abstract void openFile(String filename);
