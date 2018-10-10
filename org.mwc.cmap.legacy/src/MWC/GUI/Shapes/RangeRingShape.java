@@ -266,6 +266,21 @@ public class RangeRingShape extends PlainShape implements Editable
 	// member functions
 	// ////////////////////////////////////////////////
 
+
+  /**
+   * get the 'anchor point' for any labels attached to this shape
+   */
+  public MWC.GenericData.WorldLocation getAnchor()
+  {
+    return _theCentre;
+  }
+
+  @Override
+  public MWC.GenericData.WorldArea getBounds()
+  {
+    return _theArea;
+  }
+
 	/**
 	 * calculate some convenience values based on the radius and centre of the
 	 * Wheel
@@ -297,20 +312,6 @@ public class RangeRingShape extends PlainShape implements Editable
           getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
       _theArea.extend(other);
     }
-	}
-
-	/**
-	 * get the 'anchor point' for any labels attached to this shape
-	 */
-	public MWC.GenericData.WorldLocation getAnchor()
-	{
-		return _theCentre;
-	}
-
-	@Override
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return _theArea;
 	}
 
 	/**
