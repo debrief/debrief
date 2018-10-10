@@ -29,7 +29,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -47,11 +47,12 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 		/** paint this dynamic shape
 		 * 
 		 * @param dest where to paint to
-		 * @param hostState the host state at this time
 		 * @param color color for this object
 		 * @param semiTransparent how to fill shape
+		 * @param location current platform location
+		 * @param courseDegs current platform heading
 		 */
-		public void paint(CanvasType dest, Watchable hostState, Color color, boolean semiTransparent);
+		public void paint(CanvasType dest, Color color, boolean semiTransparent, WorldLocation location, double courseDegs);
 
 	}
 	
@@ -198,7 +199,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 * @param keep_simple
 	 *          whether to allow a change in line styles
 	 */
-	public final void paint(final MWC.GUI.CanvasType dest, final HiResDate DTG)
+	public final void paint(final MWC.GUI.CanvasType dest, final WorldLocation origin, final double courseDegs)
 	{
 		// ignore
 		if (!getVisible())
@@ -209,32 +210,11 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 
 		Color oldColor = dest.getBackgroundColor();
 
-		Watchable hostState = null;
-
-		if (DTG != null)
-		{
-			Watchable[] wList = getSensor().getHost().getNearestTo(DTG);
-			if (wList.length > 0)
-			{
-				hostState = wList[0];
-			}
-		}
-
-		// have we worked?
-		if (hostState == null)
-		{
-			MWC.Utilities.Errors.Trace
-					.trace("This dynamic shape hasn't got a parent at time:" + DTG.getDate());
-		}
-		else
-		{
-
-			// ok, we've got enough to do the paint!
-			for (DynamicShape value : _values)
-			{
-				value.paint(dest, hostState, getColor(), _semiTransparent);
-			}
-		}
+    // ok, we've got enough to do the paint!
+    for (DynamicShape value : _values)
+    {
+      value.paint(dest, getColor(), _semiTransparent, origin, courseDegs);
+    }
 
 		// and restore the background color
 		dest.setBackgroundColor(oldColor);
@@ -513,11 +493,11 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 
 	abstract public void setConstraints(String arcs);
 
-	protected int getValue(String[] elements, int index)
+	protected int getValue(ArrayList<String> elements, int index)
 	{
 		try
 		{
-			return new Integer(elements[index]).intValue();
+			return new Integer(elements.get(index)).intValue();
 		}
 		catch (NumberFormatException e)
 		{
