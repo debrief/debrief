@@ -32,9 +32,10 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.TimePeriod.BaseTimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldLocation;
 
-public class DynamicTrackShapeSetWrapper extends BaseLayer implements
-    Cloneable, DynamicPlottable, WatchableList
+public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
+    DynamicPlottable, WatchableList
 {
   // //////////////////////////////////////////////////////////////////////////
   // embedded class, used for editing the projection
@@ -68,14 +69,12 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
       try
       {
         final PropertyDescriptor[] res =
-            {
-                prop("Name", "the name for this sensor"),
-                prop("Visible", "whether this sensor data is visible"),
-                displayProp("LineThickness", "Line thickness",
-                    "the thickness to draw these sensor lines")};
+        {prop("Name", "the name for this sensor"), prop("Visible",
+            "whether this sensor data is visible"), displayProp("LineThickness",
+                "Line thickness", "the thickness to draw these sensor lines")};
 
-        res[2]
-            .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+        res[2].setPropertyEditorClass(
+            MWC.GUI.Properties.LineWidthPropertyEditor.class);
 
         return res;
       }
@@ -104,8 +103,8 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   public static void main(final String[] args)
@@ -177,9 +176,8 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
       // maintain our time period
       if (_timePeriod == null)
       {
-        _timePeriod =
-            new MWC.GenericData.TimePeriod.BaseTimePeriod(scw.getStartDTG(),
-                scw.getEndDTG());
+        _timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(scw
+            .getStartDTG(), scw.getEndDTG());
       }
       else
       {
@@ -272,13 +270,13 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
   public void paint(final CanvasType dest)
   {
     // this method shouldn't be called = we're a time dependent object
-    MWC.Utilities.Errors.Trace
-        .trace("Sensor Arc Wrapper paint() should not be called!");
+    MWC.Utilities.Errors.Trace.trace(
+        "Sensor Arc Wrapper paint() should not be called!");
 
   }
 
-  @Override
-  public void paint(final CanvasType canvas, final long time)
+  public void paintOverride(final CanvasType canvas, final long time,
+      final WorldLocation origin, final double courseDegs)
   {
     if (!getVisible())
     {
@@ -295,8 +293,8 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     final Enumeration<Editable> it = this.elements();
     while (it.hasMoreElements())
     {
-      final DynamicTrackShapeWrapper con =
-          (DynamicTrackShapeWrapper) it.nextElement();
+      final DynamicTrackShapeWrapper con = (DynamicTrackShapeWrapper) it
+          .nextElement();
 
       final HiResDate dtg = new HiResDate(time);
 
@@ -308,14 +306,46 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
       {
         continue;
       }
-      // ok, plot it - and don't make it keep it simple, lets really go
-      // for it man!
-      con.paint(canvas, dtg);
+
+      // ok, sort out where the host it
+      double course = 0d;
+      WorldLocation originToUse = null;
+      if (origin != null)
+      {
+        originToUse = origin;
+        course = courseDegs;
+      }
+      else
+      {
+        Watchable[] list = getHost().getNearestTo(dtg);
+        if (list != null && list.length > 0 && list[0] != null)
+        {
+          final Watchable fix = list[0];
+          if (list != null && list.length > 0 && fix != null)
+          {
+            originToUse = fix.getLocation();
+            course = MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse());
+          }
+        }
+      }
+      
+      if (originToUse != null)
+      {
+        // ok, plot it - and don't make it keep it simple, lets really go
+        // for it man!
+        con.paint(canvas, originToUse, course);
+      }
     }
 
     // and restore the line width
     canvas.setLineWidth(oldLineWidth);
 
+  }
+
+  @Override
+  public void paint(final CanvasType canvas, final long time)
+  {
+    paintOverride(canvas, time, null, 0d);
   }
 
   /**
@@ -353,8 +383,8 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
     final Enumeration<Editable> it = this.elements();
     while (it.hasMoreElements())
     {
-      final DynamicTrackShapeWrapper thisE =
-          (DynamicTrackShapeWrapper) it.nextElement();
+      final DynamicTrackShapeWrapper thisE = (DynamicTrackShapeWrapper) it
+          .nextElement();
       if (period.overlaps(thisE.getPeriod()))
       {
         newList.add(thisE);
@@ -381,19 +411,22 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
   @Override
   public HiResDate getStartDTG()
   {
-    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   @Override
   public HiResDate getEndDTG()
   {
-    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   @Override
   public Watchable[] getNearestTo(HiResDate DTG)
   {
-    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   @Override
@@ -401,11 +434,12 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
   {
     TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
     Enumeration<Editable> iter = elements();
-    while(iter.hasMoreElements())
+    while (iter.hasMoreElements())
     {
-      final DynamicTrackShapeWrapper item = (DynamicTrackShapeWrapper) iter.nextElement();
+      final DynamicTrackShapeWrapper item = (DynamicTrackShapeWrapper) iter
+          .nextElement();
       final HiResDate thisStart = item.getStartDTG();
-      if(thisStart != null)
+      if (thisStart != null)
       {
         item.setVisible(period.contains(thisStart));
       }
@@ -415,13 +449,15 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements
   @Override
   public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
   {
-    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   @Override
   public PlainSymbol getSnailShape()
   {
-    throw new IllegalArgumentException("Method not implemented for DynamicTrackShapeSetWrapper");
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
 }
