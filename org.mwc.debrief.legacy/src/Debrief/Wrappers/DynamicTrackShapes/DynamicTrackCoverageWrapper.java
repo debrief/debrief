@@ -223,53 +223,57 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	  
 	  
 	  
-		@Override
+    @Override
     public void paint(CanvasType dest, Color color, boolean semiTransparent,
         WorldLocation originWd, double courseDegs)
     {
-			// update the color
-			dest.setColor(color);
+      // update the color
+      dest.setColor(color);
 
-			// get the host origin in screen coords
-			final Point originPt = dest.toScreen(originWd);
+      // get the host origin in screen coords
+      final Point originPt = dest.toScreen(originWd);
 
-			// get the polygon at this location
-			//Vector<WorldLocation> _theDataPoints = calcDataPoints(
-			//		hostState.getLocation(), hostState.getCourse());
+      final WorldDistance minDist = new WorldDistance(minYds,
+          WorldDistance.YARDS);
+      final WorldDistance maxDist = new WorldDistance(maxYds,
+          WorldDistance.YARDS);
 
-			final WorldDistance minDist = new WorldDistance(minYds, WorldDistance.YARDS);
-			final WorldDistance maxDist = new WorldDistance(maxYds, WorldDistance.YARDS);
+      // sort out the sizes in pixels
+      final WorldVector minOffset = new WorldVector(0.001d, minDist, null);
+      final WorldVector maxOffset = new WorldVector(0.001d, maxDist, null);
 
-			// sort out the sizes in pixels
-			WorldVector minOffset = new WorldVector(0d, minDist, null);
-			WorldVector maxOffset = new WorldVector(0d, maxDist, null);
-			Point minPt = dest.toScreen(originWd.add(minOffset));
-			Point maxPt = dest.toScreen(originWd.add(maxOffset));
-			
-			long minOffsetPt = originPt.y - minPt.y;
-			long maxOffsetPt = originPt.y - maxPt.y;
-			
-			Area area = makeDonutSectionArea(minOffsetPt, maxOffsetPt, minAngleDegs, maxAngleDegs, courseDegs);
-			
-			final AffineTransform af = AffineTransform.getTranslateInstance(originPt.x, originPt.y);
-	    Shape shape = af.createTransformedShape(area);
+      final WorldLocation minWd = originWd.add(minOffset);
+      final WorldLocation maxWd = originWd.add(maxOffset);
 
-			if (dest instanceof ExtendedCanvasType)
-			{
-				if (semiTransparent)
-				{
-					((ExtendedCanvasType) dest).semiFillShape(shape);
-				}
-				else
-				{
-					((ExtendedCanvasType) dest).fillShape(shape);
-				}
-			}
-			else if (dest instanceof ShapeCanvasType)
-			{
-				((ShapeCanvasType) dest).fillShape(shape);
-			}
-		}
+      final Point minPt = dest.toScreen(minWd);
+      final Point maxPt = dest.toScreen(maxWd);
+
+      final long minOffsetPt = originPt.y - minPt.y;
+      final long maxOffsetPt = originPt.y - maxPt.y;
+
+      final Area area = makeDonutSectionArea(minOffsetPt, maxOffsetPt, minAngleDegs,
+          maxAngleDegs, courseDegs);
+
+      final AffineTransform af = AffineTransform.getTranslateInstance(
+          originPt.x, originPt.y);
+      final Shape shape = af.createTransformedShape(area);
+
+      if (dest instanceof ExtendedCanvasType)
+      {
+        if (semiTransparent)
+        {
+          ((ExtendedCanvasType) dest).semiFillShape(shape);
+        }
+        else
+        {
+          ((ExtendedCanvasType) dest).fillShape(shape);
+        }
+      }
+      else if (dest instanceof ShapeCanvasType)
+      {
+        ((ShapeCanvasType) dest).fillShape(shape);
+      }
+    }
 
 		public String toString()
 		{
