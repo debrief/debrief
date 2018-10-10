@@ -153,7 +153,9 @@ public class EditableWrapper implements IPropertySource
       // there's a chance that some operations arent' commutative, that when we 
       // assign a value, then retrieve it, they're different.  The answer to it
       // is to compare the getValue() from before and after the operation.
-      if (newValue == null || !newValue.equals(oldValue))
+      // Note: we also check if it's now null, but wasn't before.  This is necessary
+      // in case the value is being set to null.
+      if ((newValue == null && oldValue != null) || !newValue.equals(oldValue))
       {
         // ok, and tell any listeners that want to know
         // - the only listener I can think of is the Java3d properties viewer
