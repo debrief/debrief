@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Wrappers.DynamicTrackShapes;
 
@@ -48,7 +48,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 
     /**
      * constructor for editable details of a set of Layers
-     * 
+     *
      * @param data
      *          the Layers themselves
      */
@@ -60,7 +60,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     /**
      * The things about these Layers which are editable. We don't really use this list, since we
      * have our own custom editor anyway
-     * 
+     *
      * @return property descriptions
      */
     @Override
@@ -103,7 +103,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
   }
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -159,7 +159,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
 
   /**
    * add
-   * 
+   *
    * @param plottable
    *          parameter for add
    */
@@ -194,6 +194,23 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
   // other member functions
   // ///////////////////////////////////////
 
+  @Override
+  public void filterListTo(final HiResDate start, final HiResDate end)
+  {
+    final TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
+    final Enumeration<Editable> iter = elements();
+    while (iter.hasMoreElements())
+    {
+      final DynamicTrackShapeWrapper item = (DynamicTrackShapeWrapper) iter
+          .nextElement();
+      final HiResDate thisStart = item.getStartDTG();
+      if (thisStart != null)
+      {
+        item.setVisible(period.contains(thisStart));
+      }
+    }
+  }
+
   /**
    * find the data area occupied by this item
    */
@@ -205,18 +222,31 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     return null;
   }
 
+  // ////////////////////////////////////////////////////
+  // nested class for testing
+  // /////////////////////////////////////////////////////
+
+  @Override
+  public Color getColor()
+  {
+    return Color.RED;
+  }
+
+  @Override
+  public HiResDate getEndDTG()
+  {
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
   public WatchableList getHost()
   {
     return _myHost;
   }
 
-  // ////////////////////////////////////////////////////
-  // nested class for testing
-  // /////////////////////////////////////////////////////
-
   /**
    * getInfo
-   * 
+   *
    * @return the returned MWC.GUI.Editable.EditorType
    */
   @Override
@@ -230,15 +260,30 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     return _myEditor;
   }
 
+  @Override
+  public Collection<Editable> getItemsBetween(final HiResDate start,
+      final HiResDate end)
+  {
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
   /**
    * the line thickness (convenience wrapper around width)
-   * 
+   *
    * @return
    */
   @Override
   public final int getLineThickness()
   {
     return _lineWidth;
+  }
+
+  @Override
+  public Watchable[] getNearestTo(final HiResDate DTG)
+  {
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   public Editable getSampleGriddable()
@@ -252,6 +297,20 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
       res = eles.nextElement();
     }
     return res;
+  }
+
+  @Override
+  public PlainSymbol getSnailShape()
+  {
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
+  }
+
+  @Override
+  public HiResDate getStartDTG()
+  {
+    throw new IllegalArgumentException(
+        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
   @Override
@@ -272,7 +331,12 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     // this method shouldn't be called = we're a time dependent object
     MWC.Utilities.Errors.Trace.trace(
         "Sensor Arc Wrapper paint() should not be called!");
+  }
 
+  @Override
+  public void paint(final CanvasType canvas, final long time)
+  {
+    paintOverride(canvas, time, null, 0d);
   }
 
   public void paintOverride(final CanvasType canvas, final long time,
@@ -302,6 +366,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
       {
         continue;
       }
+      
       if (con.getEndDTG() != null && dtg.greaterThanOrEqualTo(con.getEndDTG()))
       {
         continue;
@@ -317,7 +382,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
       }
       else
       {
-        Watchable[] list = getHost().getNearestTo(dtg);
+        final Watchable[] list = getHost().getNearestTo(dtg);
         if (list != null && list.length > 0 && list[0] != null)
         {
           final Watchable fix = list[0];
@@ -328,7 +393,7 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
           }
         }
       }
-      
+
       if (originToUse != null)
       {
         // ok, plot it - and don't make it keep it simple, lets really go
@@ -340,12 +405,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     // and restore the line width
     canvas.setLineWidth(oldLineWidth);
 
-  }
-
-  @Override
-  public void paint(final CanvasType canvas, final long time)
-  {
-    paintOverride(canvas, time, null, 0d);
   }
 
   /**
@@ -400,64 +459,6 @@ public class DynamicTrackShapeSetWrapper extends BaseLayer implements Cloneable,
     {
       add(item);
     }
-  }
-
-  @Override
-  public Color getColor()
-  {
-    return Color.RED;
-  }
-
-  @Override
-  public HiResDate getStartDTG()
-  {
-    throw new IllegalArgumentException(
-        "Method not implemented for DynamicTrackShapeSetWrapper");
-  }
-
-  @Override
-  public HiResDate getEndDTG()
-  {
-    throw new IllegalArgumentException(
-        "Method not implemented for DynamicTrackShapeSetWrapper");
-  }
-
-  @Override
-  public Watchable[] getNearestTo(HiResDate DTG)
-  {
-    throw new IllegalArgumentException(
-        "Method not implemented for DynamicTrackShapeSetWrapper");
-  }
-
-  @Override
-  public void filterListTo(HiResDate start, HiResDate end)
-  {
-    TimePeriod period = new TimePeriod.BaseTimePeriod(start, end);
-    Enumeration<Editable> iter = elements();
-    while (iter.hasMoreElements())
-    {
-      final DynamicTrackShapeWrapper item = (DynamicTrackShapeWrapper) iter
-          .nextElement();
-      final HiResDate thisStart = item.getStartDTG();
-      if (thisStart != null)
-      {
-        item.setVisible(period.contains(thisStart));
-      }
-    }
-  }
-
-  @Override
-  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end)
-  {
-    throw new IllegalArgumentException(
-        "Method not implemented for DynamicTrackShapeSetWrapper");
-  }
-
-  @Override
-  public PlainSymbol getSnailShape()
-  {
-    throw new IllegalArgumentException(
-        "Method not implemented for DynamicTrackShapeSetWrapper");
   }
 
 }
