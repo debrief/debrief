@@ -2,6 +2,7 @@ package org.mwc.debrief.core.ui.views;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -15,10 +16,13 @@ import org.mwc.debrief.core.ui.views.UnitCentricView.IOperateOnMatch;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GUI.Shapes.RangeRingShape;
@@ -45,12 +49,41 @@ class UnitCentricChart extends SWTChart
 
     @Override
     public void handlePrimary(final WatchableList primary,
-        final WorldLocation origin)
+        final WorldLocation origin, long timeNow)
     {
       final PlainSymbol sym = primary.getSnailShape();
       if (sym != null)
       {
         sym.paint(dest, origin);
+      }
+      
+      // ok, does it have any dynamic shapes?
+      plotSensorArcs(primary, origin, timeNow, 0d);
+     
+    }
+    
+    private void plotSensorArcs(final WatchableList parent,
+        final WorldLocation nearestOffset, final long time,
+        final double primaryHeadingDegs)
+    {
+      if (parent instanceof TrackWrapper)
+      {
+        final TrackWrapper track2 = (TrackWrapper) parent;
+        final BaseLayer arcs = track2.getDynamicShapes();
+        if (arcs.getVisible())
+        {
+          final Enumeration<Editable> ele = arcs.elements();
+          while (ele.hasMoreElements())
+          {
+            final DynamicTrackShapeSetWrapper shapeSet =
+                (DynamicTrackShapeSetWrapper) ele.nextElement();
+            if (shapeSet.getVisible())
+            {
+              shapeSet.paintOverride(dest, time, nearestOffset,
+                  primaryHeadingDegs);
+            }
+          }
+        }
       }
     }
 
@@ -74,6 +107,8 @@ class UnitCentricChart extends SWTChart
 
         sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
             relativeHeading));
+        
+        plotSensorArcs(track, nearestOffset, nearestInTime.getDTG().getDate().getTime(), relativeHeading);
       }
       else if (nearest instanceof LabelWrapper)
       {
@@ -302,7 +337,7 @@ class UnitCentricChart extends SWTChart
 
           @Override
           public void handlePrimary(final WatchableList primary,
-              final WorldLocation origin)
+              final WorldLocation origin, long timeNow)
           {
             // ok, ignore
           }

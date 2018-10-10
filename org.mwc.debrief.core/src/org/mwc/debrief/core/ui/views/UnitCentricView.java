@@ -214,8 +214,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
      *          the primary track
      * @param origin
      *          the point we use as origin (typically 0,0,0)
+     * @param timeNow current time
      */
-    void handlePrimary(final WatchableList primary, final WorldLocation origin);
+    void handlePrimary(final WatchableList primary, final WorldLocation origin, long timeNow);
 
     /**
      * process the secondary track position that's nearest to the required time
@@ -646,7 +647,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         if (other.equals(primary))
         {
           // ok, primary track. Let it do it's special processing
-          doIt.handlePrimary(primary, origin);
+          doIt.handlePrimary(primary, origin, subjectTime.getDate().getTime());
         }
         else
         {
