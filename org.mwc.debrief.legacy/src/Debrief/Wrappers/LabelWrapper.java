@@ -578,6 +578,16 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
     return _theShape;
   }
 
+  public final HiResDate getStartDTGProperty()
+  {
+    return HiResDate.wrapped(_theTimePeriod.getStartDTG());
+  }
+
+  public final HiResDate getEndDTGProperty()
+  {
+    return HiResDate.wrapped(_theTimePeriod.getEndDTG());
+  }
+  
   public final HiResDate getStartDTG()
   {
     return _theTimePeriod.getStartDTG();
@@ -848,14 +858,10 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
     return _theLocation.getDepth();
   }
 
-  // ////////////////////////////////////////////////////
-  // bean accessor methods
-  // ///////////////////////////////////////////////////
-
   /**
    * we've got this extra time accessor so we can have nicely named properties in the editor
    */
-  public final void setTimeStart(final HiResDate val)
+  public final void setStartDTG(final HiResDate val)
   {
     _theTimePeriod.setStartDTG(val);
   }
@@ -863,25 +869,34 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
   /**
    * we've got this extra time accessor so we can have nicely named properties in the editor
    */
-  public final void setTime_End(final HiResDate val)
+  public final void setEndDTGProperty(final HiResDate val)
   {
-    _theTimePeriod.setEndDTG(val);
+    final HiResDate res;
+    if(HiResDate.NULL_DATE.equals(val))
+    {
+      res = null;
+    }
+    else
+    {
+      res = val;
+    }
+    _theTimePeriod.setEndDTG(res);
+  }
+  
+  /**
+   * we've got this extra time accessor so we can have nicely named properties in the editor
+   */
+  public final void setStartDTGProperty(final HiResDate val)
+  {
+    _theTimePeriod.setStartDTG(HiResDate.unwrapped(val));
   }
 
   /**
    * we've got this extra time accessor so we can have nicely named properties in the editor
    */
-  public final HiResDate getTimeStart()
+  public final void setEndDTG(final HiResDate val)
   {
-    return _theTimePeriod.getStartDTG();
-  }
-
-  /**
-   * we've got this extra time accessor so we can have nicely named properties in the editor
-   */
-  public final HiResDate getTime_End()
-  {
-    return _theTimePeriod.getEndDTG();
+    _theTimePeriod.setEndDTG(HiResDate.unwrapped(val));
   }
 
   public final void setLabelVisible(final Boolean val)
@@ -1040,8 +1055,8 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
                                     "LabelVisible", "Label visible",
                                     "whether the label is plotted", FORMAT),
             prop("Visible", "whether the label and symbol are plotted", FORMAT),
-            displayProp("TimeStart", "Time start", "the start DTG", TEMPORAL),
-            displayProp("Time_End", "Time end", "the end DTG", TEMPORAL)};
+            displayProp("StartDTGProperty", "Time start", "the start DTG", TEMPORAL),
+            displayProp("EndDTGProperty", "Time end", "the end DTG", TEMPORAL)};
 
         // set the custom editors
         res[4].setPropertyEditorClass(
