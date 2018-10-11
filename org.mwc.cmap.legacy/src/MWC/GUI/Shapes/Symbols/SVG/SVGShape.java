@@ -226,7 +226,7 @@ public class SVGShape extends PlainSymbol
         break;
       default:
         // We have an unknown type.
-        Trace.trace("Unknown SVG element type encountered:" + svgElement);
+        Trace.trace("Unknown SVG element type encountered:" + svgElement.getNodeName());
         answer = null;
         break;
     }

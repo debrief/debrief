@@ -94,6 +94,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
@@ -1221,9 +1222,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
-          "Sorry it is not possible to add:" + point.getName() + " to " + this
-              .getName());
+      Trace.trace("Can't paste " + point + " into track", true);
     }
   }
 

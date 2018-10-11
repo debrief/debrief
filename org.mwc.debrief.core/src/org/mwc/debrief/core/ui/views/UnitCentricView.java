@@ -28,6 +28,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.ui.views.UnitCentricChart.UnitDataProvider;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -203,7 +204,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
      * @param proportion
      *          how far back through the time period we are
      */
-    void doItTo(final FixWrapper rawSec, final WorldLocation offsetLocation,
+    void doItTo(final Watchable secondary, final WorldLocation offsetLocation,
         final double proportion);
 
     /**
@@ -213,8 +214,9 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
      *          the primary track
      * @param origin
      *          the point we use as origin (typically 0,0,0)
+     * @param timeNow current time
      */
-    void handlePrimary(final WatchableList primary, final WorldLocation origin);
+    void handlePrimary(final WatchableList primary, final WorldLocation origin, long timeNow);
 
     /**
      * process the secondary track position that's nearest to the required time
@@ -226,7 +228,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
      * @param primaryHeadingDegs
      *          current heading of primary track
      */
-    void processNearest(final FixWrapper nearestInTime,
+    void processNearest(final Watchable nearestInTime,
         final WorldLocation nearestOffset, double primaryHeadingDegs);
   }
 
@@ -515,7 +517,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     HiResDate timeFor(FixWrapper thisF);
   }
 
-  /** walk through the data, with a normal secondary track
+  /**
+   * walk through the data, with a normal secondary track
    * 
    * @author ian
    *
@@ -548,9 +551,10 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     }
   }
 
-  /** we need to make a single-point secondary track look like a
-   * track that's as long as the primary track needs it to be.  Mock
-   *  this behaviour.
+  /**
+   * we need to make a single-point secondary track look like a track that's as long as the primary
+   * track needs it to be. Mock this behaviour.
+   * 
    * @author ian
    *
    */
@@ -561,11 +565,12 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     private FixWrapper _cached;
 
     private SingleSecondaryWalker(LightweightTrackWrapper primary,
-        LightweightTrackWrapper secondary, HiResDate subjectTime, boolean snailMode)
+        LightweightTrackWrapper secondary, HiResDate subjectTime,
+        boolean snailMode)
     {
       _secondaryFix = (FixWrapper) secondary.getPositionIterator()
           .nextElement();
-      
+
       // is it even visible?
       if (!snailMode || _secondaryFix.getDateTimeGroup().lessThan(subjectTime))
       {
@@ -600,10 +605,10 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     @Override
     public FixWrapper getNext()
     {
-      // get the next primary fix.  Cache it, 
+      // get the next primary fix. Cache it,
       // since we'll need it's time
       _cached = (FixWrapper) _primaries.nextElement();
-      
+
       // return our normal point
       return _secondaryFix;
     }
@@ -611,23 +616,24 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     @Override
     public HiResDate timeFor(FixWrapper thisF)
     {
-      // retrieve the DTG for the last primary point we looked at 
+      // retrieve the DTG for the last primary point we looked at
       HiResDate res = _cached.getDateTimeGroup();
-      
+
       // reset the cache, to be sure we don't abuse it.
       _cached = null;
-      
+
       return res;
     }
   }
 
   public static void walkTree(final Layers theLayers,
       final WatchableList primary, final HiResDate subjectTime,
-      final IOperateOnMatch doIt, final long snailLength, final boolean snailMode)
+      final IOperateOnMatch doIt, final long snailLength,
+      final boolean snailMode)
   {
     final WorldLocation origin = new WorldLocation(0d, 0d, 0d);
 
-    final OperateFunction checkIt = new OperateFunction()
+    final OperateFunction handleTracks = new OperateFunction()
     {
 
       @Override
@@ -641,7 +647,7 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         if (other.equals(primary))
         {
           // ok, primary track. Let it do it's special processing
-          doIt.handlePrimary(primary, origin);
+          doIt.handlePrimary(primary, origin, subjectTime.getDate().getTime());
         }
         else
         {
@@ -657,7 +663,8 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
           if (isSingle)
           {
             walker = new SingleSecondaryWalker(
-                (LightweightTrackWrapper) primary, other, subjectTime, snailMode);
+                (LightweightTrackWrapper) primary, other, subjectTime,
+                snailMode);
           }
           else
           {
@@ -734,7 +741,101 @@ public class UnitCentricView extends ViewPart implements PropertyChangeListener,
         }
       }
     };
-    theLayers.walkVisibleItems(LightweightTrackWrapper.class, checkIt);
+    theLayers.walkVisibleItems(LightweightTrackWrapper.class, handleTracks);
+
+    final OperateFunction handleLabels = new OperateFunction()
+    {
+      @Override
+      public void operateOn(final Editable item)
+      {
+        final LabelWrapper label = (LabelWrapper) item;
+        if (!label.getVisible())
+          return;
+
+        if (subjectTime == null)
+        {
+          // ok, duff time, must be finding bounds. Just handle it
+        }
+        else
+        {
+          Watchable[] matches = label.getNearestTo(subjectTime);
+
+          if (matches != null && matches.length > 0)
+          {
+            // keep track of the fix nearest to the required DTG
+            
+            
+            LabelWrapper nearestInTime = null;
+            WorldLocation relativeLocation = null;
+            double primaryHeading = Double.MIN_VALUE;
+            long nearestDelta = Long.MAX_VALUE;
+            final boolean useIt;
+
+            // ok. since the label is static, we don't have concept of time
+            // so, use subject time
+            final HiResDate hisDate = subjectTime;
+            final long hisTime = hisDate.getDate().getTime();
+
+            if (snailLength == Long.MAX_VALUE)
+            {
+              useIt = true;
+            }
+            else
+            {
+              final long offset = subjectTime.getDate().getTime() - hisTime;
+              useIt = offset >= 0 && offset < snailLength;
+            }
+
+            if (useIt)
+            {
+              final Watchable[] nearest = primary.getNearestTo(subjectTime);
+              if (nearest != null && nearest.length > 0)
+              {
+                final Watchable nItem = nearest[0];
+                if (nItem instanceof FixWrapper)
+                {
+                  final FixWrapper priFix = (FixWrapper) nItem;
+                  final long diff = Math.abs(priFix.getDTG().getDate().getTime()
+                      - subjectTime.getDate().getTime());
+
+                  if (nearestInTime == null || diff < nearestDelta)
+                  {
+                    nearestInTime = label;
+                    nearestDelta = diff;
+                    relativeLocation = processOffset(priFix, label
+                        .getLocation(), origin);
+                    primaryHeading = priFix.getCourseDegs();
+                  }
+
+                  final WorldLocation pos = processOffset(priFix, label
+                      .getLocation(), origin);
+
+                  // work out how far back down the leg we are
+                  final long age = subjectTime.getDate().getTime() - nItem
+                      .getTime().getDate().getTime();
+                  final double proportion = age / (double) snailLength;
+
+                  doIt.doItTo(label, pos, proportion);
+                }
+              }
+              
+              if (nearestInTime != null)
+              {
+                doIt.processNearest(nearestInTime, relativeLocation,
+                    primaryHeading);
+              }
+
+            }
+          }
+          
+
+        }
+      }
+    };
+    
+    // also walk the tree to look out for labels
+    theLayers.walkVisibleItems(LabelWrapper.class, handleLabels);
+
   }
 
   /**
