@@ -10,7 +10,7 @@ import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
-abstract class CoreDynamicShapeWizard extends Wizard
+abstract public class CoreDynamicShapeWizard extends Wizard
 {
 
   private final String SHAPE_NAME;
