@@ -17,7 +17,7 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 import java.util.Date;
 
 import org.mwc.debrief.core.wizards.dynshapes.DynamicRectangleWizard;
-import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
 
 import MWC.GenericData.WorldLocation;
 
@@ -28,7 +28,7 @@ import MWC.GenericData.WorldLocation;
 public class InsertDynamicRectangle extends InsertDynamicShape{
 
   @Override
-  protected DynamicShapeWizard getWizard(final Date startDate, final Date endDate,WorldLocation center)
+  protected CoreDynamicShapeWizard getWizard(final Date startDate, final Date endDate,WorldLocation center)
   {
     return new DynamicRectangleWizard(startDate,endDate,center);
   }
