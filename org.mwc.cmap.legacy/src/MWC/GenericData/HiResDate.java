@@ -45,6 +45,8 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 	 * timings, we check when asked, and remember the value here
 	 */
 	private static Boolean _hiResProcessing = null;
+	
+	public static final HiResDate NULL_DATE = new HiResDate(-1);
 
 	// the marker for incomplete hi-res changes:
 	// HI-RES NOT DONE
