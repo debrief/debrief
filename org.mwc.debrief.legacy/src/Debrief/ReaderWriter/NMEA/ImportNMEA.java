@@ -606,7 +606,7 @@ public class ImportNMEA
     {
       final String str = m.group("TYPE1");
       final String str2 = m.group("TYPE2");
-      if (!"VNM".equals(str))
+      if ("VNM".equals(str))
         res = MsgType.VESSEL_NAME;
       else if ("POS".equals(str) && "GPS".equals(str2))
         res = MsgType.OS_POS;
