@@ -74,7 +74,7 @@ public class DynamicRectangleWizard extends DynamicShapeWizard
       dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),rectangle,theColor,null,"rectangle");
     }
     if(endTime!=null) {
-      dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+      dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));
     }
     return true;
   }

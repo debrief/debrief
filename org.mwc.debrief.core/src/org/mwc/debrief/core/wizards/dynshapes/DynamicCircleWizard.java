@@ -77,7 +77,7 @@ public class DynamicCircleWizard extends DynamicShapeWizard
       dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,null,"rectangle");
     }
     if(endTime!=null) {
-      dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+      dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));
     }
     return true;
   }

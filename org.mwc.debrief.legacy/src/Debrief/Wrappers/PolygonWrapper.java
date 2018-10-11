@@ -388,7 +388,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 			final java.awt.Color theColor, final HiResDate startDate, final HiResDate endDate)
 	{
 		this(label, shape, theColor, startDate);
-		setTimeEnd(endDate);
+		setEndDTG(endDate);
 	}
 
 	private PolygonShape getPoly()

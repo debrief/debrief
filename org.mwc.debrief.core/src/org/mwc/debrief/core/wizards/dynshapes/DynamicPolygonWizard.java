@@ -69,7 +69,7 @@ public class DynamicPolygonWizard extends DynamicShapeWizard
     _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),polygon,theColor,new HiResDate(startTime),"dynamic polygon");
     }
     if(endTime!=null) {
-      _dynamicShape.setTimeEnd(new HiResDate(_shapeTimingsPage.getEndTime()));
+      _dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));
     }
     return true;
   }
