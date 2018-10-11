@@ -2,10 +2,12 @@ package Debrief.ReaderWriter.NMEA;
 
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,6 +19,8 @@ import java.util.regex.Pattern;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -86,7 +90,7 @@ public class ImportNMEA
       location = locationFor(tLat, tLong);
     }
 
-    private WorldLocation locationFor(final String tLat, final String tLong)
+    private static WorldLocation locationFor(final String tLat, final String tLong)
     {
       final double dLat = degsFor(tLat);
       final double dLong = degsFor(tLong);
@@ -144,9 +148,104 @@ public class ImportNMEA
 
         assertEquals("got tracks", 416, tLayers.size());
       }
+    }
+    
+    public void testMultiGPSImport() throws Exception
+    {
+      String test1 =
+          "$POSL,CONTACT,OC,DR,CHARLIE NAME,CHARLIE NAME,13.0,254.6,T,20160720,082807.345,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,3409.5794,N,01537.3128,W,0,,,*5D\r\n";
+      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
+      test1 += 
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000000.859,0007328229*42\r\n";
+      test1 += 
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,013059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 += 
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 += 
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 += 
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,010259.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 += 
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000001.859,0007328229*42\r\n";
+      test1 += 
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,110049.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 += 
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 += 
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 += 
+          "$POSL,AIS,564166022,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
+      test1 += 
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000002.859,0007328229*42\r\n";
+      test1 += 
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,020059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 += 
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 += 
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 += 
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000003.859,0007328229*42\r\n";
+      test1 += 
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,011059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 += 
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 += 
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
+      
+      InputStream is =new ByteArrayInputStream(test1.getBytes(StandardCharsets.UTF_8));
+      Layers layers = new Layers();
+      
+      assertEquals("empty", 0, layers.size());
+      
+      ImportNMEA importer = new ImportNMEA(layers);
+      importer.importThis("file.log", is, 0, 0);
+      
+      assertEquals("not empty", 4, layers.size());
+      LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers.elementAt(0);
+      LightweightTrackWrapper t2 = (LightweightTrackWrapper) layers.elementAt(1);
+      LightweightTrackWrapper t3 = (LightweightTrackWrapper) layers.elementAt(2);
+      BaseLayer t4 = (BaseLayer) layers.elementAt(3);
+      
+      assertEquals("correct name", "HMS NONSUCH_POS_GPS", t1.getName());
+      assertEquals("correct name", "HMS NONSUCH_POS2_GPS", t2.getName());
+      assertEquals("correct name", "HMS NONSUCH-DR", t3.getName());
+      assertEquals("correct name", "WECDIS Contacts", t4.getName());
 
-      // TODO: also test that we use correct sample frequency - though that's prob best done on a
-      // smaller file.
+      assertEquals("correct size", 3, t1.numFixes());
+      assertEquals("correct size", 4, t2.numFixes());
+      assertEquals("correct size", 3, t3.numFixes());
+      assertEquals("correct size", 2, t4.size());
+      
+      LightweightTrackWrapper a1 = (LightweightTrackWrapper) t4.first();
+      LightweightTrackWrapper a2 = (LightweightTrackWrapper) t4.last();
+
+      assertEquals("correct name", "564166000", a1.getName());
+      assertEquals("correct name", "564166022", a2.getName());
+
+      assertEquals("correct size", 4, a1.numFixes());
+      assertEquals("correct size", 1, a2.numFixes());
+      
     }
 
     @SuppressWarnings(
@@ -507,23 +606,25 @@ public class ImportNMEA
     {
       final String str = m.group("TYPE1");
       final String str2 = m.group("TYPE2");
-      if (str.equals("VNM"))
+      if (!"VNM".equals(str))
         res = MsgType.VESSEL_NAME;
-      else if (str.equals("POS") && str2.equals("GPS"))
+      else if ("POS".equals(str) && "GPS".equals(str2))
         res = MsgType.OS_POS;
-      else if (str.contains("VEL") && str2.equals("GPS"))
+      else if ("POS2".equals(str) && "GPS".equals(str2))
+        res = MsgType.OS_POS;
+      else if (str.contains("VEL") && "GPS".equals(str2))
         res = MsgType.OS_COURSE_SPEED;
-      else if (str.contains("VEL") && str2.equals("SPL"))
+      else if (str.contains("VEL") && "SPL".equals(str2))
         res = MsgType.OS_SPEED;
       else if (str.contains("HDG"))
         res = MsgType.OS_COURSE;
-      else if (str.equals("CONTACT"))
+      else if ("CONTACT".equals(str))
         res = MsgType.CONTACT;
-      else if (str.equals("AIS"))
+      else if ("AIS".equals(str))
         res = MsgType.AIS;
-      else if (str.equals("DZA"))
+      else if ("DZA".equals(str))
         res = MsgType.TIMESTAMP;
-      else if (str.equals("PDS"))
+      else if ("PDS".equals(str))
         res = MsgType.OS_DEPTH;
       else
         res = MsgType.UNKNOWN;
@@ -545,7 +646,14 @@ public class ImportNMEA
    * the set of tracks we build up, to reduce screen updates
    * 
    */
-  HashMap<String, ArrayList<FixWrapper>> tracks =
+  private HashMap<String, ArrayList<FixWrapper>> tracks =
+      new HashMap<String, ArrayList<FixWrapper>>();
+
+  /**
+   * the set of tracks we build up, to reduce screen updates
+   * 
+   */
+  private HashMap<String, ArrayList<FixWrapper>> contacts =
       new HashMap<String, ArrayList<FixWrapper>>();
 
   /**
@@ -650,7 +758,7 @@ public class ImportNMEA
           else
           {
             // do we know our origin?
-            if (origin != null)
+            if (origin != null && drCourse != null)
             {
               // ok, grow the DR track
               storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
@@ -706,7 +814,7 @@ public class ImportNMEA
           if (state != null && date != null)
           {
             // now store the ownship location
-            storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth);
+            storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth, tracks, colors);
           }
         }
 
@@ -725,7 +833,7 @@ public class ImportNMEA
           {
             // now store the ownship location
             storeLocation(hisState.date, hisState, aisFreq,
-                DebriefColors.GREEN, null);
+                DebriefColors.GREEN, null, contacts, colors);
           }
         }
         break;
@@ -744,7 +852,7 @@ public class ImportNMEA
             if (date != null)
             {
               // now store the ownship location
-              storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW, null);
+              storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW, null, contacts, colors);
             }
           }
         }
@@ -790,6 +898,35 @@ public class ImportNMEA
       }
 
       _layers.addThisLayer(tr);
+    }
+
+    BaseLayer contactHolder = null;
+    for (final String trackName : contacts.keySet())
+    {
+      final ArrayList<FixWrapper> track = contacts.get(trackName);
+      
+      System.out.println("storing " + track.size() + " for " + trackName);
+
+      if(contactHolder == null)
+      {
+        contactHolder = new BaseLayer();
+        contactHolder.setName("WECDIS Contacts");
+        _layers.addThisLayer(contactHolder);
+      }
+      
+      // ok, build the track
+      final LightweightTrackWrapper tr = new LightweightTrackWrapper();
+      tr.setName(trackName);
+      tr.setColor(colors.get(trackName));
+
+      for (final FixWrapper fix : track)
+      {
+        // ok, also do the label
+        fix.resetName();
+        tr.add(fix);
+      }
+
+      contactHolder.add(tr);
     }
 
   }
@@ -860,11 +997,13 @@ public class ImportNMEA
 
   }
 
-  private void storeLocation(final Date date, final State state,
-      final long freq, final Color color, final Double myDepth)
+  private static void storeLocation(final Date date, final State state,
+      final long freq, final Color color, final Double myDepth,
+      final HashMap<String, ArrayList<FixWrapper>> destination,
+      final HashMap<String, Color> colors)
   {
     final String myName = state.name;
-    ArrayList<FixWrapper> track = tracks.get(myName);
+    ArrayList<FixWrapper> track = destination.get(myName);
 
     final boolean addIt;
 
@@ -873,7 +1012,7 @@ public class ImportNMEA
     if (track == null)
     {
       track = new ArrayList<FixWrapper>();
-      tracks.put(myName, track);
+      destination.put(myName, track);
       colors.put(myName, color);
 
       // ok. we're certainly adding this one
