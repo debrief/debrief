@@ -362,6 +362,13 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
     // paintPlot(pe.gc);
     // get the graphics destination
     final GC gc = pe.gc;
+    
+    // just double check the double buffer image is the correct height
+    if (_dblBuff != null && _dblBuff.getBounds().height != pe.y + pe.height)
+    {
+      // resetting double buffer.
+      _dblBuff = null;
+    }
 
     // put double-buffering code in here.
     if (_dblBuff == null)

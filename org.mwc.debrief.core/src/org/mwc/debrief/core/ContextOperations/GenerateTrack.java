@@ -351,8 +351,8 @@ public class GenerateTrack implements RightClickContextItemGenerator
 					final long theDate2 = 20000000 + i * 61000;
 					
 					final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red, new HiResDate(theDate1));
-					sw.setTime_Start(new HiResDate(theDate1));
-					sw.setTimeEnd(new HiResDate(theDate2));
+					sw.setStartDTG(new HiResDate(theDate1));
+					sw.setEndDTG(new HiResDate(theDate2));
 					holder.add(sw);
 				}
 

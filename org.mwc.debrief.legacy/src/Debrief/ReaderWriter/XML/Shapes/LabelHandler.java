@@ -147,8 +147,8 @@ abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
     // create a Label from this data
     final Debrief.Wrappers.LabelWrapper lw = new Debrief.Wrappers.LabelWrapper(_label, _centre, _theColor);
-    lw.setTimeStart(_startDTG);
-    lw.setTime_End(_endDTG);
+    lw.setStartDTG(_startDTG);
+    lw.setEndDTG(_endDTG);
     lw.setVisible(_isVisible);
     lw.setSymbolVisible(_symbolVisible);
     lw.setLabelVisible(_labelVisible);

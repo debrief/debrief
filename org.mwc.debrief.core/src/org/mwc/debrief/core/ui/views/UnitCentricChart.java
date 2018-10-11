@@ -2,8 +2,10 @@ package org.mwc.debrief.core.ui.views;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
@@ -12,15 +14,21 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.ui.views.UnitCentricView.IOperateOnMatch;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GUI.Shapes.RangeRingShape;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -41,31 +49,77 @@ class UnitCentricChart extends SWTChart
 
     @Override
     public void handlePrimary(final WatchableList primary,
-        final WorldLocation origin)
+        final WorldLocation origin, long timeNow)
     {
       final PlainSymbol sym = primary.getSnailShape();
       if (sym != null)
       {
         sym.paint(dest, origin);
       }
+      
+      // ok, does it have any dynamic shapes?
+      plotSensorArcs(primary, origin, timeNow, 0d);
+     
+    }
+    
+    private void plotSensorArcs(final WatchableList parent,
+        final WorldLocation nearestOffset, final long time,
+        final double primaryHeadingDegs)
+    {
+      if (parent instanceof TrackWrapper)
+      {
+        final TrackWrapper track2 = (TrackWrapper) parent;
+        final BaseLayer arcs = track2.getDynamicShapes();
+        if (arcs.getVisible())
+        {
+          final Enumeration<Editable> ele = arcs.elements();
+          while (ele.hasMoreElements())
+          {
+            final DynamicTrackShapeSetWrapper shapeSet =
+                (DynamicTrackShapeSetWrapper) ele.nextElement();
+            if (shapeSet.getVisible())
+            {
+              shapeSet.paintOverride(dest, time, nearestOffset,
+                  primaryHeadingDegs);
+            }
+          }
+        }
+      }
     }
 
     @Override
-    public void processNearest(final FixWrapper nearestInTime,
+    public void processNearest(final Watchable nearest,
         final WorldLocation nearestOffset, final double primaryHeadingDegs)
     {
-      final double hisCourseDegs = nearestInTime.getCourseDegs();
-      // sort out the secondary's relative heading
-      final double relativeHeading = (360 - primaryHeadingDegs) + hisCourseDegs;
+      if (nearest instanceof FixWrapper)
+      {
+        FixWrapper nearestInTime = (FixWrapper) nearest;
+        final double hisCourseDegs = nearestInTime.getCourseDegs();
+        // sort out the secondary's relative heading
+        final double relativeHeading = (360 - primaryHeadingDegs)
+            + hisCourseDegs;
 
-      // draw the snail marker
-      final WatchableList track = nearestInTime.getTrackWrapper();
-      final PlainSymbol sym = track.getSnailShape();
+        // draw the snail marker
+        final WatchableList track = nearestInTime.getTrackWrapper();
+        final PlainSymbol sym = track.getSnailShape();
 
-      sym.setColor(track.getColor());
+        sym.setColor(track.getColor());
 
-      sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
-          relativeHeading));
+        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
+            relativeHeading));
+        
+        plotSensorArcs(track, nearestOffset, nearestInTime.getDTG().getDate().getTime(), relativeHeading);
+      }
+      else if (nearest instanceof LabelWrapper)
+      {
+        LabelWrapper nearestInTime = (LabelWrapper) nearest;
+
+        // draw the snail marker
+        final PlainSymbol sym = nearestInTime.getSnailShape();
+        sym.setColor(nearestInTime.getColor());
+        sym.paint(dest, nearestOffset, MWC.Algorithms.Conversions.Degs2Rads(
+            0d));
+      }
 
       // reset the last object pointer
       oldEnd = null;
@@ -87,13 +141,22 @@ class UnitCentricChart extends SWTChart
     }
 
     @Override
-    public void doItTo(final FixWrapper rawSec,
+    public void doItTo(final Watchable rawSec,
         final WorldLocation offsetLocation, final double proportion)
     {
       dest.setLineWidth(2f);
       dest.setColor(rawSec.getColor());
 
-      rawSec.paintMe(dest, offsetLocation, rawSec.getColor());
+      if (rawSec instanceof CanPlotFaded)
+      {
+        CanPlotFaded faded = (CanPlotFaded) rawSec;
+        faded.paintMe(dest, offsetLocation, rawSec.getColor());
+      }
+      else
+      {
+        CorePlugin.logError(Status.WARNING,
+            "Expect all items here to implement CanPlotFaded interface", null);
+      }
 
       // and the line
       final Point newEnd = dest.toScreen(offsetLocation);
@@ -121,28 +184,43 @@ class UnitCentricChart extends SWTChart
     }
 
     @Override
-    public void doItTo(final FixWrapper rawSec,
+    public void doItTo(final Watchable secondary,
         final WorldLocation offsetLocation, final double proportion)
     {
-      // try to use the same line width
-      final LightweightTrackWrapper track = (LightweightTrackWrapper) rawSec
-          .getTrackWrapper();
-      if (track != null)
+      if (secondary instanceof FixWrapper)
       {
-        dest.setLineWidth(track.getLineThickness());
+        FixWrapper fix = (FixWrapper) secondary;
+        // try to use the same line width
+        final LightweightTrackWrapper track = (LightweightTrackWrapper) fix
+            .getTrackWrapper();
+        if (track != null)
+        {
+          final float lineWidth;
+          lineWidth = track.getLineThickness();
+          dest.setLineWidth(lineWidth);
+        }
       }
       else
       {
-        dest.setLineWidth(3f);
+        dest.setLineWidth(1.0f);
       }
 
       // sort out the color
-      final Color newCol = colorFor(rawSec.getColor(), (float) proportion,
+      final Color newCol = colorFor(secondary.getColor(), (float) proportion,
           getCanvas().getBackgroundColor());
 
       dest.setColor(newCol);
-
-      rawSec.paintMe(dest, offsetLocation, newCol);
+      
+      if (secondary instanceof CanPlotFaded)
+      {
+        CanPlotFaded faded = (CanPlotFaded) secondary;
+        faded.paintMe(dest, offsetLocation, newCol);
+      }
+      else
+      {
+        CorePlugin.logError(Status.WARNING,
+            "Expect all items here to implement CanPlotFaded interface", null);
+      }
 
       // and the line
       final Point newEnd = dest.toScreen(offsetLocation);
@@ -215,7 +293,7 @@ class UnitCentricChart extends SWTChart
     _rangeRings = new RangeRingShape(new WorldLocation(0d, 0d, 0d), 5,
         new WorldDistance(5, WorldDistance.KM));
   }
-  
+
   @Override
   public boolean supportsRightClick()
   {
@@ -251,7 +329,7 @@ class UnitCentricChart extends SWTChart
         {
 
           @Override
-          public void doItTo(final FixWrapper rawSec,
+          public void doItTo(final Watchable rawSec,
               final WorldLocation offsetLocation, final double proportion)
           {
             area.extend(offsetLocation);
@@ -259,13 +337,13 @@ class UnitCentricChart extends SWTChart
 
           @Override
           public void handlePrimary(final WatchableList primary,
-              final WorldLocation origin)
+              final WorldLocation origin, long timeNow)
           {
             // ok, ignore
           }
 
           @Override
-          public void processNearest(final FixWrapper nearestInTime,
+          public void processNearest(final Watchable nearestInTime,
               final WorldLocation nearestOffset,
               final double primaryHeadingDegs)
           {
@@ -315,18 +393,24 @@ class UnitCentricChart extends SWTChart
 
     // get the time
     final HiResDate subjectTime = _provider.getTimeProvider().getTime();
-    final IOperateOnMatch paintIt;
-    if (_snailMode)
-    {
-      paintIt = new SnailPaintOperation(dest);
-    }
-    else
-    {
-      paintIt = new NormalPaintOperation(dest);
-    }
 
-    UnitCentricView.walkTree(_theLayers, primary, subjectTime, paintIt,
-        _provider.getSnailLength(), _snailMode);
+    // check the primary is visible
+    if (primary.getStartDTG().lessThan(subjectTime) && primary.getEndDTG()
+        .greaterThanOrEqualTo(subjectTime))
+    {
+      final IOperateOnMatch paintIt;
+      if (_snailMode)
+      {
+        paintIt = new SnailPaintOperation(dest);
+      }
+      else
+      {
+        paintIt = new NormalPaintOperation(dest);
+      }
+
+      UnitCentricView.walkTree(_theLayers, primary, subjectTime, paintIt,
+          _provider.getSnailLength(), _snailMode);
+    }
 
     if (priTrack != null)
     {
@@ -334,7 +418,6 @@ class UnitCentricChart extends SWTChart
       priTrack.setInterpolatePoints(oldInterp);
     }
   }
-
 
   public LocalGridPainter getGrid()
   {
@@ -358,6 +441,8 @@ class UnitCentricChart extends SWTChart
     {
       CorePlugin.logError(IStatus.WARNING,
           "Unit centric view is missing layers", null);
+      dest.setColor(new Color(200, 0, 0));
+      dest.drawText("Please open a plot", 50, 50);
       return;
     }
 
@@ -365,6 +450,8 @@ class UnitCentricChart extends SWTChart
     {
       CorePlugin.logError(IStatus.WARNING,
           "Unit centric view is missing track data provider", null);
+      dest.setColor(new Color(200, 0, 0));
+      dest.drawText("Please open a plot containing track data", 50, 50);
       return;
     }
 

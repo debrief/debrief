@@ -17,7 +17,7 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 import java.util.Date;
 
 import org.mwc.debrief.core.wizards.dynshapes.DynamicPolygonWizard;
-import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
 
 import MWC.GenericData.WorldLocation;
 
@@ -28,7 +28,7 @@ import MWC.GenericData.WorldLocation;
 public class InsertDynamicPolygon extends InsertDynamicShape
 {
   @Override
-  protected DynamicShapeWizard getWizard(Date startDate, Date endDate,WorldLocation center)
+  protected CoreDynamicShapeWizard getWizard(Date startDate, Date endDate,WorldLocation center)
   {
     return new DynamicPolygonWizard(startDate,endDate);
   }
