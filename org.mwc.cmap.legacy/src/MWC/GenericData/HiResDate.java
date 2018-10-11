@@ -200,6 +200,23 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
     return true;
   }
 
-	
+  /** convert null date into the NULL_DATE object, which we 
+   * use in property editors
+   * @param date
+   * @return converted value
+   */
+  public static HiResDate wrapped(HiResDate date)
+  {
+    return date == null ? NULL_DATE : date;
+  }
 
+  /** convert NULL_DATE object back to null value, which we 
+   * use in property editors
+   * @param date
+   * @return converted value
+   */
+  public static HiResDate unwrapped(HiResDate date)
+  {
+    return NULL_DATE.equals(date) ? null : date;
+  }
 }
