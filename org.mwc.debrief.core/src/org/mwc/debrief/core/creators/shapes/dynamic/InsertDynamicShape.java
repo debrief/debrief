@@ -19,7 +19,7 @@ import java.util.Date;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
-import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Layers;
@@ -51,7 +51,7 @@ public abstract class InsertDynamicShape extends CoreInsertShape
   
   protected DynamicShapeWrapper getDynamicShape(final Date startDate, final Date endDate,final WorldLocation center)
   {
-    final DynamicShapeWizard wizard = getWizard(startDate, endDate,center);
+    final CoreDynamicShapeWizard wizard = getWizard(startDate, endDate,center);
     final WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
@@ -65,7 +65,7 @@ public abstract class InsertDynamicShape extends CoreInsertShape
     return thisShape;
   }
   
-  abstract protected DynamicShapeWizard getWizard(final Date startDate, final Date endDate,final WorldLocation center);
+  abstract protected CoreDynamicShapeWizard getWizard(final Date startDate, final Date endDate,final WorldLocation center);
 
   @Override
   protected PlainShape getShape(WorldLocation centre)

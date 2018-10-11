@@ -14,14 +14,10 @@
  */
 package org.mwc.debrief.core.wizards.dynshapes;
 
-import java.awt.Color;
 import java.util.Date;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PlainShape;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -30,62 +26,29 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class DynamicCircleWizard extends DynamicShapeWizard 
+public class DynamicCircleWizard extends CoreDynamicShapeWizard 
 {
   
-  private DynamicShapeTimingsWizardPage _shapeTimingsPage;
-  private DynamicCircleBoundsPage _boundsPage;
-  private DynamicShapeStylingPage _stylingPage;
-  private DynamicShapeWrapper dynamicShape;
   public static final String SHAPE_NAME = "Circle";
-  private Date _startDate;
-  private Date _endDate;
   private WorldLocation _centre;
 
   public DynamicCircleWizard(Date startDate,Date endDate,WorldLocation centre)
   {
-    _startDate = startDate;
-    _endDate = endDate;
+    super("Circle", startDate, endDate);
     _centre = centre;
-        
-  }
-  @Override
-  public void addPages()
-  {
-    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,_startDate,_endDate);
-    _boundsPage = new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE,_centre);
-    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, SHAPE_NAME);
-    addPage(_shapeTimingsPage);
-    addPage(_boundsPage);
-    addPage(_stylingPage);
-  }
-  /* (non-Javadoc)
-   * @see org.eclipse.jface.wizard.Wizard#performFinish()
-   */
-  @Override
-  public boolean performFinish()
-  {
-    Date startTime = _shapeTimingsPage.getStartTime();
-    Date endTime = _shapeTimingsPage.getEndTime();
-    WorldLocation center = _boundsPage.getCenter();
-    PlainShape circle = new CircleShape(center, _boundsPage.getRadius());
-    final Color theColor = ImportReplay.replayColorFor(_stylingPage.getSymbology());
-    if(startTime!=null) {
-      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,new HiResDate(startTime),"rectangle");
-    }
-    else {
-      dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(),circle,theColor,null,"rectangle");
-    }
-    if(endTime!=null) {
-      dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));
-    }
-    return true;
   }
   
   @Override
-  public DynamicShapeWrapper getDynamicShapeWrapper()
+  protected DynamicShapeBaseWizardPage getBoundsPage()
   {
-    return dynamicShape;
+    return new DynamicCircleBoundsPage(DynamicShapeBaseWizardPage.BOUNDS_PAGE,_centre);
+  }
+
+  @Override
+  protected PlainShape getShape()
+  {
+    DynamicCircleBoundsPage page = (DynamicCircleBoundsPage) _boundsPage;
+    return new CircleShape(page.getCenter(), page.getRadius());
   }
 
 }
