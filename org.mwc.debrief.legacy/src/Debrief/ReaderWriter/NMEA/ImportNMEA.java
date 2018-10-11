@@ -21,7 +21,6 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -91,7 +90,7 @@ public class ImportNMEA
       location = locationFor(tLat, tLong);
     }
 
-    private WorldLocation locationFor(final String tLat, final String tLong)
+    private static WorldLocation locationFor(final String tLat, final String tLong)
     {
       final double dLat = degsFor(tLat);
       final double dLong = degsFor(tLong);
@@ -607,25 +606,25 @@ public class ImportNMEA
     {
       final String str = m.group("TYPE1");
       final String str2 = m.group("TYPE2");
-      if (str.equals("VNM"))
+      if (!"VNM".equals(str))
         res = MsgType.VESSEL_NAME;
-      else if (str.equals("POS") && str2.equals("GPS"))
+      else if ("POS".equals(str) && "GPS".equals(str2))
         res = MsgType.OS_POS;
-      else if (str.equals("POS2") && str2.equals("GPS"))
+      else if ("POS2".equals(str) && "GPS".equals(str2))
         res = MsgType.OS_POS;
-      else if (str.contains("VEL") && str2.equals("GPS"))
+      else if (str.contains("VEL") && "GPS".equals(str2))
         res = MsgType.OS_COURSE_SPEED;
-      else if (str.contains("VEL") && str2.equals("SPL"))
+      else if (str.contains("VEL") && "SPL".equals(str2))
         res = MsgType.OS_SPEED;
       else if (str.contains("HDG"))
         res = MsgType.OS_COURSE;
-      else if (str.equals("CONTACT"))
+      else if ("CONTACT".equals(str))
         res = MsgType.CONTACT;
-      else if (str.equals("AIS"))
+      else if ("AIS".equals(str))
         res = MsgType.AIS;
-      else if (str.equals("DZA"))
+      else if ("DZA".equals(str))
         res = MsgType.TIMESTAMP;
-      else if (str.equals("PDS"))
+      else if ("PDS".equals(str))
         res = MsgType.OS_DEPTH;
       else
         res = MsgType.UNKNOWN;
@@ -647,14 +646,14 @@ public class ImportNMEA
    * the set of tracks we build up, to reduce screen updates
    * 
    */
-  HashMap<String, ArrayList<FixWrapper>> tracks =
+  private HashMap<String, ArrayList<FixWrapper>> tracks =
       new HashMap<String, ArrayList<FixWrapper>>();
 
   /**
    * the set of tracks we build up, to reduce screen updates
    * 
    */
-  HashMap<String, ArrayList<FixWrapper>> contacts =
+  private HashMap<String, ArrayList<FixWrapper>> contacts =
       new HashMap<String, ArrayList<FixWrapper>>();
 
   /**
