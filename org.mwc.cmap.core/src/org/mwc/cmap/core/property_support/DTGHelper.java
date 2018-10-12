@@ -35,7 +35,9 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class DTGHelper extends EditorHelper
 {
 
-  protected static SimpleDateFormat _dateFormat;
+  protected static SimpleDateFormat _longDateFormat;
+
+  protected static SimpleDateFormat _shortDateFormat;
 
   protected static SimpleDateFormat _longTimeFormat;
 
@@ -43,7 +45,8 @@ public class DTGHelper extends EditorHelper
 
   protected static SimpleDateFormat _fullFormat;
 
-  protected final static String DATE_FORMAT_DEFN = "dd/MMM/yyyy";
+  protected final static String LONG_DATE_FORMAT_DEFN = "dd/MMM/yyyy";
+  protected final static String SHORT_DATE_FORMAT_DEFN = "dd/MM/yyyy";
 
   protected final static String LONG_TIME_FORMAT_DEFN = "HH:mm:ss";
 
@@ -53,12 +56,13 @@ public class DTGHelper extends EditorHelper
 
   protected synchronized static void checkDateFormat()
   {
-    if (_dateFormat == null)
+    if (_longDateFormat == null)
     {
-      _dateFormat = new GMTDateFormat(DATE_FORMAT_DEFN);
+      _shortDateFormat = new GMTDateFormat(SHORT_DATE_FORMAT_DEFN);
+      _longDateFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN);
       _longTimeFormat = new GMTDateFormat(LONG_TIME_FORMAT_DEFN);
       _shortTimeFormat = new GMTDateFormat(SHORT_TIME_FORMAT_DEFN);
-      _fullFormat = new GMTDateFormat(DATE_FORMAT_DEFN + "Z"
+      _fullFormat = new GMTDateFormat(LONG_DATE_FORMAT_DEFN + "Z"
           + LONG_TIME_FORMAT_DEFN);
     }
   }
@@ -106,7 +110,7 @@ public class DTGHelper extends EditorHelper
       else
       {
         _originalVal = new HiResDate(dtg);
-        _date = _dateFormat.format(dtg.getDate());
+        _date = _longDateFormat.format(dtg.getDate());
         _time = _longTimeFormat.format(dtg.getDate());
       }
 
@@ -152,7 +156,7 @@ public class DTGHelper extends EditorHelper
       final boolean null_date = _originalVal.equals(HiResDate.NULL_DATE);
       if (ID_DATE.equals(propName))
       {
-        res = null_date ? DATE_FORMAT_DEFN : _date;
+        res = null_date ? LONG_DATE_FORMAT_DEFN : _date;
       }
       else if (ID_TIME.equals(propName))
       {
@@ -177,8 +181,16 @@ public class DTGHelper extends EditorHelper
         // see if they have been set yet
         if (!_date.equals(UNSET) && _date.length() > 0)
         {
-          final Date date = _dateFormat.parse(_date);
-          millis += date.getTime();
+          try
+          {
+            final Date date = _longDateFormat.parse(_date);
+            millis += date.getTime();
+          }
+          catch (ParseException pe)
+          {
+            final Date date = _shortDateFormat.parse(_date);
+            millis += date.getTime();
+          }
         }
 
         if (!_time.equals(UNSET) && _time.length() > 0)
