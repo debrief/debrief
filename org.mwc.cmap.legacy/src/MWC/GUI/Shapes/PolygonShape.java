@@ -664,8 +664,6 @@ public class PolygonShape extends PlainShape implements Editable,
         last = thisL;
       }
       res = shortest.getValueIn(WorldDistance.DEGS);
-      
-      System.out.println("distance:" + shortest.getValueIn(WorldDistance.METRES));
     }
 
     return res;
