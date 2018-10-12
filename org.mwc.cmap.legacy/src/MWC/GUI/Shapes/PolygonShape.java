@@ -463,7 +463,7 @@ public class PolygonShape extends PlainShape implements Editable,
     final Iterator<PolygonNode> myPts = _nodes.iterator();
     while (myPts.hasNext())
     {
-      final WorldLocation thisLoc = (WorldLocation) myPts.next().getLocation();
+      final WorldLocation thisLoc = myPts.next().getLocation();
       // right, see if the cursor is at the centre (that's the easy component)
       checkThisOne(thisLoc, cursorLoc, currentNearest, this, parentLayer);
     }
@@ -638,7 +638,7 @@ public class PolygonShape extends PlainShape implements Editable,
 
     if (_nodes.size() > 0)
     {
-      
+
       // loop through the legs
       final Enumeration<PolygonNode> points = _nodes.elements();
 
@@ -646,8 +646,7 @@ public class PolygonShape extends PlainShape implements Editable,
       WorldDistance shortest = null;
       while (points.hasMoreElements())
       {
-        final WorldLocation thisL = ((PolygonNode) points.nextElement())
-            .getLocation();
+        final WorldLocation thisL = points.nextElement().getLocation();
         if (last != null)
         {
           final WorldDistance dist = point.rangeFrom(last, thisL);
@@ -691,6 +690,12 @@ public class PolygonShape extends PlainShape implements Editable,
     _closePolygon = polygon;
   }
 
+  @Override
+  public void setName(final String val)
+  {
+    _myName = val;
+  }
+
   public void setPolygonColor(final Color val)
   {
     super.setColor(val);
@@ -721,7 +726,7 @@ public class PolygonShape extends PlainShape implements Editable,
     final Iterator<PolygonNode> pts = _nodes.iterator();
     while (pts.hasNext())
     {
-      final WorldLocation pt = (WorldLocation) pts.next().getLocation();
+      final WorldLocation pt = pts.next().getLocation();
       final WorldLocation newLoc = pt.add(vector);
       pt.setLat(newLoc.getLat());
       pt.setLong(newLoc.getLong());
@@ -733,12 +738,6 @@ public class PolygonShape extends PlainShape implements Editable,
 
     // and inform the parent (so it can move the label)
     firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-  }
-
-  @Override
-  public void setName(String val)
-  {
-    _myName = val;
   }
 
 }
