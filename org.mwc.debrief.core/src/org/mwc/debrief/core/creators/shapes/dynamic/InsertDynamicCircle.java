@@ -29,7 +29,7 @@ import MWC.GenericData.WorldLocation;
  *
  */
 public class InsertDynamicCircle extends
-    InsertDynamicShape<CoreDynamicShapeWizard<?>>
+    InsertDynamicShape<DynamicCircleBoundsPage>
 {
   @Override
   protected CoreDynamicShapeWizard<DynamicCircleBoundsPage> getWizard(

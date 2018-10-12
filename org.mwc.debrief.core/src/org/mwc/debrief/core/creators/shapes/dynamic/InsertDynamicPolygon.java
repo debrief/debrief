@@ -27,7 +27,7 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class InsertDynamicPolygon extends InsertDynamicShape<CoreDynamicShapeWizard<?>>
+public class InsertDynamicPolygon extends InsertDynamicShape<DynamicPolygonBoundsPage>
 {
  
   @Override

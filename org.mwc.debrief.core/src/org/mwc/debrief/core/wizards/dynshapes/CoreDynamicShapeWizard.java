@@ -12,10 +12,9 @@ import MWC.GenericData.HiResDate;
 
 abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShapeBaseWizardPage> extends Wizard
 {
-
-  private final String SHAPE_NAME;
-  private Date _startDate;
-  private Date _endDate;
+  private final String _shapeName;
+  private final Date _startDate;
+  private final Date _endDate;
 
   private DynamicShapeWrapper _dynamicShape;
 
@@ -25,7 +24,7 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
   
   public CoreDynamicShapeWizard(String shapeName, Date startDate,Date endDate)
   {
-    SHAPE_NAME = shapeName;
+    _shapeName = shapeName;
     _startDate = startDate;
     _endDate = endDate;
   }
@@ -38,9 +37,9 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
   @Override
   public void addPages()
   {
-    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,SHAPE_NAME,_startDate,_endDate);
+    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,_shapeName,_startDate,_endDate);
     _boundsPage = getBoundsPage();
-    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, SHAPE_NAME);
+    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, _shapeName);
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);
     addPage(_stylingPage);
@@ -65,16 +64,16 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
   @Override
   public boolean performFinish()
   {
-    Date startTime = _shapeTimingsPage.getStartTime();
-    Date endTime = _shapeTimingsPage.getEndTime();
-    PlainShape shape = getShape(_boundsPage);
+    final Date startTime = _shapeTimingsPage.getStartTime();
+    final Date endTime = _shapeTimingsPage.getEndTime();
+    final PlainShape shape = getShape(_boundsPage);
     final Color theColor = ImportReplay.replayColorFor(_stylingPage
         .getSymbology());
     
     final HiResDate shapeDate = startTime == null ? null : new HiResDate(startTime);
     
     _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(), shape,
-        theColor, shapeDate, "dynamic " + SHAPE_NAME);
+        theColor, shapeDate, "dynamic " + _shapeName);
       
     if (endTime != null)
     {

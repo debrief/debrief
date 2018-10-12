@@ -27,13 +27,13 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha
  *
  */
-public class InsertDynamicRectangle extends InsertDynamicShape<CoreDynamicShapeWizard<?>>{
+public class InsertDynamicRectangle extends InsertDynamicShape<DynamicRectangleBoundsPage>{
   
   @Override
   protected CoreDynamicShapeWizard<DynamicRectangleBoundsPage> getWizard(
       final Date startDate, final Date endDate, final WorldLocation center)
   {
-    return new CoreDynamicShapeWizard<DynamicRectangleBoundsPage>("Circle",
+    return new CoreDynamicShapeWizard<DynamicRectangleBoundsPage>("Rectangle",
         startDate, endDate)
     {
       @Override
@@ -45,8 +45,8 @@ public class InsertDynamicRectangle extends InsertDynamicShape<CoreDynamicShapeW
       @Override
       protected PlainShape getShape(DynamicRectangleBoundsPage page)
       {
-        WorldLocation topLeft = page.getTopLeftLocation();
-        WorldLocation bottomRight = page.getBottomRightLocation();
+        final WorldLocation topLeft = page.getTopLeftLocation();
+        final WorldLocation bottomRight = page.getBottomRightLocation();
         return new RectangleShape(topLeft, bottomRight);
       }
     };

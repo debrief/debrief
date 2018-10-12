@@ -38,7 +38,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
   private static final int MAX_RADIUS = 5000;
   private CWorldLocation _txtCentre;
   private Text _txtRadius;
-  private WorldLocation _centre;
+  private final WorldLocation _centre;
   public DynamicCircleBoundsPage(String pageName,WorldLocation centre)
   {
     super(pageName);
