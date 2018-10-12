@@ -1234,7 +1234,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
     {
 
       // right, we if we have to add another
-      // find the current last point
+      // find the current first point
       final FixWrapper theLoc = (FixWrapper) this.first();
 
       // note: we don't want one large leap. So, insert a few points
@@ -1253,12 +1253,14 @@ public class RelativeTMASegment extends CoreTMASegment implements
             startDTG());
         if (cuts != null)
         {
-          handled = true;
+          final int len = this.size();
           for (Editable t : cuts)
           {
             SensorContactWrapper cut = (SensorContactWrapper) t;
             addFix(theLoc, cut.getDTG().getDate().getTime());
           }
+          final int newLen = this.size();
+          handled = newLen > len;
         }
         else
         {
