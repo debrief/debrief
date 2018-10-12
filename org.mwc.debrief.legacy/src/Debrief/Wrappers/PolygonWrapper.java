@@ -391,7 +391,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 		setEndDTG(endDate);
 	}
 
-	private PolygonShape getPoly()
+	public PolygonShape getPoly()
 	{
 		return (PolygonShape) _theShape;
 	}
