@@ -148,16 +148,22 @@ public class DTGHelper extends EditorHelper
 
     public Object getPropertyValue(final Object propName)
     {
-      String res = "";
+      final String res;
+      final boolean null_date = _originalVal.equals(HiResDate.NULL_DATE);
       if (ID_DATE.equals(propName))
       {
-        // ok, extract the year component
-        res = _date;
+        res = null_date ? DATE_FORMAT_DEFN : _date;
       }
-      if (ID_TIME.equals(propName))
+      else if (ID_TIME.equals(propName))
       {
-        res = _time;
+        res = null_date ? LONG_TIME_FORMAT_DEFN : _time;
       }
+      else
+      {
+        throw new IllegalArgumentException(
+            "We're not expecting property titled:" + propName);
+      }
+      
       return res;
     }
 
