@@ -85,7 +85,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
         // fix the filename
         final String exportLocation = exportDialog.getExportLocation();
-        String fileName = exportDialog.getFileName() + "-" + startTime;
+        
+        // check we don't get invalid characters in the string
+        // we're using for the filename
+        final String tidyName = tidyString(startTime);
+        
+        String fileName = exportDialog.getFileName() + "-" + tidyName;
 
         if (exportLocation != null && !"".equals(exportLocation))
         {
@@ -115,6 +120,11 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       }
     });
     return retVal;
+  }
+
+  private static String tidyString(String startTime)
+  {
+    return startTime.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
   }
 
   @Override
