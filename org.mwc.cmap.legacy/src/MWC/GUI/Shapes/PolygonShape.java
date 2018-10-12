@@ -34,6 +34,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -637,22 +638,34 @@ public class PolygonShape extends PlainShape implements Editable,
 
     if (_nodes.size() > 0)
     {
-      // ok, step through the area
-      final Iterator<PolygonNode> points = _nodes.iterator();
-      while (points.hasNext())
+      
+      // loop through the legs
+      final Enumeration<PolygonNode> points = _nodes.elements();
+
+      WorldLocation last = null;
+      WorldDistance shortest = null;
+      while (points.hasMoreElements())
       {
-        final WorldLocation next = (WorldLocation) points.next().getLocation();
-
-        final double thisD = next.rangeFrom(point);
-
-        // is this our first point?
-        if (res == -1)
+        final WorldLocation thisL = ((PolygonNode) points.nextElement())
+            .getLocation();
+        if (last != null)
         {
-          res = thisD;
+          final WorldDistance dist = point.rangeFrom(last, thisL);
+
+          if (shortest == null)
+          {
+            shortest = dist;
+          }
+          else if (shortest.greaterThan(dist))
+          {
+            shortest = dist;
+          }
         }
-        else
-          res = Math.min(res, thisD);
+        last = thisL;
       }
+      res = shortest.getValueIn(WorldDistance.DEGS);
+      
+      System.out.println("distance:" + shortest.getValueIn(WorldDistance.METRES));
     }
 
     return res;
