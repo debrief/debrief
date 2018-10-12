@@ -121,7 +121,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 	private final String _myType = ";DYNAMIC_POLY:";
 
 	@Override
-	public final Object readThisLine(final String theLine)
+	public final Object readThisLine(final String theLine) throws ParseException
 	{
 		String line = theLine;
 		// get a stream from the string
@@ -289,7 +289,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 	public static class TestImport extends TestCase
 	{
 
-		public void testWithLabel()
+		public void testWithLabel() throws ParseException
 		{
 			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportDynamicPolygon ip = new ImportDynamicPolygon();

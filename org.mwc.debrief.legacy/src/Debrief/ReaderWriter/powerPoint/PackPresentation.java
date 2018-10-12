@@ -69,7 +69,7 @@ public class PackPresentation
     parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
     parameters.setIncludeRootFolder(false);
     zipFile.addFolder(unpack_path + "/", parameters);
-    Application.logError2(Application.INFO, "File packed at " + pptx_path, null);
+    Application.logError2(Application.INFO, "File packed at " + path, null);
 
     try
     {
@@ -80,6 +80,6 @@ public class PackPresentation
       throw new DebriefException("Impossible to remove the directory "
           + unpack_path);
     }
-    return pptx_path;
+    return path;
   }
 }

@@ -16,20 +16,39 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
 
-import org.mwc.debrief.core.wizards.dynshapes.DynamicRectangleWizard;
-import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicRectangleBoundsPage;
 
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GenericData.WorldLocation;
 
 /**
  * @author Ayesha
  *
  */
-public class InsertDynamicRectangle extends InsertDynamicShape{
-
+public class InsertDynamicRectangle extends InsertDynamicShape<DynamicRectangleBoundsPage>{
+  
   @Override
-  protected DynamicShapeWizard getWizard(final Date startDate, final Date endDate,WorldLocation center)
+  protected CoreDynamicShapeWizard<DynamicRectangleBoundsPage> getWizard(
+      final Date startDate, final Date endDate, final WorldLocation center)
   {
-    return new DynamicRectangleWizard(startDate,endDate,center);
+    return new CoreDynamicShapeWizard<DynamicRectangleBoundsPage>("Rectangle",
+        startDate, endDate)
+    {
+      @Override
+      protected DynamicRectangleBoundsPage getBoundsPage()
+      {
+        return new DynamicRectangleBoundsPage("Bounds", center);
+      }
+
+      @Override
+      protected PlainShape getShape(DynamicRectangleBoundsPage page)
+      {
+        final WorldLocation topLeft = page.getTopLeftLocation();
+        final WorldLocation bottomRight = page.getBottomRightLocation();
+        return new RectangleShape(topLeft, bottomRight);
+      }
+    };
   }
 }

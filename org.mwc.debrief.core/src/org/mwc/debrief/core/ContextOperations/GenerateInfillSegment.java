@@ -471,13 +471,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       final Layers theLayers = new Layers();
 
-      tw.addFix(TrackWrapper_Test.createFix(100000, 1, 1, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(200000, 2, 3, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(300000, 3, 3, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(400000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(500000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(600000, 4, 6, 4, 12));
-      tw.addFix(TrackWrapper_Test.createFix(700000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(100000, 1, 1, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(200000, 2, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(300000, 3, 3, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(400000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(500000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(600000, 4, 6, 4, 12));
+      tw.addFix(TrackWrapper_Test.createFix2(700000, 4, 6, 4, 12));
 
       final WorldVector offset = new WorldVector(12, 12, 0);
       final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);

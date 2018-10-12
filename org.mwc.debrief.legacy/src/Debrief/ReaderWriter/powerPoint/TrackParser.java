@@ -2,7 +2,6 @@ package Debrief.ReaderWriter.powerPoint;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.jsoup.Jsoup;
@@ -15,6 +14,7 @@ import Debrief.ReaderWriter.powerPoint.model.ExportNarrativeEntry;
 import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TrackParser
 {
@@ -107,7 +107,9 @@ public class TrackParser
 
       for (final Element entry : entries)
       {
-        final ExportNarrativeEntry entryInstance = new ExportNarrativeEntry(entry.attr("Text"),entry.attr("dateStr"),entry.attr("elapsed"), null);
+        final ExportNarrativeEntry entryInstance = new ExportNarrativeEntry(
+            entry.attr("Text"), entry.attr("dateStr"), entry.attr("elapsed"),
+            null);
         trackData.getNarrativeEntries().add(entryInstance);
       }
     }
@@ -120,14 +122,16 @@ public class TrackParser
    *          TrackData instance where we are going to insert the info
    * @param soup
    *          Soup file
-   * @throws ParseException 
+   * @throws ParseException
    */
-  private void parseTracks(final TrackData trackData, final Document soup) throws ParseException
+  private void parseTracks(final TrackData trackData, final Document soup)
+      throws ParseException
   {
     final Elements tracks = soup.select("trk");
     for (final Element track : tracks)
     {
-      final Track currentTrack = new Track(track.selectFirst("name").text(), track.selectFirst("color").text());
+      final Track currentTrack = new Track(track.selectFirst("name").text(),
+          track.selectFirst("color").text(), 0);
 
       for (final Element coordinate : track.select("trkpt"))
       {
@@ -135,9 +139,10 @@ public class TrackParser
         point.setLongitude(Float.parseFloat(coordinate.attr("lon")));
         point.setLatitude(Float.parseFloat(coordinate.attr("lat")));
 
-        final DateFormat dateTimeFormatter = new SimpleDateFormat(
+        final DateFormat dateTimeFormatter = new GMTDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss'Z'");
-        final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst("time").text());
+        final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst(
+            "time").text());
         point.setTime(dateTime);
 
         point.setCourse(Float.parseFloat(coordinate.selectFirst("course")
@@ -146,6 +151,8 @@ public class TrackParser
             .text()));
         point.setSpeed(Float.parseFloat(coordinate.selectFirst("speed")
             .text()));
+
+        point.setFormattedTime(coordinate.selectFirst("time").text());
 
         currentTrack.getSegments().add(point);
       }

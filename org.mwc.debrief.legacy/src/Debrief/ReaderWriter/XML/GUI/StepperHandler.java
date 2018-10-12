@@ -29,6 +29,7 @@ import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.XML.GUIHandler;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.*;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -100,10 +101,18 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     {
       HiResDate startTime = null;
       // get a date from this
-      startTime = DebriefFormatDateTime.parseThis(start_time);
+      try
+      {
+        startTime = DebriefFormatDateTime.parseThis(start_time);
+        
+        // set the cursor
+        _analysisView.getTote().getStepper().setToolboxStartTime(startTime);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
-      // set the cursor
-      _analysisView.getTote().getStepper().setToolboxStartTime(startTime);
     }
 
     //////////////////////////////////////////////////////////////
@@ -113,10 +122,17 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       HiResDate endTime = null;
 
       // get a date from this
-      endTime = DebriefFormatDateTime.parseThis(end_time);
-
-      // set the cursor
-      _analysisView.getTote().getStepper().setToolboxEndTime(endTime);
+      try
+      {
+        endTime = DebriefFormatDateTime.parseThis(end_time);
+        
+        // set the cursor
+        _analysisView.getTote().getStepper().setToolboxEndTime(endTime);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
     }
 
     //////////////////////////////////////////////////////////////
@@ -124,21 +140,37 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
     if (tZero != null)
     {
       // get a date from this
-      final HiResDate dt = DebriefFormatDateTime.parseThis(tZero);
+      HiResDate dt;
+      try
+      {
+        dt = DebriefFormatDateTime.parseThis(tZero);
 
-      // set the cursor
-      _analysisView.getTote().getStepper().setTimeZero(dt);
+        // set the cursor
+        _analysisView.getTote().getStepper().setTimeZero(dt);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
     }
     //////////////////////////////////////////////////////////////
     final String currentTime = (String) details.properties.get("CurrentTime");
     if (currentTime != null)
     {
       // and set the time
-      final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
+      HiResDate dtg;
+      try
+      {
+        dtg = DebriefFormatDateTime.parseThis(currentTime);
 
-      // did we find a valid dtg?
-      if (dtg != null)
-        _analysisView.getTote().getStepper().changeTime(dtg);
+        // did we find a valid dtg?
+        if (dtg != null)
+          _analysisView.getTote().getStepper().changeTime(dtg);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
     }
     //////////////////////////////////////////////////////////////
     val = (String) details.properties.get("AutoStep");

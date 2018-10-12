@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.operations;
 
@@ -114,7 +114,7 @@ public class RightClickCutCopyAdaptor
       {
         /**
          * the Copy bit is common to execute and redo methods - so factor it out to here...
-         * 
+         *
          */
         private void doCopy()
         {
@@ -267,8 +267,8 @@ public class RightClickCutCopyAdaptor
     }
 
     /**
-		 * 
-		 */
+     * 
+     */
     @Override
     public void run()
     {
@@ -300,7 +300,7 @@ public class RightClickCutCopyAdaptor
 
         /**
          * the cut operation is common for execute and redo operations - so factor it out to here...
-         * 
+         *
          */
         private void doCut()
         {
@@ -386,8 +386,7 @@ public class RightClickCutCopyAdaptor
         private Plottable findAdjacentEditable(final Editable thisE,
             final Enumeration<Editable> numer)
         {
-          boolean matched = false;
-          Plottable res = null;
+          final Plottable res;
 
           // put them into a list, so we can sort them properly
           final List<Editable> list = new ArrayList<Editable>();
@@ -399,47 +398,50 @@ public class RightClickCutCopyAdaptor
           final Comparator<Editable> comparator =
               new OutlineNameSorter.EditableComparer();
 
-          // okm now sort them out
+          // ok now sort them out
           Collections.sort(list, comparator);
 
-          for (final Editable item : list)
-          {
-            final Plottable seg = (Plottable) item;
-            if (!matched)
-            {
-              if (seg.equals(thisE))
-              {
-                if (res != null)
-                {
-                  // SPECIAL HANDLING, if previous was an infill, we need to
-                  // move back one more step - since the infill
-                  // will get deleted when its "after" segment
-                  // is deleted
-                  if (res instanceof DynamicInfillSegment)
-                  {
-                    final DynamicInfillSegment fill =
-                        (DynamicInfillSegment) res;
-                    res = fill.getBeforeSegment();
-                  }
+          // find the item that's about to be deleted
+          final int indexOf = list.indexOf(thisE);
 
-                  // ok, we have a previous, and this matches
-                  break;
-                }
-                else
-                {
-                  // ok, it's the first item. we need to move to the next one
-                  matched = true;
-                }
-              }
+          // where is it in the list?
+          if (indexOf == -1 || list.size() <= 1)
+          {
+            // ok, empty list (or there's only us in the list)
+            res = null;
+          }
+          else if (indexOf == (list.size() - 1) && list.size() > 1)
+          {
+            // last item on the list, can't move down. use previous
+            final Plottable previous = (Plottable) list.get(list.size() - 2);
+
+            // special handling for dynamic infill. It will get deleted
+            // when it's before/after leg get deleted.
+            if (previous instanceof DynamicInfillSegment)
+            {
+              final DynamicInfillSegment fill = (DynamicInfillSegment) previous;
+              res = fill.getBeforeSegment();
             }
             else
             {
-              // ok, we've matched the item, but we didn't have a previous item. So, we want to
-              // move onto the next one, then return
-              res = seg;
-              break;
+              res = previous;
             }
-            res = seg;
+          }
+          else
+          {
+            // mid-list, just take next item of the list
+            final Plottable next = (Plottable) list.get(indexOf + 1);
+
+            // aah, not if it's an infill that's about to be deleted?
+            if (next instanceof DynamicInfillSegment)
+            {
+              final DynamicInfillSegment fill = (DynamicInfillSegment) next;
+              res = fill.getAfterSegment();
+            }
+            else
+            {
+              res = next;
+            }
           }
           return res;
         }
@@ -607,7 +609,7 @@ public class RightClickCutCopyAdaptor
 
   /**
    * embedded class used to convert our Editable objects to/from clipboard format
-   * 
+   *
    * @author ian.mayo
    */
   public final static class EditableTransfer extends ByteArrayTransfer
@@ -624,7 +626,7 @@ public class RightClickCutCopyAdaptor
 
     /**
      * accessor, get running.
-     * 
+     *
      * @return
      */
     public static EditableTransfer getInstance()
@@ -660,7 +662,7 @@ public class RightClickCutCopyAdaptor
 
     /**
      * ok - convert our object ready to put it on the clipboard
-     * 
+     *
      * @param object
      * @param transferData
      */
@@ -697,7 +699,7 @@ public class RightClickCutCopyAdaptor
 
     /**
      * ok, extract our object from the clipboard
-     * 
+     *
      * @param transferData
      * @return
      */
@@ -765,7 +767,7 @@ public class RightClickCutCopyAdaptor
 
     }
 
-    private void doUndo()
+    private static void doUndo()
     {
       final IOperationHistory history = CorePlugin.getHistory();
       try
@@ -779,7 +781,7 @@ public class RightClickCutCopyAdaptor
       }
     }
 
-    private boolean isContactThere(final TrackWrapper tw,
+    private static boolean isContactThere(final TrackWrapper tw,
         final TMAContactWrapper scwa1)
     {
       boolean itemFound;
@@ -802,8 +804,8 @@ public class RightClickCutCopyAdaptor
       return itemFound;
     }
 
-    private boolean
-        isPositionThere(final TrackWrapper tw, final FixWrapper fw2)
+    private static boolean isPositionThere(final TrackWrapper tw,
+        final FixWrapper fw2)
     {
       boolean itemFound;
       final Enumeration<Editable> enumer = tw.getPositionIterator();
@@ -820,7 +822,7 @@ public class RightClickCutCopyAdaptor
       return itemFound;
     }
 
-    private boolean isSensorThere(final TrackWrapper tw,
+    private static boolean isSensorThere(final TrackWrapper tw,
         final SensorContactWrapper scwa1)
     {
       boolean itemFound;
@@ -850,30 +852,25 @@ public class RightClickCutCopyAdaptor
       final TrackWrapper tw = new TrackWrapper();
 
       final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-      final FixWrapper fw1 =
-          new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1
-              .add(new WorldVector(33, new WorldDistance(100,
-                  WorldDistance.METRES), null)), 10, 110));
+      final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+          loc_1.add(new WorldVector(33, new WorldDistance(100,
+              WorldDistance.METRES), null)), 10, 110));
       fw1.setLabel("fw1");
-      final FixWrapper fw2 =
-          new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1
-              .add(new WorldVector(33, new WorldDistance(200,
-                  WorldDistance.METRES), null)), 20, 120));
+      final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+          loc_1.add(new WorldVector(33, new WorldDistance(200,
+              WorldDistance.METRES), null)), 20, 120));
       fw2.setLabel("fw2");
-      final FixWrapper fw3 =
-          new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1
-              .add(new WorldVector(33, new WorldDistance(300,
-                  WorldDistance.METRES), null)), 30, 130));
+      final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+          loc_1.add(new WorldVector(33, new WorldDistance(300,
+              WorldDistance.METRES), null)), 30, 130));
       fw3.setLabel("fw3");
-      final FixWrapper fw4 =
-          new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1
-              .add(new WorldVector(33, new WorldDistance(400,
-                  WorldDistance.METRES), null)), 40, 140));
+      final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+          loc_1.add(new WorldVector(33, new WorldDistance(400,
+              WorldDistance.METRES), null)), 40, 140));
       fw4.setLabel("fw4");
-      final FixWrapper fw5 =
-          new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1
-              .add(new WorldVector(33, new WorldDistance(500,
-                  WorldDistance.METRES), null)), 50, 150));
+      final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+          loc_1.add(new WorldVector(33, new WorldDistance(500,
+              WorldDistance.METRES), null)), 50, 150));
       fw5.setLabel("fw5");
       tw.addFix(fw1);
       tw.addFix(fw2);
@@ -882,58 +879,46 @@ public class RightClickCutCopyAdaptor
       tw.addFix(fw5);
       // also give it some sensor data
       final SensorWrapper swa = new SensorWrapper("title one");
-      final SensorContactWrapper scwa1 =
-          new SensorContactWrapper("aaa", new HiResDate(150, 0), null, null,
-              null, null, null, 0, null);
-      final SensorContactWrapper scwa2 =
-          new SensorContactWrapper("bbb", new HiResDate(180, 0), null, null,
-              null, null, null, 0, null);
-      final SensorContactWrapper scwa3 =
-          new SensorContactWrapper("ccc", new HiResDate(250, 0), null, null,
-              null, null, null, 0, null);
+      final SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+          new HiResDate(150, 0), null, null, null, null, null, 0, null);
+      final SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+          new HiResDate(180, 0), null, null, null, null, null, 0, null);
+      final SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+          new HiResDate(250, 0), null, null, null, null, null, 0, null);
       swa.add(scwa1);
       swa.add(scwa2);
       swa.add(scwa3);
       tw.add(swa);
       final SensorWrapper sw = new SensorWrapper("title two");
-      final SensorContactWrapper scw1 =
-          new SensorContactWrapper("ddd", new HiResDate(260, 0), null, null,
-              null, null, null, 0, null);
-      final SensorContactWrapper scw2 =
-          new SensorContactWrapper("eee", new HiResDate(280, 0), null, null,
-              null, null, null, 0, null);
-      final SensorContactWrapper scw3 =
-          new SensorContactWrapper("fff", new HiResDate(350, 0), null, null,
-              null, null, null, 0, null);
+      final SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+          new HiResDate(260, 0), null, null, null, null, null, 0, null);
+      final SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+          new HiResDate(280, 0), null, null, null, null, null, 0, null);
+      final SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+          new HiResDate(350, 0), null, null, null, null, null, 0, null);
       sw.add(scw1);
       sw.add(scw2);
       sw.add(scw3);
       tw.add(sw);
 
       final TMAWrapper mwa = new TMAWrapper("bb");
-      final TMAContactWrapper tcwa1 =
-          new TMAContactWrapper("aaa", "bbb", new HiResDate(130), null, 0, 0,
-              0, null, null, null, null);
-      final TMAContactWrapper tcwa2 =
-          new TMAContactWrapper("bbb", "bbb", new HiResDate(190), null, 0, 0,
-              0, null, null, null, null);
-      final TMAContactWrapper tcwa3 =
-          new TMAContactWrapper("ccc", "bbb", new HiResDate(230), null, 0, 0,
-              0, null, null, null, null);
+      final TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
+          new HiResDate(130), null, 0, 0, 0, null, null, null, null);
+      final TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
+          new HiResDate(190), null, 0, 0, 0, null, null, null, null);
+      final TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
+          new HiResDate(230), null, 0, 0, 0, null, null, null, null);
       mwa.add(tcwa1);
       mwa.add(tcwa2);
       mwa.add(tcwa3);
       tw.add(mwa);
       final TMAWrapper mw = new TMAWrapper("cc");
-      final TMAContactWrapper tcw1 =
-          new TMAContactWrapper("ddd", "bbb", new HiResDate(230), null, 0, 0,
-              0, null, null, null, null);
-      final TMAContactWrapper tcw2 =
-          new TMAContactWrapper("eee", "bbb", new HiResDate(330), null, 0, 0,
-              0, null, null, null, null);
-      final TMAContactWrapper tcw3 =
-          new TMAContactWrapper("fff", "bbb", new HiResDate(390), null, 0, 0,
-              0, null, null, null, null);
+      final TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
+          new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+      final TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
+          new HiResDate(330), null, 0, 0, 0, null, null, null, null);
+      final TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
+          new HiResDate(390), null, 0, 0, 0, null, null, null, null);
       mw.add(tcw1);
       mw.add(tcw2);
       mw.add(tcw3);
@@ -1103,10 +1088,9 @@ public class RightClickCutCopyAdaptor
     return res;
   }
 
-  
   /**
    * duplicate this item
-   * 
+   *
    * @param item
    * @return
    */
@@ -1115,7 +1099,7 @@ public class RightClickCutCopyAdaptor
     Editable res = null;
     try
     {
-      
+
       final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
       final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
       oos.writeObject(item);
@@ -1159,10 +1143,10 @@ public class RightClickCutCopyAdaptor
       if (oj instanceof Editable)
       {
         res = (Editable) oj;
-        
-        if(item instanceof IsTransientForChildren)
+
+        if (item instanceof IsTransientForChildren)
         {
-          IsTransientForChildren par = (IsTransientForChildren) item;
+          final IsTransientForChildren par = (IsTransientForChildren) item;
           par.reconnectChildObjects(res);
         }
       }
@@ -1208,18 +1192,16 @@ public class RightClickCutCopyAdaptor
     {
 
       // first the cut action
-      cutter =
-          new CutItem(editables, _clipboard, parentLayers, theLayers,
-              updateLayers);
+      cutter = new CutItem(editables, _clipboard, parentLayers, theLayers,
+          updateLayers);
 
       // now the copy action
-      copier =
-          new CopyItem(editables, _clipboard, parentLayers, theLayers,
-              updateLayers);
+      copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
+          updateLayers);
 
       // and the delete
-      deleter =
-          new DeleteItem(editables, parentLayers, theLayers, updateLayers);
+      deleter = new DeleteItem(editables, parentLayers, theLayers,
+          updateLayers);
 
       // create the menu items
 

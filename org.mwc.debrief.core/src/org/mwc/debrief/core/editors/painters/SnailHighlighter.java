@@ -20,6 +20,8 @@ import java.awt.Graphics2D;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTAnnotation;
 import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTBuoyPattern;
@@ -149,9 +151,24 @@ public class SnailHighlighter implements TemporalLayerPainter
       }
       else if (track.isSinglePointTrack())
       {
-        final TrackSegment seg = (TrackSegment) track.getPositionIterator()
-            .nextElement();
-        final FixWrapper fix = (FixWrapper) seg.first();
+        // hmm, there may, or may not be a segment
+        Editable next = track.getPositionIterator().nextElement();
+        final FixWrapper fix;
+        if(next instanceof TrackSegment)
+        {
+          TrackSegment seg = (TrackSegment) next;
+          fix = (FixWrapper) seg.first();
+        }
+        else if(next instanceof FixWrapper)
+        {
+          fix = (FixWrapper) next;
+        }
+        else
+        {
+          CorePlugin.logError(Status.ERROR, "Item of type:" + next.getClass()
+              + " should not be stored as a track position", null);
+          fix = null;
+        }
         return new Watchable[]
         {fix};
       }

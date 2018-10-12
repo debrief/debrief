@@ -5,6 +5,7 @@ package Debrief.GUI.Views;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,7 +21,7 @@ import Debrief.ReaderWriter.powerPoint.model.Track;
 import Debrief.ReaderWriter.powerPoint.model.TrackData;
 import Debrief.ReaderWriter.powerPoint.model.TrackPoint;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -32,7 +33,6 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import net.lingala.zip4j.exception.ZipException;
 
@@ -139,15 +139,17 @@ public abstract class CoreCoordinateRecorder
   private final long _worldIntervalMillis;
 
   private final long _modelIntervalMillis;
+  private final DateFormat _dateFormat;
 
   public CoreCoordinateRecorder(final Layers layers,
       final PlainProjection plainProjection, final long worldIntervalMillis,
-      final long modelIntervalMillis)
+      final long modelIntervalMillis, final String dateFormat)
   {
     _myLayers = layers;
     _projection = plainProjection;
     _worldIntervalMillis = worldIntervalMillis;
     _modelIntervalMillis = modelIntervalMillis;
+    _dateFormat = new GMTDateFormat(dateFormat);
   }
 
   private ExportResult exportFile(final String fileName,
@@ -205,8 +207,7 @@ public abstract class CoreCoordinateRecorder
       return;
 
     // get the new time.
-    final String time = FormatRNDateTime.toMediumString(timeNow.getDate()
-        .getTime());
+    final String time = _dateFormat.format(timeNow.getDate());
     if (startTime == null)
     {
       startTime = time;
@@ -219,15 +220,18 @@ public abstract class CoreCoordinateRecorder
       @Override
       public void operateOn(final Editable item)
       {
-        final TrackWrapper track = (TrackWrapper) item;
+        final LightweightTrackWrapper track = (LightweightTrackWrapper) item;
         final Watchable[] items = track.getNearestTo(timeNow);
-        if (items != null && items.length > 0)
+        if (items != null && items.length > 0 && items[0] != null)
         {
           final FixWrapper fix = (FixWrapper) items[0];
           Track tp = _tracks.get(track.getName());
           if (tp == null)
           {
-            tp = new Track(track.getName(), track.getColor());
+            // the _times list will have received a value before
+            // we get called, so we decrement by one.
+            int waitingSteps = _times.size() - 1;
+            tp = new Track(track.getName(), track.getColor(), waitingSteps);
             _tracks.put(track.getName(), tp);
           }
           final Point point = _projection.toScreen(fix.getLocation());
@@ -243,11 +247,12 @@ public abstract class CoreCoordinateRecorder
           trackPoint.setLongitude((float) point.getX());
           trackPoint.setElevation((float) fix.getLocation().getDepth());
           trackPoint.setTime(fix.getDTG().getDate());
+          trackPoint.setFormattedTime(_times.get(_times.size() - 1));
           tp.getSegments().add(trackPoint);
         }
       }
     };
-    _myLayers.walkVisibleItems(TrackWrapper.class, outputIt);
+    _myLayers.walkVisibleItems(LightweightTrackWrapper.class, outputIt);
   }
 
   protected abstract void openFile(String filename);

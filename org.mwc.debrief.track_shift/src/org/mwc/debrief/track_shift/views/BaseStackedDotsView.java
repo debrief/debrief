@@ -1372,7 +1372,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     _targetOverviewPlot.setDataset(0, _targetCourseSeries);
     _targetOverviewPlot.setDataset(1, _targetSpeedSeries);
 
-    final NumberAxis overviewCourse = new NumberAxis("Course (\u00b0)")
+    final NumberAxis overviewCourse = new NumberAxis("Course (°)")
     {
       /**
        *
@@ -3195,6 +3195,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       });
     }
   }
+  
+  private static class LegStorer implements ILegStorer
+  {
+    private final ColorProvider _randomProv;
+    private final List<Zone> _legs;
+
+    private LegStorer(ColorProvider randomProv, List<Zone> legs)
+    {
+      _randomProv = randomProv;
+      _legs = legs;
+    }
+    
+    @Override
+    public void storeLeg(final String scenarioName, final long tStart,
+        final long tEnd, final double rms)
+    {
+      final Zone newZone = new Zone(tStart, tEnd, _randomProv.getZoneColor());
+      _legs.add(newZone);
+    }
+  };
 
   /**
    * slice the target bearings according to these zones
@@ -3244,16 +3264,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       }
     };
 
-    final ILegStorer legStorer = new ILegStorer()
-    {
-      @Override
-      public void storeLeg(final String scenarioName, final long tStart,
-          final long tEnd, final double rms)
-      {
-        final Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
-        legs.add(newZone);
-      }
-    };
+    final ILegStorer legStorer = new LegStorer(randomProv, legs);
 
     final double optimiseTolerance = 0.000001;
     final double RMS_ZIG_RATIO = getPrecision(slicePrecision);
@@ -3347,16 +3358,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       return null;
     }
 
-    final ILegStorer legStorer = new ILegStorer()
-    {
-      @Override
-      public void storeLeg(final String scenarioName, final long tStart,
-          final long tEnd, final double rms)
-      {
-        final Zone newZone = new Zone(tStart, tEnd, randomProv.getZoneColor());
-        legs.add(newZone);
-      }
-    };
+    final ILegStorer legStorer = new LegStorer(randomProv, legs);
 
     final double optimiseTolerance = 0.000001;
     final double RMS_ZIG_RATIO = getPrecision(slicePrecision);

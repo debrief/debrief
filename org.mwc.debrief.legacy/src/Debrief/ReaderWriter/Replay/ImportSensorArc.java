@@ -24,6 +24,7 @@ import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackCoverageWrapper.DynamicCo
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper.DynamicShape;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -78,7 +79,14 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 		else
 		{
 			final String timeToken = myTokens.get(index++);
-			startDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+			try
+      {
+        startDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 		}
 		dateToken = myTokens.get(index++);
 		if (dateToken.startsWith("N"))
@@ -88,7 +96,14 @@ final class ImportSensorArc extends AbstractPlainLineImporter {
 		else
 		{
 			final String timeToken = myTokens.get(index++);
-			endDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+			try
+      {
+        endDtg = DebriefFormatDateTime.parseThis(dateToken, timeToken);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 		}
 
     // get the (possibly multi-word) track name

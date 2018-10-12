@@ -44,6 +44,7 @@ import Debrief.ReaderWriter.XML.GUIHandler;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -52,7 +53,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 {
 
-	private static final String RECT_HIGHLIGHT_SIZE = "RectHighlight_Size";
+  private static final String TOOLBOX_END_TIME = "Toolbox_End_Time";
+
+  private static final String TOOLBOX_START_TIME = "Toolbox_Start_Time";
+
+  private static final String RECT_HIGHLIGHT_SIZE = "RectHighlight_Size";
 
 	private static final String RECT_HIGHLIGHT_COLOR = "RectHighlight_Color";
 
@@ -141,25 +146,39 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		}
 
 		// ////////////////////////////////////////////////////////////
-		final String start_time = (String) details.properties.get("Toolbox_Start_Time");
+		final String start_time = (String) details.properties.get(TOOLBOX_START_TIME);
 		if (start_time != null)
 		{
 			HiResDate startTime = null;
 			// get a date from this
-			startTime = DebriefFormatDateTime.parseThis(start_time);
+			try
+      {
+        startTime = DebriefFormatDateTime.parseThis(start_time);
+        // set the cursor
+        timePrefs.setSliderStartTime(startTime);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
-			// set the cursor
-			timePrefs.setSliderStartTime(startTime);
 		}
 
 		// ////////////////////////////////////////////////////////////
-		final String end_time = (String) details.properties.get("Toolbox_End_Time");
+		final String end_time = (String) details.properties.get(TOOLBOX_END_TIME);
 		if (end_time != null)
 		{
 			HiResDate endTime = null;
 
 			// get a date from this
-			endTime = DebriefFormatDateTime.parseThis(end_time);
+			try
+      {
+        endTime = DebriefFormatDateTime.parseThis(end_time);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
 			// set the cursor
 			timePrefs.setSliderEndTime(endTime);
@@ -181,13 +200,22 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		if (currentTime != null)
 		{
 			// and set the time
-			final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
+			HiResDate dtg;
+      try
+      {
+        dtg = DebriefFormatDateTime.parseThis(currentTime);
+        
+        // did we find a valid dtg?
+        if (dtg != null)
+        {
+          timeController.setTime(this, dtg, false);
+        }
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
-			// did we find a valid dtg?
-			if (dtg != null)
-			{
-				timeController.setTime(this, dtg, false);
-			}
 		}
 
 		// ////////////////////////////////////////////////////////////
@@ -517,11 +545,11 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		// Let's not bother with this for now...
 		final HiResDate theStartTime = controller.getSliderStartTime();
 		if (theStartTime != null)
-			details.addProperty("Toolbox_Start_Time",
+			details.addProperty(TOOLBOX_START_TIME,
 					DebriefFormatDateTime.toStringHiRes(theStartTime));
 		final HiResDate theEndTime = controller.getSliderEndTime();
 		if (theEndTime != null)
-			details.addProperty("Toolbox_End_Time",
+			details.addProperty(TOOLBOX_END_TIME,
 					DebriefFormatDateTime.toStringHiRes(theEndTime));
 
 		return details;

@@ -261,6 +261,7 @@ import java.util.Vector;
 
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
+import MWC.GUI.CanPlotFaded;
 import MWC.GUI.CanvasType;
 import MWC.GUI.CreateEditorForParent;
 import MWC.GUI.Defaults;
@@ -291,7 +292,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  */
 public class FixWrapper extends PlainWrapper implements Watchable,
     CanvasType.MultiLineTooltipProvider, TimeStampedDataItem,
-    CreateEditorForParent
+    CreateEditorForParent, CanPlotFaded
 {
 
   // //////////////////////////////////////
@@ -570,52 +571,52 @@ public class FixWrapper extends PlainWrapper implements Watchable,
      */
     public void testInterpolate()
     {
-      FixWrapper fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3);
-      FixWrapper fw2 = TrackWrapper_Test.createFix(200, 2, 1, 2, 3);
+      FixWrapper fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 3);
+      FixWrapper fw2 = TrackWrapper_Test.createFix2(200, 2, 1, 2, 3);
       FixWrapper fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right lat", 1.5, fw3.getLocation().getLat(), 0.001);
       assertEquals("right lat", 1, fw3.getLocation().getLong(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 1);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 10, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 1);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 2, 10, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right course", MWC.Algorithms.Conversions.Degs2Rads(6), fw3
           .getCourse(), 0.001);
       assertEquals("right speed", 2, fw3.getSpeed(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 20, 30);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 10, 10);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 20, 30);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 2, 10, 10);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(125));
       assertEquals("right time", 125, fw3.getTime().getDate().getTime());
       assertEquals("right course", MWC.Algorithms.Conversions.Degs2Rads(17.5),
           fw3.getCourse(), 0.001);
       assertEquals("right speed", 25, fw3.getSpeed(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 1, 2, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 3);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 1, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
       assertEquals("right time", 140, fw3.getTime().getDate().getTime());
       assertEquals("right lat", 1.4, fw3.getLocation().getLat(), 0.001);
       assertEquals("right lat", 1, fw3.getLocation().getLong(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 1, 21, 2, 3);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 21, 2, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 21, 2, 3);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 21, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
       assertEquals("right time", 140, fw3.getTime().getDate().getTime());
       assertEquals("right lat", 1.4, fw3.getLocation().getLat(), 0.001);
       assertEquals("right lat", 21, fw3.getLocation().getLong(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 41, 21, 2, 3);
-      fw2 = TrackWrapper_Test.createFix(200, 42, 21, 2, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 41, 21, 2, 3);
+      fw2 = TrackWrapper_Test.createFix2(200, 42, 21, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
       assertEquals("right time", 140, fw3.getTime().getDate().getTime());
       assertEquals("right lat", 41.4, fw3.getLocation().getLat(), 0.001);
       assertEquals("right lat", 21, fw3.getLocation().getLong(), 0.0001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 60, 30, 0, 31, 0, 0, 2, 3);
-      fw2 = TrackWrapper_Test.createFix(200, 60, 15, 0, 31, 30, 0, 2, 3);
+      fw1 = TrackWrapper_Test.createFix1(100, 60, 30, 0, 31, 0, 0, 2, 3);
+      fw2 = TrackWrapper_Test.createFix1(200, 60, 15, 0, 31, 30, 0, 2, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       //
       // System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
@@ -630,22 +631,22 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       assertEquals("right lat", 60.375, fw3.getLocation().getLat(), 0.001);
 
       // handle the course passing through zero
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 0, 1);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 10, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 0, 1);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 2, 10, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right course", MWC.Algorithms.Conversions.Degs2Rads(5), fw3
           .getCourse(), 0.001);
 
       // handle the course passing through zero
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 355, 1);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 355, 1);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 2, 15, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right course", 5, Math.toDegrees(fw3.getCourse()), 0.001);
 
-      fw1 = TrackWrapper_Test.createFix(100, 1, 1, 315, 1);
-      fw2 = TrackWrapper_Test.createFix(200, 2, 2, 15, 3);
+      fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 315, 1);
+      fw2 = TrackWrapper_Test.createFix2(200, 2, 2, 15, 3);
       fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
       assertEquals("right time", 150, fw3.getTime().getDate().getTime());
       assertEquals("right course", 345, Math.toDegrees(fw3.getCourse()), 0.001);
@@ -1384,6 +1385,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
    * @param dest
    * @param centre
    */
+  @Override
   public void paintMe(final CanvasType dest, final WorldLocation centre,
       final Color theColor)
   {

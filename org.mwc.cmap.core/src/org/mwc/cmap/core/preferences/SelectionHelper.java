@@ -25,6 +25,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 final public class SelectionHelper implements ISelectionProvider
 {
 	private Vector<ISelectionChangedListener> _selectionListeners;
+	private ISelection _selection;
 
 	public void addSelectionChangedListener(final ISelectionChangedListener listener)
 	{
@@ -38,7 +39,7 @@ final public class SelectionHelper implements ISelectionProvider
 
 	public ISelection getSelection()
 	{
-		return null;
+		return _selection;
 	}
 
 	public void removeSelectionChangedListener(
@@ -49,10 +50,13 @@ final public class SelectionHelper implements ISelectionProvider
 
 	public void setSelection(final ISelection selection)
 	{
+	  _selection = selection;
 	}
 
 	public void fireNewSelection(final ISelection data)
 	{
+	  _selection = data;
+	  
 		final SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
 		for (final Iterator<ISelectionChangedListener> stepper = _selectionListeners
 				.iterator(); stepper.hasNext();)

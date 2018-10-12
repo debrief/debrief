@@ -14,6 +14,8 @@
  */
 package Debrief.ReaderWriter.XML.Tactical;
 
+import java.text.ParseException;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -30,6 +32,7 @@ import MWC.GUI.Properties.LineLocationPropertyEditor;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.WorldDistance;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 abstract public class SensorContactHandler extends
@@ -171,7 +174,14 @@ abstract public class SensorContactHandler extends
     {
       public void setValue(final String name, final String value)
       {
-        _theContact.setDTG(parseThisDate(value));
+        try
+        {
+          _theContact.setDTG(parseThisDate(value));
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");
+        }
       }
     });
 

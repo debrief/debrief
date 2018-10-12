@@ -101,8 +101,9 @@ final class ImportDynamicRectangle extends AbstractPlainLineImporter {
 
 	/**
 	 * read in this string and return a Label
+	 * @throws ParseException 
 	 */
-	public final Object readThisLine(final String theLine) {
+	public final Object readThisLine(final String theLine) throws ParseException {
 
 		// get a stream from the string
 		final StringTokenizer st = new StringTokenizer(theLine);
@@ -275,7 +276,7 @@ final class ImportDynamicRectangle extends AbstractPlainLineImporter {
 
 	public static class TestImport extends TestCase {
 		
-		public void testWithLabel() {
+		public void testWithLabel() throws ParseException {
 			final String line1 = ";RECT_TRACK: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportDynamicRectangle ir = new ImportDynamicRectangle();
 			final DynamicShapeWrapper res = (DynamicShapeWrapper) ir.readThisLine(line1);

@@ -169,6 +169,10 @@ public class CorePlugin extends AbstractUIPlugin implements ClipboardOwner,
       "org.mwc.cmap.media.views.VideoPlayerView";
   public static final String IMAGE_VIEWER_VIEW =
       "org.mwc.cmap.media.views.ImagesView";
+  
+  public static final String[] SUPPORTED_MEDIA_FORMATS =
+  {"*.avi", "*.vob", "*.mp4", "*.mov", "*.mpeg", "*.flv", "*.mp3",
+      "*.wma", "*.wmv","*.mp3", "*.*"};
 
   /**
    * preference for detault font size
