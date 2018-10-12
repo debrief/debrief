@@ -54,6 +54,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper implements
@@ -446,13 +447,23 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       // remember the size of the symbol
       final double scale = _theSnailShape.getScaleVal();
+      
       // remember the color of the symbol
       final Color oldCol = _theSnailShape.getColor();
 
       // replace our symbol with this new one
-      _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-      _theSnailShape.setColor(oldCol);
-      _theSnailShape.setScaleVal(scale);
+      final PlainSymbol shape =
+          MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
+      if (shape != null)
+      {
+        _theSnailShape = shape;
+        _theSnailShape.setColor(oldCol);
+        _theSnailShape.setScaleVal(scale);
+      }
+      else
+      {
+        Trace.trace("Failed to find symbol for type:" + val);
+      }
     }
   }
 
