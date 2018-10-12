@@ -188,14 +188,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             displayExpertLongProp("LabelFrequency", "Label frequency",
                 "the label frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                "the symbol frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ResampleDataAt", "Resample data at",
                 "the data sample rate", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ArrowFrequency", "Arrow frequency",
                 "the direction marker frequency", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                "the symbol frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayProp("CustomTrailLength", "Custom Snail Trail",
                 "to specify a custom snail trail length",
@@ -2324,7 +2324,32 @@ public class TrackWrapper extends LightweightTrackWrapper implements
               break;
             }
           }
+          //
+          // // have a go..
+          // if (starter == null)
+          // {
+          // starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
+          // }
+          // else
+          // {
+          // starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
+          // }
+          //
+          // if (finisher == null)
+          // {
+          // finisher =
+          // new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1),
+          // _zeroLocation, 0.0, 0.0));
+          // }
+          // else
+          // {
+          // finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
+          // }
+          //
+          // // ok, ready, go for it.
+          // set = getPositionsBetween(starter, finisher);
         }
+
       }
     }
 
