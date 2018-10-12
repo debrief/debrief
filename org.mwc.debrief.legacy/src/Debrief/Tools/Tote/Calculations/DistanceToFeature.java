@@ -75,8 +75,6 @@ public class DistanceToFeature
         @Override
         public void store(final long time, final WorldDistance distance)
         {
-          System.out.println(new Date(time) + " - " + distance.getValueIn(
-              WorldDistance.METRES));
           times.add(time);
           dist.add(distance);
         }
