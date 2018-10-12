@@ -46,7 +46,6 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     super(pageName);
     setTitle("Create Dynamic Circle");
     _centre = centre;
-    setDescription("This wizard is used to create dynamic shapes");
   }
 
   /*

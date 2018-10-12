@@ -40,7 +40,6 @@ public class DynamicShapeStylingPage extends DynamicShapeBaseWizardPage
     super(pageName);
     this._type = type;
     setTitle("Create dynamic " + type);
-    setDescription("This wizard is used to create new dynamic shapes");
   }
 
   /*

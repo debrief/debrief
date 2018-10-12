@@ -42,7 +42,6 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
     super(pageName);
     _centre = centre;
     setTitle("Create dynamic rectangle");
-    setDescription("This wizard is used to create new dynamic shapes");
   }
 
   /*

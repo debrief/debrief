@@ -41,6 +41,7 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   protected DynamicShapeBaseWizardPage(final String pageName)
   {
     super(pageName);
+    setDescription("This wizard is used to create new dynamic shapes");
   }
 
   protected Composite createBaseControl(final Composite parent)
