@@ -1175,6 +1175,9 @@ public class RelativeTMASegment extends CoreTMASegment implements
     {
       theNewStart = newStart;
     }
+    
+    // get the new start time, as a long
+    final long newStartT = theNewStart.getDate().getTime();
 
     // ok, how far is this from the current end
     final long delta = theNewStart.getMicros() - startDTG().getMicros();
@@ -1238,17 +1241,9 @@ public class RelativeTMASegment extends CoreTMASegment implements
     // in...
     if (theNewStart.lessThan(startDTG()))
     {
-
       // right, we if we have to add another
       // find the current first point
       final FixWrapper theLoc = (FixWrapper) this.first();
-
-      // note: we don't want one large leap. So, insert a few points
-      final long oldStartT = startDTG().getDate().getTime();
-      final long newStartT = theNewStart.getDate().getTime();
-
-      // see if we've managed to find some cuts to use
-      final boolean handled;
 
       // If we have a reference sensor, take visible cuts
       // from that sensor
@@ -1259,42 +1254,39 @@ public class RelativeTMASegment extends CoreTMASegment implements
             startDTG());
         if (cuts != null)
         {
-          final int len = this.size();
           for (final Editable t : cuts)
           {
             final SensorContactWrapper cut = (SensorContactWrapper) t;
             addFix(theLoc, cut.getDTG().getDate().getTime());
           }
-          final int newLen = this.size();
-          handled = newLen > len;
-        }
-        else
-        {
-          handled = false;
         }
       }
-      else
+    }
+    
+    // right, we may have pruned off too far. See if we need to put a bit back
+    // in...
+    if (theNewStart.lessThan(startDTG()))
+    {
+      // ok, we don't have sensor. just add some at "nice" sizes
+      final long typicalDelta = typicalTimeStep();
+
+      // right, we if we have to add another
+      // find the current first point
+      final FixWrapper theLoc = (FixWrapper) this.first();
+
+      // note: we don't want one large leap. So, insert a few points
+      final long oldStartT = startDTG().getDate().getTime();
+
+      // ok, insert new fix at the new start time
+      addFix(theLoc, newStartT);
+
+      // now walk forwards until we meet the old start time
+      long thisT = newStartT + typicalDelta;
+
+      while (thisT < oldStartT)
       {
-        handled = false;
-      }
-
-      // are we sorted?
-      if (!handled)
-      {
-        // ok, we don't have sensor. just add some at "nice" sizes
-        final long typicalDelta = typicalTimeStep();
-
-        // ok, insert new fix at the new start time
-        addFix(theLoc, newStartT);
-
-        // now walk forwards until we meet the old start time
-        long thisT = newStartT + typicalDelta;
-
-        while (thisT < oldStartT)
-        {
-          addFix(theLoc, thisT);
-          thisT += typicalDelta;
-        }
+        addFix(theLoc, thisT);
+        thisT += typicalDelta;
       }
     }
 
