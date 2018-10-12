@@ -41,7 +41,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
       + "Eg: 12.3,234.5 11.3,44.2 12.5,45.6 -12.3,5.78, 3.65432,-14.5";
   private Text _coordinatesPolygon;
 
-  protected DynamicPolygonBoundsPage(String pageName)
+  public DynamicPolygonBoundsPage(String pageName)
   {
     super(pageName);
     setTitle("Create dynamic polygon");

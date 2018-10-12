@@ -10,7 +10,7 @@ import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
-abstract public class CoreDynamicShapeWizard extends Wizard
+abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShapeBaseWizardPage> extends Wizard
 {
 
   private final String SHAPE_NAME;
@@ -20,7 +20,7 @@ abstract public class CoreDynamicShapeWizard extends Wizard
   private DynamicShapeWrapper _dynamicShape;
 
   private DynamicShapeTimingsWizardPage _shapeTimingsPage;
-  protected DynamicShapeBaseWizardPage _boundsPage;
+  private WizardPageType _boundsPage;
   private DynamicShapeStylingPage _stylingPage;
   
   public CoreDynamicShapeWizard(String shapeName, Date startDate,Date endDate)
@@ -50,13 +50,13 @@ abstract public class CoreDynamicShapeWizard extends Wizard
    * 
    * @return
    */
-  abstract DynamicShapeBaseWizardPage getBoundsPage();
+  abstract protected WizardPageType getBoundsPage();
   
   /** retrieve the shape from the bounds page
    * 
    * @return
    */
-  abstract protected PlainShape getShape();
+  abstract protected PlainShape getShape(WizardPageType boundsPage);
 
   
   /* (non-Javadoc)
@@ -67,7 +67,7 @@ abstract public class CoreDynamicShapeWizard extends Wizard
   {
     Date startTime = _shapeTimingsPage.getStartTime();
     Date endTime = _shapeTimingsPage.getEndTime();
-    PlainShape shape = getShape();
+    PlainShape shape = getShape(_boundsPage);
     final Color theColor = ImportReplay.replayColorFor(_stylingPage
         .getSymbology());
     

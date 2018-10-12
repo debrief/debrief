@@ -37,7 +37,7 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
   private WorldLocation _centre;
   
 
-  protected DynamicRectangleBoundsPage(String pageName,WorldLocation centre)
+  public DynamicRectangleBoundsPage(String pageName,WorldLocation centre)
   {
     super(pageName);
     _centre = centre;

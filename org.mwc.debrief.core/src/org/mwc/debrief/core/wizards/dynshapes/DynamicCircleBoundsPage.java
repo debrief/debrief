@@ -39,7 +39,7 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
   private CWorldLocation _txtCentre;
   private Text _txtRadius;
   private WorldLocation _centre;
-  protected DynamicCircleBoundsPage(String pageName,WorldLocation centre)
+  public DynamicCircleBoundsPage(String pageName,WorldLocation centre)
   {
     super(pageName);
     setTitle("Create Dynamic Circle");
