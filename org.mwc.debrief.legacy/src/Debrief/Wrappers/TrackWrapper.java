@@ -2324,32 +2324,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
               break;
             }
           }
-          //
-          // // have a go..
-          // if (starter == null)
-          // {
-          // starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
-          // }
-          // else
-          // {
-          // starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
-          // }
-          //
-          // if (finisher == null)
-          // {
-          // finisher =
-          // new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1),
-          // _zeroLocation, 0.0, 0.0));
-          // }
-          // else
-          // {
-          // finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
-          // }
-          //
-          // // ok, ready, go for it.
-          // set = getPositionsBetween(starter, finisher);
         }
-
       }
     }
 
