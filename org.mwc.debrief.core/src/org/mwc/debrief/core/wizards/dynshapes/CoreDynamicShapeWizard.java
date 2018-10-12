@@ -10,7 +10,8 @@ import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
-abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShapeBaseWizardPage> extends Wizard
+abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShapeBaseWizardPage>
+    extends Wizard
 {
   private final String _shapeName;
   private final Date _startDate;
@@ -21,44 +22,51 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
   private DynamicShapeTimingsWizardPage _shapeTimingsPage;
   private WizardPageType _boundsPage;
   private DynamicShapeStylingPage _stylingPage;
-  
-  public CoreDynamicShapeWizard(String shapeName, Date startDate,Date endDate)
+
+  public CoreDynamicShapeWizard(final String shapeName, final Date startDate,
+      final Date endDate)
   {
     _shapeName = shapeName;
     _startDate = startDate;
     _endDate = endDate;
   }
-  
-  public DynamicShapeWrapper getDynamicShapeWrapper()
-  {
-    return _dynamicShape;
-  }
-  
+
   @Override
   public void addPages()
   {
-    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(DynamicShapeBaseWizardPage.TIMINGS_PAGE,_shapeName,_startDate,_endDate);
+    _shapeTimingsPage = new DynamicShapeTimingsWizardPage(
+        DynamicShapeBaseWizardPage.TIMINGS_PAGE, _shapeName, _startDate,
+        _endDate);
     _boundsPage = getBoundsPage();
-    _stylingPage = new DynamicShapeStylingPage(DynamicShapeBaseWizardPage.STYLING_PAGE, _shapeName);
+    _stylingPage = new DynamicShapeStylingPage(
+        DynamicShapeBaseWizardPage.STYLING_PAGE, _shapeName);
     addPage(_shapeTimingsPage);
     addPage(_boundsPage);
     addPage(_stylingPage);
   }
-  
-  /** get the page that provides the bounds values
-   * 
+
+  /**
+   * get the page that provides the bounds values
+   *
    * @return
    */
   abstract protected WizardPageType getBoundsPage();
-  
-  /** retrieve the shape from the bounds page
-   * 
+
+  public DynamicShapeWrapper getDynamicShapeWrapper()
+  {
+    return _dynamicShape;
+  }
+
+  /**
+   * retrieve the shape from the bounds page
+   *
    * @return
    */
   abstract protected PlainShape getShape(WizardPageType boundsPage);
 
-  
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.eclipse.jface.wizard.Wizard#performFinish()
    */
   @Override
@@ -69,12 +77,13 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
     final PlainShape shape = getShape(_boundsPage);
     final Color theColor = ImportReplay.replayColorFor(_stylingPage
         .getSymbology());
-    
-    final HiResDate shapeDate = startTime == null ? null : new HiResDate(startTime);
-    
+
+    final HiResDate shapeDate = startTime == null ? null : new HiResDate(
+        startTime);
+
     _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(), shape,
         theColor, shapeDate, "dynamic " + _shapeName);
-      
+
     if (endTime != null)
     {
       _dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));

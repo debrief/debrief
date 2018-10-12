@@ -39,7 +39,9 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
   private CWorldLocation _txtCentre;
   private Text _txtRadius;
   private final WorldLocation _centre;
-  public DynamicCircleBoundsPage(String pageName,WorldLocation centre)
+
+  public DynamicCircleBoundsPage(final String pageName,
+      final WorldLocation centre)
   {
     super(pageName);
     setTitle("Create Dynamic Circle");
@@ -47,49 +49,51 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     setDescription("This wizard is used to create dynamic shapes");
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   *
    * @see org.eclipse.jface.dialogs.IDialogPage#createControl(org.eclipse.swt.widgets.Composite)
    */
   @Override
-  public void createControl(Composite parent)
+  public void createControl(final Composite parent)
   {
-    Composite mainComposite = new Composite(parent,SWT.NULL);
+    final Composite mainComposite = new Composite(parent, SWT.NULL);
     mainComposite.setLayout(new GridLayout());
     mainComposite.setLayoutData(new GridData(GridData.FILL_BOTH));
-    Composite baseComposite = super.createBaseControl(mainComposite);
-    Composite composite = new Composite(baseComposite,SWT.NULL);
-    GridLayout layout = new GridLayout(2,false);
-    layout.marginLeft=layout.marginRight=0;
+    final Composite baseComposite = super.createBaseControl(mainComposite);
+    final Composite composite = new Composite(baseComposite, SWT.NULL);
+    final GridLayout layout = new GridLayout(2, false);
+    layout.marginLeft = layout.marginRight = 0;
     composite.setLayout(layout);
     composite.setLayoutData(new GridData(GridData.FILL_BOTH));
-    GridData gd = new GridData(SWT.BEGINNING,SWT.CENTER,true,false);
-    new Label(composite,SWT.NONE).setText("Centre:");
-    _txtCentre = new CWorldLocation(composite,SWT.NONE);
+    final GridData gd = new GridData(SWT.BEGINNING, SWT.CENTER, true, false);
+    new Label(composite, SWT.NONE).setText("Centre:");
+    _txtCentre = new CWorldLocation(composite, SWT.NONE);
     _txtCentre.setLayoutData(gd);
     _txtCentre.setToolTipText("Location of centre of the dynamic circle");
-   
+
     _txtCentre.addLocationModifiedListener(new LocationModifiedListener()
     {
-      
+
       @Override
-      public void modifyValue(LocationModifiedEvent e)
+      public void modifyValue(final LocationModifiedEvent e)
       {
         setPageComplete(isPageComplete());
-        
+
       }
     });
-    new Label(composite,SWT.NONE).setText("Radius (yds): ");
-    _txtRadius = new Text(composite,SWT.BORDER);
+    new Label(composite, SWT.NONE).setText("Radius (yds): ");
+    _txtRadius = new Text(composite, SWT.BORDER);
     _txtRadius.setToolTipText("Radius of the dynamic circle");
-    
-    gd.minimumWidth=245;
-    gd.heightHint=20;
+
+    gd.minimumWidth = 245;
+    gd.heightHint = 20;
     _txtRadius.setLayoutData(gd);
     _txtRadius.addModifyListener(new ModifyListener()
     {
-      
+
       @Override
-      public void modifyText(ModifyEvent e)
+      public void modifyText(final ModifyEvent e)
       {
         setPageComplete(isPageComplete());
       }
@@ -97,53 +101,63 @@ public class DynamicCircleBoundsPage extends DynamicShapeBaseWizardPage
     initializeUI();
     setControl(mainComposite);
   }
-  private void initializeUI() {
-    _txtRadius.setText("" + MAX_RADIUS);
-    _txtCentre.setValue(_centre);
-  }
 
   public WorldLocation getCenter()
   {
-    return (WorldLocation)_txtCentre.getValue();
+    return _txtCentre.getValue();
   }
+
   public int getRadius()
   {
     return Integer.valueOf(_txtRadius.getText());
   }
+
+  private void initializeUI()
+  {
+    _txtRadius.setText("" + MAX_RADIUS);
+    _txtCentre.setValue(_centre);
+  }
+
   @Override
   public boolean isPageComplete()
   {
     boolean isPageComplete = false;
-    isPageComplete = _txtCentre.getValue()!=null && _txtCentre.getValue().isValid();
-    if(!isPageComplete) {
+    isPageComplete = _txtCentre.getValue() != null && _txtCentre.getValue()
+        .isValid();
+    if (!isPageComplete)
+    {
       setErrorMessage("Please enter a valid center for the dynamic circle");
     }
-    else {
-      isPageComplete = (!_txtRadius.getText().isEmpty() && isValidRadius(_txtRadius.getText()));
-      if(!isPageComplete) {
+    else
+    {
+      isPageComplete = (!_txtRadius.getText().isEmpty() && isValidRadius(
+          _txtRadius.getText()));
+      if (!isPageComplete)
+      {
         setErrorMessage("Please enter radius in the range 0 to " + MAX_RADIUS);
       }
-      else {
+      else
+      {
         setErrorMessage(null);
       }
     }
     return isPageComplete;
   }
-  
-  private boolean isValidRadius(String value)
+
+  private boolean isValidRadius(final String value)
   {
     // radius must be integer in the range 0 to 4000.
     if (!value.matches("\\\\d+"))
     {
       try
       {
-        int num = Integer.valueOf(value);
+        final int num = Integer.valueOf(value);
         if (num > 0 && num <= MAX_RADIUS)
         {
           return true;
         }
       }
-      catch (NumberFormatException ne)
+      catch (final NumberFormatException ne)
       {
         return false;
       }
