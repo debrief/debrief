@@ -98,6 +98,8 @@ public class PlotTracks
       final Document soup = Jsoup.parse(new String(encoded), "", Parser
           .xmlParser());
       final Element[] shapes = getShapes(soup);
+      String updateTemplate =
+          "(Please, update the version of the master template)";
       if (shapes[0] == null)
       {
         returnValue = "Corrupted Track or missing";
@@ -112,8 +114,15 @@ public class PlotTracks
       }
       else if (shapes[4] == null)
       {
-        returnValue =
-            "Corrupted footprint or missing (old version of the master template)";
+        returnValue = "Corrupted or missing footprint " + updateTemplate;
+      }
+      else if (shapes[5] == null)
+      {
+        returnValue = "Corrupted or missing Scale Bar " + updateTemplate;
+      }
+      else if (shapes[6] == null)
+      {
+        returnValue = "Corrupted or missing Scale Value " + updateTemplate;
       }
 
       try
@@ -474,12 +483,14 @@ public class PlotTracks
 
       // TailX and TailY contains the offset(relative distance from the centre and not
       // the absolute)
-      float TailXUnscalled = arrow_ext_cx * (float) (arrow_pointer_x / 100000.0);
-      float TailYUnscalled = arrow_ext_cy * (float) (arrow_pointer_y / 100000.0);
+      float TailXUnscalled = arrow_ext_cx * (float) (arrow_pointer_x
+          / 100000.0);
+      float TailYUnscalled = arrow_ext_cy * (float) (arrow_pointer_y
+          / 100000.0);
 
-      float[] tempCoordinates = coordinateTransformation(TailXUnscalled, TailYUnscalled, Float
-          .parseFloat(slide_dimen_x), Float.parseFloat(slide_dimen_y), 0, 0, 1,
-          1, 0);
+      float[] tempCoordinates = coordinateTransformation(TailXUnscalled,
+          TailYUnscalled, Float.parseFloat(slide_dimen_x), Float.parseFloat(
+              slide_dimen_y), 0, 0, 1, 1, 0);
       float TailX = tempCoordinates[0];
       float TailY = tempCoordinates[1];
 
@@ -510,7 +521,7 @@ public class PlotTracks
           "a|off").attr("x"));
       final int temp_shape_y = Integer.parseInt(temp_shape_tag.selectFirst(
           "a|off").attr("y"));
-      
+
       String animation_path;
       final Element path_tag = temp_shape_tag.selectFirst("a|path");
       for (final Element child : path_tag.children())
@@ -533,17 +544,19 @@ public class PlotTracks
       float prev_anim_y = tempCoordinates[1];
       prev_anim_x = prev_anim_x - TailX - arrow_center_x_small;
       prev_anim_y = prev_anim_y - TailY - arrow_center_y_small;
-      
+
       float toSubX = prev_anim_x;
       float toSubY = prev_anim_y;
-      
+
       // We calculate the first position for the marker
       tempCoordinates = coordinateTransformation(first_x, first_y,
           dimensionWidth, dimensionHeight, mapX, mapY, mapCX, mapCY, 1);
       // Get Shape offsets and exts
-      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0] - arrow_ext_cx / 2 - TailXUnscalled) + "");
-      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1] - arrow_ext_cy / 2 - TailYUnscalled) + "");
-      
+      temp_arrow_tag.selectFirst("a|off").attr("x", (int) (tempCoordinates[0]
+          - arrow_ext_cx / 2 - TailXUnscalled) + "");
+      temp_arrow_tag.selectFirst("a|off").attr("y", (int) (tempCoordinates[1]
+          - arrow_ext_cy / 2 - TailYUnscalled) + "");
+
       // Adding color to the track
       final String colorHexValue = track.getColorAsString().toUpperCase();
 
@@ -563,9 +576,10 @@ public class PlotTracks
         anim_x = anim_x - TailX - arrow_center_x_small;
         anim_y = anim_y - TailY - arrow_center_y_small;
 
-        animation_path = "M " + String.format("%.4f", (prev_anim_x - toSubX)) + " "
-            + String.format("%.4f", (prev_anim_y - toSubY)) + " L " + String.format("%.4f",
-                (anim_x - toSubX)) + " " + String.format("%.4f", (anim_y - toSubY));
+        animation_path = "M " + String.format("%.4f", (prev_anim_x - toSubX))
+            + " " + String.format("%.4f", (prev_anim_y - toSubY)) + " L "
+            + String.format("%.4f", (anim_x - toSubX)) + " " + String.format(
+                "%.4f", (anim_y - toSubY));
         prev_anim_x = anim_x;
         prev_anim_y = anim_y;
 
@@ -940,6 +954,8 @@ public class PlotTracks
     Element time_tag = null;
     Element narrative_tag = null;
     Element footprint_tag = null;
+    Element scaleBarTag = null;
+    Element scaleValueTag = null;
 
     // retrieve the sample arrow and path tag
     final Elements all_shape_tags = soup.select("p|sp");
@@ -972,6 +988,16 @@ public class PlotTracks
         footprint_tag = shape;
         toRemove.add(footprint_tag);
       }
+      else if ("ScaleBar".equals(name))
+      {
+        scaleBarTag = shape;
+        toRemove.add(scaleBarTag);
+      }
+      else if ("ScaleValue".equals(name))
+      {
+        scaleValueTag = shape;
+        toRemove.add(scaleValueTag);
+      }
     }
 
     for (Element toRemoveElement : toRemove)
@@ -979,7 +1005,8 @@ public class PlotTracks
       toRemoveElement.remove();
     }
     return new Element[]
-    {shape_tag, arrow_tag, time_tag, narrative_tag, footprint_tag};
+    {shape_tag, arrow_tag, time_tag, narrative_tag, footprint_tag, scaleBarTag,
+        scaleValueTag};
   }
 
   private void writeSoup(final String slide_path, final Document soup)
