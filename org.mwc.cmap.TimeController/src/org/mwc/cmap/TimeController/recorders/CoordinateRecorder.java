@@ -108,6 +108,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           retVal.setMasterTemplate(masterTemplateFile);
           retVal.setFileName(fileName);
           retVal.setOpenOnComplete(exportDialog.getOpenOncomplete());
+          retVal.setScaleBarVisible(exportDialog.isScaleBarVisible());
+          retVal.setScaleBarUnit(exportDialog.getScaleBarUnit());
           retVal.setSelectedFile(exportFile);
           retVal.setStatus(true);
         }
