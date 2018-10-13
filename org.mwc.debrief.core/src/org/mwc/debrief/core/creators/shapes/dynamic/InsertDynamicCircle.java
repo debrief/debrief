@@ -16,20 +16,40 @@ package org.mwc.debrief.core.creators.shapes.dynamic;
 
 import java.util.Date;
 
-import org.mwc.debrief.core.wizards.dynshapes.DynamicCircleWizard;
 import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicCircleBoundsPage;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.WorldLocation;
 
 /**
  * @author Ayesha
  *
  */
-public class InsertDynamicCircle extends InsertDynamicShape
+public class InsertDynamicCircle extends
+    InsertDynamicShape<DynamicCircleBoundsPage>
 {
   @Override
-  protected CoreDynamicShapeWizard getWizard(final Date startDate, final Date endDate,WorldLocation center)
+  protected CoreDynamicShapeWizard<DynamicCircleBoundsPage> getWizard(
+      final Date startDate, final Date endDate, final WorldLocation center)
   {
-    return new DynamicCircleWizard(startDate, endDate,center);
+    return new CoreDynamicShapeWizard<DynamicCircleBoundsPage>("Circle",
+        startDate, endDate)
+    {
+      @Override
+      protected DynamicCircleBoundsPage getBoundsPage()
+      {
+        return new DynamicCircleBoundsPage(
+            DynamicShapeBaseWizardPage.BOUNDS_PAGE, center);
+      }
+
+      @Override
+      protected PlainShape getShape(DynamicCircleBoundsPage page)
+      {
+        return new CircleShape(page.getCenter(), page.getRadius());
+      }
+    };
   }
 }

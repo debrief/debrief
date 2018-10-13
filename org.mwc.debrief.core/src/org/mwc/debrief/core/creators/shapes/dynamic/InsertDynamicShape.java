@@ -20,6 +20,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
 import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
+import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
 import MWC.GUI.Layers;
@@ -33,7 +34,7 @@ import MWC.GenericData.WorldLocation;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public abstract class InsertDynamicShape extends CoreInsertShape
+public abstract class InsertDynamicShape<PageType extends DynamicShapeBaseWizardPage> extends CoreInsertShape
 {
   @Override
   protected Plottable getPlottable(final PlainChart theChart)
@@ -46,12 +47,11 @@ public abstract class InsertDynamicShape extends CoreInsertShape
     // get centre of area (at zero depth)
     final WorldLocation centre = wa.getCentreAtSurface();
     return getDynamicShape(startDate,endDate,centre);
-    
   }
   
   protected DynamicShapeWrapper getDynamicShape(final Date startDate, final Date endDate,final WorldLocation center)
   {
-    final CoreDynamicShapeWizard wizard = getWizard(startDate, endDate,center);
+    final CoreDynamicShapeWizard<?> wizard = getWizard(startDate, endDate,center);
     final WizardDialog wd = new WizardDialog(getShell(), wizard);
     final DynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
@@ -65,7 +65,7 @@ public abstract class InsertDynamicShape extends CoreInsertShape
     return thisShape;
   }
   
-  abstract protected CoreDynamicShapeWizard getWizard(final Date startDate, final Date endDate,final WorldLocation center);
+  abstract protected CoreDynamicShapeWizard<PageType> getWizard(final Date startDate, final Date endDate,final WorldLocation center);
 
   @Override
   protected PlainShape getShape(WorldLocation centre)
