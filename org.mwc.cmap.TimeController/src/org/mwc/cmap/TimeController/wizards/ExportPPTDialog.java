@@ -55,7 +55,9 @@ public class ExportPPTDialog extends Dialog
   public static final String PREF_PPT_EXPORT_FILENAME = "pptExportFilename";
   public static final String PREF_PPT_EXPORT_FILEFORMAT = "pptExportFormat";
   public static final String PREF_PPT_EXPORT_OPEN_FILE = "pptExportOpenFile";
-  public static final String PREF_PPT_EXPORT_VISIBLE_BAR = "pptExportVisibleBar";
+  public static final String PREF_PPT_EXPORT_VISIBLE_BAR =
+      "pptExportVisibleBar";
+  public static final String PREF_PPT_EXPORT_UNIT_BAR = "pptExportUnitBar";
 
   private static final String[] supportedFormats =
   {"PPTX"};
@@ -118,6 +120,8 @@ public class ExportPPTDialog extends Dialog
         PREF_PPT_EXPORT_OPEN_FILE);
     scaleBarVisible = PlatformUI.getPreferenceStore().getBoolean(
         PREF_PPT_EXPORT_VISIBLE_BAR);
+    scaleBarUnit = PlatformUI.getPreferenceStore().getString(
+        PREF_PPT_EXPORT_UNIT_BAR);
   }
 
   @Override
@@ -214,29 +218,30 @@ public class ExportPPTDialog extends Dialog
     final Composite compositeFormatting = new Composite(dialogParent, SWT.NONE);
     compositeFormatting.setLayoutData(new GridData(GridData.FILL_BOTH));
     compositeFormatting.setLayout(new GridLayout(1, false));
-    
+
     grpFormatting = new Group(compositeFormatting, SWT.NONE);
     grpFormatting.setText("Formatting");
     grpFormatting.setLayoutData(data);
     grpFormatting.setLayout(new GridLayout(1, false));
-    
+
     grpScaleBar = new Group(grpFormatting, SWT.NONE);
     grpScaleBar.setText("Scale bar");
     grpScaleBar.setLayoutData(data);
     grpScaleBar.setLayout(new GridLayout(2, false));
-    
-    final Label lblScaleBarUnits = new Label(grpScaleBar, SWT.NONE);
-    lblScaleBarUnits.setText("Scale Bar Units");
-    
-    cmbScaleBarUnits = new Combo(grpScaleBar, SWT.DROP_DOWN);
-    cmbScaleBarUnits.setItems(unitsScaleBar);
-    
+
     final Label lblScaleBarVisilibility = new Label(grpScaleBar, SWT.NONE);
-    lblScaleBarVisilibility.setText("Scale Bar Visilibity");
-    
+    lblScaleBarVisilibility.setText("Visilibity");
+
     checkScaleBarVisible = new Button(grpScaleBar, SWT.CHECK);
     checkScaleBarVisible.setText("Visible");
     checkScaleBarVisible.setSelection(scaleBarVisible);
+
+    final Label lblScaleBarUnits = new Label(grpScaleBar, SWT.NONE);
+    lblScaleBarUnits.setText("Units");
+
+    cmbScaleBarUnits = new Combo(grpScaleBar, SWT.DROP_DOWN);
+    cmbScaleBarUnits.setItems(unitsScaleBar);
+    cmbScaleBarUnits.setEnabled(scaleBarVisible);
 
     // ok, and the "view on complete" toggle
     viewOnCompleteBtn = new Button(composite, SWT.CHECK);
@@ -317,6 +322,16 @@ public class ExportPPTDialog extends Dialog
     }
     viewOnCompleteBtn.setSelection(viewOnComplete);
     checkScaleBarVisible.setSelection(scaleBarVisible);
+
+    checkScaleBarVisible.addSelectionListener(new SelectionAdapter()
+    {
+      @Override
+      public void widgetSelected(SelectionEvent e)
+      {
+        cmbScaleBarUnits.setEnabled(checkScaleBarVisible.getSelection());
+      }
+    });
+
     txtFilename.addModifyListener(new ModifyListener()
     {
 
@@ -416,6 +431,10 @@ public class ExportPPTDialog extends Dialog
           fileFormat);
       PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_OPEN_FILE,
           viewOnComplete);
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_VISIBLE_BAR,
+          scaleBarVisible);
+      PlatformUI.getPreferenceStore().setValue(PREF_PPT_EXPORT_UNIT_BAR,
+          scaleBarUnit);
 
       // let parent do it's business
       super.okPressed();
