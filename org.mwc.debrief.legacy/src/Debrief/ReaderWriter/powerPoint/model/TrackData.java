@@ -13,6 +13,8 @@ public class TrackData
   private int intervals;
   private String name;
   private int scaleWidth;
+  private String scaleUnit;
+  private long scaleAmount;
   private final ArrayList<ExportNarrativeEntry> narrativeEntries =
       new ArrayList<>();
   private final ArrayList<Track> tracks = new ArrayList<>();
@@ -75,6 +77,26 @@ public class TrackData
   public void setScaleWidth(int scaleWidth)
   {
     this.scaleWidth = scaleWidth;
+  }
+
+  public String getScaleUnit()
+  {
+    return scaleUnit;
+  }
+
+  public void setScaleUnit(String scaleUnit)
+  {
+    this.scaleUnit = scaleUnit;
+  }
+
+  public long getScaleAmount()
+  {
+    return scaleAmount;
+  }
+
+  public void setScaleAmount(long scaleAmount)
+  {
+    this.scaleAmount = scaleAmount;
   }
 
   @Override

@@ -159,7 +159,7 @@ public abstract class CoreCoordinateRecorder
   private boolean _running = false;
   protected String startTime = null;
   private long _startMillis;
-  
+
   /**
    * set of values used to doDecide on what steps to use for the scale
    */
@@ -169,12 +169,12 @@ public abstract class CoreCoordinateRecorder
    * the units to use for the scale
    */
   private UnitsConverter _DisplayUnits = null;
-  
+
   /**
-   * the list of units types we know about (we don't remember this when serialising, we create it afresh)
+   * the list of units types we know about (we don't remember this when serialising, we create it
+   * afresh)
    */
   private static transient java.util.HashMap<String, UnitsConverter> _unitsList;
-
 
   private final long _worldIntervalMillis;
 
@@ -191,29 +191,22 @@ public abstract class CoreCoordinateRecorder
     _modelIntervalMillis = modelIntervalMillis;
     _dateFormat = new GMTDateFormat(dateFormat);
   }
-  
+
   /**
    * setup the list
    */
   private void initialiseLimits()
   {
     // create the array of limits values in a tmp parameter
-    final Label_Limit[] tmp = {
-      new Label_Limit(7, 1),
-      new Label_Limit(20, 5),
-      new Label_Limit(70, 10),
-      new Label_Limit(200, 50),
-      new Label_Limit(700, 100),
-      new Label_Limit(2000, 500),
-      new Label_Limit(7000, 1000),
-      new Label_Limit(20000, 5000),
-      new Label_Limit(70000, 10000),
-      new Label_Limit(200000, 50000),
-      new Label_Limit(700000, 100000),
-      new Label_Limit(2000000, 500000),
-      new Label_Limit(7000000, 1000000),
-      new Label_Limit(20000000, 5000000),
-      new Label_Limit(70000000, 10000000)};
+    final Label_Limit[] tmp =
+    {new Label_Limit(7, 1), new Label_Limit(20, 5), new Label_Limit(70, 10),
+        new Label_Limit(200, 50), new Label_Limit(700, 100), new Label_Limit(
+            2000, 500), new Label_Limit(7000, 1000), new Label_Limit(20000,
+                5000), new Label_Limit(70000, 10000), new Label_Limit(200000,
+                    50000), new Label_Limit(700000, 100000), new Label_Limit(
+                        2000000, 500000), new Label_Limit(7000000, 1000000),
+        new Label_Limit(20000000, 5000000), new Label_Limit(70000000,
+            10000000)};
 
     // and now store the array in our local variable
     _limits = tmp;
@@ -228,7 +221,7 @@ public abstract class CoreCoordinateRecorder
      * 
      */
     private static final long serialVersionUID = 1L;
-    
+
     long upper_limit;
     long increment;
 
@@ -238,118 +231,121 @@ public abstract class CoreCoordinateRecorder
       increment = inc;
     }
   }
-  
+
   /**
    * setup the list of units converters
    */
   private synchronized void setupUnits()
   {
-    
+
     // just check it hasn't already been generated
-    if(_unitsList != null)
+    if (_unitsList != null)
       return;
-    
+
     // create the list itself
     _unitsList = new java.util.HashMap<String, UnitsConverter>();
 
     // and put in the converters
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)
-    {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
+        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-      public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Km(degs);
-      }
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Km(degs);
+          }
 
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
+          public String writeThis(final double myUnits)
+          {
+            return "" + (int) myUnits;
+          }
+        });
 
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS)
-    {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS,
+        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS)
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-      public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2m(degs);
-      }
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2m(degs);
+          }
 
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
+          public String writeThis(final double myUnits)
+          {
+            return "" + (int) myUnits;
+          }
+        });
 
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
+        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS)
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS)
-    {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Nm(degs);
+          }
 
-      public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Nm(degs);
-      }
+          public String writeThis(final double myUnits)
+          {
+            return "" + (int) myUnits;
+          }
+        });
 
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
+        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
-    {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Yds(degs);
+          }
 
-      public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Yds(degs);
-      }
+          public String writeThis(final double myUnits)
+          {
+            return "" + (int) myUnits;
+          }
+        });
 
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
+        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS)
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS)
-    {
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
+          }
 
-      public double convertThis(final double degs)
-      {
-        return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
-      }
-
-      public String writeThis(final double myUnits)
-      {
-        return "" + (int) myUnits;
-      }
-    });
-
+          public String writeThis(final double myUnits)
+          {
+            return "" + (int) myUnits;
+          }
+        });
 
   }
-  
+
   private ExportResult exportFile(final String fileName,
       final String exportFile, final String masterTemplateFile,
-      final long interval)
+      final long interval, String scaleBarUnit, boolean scaleVisible)
   {
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
@@ -360,7 +356,7 @@ public abstract class CoreCoordinateRecorder
     td.getTracks().addAll(_tracks.values());
     storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
         _startMillis);
-    calculateScaleWidth(td, _projection);
+    calculateScaleWidth(td, _projection, scaleVisible ? scaleBarUnit : "");
 
     // start export
     final PlotTracks plotTracks = new PlotTracks();
@@ -392,18 +388,30 @@ public abstract class CoreCoordinateRecorder
     return retVal;
   }
 
-  private void calculateScaleWidth(TrackData td, PlainProjection proj)
+  private void calculateScaleWidth(TrackData td, PlainProjection proj,
+      String scaleBarUnit)
   {
+    if ("".equals(scaleBarUnit))
+    {
+      td.setScaleUnit("");
+      td.setScaleWidth(-1);
+      td.setScaleAmount(-1);
+      return;
+    }
+    
     // create the list of units
     setupUnits();
-    
+
+    _DisplayUnits = _unitsList.get(scaleBarUnit);
+
     // find the screen width
     final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
     final long screen_width = screen_size.width;
 
     // generate screen points in the middle on the left & right-hand sides
     final Point left = new Point(0, (int) screen_size.getHeight() / 2);
-    final Point right = new Point((int) screen_width, (int) screen_size.getHeight() / 2);
+    final Point right = new Point((int) screen_width, (int) screen_size
+        .getHeight() / 2);
 
     // and now world locations to represent them
     final WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
@@ -418,25 +426,26 @@ public abstract class CoreCoordinateRecorder
     // make a guess at the scale
     final double scale = data_width / screen_width;
 
-
     // check we have our set of data
     if (_limits == null)
-        initialiseLimits();
+      initialiseLimits();
 
     // find the range we are working in
     int counter = 0;
-    while ((counter < _limits.length) &&
-        (data_width > _limits[counter].upper_limit))
+    while ((counter < _limits.length)
+        && (data_width > _limits[counter].upper_limit))
     {
-        counter++;
+      counter++;
     }
 
     // set our increment counter
     final long _scaleStep = _limits[counter].increment;
 
     final int tick_step = (int) (_scaleStep / scale);
-    
+
     td.setScaleWidth(tick_step);
+    td.setScaleAmount(_scaleStep);
+    td.setScaleUnit(_DisplayUnits.getUnits());
   }
 
   public boolean isRecording()
@@ -526,7 +535,8 @@ public abstract class CoreCoordinateRecorder
     if (exportResult.getStatus())
     {
       final ExportResult expResult = exportFile(exportResult.fileName,
-          exportResult.selectedFile, exportResult.masterTemplate, interval);
+          exportResult.selectedFile, exportResult.masterTemplate, interval,
+          exportResult.getScaleBarUnit(), exportResult.isScaleBarVisible());
 
       if (expResult.errorMessage == null)
       {
@@ -620,17 +630,16 @@ public abstract class CoreCoordinateRecorder
     }
   }
 
-
   ////////////////////////////////////
   // static interior class to convert between units
   ////////////////////////////////////
   abstract private static class UnitsConverter implements Serializable
   {
     /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-  /**
+    * 
+    */
+    private static final long serialVersionUID = 1L;
+    /**
      * the label we use for our inits
      */
     private final String _myUnits;

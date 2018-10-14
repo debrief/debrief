@@ -420,6 +420,29 @@ public class PlotTracks
     final Element time_tag = shapes_temp[2];
     final Element narrative_tag = shapes_temp[3];
     final Element footprint_tag = shapes_temp[4];
+    final Element scaleBarTag = shapes_temp[5];
+    final Element scaleValueTag = shapes_temp[6];
+
+    // Set the scale bar size
+
+    if ("".equals(trackData.getScaleUnit()))
+    {
+      scaleBarTag.remove();
+      scaleValueTag.remove();
+    }else {
+      int[] scale_size_tmp = coordinateTransformation(trackData.getScaleWidth(),
+          0, dimensionWidth, dimensionHeight, 0, 0, mapCX, mapCY, 1);
+      scaleBarTag.selectFirst("a|xfrm").selectFirst("a|ext").attr("cx",
+          scale_size_tmp[0] + "");
+
+      String scaleName = trackData.getScaleUnit();
+      if (trackData.getScaleAmount() > 1)
+      {
+        scaleName += "s";
+      }
+      scaleValueTag.selectFirst("a|t").text(trackData.getScaleAmount() + " "
+          + scaleName);      
+    }
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
@@ -1011,12 +1034,10 @@ public class PlotTracks
       else if ("ScaleBar".equals(name))
       {
         scaleBarTag = shape;
-        toRemove.add(scaleBarTag);
       }
       else if ("ScaleValue".equals(name))
       {
         scaleValueTag = shape;
-        toRemove.add(scaleValueTag);
       }
     }
 
