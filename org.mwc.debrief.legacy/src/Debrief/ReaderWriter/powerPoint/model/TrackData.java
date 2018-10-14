@@ -12,9 +12,9 @@ public class TrackData
   private int width;
   private int intervals;
   private String name;
-  private int scaleWidth;
-  private String scaleUnit;
-  private long scaleAmount;
+  private int scaleWidth = -1;
+  private String scaleUnit = "";
+  private long scaleAmount = -1;
   private final ArrayList<ExportNarrativeEntry> narrativeEntries =
       new ArrayList<>();
   private final ArrayList<Track> tracks = new ArrayList<>();
