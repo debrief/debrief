@@ -88,8 +88,6 @@ public class ExportPPTDialog extends Dialog
   private Combo cmbFileFormats;
   private Combo cmbScaleBarUnits;
   private Button checkScaleBarVisible;
-  private Group grpFormatting;
-  private Group grpScaleBar;
 
   private String fileFormat;
   private String fileName;
@@ -219,12 +217,12 @@ public class ExportPPTDialog extends Dialog
     compositeFormatting.setLayoutData(new GridData(GridData.FILL_BOTH));
     compositeFormatting.setLayout(new GridLayout(1, false));
 
-    grpFormatting = new Group(compositeFormatting, SWT.NONE);
+    final Group grpFormatting = new Group(compositeFormatting, SWT.NONE);
     grpFormatting.setText("Formatting");
     grpFormatting.setLayoutData(data);
     grpFormatting.setLayout(new GridLayout(1, false));
 
-    grpScaleBar = new Group(grpFormatting, SWT.NONE);
+    final Group grpScaleBar = new Group(grpFormatting, SWT.NONE);
     grpScaleBar.setText("Scale bar");
     grpScaleBar.setLayoutData(data);
     grpScaleBar.setLayout(new GridLayout(2, false));

@@ -166,15 +166,10 @@ public abstract class CoreCoordinateRecorder
   transient private Label_Limit _limits[];
 
   /**
-   * the units to use for the scale
-   */
-  private UnitsConverter _DisplayUnits = null;
-
-  /**
    * the list of units types we know about (we don't remember this when serialising, we create it
    * afresh)
    */
-  private static transient java.util.HashMap<String, UnitsConverter> _unitsList;
+  private static transient HashMap<String, UnitsConverter> _unitsList;
 
   private final long _worldIntervalMillis;
 
@@ -222,8 +217,8 @@ public abstract class CoreCoordinateRecorder
      */
     private static final long serialVersionUID = 1L;
 
-    long upper_limit;
-    long increment;
+    public long upper_limit;
+    public long increment;
 
     Label_Limit(final long limit, final long inc)
     {
@@ -243,7 +238,7 @@ public abstract class CoreCoordinateRecorder
       return;
 
     // create the list itself
-    _unitsList = new java.util.HashMap<String, UnitsConverter>();
+    _unitsList = new HashMap<String, UnitsConverter>();
 
     // and put in the converters
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
@@ -402,7 +397,10 @@ public abstract class CoreCoordinateRecorder
     // create the list of units
     setupUnits();
 
-    _DisplayUnits = _unitsList.get(scaleBarUnit);
+    /**
+     * the units to use for the scale
+     */
+    final UnitsConverter _DisplayUnits = _unitsList.get(scaleBarUnit);
 
     // find the screen width
     final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
