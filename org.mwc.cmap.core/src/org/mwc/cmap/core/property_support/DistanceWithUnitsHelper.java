@@ -14,12 +14,14 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsCellEditor2;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
@@ -154,13 +156,32 @@ public class DistanceWithUnitsHelper extends EditorHelper
 
 	public ILabelProvider getLabelFor(final Object currentValue)
 	{
-		final ILabelProvider label1 = new LabelProvider()
-		{
-			public String getText(final Object element)
-			{
-				final WorldDistance val = (WorldDistance) element;
-				return val.toString();
-			}
+    final ILabelProvider label1 = new LabelProvider()
+    {
+      public String getText(final Object element)
+      {
+        final WorldDistance val = (WorldDistance) element;
+        String res = "unassigned";
+        if (val != null)
+        {
+          // we're getting an intermittent error in
+          // Double.isFinite. Trap it here, to help diagnosis
+          try
+          {
+            res = val.toString();
+          }
+          catch(final Exception e)
+          {
+            CorePlugin.logError(Status.ERROR, "Trouble writing distance as string", e);
+            res = "suppressed";
+          }
+        }
+        else
+        {
+          res = "unset";
+        }
+        return res;
+      }
 
 			public Image getImage(final Object element)
 			{
