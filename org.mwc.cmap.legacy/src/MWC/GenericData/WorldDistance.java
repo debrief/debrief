@@ -234,8 +234,11 @@ public boolean equals(final Object obj) {
    */
   public String toString()
   {
+    // check if it's finite, using JRE7 methods
+    final boolean isFinite = !( Double.isNaN(_myDistance) || Double.isInfinite(_myDistance));
+      
     // check if it's a whole number
-    final boolean isWhole = Double.isFinite(_myDistance) && Double.compare(
+    final boolean isWhole = isFinite && Double.compare(
         _myDistance, StrictMath.rint(_myDistance)) == 0;
 
     // if it's whole, we don't need decimal places
