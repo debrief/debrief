@@ -192,11 +192,9 @@ public class DialogFactory
       final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
       tmp.setLocation(sz.width / 2, sz.height / 2);
 
-      MessageProvider.Base.Provider.show(title,
+      MessageProvider.Base.show(title,
           msg,
           MessageProvider.ERROR);
-      /*JOptionPane.showMessageDialog(tmp, msg, title,
-          JOptionPane.INFORMATION_MESSAGE);*/
     }
   }
 
