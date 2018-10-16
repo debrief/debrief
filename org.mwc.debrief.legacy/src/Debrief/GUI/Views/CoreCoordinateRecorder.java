@@ -242,7 +242,7 @@ public abstract class CoreCoordinateRecorder
 
     // and put in the converters
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
-        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)
+        new UnitsConverter()
         {
           /**
            * 
@@ -256,7 +256,7 @@ public abstract class CoreCoordinateRecorder
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS,
-        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS)
+        new UnitsConverter()
         {
           /**
            * 
@@ -270,7 +270,7 @@ public abstract class CoreCoordinateRecorder
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
-        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS)
+        new UnitsConverter()
         {
           /**
            * 
@@ -284,7 +284,7 @@ public abstract class CoreCoordinateRecorder
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
-        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS)
+        new UnitsConverter()
         {
           /**
            * 
@@ -298,7 +298,7 @@ public abstract class CoreCoordinateRecorder
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
-        new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS)
+        new UnitsConverter()
         {
           /**
            * 
@@ -418,7 +418,7 @@ public abstract class CoreCoordinateRecorder
 
     td.setScaleWidth(tick_step);
     td.setScaleAmount(_scaleStep);
-    td.setScaleUnit(_DisplayUnits.getUnits());
+    td.setScaleUnit(scaleBarUnit);
   }
 
   public boolean isRecording()
@@ -612,27 +612,12 @@ public abstract class CoreCoordinateRecorder
     * 
     */
     private static final long serialVersionUID = 1L;
-    /**
-     * the label we use for our units
-     */
-    private final String _myUnits;
 
-    /**
-     * constructor
-     *
-     * @param myUnits
+    /** convert this value to our units
+     * 
+     * @param degs
+     * @return
      */
-    public UnitsConverter(final String myUnits)
-    {
-      this._myUnits = myUnits;
-    }
-
     abstract public double convertThis(double degs);
-    
-    public String getUnits()
-    {
-      return _myUnits;
-    }
-
   }
 }
