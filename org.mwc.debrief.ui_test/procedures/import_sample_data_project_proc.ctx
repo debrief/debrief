@@ -6,13 +6,24 @@ Element-Type: context
 Element-Version: 2.0
 Id: _f2QKkLHlEeiJMM-KEOtW-Q
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/21/18 12:43 PM
+Save-Time: 10/17/18 12:43 AM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
 Entry-Name: .ecl.context
 
 proc "import_sample_data_project_proc" {
+
+/*close project dialog */
+try -times 3 -delay 1000 -command {
+	with [get-window "Create Project"]  {
+	    get-button Cancel | click
+	
+	}
+} -catch {
+     
+}
+
 get-menu -path "File/Import..." | click
 with [get-window Import] {
     get-tree | select "General/Existing Projects into Workspace"
