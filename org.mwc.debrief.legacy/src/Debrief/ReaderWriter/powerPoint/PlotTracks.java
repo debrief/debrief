@@ -411,6 +411,8 @@ public class PlotTracks
     final Element time_tag = shapes_temp[2];
     final Element narrative_tag = shapes_temp[3];
     final Element footprint_tag = shapes_temp[4];
+    
+    footprint_tag.selectFirst("p|cNvPr").attr("id", "2000");
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
