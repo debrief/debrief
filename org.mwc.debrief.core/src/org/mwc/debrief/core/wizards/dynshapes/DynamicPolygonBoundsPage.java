@@ -120,9 +120,11 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
         final String[] coords = token.split(",");
         valid = coords.length == 2;
         valid = valid && isDouble(coords[0]) && isDouble(coords[1]);
-        final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
-            Double.valueOf(coords[1]), 0);
-        valid = (wl == null) ? false : true;
+        if(valid) {
+          final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
+                Double.valueOf(coords[1]), 0);
+            valid = (wl == null) ? false : true;  
+        }
       }
     }
     return valid;
