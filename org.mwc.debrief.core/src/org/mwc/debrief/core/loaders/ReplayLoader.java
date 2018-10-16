@@ -37,7 +37,7 @@ public class ReplayLoader extends CoreLoader
 
   public ReplayLoader()
   {
-    super("Replay", ".rep");
+    super("Replay", null);
   }
 
   /**
