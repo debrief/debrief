@@ -44,8 +44,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
 
   public DynamicPolygonBoundsPage(final String pageName)
   {
-    super(pageName);
-    setTitle("Create dynamic polygon");
+    super(pageName,"Polygon");
     setDescription(DETAIL_MESSAGE);
   }
 

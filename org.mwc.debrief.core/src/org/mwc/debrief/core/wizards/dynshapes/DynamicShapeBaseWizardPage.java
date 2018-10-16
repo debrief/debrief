@@ -38,10 +38,21 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   private Font font;
   private Font regularFont;
 
-  protected DynamicShapeBaseWizardPage(final String pageName)
+  protected DynamicShapeBaseWizardPage(final String pageName,String shapeName)
   {
     super(pageName);
-    setDescription("This wizard is used to create new dynamic shapes");
+    
+    if(shapeName!=null && !shapeName.isEmpty()) {
+      if(shapeName.equals("Sensor Arc")) {
+        setTitle("Create dynamic track shapes");
+        setDescription("This wizard is used to create new track shapes (or sensor arcs)");
+      }
+      else {
+        setTitle("Create Dynamic "+shapeName);
+        setDescription("This wizard is used to create new dynamic "+shapeName.toLowerCase());
+      }
+    }
+    
   }
 
   protected Composite createBaseControl(final Composite parent)
