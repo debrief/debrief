@@ -6,14 +6,14 @@ Element-Version: 3.0
 External-Reference: 
 Id: _OZySoMFaEeiNv4n_nTCLgw
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/26/18 12:12 PM
+Save-Time: 10/17/18 1:38 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
 Entry-Name: .content
 
-get-view Navigator | get-tree | select "sample_data/sample.dpf" | double-click
+get-view Navigator | get-tree | select "demo/sample_data/sample.dpf" | double-click
 get-button "Fit to window" | click
 //open outline view using key-bindings , please modify the keybinding for mac
 get-editor "sample.dpf" | get-canvas | key-type [get-by-os -win "M2+M3+Q" -macosx "M2+M3+Q"] | key-type [get-by-os -win "o" -macosx "o"]

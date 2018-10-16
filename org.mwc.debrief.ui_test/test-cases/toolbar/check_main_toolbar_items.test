@@ -6,14 +6,14 @@ Element-Version: 3.0
 External-Reference: 
 Id: _sj6nMLTeEeiX54HPutJ62Q
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/10/18 1:05 PM
+Save-Time: 10/17/18 1:38 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
 Entry-Name: .content
 
-get-view Navigator |get-tree | select "sample_data/boat1t.dpf" | double-click
+get-view Navigator |get-tree | select "demo/sample_data/boat1t.dpf" | double-click
 wait 500
 with [get-button "Save (M1+S)"] {
     get-property enablement | equals true | verify-true
