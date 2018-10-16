@@ -117,6 +117,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           retVal.setSelectedFile(exportFile);
           retVal.setStatus(true);
         }
+        //if cancelled, then stop recording.
+        else {
+          retVal.setStatus(false);
+          retVal.setOpenOnComplete(false);
+          retVal.setSelectedFile(null);
+        }
       }
     });
     return retVal;
