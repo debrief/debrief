@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.importWizards">
+      <category
+            id="org.mwc.debrief.scripting.importWizards.sampleCategory"
+            name="Sample File Import">
+      </category>
+      <wizard
+            id="org.mwc.debrief.scripting.importWizards.ImportWizard"
+            name="Import File"
+            class="org.mwc.debrief.scripting.importWizards.ImportWizard"
+            category="org.mwc.debrief.scripting.importWizards.sampleCategory"
+            icon="icons/sample.png">
+         <description>
+            Import a file from the local file system into the workspace.
+         </description>
+      </wizard>
+   </extension>
+
+</plugin>
