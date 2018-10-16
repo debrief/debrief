@@ -117,6 +117,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           retVal.setSelectedFile(exportFile);
           retVal.setStatus(true);
         }
+        //if cancelled, then stop recording.
+        else {
+          retVal.setStatus(false);
+          retVal.setOpenOnComplete(false);
+          retVal.setSelectedFile(null);
+        }
       }
     });
     return retVal;
@@ -124,13 +130,26 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
   private static String tidyString(String startTime)
   {
-    return startTime.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+    if(startTime!=null)
+    {
+      return startTime.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+    }
+    return startTime;
   }
 
   @Override
   protected void showMessageDialog(final String message)
   {
-    MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
-        .getActiveShell(), "Export", message, MessageDialog.INFORMATION);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+            .getActiveShell(), "Export", message, MessageDialog.INFORMATION);    
+      }
+    });
+    
   }
 }

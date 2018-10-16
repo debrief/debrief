@@ -130,6 +130,7 @@ public interface IPlotLoader extends INamedItem
 				if (fileName.toUpperCase().endsWith(mySuffix.toUpperCase()))
 				{
 					res = true;
+					break;
 				}
 			}
 			
