@@ -253,11 +253,6 @@ public abstract class CoreCoordinateRecorder
           {
             return MWC.Algorithms.Conversions.Degs2Km(degs);
           }
-
-          public String writeThis(final double myUnits)
-          {
-            return "" + (int) myUnits;
-          }
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS,
@@ -271,11 +266,6 @@ public abstract class CoreCoordinateRecorder
           public double convertThis(final double degs)
           {
             return MWC.Algorithms.Conversions.Degs2m(degs);
-          }
-
-          public String writeThis(final double myUnits)
-          {
-            return "" + (int) myUnits;
           }
         });
 
@@ -291,11 +281,6 @@ public abstract class CoreCoordinateRecorder
           {
             return MWC.Algorithms.Conversions.Degs2Nm(degs);
           }
-
-          public String writeThis(final double myUnits)
-          {
-            return "" + (int) myUnits;
-          }
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
@@ -310,11 +295,6 @@ public abstract class CoreCoordinateRecorder
           {
             return MWC.Algorithms.Conversions.Degs2Yds(degs);
           }
-
-          public String writeThis(final double myUnits)
-          {
-            return "" + (int) myUnits;
-          }
         });
 
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
@@ -328,11 +308,6 @@ public abstract class CoreCoordinateRecorder
           public double convertThis(final double degs)
           {
             return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
-          }
-
-          public String writeThis(final double myUnits)
-          {
-            return "" + (int) myUnits;
           }
         });
 
@@ -638,7 +613,7 @@ public abstract class CoreCoordinateRecorder
     */
     private static final long serialVersionUID = 1L;
     /**
-     * the label we use for our inits
+     * the label we use for our units
      */
     private final String _myUnits;
 
@@ -653,9 +628,7 @@ public abstract class CoreCoordinateRecorder
     }
 
     abstract public double convertThis(double degs);
-
-    abstract public String writeThis(double myUnits);
-
+    
     public String getUnits()
     {
       return _myUnits;
