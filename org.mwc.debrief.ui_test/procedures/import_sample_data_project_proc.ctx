@@ -5,8 +5,8 @@ Element-Name: import_sample_data_project_proc
 Element-Type: context
 Element-Version: 2.0
 Id: _f2QKkLHlEeiJMM-KEOtW-Q
-Runtime-Version: 2.2.0.201706152316
-Save-Time: 9/6/18 7:00 PM
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 9/21/18 12:43 PM
 
 ------=_.ecl.context-718f04b4-ed39-33e3-af62-0995e4561998
 Content-Type: text/ecl
@@ -18,9 +18,22 @@ with [get-window Import] {
     get-tree | select "General/Existing Projects into Workspace"
     get-button "Next >" | click
 }
-set-dialog-result Folder  [concat [get-java-property "debrifInstallation"] "//" "sample_data"]
+/*switch [get-os]
+        [case "macosx" {            
+           set-dialog-result Folder  [concat [str [get-java-property "osgi.install.area"] | invoke substring 6] "sample_data"]
+        }]    
+       
+        -default {
+           set-dialog-result Folder  [concat [str [get-java-property "osgi.install.area"] | invoke substring 5] "sample_data"]
+        }*/
+ //set-dialog-result Folder [concat [str [get-java-property "osgi.configuration.area"] | invoke substring 0 [str [get-java-property "osgi.configuration.area"] | invoke indexOf ".metadata/.plugins/org.eclipse.pde.core/build-347/"]] "target/aut/DebriefNG/" "sample_data" ]      
+set-dialog-result Folder  [concat  [get-java-property "user.dir"] "\sample_data"]
+wait 2000
 with [get-window Import] {
     get-button "Browse..." | click
+ 
+    get-button "Copy projects into workspace" | check
+    wait 1000
     get-button Finish | click
 }
 }

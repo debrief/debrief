@@ -120,7 +120,6 @@ import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.property_support.RightClickSupport;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
 import org.mwc.cmap.media.utility.OpenVideoPlayerUtil;
 import org.mwc.cmap.plotViewer.actions.Pan;
 import org.mwc.cmap.plotViewer.actions.Pan.PanMode;
@@ -165,6 +164,7 @@ import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -874,7 +874,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @Override
   protected SWTChart createTheChart(final Composite parent)
   {
-    final SWTChart res = new SWTChart(_myLayers, parent, _myGeoHandler)
+    final SWTChart res = new SWTChart(_myLayers, parent,(PlainProjection) _myGeoHandler)
     {
 
       /**
@@ -890,9 +890,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
       @Override
       public SWTCanvas createCanvas(final Composite parent1,
-          final GtProjection projection)
+          final PlainProjection projection)
       {
-        return new CustomisedSWTCanvas(parent1, _myGeoHandler)
+        return new CustomisedSWTCanvas(parent1, (PlainProjection) _myGeoHandler)
         {
 
           /**
@@ -1997,37 +1997,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     return alreadyLoaded;
   }
 
-  @Override
-  protected void layerAdded(final Layer layer)
-  {
-    super.layerAdded(layer);
-
-    // if we've only got one layer, and we like the look of it,
-    // then make it the primary layer
-    if (_myLayers.size() == 1 && layer instanceof WatchableList)
-    {
-      final TrackManager mgr = (TrackManager) _trackDataProvider;
-
-      // do we already have a primary
-      if (mgr.getPrimaryTrack() == null)
-      {
-        final Display display = Display.getDefault();
-        if (display != null)
-        {
-          display.asyncExec(new Runnable()
-          {
-
-            @Override
-            public void run()
-            {
-              mgr.setPrimary((WatchableList) layer);
-            }
-          });
-        }
-      }
-    }
-  }
-
   /**
    * layers have been added/removed
    *
@@ -2075,10 +2044,49 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         _timeManager.setTime(this, timePeriod.getStartDTG(), false);
       }
     }
+    
+    // see if we can automatically assign a primary track
+    assignPrimaryIfApplicable(_myLayers, _trackDataProvider);
 
     // done - now we can process dirty calls again
     stopIgnoringDirtyCalls();
+  }
 
+  /** lastly, assign the primary, if there's only one track
+   * if we've only got one layer, and we like the look of it
+   * then make it the primary layer
+   */
+  private static void assignPrimaryIfApplicable(final Layers myLayers, 
+      final TrackDataProvider trackDataProvider)
+  {
+    if (myLayers.size() == 1)
+    {
+      // see if that single layer is a track
+      final Layer firstL = myLayers.elementAt(0);
+
+      if (firstL instanceof LightweightTrackWrapper)
+      {
+        final TrackManager mgr = (TrackManager) trackDataProvider;
+
+        // do we already have a primary?
+        if (mgr.getPrimaryTrack() == null)
+        {
+          final Display display = Display.getDefault();
+          if (display != null)
+          {
+            final LightweightTrackWrapper track = (LightweightTrackWrapper) firstL;
+            display.syncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                mgr.setPrimary((WatchableList) track);
+              }
+            });
+          }
+        }
+      }
+    }
   }
 
   /**

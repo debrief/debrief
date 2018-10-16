@@ -1,0 +1,77 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: hide_shape_from_outline_view
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _OZySoMFaEeiNv4n_nTCLgw
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 9/26/18 12:12 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | select "sample_data/sample.dpf" | double-click
+get-button "Fit to window" | click
+//open outline view using key-bindings , please modify the keybinding for mac
+get-editor "sample.dpf" | get-canvas | key-type [get-by-os -win "M2+M3+Q" -macosx "M2+M3+Q"] | key-type [get-by-os -win "o" -macosx "o"]
+get-view Outline | get-tree | get-item -path "Misc \\(5 items\\)" | get-property caption | equals "Misc (5 items)" 
+    | verify-true
+    
+with [get-view Outline | get-tree] {
+    get-item -path "Misc \\(5 items\\)" | expand
+    get-cell 5 0 | click
+}
+get-view Properties | click
+with [get-view Outline | get-tree] {
+    get-item -path "Misc \\(5 items\\)" | expand
+    get-cell 5 0 | click
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals Yes | verify-true
+}
+with [get-view Outline | get-tree] {
+    select "Misc (5 items)/Rectangle:NOGO DELTA"
+    get-cell 5 0 | mouse up -count 1
+}
+get-view Outline | get-button "Hide selected items" | click
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals No | verify-true
+}
+with [get-view Outline | get-button "Reveal selected items"] {
+    get-property tooltip | equals "Reveal selected items" | verify-true
+    get-property selected | equals false | verify-true
+}
+with [get-view Outline] {
+    with [get-tree] {
+        get-item -path "Misc \\(5 items\\)" | expand
+        get-cell 5 0 | mouse down Right -count 1
+        get-cell 5 0 | mouse up Right -count 1
+        select "Misc (5 items)/Rectangle:NOGO DELTA" | get-menu -path "NOGO DELTA/Visible" | click
+    }
+    get-button "Reveal selected items" | click
+    with [get-tree] {
+        get-item -path "Misc \\(5 items\\)" | expand
+        get-cell 5 0 | mouse down Right -count 1
+        get-cell 5 0 | mouse up Right -count 1
+        select "Misc (5 items)/Rectangle:NOGO DELTA" | get-menu -path "NOGO DELTA/Visible" | click
+    }
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals No | verify-true
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Misc \\(5 items\\)" | expand
+    get-cell 5 0 | mouse down Right -count 1
+    get-cell 5 0 | mouse up Right -count 1
+    select "Misc (5 items)/Rectangle:NOGO DELTA" | get-menu -path "NOGO DELTA/Visible" | click
+}
+get-editor "sample.dpf" | close
+get-window "Save Resource" | get-button No | click
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

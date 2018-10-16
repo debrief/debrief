@@ -156,7 +156,6 @@ public class FrequencyCalcs
       assertEquals(-1d, travellingTowards(Math.toRadians(-133)));
       assertEquals(-1d, travellingTowards(Math.toRadians(473)));
       assertEquals(-1d, travellingTowards(Math.toRadians(-473)));
-
     }
     
     /**

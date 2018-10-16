@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <circle id="Oval-3" stroke="#000000" fill-opacity="0" cx="50" cy="50" r="14.5" style="stroke-width: 5;"/>
+  <polyline style="stroke: rgb(0, 0, 0); fill: none; stroke-width: 5;" points="26.986 2.502 70.521 2.503 70.51 29.488 97.485 29.493 97.485 69.514 70.49 69.457 70.546 97.49 29.506 97.498 29.503 69.504 2.514 69.519 2.502 29.492 29.525 29.522 29.485 3.073" transform=""/>
+  <circle id="origin" cx="50" cy="50" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>

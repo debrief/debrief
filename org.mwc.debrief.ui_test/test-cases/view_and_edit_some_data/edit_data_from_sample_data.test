@@ -1,0 +1,76 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: edit_data_from_sample_data
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _TdFxkL_zEeiTV6DljcgL5w
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 9/24/18 3:34 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+//first check wether sampledata.dpf file exist in navigator view
+get-view Navigator | get-tree | get-item -path "sample_data/sample.dpf" | get-property "getText()" 
+    | equals "sample.dpf" | verify-true
+ //open it   
+with [get-view Navigator | get-tree] {
+    select "sample_data/sample.dpf" | double-click
+}
+//Check your data by zooming in and out and finally by hitting fit to window action
+get-button "Zoom Out" | click
+get-button "Zoom In (M3+6)" | click
+
+get-button "Fit to window" | click
+
+//open properties view incase if it is not opened
+get-menu -path "Window/Show View/Other..." | click
+with [get-window "Show View"] {
+    get-editbox | set-text pro
+    get-tree | select "General/Properties"
+    get-button OK | click
+}
+
+with [get-view Outline | get-tree] {
+    get-item -path "Misc \\(5 items\\)" | expand
+    get-cell 5 0 | click
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Label" | get-property "values['Property']" | equals Label | verify-true
+    get-item -path "Format/Label" | get-property "values['Value']" | equals "NOGO DELTA" | verify-true
+    get-item -path "Format/Label" | get-property "getText()" | equals Label | verify-true
+   
+}
+with [get-view Properties | get-tree] {
+    select "Format/Label color" | activate-cell-edit -column 1
+    apply-cell-edit -deactivate
+    select "Format/Label color" | activate-cell-edit -column 1
+}
+set-dialog-result Color "255,0,0"
+with [get-view Properties | get-tree] {
+    get-button "..." | click
+    apply-cell-edit -deactivate
+}
+with [get-view Outline | get-tree] {
+    select "Misc (5 items)/Rectangle:NOGO DELTA"
+    get-cell 5 0 | mouse up -count 1
+}
+with [get-view Properties | get-tree] {
+    select "Format/Label color" | activate-cell-edit -column 1
+    apply-cell-edit -deactivate
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Label color" | get-property "values['Property']" | equals "Label color" | verify-true
+    get-item -path "Format/Label color" | get-property "values['Value']" | equals "(R:255 G:0 B:0)" | verify-true
+}
+get-menu -path "Edit/Undo NOGO DELTA Label color" | click
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Label color" | get-property "values['Property']" | equals "Label color" | verify-true
+    get-item -path "Format/Label color" | get-property "values['Value']" | equals "(R:0 G:128 B:11)" | verify-true
+}
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

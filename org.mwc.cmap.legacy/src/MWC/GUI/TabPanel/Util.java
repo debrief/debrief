@@ -126,7 +126,7 @@ public class Util
 
     /**
      * Retrieves a default dialog font.
-     * In this case the typeface is a plain 12-point �Dialog�.
+     * In this case the typeface is a plain 12-point Dialog.
      * @return the default dialog font
      */
     public static Font getDefaultFont()
@@ -144,7 +144,7 @@ public class Util
      * Preserves the font information of a graphics object retrieved from
      * an image. This ensures that susequent calls to getFontMetrics through
      * the graphics object will not result in a NullPointerException.
-     * It does this by setting the font in the image�s graphics context to
+     * It does this by setting the font in the image's graphics context to
      * the font in the component, as needed.
      *
      * @param image the image with the desired graphics context

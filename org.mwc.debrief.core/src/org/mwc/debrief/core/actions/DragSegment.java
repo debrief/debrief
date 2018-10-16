@@ -129,6 +129,12 @@ public class DragSegment extends DragFeature
 			_currentDragMode = this;
 			super.run();
 		}
+		
+		@Override
+		public boolean isChecked()
+		{
+		  return _currentDragMode == this;
+		}
 	}
 
 	/**

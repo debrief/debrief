@@ -56,6 +56,7 @@
 package MWC.GUI.Shapes.Symbols.Buoys;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.WorldLocation;
 
@@ -74,7 +75,13 @@ public class HidarSym extends BuoySym
         * getScaleVal()), (int) (2 * 4 * getScaleVal()));
     return res;
   }
-
+  
+  @Override
+  public PlainSymbol create()
+  {
+    return new HidarSym();
+  }
+  
   public void paint(final CanvasType dest, final WorldLocation centre)
   {
     paint(dest, centre, 0.0);
