@@ -6,14 +6,14 @@ Element-Version: 3.0
 External-Reference: 
 Id: _gtVz0LzLEeiO58lDElrrcw
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 10/17/18 1:38 AM
+Save-Time: 10/17/18 8:25 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
 Entry-Name: .content
 
-get-view Navigator | get-tree | select "sample_data" | get-menu -path "New/Debrief Plot" | click
+get-view Navigator | get-tree | select "demo" | get-menu -path "New/Debrief Plot" | click
 with [get-window -class WizardDialog] {
     get-editbox -after [get-label "File name:"] | set-text "plot1.dpf"
     get-button "Next >" | click
