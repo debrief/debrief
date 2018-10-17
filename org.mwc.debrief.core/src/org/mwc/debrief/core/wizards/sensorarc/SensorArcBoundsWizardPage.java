@@ -64,7 +64,7 @@ public class SensorArcBoundsWizardPage extends DynamicShapeBaseWizardPage
   private Text _txtArcEnd;
   protected SensorArcBoundsWizardPage(String pageName)
   {
-    super(pageName,"Sensor Arc");
+    super(pageName,NewSensorArcWizard.SHAPE_NAME);
   }
 
   /* (non-Javadoc)

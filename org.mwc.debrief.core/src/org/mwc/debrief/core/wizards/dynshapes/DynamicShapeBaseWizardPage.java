@@ -25,6 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -43,7 +44,7 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
     super(pageName);
     
     if(shapeName!=null && !shapeName.isEmpty()) {
-      if(shapeName.equals("Sensor Arc")) {
+      if(NewSensorArcWizard.SHAPE_NAME.equals(shapeName)) {
         setTitle("Create dynamic track shapes");
         setDescription("This wizard is used to create new track shapes (or sensor arcs)");
       }
