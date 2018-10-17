@@ -1384,7 +1384,7 @@ public class ImportNarrativeDocument
         res = thisL.getName();
 
         // and politely tell the user
-        MessageProvider.Base.Provider.show("Import Narrative",
+        MessageProvider.Base.show("Import Narrative",
             "Since it looks like a WECDIS track, we've renamed " + existingName
                 + " to " + res + ", so we can add create FCSs.",
             MessageProvider.INFO);
@@ -2057,7 +2057,7 @@ public class ImportNarrativeDocument
               _declaredNoHostFound = true;
 
               // tell the user
-              MessageProvider.Base.Provider.show("Import Narrative",
+              MessageProvider.Base.show("Import Narrative",
                   "Narrative entries will be imported, but we won't be creating FCSs "
                       + "since we couldn't determine the host track for: "
                       + originalName + ".", MessageProvider.WARNING);

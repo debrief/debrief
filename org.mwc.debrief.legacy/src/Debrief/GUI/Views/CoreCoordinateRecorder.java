@@ -575,7 +575,7 @@ public abstract class CoreCoordinateRecorder
           firstTime), new HiResDate(lastTime));
 
       // sort out a scale factor
-      final double scale = _worldIntervalMillis / _modelIntervalMillis;
+      final double scale = ((double)_worldIntervalMillis) / _modelIntervalMillis;
 
       final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
 
