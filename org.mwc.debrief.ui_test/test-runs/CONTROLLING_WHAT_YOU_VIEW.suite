@@ -5,7 +5,7 @@ Element-Type: testsuite
 Element-Version: 2.0
 Id: _l8pmkMGHEeitrdPUr06k7w
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/26/18 3:29 PM
+Save-Time: 10/17/18 8:00 AM
 
 ------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8
 Content-Type: text/testcase
@@ -17,5 +17,6 @@ _uxSgQMFsEeitrdPUr06k7w	// kind: 'test' name: 'hide_whole_layer_from_outline_vie
 _4Vp8AMF4EeitrdPUr06k7w	// kind: 'test' name: 'removing_and_adding_track_from_tote_view' path: '../test-cases/controlling_what_you_view/removing_and_adding_track_from_tote_view.test'
 _fKgv8MF9EeitrdPUr06k7w	// kind: 'test' name: 'verify_toolbar_menus_timecontroller_view' path: '../test-cases/controlling_what_you_view/verify_toolbar_menus_timecontroller_view.test'
 _qJ_jAMGCEeitrdPUr06k7w	// kind: 'test' name: 'verify_vessel_positions_by_moving_slowly' path: '../test-cases/controlling_what_you_view/verify_vessel_positions_by_moving_slowly.test'
+_QMn3MK9cEei4e5U78aujdw	// kind: 'test' name: 'create-new-sample-data-project-if-not-found' path: '../test-cases/create-new-sample-data-project-if-not-found.test'
 
 ------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8--

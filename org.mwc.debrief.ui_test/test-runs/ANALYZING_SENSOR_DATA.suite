@@ -4,13 +4,15 @@ Element-Name: ANALYZING_SENSOR_DATA
 Element-Type: testsuite
 Element-Version: 2.0
 Id: _TxrjkMGKEeitrdPUr06k7w
+Manually-Ordered: true
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 9/26/18 3:48 PM
+Save-Time: 10/17/18 7:59 AM
 
 ------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8
 Content-Type: text/testcase
 Entry-Name: testcase-items
 
+_QMn3MK9cEei4e5U78aujdw	// kind: 'test' name: 'create-new-sample-data-project-if-not-found' path: '../test-cases/create-new-sample-data-project-if-not-found.test'
 _JSPqAL_6EeiTV6DljcgL5w	// kind: 'test' name: 'add_sensor_data' path: '../test-cases/analyzing_Sensor_Data/add_sensor_data.test'
 _mBA6QMFoEeitrdPUr06k7w	// kind: 'test' name: 'conduct-plot-lock' path: '../test-cases/analyzing_Sensor_Data/conduct-plot-lock.test'
 _ZwXisMCREeiqq4LbHeQqIQ	// kind: 'test' name: 'format_sensor_data' path: '../test-cases/analyzing_Sensor_Data/format_sensor_data.test'
