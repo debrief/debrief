@@ -162,14 +162,14 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
               .getSelection() != null));
       if (!isComplete)
       {
-        setErrorMessage("Either start time or end time is required");
+        setErrorMessage("Please enter one of starttime or endtime");
       }
       else
       {
         if (_chkStartTime.getSelection() && _chkEndTime.getSelection()
             && !_cStartTime.getSelection().before(_cEndTime.getSelection()))
         {
-          setErrorMessage("The start time must be before end time");
+          setErrorMessage("Please provide a starttime earlier than the endtime");
         }
         else
         {
