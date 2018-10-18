@@ -6090,12 +6090,6 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Title</term>
-                <listitem>
-                  <para>Title for engagement. (Text element named <code>time</code>.)</para>
-                </listitem>
-              </varlistentry>
-              <varlistentry>
                 <term>Footprint</term>
                 <listitem>
                   <para>Footprint to indicate the steps of the past plataform's positions. (Object named <code>footprint</code>)</para>
