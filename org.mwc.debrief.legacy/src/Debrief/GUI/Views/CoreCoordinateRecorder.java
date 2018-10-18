@@ -154,7 +154,7 @@ public abstract class CoreCoordinateRecorder
 
   private ExportResult exportFile(final String fileName,
       final String exportFile, final String masterTemplateFile,
-      final long interval) throws DebriefException
+      final long interval)
   {
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
@@ -183,6 +183,13 @@ public abstract class CoreCoordinateRecorder
     {
       errorMessage = "Error exporting to powerpoint (Unable to extract ZIP)";
       Trace.trace(ze, errorMessage);
+    }
+    catch (final DebriefException de)
+    {
+      errorMessage =
+          "Error exporting to powerpoint (template may be corrupt).\n" + de
+              .getMessage();
+      Trace.trace(de, errorMessage);
     }
     retVal.setErrorMessage(errorMessage);
     retVal.setExportedFile(exportedFile);
@@ -266,16 +273,21 @@ public abstract class CoreCoordinateRecorder
   {
     _running = false;
 
-    final List<Track> list = new ArrayList<Track>();
-    list.addAll(_tracks.values());
-    final long interval = _worldIntervalMillis;
-    // output tracks object.
-    // showDialog now
-    final ExportDialogResult exportResult = showExportDialog();
-    // collate the data object
-    if (exportResult.getStatus())
+    if (_tracks.values().size() > PlotTracks.MARKER_FOOTPRINT_DELTA)
     {
-      try
+      // export failed.
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+          "Exporting to PPTX failed. See error log for more details");
+    }else {
+
+      final List<Track> list = new ArrayList<Track>();
+      list.addAll(_tracks.values());
+      final long interval = _worldIntervalMillis;
+      // output tracks object.
+      // showDialog now
+      final ExportDialogResult exportResult = showExportDialog();
+      // collate the data object
+      if (exportResult.getStatus())
       {
         final ExportResult expResult = exportFile(exportResult.fileName,
             exportResult.selectedFile, exportResult.masterTemplate, interval);
@@ -298,13 +310,6 @@ public abstract class CoreCoordinateRecorder
           MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
               "Exporting to PPTX failed. See error log for more details");
         }
-      }
-      catch (final DebriefException de)
-      {
-        // export failed.
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX failed", de
-            .getMessage());
-        Trace.trace(de, de.getMessage());
       }
     }
   }

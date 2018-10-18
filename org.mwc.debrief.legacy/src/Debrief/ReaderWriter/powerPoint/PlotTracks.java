@@ -38,7 +38,7 @@ public class PlotTracks
 {
 
   final public static int INITIAL_MARKER_ID = 600;
-  final public static int MARKER_FOOTPRINT_DELTA = 20000;
+  final public static int MARKER_FOOTPRINT_DELTA = 1;
   final public static int INITIAL_FOOTPRINT_ID = INITIAL_MARKER_ID
       + MARKER_FOOTPRINT_DELTA;
 
@@ -461,13 +461,6 @@ public class PlotTracks
     int initialFootprintId = Integer.parseInt(footprint_tag.selectFirst(
         "p|cNvPr").attr("id"));
     int footprint_count = initialFootprintId;
-
-    if (trackData.getTracks().size() > MARKER_FOOTPRINT_DELTA)
-    {
-      throw new DebriefException("There are too many tracks. No more than "
-          + MARKER_FOOTPRINT_DELTA
-          + " can be exported in the same presentation file.");
-    }
 
     for (final Track track : trackData.getTracks())
     {
