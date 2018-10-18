@@ -277,8 +277,12 @@ public abstract class CoreCoordinateRecorder
     {
       // export failed.
       MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
-          "Exporting to PPTX failed. See error log for more details");
-    }else {
+          "There are too many tracks. No more than "
+              + PlotTracks.MARKER_FOOTPRINT_DELTA
+              + " can be exported in the same presentation file.");
+    }
+    else
+    {
 
       final List<Track> list = new ArrayList<Track>();
       list.addAll(_tracks.values());

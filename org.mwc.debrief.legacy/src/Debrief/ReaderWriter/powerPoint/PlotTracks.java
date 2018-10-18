@@ -38,7 +38,7 @@ public class PlotTracks
 {
 
   final public static int INITIAL_MARKER_ID = 600;
-  final public static int MARKER_FOOTPRINT_DELTA = 1;
+  final public static int MARKER_FOOTPRINT_DELTA = 20000;
   final public static int INITIAL_FOOTPRINT_ID = INITIAL_MARKER_ID
       + MARKER_FOOTPRINT_DELTA;
 
