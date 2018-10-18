@@ -22,7 +22,6 @@ import org.mwc.debrief.core.creators.shapes.CoreInsertShape;
 import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
-import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.IDynamicShapeWrapper;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
