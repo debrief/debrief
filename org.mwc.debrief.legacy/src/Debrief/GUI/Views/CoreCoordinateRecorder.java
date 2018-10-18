@@ -498,36 +498,49 @@ public abstract class CoreCoordinateRecorder
   {
     _running = false;
 
-    final List<Track> list = new ArrayList<Track>();
-    list.addAll(_tracks.values());
-    final long interval = _worldIntervalMillis;
-    // output tracks object.
-    // showDialog now
-    final ExportDialogResult exportResult = showExportDialog();
-    // collate the data object
-    if (exportResult.getStatus())
+    if (_tracks.values().size() > PlotTracks.MARKER_FOOTPRINT_DELTA)
     {
-      final ExportResult expResult = exportFile(exportResult.fileName,
-          exportResult.selectedFile, exportResult.masterTemplate, interval,
-          exportResult.getScaleBarUnit(), exportResult.isScaleBarVisible());
+      // export failed.
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+          "There are too many tracks. No more than "
+              + PlotTracks.MARKER_FOOTPRINT_DELTA
+              + " can be exported in the same presentation file.");
+    }
+    else
+    {
 
-      if (expResult.errorMessage == null)
+      final List<Track> list = new ArrayList<Track>();
+      list.addAll(_tracks.values());
+      final long interval = _worldIntervalMillis;
+      // output tracks object.
+      // showDialog now
+      final ExportDialogResult dialogResult = showExportDialog();
+      
+      // collate the data object
+      if (dialogResult.getStatus())
       {
-        // do we open resulting file?
-        if (exportResult.openOnComplete)
+        final ExportResult expResult = exportFile(dialogResult.fileName,
+            dialogResult.selectedFile, dialogResult.masterTemplate, interval,
+            dialogResult.getScaleBarUnit(), dialogResult.isScaleBarVisible());
+
+        if (expResult.errorMessage == null)
         {
-          openFile(expResult.exportedFile);
+          // do we open resulting file?
+          if (dialogResult.openOnComplete)
+          {
+            openFile(expResult.exportedFile);
+          }
+          else
+          {
+            showMessageDialog("File exported to:" + expResult.exportedFile);
+          }
         }
         else
         {
-          showMessageDialog("File exported to:" + expResult.exportedFile);
+          // export failed.
+          MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+              "Exporting to PPTX failed. See error log for more details");
         }
-      }
-      else
-      {
-        // export failed.
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
-            "Exporting to PPTX failed. See error log for more details");
       }
     }
   }
@@ -575,7 +588,8 @@ public abstract class CoreCoordinateRecorder
           firstTime), new HiResDate(lastTime));
 
       // sort out a scale factor
-      final double scale = ((double)_worldIntervalMillis) / _modelIntervalMillis;
+      final double scale = ((double) _worldIntervalMillis)
+          / _modelIntervalMillis;
 
       final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
 

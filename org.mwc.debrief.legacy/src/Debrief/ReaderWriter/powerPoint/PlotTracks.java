@@ -37,6 +37,11 @@ import net.lingala.zip4j.exception.ZipException;
 public class PlotTracks
 {
 
+  final public static int INITIAL_MARKER_ID = 600;
+  final public static int MARKER_FOOTPRINT_DELTA = 20000;
+  final public static int INITIAL_FOOTPRINT_ID = INITIAL_MARKER_ID
+      + MARKER_FOOTPRINT_DELTA;
+
   /**
    * It returns null (for success) or a series of String messages for the invalid conditions.
    * 
@@ -444,6 +449,8 @@ public class PlotTracks
           + scaleName);      
     }
 
+    footprint_tag.selectFirst("p|cNvPr").attr("id", INITIAL_FOOTPRINT_ID + "");
+
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
     // Find time_animation objs -
@@ -688,7 +695,7 @@ public class PlotTracks
       if (trackCount == 0)
       {
         current_shape_id = 500;
-        current_arrow_id = 600;
+        current_arrow_id = INITIAL_MARKER_ID;
       }
       current_shape_id++;
       current_arrow_id++;
