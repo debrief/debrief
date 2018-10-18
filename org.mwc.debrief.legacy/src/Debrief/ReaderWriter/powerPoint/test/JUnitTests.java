@@ -32,8 +32,7 @@ public class JUnitTests
       "scenario_short_range.txt", "speed_change.txt"};
   final private String trackFolder = Utils.testFolder + File.separator
       + "track_data";
-  final private String donorFolder = Utils.testFolder + File.separator
-      + "donor_files";
+  final private String donorFolder = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats";
   final private String resultsFolder = Utils.testFolder;
   final private String slide1Path = "ppt" + File.separator + "slides"
       + File.separator + "slide1.xml";
