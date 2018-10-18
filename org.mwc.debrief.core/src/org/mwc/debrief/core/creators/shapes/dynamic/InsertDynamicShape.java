@@ -23,6 +23,7 @@ import org.mwc.debrief.core.wizards.dynshapes.CoreDynamicShapeWizard;
 import org.mwc.debrief.core.wizards.dynshapes.DynamicShapeBaseWizardPage;
 
 import Debrief.Wrappers.DynamicShapeWrapper;
+import Debrief.Wrappers.IDynamicShapeWrapper;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
@@ -49,11 +50,11 @@ public abstract class InsertDynamicShape<PageType extends DynamicShapeBaseWizard
     return getDynamicShape(startDate,endDate,centre);
   }
   
-  protected DynamicShapeWrapper getDynamicShape(final Date startDate, final Date endDate,final WorldLocation center)
+  protected IDynamicShapeWrapper getDynamicShape(final Date startDate, final Date endDate,final WorldLocation center)
   {
     final CoreDynamicShapeWizard<?> wizard = getWizard(startDate, endDate,center);
     final WizardDialog wd = new WizardDialog(getShell(), wizard);
-    final DynamicShapeWrapper thisShape;
+    final IDynamicShapeWrapper thisShape;
     if(wd.open()==Window.OK) {
       
       //get all param details from the wizard now.

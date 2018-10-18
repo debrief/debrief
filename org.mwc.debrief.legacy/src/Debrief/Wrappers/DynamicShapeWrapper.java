@@ -20,7 +20,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 
-public class DynamicShapeWrapper extends ShapeWrapper
+public class DynamicShapeWrapper extends ShapeWrapper implements IDynamicShapeWrapper
 {
 	
 	/**
@@ -36,11 +36,12 @@ public class DynamicShapeWrapper extends ShapeWrapper
 		_theTrackName = name;
 	}
 
+	@Override
 	public String getTrackName()
 	{
 		return _theTrackName;
 	}
-
+	@Override
 	public void setTrackName(String theTrackName)
 	{
 		this._theTrackName = theTrackName;
