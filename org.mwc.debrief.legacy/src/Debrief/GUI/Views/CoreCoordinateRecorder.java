@@ -154,7 +154,7 @@ public abstract class CoreCoordinateRecorder
 
   private ExportResult exportFile(final String fileName,
       final String exportFile, final String masterTemplateFile,
-      final long interval)
+      final long interval) throws DebriefException
   {
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
@@ -183,13 +183,6 @@ public abstract class CoreCoordinateRecorder
     {
       errorMessage = "Error exporting to powerpoint (Unable to extract ZIP)";
       Trace.trace(ze, errorMessage);
-    }
-    catch (final DebriefException de)
-    {
-      errorMessage =
-          "Error exporting to powerpoint (template may be corrupt).\n" + de
-              .getMessage();
-      Trace.trace(de, errorMessage);
     }
     retVal.setErrorMessage(errorMessage);
     retVal.setExportedFile(exportedFile);
@@ -282,26 +275,36 @@ public abstract class CoreCoordinateRecorder
     // collate the data object
     if (exportResult.getStatus())
     {
-      final ExportResult expResult = exportFile(exportResult.fileName,
-          exportResult.selectedFile, exportResult.masterTemplate, interval);
-
-      if (expResult.errorMessage == null)
+      try
       {
-        // do we open resulting file?
-        if (exportResult.openOnComplete)
+        final ExportResult expResult = exportFile(exportResult.fileName,
+            exportResult.selectedFile, exportResult.masterTemplate, interval);
+
+        if (expResult.errorMessage == null)
         {
-          openFile(expResult.exportedFile);
+          // do we open resulting file?
+          if (exportResult.openOnComplete)
+          {
+            openFile(expResult.exportedFile);
+          }
+          else
+          {
+            showMessageDialog("File exported to:" + expResult.exportedFile);
+          }
         }
         else
         {
-          showMessageDialog("File exported to:" + expResult.exportedFile);
+          // export failed.
+          MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+              "Exporting to PPTX failed. See error log for more details");
         }
       }
-      else
+      catch (final DebriefException de)
       {
         // export failed.
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
-            "Exporting to PPTX failed. See error log for more details");
+        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX failed", de
+            .getMessage());
+        Trace.trace(de, de.getMessage());
       }
     }
   }
@@ -349,7 +352,8 @@ public abstract class CoreCoordinateRecorder
           firstTime), new HiResDate(lastTime));
 
       // sort out a scale factor
-      final double scale = ((double)_worldIntervalMillis) / _modelIntervalMillis;
+      final double scale = ((double) _worldIntervalMillis)
+          / _modelIntervalMillis;
 
       final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
 

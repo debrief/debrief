@@ -37,6 +37,11 @@ import net.lingala.zip4j.exception.ZipException;
 public class PlotTracks
 {
 
+  final public static int INITIAL_MARKER_ID = 600;
+  final public static int MARKER_FOOTPRINT_DELTA = 20000;
+  final public static int INITIAL_FOOTPRINT_ID = INITIAL_MARKER_ID
+      + MARKER_FOOTPRINT_DELTA;
+
   /**
    * It returns null (for success) or a series of String messages for the invalid conditions.
    * 
@@ -411,8 +416,8 @@ public class PlotTracks
     final Element time_tag = shapes_temp[2];
     final Element narrative_tag = shapes_temp[3];
     final Element footprint_tag = shapes_temp[4];
-    
-    footprint_tag.selectFirst("p|cNvPr").attr("id", "2000");
+
+    footprint_tag.selectFirst("p|cNvPr").attr("id", INITIAL_FOOTPRINT_ID + "");
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
@@ -456,6 +461,13 @@ public class PlotTracks
     int initialFootprintId = Integer.parseInt(footprint_tag.selectFirst(
         "p|cNvPr").attr("id"));
     int footprint_count = initialFootprintId;
+
+    if (trackData.getTracks().size() > MARKER_FOOTPRINT_DELTA)
+    {
+      throw new DebriefException("There are too many tracks. No more than "
+          + MARKER_FOOTPRINT_DELTA
+          + " can be exported in the same presentation file.");
+    }
 
     for (final Track track : trackData.getTracks())
     {
@@ -658,7 +670,7 @@ public class PlotTracks
       if (trackCount == 0)
       {
         current_shape_id = 500;
-        current_arrow_id = 600;
+        current_arrow_id = INITIAL_MARKER_ID;
       }
       current_shape_id++;
       current_arrow_id++;
