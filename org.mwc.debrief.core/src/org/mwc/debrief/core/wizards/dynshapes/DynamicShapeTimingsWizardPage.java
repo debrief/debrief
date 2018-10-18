@@ -48,21 +48,10 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
   public DynamicShapeTimingsWizardPage(final String pageName, final String type,
       final Date startTime, final Date endTime)
   {
-    super(pageName);
+    super(pageName,type);
     this._startTime = startTime;
     this._endTime = endTime;
     this._type = type;
-    setTitle("Create dynamic " + type);
-    if (NewSensorArcWizard.SHAPE_NAME.equals(type))
-    {
-      setDescription(
-          "This wizard is used to create new track shapes (or sensor arcs)");
-    }
-    else
-    {
-      setDescription("This wizard is used to create new dynamic shapes");
-    }
-
   }
 
   @Override
