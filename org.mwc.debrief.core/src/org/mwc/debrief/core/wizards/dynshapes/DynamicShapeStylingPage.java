@@ -37,9 +37,8 @@ public class DynamicShapeStylingPage extends DynamicShapeBaseWizardPage
 
   public DynamicShapeStylingPage(final String pageName, final String type)
   {
-    super(pageName);
+    super(pageName,type);
     this._type = type;
-    setTitle("Create dynamic " + type);
   }
 
   /*
