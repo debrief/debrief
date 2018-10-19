@@ -367,7 +367,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
     }
     catch (final Exception e)
     {
-      MWC.Utilities.Errors.Trace.trace(e);
+      MWC.Utilities.Errors.Trace.trace(e, "Exception while getting value for:" + _thisProp.getDisplayName());
     }
 
     return res;
