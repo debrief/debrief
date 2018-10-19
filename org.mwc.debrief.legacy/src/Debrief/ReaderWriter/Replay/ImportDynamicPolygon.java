@@ -140,7 +140,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 		// start with the symbology
 		symbology = st.nextToken();
 
-		//String theName = checkForQuotedName(st).trim();
+		String theName = checkForQuotedName(st).trim();
 
 		// combine the date, a space, and the time
 		final String dateToken = st.nextToken();
@@ -220,6 +220,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 		// and put Polygon into a shape
 		final DynamicPolygonShapeWrapper sw = new DynamicPolygonShapeWrapper(theText, (PolygonShape)sp,
 				ImportReplay.replayColorFor(symbology), theDate, null);
+		sw.setTrackName(theName);
 
 		return sw;
 	}
