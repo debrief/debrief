@@ -158,26 +158,26 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     public final void testMyParams1()
     {
-      MWC.GUI.Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
+      Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
       editableTesterSupport.testParams(ed, this);
       ed = null;
     }
 
     public final void testMyParams2()
     {
-      MWC.GUI.Editable ed = new LightweightTrackWrapper();
+      Editable ed = new LightweightTrackWrapper();
       editableTesterSupport.testParams(ed, this);
       ed = null;
     }
 
-    private FixWrapper create(final long date, final double lat,
+    private static FixWrapper create(final long date, final double lat,
         final double lon)
     {
       return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat,
           lon, 0), 0d, 0d));
     }
 
-    private int doCount(final LightweightTrackWrapper track,
+    private static int doCount(final LightweightTrackWrapper track,
         final IsValid aTest)
     {
       int ctr = 0;
@@ -193,7 +193,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return ctr;
     }
 
-    private LightweightTrackWrapper getTrack()
+    private static LightweightTrackWrapper getTrack()
     {
       final LightweightTrackWrapper track = new LightweightTrackWrapper();
       track.setName("light");
