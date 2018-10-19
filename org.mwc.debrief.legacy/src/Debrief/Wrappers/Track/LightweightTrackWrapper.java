@@ -154,15 +154,30 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       boolean isValid(FixWrapper fix);
     }
+    
 
-    private FixWrapper create(final long date, final double lat,
+    public final void testMyParams1()
+    {
+      Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    public final void testMyParams2()
+    {
+      Editable ed = new LightweightTrackWrapper();
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    private static FixWrapper create(final long date, final double lat,
         final double lon)
     {
       return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat,
           lon, 0), 0d, 0d));
     }
 
-    private int doCount(final LightweightTrackWrapper track,
+    private static int doCount(final LightweightTrackWrapper track,
         final IsValid aTest)
     {
       int ctr = 0;
@@ -178,7 +193,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return ctr;
     }
 
-    private LightweightTrackWrapper getTrack()
+    private static LightweightTrackWrapper getTrack()
     {
       final LightweightTrackWrapper track = new LightweightTrackWrapper();
       track.setName("light");
@@ -362,7 +377,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // set default line-style
     setLineStyle(LineStylePropertyEditor.SOLID);
-  }
+    
+    // initialise the symbol to use for plotting this track in snail mode
+    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
+        "Submarine");
+   }
 
   public LightweightTrackWrapper(final String name, final boolean visible,
       final boolean nameVisible, final Color color, final int lineStyle)
@@ -374,10 +393,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     setNameVisible(nameVisible);
     setColor(color);
     setLineStyle(lineStyle);
-
-    // initialise the symbol to use for plotting this track in snail mode
-    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
-        "Submarine");
   }
 
   /**
