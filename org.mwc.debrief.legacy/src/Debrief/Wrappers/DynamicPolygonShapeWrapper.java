@@ -68,9 +68,9 @@ public class DynamicPolygonShapeWrapper extends PolygonWrapper implements IDynam
       // same object. duh.
       res = 0;
     }
-    else if (o instanceof ShapeWrapper)
+    else if (o instanceof PolygonWrapper)
     {
-      ShapeWrapper shape = (ShapeWrapper) o;
+      PolygonWrapper shape = (PolygonWrapper) o;
 
       HiResDate myStart = this.getStartDTG();
       // do I know my date?
