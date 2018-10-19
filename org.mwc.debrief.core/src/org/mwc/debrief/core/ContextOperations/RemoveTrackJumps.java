@@ -66,6 +66,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 	{
 		Collection<Editable> points = null;
 		String tmpTitle = null;
+		TrackWrapper track = null;
 		
 		// check something was selected
 		if(subjects.length == 0)
@@ -81,6 +82,11 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 				TrackSegment ts = (TrackSegment) thisE;
 				points = ts.getData();
 				tmpTitle = "Remove jumps for selected track";
+				
+        if (ts.getWrapper() instanceof TrackWrapper)
+        {
+          track = ts.getWrapper();
+        }
 			}
 		}
 		else
@@ -96,23 +102,34 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 				for (int i = 0; i < subjects.length; i++)
 				{
 					Editable editable = subjects[i];
+					
+					if(track == null)
+					{
+					  FixWrapper fix = (FixWrapper) editable;
+		        if (fix.getTrackWrapper() instanceof TrackWrapper)
+		        {
+		          track = (TrackWrapper) fix.getTrackWrapper();
+		        }
+					}
+					
 					points.add(editable);
 				}
 
 				tmpTitle = "Remove jumps in selected positions";
+				
 			}
 		}
 
 		// ok, is it worth going for?
-		if (points != null)
+		if (points != null && track != null)
 		{
 			final String title = tmpTitle;
 			final Collection<Editable> permPoints = points;
+			
+			final TrackWrapper lTrack = track;
 
 			// right,stick in a separator
 			parent.add(new Separator());
-
-			final TrackWrapper track = (TrackWrapper) parentLayers[0];
 
 			// and the new drop-down list of interpolation frequencies
 
@@ -124,7 +141,7 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 					// ok, go for it.
 					// sort it out as an operation
 					final IUndoableOperation removeJumps = new RemoveJumps(title,
-							theLayers, track, permPoints);
+							theLayers, lTrack, permPoints);
 
 					// ok, stick it on the buffer
 					CorePlugin.run(removeJumps);
@@ -285,12 +302,12 @@ public class RemoveTrackJumps implements RightClickContextItemGenerator
 
 		private HashMap<FixWrapper, WorldLocation> _newFixes;
 
-		public RemoveJumps(String title, Layers theLayers, TrackWrapper track,
+		public RemoveJumps(String title, Layers theLayers, TrackWrapper lTrack,
 				Collection<Editable> points)
 		{
 			super(title);
 			_layers = theLayers;
-			_track = track;
+			_track = lTrack;
 			_points = points;
 		}
 
