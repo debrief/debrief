@@ -154,6 +154,21 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       boolean isValid(FixWrapper fix);
     }
+    
+
+    public final void testMyParams1()
+    {
+      MWC.GUI.Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    public final void testMyParams2()
+    {
+      MWC.GUI.Editable ed = new LightweightTrackWrapper();
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
 
     private FixWrapper create(final long date, final double lat,
         final double lon)
@@ -362,7 +377,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // set default line-style
     setLineStyle(LineStylePropertyEditor.SOLID);
-  }
+    
+    // initialise the symbol to use for plotting this track in snail mode
+    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
+        "Submarine");
+   }
 
   public LightweightTrackWrapper(final String name, final boolean visible,
       final boolean nameVisible, final Color color, final int lineStyle)
@@ -374,10 +393,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     setNameVisible(nameVisible);
     setColor(color);
     setLineStyle(lineStyle);
-
-    // initialise the symbol to use for plotting this track in snail mode
-    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
-        "Submarine");
   }
 
   /**
