@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _gtVz0LzLEeiO58lDElrrcw
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 10/22/18 11:30 AM
+Save-Time: 10/22/18 12:07 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -109,6 +109,7 @@ try -times 1 -delay 1000 -command {
 	with [get-menu -path "File/Save" | click]  {
 	}
 } -catch {
+//ignore
 }
 get-tab-folder | get-property activePage | equals "plot1.dpf" | verify-true
 
@@ -116,6 +117,7 @@ try -times 1 -delay 1000 -command {
 	with [get-menu -path "File/Close" | click]  {
 	}
 } -catch {
+//ignore
 }
 
 
