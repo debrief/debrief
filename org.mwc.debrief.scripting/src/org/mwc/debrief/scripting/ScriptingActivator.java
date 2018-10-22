@@ -33,7 +33,7 @@ public class ScriptingActivator extends AbstractUIPlugin implements BundleActiva
     ScriptingActivator.context = bundleContext;
     System.out.println("STARTUP");
 
- //   listenToMyParts();
+    listenToMyParts();
   }
 
   /*
