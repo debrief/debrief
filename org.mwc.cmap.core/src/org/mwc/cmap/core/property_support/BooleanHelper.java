@@ -50,7 +50,7 @@ public class BooleanHelper extends EditorHelper
 
       protected void doSetValue(Object o)
       {
-        if (o == Boolean.TRUE)
+        if (Boolean.TRUE.equals(o))
         {
           super.doSetValue(0);
         }
