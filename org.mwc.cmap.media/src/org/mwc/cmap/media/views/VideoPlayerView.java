@@ -184,6 +184,7 @@ public class VideoPlayerView extends ViewPart
       try
       {
         _controllableTime.setTime(this, dtg, true);
+        
       }
       finally
       {
@@ -617,6 +618,21 @@ public class VideoPlayerView extends ViewPart
     public void onPlaying(XugglePlayer player, long milli)
     {
       updatePlayTime(milli);
+      //if playing from timecontroller
+      long curPlayTime = milli-TimeZone.getDefault().getOffset(0);
+      long currTime = startTime.getTime()+curPlayTime;
+      long timeLeft = player.getDuration()-curPlayTime;
+      //System.out.println("current Time:"+timeFormat.format(new Date(currTime))+",endTime:"+timeFormat.format(new Date(endTime)));
+      if(currTime>startTime.getTime() && timeLeft>0) 
+      {
+        play.setImage(PlanetmayoImages.PAUSE.getImage().createImage());
+        play.setToolTipText("Pause");
+      }
+      else {
+        play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
+        play.setToolTipText("Play");
+      }
+
       if ((getViewSite().getPage().getActivePart() == VideoPlayerView.this
           && fireNewTime) || player.isPlaying())
       {
@@ -730,15 +746,33 @@ public class VideoPlayerView extends ViewPart
       @Override
       public void onPlay(XugglePlayer player)
       {
-        play.setImage(PlanetmayoImages.PAUSE.getImage().createImage());
-        play.setToolTipText("Pause");
+        Display.getDefault().syncExec(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            play.setImage(PlanetmayoImages.PAUSE.getImage().createImage());
+            play.setToolTipText("Pause");    
+          }
+        });
+        
       }
 
       @Override
       public void onStop(XugglePlayer player)
       {
-        play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
-        play.setToolTipText("Play");
+        Display.getDefault().syncExec(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            play.setImage(PlanetmayoImages.PLAY.getImage().createImage());
+            play.setToolTipText("Play");    
+          }
+        });
+        
       }
 
       @Override
