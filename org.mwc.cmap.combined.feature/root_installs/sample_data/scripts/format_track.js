@@ -1,10 +1,10 @@
 /**
  * name : Format track (JS) 
- * popup : Debrief.Wrappers.Track.LightweightTrackWrapper
+ * popup : enabledFor(Debrief.Wrappers.TrackWrapper)
  */
 
 loadModule("/System/UI", false);
-loadModule("/Debrief Factory", false);
+loadModule("/Debrief", false);
 
 var selection = getSelection();
 
