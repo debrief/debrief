@@ -2,7 +2,7 @@
  * name : Create ring of points
  * description : sample code to create ring of points
  * toolbar : Outline
- * image : platform:/org.mwc.debrief.scripting/icons/circle.png
+ * image : platform:/plugin/org.mwc.debrief.scripting/icons/circle.png
  */
 loadModule("/System/UI", false);
 loadModule("/Debrief", false);
@@ -21,6 +21,7 @@ function wait(ms) {
 		d2 = new Date();
 	} while (d2 - d < ms);
 }
+
 
 var editor = getEditor();
 
@@ -62,6 +63,7 @@ if (editor == null) {
 			layers.fireModified();
 		}
 		editor.fitToWindow();
+		layers.fireModified();
 	} else {
 		print("layers not found");
 	}
