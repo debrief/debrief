@@ -59,6 +59,12 @@ public class DebriefObjects
   {
     return new WorldLocation(dLat, dLong, depth);
   }
+  
+  public WorldDistance createDistance(double km)
+  {
+    return new WorldDistance(km, WorldDistance.KM);
+  }
+  
 
   public static ShapeWrapper createLine(WorldLocation startPt,
       WorldLocation endPt, String name, Color color)
