@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _4Vp8AMF4EeitrdPUr06k7w
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 10/23/18 9:44 AM
+Save-Time: 10/23/18 11:03 AM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -47,13 +47,14 @@ with [get-view Outline | get-tree] {
     get-cell 4 0 | mouse up -count 1
 }
 get-view Outline | get-tree | get-cell 4 0 | click
+WaitUntilEclipseIsReady
 with [get-view Outline] {
     with [get-button "Make this item the primary"] {
-       // get-property enablement | equals true | verify-true
+        get-property enablement | equals true | verify-true
         get-property tooltip | equals "Make this item the primary" | verify-true
     }
     with [get-button "Set this item as the secondary track"] {
-       // get-property enablement | equals true | verify-true
+        get-property enablement | equals true | verify-true
         get-property tooltip | equals "Set this item as the secondary track" | verify-true
     }
 }
@@ -64,9 +65,10 @@ with [get-view Outline | get-tree] {
 with [get-view Outline] {
     get-button "Make this item the primary" | click
     get-tree | get-cell 5 0 | click
-   // get-button "Set this item as the secondary track" | click
+    WaitUntilEclipseIsReady
+    get-button "Set this item as the secondary track" | click
+    WaitUntilEclipseIsReady
 }
-/*
 with [get-view "Track Tote" | get-table] {
     get-item -path ATB | get-property "getParent().getColumnCount()" | equals 3 | verify-true
     get-item -path ATB | get-property "getParent().getColumns().TableColumn[0].getText()" | equals Attribute 
@@ -75,9 +77,8 @@ with [get-view "Track Tote" | get-table] {
         | verify-true
     get-item -path ATB | get-property "getParent().getColumns().TableColumn[2].getText()" | equals NELSON | verify-true
 }
-*/
 get-view "Track Tote" | get-button "Show calc units column" | click
-/*
+WaitUntilEclipseIsReady
 with [get-view "Track Tote" | get-table] {
     get-item -path ATB | get-property "getParent().getColumnCount()" | equals 4 | verify-true
     get-item -path ATB | get-property "getParent().getColumns().TableColumn[0].getText()" | equals Attribute 
@@ -87,11 +88,11 @@ with [get-view "Track Tote" | get-table] {
     get-item -path ATB | get-property "getParent().getColumns().TableColumn[2].getText()" | equals NELSON | verify-true
     get-item -path ATB | get-property "getParent().getColumns().TableColumn[3].getText()" | equals Units | verify-true
 }
-*/
 //remove the show calc units column 
 get-view "Track Tote" | get-button "Show calc units column" | click 
 //Verify Selecting Show tactival overview button opens Stacked Chartes view
 get-view "Track Tote" | get-button "Show tactical overview" | click
+WaitUntilEclipseIsReady
 
 get-tab-folder -index 4 | get-property activePage | equals "Stacked Charts" | verify-true
 get-view "Stacked Charts" | close
