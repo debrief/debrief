@@ -239,6 +239,12 @@ public abstract class FilteredNatTable extends Composite
     textChanged();
   }
 
+  private Image getImageFromJFaceResources(String imageDes) {
+    if(JFaceResources.getImageRegistry().getDescriptor(imageDes)!=null) {
+      return JFaceResources.getImageRegistry().getDescriptor(imageDes).createImage();
+    }
+    return null;
+  }
   /**
    * Create the button that clears the text.
    * 
@@ -251,13 +257,10 @@ public abstract class FilteredNatTable extends Composite
     // natively
     if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
     {
-      final Image inactiveImage =
-          JFaceResources.getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON)
-              .createImage();
-      final Image activeImage =
-          JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON)
-              .createImage();
-      final Image pressedImage =
+      
+      final Image inactiveImage =getImageFromJFaceResources(DISABLED_CLEAR_ICON);
+      final Image activeImage =getImageFromJFaceResources(CLEAR_ICON);
+      final Image pressedImage = activeImage==null?null:
           new Image(getDisplay(), activeImage, SWT.IMAGE_GRAY);
 
       final Label clearButton = new Label(parent, SWT.NONE);
@@ -342,9 +345,15 @@ public abstract class FilteredNatTable extends Composite
         @Override
         public void widgetDisposed(final DisposeEvent e)
         {
-          inactiveImage.dispose();
-          activeImage.dispose();
-          pressedImage.dispose();
+          if(inactiveImage!=null) {
+            inactiveImage.dispose();
+          }
+          if(activeImage!=null) {
+            activeImage.dispose();
+          }
+          if(pressedImage!=null) {
+            pressedImage.dispose();
+          }
         }
       });
 
