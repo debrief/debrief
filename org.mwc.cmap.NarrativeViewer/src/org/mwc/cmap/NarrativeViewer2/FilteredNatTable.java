@@ -56,9 +56,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
+import org.mwc.cmap.NarrativeViewer.app.Activator;
 
 /**
  * 
@@ -190,16 +190,15 @@ public abstract class FilteredNatTable extends Composite
    */
   static
   {
-    ImageDescriptor descriptor =
-        AbstractUIPlugin.imageDescriptorFromPlugin(PlatformUI.PLUGIN_ID,
-            "$nl$/icons/full/etool16/clear_co.gif"); //$NON-NLS-1$
+    ImageDescriptor descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/16/clear.gif");
     if (descriptor != null)
     {
       JFaceResources.getImageRegistry().put(CLEAR_ICON, descriptor);
     }
+    
     descriptor =
-        AbstractUIPlugin.imageDescriptorFromPlugin(PlatformUI.PLUGIN_ID,
-            "$nl$/icons/full/dtool16/clear_co.gif"); //$NON-NLS-1$
+        AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+            "icons/16/disabled_clear.gif"); //$NON-NLS-1$
     if (descriptor != null)
     {
       JFaceResources.getImageRegistry().put(DISABLED_CLEAR_ICON, descriptor);

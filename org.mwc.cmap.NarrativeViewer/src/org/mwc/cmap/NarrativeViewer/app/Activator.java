@@ -18,6 +18,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 public class Activator extends AbstractUIPlugin {
+  public static final String PLUGIN_ID="org.mwc.cmap.NarrativeViewer";
 	private static Activator ourInstance;
 
 	public static Activator getInstance() {
