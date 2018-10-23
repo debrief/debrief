@@ -2,10 +2,12 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.text.ParseException;
 
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.TimeDisplayPainter;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.PlottableExporter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -56,7 +58,14 @@ public abstract class TimeDisplayPainterHandler extends MWCXMLReader implements 
 		{
 			public void setValue(final String name, final String value)
 			{
-				_origin = parseThisDate(value);
+				try
+        {
+          _origin = parseThisDate(value);
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");
+        }
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(ABSOLUTE)

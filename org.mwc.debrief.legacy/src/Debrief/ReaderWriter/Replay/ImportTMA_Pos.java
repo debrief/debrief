@@ -76,7 +76,7 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter
       super(val);
     }
 
-    public final void testImport()
+    public final void testImport() throws ParseException
     {
 
       // ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
@@ -127,7 +127,7 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter
 
     }
 
-    public final void testImportNoEllipse()
+    public final void testImportNoEllipse() throws ParseException
     {
       // ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
       // TT...TT OOO.O XXXX YYYY CCC SSS DDD xx.xx
@@ -179,7 +179,7 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter
       assertEquals("correct label", "Trial label", tc.getLabel());
     }
 
-    public final void testImportSpaces()
+    public final void testImportSpaces() throws ParseException
     {
 
       // ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H
@@ -213,7 +213,7 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter
     }
   }
 
-  public static void main(final String[] args)
+  public static void main(final String[] args) throws ParseException
   {
     final testImportTMA_POS tm = new testImportTMA_POS("scrap");
     tm.testImport();
@@ -273,9 +273,10 @@ public final class ImportTMA_Pos extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
   @Override
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H

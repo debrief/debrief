@@ -1425,6 +1425,8 @@ public class ImportNarrativeDocument
     res = res.replace((char) 20, (char) 32);
     res = res.replace((char) 21, (char) 32);
     res = res.replace((char) 5, (char) 32); // MS Word comment marker
+    res = res.replace((char) 31, (char) 32); // described as units marker, but we had it prior to
+                                             // subscript "2"
 
     // done.
     return res;

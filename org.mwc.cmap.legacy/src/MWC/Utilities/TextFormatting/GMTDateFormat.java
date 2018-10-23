@@ -27,6 +27,10 @@ public class GMTDateFormat extends SimpleDateFormat
     super(format);
     
     super.setTimeZone(GMT_ZONE);
+    
+    // don't let the format be lenient. Throw errors on malformed dates. This 
+    // may help catch USA-style MMDDYY being passed instead of DDMMYY
+    setLenient(false);
   }
 
   public GMTDateFormat(String pattern, Locale us)

@@ -17,16 +17,19 @@ package MWC.GUI.Shapes.Symbols.SVG;
 import java.awt.Point;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -36,6 +39,7 @@ import MWC.Utilities.Errors.Trace;
 
 public class SVGShape extends PlainSymbol
 {
+	private static final String SVG_SYMBOL_FOLDER = "svg_symbols";
 
   /**
    * Version ID.
@@ -237,39 +241,61 @@ public class SVGShape extends PlainSymbol
    */
   private Document getDocument()
   {
-    try
-    {
       // remove the svg: prefix, if necesary
       final String fName = _svgFileName.contains("svg:") ? _svgFileName
           .substring(4) : _svgFileName;
 
-      String svgPath = File.separator + fName + SymbolFactory.SVG_EXTENSION;
-
-      InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
+      // retrieve symbol from relevant folder (operating system dependent)
+      final String system = System.getProperty("os.name");
+      final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
+      final String svgPath;
+      if(system.startsWith("Win"))
+      {
+        svgPath = "/" + SVG_SYMBOL_FOLDER + filePath;
+      }
+      else
+      {
+        svgPath = filePath;
+      }
+  
+      final InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
 
       if (inputStream == null)
       {
         // Resource doesn't exist
-        throw new FileNotFoundException();
+        Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
+        return null;
       }
-      final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
-          .newInstance();
-      final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-      final Document doc = dBuilder.parse(inputStream);
+      else
+      {
+        final DocumentBuilderFactory dbFactory = DocumentBuilderFactory
+            .newInstance();
+        try
+        {
+          final DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+          final Document doc = dBuilder.parse(inputStream);
+          // read this -
+          // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+          doc.getDocumentElement().normalize();
 
-      // read this -
-      // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
-      doc.getDocumentElement().normalize();
-
-      return doc;
-    }
-    catch (Exception e)
-    {
-      Trace.trace(e, "Failed to open SVG file " + _svgFileName);
-    }
-
-    // failed, drop out
-    return null;
+          return doc;
+        }
+        catch (ParserConfigurationException e)
+        {
+          Trace.trace(e,  "While configuring parser");
+          return null;
+        }
+        catch (SAXException e)
+        {
+          Trace.trace(e,  "While parsing SVG file");
+          return null;
+        }
+        catch (IOException e)
+        {
+          Trace.trace(e,  "While reading document");
+          return null;
+        }
+      }
   }
 
   private void parseOrigin(Node element)

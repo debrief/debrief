@@ -118,9 +118,20 @@ public class DialogFactory
   static SwingFile _swinger = new SwingFile();
   static AWTFile _awter = new AWTFile();
 
+  static private boolean _runHeadless = false;
+  
   static public void useSwing(final boolean val)
   {
     _useSwing = val;
+  }
+  
+  /** direct the code to run headless, so we don't 
+   * try to open dialogs
+   * @param runHeadless whether to run headless
+   */
+  static public void setRunHeadless(final boolean runHeadless)
+  {
+    _runHeadless = runHeadless;
   }
 
   /**
@@ -171,15 +182,18 @@ public class DialogFactory
 
   static public void showMessage(final String title, final String msg)
   {
-    // create duff frame, that message dialog can appear
-    // in centre of
-    final Frame tmp = new Frame();
-    // and put the frame in the centre of the screen
-    final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
-    tmp.setLocation(sz.width / 2,
-                    sz.height / 2);
-    
-    JOptionPane.showMessageDialog(tmp, msg, title, JOptionPane.INFORMATION_MESSAGE);
+    if (!_runHeadless)
+    {
+      // create duff frame, that message dialog can appear
+      // in centre of
+      final Frame tmp = new Frame();
+      // and put the frame in the centre of the screen
+      final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
+      tmp.setLocation(sz.width / 2, sz.height / 2);
+
+      JOptionPane.showMessageDialog(tmp, msg, title,
+          JOptionPane.INFORMATION_MESSAGE);
+    }
   }
 
 

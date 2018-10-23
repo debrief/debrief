@@ -200,6 +200,7 @@ Export-Package:
  Debrief.ReaderWriter.ais;uses:="junit.framework,MWC.GUI",
  Debrief.ReaderWriter.powerPoint,
  Debrief.ReaderWriter.powerPoint.model,
+ Debrief.ReaderWriter.powerPoint.test,
  Debrief.Tools.FilterOperations;
   uses:="MWC.GUI.Properties,
    Debrief.Tools.Tote,

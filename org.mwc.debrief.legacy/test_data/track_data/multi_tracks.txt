@@ -1,0 +1,1072 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/0" creator="DebriefNG" version="1.0">
+    <name>Exported DebriefNG tracks</name>
+    <trk>
+        <name>COLL</name>
+        <trkseg>
+            <trkpt lat="512.0" lon="272.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:15:47Z</time>
+                <course>10.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="514.0" lon="272.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:16:47Z</time>
+                <course>9.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="516.0" lon="273.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:17:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="518.0" lon="273.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:18:47Z</time>
+                <course>10.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="520.0" lon="274.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:19:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="522.0" lon="274.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:20:47Z</time>
+                <course>9.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="524.0" lon="275.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:21:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="527.0" lon="275.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:22:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="529.0" lon="276.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:23:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="531.0" lon="276.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:24:47Z</time>
+                <course>9.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="533.0" lon="277.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:25:47Z</time>
+                <course>10.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="535.0" lon="277.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:26:47Z</time>
+                <course>9.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="537.0" lon="278.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:27:47Z</time>
+                <course>11.9000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="539.0" lon="278.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:28:47Z</time>
+                <course>32.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="541.0" lon="280.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:29:47Z</time>
+                <course>65.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="541.0" lon="282.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:30:47Z</time>
+                <course>100.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="541.0" lon="284.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:31:47Z</time>
+                <course>132.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="540.0" lon="286.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:32:47Z</time>
+                <course>149.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="538.0" lon="287.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:33:47Z</time>
+                <course>150.9000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="537.0" lon="288.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:34:47Z</time>
+                <course>151.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="535.0" lon="289.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:35:47Z</time>
+                <course>147.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="533.0" lon="291.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:36:47Z</time>
+                <course>126.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="532.0" lon="293.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:37:47Z</time>
+                <course>92.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="532.0" lon="295.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:38:47Z</time>
+                <course>59.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="533.0" lon="297.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:39:47Z</time>
+                <course>28.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="534.0" lon="298.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:40:47Z</time>
+                <course>13.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="536.0" lon="299.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:41:47Z</time>
+                <course>10.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="538.0" lon="299.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:42:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="540.0" lon="300.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:43:47Z</time>
+                <course>11.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="542.0" lon="300.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:44:47Z</time>
+                <course>11.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="544.0" lon="301.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:45:47Z</time>
+                <course>9.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="546.0" lon="301.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:46:47Z</time>
+                <course>8.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="548.0" lon="302.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:47:47Z</time>
+                <course>10.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="550.0" lon="302.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:48:47Z</time>
+                <course>10.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="552.0" lon="303.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:49:47Z</time>
+                <course>10.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="554.0" lon="303.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:50:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="556.0" lon="304.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:51:47Z</time>
+                <course>9.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="558.0" lon="304.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:52:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="560.0" lon="305.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:53:47Z</time>
+                <course>10.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="562.0" lon="305.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:54:47Z</time>
+                <course>9.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="564.0" lon="306.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:55:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="566.0" lon="306.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:56:47Z</time>
+                <course>10.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="568.0" lon="307.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:57:47Z</time>
+                <course>9.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+        </trkseg>
+        <extensions>
+            <color>java.awt.Color[r=0,g=100,b=189]</color>
+        </extensions>
+    </trk>
+    <trk>
+        <name>NEL2</name>
+        <trkseg>
+            <trkpt lat="461.0" lon="349.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:15:47Z</time>
+                <course>59.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="463.0" lon="353.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:16:47Z</time>
+                <course>60.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="464.0" lon="357.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:17:47Z</time>
+                <course>59.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="466.0" lon="362.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:18:47Z</time>
+                <course>60.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="468.0" lon="366.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:19:47Z</time>
+                <course>60.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="470.0" lon="370.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:20:47Z</time>
+                <course>59.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="472.0" lon="375.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:21:47Z</time>
+                <course>60.2001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="474.0" lon="379.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:22:47Z</time>
+                <course>60.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="475.0" lon="383.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:23:47Z</time>
+                <course>59.6001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="477.0" lon="388.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:24:47Z</time>
+                <course>30.1001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="480.0" lon="390.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:25:47Z</time>
+                <course>318.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="482.0" lon="387.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:26:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="484.0" lon="384.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:27:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="485.0" lon="380.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:28:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="487.0" lon="376.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:29:47Z</time>
+                <course>300.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="489.0" lon="371.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:30:47Z</time>
+                <course>300.1000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="491.0" lon="367.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:31:47Z</time>
+                <course>299.5000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="492.0" lon="363.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:32:47Z</time>
+                <course>300.2000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="494.0" lon="359.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:33:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="496.0" lon="354.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:34:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="498.0" lon="350.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:35:47Z</time>
+                <course>299.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="500.0" lon="346.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:36:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="502.0" lon="341.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:37:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="503.0" lon="337.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:38:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="505.0" lon="333.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:39:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="507.0" lon="328.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:40:47Z</time>
+                <course>299.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="509.0" lon="324.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:41:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="511.0" lon="320.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:42:47Z</time>
+                <course>300.2000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="513.0" lon="315.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:43:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="514.0" lon="311.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:44:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="516.0" lon="307.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:45:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="518.0" lon="302.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:46:47Z</time>
+                <course>292.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="520.0" lon="298.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:47:47Z</time>
+                <course>271.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="520.0" lon="293.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:48:47Z</time>
+                <course>280.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="520.0" lon="288.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:49:47Z</time>
+                <course>332.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="523.0" lon="287.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:50:47Z</time>
+                <course>340.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="526.0" lon="285.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:51:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="529.0" lon="283.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:52:47Z</time>
+                <course>339.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="533.0" lon="282.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:53:47Z</time>
+                <course>340.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="536.0" lon="280.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:54:47Z</time>
+                <course>339.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="540.0" lon="278.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:55:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="543.0" lon="277.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:56:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="546.0" lon="275.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:57:47Z</time>
+                <course>340.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+        </trkseg>
+        <extensions>
+            <color>java.awt.Color[r=224,g=28,b=62]</color>
+        </extensions>
+    </trk>
+    <trk>
+        <name>NELS</name>
+        <trkseg>
+            <trkpt lat="387.0" lon="312.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:15:47Z</time>
+                <course>59.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="389.0" lon="316.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:16:47Z</time>
+                <course>60.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="390.0" lon="320.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:17:47Z</time>
+                <course>59.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="392.0" lon="325.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:18:47Z</time>
+                <course>60.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="394.0" lon="329.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:19:47Z</time>
+                <course>60.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="396.0" lon="333.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:20:47Z</time>
+                <course>59.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="398.0" lon="338.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:21:47Z</time>
+                <course>60.2001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="400.0" lon="342.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:22:47Z</time>
+                <course>60.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="401.0" lon="346.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:23:47Z</time>
+                <course>59.6001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="403.0" lon="351.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:24:47Z</time>
+                <course>30.1001</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="406.0" lon="353.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:25:47Z</time>
+                <course>318.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="408.0" lon="350.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:26:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="410.0" lon="347.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:27:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="411.0" lon="343.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:28:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="413.0" lon="339.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:29:47Z</time>
+                <course>300.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="415.0" lon="335.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:30:47Z</time>
+                <course>300.1000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="417.0" lon="330.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:31:47Z</time>
+                <course>299.5000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="418.0" lon="326.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:32:47Z</time>
+                <course>300.2000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="420.0" lon="322.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:33:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="422.0" lon="317.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:34:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="424.0" lon="313.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:35:47Z</time>
+                <course>299.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="426.0" lon="309.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:36:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="428.0" lon="304.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:37:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="430.0" lon="300.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:38:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="431.0" lon="296.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:39:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="433.0" lon="291.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:40:47Z</time>
+                <course>299.9000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="435.0" lon="287.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:41:47Z</time>
+                <course>299.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="437.0" lon="283.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:42:47Z</time>
+                <course>300.2000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="439.0" lon="278.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:43:47Z</time>
+                <course>299.6000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="441.0" lon="274.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:44:47Z</time>
+                <course>300.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="442.0" lon="270.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:45:47Z</time>
+                <course>299.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="444.0" lon="265.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:46:47Z</time>
+                <course>292.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="446.0" lon="261.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:47:47Z</time>
+                <course>271.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="446.0" lon="256.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:48:47Z</time>
+                <course>280.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="446.0" lon="251.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:49:47Z</time>
+                <course>332.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="449.0" lon="250.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:50:47Z</time>
+                <course>340.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="452.0" lon="248.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:51:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="455.0" lon="246.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:52:47Z</time>
+                <course>339.8000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="459.0" lon="245.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:53:47Z</time>
+                <course>340.3000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="462.0" lon="243.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:54:47Z</time>
+                <course>339.4000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="466.0" lon="241.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:55:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="469.0" lon="240.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:56:47Z</time>
+                <course>340.0000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+            <trkpt lat="472.0" lon="238.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:57:47Z</time>
+                <course>340.7000</course>
+                <speed>1.0289</speed>
+            </trkpt>
+        </trkseg>
+        <extensions>
+            <color>java.awt.Color[r=224,g=150,b=62]</color>
+        </extensions>
+    </trk>
+    <trk>
+        <name>COL2</name>
+        <trkseg>
+            <trkpt lat="462.0" lon="152.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:15:47Z</time>
+                <course>10.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="464.0" lon="152.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:16:47Z</time>
+                <course>9.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="466.0" lon="153.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:17:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="468.0" lon="153.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:18:47Z</time>
+                <course>10.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="470.0" lon="154.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:19:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="472.0" lon="154.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:20:47Z</time>
+                <course>9.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="475.0" lon="155.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:21:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="477.0" lon="155.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:22:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="479.0" lon="156.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:23:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="481.0" lon="156.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:24:47Z</time>
+                <course>9.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="483.0" lon="157.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:25:47Z</time>
+                <course>10.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="485.0" lon="157.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:26:47Z</time>
+                <course>9.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="487.0" lon="158.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:27:47Z</time>
+                <course>11.9000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="489.0" lon="158.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:28:47Z</time>
+                <course>32.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="491.0" lon="160.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:29:47Z</time>
+                <course>65.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="491.0" lon="162.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:30:47Z</time>
+                <course>100.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="491.0" lon="164.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:31:47Z</time>
+                <course>132.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="490.0" lon="166.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:32:47Z</time>
+                <course>149.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="488.0" lon="167.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:33:47Z</time>
+                <course>150.9000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="487.0" lon="168.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:34:47Z</time>
+                <course>151.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="485.0" lon="170.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:35:47Z</time>
+                <course>147.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="483.0" lon="171.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:36:47Z</time>
+                <course>126.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="482.0" lon="173.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:37:47Z</time>
+                <course>92.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="482.0" lon="175.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:38:47Z</time>
+                <course>59.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="483.0" lon="177.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:39:47Z</time>
+                <course>28.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="484.0" lon="178.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:40:47Z</time>
+                <course>13.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="486.0" lon="179.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:41:47Z</time>
+                <course>10.3000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="488.0" lon="179.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:42:47Z</time>
+                <course>10.2000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="490.0" lon="180.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:43:47Z</time>
+                <course>11.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="492.0" lon="180.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:44:47Z</time>
+                <course>11.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="494.0" lon="181.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:45:47Z</time>
+                <course>9.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="496.0" lon="181.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:46:47Z</time>
+                <course>8.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="498.0" lon="182.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:47:47Z</time>
+                <course>10.1000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="500.0" lon="182.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:48:47Z</time>
+                <course>10.7000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="502.0" lon="183.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:49:47Z</time>
+                <course>10.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="504.0" lon="183.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:50:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="506.0" lon="184.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:51:47Z</time>
+                <course>9.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="508.0" lon="184.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:52:47Z</time>
+                <course>10.4000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="510.0" lon="185.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:53:47Z</time>
+                <course>10.8000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="512.0" lon="185.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:54:47Z</time>
+                <course>9.0000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="514.0" lon="186.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:55:47Z</time>
+                <course>9.5000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="516.0" lon="186.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:56:47Z</time>
+                <course>10.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+            <trkpt lat="518.0" lon="187.0">
+                <ele>0.0</ele>
+                <time>1995-12-12T09:57:47Z</time>
+                <course>9.6000</course>
+                <speed>1.8006</speed>
+            </trkpt>
+        </trkseg>
+        <extensions>
+            <color>java.awt.Color[r=100,g=100,b=0]</color>
+        </extensions>
+    </trk>
+    <extensions>
+        <dimensions height="970" width="806"/>
+        <interval millis="100"/>
+    </extensions>
+</gpx>

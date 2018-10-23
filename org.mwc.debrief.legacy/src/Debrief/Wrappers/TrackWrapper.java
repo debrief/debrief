@@ -80,6 +80,7 @@ import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
+import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -151,7 +152,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       try
       {
         final PropertyDescriptor[] _coreDescriptors = new PropertyDescriptor[]
-        {displayExpertLongProp("SymbolType", "Symbol type",
+        {displayExpertLongProp("SymbolType", "Snail symbol type",
             "the type of symbol plotted for this label", FORMAT,
             SymbolFactoryPropertyEditor.class), displayExpertLongProp(
                 "LineThickness", "Line thickness",
@@ -219,16 +220,26 @@ public class TrackWrapper extends LightweightTrackWrapper implements
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 2,
               _coreDescriptors.length);
           _coreDescriptorsWithSymbols[0] = displayExpertProp("SymbolLength",
-              "Symbol length", "Length of symbol", FORMAT);
+              "Snail symbol length", "Length of snail symbol", FORMAT);
           _coreDescriptorsWithSymbols[1] = displayExpertProp("SymbolWidth",
-              "Symbol width", "Width of symbol", FORMAT);
+              "Snail symbol width", "Width of snail symbol", FORMAT);
 
           // and now use the new value
           res = _coreDescriptorsWithSymbols;
         }
         else
         {
-          res = _coreDescriptors;
+          // yes = better create height/width editors
+          final PropertyDescriptor[] _coreDescriptorsWithSymbols =
+              new PropertyDescriptor[_coreDescriptors.length + 1];
+          System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
+              _coreDescriptors.length);
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
+              "Snail symbol size", "Size of symbol", FORMAT,
+              SymbolScalePropertyEditor.class);
+
+          // and now use the new value
+          res = _coreDescriptorsWithSymbols;
         }
 
         // TRACK COLORING HANDLING

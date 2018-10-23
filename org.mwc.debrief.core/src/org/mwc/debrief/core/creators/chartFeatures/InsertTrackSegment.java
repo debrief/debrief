@@ -16,6 +16,7 @@ package org.mwc.debrief.core.creators.chartFeatures;
 
 import java.awt.Color;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -40,6 +41,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
@@ -171,27 +173,35 @@ public class InsertTrackSegment extends CoreInsertChartFeature
 						while ((startDate == null) && (inp.open() == InputDialog.OK))
 						{
 							final String startDateTxt = inp.getValue();
-							startDate = DebriefFormatDateTime.parseThis(startDateTxt);
-							if (!(startDate == null))
-							{
-								// get the centre of the visible area
-								final WorldLocation wc = new WorldLocation(getCentre(theChart));
-								
-								// create new track
-								final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
-								
-								// give it a default color
-								tw.setColor(Color.red);
-								
-								// initialize NameVisible (false)
-								tw.setNameVisible(false);
+							try
+              {
+                startDate = DebriefFormatDateTime.parseThis(startDateTxt);
+                
+                if (startDate != null)
+                {
+                  // get the centre of the visible area
+                  final WorldLocation wc = new WorldLocation(getCentre(theChart));
+                  
+                  // create new track
+                  final TrackWrapper tw = new CompositeTrackWrapper(startDate, wc);
+                  
+                  // give it a default color
+                  tw.setColor(Color.red);
+                  
+                  // initialize NameVisible (false)
+                  tw.setNameVisible(false);
 
-								// store the name
-								tw.setName(txt);
+                  // store the name
+                  tw.setName(txt);
 
-								// add to layers object
-								theLayers.addThisLayer(tw);
-							}
+                  // add to layers object
+                  theLayers.addThisLayer(tw);
+                }
+              }
+              catch (ParseException e)
+              {
+                Trace.trace(e, "While parsing date");
+              }
 						}
 					}
 					else
