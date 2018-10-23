@@ -3,6 +3,7 @@ package org.mwc.debrief.scripting.wrappers;
 import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 
 import javax.inject.Inject;
 
@@ -23,8 +24,10 @@ import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -58,6 +61,12 @@ public class DebriefObjects
   {
     return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(bearingDegs),
         new WorldDistance(distM, WorldDistance.METRES), null);
+  }
+
+  public static WorldVector createVectorKm(double distKm, double bearingDegs)
+  {
+    return new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(bearingDegs),
+        new WorldDistance(distKm, WorldDistance.KM), null);
   }
 
   public static FixWrapper createFix(HiResDate time, WorldLocation location,
@@ -120,6 +129,12 @@ public class DebriefObjects
     {
       _editor = editor;
     }
+    
+    public void fitToWindow()
+    {
+      _editor.getChart().rescale();
+      getLayers().fireModified();
+    }
 
     public DLayers getLayers()
     {
@@ -144,6 +159,12 @@ public class DebriefObjects
         return proj.getDataArea();
       }
       return null;
+    }
+    
+    public HiResDate getCurrentTime()
+    {
+      TimeProvider time = (TimeProvider) _editor.getAdapter(TimeProvider.class);
+      return time.getTime();
     }
 
     public WorldLocation getCentre()
@@ -185,11 +206,33 @@ public class DebriefObjects
       return null;
     }
 
+    public LightweightTrackWrapper[] getTracks()
+    {
+      final ArrayList<LightweightTrackWrapper> items = new 
+          ArrayList<LightweightTrackWrapper>();
+      
+      OperateFunction function = new OperateFunction() {
+
+        @Override
+        public void operateOn(Editable item)
+        {
+          items.add((LightweightTrackWrapper) item);
+        }};
+      _layers.walkVisibleItems(LightweightTrackWrapper.class, function);
+      
+      return items.toArray(new LightweightTrackWrapper[] {null});
+    }
+    
     public Layer createLayer(String name)
     {
-      Layer newLayer = new BaseLayer();
-      newLayer.setName(name);
-      _layers.addThisLayer(newLayer);
+      // do we already have it?
+      Layer newLayer = _layers.findLayer(name);
+      if(newLayer == null)
+      {
+        newLayer = new BaseLayer();
+        newLayer.setName(name);
+        _layers.addThisLayer(newLayer);
+      }
       return newLayer;
     }
 
@@ -309,7 +352,10 @@ public class DebriefObjects
     // tell them about new time
     final String EVENT_NAME = "info.debrief.newTime";
 
-    broker.post(EVENT_NAME, date.getDate().getTime());
-
+    // fire the event, if we have a broker
+    if(broker != null)
+    {
+      broker.post(EVENT_NAME, date.getDate().getTime());
+    }
   }
 }
