@@ -6,8 +6,9 @@
          point="org.eclipse.ease.modules">
       <module
             class="org.mwc.debrief.scripting.wrappers.DebriefObjects"
+            icon="icons/debrief_icon.png"
             id="org.mwc.debrief.scripting.module"
-            name="Debrief Factory"
+            name="Debrief"
             visible="true">
       </module>
    </extension>
