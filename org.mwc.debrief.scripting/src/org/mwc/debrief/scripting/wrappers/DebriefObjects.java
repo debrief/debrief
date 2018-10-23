@@ -76,7 +76,7 @@ public class DebriefObjects
     return new Color(red, green, blue);
   }
 
-  private static PlotEditor getEditor()
+  public static DEditor getEditor()
   {
     IWorkbench workbench = PlatformUI.getWorkbench();
     IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
@@ -90,7 +90,7 @@ public class DebriefObjects
           IEditorPart editor = page.getActiveEditor();
           if (editor != null && editor instanceof PlotEditor)
           {
-            return (PlotEditor) editor;
+            return new DEditor( (PlotEditor) editor);
           }
         }
       }
@@ -98,53 +98,63 @@ public class DebriefObjects
     return null;
   }
 
-  public WorldArea getArea()
-  {
-    listenToMyParts();
-    
-    PlotEditor editor = getEditor();
-    if (editor != null)
-    {
-      PlainProjection proj = (PlainProjection) editor.getAdapter(
-          PlainProjection.class);
-      return proj.getDataArea();
-    }
-    return null;
-  }
-
-  public WorldLocation getCentre()
-  {
-    WorldArea area = getArea();
-    if (area != null)
-    {
-      return area.getCentre();
-    }
-    else
-    {
-      return null;
-    }
-  }
-
-  public static DLayers getLayers()
-  {
-    PlotEditor editor = getEditor();
-    if (editor != null)
-    {
-      Layers layers = (Layers) editor.getAdapter(Layers.class);
-      if (layers != null)
-      {
-        return new DLayers(layers);
-      }
-    }
-    return null;
-  }
-
+ 
   /*
    * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
    */
   public static HiResDate createDate(long date)
   {
     return new HiResDate(date);
+  }
+  
+  public static class DEditor
+  {
+    private final PlotEditor _editor;
+    public DEditor(PlotEditor editor)
+    {
+      _editor = editor;
+    }
+    
+    public DLayers getLayers()
+    {
+      if (_editor != null)
+      {
+        Layers layers = (Layers) _editor.getAdapter(Layers.class);
+        if (layers != null)
+        {
+          return new DLayers(layers);
+        }
+      }
+      return null;
+   
+    }
+    
+    public WorldArea getArea()
+    {
+      if (_editor != null)
+      {
+        PlainProjection proj = (PlainProjection) _editor.getAdapter(
+            PlainProjection.class);
+        return proj.getDataArea();
+      }
+      return null;
+    }
+    
+    public WorldLocation getCentre()
+    {
+      WorldArea area = getArea();
+      if (area != null)
+      {
+        return area.getCentre();
+      }
+      else
+      {
+        return null;
+      }
+    }
+
+
+    
   }
 
   public static class DLayers
@@ -205,13 +215,14 @@ public class DebriefObjects
       return;
     }
     
-    PlotEditor editor = getEditor();
-    if(editor == null)
+    DEditor dEditor = getEditor();
+    if(dEditor == null)
     {
       System.err.println("Couldn't get editor");
       return;
     }
     
+    PlotEditor editor = dEditor._editor;
     IWorkbenchWindow window = editor.getSite().getPage().getWorkbenchWindow();
         
     if(window == null)
