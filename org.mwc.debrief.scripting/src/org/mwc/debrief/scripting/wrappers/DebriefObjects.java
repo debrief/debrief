@@ -7,7 +7,8 @@ import java.beans.PropertyChangeListener;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.ease.modules.ScriptParameter;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -39,8 +40,6 @@ public class DebriefObjects
     System.out.println("About to start listening");
     listenToMyParts();
   }
-  
-  
 
   @Override
   protected void finalize() throws Throwable
@@ -49,9 +48,6 @@ public class DebriefObjects
     System.out.println("DISPOSE");
   }
 
-
-
-  /* */
   public static WorldLocation createLocation(double dLat, double dLong,
       double depth)
   {
@@ -76,7 +72,8 @@ public class DebriefObjects
     return new Color(red, green, blue);
   }
 
-  public static DEditor getEditor()
+  public static DEditor getEditor(@ScriptParameter(
+      defaultValue = "unset") String filename)
   {
     IWorkbench workbench = PlatformUI.getWorkbench();
     IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
@@ -87,10 +84,19 @@ public class DebriefObjects
         IWorkbenchPage[] pages = window.getPages();
         for (IWorkbenchPage page : pages)
         {
-          IEditorPart editor = page.getActiveEditor();
-          if (editor != null && editor instanceof PlotEditor)
+          IEditorReference[] editors = page.getEditorReferences();
+          for (IEditorReference editor : editors)
           {
-            return new DEditor( (PlotEditor) editor);
+            String descriptor = editor.getId();
+            if (filename == null || "unset".equals(filename) || filename.equals(
+                editor.getName()))
+            {
+              // ok, we either didn't have an editor name, or this matches
+              if ("org.mwc.debrief.TrackEditor".equals(descriptor))
+              {
+                return new DEditor((PlotEditor) editor.getEditor(true));
+              }
+            }
           }
         }
       }
@@ -98,7 +104,6 @@ public class DebriefObjects
     return null;
   }
 
- 
   /*
    * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
    */
@@ -106,15 +111,16 @@ public class DebriefObjects
   {
     return new HiResDate(date);
   }
-  
+
   public static class DEditor
   {
     private final PlotEditor _editor;
+
     public DEditor(PlotEditor editor)
     {
       _editor = editor;
     }
-    
+
     public DLayers getLayers()
     {
       if (_editor != null)
@@ -126,9 +132,9 @@ public class DebriefObjects
         }
       }
       return null;
-   
+
     }
-    
+
     public WorldArea getArea()
     {
       if (_editor != null)
@@ -139,7 +145,7 @@ public class DebriefObjects
       }
       return null;
     }
-    
+
     public WorldLocation getCentre()
     {
       WorldArea area = getArea();
@@ -153,8 +159,6 @@ public class DebriefObjects
       }
     }
 
-
-    
   }
 
   public static class DLayers
@@ -166,6 +170,11 @@ public class DebriefObjects
       _layers = layers;
     }
 
+    public int size()
+    {
+      return _layers.size();
+    }
+    
     public LightweightTrackWrapper findTrack(String name)
     {
       Layer match = _layers.findLayer(name);
@@ -210,24 +219,24 @@ public class DebriefObjects
 
   private void listenToMyParts()
   {
-    if(_partMonitor != null)
+    if (_partMonitor != null)
     {
       return;
     }
-    
-    DEditor dEditor = getEditor();
-    if(dEditor == null)
+
+    DEditor dEditor = getEditor(null);
+    if (dEditor == null)
     {
       System.err.println("Couldn't get editor");
       return;
     }
-    
+
     PlotEditor editor = dEditor._editor;
     IWorkbenchWindow window = editor.getSite().getPage().getWorkbenchWindow();
-        
-    if(window == null)
+
+    if (window == null)
       return;
-    
+
     _partMonitor = new PartMonitor(window.getPartService());
 
     final PropertyChangeListener listener = new PropertyChangeListener()
@@ -288,20 +297,19 @@ public class DebriefObjects
 
   @Inject
   private IEventBroker broker;
-  
+
   protected void fireNewTime(HiResDate date)
   {
     System.out.println("CAUGHT NEW TIME:" + date.getDate());
-    
+
     // find scripts
-    
+
     // find scripts that listen to NewTime event
-    
-      // tell them about new time
-      final String EVENT_NAME = "info.debrief.newTime";
-      
-      broker.post(EVENT_NAME, date.getDate().getTime());
-      
+
+    // tell them about new time
+    final String EVENT_NAME = "info.debrief.newTime";
+
+    broker.post(EVENT_NAME, date.getDate().getTime());
 
   }
 }
