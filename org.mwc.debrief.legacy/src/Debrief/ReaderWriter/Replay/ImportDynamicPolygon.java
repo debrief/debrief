@@ -96,7 +96,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import junit.framework.TestCase;
+import Debrief.Wrappers.DynamicPolygonShapeWrapper;
 import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
@@ -107,6 +107,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class that is able to export a polygon - note the Replay file format doesn't
@@ -217,8 +218,9 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 		}
 
 		// and put Polygon into a shape
-		final DynamicShapeWrapper sw = new DynamicShapeWrapper(theText, sp,
-				ImportReplay.replayColorFor(symbology), theDate, theName);
+		final DynamicPolygonShapeWrapper sw = new DynamicPolygonShapeWrapper(theText, (PolygonShape)sp,
+				ImportReplay.replayColorFor(symbology), theDate, null);
+		sw.setTrackName(theName);
 
 		return sw;
 	}

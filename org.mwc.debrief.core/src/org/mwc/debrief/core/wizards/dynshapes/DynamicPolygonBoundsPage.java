@@ -91,7 +91,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
     final PolygonShape polygon = new PolygonShape(coordinates);
 
     final StringTokenizer st = new StringTokenizer(text);
-
+    int counter=0;
     while (st.hasMoreTokens())
     {
       // meet the label
@@ -99,7 +99,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
       final String[] coords = sts.split(",");
       final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
           Double.valueOf(coords[1]), 0);
-      final PolygonNode newNode = new PolygonNode("1", wl, polygon);
+      final PolygonNode newNode = new PolygonNode((++counter)+"", wl, polygon);
       polygon.add(newNode);
     }
     return polygon;

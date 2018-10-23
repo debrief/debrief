@@ -6,8 +6,11 @@ import java.util.Date;
 import org.eclipse.jface.wizard.Wizard;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.DynamicPolygonShapeWrapper;
 import Debrief.Wrappers.DynamicShapeWrapper;
+import Debrief.Wrappers.IDynamicShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Shapes.PolygonShape;
 import MWC.GenericData.HiResDate;
 
 abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShapeBaseWizardPage>
@@ -17,7 +20,7 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
   private final Date _startDate;
   private final Date _endDate;
 
-  private DynamicShapeWrapper _dynamicShape;
+  private IDynamicShapeWrapper _dynamicShape;
 
   private DynamicShapeTimingsWizardPage _shapeTimingsPage;
   private WizardPageType _boundsPage;
@@ -52,7 +55,7 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
    */
   abstract protected WizardPageType getBoundsPage();
 
-  public DynamicShapeWrapper getDynamicShapeWrapper()
+  public IDynamicShapeWrapper getDynamicShapeWrapper()
   {
     return _dynamicShape;
   }
@@ -80,14 +83,21 @@ abstract public class CoreDynamicShapeWizard<WizardPageType extends DynamicShape
 
     final HiResDate shapeDate = startTime == null ? null : new HiResDate(
         startTime);
-
-    _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(), shape,
-        theColor, shapeDate, "dynamic " + _shapeName);
-
-    if (endTime != null)
-    {
-      _dynamicShape.setEndDTG(new HiResDate(_shapeTimingsPage.getEndTime()));
+    final HiResDate endDate = endTime == null?null:new HiResDate(endTime);
+    if(shape instanceof PolygonShape) {
+      _dynamicShape = new DynamicPolygonShapeWrapper(_stylingPage.getShapeLabel(),
+          (PolygonShape) shape,
+          theColor, shapeDate, endDate);
     }
+    else {
+      _dynamicShape = new DynamicShapeWrapper(_stylingPage.getShapeLabel(), shape,
+        theColor, shapeDate, "dynamic " + _shapeName);
+      if (endTime != null)
+      {
+        _dynamicShape.setEndDTG(new HiResDate(endDate));
+      }
+    }
+    
     return true;
   }
 
