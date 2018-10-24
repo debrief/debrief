@@ -5,7 +5,9 @@
  * image : platform:/plugin/org.mwc.debrief.scripting/icons/circle.png
  */
 loadModule("/System/UI", false);
-loadModule("/Debrief", false);
+loadModule("/Debrief/Core", false);
+loadModule("/Debrief/Spatial", false);
+loadModule("/Debrief/Shapes", false);
 
 var name = "Ring";
 

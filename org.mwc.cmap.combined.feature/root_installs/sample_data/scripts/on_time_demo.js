@@ -4,3 +4,4 @@
  * onEventBus : info/debrief/newTime
  */
 
+print("new time received in JS");

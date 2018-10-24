@@ -4,7 +4,8 @@
  */
 
 loadModule("/System/UI", false);
-loadModule("/Debrief", false);
+loadModule("/Debrief/Core", false);
+loadModule("/Debrief/Spatial", false);
 
 var selection = getSelection();
 

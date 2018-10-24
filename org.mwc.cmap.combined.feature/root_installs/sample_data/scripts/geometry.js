@@ -2,7 +2,9 @@
  * name : Geometry playground
  * description : create some geometric shapes
  */
-loadModule("/Debrief", false);
+loadModule("/Debrief/Core", false);
+loadModule("/Debrief/Spatial", false);
+loadModule("/Debrief/Shapes", false);
 
 /** utility to introduce pause
  * 
