@@ -1,5 +1,5 @@
 /*
- * name : Create ring of points
+ * name : trial / Create ring of points
  * description : sample code to create ring of points
  * toolbar : Outline
  * image : platform:/plugin/org.mwc.debrief.scripting/icons/circle.png

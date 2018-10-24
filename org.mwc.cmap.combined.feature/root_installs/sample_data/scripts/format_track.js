@@ -1,5 +1,5 @@
 /**
- * name : Format track (JS) 
+ * name : trial / Format track (JS) 
  * popup : enableFor(Debrief.Wrappers.TrackWrapper)
  */
 
