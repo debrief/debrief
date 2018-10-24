@@ -4,11 +4,11 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-
-import javax.inject.Inject;
+import java.util.Enumeration;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -19,7 +19,6 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -31,7 +30,6 @@ import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 
 public class Core
 {
@@ -67,9 +65,14 @@ public class Core
                 editor.getName()))
             {
               // ok, we either didn't have an editor name, or this matches
-              if ("org.mwc.debrief.TrackEditor".equals(descriptor))
+              if ("org.mwc.debrief.PlotEditor".equals(descriptor)
+                  || "org.mwc.debrief.TrackEditor".equals(descriptor))
               {
-                return new DEditor((PlotEditor) editor.getEditor(true));
+                IEditorPart instance = editor.getEditor(false);
+                if (instance != null)
+                {
+                  return new DEditor((PlotEditor) instance);
+                }
               }
             }
           }
@@ -157,19 +160,49 @@ public class Core
       _layers = layers;
     }
 
+    public void remove(final Layer layer)
+    {
+      _layers.removeThisLayer(layer);
+    }
+
+    public void add(final Layer layer)
+    {
+      _layers.addThisLayer(layer);
+    }
+
     public int size()
     {
       return _layers.size();
     }
 
-    public LightweightTrackWrapper findTrack(String name)
+    public LightweightTrackWrapper findTrack(@ScriptParameter(
+        defaultValue = "unset") String name)
     {
-      Layer match = _layers.findLayer(name);
-      if (match instanceof LightweightTrackWrapper)
+      // special handling. if a track isn't provided, return the first
+      // one
+      LightweightTrackWrapper res = null;
+      if ("unset".equals(name) || name == null)
       {
-        return (LightweightTrackWrapper) match;
+        // ok, just return the first one
+        Enumeration<Editable> ele = _layers.elements();
+        while (ele.hasMoreElements() && res == null)
+        {
+          Editable nextE = ele.nextElement();
+          if (nextE instanceof LightweightTrackWrapper)
+          {
+            res = (LightweightTrackWrapper) nextE;
+          }
+        }
       }
-      return null;
+      else
+      {
+        Layer match = _layers.findLayer(name);
+        if (match instanceof LightweightTrackWrapper)
+        {
+          res = (LightweightTrackWrapper) match;
+        }
+      }
+      return res;
     }
 
     public LightweightTrackWrapper[] getTracks()
@@ -222,13 +255,6 @@ public class Core
     return new LabelWrapper("Name", location, color);
   }
 
-  /**
-   * helper application to help track activation/closing of new plots
-   */
-  private PartMonitor _partMonitor;
-
-  private TimeProvider _timeProvider;
-
   private void listenToMyParts()
   {
     if (_partMonitor != null)
@@ -247,7 +273,10 @@ public class Core
     IWorkbenchWindow window = editor.getSite().getPage().getWorkbenchWindow();
 
     if (window == null)
+    {
+      System.err.println("Can't retrieve workbench window");
       return;
+    }
 
     _partMonitor = new PartMonitor(window.getPartService());
 
@@ -307,24 +336,31 @@ public class Core
 
   }
 
-  @Inject
-  private IEventBroker broker;
-
   protected void fireNewTime(HiResDate date)
   {
-    System.out.println("CAUGHT NEW TIME:" + date.getDate());
+    // get broker service
+    IEventBroker broker = PlatformUI.getWorkbench().getService(
+        IEventBroker.class);
 
-    // find scripts
-
-    // find scripts that listen to NewTime event
-
-    // tell them about new time
-    final String EVENT_NAME = "info.debrief.newTime";
 
     // fire the event, if we have a broker
     if (broker != null)
     {
+      final String EVENT_NAME = "info/debrief/newTime";
+
+      // tell them about new time
       broker.post(EVENT_NAME, date.getDate().getTime());
     }
+    else
+    {
+      System.err.println("Could not retrieve Platform broker");
+    }
   }
+
+  /**
+   * helper application to help track activation/closing of new plots
+   */
+  private PartMonitor _partMonitor;
+
+  private TimeProvider _timeProvider;
 }
