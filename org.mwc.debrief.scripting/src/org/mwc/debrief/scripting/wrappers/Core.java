@@ -21,7 +21,6 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
@@ -29,29 +28,18 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
-import MWC.GUI.Shapes.CircleShape;
-import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
-public class DebriefObjects
+public class Core
 {
 
-  public DebriefObjects()
+  public Core()
   {
     System.out.println("About to start listening");
     listenToMyParts();
-  }
-
-  public static FixWrapper createFix(HiResDate time, WorldLocation location,
-      double courseRads, double speedYps)
-  {
-    Fix fix = new Fix(time, location, courseRads, speedYps);
-    return new FixWrapper(fix);
   }
 
   public static Color getColor(int red, int green, int blue)
