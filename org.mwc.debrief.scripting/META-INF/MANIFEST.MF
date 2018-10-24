@@ -12,7 +12,8 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ease,
  org.mwc.cmap.plotViewer;bundle-version="1.1.99",
  org.eclipse.e4.core.services;bundle-version="2.1.200",
- org.eclipse.osgi.services;bundle-version="3.7.100"
+ org.eclipse.osgi.services;bundle-version="3.7.100",
+ org.eclipse.ui.workbench
 Automatic-Module-Name: org.mwc.debrief.scripting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: org.eclipse.ui.plugin,
