@@ -19,7 +19,10 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
@@ -27,12 +30,54 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.OperateFunction;
+import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 public class Core
 {
+
+  public static class TestCore extends TestCase
+  {
+    public void testFindItem()
+    {
+      Layers layers = new Layers();
+      BaseLayer shapes = new BaseLayer();
+      shapes.setName("shapes");
+      layers.addThisLayer(shapes);
+
+      WorldLocation loc1 = new WorldLocation(1d, 2d, 3d);
+      WorldLocation loc2 = new WorldLocation(1d, 2d, 3d);
+      
+      ShapeWrapper lineShape = new ShapeWrapper("line", new LineShape(loc1,
+          loc2), Color.red, null);
+      ShapeWrapper rectShape = new ShapeWrapper("rectangle", new RectangleShape(
+          loc1, loc2), Color.red, null);
+      shapes.add(lineShape);
+      shapes.add(rectShape);
+
+      TrackWrapper track = new TrackWrapper();
+      track.setName("track");
+      layers.addThisLayer(track);
+
+      FixWrapper newFix = new FixWrapper(new Fix(new HiResDate(100000), loc1,
+          0d, 0d));
+      track.addFix(newFix);
+      newFix.setName("fix");
+
+      DLayers dl = new DLayers(layers);
+      assertEquals("found it", lineShape, dl.findThis("line"));
+      assertEquals("found it", shapes, dl.findThis("shapes"));
+      assertEquals("found it", track, dl.findThis("track"));
+      assertEquals("found it", newFix, dl.findThis("fix"));
+      assertEquals("found it", null, dl.findThis("fezzig"));
+
+    }
+  }
 
   public Core()
   {
@@ -158,6 +203,58 @@ public class Core
     public DLayers(final Layers layers)
     {
       _layers = layers;
+    }
+
+    /** descend the tree looking for an item with the
+     * specified name
+     * @param name what we're looking for
+     * @return the matching item (or null)
+     */
+    public Editable findThis(final String name)
+    {
+      Editable res = null;
+      if (name != null)
+      {
+        Enumeration<Editable> ele = _layers.elements();
+        while (ele.hasMoreElements() && res == null)
+        {
+          Layer next = (Layer) ele.nextElement();
+          if (name.equals(next.getName()))
+          {
+            res = next;
+            break;
+          }
+          else
+          {
+            Enumeration<Editable> items = next.elements();
+            while (items.hasMoreElements() && res == null)
+            {
+              Editable item = items.nextElement();
+              if (name.equals(item.getName()))
+              {
+                res = item;
+                break;
+              }
+              else if (item instanceof Layer)
+              {
+                Layer subLayer = (Layer) item;
+                Enumeration<Editable> subItems = subLayer.elements();
+                while (subItems.hasMoreElements())
+                {
+                  Editable subItem = subItems.nextElement();
+                  if (name.equals(subItem.getName()))
+                  {
+                    res = subItem;
+                    break;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return res;
     }
 
     public void remove(final Layer layer)
@@ -341,7 +438,6 @@ public class Core
     // get broker service
     IEventBroker broker = PlatformUI.getWorkbench().getService(
         IEventBroker.class);
-
 
     // fire the event, if we have a broker
     if (broker != null)
