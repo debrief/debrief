@@ -7,6 +7,8 @@
 loadModule("/Debrief/Core", false);
 loadModule("/Debrief/Tactical", false);
 loadModule("/System/UI", false);
+loadModule('/Charting', false);
+
 
 
 function updateBattery(level, elapsed, speed,  depth)
@@ -40,7 +42,7 @@ var tracks = layers.getTracks();
 
 // @type Debrief.Wrappers.TrackWrapper
 var track = showSelectionDialog(tracks,"Select subject track", "Update battery level");
-var level = showInputDialog("Initial level?", 45);
+var level = showInputDialog("Initial level?", 95);
 
 if(track == null)
 	exit();
@@ -51,6 +53,12 @@ var tLast = track.getStartDTG().getDate().getTime();
 // ok, work through the track
 var iter = track.getPositionIterator();
 
+figure("Simple Charts");
+// clear();
+series("Level", "%");
+
+
+var ctr = 0;
 // loop through the positions
 while(iter.hasMoreElements())
 	{
@@ -69,6 +77,9 @@ while(iter.hasMoreElements())
 	  var proportion = (level / 100.0) * 255;
 	  var color = getColor(proportion, 0, 255 - proportion);
 	  pos.setColor(color);
+	  
+	  ctr++;
+	  plotPoint(ctr, level);
 	  
 	  // remember this time
 	  tLast = thisTime;
