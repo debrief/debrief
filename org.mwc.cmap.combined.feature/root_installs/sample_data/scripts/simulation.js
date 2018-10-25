@@ -1,6 +1,5 @@
 /**
  * name : trial / GenTrack
- * toolbar :  Project Explorer
  */
 
 loadModule("/Debrief/Core", false);
