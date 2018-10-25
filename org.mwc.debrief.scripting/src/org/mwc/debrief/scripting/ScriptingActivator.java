@@ -4,7 +4,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class ScriptingActivator extends AbstractUIPlugin implements BundleActivator
+public class ScriptingActivator extends AbstractUIPlugin implements
+    BundleActivator
 {
 
   private static BundleContext context;
@@ -16,10 +17,11 @@ public class ScriptingActivator extends AbstractUIPlugin implements BundleActiva
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.osgi.framework.BundleActivator#start(org.osgi.framework.BundleContext)
    */
-  public void start(BundleContext bundleContext) throws Exception
+  @Override
+  public void start(final BundleContext bundleContext) throws Exception
   {
     super.start(bundleContext);
     ScriptingActivator.context = bundleContext;
@@ -28,14 +30,14 @@ public class ScriptingActivator extends AbstractUIPlugin implements BundleActiva
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
    */
-  public void stop(BundleContext bundleContext) throws Exception
+  @Override
+  public void stop(final BundleContext bundleContext) throws Exception
   {
     super.stop(bundleContext);
     ScriptingActivator.context = null;
   }
-
 
 }

@@ -11,18 +11,18 @@ import MWC.GenericData.WorldLocation;
 public class Shapes
 {
 
-  public static ShapeWrapper createLine(WorldLocation startPt,
-      WorldLocation endPt, String name, Color color)
+  public static ShapeWrapper createCircle(final WorldLocation centre,
+      final WorldDistance radius, final String name, final Color color)
   {
-    return new ShapeWrapper(name, new LineShape(startPt, endPt, name),
-        color, null);
+    return new ShapeWrapper(name, new CircleShape(centre, radius, name), color,
+        null);
   }
 
-  public static ShapeWrapper createCircle(WorldLocation centre,
-      WorldDistance radius, String name, Color color)
+  public static ShapeWrapper createLine(final WorldLocation startPt,
+      final WorldLocation endPt, final String name, final Color color)
   {
-    return new ShapeWrapper(name, new CircleShape(centre, radius, name),
-        color, null);
+    return new ShapeWrapper(name, new LineShape(startPt, endPt, name), color,
+        null);
   }
 
 }

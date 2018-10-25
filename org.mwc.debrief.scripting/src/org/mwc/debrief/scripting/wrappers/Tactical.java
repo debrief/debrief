@@ -10,30 +10,31 @@ import MWC.TacticalData.Fix;
 
 public class Tactical
 {
-  public static TrackWrapper createTrack(String name)
+  public static FixWrapper createFix(final HiResDate time,
+      final WorldLocation location, final double courseRads,
+      final double speedYps)
   {
-    TrackWrapper res = new TrackWrapper();
-    res.setName(name);
-    return res;
+    final Fix fix = new Fix(time, location, courseRads, speedYps);
+    return new FixWrapper(fix);
   }
-  
-  public static SensorWrapper createSensor(String name)
+
+  public static SensorWrapper createSensor(final String name)
   {
-    SensorWrapper sensor = new SensorWrapper(name);
+    final SensorWrapper sensor = new SensorWrapper(name);
     return sensor;
   }
-  
-  public static SensorContactWrapper createSensorContact(HiResDate date)
+
+  public static SensorContactWrapper createSensorContact(final HiResDate date)
   {
-    SensorContactWrapper res = new SensorContactWrapper();
+    final SensorContactWrapper res = new SensorContactWrapper();
     res.setDTG(date);
     return res;
   }
 
-  public static FixWrapper createFix(HiResDate time, WorldLocation location,
-      double courseRads, double speedYps)
+  public static TrackWrapper createTrack(final String name)
   {
-    Fix fix = new Fix(time, location, courseRads, speedYps);
-    return new FixWrapper(fix);
+    final TrackWrapper res = new TrackWrapper();
+    res.setName(name);
+    return res;
   }
 }
