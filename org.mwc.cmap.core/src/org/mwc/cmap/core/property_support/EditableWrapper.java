@@ -773,15 +773,13 @@ public class EditableWrapper implements IPropertySource, IAdaptable
     }
   }
 
-  /** note EditableWrapper has implemented adaptable.  EASE scripting
-   * can attempt to see if the selection matches a specified class.
-   * But, we wrap our objects before we put them into the UI.  
-   * If the selection isn't compliant, EASE checks if it's an 
-   * adaptable, and gives it the chance to transform itself
+  /** this is a Java8 version of getAdapter, which returns a 
+   * correctly typed result
+   * @param adapter what we're looking for
+   * @return an adapted version of the data we're storing ,or null
    */
   @SuppressWarnings("unchecked")
-  @Override
-  public <T> T getAdapter(Class<T> adapter)
+  protected <T> T getAdapter2(Class<T> adapter)
   {
     if(adapter.isInstance(_editable))
     {
@@ -791,5 +789,18 @@ public class EditableWrapper implements IPropertySource, IAdaptable
     {
       return null;
     }
+  }
+
+  /** note EditableWrapper has implemented adaptable.  EASE scripting
+   * can attempt to see if the selection matches a specified class.
+   * But, we wrap our objects before we put them into the UI.  
+   * If the selection isn't compliant, EASE checks if it's an 
+   * adaptable, and gives it the chance to transform itself
+   */
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  @Override
+  public Object getAdapter(Class adapter)
+  {
+    return getAdapter2(adapter);
   }
 }
