@@ -1,7 +1,15 @@
 /**
- * name : shade battery level
+ * name : demo/shade battery level
  * toolbar :  do Shade
- * io : None
+ * io : one
+ */
+
+/** Aim: to shade track according to battery level,
+ * and produce plot of ongoing battery level.
+ * Note: scenario is SSK & Frigate. Note depth profile
+ * of SSK, with with 2 PD runs, where it
+ * can charge batteries,
+ * 
  */
 
 loadModule("/Debrief/Core", false);
@@ -9,17 +17,16 @@ loadModule("/Debrief/Tactical", false);
 loadModule("/System/UI", false);
 loadModule('/Charting', false);
 
-
-
+// encode how to calculate battery level
 function updateBattery(level, elapsed, speed,  depth)
 {
 	var percentPerKtPerSec = 0.0015;
 	var pdDepth = 25;
 	var chargePerSec = 0.07;
-	
 	var usage;
 	if(depth < pdDepth)
 		{
+		// -ve, since represents charging
 		usage = - elapsed * chargePerSec;
 		}
 	else
@@ -27,6 +34,7 @@ function updateBattery(level, elapsed, speed,  depth)
 		usage = elapsed * percentPerKtPerSec * speed;
 		}
 	
+	// new battery level
 	var res = level - usage;
 	
 	res = Math.min(100, res);
@@ -37,7 +45,6 @@ function updateBattery(level, elapsed, speed,  depth)
 
 var editor = getEditor();
 var layers = editor.getLayers();
-
 var tracks = layers.getTracks(); 
 
 // @type Debrief.Wrappers.TrackWrapper
@@ -53,10 +60,14 @@ var tLast = track.getStartDTG().getDate().getTime();
 // ok, work through the track
 var iter = track.getPositionIterator();
 
-figure("Simple Charts");
-// clear();
+// declare graph
+figure("Battery Level");
+clear();
 series("Level", "%");
 
+// collate points for graph
+var times = [];
+var levels = [];
 
 var ctr = 0;
 // loop through the positions
@@ -73,17 +84,26 @@ while(iter.hasMoreElements())
 	  var speed = pos.getSpeed();
 	  var level = updateBattery(level, elapsed, speed, depth);
 
-	  // ahade according to level
+	  // shade according to level
 	  var proportion = (level / 100.0) * 255;
 	  var color = getColor(proportion, 0, 255 - proportion);
 	  pos.setColor(color);
 	  
 	  ctr++;
-	  plotPoint(ctr, level);
+	  
+	  // store plot points
+	  times.push(ctr);
+	  levels.push(level);
+	  
+	  print(thisTime + ", " + level);
 	  
 	  // remember this time
 	  tLast = thisTime;
-
 	}
 
+plot(times, levels);
 layers.fireModified();
+
+// note: track (and x-y plot) updated with
+// shades according to level.  Note 
+// graph of battery level (below).
