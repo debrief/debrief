@@ -89,6 +89,8 @@ public class TrackPoint
     int result = 1;
     result = prime * result + Float.floatToIntBits(course);
     result = prime * result + Float.floatToIntBits(elevation);
+    result = prime * result + ((formattedTime == null) ? 0 : formattedTime
+        .hashCode());
     result = prime * result + Float.floatToIntBits(latitude);
     result = prime * result + Float.floatToIntBits(longitude);
     result = prime * result + Float.floatToIntBits(speed);
@@ -111,6 +113,13 @@ public class TrackPoint
     if (Float.floatToIntBits(elevation) != Float.floatToIntBits(
         other.elevation))
       return false;
+    if (formattedTime == null)
+    {
+      if (other.formattedTime != null)
+        return false;
+    }
+    else if (!formattedTime.equals(other.formattedTime))
+      return false;
     if (Float.floatToIntBits(latitude) != Float.floatToIntBits(other.latitude))
       return false;
     if (Float.floatToIntBits(longitude) != Float.floatToIntBits(
@@ -127,4 +136,6 @@ public class TrackPoint
       return false;
     return true;
   }
+  
+  
 }

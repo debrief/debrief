@@ -1794,7 +1794,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   }
 
   @SuppressWarnings(
-  {"rawtypes", "unchecked"})
+  {"rawtypes"})
   @Override
   public Object getAdapter(final Class adapter)
   {
@@ -1845,7 +1845,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           {
             animatedGif.cancel();
           }
-          _recordingLabel.setVisible(false); 
+          _recordingLabel.setVisible(false);
         }
       }
       catch (final IllegalArgumentException e)
@@ -1856,27 +1856,27 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     }
     return newVal;
   }
-  
-  //reset the buttons and labels are recording is done.
-  
-  private void resetRecordingLabel() {
+
+  // reset the buttons and labels are recording is done.
+
+  private void resetRecordingLabel()
+  {
     Display.getDefault().syncExec(new Runnable()
     {
-      
+
       @Override
       public void run()
       {
-        final String newVal = getFormattedDate(_myTemporalDataset
-            .getTime());
+        final String newVal = getFormattedDate(_myTemporalDataset.getTime());
         _timeLabel.setText(newVal);
         if (animatedGif != null)
         {
           animatedGif.cancel();
         }
-        _recordingLabel.setVisible(false);    
+        _recordingLabel.setVisible(false);
       }
     });
-    
+
   }
 
   @Override
@@ -3151,7 +3151,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
         // and update the VCR buttons
         setVCREnabled(true);
-        
+
       }
     });
 

@@ -10,6 +10,7 @@ Bundle-Localization: plugin
 Export-Package: org.mwc.cmap.TimeController,
  org.mwc.cmap.TimeController.controls,
  org.mwc.cmap.TimeController.properties,
+ org.mwc.cmap.TimeController.recorders,
  org.mwc.cmap.TimeController.views
 Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.debrief.legacy,
@@ -20,5 +21,6 @@ Require-Bundle: org.mwc.cmap.legacy,
  org.mwc.cmap.core,
  org.eclipse.ui.views,
  org.mwc.debrief.core,
- org.mwc.cmap.plotViewer
+ org.mwc.cmap.plotViewer,
+ org.mwc.cmap.gt2Plot
 Bundle-ActivationPolicy: lazy

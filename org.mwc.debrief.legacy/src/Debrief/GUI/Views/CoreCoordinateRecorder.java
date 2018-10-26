@@ -154,7 +154,7 @@ public abstract class CoreCoordinateRecorder
 
   private final Layers _myLayers;
   private final PlainProjection _projection;
-  final private Map<String, Track> _tracks = new HashMap<>();
+  final protected Map<String, Track> _tracks = new HashMap<>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   protected String startTime = null;
