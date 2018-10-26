@@ -1222,6 +1222,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
       Trace.trace("Can't paste " + point + " into track", true);
     }
   }
