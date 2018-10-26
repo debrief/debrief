@@ -14,6 +14,8 @@
  */
 package org.mwc.cmap.grideditor;
 
+import java.util.Vector;
+
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -29,9 +31,12 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.grideditor.data.GriddableWrapper;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
@@ -50,6 +55,11 @@ public class GridEditorView extends ViewPart
 	private UndoActionHandler myUndoAction;
 
 	private RedoActionHandler myRedoAction;
+	
+	private PartMonitor _myPartMonitor;
+	
+	private Vector<CorePlotEditor> activePlots = new Vector<CorePlotEditor>();
+	private CorePlotEditor displayedPlot;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -66,13 +76,55 @@ public class GridEditorView extends ViewPart
 		myActions.fillActionBars(actionBars);
 		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
+		_myPartMonitor =
+        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.CLOSED, new PartMonitor.ICallback()
+    {
+      
+      @Override
+      public void eventTriggered(String type, Object instance,
+          IWorkbenchPart parentPart)
+      {
+        if(instance == displayedPlot) {
+          //set input null now.
+          activePlots.remove(instance);
+          myUI.inputSeriesChanged(null);
+        }
+      }
+    });
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+    {
+      
+      @Override
+      public void eventTriggered(String type, Object instance,
+          IWorkbenchPart parentPart)
+      {
+        if(instance instanceof CorePlotEditor) {
+          activePlots.add((CorePlotEditor)instance);
+          displayedPlot = (CorePlotEditor)instance;
+          //activate the outline view
+          activateOutlineView((CorePlotEditor)instance);
+        }
+      }
+
+     
+    });    
 	}
+	 private void activateOutlineView(CorePlotEditor editor)
+   {
+	   IContentOutlinePage outline =
+         (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+     if(outline!=null) {
+       outline.setFocus();
+     }
+   }
 
 	@Override
 	public void dispose()
 	{
 		getSite().getWorkbenchWindow().getSelectionService()
 				.removeSelectionListener(getSelectionListener());
+		_myPartMonitor.ditch();
 		super.dispose();
 	}
 
@@ -226,6 +278,7 @@ public class GridEditorView extends ViewPart
 				myUndoSupport.getUndoContext());
 		myRedoAction = new RedoActionHandler(this.getSite(),
 				myUndoSupport.getUndoContext());
+		
 	}
 
 	public void refreshUndoContext()
