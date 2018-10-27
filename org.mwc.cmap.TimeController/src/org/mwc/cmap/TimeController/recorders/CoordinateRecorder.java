@@ -164,6 +164,9 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
+    static final String collingwood = "COLLINGWOOD";
+    static final String nelson = "NELSON";
+
     public CoordinateRecorder getRecorder()
     {
       final File testFile = new File(
@@ -188,14 +191,16 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
             public void allFilesFinished(final File[] fNames,
                 final Layers newData)
             {
-
+              Application.logError2(Application.INFO,
+                  "All files loaded correctly", null);
             }
 
             // handle the completion of each file
             @Override
             public void fileFinished(final File fName, final Layers newData)
             {
-
+              Application.logError2(Application.INFO, "File " + fName
+                  + " loaded correctly", null);
             }
           };
 
@@ -211,6 +216,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
         }
         catch (final java.lang.InterruptedException e)
         {
+          Application.logError2(Application.INFO,
+              "Error while sleeping", e);
         }
       }
 
@@ -243,28 +250,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.GenericData.HiResDate currentTime = new MWC.GenericData.HiResDate(
           818748540000L);
 
-      recorder.startStepping(currentTime);
-
-      long timeDelta = 60000; // 1 min.
       final int AMOUNT_OF_STEPS = 3;
-      for (int i = 0; i < AMOUNT_OF_STEPS; i++)
-      {
-        recorder.newTime(currentTime);
-        currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-            / 1000L + timeDelta);
-      }
-
-      currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-          / 1000L + timeDelta);
-
-      final String collingwood = "COLLINGWOOD";
-      final String nelson = "NELSON";
+      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
 
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           recorder._tracks;
-      assertTrue(track.size() == 2);
-      assertTrue(track.containsKey(collingwood));
-      assertTrue(track.containsKey(nelson));
+      checkTrackSize(track);
       assertTrue(track.get(collingwood).getStepsToSkip() == 1);
       assertTrue(track.get(collingwood).getSegments().size() == 2);
       assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
@@ -323,6 +314,28 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           "Recording Test Passed (Primary Starting First)", null);
     }
 
+    private void checkTrackSize(
+        final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track)
+    {
+      assertTrue(track.size() == 2);
+      assertTrue(track.containsKey(collingwood));
+      assertTrue(track.containsKey(nelson));
+    }
+
+    private void doIteration(CoordinateRecorder recorder,
+        MWC.GenericData.HiResDate currentTime, final int AMOUNT_OF_STEPS)
+    {
+      recorder.startStepping(currentTime);
+      
+      long timeDelta = 60000; // 1 min.
+      for (int i = 0; i < AMOUNT_OF_STEPS; i++)
+      {
+        recorder.newTime(currentTime);
+        currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
+            / 1000L + timeDelta);
+      }
+    }
+
     /**
      * COLLINGWOOD starts with NELSON
      */
@@ -333,28 +346,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.GenericData.HiResDate currentTime = new MWC.GenericData.HiResDate(
           818748600000L);
 
-      recorder.startStepping(currentTime);
-
-      long timeDelta = 60000; // 1 min.
       final int AMOUNT_OF_STEPS = 2;
-      for (int i = 0; i < AMOUNT_OF_STEPS; i++)
-      {
-        recorder.newTime(currentTime);
-        currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-            / 1000L + timeDelta);
-      }
-
-      currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-          / 1000L + timeDelta);
-
-      final String collingwood = "COLLINGWOOD";
-      final String nelson = "NELSON";
+      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
 
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           recorder._tracks;
-      assertTrue(track.size() == 2);
-      assertTrue(track.containsKey(collingwood));
-      assertTrue(track.containsKey(nelson));
+      checkTrackSize(track);
       assertTrue(track.get(collingwood).getStepsToSkip() == 0);
       assertTrue(track.get(collingwood).getSegments().size() == 2);
       assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
@@ -414,28 +411,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.GenericData.HiResDate currentTime = new MWC.GenericData.HiResDate(
           818764200000L);
 
-      recorder.startStepping(currentTime);
-
-      long timeDelta = 60000; // 1 min.
       final int AMOUNT_OF_STEPS = 2;
-      for (int i = 0; i < AMOUNT_OF_STEPS; i++)
-      {
-        recorder.newTime(currentTime);
-        currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-            / 1000L + timeDelta);
-      }
-
-      currentTime = new MWC.GenericData.HiResDate(currentTime.getMicros()
-          / 1000L + timeDelta);
-
-      final String collingwood = "COLLINGWOOD";
-      final String nelson = "NELSON";
+      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
 
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           recorder._tracks;
-      assertTrue(track.size() == 2);
-      assertTrue(track.containsKey(collingwood));
-      assertTrue(track.containsKey(nelson));
+      checkTrackSize(track);
       assertTrue(track.get(collingwood).getStepsToSkip() == 0);
       assertTrue(track.get(collingwood).getSegments().size() == 2);
       assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
