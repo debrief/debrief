@@ -216,8 +216,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
         }
         catch (final java.lang.InterruptedException e)
         {
-          Application.logError2(Application.INFO,
-              "Error while sleeping", e);
+          Application.logError2(Application.INFO, "Error while sleeping", e);
         }
       }
 
@@ -326,7 +325,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
         MWC.GenericData.HiResDate currentTime, final int AMOUNT_OF_STEPS)
     {
       recorder.startStepping(currentTime);
-      
+
       long timeDelta = 60000; // 1 min.
       for (int i = 0; i < AMOUNT_OF_STEPS; i++)
       {
@@ -346,15 +345,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.GenericData.HiResDate currentTime = new MWC.GenericData.HiResDate(
           818748600000L);
 
-      final int AMOUNT_OF_STEPS = 2;
-      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
-
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
-          recorder._tracks;
-      checkTrackSize(track);
-      assertTrue(track.get(collingwood).getStepsToSkip() == 0);
-      assertTrue(track.get(collingwood).getSegments().size() == 2);
-      assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
+          twoStepsCheckCollingwood(recorder, currentTime);
       final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentCollingwood =
           new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
       firstSegmentCollingwood.setCourse(5.7386427f);
@@ -401,6 +393,22 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           "Recording Test Passed (Starting at the same time)", null);
     }
 
+    private java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track>
+        twoStepsCheckCollingwood(CoordinateRecorder recorder,
+            MWC.GenericData.HiResDate currentTime)
+    {
+      final int AMOUNT_OF_STEPS = 2;
+      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
+
+      final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
+          recorder._tracks;
+      checkTrackSize(track);
+      assertTrue(track.get(collingwood).getStepsToSkip() == 0);
+      assertTrue(track.get(collingwood).getSegments().size() == 2);
+      assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
+      return track;
+    }
+
     /**
      * COLLINGWOOD ends before NELSON
      */
@@ -411,15 +419,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.GenericData.HiResDate currentTime = new MWC.GenericData.HiResDate(
           818764200000L);
 
-      final int AMOUNT_OF_STEPS = 2;
-      doIteration(recorder, currentTime, AMOUNT_OF_STEPS);
-
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
-          recorder._tracks;
-      checkTrackSize(track);
-      assertTrue(track.get(collingwood).getStepsToSkip() == 0);
-      assertTrue(track.get(collingwood).getSegments().size() == 2);
-      assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
+          twoStepsCheckCollingwood(recorder, currentTime);
       final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentCollingwood =
           new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
       firstSegmentCollingwood.setCourse(0.13264503f);
