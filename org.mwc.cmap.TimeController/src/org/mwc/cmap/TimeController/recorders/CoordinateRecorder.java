@@ -174,8 +174,6 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
       // ok, now try to read it in
       final Layers _theLayers = new Layers();
-      final File[] _theFiles = new File[]
-      {testFile};
 
       // add the REP importer
       MWC.Utilities.ReaderWriter.ImportManager.addImporter(
@@ -184,7 +182,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       // get our thread to import this
       final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
           new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-              _theFiles, _theLayers)
+              new File[]
+              {testFile}, _theLayers)
           {
             // handle completion of the full import process
             @Override
@@ -258,28 +257,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       assertTrue(track.get(collingwood).getStepsToSkip() == 1);
       assertTrue(track.get(collingwood).getSegments().size() == 2);
       assertTrue("0064bd".equals(track.get(collingwood).getColorAsString()));
-      final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentCollingwood =
-          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
-      firstSegmentCollingwood.setCourse(5.7386427f);
-      firstSegmentCollingwood.setLatitude(-341.0f);
-      firstSegmentCollingwood.setLongitude(969.0f);
-      firstSegmentCollingwood.setSpeed(1.9691114f);
-      firstSegmentCollingwood.setTime(new Date(818748600000L));
-      firstSegmentCollingwood.setFormattedTime("120610");
-      assertEquals(firstSegmentCollingwood, track.get(collingwood).getSegments()
-          .get(0));
-      final Debrief.ReaderWriter.powerPoint.model.TrackPoint secondSegmentCollingwood =
-          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
-      secondSegmentCollingwood.setCourse(5.761332f);
-      secondSegmentCollingwood.setLatitude(-338.0f);
-      secondSegmentCollingwood.setLongitude(966.0f);
-      secondSegmentCollingwood.setSpeed(1.9691114f);
-      secondSegmentCollingwood.setTime(new Date(818748660000L));
-      secondSegmentCollingwood.setFormattedTime("120611");
-      assertEquals(secondSegmentCollingwood, track.get(collingwood)
-          .getSegments().get(1));
-
-      assertTrue(track.get(nelson).getStepsToSkip() == 0);
+      checkCollingwoodSegments(track);
       assertTrue(track.get(nelson).getSegments().size() == 3);
       assertTrue("e01c3e".equals(track.get(nelson).getColorAsString()));
       final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentNelson =
@@ -311,6 +289,33 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       assertEquals(thirdSegmentNelson, track.get(nelson).getSegments().get(2));
       Application.logError2(Application.INFO,
           "Recording Test Passed (Primary Starting First)", null);
+    }
+
+    private void checkCollingwoodSegments(
+        final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track)
+    {
+      final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentCollingwood =
+          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
+      firstSegmentCollingwood.setCourse(5.7386427f);
+      firstSegmentCollingwood.setLatitude(-341.0f);
+      firstSegmentCollingwood.setLongitude(969.0f);
+      firstSegmentCollingwood.setSpeed(1.9691114f);
+      firstSegmentCollingwood.setTime(new Date(818748600000L));
+      firstSegmentCollingwood.setFormattedTime("120610");
+      assertEquals(firstSegmentCollingwood, track.get(collingwood).getSegments()
+          .get(0));
+      final Debrief.ReaderWriter.powerPoint.model.TrackPoint secondSegmentCollingwood =
+          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
+      secondSegmentCollingwood.setCourse(5.761332f);
+      secondSegmentCollingwood.setLatitude(-338.0f);
+      secondSegmentCollingwood.setLongitude(966.0f);
+      secondSegmentCollingwood.setSpeed(1.9691114f);
+      secondSegmentCollingwood.setTime(new Date(818748660000L));
+      secondSegmentCollingwood.setFormattedTime("120611");
+      assertEquals(secondSegmentCollingwood, track.get(collingwood)
+          .getSegments().get(1));
+
+      assertTrue(track.get(nelson).getStepsToSkip() == 0);
     }
 
     private void checkTrackSize(
@@ -347,28 +352,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           twoStepsCheckCollingwood(recorder, currentTime);
-      final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentCollingwood =
-          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
-      firstSegmentCollingwood.setCourse(5.7386427f);
-      firstSegmentCollingwood.setLatitude(-341.0f);
-      firstSegmentCollingwood.setLongitude(969.0f);
-      firstSegmentCollingwood.setSpeed(1.9691114f);
-      firstSegmentCollingwood.setTime(new Date(818748600000L));
-      firstSegmentCollingwood.setFormattedTime("120610");
-      assertEquals(firstSegmentCollingwood, track.get(collingwood).getSegments()
-          .get(0));
-      final Debrief.ReaderWriter.powerPoint.model.TrackPoint secondSegmentCollingwood =
-          new Debrief.ReaderWriter.powerPoint.model.TrackPoint();
-      secondSegmentCollingwood.setCourse(5.761332f);
-      secondSegmentCollingwood.setLatitude(-338.0f);
-      secondSegmentCollingwood.setLongitude(966.0f);
-      secondSegmentCollingwood.setSpeed(1.9691114f);
-      secondSegmentCollingwood.setTime(new Date(818748660000L));
-      secondSegmentCollingwood.setFormattedTime("120611");
-      assertEquals(secondSegmentCollingwood, track.get(collingwood)
-          .getSegments().get(1));
-
-      assertTrue(track.get(nelson).getStepsToSkip() == 0);
+      checkCollingwoodSegments(track);
       assertTrue(track.get(nelson).getSegments().size() == 2);
       assertTrue("e01c3e".equals(track.get(nelson).getColorAsString()));
       final Debrief.ReaderWriter.powerPoint.model.TrackPoint firstSegmentNelson =
