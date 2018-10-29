@@ -9,13 +9,7 @@ install:
 addons:
   apt:
     sources:
-    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty main restricted universe multiverse'
-    - sourceline: 'deb-src http://mirror.accelerated.de/ubuntu trusty main universe restricted multiverse'
-    - sourceline: 'deb http://mirror.accelerated.de/ubuntu-security trusty-security main restricted universe multiverse'
-    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty-updates main restricted universe multiverse'
-    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty-updates main restricted universe multiverse'
-    - sourceline: 'deb http://mirror.accelerated.de/ubuntu-canonical/ trusty partner'
-    update: true
+    - xenial
     packages:
     - msitools
     - pdftk
