@@ -9,7 +9,6 @@ install:
 addons:
   apt:
     packages:
-    - msitools
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
@@ -17,6 +16,8 @@ before_script:
 - export DISPLAY=:99
 - sh -e /etc/init.d/xvfb start
 - sleep 3
+- sudo apt-get update
+- sudo apt-get install -y msitools
 script: mvn clean verify -U -B -fae
 after_success: ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
 deploy:
