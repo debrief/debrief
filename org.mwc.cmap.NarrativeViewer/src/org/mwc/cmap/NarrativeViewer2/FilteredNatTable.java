@@ -240,8 +240,9 @@ public abstract class FilteredNatTable extends Composite
   }
 
   private Image getImageFromJFaceResources(String imageDes) {
-    if(JFaceResources.getImageRegistry().getDescriptor(imageDes)!=null) {
-      return JFaceResources.getImageRegistry().getDescriptor(imageDes).createImage();
+    ImageDescriptor id = JFaceResources.getImageRegistry().getDescriptor(imageDes);
+    if(id != null) {
+      return id.createImage();
     }
     return null;
   }
