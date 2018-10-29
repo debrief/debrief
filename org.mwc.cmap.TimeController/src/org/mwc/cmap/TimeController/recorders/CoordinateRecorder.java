@@ -168,55 +168,15 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
     public CoordinateRecorder getRecorder()
     {
-      final File testFile = new File(
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/offset_times.rep");
+      final String testFilePath =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/offset_times.rep";
 
       // ok, now try to read it in
       final Layers _theLayers = new Layers();
 
       // add the REP importer
-      MWC.Utilities.ReaderWriter.ImportManager.addImporter(
-          new Debrief.ReaderWriter.Replay.ImportReplay());
-
-      // get our thread to import this
-      final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
-          new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-              new File[]
-              {testFile}, _theLayers)
-          {
-            // handle completion of the full import process
-            @Override
-            public void allFilesFinished(final File[] fNames,
-                final Layers newData)
-            {
-              Application.logError2(Application.INFO,
-                  "All files loaded correctly", null);
-            }
-
-            // handle the completion of each file
-            @Override
-            public void fileFinished(final File fName, final Layers newData)
-            {
-              Application.logError2(Application.INFO, "File " + fName
-                  + " loaded correctly", null);
-            }
-          };
-
-      // and start it running
-      reader.start();
-
-      // wait for the results
-      while (reader.isAlive())
-      {
-        try
-        {
-          Thread.sleep(100);
-        }
-        catch (final java.lang.InterruptedException e)
-        {
-          Application.logError2(Application.INFO, "Error while sleeping", e);
-        }
-      }
+      MWC.Utilities.ReaderWriter.ImportManager.importThis(testFilePath,
+          _theLayers);
 
       /*
        * final PlainProjection projection = new org.mwc.cmap.gt2plot.proj.GtProjection();
@@ -260,7 +220,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       Application.logError2(Application.INFO,
           "Recording Test Passed (Primary Starting First)", null);
     }
-    
+
     private void checkTrackSize(
         final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track)
     {
