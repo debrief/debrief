@@ -254,9 +254,9 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           recorder._tracks;
       checkTrackSize(track);
       assertTrue(track.get(collingwood).getStepsToSkip() == 1);
-      assertTrue(track.get(collingwood).getSegments().size() == 2);
+      assertTrue(track.get(collingwood).getPoints().size() == 2);
       assertTrue(track.get(nelson).getStepsToSkip() == 0);
-      assertTrue(track.get(nelson).getSegments().size() == 3);
+      assertTrue(track.get(nelson).getPoints().size() == 3);
       Application.logError2(Application.INFO,
           "Recording Test Passed (Primary Starting First)", null);
     }
@@ -296,7 +296,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           twoStepsCheckCollingwood(recorder, currentTime);
       assertTrue(track.get(nelson).getStepsToSkip() == 0);
-      assertTrue(track.get(nelson).getSegments().size() == 2);
+      assertTrue(track.get(nelson).getPoints().size() == 2);
       Application.logError2(Application.INFO,
           "Recording Test Passed (Starting at the same time)", null);
     }
@@ -312,7 +312,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           recorder._tracks;
       checkTrackSize(track);
       assertTrue(track.get(collingwood).getStepsToSkip() == 0);
-      assertTrue(track.get(collingwood).getSegments().size() == 2);
+      assertTrue(track.get(collingwood).getPoints().size() == 2);
       return track;
     }
 
@@ -330,7 +330,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           twoStepsCheckCollingwood(recorder, currentTime);
 
       assertTrue(track.get(nelson).getStepsToSkip() == 0);
-      assertTrue(track.get(nelson).getSegments().size() == 1);
+      assertTrue(track.get(nelson).getPoints().size() == 1);
       Application.logError2(Application.INFO,
           "Recording Test Passed (Starting at the same time)", null);
     }

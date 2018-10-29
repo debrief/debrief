@@ -464,7 +464,7 @@ public abstract class CoreCoordinateRecorder
               - point.getY()), (float) point.getX(), (float) fix.getLocation()
                   .getDepth(), fix.getDTG().getDate(), _times.get(_times.size()
                       - 1));
-          tp.getSegments().add(trackPoint);
+          tp.getPoints().add(trackPoint);
         }
       }
     };
@@ -551,7 +551,7 @@ public abstract class CoreCoordinateRecorder
       // ok, get the bounding time period
       for (final Track track : tracks.values())
       {
-        final ArrayList<TrackPoint> segs = track.getSegments();
+        final ArrayList<TrackPoint> segs = track.getPoints();
         for (final TrackPoint point : segs)
         {
           final Date thisTime = point.getTime();

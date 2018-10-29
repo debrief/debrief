@@ -49,14 +49,14 @@ public class TrackParserTest
     Date dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
     TrackPoint trackPoint = new TrackPoint((float) 56.0, (float) 511.0,
         (float) .0, dateTime, "1995-12-12T05:05:00Z");
-    track1.getSegments().add(trackPoint);
+    track1.getPoints().add(trackPoint);
     expectedResult.getTracks().add(track1);
 
     final Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
     dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
     trackPoint = new TrackPoint((float) 585.0, (float) 304.0, (float) .0,
         dateTime, "1995-12-12T05:05:00Z");
-    track2.getSegments().add(trackPoint);
+    track2.getPoints().add(trackPoint);
     expectedResult.getTracks().add(track2);
 
     assertTrue(result.equals(expectedResult));

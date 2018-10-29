@@ -144,7 +144,7 @@ public class TrackParser
                 .parseFloat(coordinate.selectFirst("ele").text()), dateTime,
             coordinate.selectFirst("time").text());
 
-        currentTrack.getSegments().add(point);
+        currentTrack.getPoints().add(point);
       }
       trackData.getTracks().add(currentTrack);
     }
