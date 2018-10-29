@@ -145,11 +145,7 @@ public class TrackParser
             "time").text());
         point.setTime(dateTime);
 
-        point.setCourse(Float.parseFloat(coordinate.selectFirst("course")
-            .text()));
         point.setElevation(Float.parseFloat(coordinate.selectFirst("ele")
-            .text()));
-        point.setSpeed(Float.parseFloat(coordinate.selectFirst("speed")
             .text()));
 
         point.setFormattedTime(coordinate.selectFirst("time").text());

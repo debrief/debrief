@@ -461,13 +461,7 @@ public abstract class CoreCoordinateRecorder
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final double screenHeight = _projection.getScreenArea().getHeight();
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
-              .getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
-              .getValueIn(WorldSpeed.ft_sec) / 3;
           final TrackPoint trackPoint = new TrackPoint();
-          trackPoint.setCourse((float) courseRads);
-          trackPoint.setSpeed((float) speedYps);
           trackPoint.setLatitude((float) (screenHeight - point.getY()));
           trackPoint.setLongitude((float) point.getX());
           trackPoint.setElevation((float) fix.getLocation().getDepth());

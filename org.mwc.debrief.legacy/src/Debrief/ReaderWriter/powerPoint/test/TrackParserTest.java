@@ -47,11 +47,9 @@ public class TrackParserTest
     final DateFormat dateTimeFormatter = new GMTDateFormat(
         "yyyy-MM-dd'T'HH:mm:ss'Z'");
     TrackPoint trackPoint = new TrackPoint();
-    trackPoint.setCourse((float) 358.5);
     trackPoint.setElevation((float) .0);
     trackPoint.setLatitude((float) 56.0);
     trackPoint.setLongitude((float) 511.0);
-    trackPoint.setSpeed((float) 1.8006);
     Date dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
     trackPoint.setTime(dateTime);
     trackPoint.setFormattedTime("1995-12-12T05:05:00Z");
@@ -60,11 +58,9 @@ public class TrackParserTest
 
     final Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
     trackPoint = new TrackPoint();
-    trackPoint.setCourse((float) 269.4);
     trackPoint.setElevation((float) .0);
     trackPoint.setLatitude((float) 585.0);
     trackPoint.setLongitude((float) 304.0);
-    trackPoint.setSpeed((float) 1.0289);
     dateTime =  dateTimeFormatter.parse("1995-12-12T05:05:00Z");
     trackPoint.setTime(dateTime);
     trackPoint.setFormattedTime("1995-12-12T05:05:00Z");
