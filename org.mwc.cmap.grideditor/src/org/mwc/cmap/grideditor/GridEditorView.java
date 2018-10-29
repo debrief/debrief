@@ -85,7 +85,7 @@ public class GridEditorView extends ViewPart
       public void eventTriggered(String type, Object instance,
           IWorkbenchPart parentPart)
       {
-        if(instance == displayedPlot) {
+        if(instance.equals(displayedPlot)) {
           //set input null now.
           activePlots.remove(instance);
           myUI.inputSeriesChanged(null);
