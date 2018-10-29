@@ -1,0 +1,22 @@
+{
+  "name": "debrief-msi",
+  "version": "1.0.0",
+  "description": "MSI Packager for Debrief",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/debrief/debrief.git"
+  },
+  "author": "Ian Mayo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/debrief/debrief/issues"
+  },
+  "homepage": "https://github.com/debrief/debrief#readme",
+  "dependencies": {
+    "msi-packager": "^1.3.0"
+  }
+}
