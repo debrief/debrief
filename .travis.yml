@@ -8,7 +8,16 @@ install:
 - mvn --version
 addons:
   apt:
+    sources:
+    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty main restricted universe multiverse'
+    - sourceline: 'deb-src http://mirror.accelerated.de/ubuntu trusty main universe restricted multiverse'
+    - sourceline: 'deb http://mirror.accelerated.de/ubuntu-security trusty-security main restricted universe multiverse'
+    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty-updates main restricted universe multiverse'
+    - sourceline: 'deb http://mirror.accelerated.de/ubuntu trusty-updates main restricted universe multiverse'
+    - sourceline: 'deb http://mirror.accelerated.de/ubuntu-canonical/ trusty partner'
+    update: true
     packages:
+    - msitools
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
@@ -16,8 +25,6 @@ before_script:
 - export DISPLAY=:99
 - sh -e /etc/init.d/xvfb start
 - sleep 3
-- sudo apt-get update
-- sudo apt-get install -y msitools
 script: mvn clean verify -U -B -fae
 after_success: ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
 deploy:
