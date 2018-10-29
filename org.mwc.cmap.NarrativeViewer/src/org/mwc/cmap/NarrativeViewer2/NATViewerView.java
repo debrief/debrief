@@ -231,7 +231,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         {
           if (match instanceof IRollingNarrativeProvider)
           {
-            setInput((IRollingNarrativeProvider) match);
+            Display.getDefault().syncExec(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                setInput((IRollingNarrativeProvider) match);    
+              }
+            });
+            
           }
         }
         else
@@ -239,7 +248,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           // hmm, has our narrative been deleted?
           if (match == null)
           {
-            setInput(null);
+            Display.getDefault().syncExec(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                // TODO Auto-generated method stub
+                setInput(null);    
+              }
+            });
           }
         }
 

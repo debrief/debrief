@@ -56,9 +56,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.progress.WorkbenchJob;
+import org.mwc.cmap.NarrativeViewer.app.Activator;
 
 /**
  * 
@@ -190,16 +190,15 @@ public abstract class FilteredNatTable extends Composite
    */
   static
   {
-    ImageDescriptor descriptor =
-        AbstractUIPlugin.imageDescriptorFromPlugin(PlatformUI.PLUGIN_ID,
-            "$nl$/icons/full/etool16/clear_co.gif"); //$NON-NLS-1$
+    ImageDescriptor descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID, "icons/16/clear.gif");
     if (descriptor != null)
     {
       JFaceResources.getImageRegistry().put(CLEAR_ICON, descriptor);
     }
+    
     descriptor =
-        AbstractUIPlugin.imageDescriptorFromPlugin(PlatformUI.PLUGIN_ID,
-            "$nl$/icons/full/dtool16/clear_co.gif"); //$NON-NLS-1$
+        AbstractUIPlugin.imageDescriptorFromPlugin(Activator.PLUGIN_ID,
+            "icons/16/disabled_clear.gif"); //$NON-NLS-1$
     if (descriptor != null)
     {
       JFaceResources.getImageRegistry().put(DISABLED_CLEAR_ICON, descriptor);
@@ -239,6 +238,12 @@ public abstract class FilteredNatTable extends Composite
     textChanged();
   }
 
+  private Image getImageFromJFaceResources(String imageDes) {
+    if(JFaceResources.getImageRegistry().getDescriptor(imageDes)!=null) {
+      return JFaceResources.getImageRegistry().getDescriptor(imageDes).createImage();
+    }
+    return null;
+  }
   /**
    * Create the button that clears the text.
    * 
@@ -251,13 +256,10 @@ public abstract class FilteredNatTable extends Composite
     // natively
     if ((filterText.getStyle() & SWT.ICON_CANCEL) == 0)
     {
-      final Image inactiveImage =
-          JFaceResources.getImageRegistry().getDescriptor(DISABLED_CLEAR_ICON)
-              .createImage();
-      final Image activeImage =
-          JFaceResources.getImageRegistry().getDescriptor(CLEAR_ICON)
-              .createImage();
-      final Image pressedImage =
+      
+      final Image inactiveImage =getImageFromJFaceResources(DISABLED_CLEAR_ICON);
+      final Image activeImage =getImageFromJFaceResources(CLEAR_ICON);
+      final Image pressedImage = activeImage==null?null:
           new Image(getDisplay(), activeImage, SWT.IMAGE_GRAY);
 
       final Label clearButton = new Label(parent, SWT.NONE);
@@ -342,9 +344,15 @@ public abstract class FilteredNatTable extends Composite
         @Override
         public void widgetDisposed(final DisposeEvent e)
         {
-          inactiveImage.dispose();
-          activeImage.dispose();
-          pressedImage.dispose();
+          if(inactiveImage!=null) {
+            inactiveImage.dispose();
+          }
+          if(activeImage!=null) {
+            activeImage.dispose();
+          }
+          if(pressedImage!=null) {
+            pressedImage.dispose();
+          }
         }
       });
 
