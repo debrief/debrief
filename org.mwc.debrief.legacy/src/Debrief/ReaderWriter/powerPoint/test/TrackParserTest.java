@@ -23,8 +23,8 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class TrackParserTest
 {
-  private static final String sampleTrack = Utils.testFolder + File.separator + "TrackParser"
-      + File.separator + "SampleTrack.txt";
+  private static final String sampleTrack = Utils.testFolder + File.separator
+      + "TrackParser" + File.separator + "SampleTrack.txt";
 
   @Test
   public void testParse() throws IOException, ParseException
@@ -39,31 +39,23 @@ public class TrackParserTest
     expectedResult.setName("Exported DebriefNG tracks");
     expectedResult.getNarrativeEntries().addAll(Arrays.asList(
         new ExportNarrativeEntry[]
-        {new ExportNarrativeEntry("COMEX. Rule amendment Charlie 3", "120500.00",
-            "0", null), new ExportNarrativeEntry("CONFIRMED. OBTAIN SOLUTION", "121003.00",
-                "12120", null)}));
+        {new ExportNarrativeEntry("COMEX. Rule amendment Charlie 3",
+            "120500.00", "0", null), new ExportNarrativeEntry(
+                "CONFIRMED. OBTAIN SOLUTION", "121003.00", "12120", null)}));
     final Track track1 = new Track("COLLINGWOOD", new Color(0, 100, 189), 0);
 
     final DateFormat dateTimeFormatter = new GMTDateFormat(
         "yyyy-MM-dd'T'HH:mm:ss'Z'");
-    TrackPoint trackPoint = new TrackPoint();
-    trackPoint.setElevation((float) .0);
-    trackPoint.setLatitude((float) 56.0);
-    trackPoint.setLongitude((float) 511.0);
     Date dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
-    trackPoint.setTime(dateTime);
-    trackPoint.setFormattedTime("1995-12-12T05:05:00Z");
+    TrackPoint trackPoint = new TrackPoint((float) 56.0, (float) 511.0,
+        (float) .0, dateTime, "1995-12-12T05:05:00Z");
     track1.getSegments().add(trackPoint);
     expectedResult.getTracks().add(track1);
 
     final Track track2 = new Track("NELSON", new Color(224, 28, 62), 0);
-    trackPoint = new TrackPoint();
-    trackPoint.setElevation((float) .0);
-    trackPoint.setLatitude((float) 585.0);
-    trackPoint.setLongitude((float) 304.0);
-    dateTime =  dateTimeFormatter.parse("1995-12-12T05:05:00Z");
-    trackPoint.setTime(dateTime);
-    trackPoint.setFormattedTime("1995-12-12T05:05:00Z");
+    dateTime = dateTimeFormatter.parse("1995-12-12T05:05:00Z");
+    trackPoint = new TrackPoint((float) 585.0, (float) 304.0, (float) .0,
+        dateTime, "1995-12-12T05:05:00Z");
     track2.getSegments().add(trackPoint);
     expectedResult.getTracks().add(track2);
 

@@ -4,11 +4,22 @@ import java.util.Date;
 
 public class TrackPoint
 {
-  private float latitude;
-  private float longitude;
-  private float elevation;
-  private Date time;
-  private String formattedTime;
+  private final float latitude;
+  private final float longitude;
+  private final float elevation;
+  private final Date time;
+  private final String formattedTime;
+
+  public TrackPoint(final float latitude, final float longitude,
+      final float elevation, final Date time, final String formattedTime)
+  {
+    super();
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.elevation = elevation;
+    this.time = time;
+    this.formattedTime = formattedTime;
+  }
 
   public float getElevation()
   {
@@ -30,34 +41,9 @@ public class TrackPoint
     return time;
   }
 
-  public void setElevation(final float elevation)
-  {
-    this.elevation = elevation;
-  }
-
-  public void setLatitude(final float latitude)
-  {
-    this.latitude = latitude;
-  }
-
-  public void setLongitude(final float longitude)
-  {
-    this.longitude = longitude;
-  }
-
-  public void setTime(final Date time)
-  {
-    this.time = time;
-  }
-  
   public String getFormattedTime()
   {
     return formattedTime;
-  }
-
-  public void setFormattedTime(String formattedTime)
-  {
-    this.formattedTime = formattedTime;
   }
 
   @Override
@@ -108,6 +94,5 @@ public class TrackPoint
       return false;
     return true;
   }
-  
-  
+
 }

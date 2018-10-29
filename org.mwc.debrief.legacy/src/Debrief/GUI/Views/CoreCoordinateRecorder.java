@@ -32,7 +32,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -368,7 +367,7 @@ public abstract class CoreCoordinateRecorder
       td.setScaleAmount(-1);
       return;
     }
-    
+
     // create the list of units
     setupUnits();
 
@@ -461,12 +460,10 @@ public abstract class CoreCoordinateRecorder
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final double screenHeight = _projection.getScreenArea().getHeight();
-          final TrackPoint trackPoint = new TrackPoint();
-          trackPoint.setLatitude((float) (screenHeight - point.getY()));
-          trackPoint.setLongitude((float) point.getX());
-          trackPoint.setElevation((float) fix.getLocation().getDepth());
-          trackPoint.setTime(fix.getDTG().getDate());
-          trackPoint.setFormattedTime(_times.get(_times.size() - 1));
+          final TrackPoint trackPoint = new TrackPoint((float) (screenHeight
+              - point.getY()), (float) point.getX(), (float) fix.getLocation()
+                  .getDepth(), fix.getDTG().getDate(), _times.get(_times.size()
+                      - 1));
           tp.getSegments().add(trackPoint);
         }
       }
@@ -509,7 +506,7 @@ public abstract class CoreCoordinateRecorder
       // output tracks object.
       // showDialog now
       final ExportDialogResult dialogResult = showExportDialog();
-      
+
       // collate the data object
       if (dialogResult.getStatus())
       {
@@ -621,7 +618,8 @@ public abstract class CoreCoordinateRecorder
     */
     private static final long serialVersionUID = 1L;
 
-    /** convert this value to our units
+    /**
+     * convert this value to our units
      * 
      * @param degs
      * @return
