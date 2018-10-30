@@ -163,8 +163,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    static final String collingwood = "COLLINGWOOD";
-    static final String nelson = "NELSON";
+    private static final String collingwood = "COLLINGWOOD";
+    private static final String nelson = "NELSON";
 
     public CoordinateRecorder getRecorder()
     {
@@ -230,8 +230,9 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
     }
 
     private void doIteration(CoordinateRecorder recorder,
-        MWC.GenericData.HiResDate currentTime, final int AMOUNT_OF_STEPS)
+        final MWC.GenericData.HiResDate currentTime_in, final int AMOUNT_OF_STEPS)
     {
+      MWC.GenericData.HiResDate currentTime = currentTime_in;
       recorder.startStepping(currentTime);
 
       long timeDelta = 60000; // 1 min.
