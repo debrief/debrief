@@ -725,7 +725,7 @@ public class ImportWord_LEGACY
 //          "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 //
 //      final String str2 =
-//          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+//          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311\u00b0 R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 //
 //      // try our special identifier
 //      assertEquals("first bearing", 123d, FCSEntry.getElement("B-", str1));
