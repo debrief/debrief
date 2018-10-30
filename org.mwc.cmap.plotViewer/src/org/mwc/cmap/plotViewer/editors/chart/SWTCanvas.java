@@ -362,13 +362,20 @@ public class SWTCanvas extends SWTCanvasAdapter implements CanvasType.ScreenUpda
     // paintPlot(pe.gc);
     // get the graphics destination
     final GC gc = pe.gc;
+
     
-    // just double check the double buffer image is the correct height
-    if (_dblBuff != null && _dblBuff.getBounds().height != pe.y + pe.height)
-    {
-      // resetting double buffer.
-      _dblBuff = null;
-    }
+    // comment out this fix. It was causing memory leak (due to the 
+    // missing _dblBuff.dispose(), but I can't reproduce the issue
+    // it was intended to fix.  It appaers that the size comparison
+    // always fails, so the double-buffer gets deleted and re-generated
+    // on every repaint.
+//    // just double check the double buffer image is the correct height
+//    if (_dblBuff != null && _dblBuff.getBounds().height != pe.y + pe.height)
+//    {
+//      // resetting double buffer.
+//      _dblBuff.dispose();
+//      _dblBuff = null;
+//    }
 
     // put double-buffering code in here.
     if (_dblBuff == null)
