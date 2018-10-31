@@ -31,7 +31,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
         timePreferences.getDTGFormat());
   }
 
-  private String getMasterTemplateFile()
+  private static String getMasterTemplateFile()
   {
     String templateFile = CorePlugin.getDefault().getPreferenceStore()
         .getString(PrefsPage.PreferenceConstants.PPT_TEMPLATE);
@@ -43,7 +43,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
     return templateFile;
   }
 
-  private String getNewFileName(final String fileName,
+  private static String getNewFileName(final String fileName,
       final String recordingStartTime)
   {
     String newName = fileName;
@@ -221,7 +221,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           "Recording Test Passed (Primary Starting First)", null);
     }
 
-    private void checkTrackSize(
+    private static void checkTrackSize(
         final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track)
     {
       assertEquals("correct amount of tracks", 2, track.size());
@@ -229,7 +229,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       assertTrue("tracks contain nelson", track.containsKey(nelson));
     }
 
-    private void doIteration(CoordinateRecorder recorder,
+    private static void doIteration(CoordinateRecorder recorder,
         final MWC.GenericData.HiResDate currentTime_in, final int AMOUNT_OF_STEPS)
     {
       MWC.GenericData.HiResDate currentTime = currentTime_in;
@@ -262,7 +262,7 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           "Recording Test Passed (Starting at the same time)", null);
     }
 
-    private java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track>
+    private static java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track>
         twoStepsCheckCollingwood(CoordinateRecorder recorder,
             MWC.GenericData.HiResDate currentTime)
     {
