@@ -682,7 +682,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     return null;
   }
 
-  private boolean internalEquals(final Color color1, final Color color2)
+  private static boolean internalEquals(final Color color1, final Color color2)
   {
     if (color1 == null && color2 == null)
     {

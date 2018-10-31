@@ -105,7 +105,7 @@ public class GridEditorView extends ViewPart
      
     });    
 	}
-	 private void activateOutlineView(CorePlotEditor editor)
+	 private static void activateOutlineView(CorePlotEditor editor)
    {
 	   IContentOutlinePage outline =
          (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
@@ -123,7 +123,7 @@ public class GridEditorView extends ViewPart
 		super.dispose();
 	}
 
-	private GriddableWrapper extractGriddableSeries(final ISelection selection)
+	private static GriddableWrapper extractGriddableSeries(final ISelection selection)
 	{
 		GriddableWrapper res = null;
 
