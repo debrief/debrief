@@ -28,6 +28,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
@@ -61,10 +62,18 @@ public class PlotPropertySheetPage extends PropertySheetPage
     _propListener = new PropertyChangeListener()
     {
       @Override
-      public void propertyChange(PropertyChangeEvent evt)
+      public void propertyChange(final PropertyChangeEvent evt)
       {
-        // ok, refresh.
-        refresh();
+        // make sure we fire the update on the UI thread
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            // ok, refresh.
+            refresh();
+          }
+        });
       }
     };
   }
