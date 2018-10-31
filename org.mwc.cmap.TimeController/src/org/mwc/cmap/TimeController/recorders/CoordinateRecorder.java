@@ -174,6 +174,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       // ok, now try to read it in
       final Layers _theLayers = new Layers();
 
+      MWC.Utilities.ReaderWriter.ImportManager.addImporter(
+          new Debrief.ReaderWriter.Replay.ImportReplay());
       // add the REP importer
       MWC.Utilities.ReaderWriter.ImportManager.importThis(testFilePath,
           _theLayers);
@@ -213,10 +215,14 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           recorder._tracks;
       checkTrackSize(track);
-      assertEquals("correct amount of steps skipped in collingwood", 1, track.get(collingwood).getStepsToSkip());
-      assertEquals("correct amount of segments for collingwood", 2, track.get(collingwood).getPoints().size());
-      assertEquals("correct amount of steps skipped for nelson", 0, track.get(nelson).getStepsToSkip());
-      assertEquals("correct amount of tracks for nelson", 3, track.get(nelson).getPoints().size());
+      assertEquals("correct amount of steps skipped in collingwood", 1, track
+          .get(collingwood).getStepsToSkip());
+      assertEquals("correct amount of segments for collingwood", 2, track.get(
+          collingwood).getPoints().size());
+      assertEquals("correct amount of steps skipped for nelson", 0, track.get(
+          nelson).getStepsToSkip());
+      assertEquals("correct amount of tracks for nelson", 3, track.get(nelson)
+          .getPoints().size());
       Application.logError2(Application.INFO,
           "Recording Test Passed (Primary Starting First)", null);
     }
@@ -230,7 +236,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
     }
 
     private static void doIteration(CoordinateRecorder recorder,
-        final MWC.GenericData.HiResDate currentTime_in, final int AMOUNT_OF_STEPS)
+        final MWC.GenericData.HiResDate currentTime_in,
+        final int AMOUNT_OF_STEPS)
     {
       MWC.GenericData.HiResDate currentTime = currentTime_in;
       recorder.startStepping(currentTime);
@@ -256,13 +263,16 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           twoStepsCheckCollingwood(recorder, currentTime);
-      assertEquals("correct amount of steps skipped in nelson's track", 0, track.get(nelson).getStepsToSkip());
-      assertEquals("correct amount of points in collingwood's segment", 2, track.get(nelson).getPoints().size());
+      assertEquals("correct amount of steps skipped in nelson's track", 0, track
+          .get(nelson).getStepsToSkip());
+      assertEquals("correct amount of points in collingwood's segment", 2, track
+          .get(nelson).getPoints().size());
       Application.logError2(Application.INFO,
           "Recording Test Passed (Starting at the same time)", null);
     }
 
-    private static java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track>
+    private static
+        java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track>
         twoStepsCheckCollingwood(CoordinateRecorder recorder,
             MWC.GenericData.HiResDate currentTime)
     {
@@ -272,8 +282,10 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           recorder._tracks;
       checkTrackSize(track);
-      assertEquals("correct number of skipped steps in collingwood's track", 0, track.get(collingwood).getStepsToSkip());
-      assertEquals("correct number of points in collingwood's segment", 2, track.get(collingwood).getPoints().size());
+      assertEquals("correct number of skipped steps in collingwood's track", 0,
+          track.get(collingwood).getStepsToSkip());
+      assertEquals("correct number of points in collingwood's segment", 2, track
+          .get(collingwood).getPoints().size());
       return track;
     }
 
@@ -290,8 +302,10 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final java.util.Map<String, Debrief.ReaderWriter.powerPoint.model.Track> track =
           twoStepsCheckCollingwood(recorder, currentTime);
 
-      assertEquals("correct number of skipped steps in nelson's track", 0, track.get(nelson).getStepsToSkip());
-      assertEquals("correct number of points in track's segment", 1, track.get(nelson).getPoints().size());
+      assertEquals("correct number of skipped steps in nelson's track", 0, track
+          .get(nelson).getStepsToSkip());
+      assertEquals("correct number of points in track's segment", 1, track.get(
+          nelson).getPoints().size());
       Application.logError2(Application.INFO,
           "Recording Test Passed (Starting at the same time)", null);
     }
