@@ -97,7 +97,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import Debrief.Wrappers.DynamicPolygonShapeWrapper;
-import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
