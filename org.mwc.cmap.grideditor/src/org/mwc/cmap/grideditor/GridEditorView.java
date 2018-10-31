@@ -14,8 +14,6 @@
  */
 package org.mwc.cmap.grideditor;
 
-import java.util.Vector;
-
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -58,7 +56,6 @@ public class GridEditorView extends ViewPart
 	
 	private PartMonitor _myPartMonitor;
 	
-	private Vector<CorePlotEditor> activePlots = new Vector<CorePlotEditor>();
 	private CorePlotEditor displayedPlot;
 
 	@Override
@@ -87,7 +84,6 @@ public class GridEditorView extends ViewPart
       {
         if(instance.equals(displayedPlot)) {
           //set input null now.
-          activePlots.remove(instance);
           myUI.inputSeriesChanged(null);
         }
       }
@@ -100,7 +96,6 @@ public class GridEditorView extends ViewPart
           IWorkbenchPart parentPart)
       {
         if(instance instanceof CorePlotEditor) {
-          activePlots.add((CorePlotEditor)instance);
           displayedPlot = (CorePlotEditor)instance;
           //activate the outline view
           activateOutlineView((CorePlotEditor)instance);
