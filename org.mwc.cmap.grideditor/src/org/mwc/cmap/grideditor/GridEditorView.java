@@ -229,17 +229,13 @@ public class GridEditorView extends ViewPart
 		}
 		else
 		{
-
 			// yes, but what are we currently looking at?
 			final GriddableWrapper existingInput = (GriddableWrapper) myUI.getTable()
 					.getTableViewer().getInput();
 
-			// see if we're currently looking at something
-			EditableWrapper editable = null;
-			if (existingInput != null)
-			{
-				editable = existingInput.getWrapper();
-			}
+      // see if we're currently looking at something
+      final EditableWrapper editable = existingInput != null ? existingInput
+          .getWrapper() : null;
 
 			// are they the same?
 			if (input.getWrapper() == editable)
@@ -273,7 +269,6 @@ public class GridEditorView extends ViewPart
 				myUndoSupport.getUndoContext());
 		myRedoAction = new RedoActionHandler(this.getSite(),
 				myUndoSupport.getUndoContext());
-		
 	}
 
 	public void refreshUndoContext()

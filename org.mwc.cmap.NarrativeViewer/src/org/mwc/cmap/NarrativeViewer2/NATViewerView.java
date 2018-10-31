@@ -219,7 +219,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   {
     _layerListener = new DataListener()
     {
-
       @Override
       public void dataExtended(final Layers theData)
       {
@@ -240,7 +239,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
                 setInput((IRollingNarrativeProvider) match);    
               }
             });
-            
           }
         }
         else
@@ -250,17 +248,14 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           {
             Display.getDefault().syncExec(new Runnable()
             {
-              
               @Override
               public void run()
               {
-                // TODO Auto-generated method stub
                 setInput(null);    
               }
             });
           }
         }
-
         // oh, oooh, see if we've learned some more colors
         refreshColors();
       }
