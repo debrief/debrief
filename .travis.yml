@@ -10,7 +10,9 @@ addons:
   apt:
     packages:
     - libgsf-1-dev
-    - libgcab-dev
+    - uuid-runtime
+    - libglib2.0-dev
+    - libxml2-dev
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
