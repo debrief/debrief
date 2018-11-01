@@ -36,7 +36,7 @@ deploy:
   - "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site/Debrief_UpdateSite.zip"
   on:
     tags: true
-    all_branches: master
+    all_branches: true
 - provider: pages
   github-token: "$GITHUB_TOKEN"
   local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
@@ -45,7 +45,7 @@ deploy:
   skip-cleanup: true
   on:
     tags: true
-    all_branches: master
+    all_branches: true
 # NOTE: this next block of YAML creates a P2 update on the dev pages branch.
 # But, since this P2 update will probably contain the same product version
 # number as the currently installed version, it won't update.  We need to
