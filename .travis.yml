@@ -30,6 +30,7 @@ deploy:
   - "/home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip"
   - "/home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip"
   - "/home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar"
+  - "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site/Debrief_UpdateSite.zip"
   on:
     tags: true
     all_branches: true
@@ -42,6 +43,16 @@ deploy:
   on:
     tags: true
     all_branches: true
+- provider: pages
+  github-token: "$GITHUB_TOKEN"
+  local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
+  verbose: true
+  target-branch: gh-pages-dev
+  name: IanMayo
+  skip-cleanup: true
+  on:
+    tags: false
+    all_branches: develop
 env:
   global:
     secure: JcJdT/fdbk82jp2LM0B+YulB+adDQAy3MXUSpO8yLIkA0/371Z1fywltSnkpYl9YgVdu54jCym3ScWu2SeppQr6mHNeyUzzW7vThFBzBZux+451WR8ly2lqDqgByePkvuTxOqsk9fEfOSpNHfA02aiNWYFX9nZtHcdV/ZrQxqiY=
