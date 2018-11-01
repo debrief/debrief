@@ -4,6 +4,9 @@ sudo: required
 cache:
   directories:
   - "$HOME/.m2"
+env:
+  global:
+    secure: JcJdT/fdbk82jp2LM0B+YulB+adDQAy3MXUSpO8yLIkA0/371Z1fywltSnkpYl9YgVdu54jCym3ScWu2SeppQr6mHNeyUzzW7vThFBzBZux+451WR8ly2lqDqgByePkvuTxOqsk9fEfOSpNHfA02aiNWYFX9nZtHcdV/ZrQxqiY=
 install:
 - mvn --version
 addons:
@@ -33,7 +36,7 @@ deploy:
   - "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site/Debrief_UpdateSite.zip"
   on:
     tags: true
-    all_branches: true
+    all_branches: master
 - provider: pages
   github-token: "$GITHUB_TOKEN"
   local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
@@ -42,17 +45,19 @@ deploy:
   skip-cleanup: true
   on:
     tags: true
-    all_branches: true
-- provider: pages
-  github-token: "$GITHUB_TOKEN"
-  local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
-  verbose: true
-  target-branch: gh-pages-dev
-  name: IanMayo
-  skip-cleanup: true
-  on:
-    tags: false
-    all_branches: develop
-env:
-  global:
-    secure: JcJdT/fdbk82jp2LM0B+YulB+adDQAy3MXUSpO8yLIkA0/371Z1fywltSnkpYl9YgVdu54jCym3ScWu2SeppQr6mHNeyUzzW7vThFBzBZux+451WR8ly2lqDqgByePkvuTxOqsk9fEfOSpNHfA02aiNWYFX9nZtHcdV/ZrQxqiY=
+    all_branches: master
+# NOTE: this next block of YAML creates a P2 update on the dev pages branch.
+# But, since this P2 update will probably contain the same product version
+# number as the currently installed version, it won't update.  We need to
+# switch to a more fine-grained version number to allow these incremental
+# beta updates
+#- provider: pages
+#  github-token: "$GITHUB_TOKEN"
+#  local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
+#  verbose: true
+#  target-branch: gh-pages-dev
+#  name: IanMayo
+#  skip-cleanup: true
+#  on:
+#    tags: false
+#    all_branches: develop
