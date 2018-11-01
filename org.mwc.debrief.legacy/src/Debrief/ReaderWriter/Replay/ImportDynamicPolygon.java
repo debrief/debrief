@@ -96,8 +96,7 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import junit.framework.TestCase;
-import Debrief.Wrappers.DynamicShapeWrapper;
+import Debrief.Wrappers.DynamicPolygonShapeWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
@@ -107,6 +106,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class that is able to export a polygon - note the Replay file format doesn't
@@ -121,7 +121,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 	private final String _myType = ";DYNAMIC_POLY:";
 
 	@Override
-	public final Object readThisLine(final String theLine)
+	public final Object readThisLine(final String theLine) throws ParseException
 	{
 		String line = theLine;
 		// get a stream from the string
@@ -217,8 +217,9 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 		}
 
 		// and put Polygon into a shape
-		final DynamicShapeWrapper sw = new DynamicShapeWrapper(theText, sp,
-				ImportReplay.replayColorFor(symbology), theDate, theName);
+		final DynamicPolygonShapeWrapper sw = new DynamicPolygonShapeWrapper(theText, (PolygonShape)sp,
+				ImportReplay.replayColorFor(symbology), theDate, null);
+		sw.setTrackName(theName);
 
 		return sw;
 	}
@@ -289,11 +290,11 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 	public static class TestImport extends TestCase
 	{
 
-		public void testWithLabel()
+		public void testWithLabel() throws ParseException
 		{
 			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportDynamicPolygon ip = new ImportDynamicPolygon();
-			final DynamicShapeWrapper res = (DynamicShapeWrapper) ip.readThisLine(line);
+			final DynamicPolygonShapeWrapper res = (DynamicPolygonShapeWrapper) ip.readThisLine(line);
 			assertEquals("label", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();

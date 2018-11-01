@@ -27,10 +27,14 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageLayout;
-import org.eclipse.ui.IViewPart;
-import org.mwc.cmap.TimeController.views.TimeController;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.timebar.model.IEventEntry;
@@ -95,10 +99,22 @@ public class TimeBarViewer implements ISelectionProvider,
   public void chartDoubleClicked(final Date clickedAt)
   {
     final HiResDate newDTG = new HiResDate(clickedAt);
-    final IViewPart part = CorePlugin.findView(CorePlugin.TIME_CONTROLLER);
-    if (part != null)
+   
+    final IWorkbench wb = PlatformUI.getWorkbench();
+    final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+    final IWorkbenchPage page = win.getActivePage();
+    if (page != null)
     {
-      ((TimeController) part).fireNewTime(newDTG);
+      final IEditorPart editor = page.getActiveEditor();
+      if (editor != null)
+      {
+        final ControllableTime timer = (ControllableTime) editor.getAdapter(
+            ControllableTime.class);
+        if (timer != null)
+        {
+          timer.setTime(this, newDTG, true);
+        }
+      }
     }
   }
 

@@ -14,6 +14,8 @@
  */
 package MWC.Utilities.ReaderWriter.XML.Util;
 
+import java.text.ParseException;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -37,6 +39,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -220,7 +223,14 @@ public final class NarrativeHandler extends
 			{
 				public void setValue(final String name, final String value)
 				{
-					_dtg = DebriefFormatDateTime.parseThis(value);
+					try
+          {
+            _dtg = DebriefFormatDateTime.parseThis(value);
+          }
+          catch (ParseException e)
+          {
+            Trace.trace(e, "While parsing date");
+          }
 				}
 			});
 

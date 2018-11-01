@@ -95,12 +95,6 @@ public class FlatProjection extends PlainProjection
 	 */
 	private final WorldLocation _workingLocation = new WorldLocation(0, 0, 0);
 
-	/**
-	 * working screen location, to reduce screen operations
-	 * 
-	 */
-	private final Point scrRes = new Point(0, 0);
-
 	// ////////////////////////////////////////////////
 	// member functions
 	// ////////////////////////////////////////////////
@@ -291,17 +285,17 @@ public class FlatProjection extends PlainProjection
 		// (int)(Math.cos((double)brg) * (double)rng));
 		final int deltaX = (int) (Math.sin(brg) * rng);
 		final int deltaY = (int) (Math.cos(brg) * rng);
-		scrRes.move(deltaX, deltaY);
+		final Point res = new Point(deltaX, deltaY);
 
 		// invert the y
-		scrRes.y = -scrRes.y;
+		res.y = -res.y;
 
 		// add to the origin
-		scrRes.x += _screenOrigin.x;
-		scrRes.y += _screenOrigin.y;
+		res.x += _screenOrigin.x;
+		res.y += _screenOrigin.y;
 
 		// done, now we can return
-		return scrRes;
+		return res;
 	}
 
 	@Override

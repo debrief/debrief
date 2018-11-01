@@ -29,9 +29,12 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.grideditor.data.GriddableWrapper;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
@@ -50,6 +53,10 @@ public class GridEditorView extends ViewPart
 	private UndoActionHandler myUndoAction;
 
 	private RedoActionHandler myRedoAction;
+	
+	private PartMonitor _myPartMonitor;
+	
+	private CorePlotEditor displayedPlot;
 
 	@Override
 	public void createPartControl(final Composite parent)
@@ -66,17 +73,57 @@ public class GridEditorView extends ViewPart
 		myActions.fillActionBars(actionBars);
 		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
 		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
+		_myPartMonitor =
+        new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.CLOSED, new PartMonitor.ICallback()
+    {
+      
+      @Override
+      public void eventTriggered(String type, Object instance,
+          IWorkbenchPart parentPart)
+      {
+        if(instance.equals(displayedPlot)) {
+          //set input null now.
+          myUI.inputSeriesChanged(null);
+        }
+      }
+    });
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+    {
+      
+      @Override
+      public void eventTriggered(String type, Object instance,
+          IWorkbenchPart parentPart)
+      {
+        if(instance instanceof CorePlotEditor) {
+          displayedPlot = (CorePlotEditor)instance;
+          //activate the outline view
+          activateOutlineView((CorePlotEditor)instance);
+        }
+      }
+
+     
+    });    
 	}
+	 private static void activateOutlineView(CorePlotEditor editor)
+   {
+	   IContentOutlinePage outline =
+         (IContentOutlinePage) editor.getAdapter(IContentOutlinePage.class);
+     if(outline!=null) {
+       outline.setFocus();
+     }
+   }
 
 	@Override
 	public void dispose()
 	{
 		getSite().getWorkbenchWindow().getSelectionService()
 				.removeSelectionListener(getSelectionListener());
+		_myPartMonitor.ditch();
 		super.dispose();
 	}
 
-	private GriddableWrapper extractGriddableSeries(final ISelection selection)
+	private static GriddableWrapper extractGriddableSeries(final ISelection selection)
 	{
 		GriddableWrapper res = null;
 
@@ -182,17 +229,13 @@ public class GridEditorView extends ViewPart
 		}
 		else
 		{
-
 			// yes, but what are we currently looking at?
 			final GriddableWrapper existingInput = (GriddableWrapper) myUI.getTable()
 					.getTableViewer().getInput();
 
-			// see if we're currently looking at something
-			EditableWrapper editable = null;
-			if (existingInput != null)
-			{
-				editable = existingInput.getWrapper();
-			}
+      // see if we're currently looking at something
+      final EditableWrapper editable = existingInput != null ? existingInput
+          .getWrapper() : null;
 
 			// are they the same?
 			if (input.getWrapper() == editable)

@@ -257,6 +257,8 @@ import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import junit.framework.TestCase;
 
 /**
  * extended shapewrapper class, that introduces support for showing the child
@@ -268,6 +270,22 @@ import MWC.GenericData.WorldArea;
 public class PolygonWrapper extends ShapeWrapper implements Layer,
 		ExportLayerAsSingleItem
 {
+  
+  public static class TestPolygon extends TestCase
+  {
+
+    public final void testMyParams()
+    {
+      Vector<PolygonNode> nodes = new Vector<PolygonNode>();
+      nodes.add(new PolygonNode("aa", new WorldLocation(2d, 3d, 0d), null));
+      final PolygonShape shape = new PolygonShape(nodes);
+      PolygonWrapper ed = new PolygonWrapper("aa", shape, MWC.GUI.Properties.DebriefColors.RED,
+          new HiResDate(0));
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+  }
+  
 	/**
 	 * 
 	 */
@@ -347,7 +365,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 						displayProp("LabelLocation", "Label location", "the relative location of the label", FORMAT),
 						prop("Visible", "whether this shape is visible", VISIBILITY),
 						displayProp("LabelVisible", "Label visible", "whether the label is visible", VISIBILITY),
-						displayProp("Time_Start", "Time start", "the start date time group", TEMPORAL),
+						displayProp("StartDTGProperty", "Time start", "the start date time group", TEMPORAL),
 						displayLongProp("LineStyle", "Line style",
 								"the dot-dash style to use for plotting this shape",
 								LineStylePropertyEditor.class, FORMAT),
@@ -355,7 +373,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 								"the line-thickness to use for this shape",
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
-						displayProp("TimeEnd", "Time end",
+						displayProp("EndDTGProperty", "Time end",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
 				myRes[3]
@@ -388,10 +406,10 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 			final java.awt.Color theColor, final HiResDate startDate, final HiResDate endDate)
 	{
 		this(label, shape, theColor, startDate);
-		setTimeEnd(endDate);
+		setEndDTG(endDate);
 	}
 
-	private PolygonShape getPoly()
+	public PolygonShape getPoly()
 	{
 		return (PolygonShape) _theShape;
 	}

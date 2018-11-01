@@ -556,7 +556,7 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 			builder.append(" ");
 		}
 		builder.append((int) getCourse());
-		builder.append("°");
+		builder.append("\u00b0");
 		return builder.toString();
 	}
 

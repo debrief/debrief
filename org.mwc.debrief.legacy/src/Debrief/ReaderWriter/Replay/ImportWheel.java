@@ -96,8 +96,9 @@ final class ImportWheel extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // get a stream from the string

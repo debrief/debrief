@@ -1,5 +1,6 @@
 package Debrief.ReaderWriter.Replay.extensions;
 
+import java.text.ParseException;
 import java.util.StringTokenizer;
 
 import MWC.GenericData.HiResDate;
@@ -16,7 +17,7 @@ public class TA_COG_ABS_DataHandler extends Core_TA_Handler
   }
 
   @Override
-  public Object readThisLine(String theLine)
+  public Object readThisLine(String theLine) throws ParseException
   {
     // should look like:
     // ;TA_COG_ABS: 100112 120230 SENSOR TA_ARRAY 60.187961627128395 0.2243122833234192 19.02

@@ -14,6 +14,8 @@
  */
 package Debrief.ReaderWriter.XML.Tactical;
 
+import java.text.ParseException;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -33,6 +35,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
@@ -205,8 +208,15 @@ abstract public class FixHandler extends MWCXMLReader
       @Override
       public void setValue(final String name, final String value)
       {
-        final HiResDate hrf = DebriefFormatDateTime.parseThis(value);
-        _theFix.setTime(hrf);
+        try
+        {
+          HiResDate hrf = DebriefFormatDateTime.parseThis(value);
+          _theFix.setTime(hrf);
+        }
+        catch (ParseException e)
+        {
+          Trace.trace(e, "While parsing date");
+        }
       }
     });
 

@@ -53,6 +53,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -90,7 +91,9 @@ import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.DragDropSupport;
 import org.mwc.cmap.core.ui_support.OutlineNameSorter;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.ContextOperations.GeneratePasteRepClipboard;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
@@ -707,7 +710,15 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public boolean isEnabled()
       {
         final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
-
+        final Object val = _clipboard.getContents(TextTransfer.getInstance());
+        if (val != null)
+        {
+            final String clipBoardContent = (String) val;
+            // See if there is plain text on the clipboard
+            if (ImportReplay.isContentImportable(clipBoardContent)) {
+              return true;
+            }
+        }
         final EditableTransfer transfer = EditableTransfer.getInstance();
         final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
         if (tr == null || tr.length == 0)
@@ -737,7 +748,15 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void run()
       {
         final Clipboard _clipboard = CorePlugin.getDefault().getClipboard();
-
+        final Object val = _clipboard.getContents(TextTransfer.getInstance());
+        if (val != null)
+        {
+            final String clipBoardContent = (String) val;
+            // See if there is plain text on the clipboard
+            if (ImportReplay.isContentImportable(clipBoardContent)) {
+              GeneratePasteRepClipboard.createAction(_myLayers, clipBoardContent).run();
+            }
+        }
         final EditableTransfer transfer = EditableTransfer.getInstance();
         final Editable[] tr = (Editable[]) _clipboard.getContents(transfer);
         if (tr == null || tr.length == 0)
@@ -932,10 +951,8 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
         }
 
         final ViewerCell viewerCell = _treeViewer.getCell(pt);
-        // click on visibility column and check image only.
-        if (viewerCell != null && viewerCell.getColumnIndex() == 1 && viewerCell
-            .getImageBounds() != null && viewerCell.getImageBounds().contains(
-                pt))
+        // click on visibility column.
+        if (viewerCell != null && viewerCell.getColumnIndex() == 1 )
         {
           final Object element = viewerCell.getElement();
           if (element instanceof EditableWrapper)
@@ -2019,7 +2036,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   @Override
   public void setFocus()
   {
-    _treeViewer.getControl().setFocus();
+    if(_treeViewer!=null) {
+      _treeViewer.getControl().setFocus();
+    }
   }
 
   @Override

@@ -52,10 +52,10 @@ public class AISBaseStation implements IAISMessage, IAISDecodable, Cloneable {
 	/** message timestamp in UTC */
 	private Timestamp msgTimestamp;
 
-	/** longitude in degrees +-180° east=positive west=negative */
+	/** longitude in degrees +-180\u00b0 east=positive west=negative */
 	private double longitude;
 
-	/** latitude in degrees +-90° north=positive south=negative */
+	/** latitude in degrees +-90\u00b0 north=positive south=negative */
 	private double latitude;
 
 	private int deviceType;

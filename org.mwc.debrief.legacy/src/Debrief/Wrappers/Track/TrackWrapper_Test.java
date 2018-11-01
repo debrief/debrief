@@ -524,7 +524,7 @@ public class TrackWrapper_Test extends TestCase
     System.out.println("test took:" + (System.currentTimeMillis() - startT));
   }
 
-  private void listTimes(TrackSegment ts)
+  private static void listTimes(TrackSegment ts)
   {
     Enumeration<Editable> iter = ts.elements();
     while (iter.hasMoreElements())
@@ -536,14 +536,14 @@ public class TrackWrapper_Test extends TestCase
 
   private static final String TRACK_NAME = "test track";
 
-  public static FixWrapper createFix(final int timeMillis, final int vLatDeg,
+  public static FixWrapper createFix1(final int timeMillis, final int vLatDeg,
       final int vLatMin, final double vLatSec, final int vLongDeg,
       final int vLongMin, final double vLongSec, final int crseDegs,
       final int spdKts)
   {
     final double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d);
     final double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
-    final FixWrapper theFix = createFix(timeMillis, vLat, vLong);
+    final FixWrapper theFix = createFix3(timeMillis, vLat, vLong);
     theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
     theFix.getFix()
         .setSpeed(
@@ -553,7 +553,7 @@ public class TrackWrapper_Test extends TestCase
     return theFix;
   }
 
-  private TrackSegment getDummyList()
+  private static TrackSegment getDummyList()
   {
     final TrackSegment ts0 = new TrackSegment(TrackSegment.ABSOLUTE);
     final FixWrapper newFix1 =
@@ -575,10 +575,10 @@ public class TrackWrapper_Test extends TestCase
     return ts0;
   }
 
-  public static FixWrapper createFix(final int timeMillis, final int vLat,
+  public static FixWrapper createFix2(final int timeMillis, final int vLat,
       final int vLong, final int crseDegs, final int spdKts)
   {
-    final FixWrapper theFix = createFix(timeMillis, vLat, vLong);
+    final FixWrapper theFix = createFix3(timeMillis, vLat, vLong);
     theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
     theFix.getFix()
         .setSpeed(
@@ -588,7 +588,7 @@ public class TrackWrapper_Test extends TestCase
     return theFix;
   }
 
-  public static FixWrapper createFix(final long timeMillis, final double vLat,
+  public static FixWrapper createFix3(final long timeMillis, final double vLat,
       final double vLong)
   {
     final FixWrapper fw =
@@ -597,7 +597,7 @@ public class TrackWrapper_Test extends TestCase
     return fw;
   }
 
-  public static FixWrapper createFix(final long timeMillis, final double vLat,
+  public static FixWrapper createFix4(final long timeMillis, final double vLat,
       final double vLong, final double course, final double speed)
   {
     final FixWrapper fw =
@@ -610,9 +610,9 @@ public class TrackWrapper_Test extends TestCase
    * fixes we can easily refer to in a test..
    * 
    */
-  private final FixWrapper _fw1 = createFix(300000, 2, 3);
+  private final FixWrapper _fw1 = createFix3(300000, 2, 3);
 
-  private final FixWrapper _fw2 = createFix(500000, 2, 3);
+  private final FixWrapper _fw2 = createFix3(500000, 2, 3);
 
   private TrackWrapper _tw;
 
@@ -634,7 +634,7 @@ public class TrackWrapper_Test extends TestCase
 
   static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-  private int countCuts(final Enumeration<Editable> sensors)
+  private static int countCuts(final Enumeration<Editable> sensors)
   {
     if (sensors == null)
       return 0;
@@ -658,7 +658,7 @@ public class TrackWrapper_Test extends TestCase
     return counter;
   }
 
-  private int countSolutions(final Enumeration<Editable> solutions)
+  private static int countSolutions(final Enumeration<Editable> solutions)
   {
     if (solutions == null)
       return 0;
@@ -742,12 +742,12 @@ public class TrackWrapper_Test extends TestCase
 
     _tw = new TrackWrapper();
     _tw.setName(TRACK_NAME);
-    _tw.addFix(createFix(100000, 1, 1));
-    _tw.addFix(createFix(200000, 2, 3));
+    _tw.addFix(createFix3(100000, 1, 1));
+    _tw.addFix(createFix3(200000, 2, 3));
     _tw.addFix(_fw1);
-    _tw.addFix(createFix(400000, 3, 3));
+    _tw.addFix(createFix3(400000, 3, 3));
     _tw.addFix(_fw2);
-    _tw.addFix(createFix(600000, 4, 6));
+    _tw.addFix(createFix3(600000, 4, 6));
     _messages = new MessageProvider.TestableMessageProvider();
     MessageProvider.Base.setProvider(_messages);
 
@@ -774,7 +774,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("start condition", 6, this.trackLength());
 
     // check we can add a fix
-    final FixWrapper fw = createFix(12, 3d, 4d);
+    final FixWrapper fw = createFix3(12, 3d, 4d);
     _tw.add(fw);
 
     // insert delay, to overcome cacheing
@@ -805,7 +805,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("start condition", 6, this.trackLength());
 
     // check we can add a fix
-    final FixWrapper fw = createFix(12, 3d, 4d);
+    final FixWrapper fw = createFix3(12, 3d, 4d);
     _tw.addFix(fw);
 
     // insert delay, to overcome cacheing
@@ -819,17 +819,17 @@ public class TrackWrapper_Test extends TestCase
     TrackSegment t1 = new TrackSegment(false);
     long time = 1000;
     int pos = 1;
-    t1.addFix(createFix(time++, ++pos, pos));
-    t1.addFix(createFix(time++, ++pos, pos));
-    t1.addFix(createFix(time++, ++pos, pos));
-    t1.addFix(createFix(time++, ++pos, pos));
-    t1.addFix(createFix(time++, ++pos, pos));
+    t1.addFix(createFix3(time++, ++pos, pos));
+    t1.addFix(createFix3(time++, ++pos, pos));
+    t1.addFix(createFix3(time++, ++pos, pos));
+    t1.addFix(createFix3(time++, ++pos, pos));
+    t1.addFix(createFix3(time++, ++pos, pos));
 
     TrackSegment t2 = new TrackSegment(false);
-    t2.addFix(createFix(time++, ++pos, pos));
-    t2.addFix(createFix(time++, ++pos, pos));
-    t2.addFix(createFix(time++, ++pos, pos));
-    t2.addFix(createFix(time++, ++pos, pos));
+    t2.addFix(createFix3(time++, ++pos, pos));
+    t2.addFix(createFix3(time++, ++pos, pos));
+    t2.addFix(createFix3(time++, ++pos, pos));
+    t2.addFix(createFix3(time++, ++pos, pos));
 
     TrackWrapper track = new TrackWrapper();
     track.add(t1);
@@ -855,8 +855,8 @@ public class TrackWrapper_Test extends TestCase
   public void testAppend() throws InterruptedException
   {
     final TrackWrapper tw2 = new TrackWrapper();
-    final FixWrapper f1 = createFix(13, 2, 2);
-    final FixWrapper f2 = createFix(14, 32, 12);
+    final FixWrapper f1 = createFix3(13, 2, 2);
+    final FixWrapper f2 = createFix3(14, 32, 12);
     tw2.addFix(f1);
     tw2.addFix(f2);
 
@@ -905,25 +905,25 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimateAbsolute() throws InterruptedException
   {
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(0 * 1000000l, 31, 34));
-    ts1.addFix(createFix(1 * 1000000l, 32, 33));
-    ts1.addFix(createFix(2 * 1000000l, 33, 32));
-    ts1.addFix(createFix(3 * 1000000l, 34, 31));
-    ts1.addFix(createFix(4 * 1000000l, 35, 30));
+    ts1.addFix(createFix3(0 * 1000000L, 31, 34));
+    ts1.addFix(createFix3(1 * 1000000L, 32, 33));
+    ts1.addFix(createFix3(2 * 1000000L, 33, 32));
+    ts1.addFix(createFix3(3 * 1000000L, 34, 31));
+    ts1.addFix(createFix3(4 * 1000000L, 35, 30));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(5 * 1000000l, 35, 33));
-    ts2.addFix(createFix(6 * 1000000l, 36, 34));
-    ts2.addFix(createFix(7 * 1000000l, 37, 35));
-    ts2.addFix(createFix(8 * 1000000l, 38, 36));
-    ts2.addFix(createFix(9 * 1000000l, 39, 37));
+    ts2.addFix(createFix3(5 * 1000000L, 35, 33));
+    ts2.addFix(createFix3(6 * 1000000L, 36, 34));
+    ts2.addFix(createFix3(7 * 1000000L, 37, 35));
+    ts2.addFix(createFix3(8 * 1000000L, 38, 36));
+    ts2.addFix(createFix3(9 * 1000000L, 39, 37));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(10 * 1000000l, 32, 37));
-    ts3.addFix(createFix(11 * 1000000l, 31, 36));
-    ts3.addFix(createFix(12 * 1000000l, 30, 35));
-    ts3.addFix(createFix(13 * 1000000l, 29, 34));
-    ts3.addFix(createFix(24 * 1000000l, 28, 33));
+    ts3.addFix(createFix3(10 * 1000000L, 32, 37));
+    ts3.addFix(createFix3(11 * 1000000L, 31, 36));
+    ts3.addFix(createFix3(12 * 1000000L, 30, 35));
+    ts3.addFix(createFix3(13 * 1000000L, 29, 34));
+    ts3.addFix(createFix3(24 * 1000000L, 28, 33));
 
     final TrackWrapper tw = new TrackWrapper();
     tw.add(ts1);
@@ -941,7 +941,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("correct ht", 11d, tw.getBounds().getHeight(), 0.001);
 
     // GO FOR ULTIMATE DECIMATION
-    tw.setResampleDataAt(new HiResDate(4 * 1000000l));
+    tw.setResampleDataAt(new HiResDate(4 * 1000000L));
 
     // what's the area before
     assertEquals("still correct wid", 5.032d, tw.getBounds().getWidth(), 0.001);
@@ -965,7 +965,7 @@ public class TrackWrapper_Test extends TestCase
     // assertEquals("has all fixes", 7, tw.numFixes());
 
     // GO FOR ULTIMATE DECIMATION
-    tw.setResampleDataAt(new HiResDate(500000l));
+    tw.setResampleDataAt(new HiResDate(500000L));
 
     Thread.sleep(550);
 
@@ -977,18 +977,18 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimateRelative() throws InterruptedException,
       ParseException
   {
-    SimpleDateFormat sdf = new GMTDateFormat("hh:mm:ss");
+    SimpleDateFormat sdf = new GMTDateFormat("HH:mm:ss");
 
     final TrackSegment ts1 = new TrackSegment(TrackSegment.RELATIVE);
-    ts1.addFix(createFix(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));
-    ts1.addFix(createFix(sdf.parse("13:01:14").getTime(), 0.5, 0.0, 0, 5));
-    ts1.addFix(createFix(sdf.parse("13:02:14").getTime(), 1.0, 0.0, 90, 5));
-    ts1.addFix(createFix(sdf.parse("13:03:14").getTime(), 1.0, 0.5, 90, 5));
-    ts1.addFix(createFix(sdf.parse("13:04:14").getTime(), 1.0, 1.0, 180, 5));
-    ts1.addFix(createFix(sdf.parse("13:04:14").getTime(), 0.5, 1.0, 180, 5));
-    ts1.addFix(createFix(sdf.parse("13:05:14").getTime(), 0.0, 1.0, 270, 5));
-    ts1.addFix(createFix(sdf.parse("13:06:14").getTime(), 0.0, 0.5, 270, 5));
-    ts1.addFix(createFix(sdf.parse("13:07:14").getTime(), 0.0, 0.0, 315, 5));
+    ts1.addFix(createFix4(sdf.parse("13:00:14").getTime(), 0.0, 0.0, 0, 5));
+    ts1.addFix(createFix4(sdf.parse("13:01:14").getTime(), 0.5, 0.0, 0, 5));
+    ts1.addFix(createFix4(sdf.parse("13:02:14").getTime(), 1.0, 0.0, 90, 5));
+    ts1.addFix(createFix4(sdf.parse("13:03:14").getTime(), 1.0, 0.5, 90, 5));
+    ts1.addFix(createFix4(sdf.parse("13:04:14").getTime(), 1.0, 1.0, 180, 5));
+    ts1.addFix(createFix4(sdf.parse("13:04:14").getTime(), 0.5, 1.0, 180, 5));
+    ts1.addFix(createFix4(sdf.parse("13:05:14").getTime(), 0.0, 1.0, 270, 5));
+    ts1.addFix(createFix4(sdf.parse("13:06:14").getTime(), 0.0, 0.5, 270, 5));
+    ts1.addFix(createFix4(sdf.parse("13:07:14").getTime(), 0.0, 0.0, 315, 5));
 
     final TrackWrapper tw = new TrackWrapper();
     tw.add(ts1);
@@ -1020,30 +1020,30 @@ public class TrackWrapper_Test extends TestCase
     Layers layers = new Layers();
     TrackWrapper track = new TrackWrapper();
     track.setName("Track");
-    FixWrapper fix = createFix(1000, 10, 20);
+    FixWrapper fix = createFix3(1000, 10, 20);
     track.addFix(fix);
 
     assertNotNull("returned an area", layers.getBounds());
     assertEquals("correct location",
-        " 50\u00B051'17.63\"N 001\u00B020'32.10\"W ", layers.getBounds()
+        " 50\u00b051'17.63\"N 001\u00b020'32.10\"W ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 51\u00B012'08.27\"N 001\u00B058'07.62\"W ", layers.getBounds()
+        " 51\u00b012'08.27\"N 001\u00b058'07.62\"W ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 50\u00B030'26.99\"N 000\u00B042'56.58\"W ", layers.getBounds()
+        " 50\u00b030'26.99\"N 000\u00b042'56.58\"W ", layers.getBounds()
             .getBottomRight().toString());
 
     // ok, now put the track in the layers
     layers.addThisLayer(track);
     assertEquals("correct location",
-        " 10\u00B000'00.00\"N 020\u00B000'00.00\"E ", layers.getBounds()
+        " 10\u00b000'00.00\"N 020\u00b000'00.00\"E ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 10\u00B000'42.43\"N 019\u00B059'16.92\"E ", layers.getBounds()
+        " 10\u00b000'42.43\"N 019\u00b059'16.92\"E ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 09\u00B059'17.57\"N 020\u00B000'43.08\"E ", layers.getBounds()
+        " 09\u00b059'17.57\"N 020\u00b000'43.08\"E ", layers.getBounds()
             .getBottomRight().toString());
 
   }
@@ -1051,25 +1051,25 @@ public class TrackWrapper_Test extends TestCase
   public void testDecimatePositionsAndData() throws InterruptedException
   {
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(0 * 60000, 32, 33));
-    ts1.addFix(createFix(1 * 60000, 32, 33));
-    ts1.addFix(createFix(2 * 60000, 32, 33));
-    ts1.addFix(createFix(3 * 60000, 32, 33));
-    ts1.addFix(createFix(4 * 60000, 32, 33));
+    ts1.addFix(createFix3(0 * 60000, 32, 33));
+    ts1.addFix(createFix3(1 * 60000, 32, 33));
+    ts1.addFix(createFix3(2 * 60000, 32, 33));
+    ts1.addFix(createFix3(3 * 60000, 32, 33));
+    ts1.addFix(createFix3(4 * 60000, 32, 33));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(5 * 60000, 32, 33));
-    ts2.addFix(createFix(6 * 60000, 32, 33));
-    ts2.addFix(createFix(7 * 60000, 32, 33));
-    ts2.addFix(createFix(8 * 60000, 32, 33));
-    ts2.addFix(createFix(9 * 60000, 32, 33));
+    ts2.addFix(createFix3(5 * 60000, 32, 33));
+    ts2.addFix(createFix3(6 * 60000, 32, 33));
+    ts2.addFix(createFix3(7 * 60000, 32, 33));
+    ts2.addFix(createFix3(8 * 60000, 32, 33));
+    ts2.addFix(createFix3(9 * 60000, 32, 33));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(10 * 60000, 32, 33));
-    ts3.addFix(createFix(11 * 60000, 32, 33));
-    ts3.addFix(createFix(12 * 60000, 32, 33));
-    ts3.addFix(createFix(13 * 60000, 32, 33));
-    ts3.addFix(createFix(24 * 60000, 32, 33));
+    ts3.addFix(createFix3(10 * 60000, 32, 33));
+    ts3.addFix(createFix3(11 * 60000, 32, 33));
+    ts3.addFix(createFix3(12 * 60000, 32, 33));
+    ts3.addFix(createFix3(13 * 60000, 32, 33));
+    ts3.addFix(createFix3(24 * 60000, 32, 33));
 
     final SensorWrapper sw = new SensorWrapper("dummy sensor");
     final SensorContactWrapper scw1 =
@@ -1146,7 +1146,7 @@ public class TrackWrapper_Test extends TestCase
         .elements()));
 
     // GO FOR ULTIMATE DECIMATION
-    tw.setResampleDataAt(new HiResDate(30 * 1000l));
+    tw.setResampleDataAt(new HiResDate(30 * 1000L));
 
     // insert delay, to overcome cacheing
     Thread.sleep(550);
@@ -1294,17 +1294,17 @@ public class TrackWrapper_Test extends TestCase
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 
-    ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
-    ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
-    ts1.addFix(createFix(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
-    ts1.addFix(createFix(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
+    ts1.addFix(createFix1(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
+    ts1.addFix(createFix1(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
+    ts1.addFix(createFix1(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
+    ts1.addFix(createFix1(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
 
-    ts2.addFix(createFix(80000, 1, 0, 0d, 1, 0, 07d, 90, 12));
-    ts2.addFix(createFix(90000, 1, 0, 0d, 1, 0, 08d, 90, 12));
-    ts2.addFix(createFix(100000, 1, 0, 0d, 1, 0, 09d, 90, 12));
-    ts2.addFix(createFix(110000, 1, 0, 0d, 1, 0, 10d, 90, 12));
-    ts2.addFix(createFix(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
-    ts2.addFix(createFix(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
+    ts2.addFix(createFix1(80000, 1, 0, 0d, 1, 0, 07d, 90, 12));
+    ts2.addFix(createFix1(90000, 1, 0, 0d, 1, 0, 08d, 90, 12));
+    ts2.addFix(createFix1(100000, 1, 0, 0d, 1, 0, 09d, 90, 12));
+    ts2.addFix(createFix1(110000, 1, 0, 0d, 1, 0, 10d, 90, 12));
+    ts2.addFix(createFix1(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
+    ts2.addFix(createFix1(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
 
     // the test was broken after adding this line to the TrackSegment
     // constructor:
@@ -1323,17 +1323,17 @@ public class TrackWrapper_Test extends TestCase
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
 
-    ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
-    ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
-    ts1.addFix(createFix(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
-    ts1.addFix(createFix(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
+    ts1.addFix(createFix1(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
+    ts1.addFix(createFix1(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
+    ts1.addFix(createFix1(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
+    ts1.addFix(createFix1(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
 
-    ts2.addFix(createFix(80000, 1, 0, 0d, 1, 0, 07d, 90, 12));
-    ts2.addFix(createFix(90000, 1, 0, 0d, 1, 0, 08d, 90, 12));
-    ts2.addFix(createFix(100000, 1, 0, 0d, 1, 0, 09d, 90, 12));
-    ts2.addFix(createFix(110000, 1, 0, 0d, 1, 0, 10d, 90, 12));
-    ts2.addFix(createFix(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
-    ts2.addFix(createFix(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
+    ts2.addFix(createFix1(80000, 1, 0, 0d, 1, 0, 07d, 90, 12));
+    ts2.addFix(createFix1(90000, 1, 0, 0d, 1, 0, 08d, 90, 12));
+    ts2.addFix(createFix1(100000, 1, 0, 0d, 1, 0, 09d, 90, 12));
+    ts2.addFix(createFix1(110000, 1, 0, 0d, 1, 0, 10d, 90, 12));
+    ts2.addFix(createFix1(120000, 1, 0, 0d, 1, 0, 11d, 90, 12));
+    ts2.addFix(createFix1(130000, 1, 0, 0d, 1, 0, 12d, 90, 12));
 
     // the test was broken after adding this line to the TrackSegment
     // constructor:
@@ -1344,26 +1344,6 @@ public class TrackWrapper_Test extends TestCase
 
     // check there are the correct number of items
     assertEquals("wrong num entries", 6, infill.size());
-
-    // Enumeration<Editable> numer = infill.elements();
-    // double minCourse = Math.toRadians(90);
-    // double maxCourse = Math.toRadians(135);
-    //
-    // while (numer.hasMoreElements())
-    // {
-    // FixWrapper thisF = (FixWrapper) numer.nextElement();
-    //
-    // // TODO: investigate splines to ensure the turn only include decrease or
-    // // increase in speed, not both (Github Issue# 664)
-    //
-    // // check they maintain the speed
-    // // assertEquals("correct speed", 12, thisF.getSpeed(), 0.002);
-    //
-    // // check the speed doesn't go outside the provided range
-    // // assertTrue("correct course", thisF.getCourse() >= minCourse);
-    // // assertTrue("correct course", thisF.getCourse() <= maxCourse);
-    // }
-
   }
 
   /**
@@ -1489,9 +1469,9 @@ public class TrackWrapper_Test extends TestCase
   {
     TrackWrapper tw = new TrackWrapper();
     assertFalse(tw.isSinglePointTrack());
-    tw.add(createFix(100, 12, 13));
+    tw.add(createFix3(100, 12, 13));
     assertTrue(tw.isSinglePointTrack());
-    tw.add(createFix(200, 12, 13));
+    tw.add(createFix3(200, 12, 13));
     assertFalse(tw.isSinglePointTrack());
   }
 
@@ -1633,7 +1613,6 @@ public class TrackWrapper_Test extends TestCase
       public void
           paintMe(CanvasType dest, WorldLocation centre, Color theColor)
       {
-        // TODO Auto-generated method stub
         super.paintMe(dest, centre, theColor);
 
         _ctr++;
@@ -1658,22 +1637,22 @@ public class TrackWrapper_Test extends TestCase
     final TrackWrapper tw = new TrackWrapper();
 
     final TrackSegment ts0 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts0.addFix(createFix(10000, 1, 1, 20, 30));
-    ts0.addFix(createFix(11000, 1, 1, 20, 30));
-    ts0.addFix(createFix(12000, 1, 1, 20, 30));
-    ts0.addFix(createFix(13000, 1, 1, 20, 30));
+    ts0.addFix(createFix2(10000, 1, 1, 20, 30));
+    ts0.addFix(createFix2(11000, 1, 1, 20, 30));
+    ts0.addFix(createFix2(12000, 1, 1, 20, 30));
+    ts0.addFix(createFix2(13000, 1, 1, 20, 30));
 
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(14000, 1, 1, 20, 30));
-    ts1.addFix(createFix(15000, 1, 1, 20, 30));
-    ts1.addFix(createFix(16000, 1, 1, 20, 30));
-    ts1.addFix(createFix(17000, 1, 1, 20, 30));
+    ts1.addFix(createFix2(14000, 1, 1, 20, 30));
+    ts1.addFix(createFix2(15000, 1, 1, 20, 30));
+    ts1.addFix(createFix2(16000, 1, 1, 20, 30));
+    ts1.addFix(createFix2(17000, 1, 1, 20, 30));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(18000, 1, 1, 20, 30));
-    ts2.addFix(createFix(19000, 1, 1, 20, 30));
-    ts2.addFix(createFix(20000, 1, 1, 20, 30));
-    ts2.addFix(createFix(21000, 1, 1, 20, 30));
+    ts2.addFix(createFix2(18000, 1, 1, 20, 30));
+    ts2.addFix(createFix2(19000, 1, 1, 20, 30));
+    ts2.addFix(createFix2(20000, 1, 1, 20, 30));
+    ts2.addFix(createFix2(21000, 1, 1, 20, 30));
 
     tw.add(ts0);
     tw.add(ts1);
@@ -1712,13 +1691,13 @@ public class TrackWrapper_Test extends TestCase
     // //////////////////////////////////
     final TrackWrapper tw = new TrackWrapper();
 
-    final FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
-    final FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
-    tw.addFix(createFix(80000, 3, 3, 4, 12));
+    final FixWrapper f1 = createFix2(100000, 1, 1, 4, 12);
+    final FixWrapper f2 = createFix2(200000, 2, 3, 4, 12);
+    tw.addFix(createFix2(80000, 3, 3, 4, 12));
     tw.addFix(f1);
     tw.addFix(f2);
-    tw.addFix(createFix(300000, 3, 3, 4, 12));
-    tw.addFix(createFix(400000, 4, 6, 4, 12));
+    tw.addFix(createFix2(300000, 3, 3, 4, 12));
+    tw.addFix(createFix2(400000, 4, 6, 4, 12));
 
     final WorldVector offset = new WorldVector(12, 12, 0);
     final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
@@ -1861,8 +1840,8 @@ public class TrackWrapper_Test extends TestCase
   public void testTMASegmentRotate()
   {
 
-    final FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
-    final FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
+    final FixWrapper f1 = createFix2(100000, 1, 1, 270, 12);
+    final FixWrapper f2 = createFix2(200000, 1, 0, 270, 12);
     final WorldVector vector = new WorldVector(0, 1, 0);
     final RelativeTMASegment ts =
         new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector,
@@ -1912,8 +1891,8 @@ public class TrackWrapper_Test extends TestCase
 
   public void testTMASegmentStretch()
   {
-    final FixWrapper f1 = createFix(0, 1, 1, 270, 12);
-    final FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
+    final FixWrapper f1 = createFix2(0, 1, 1, 270, 12);
+    final FixWrapper f2 = createFix2(1000 * 60 * 60, 1, 0, 270, 12);
     final WorldVector vector = new WorldVector(0, 1, 0);
     final RelativeTMASegment ts =
         new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector,
@@ -1969,13 +1948,13 @@ public class TrackWrapper_Test extends TestCase
     // //////////////////////////////////
     final TrackWrapper tw = new TrackWrapper();
 
-    tw.addFix(createFix(100000, 1, 1, 4, 12));
-    tw.addFix(createFix(200000, 2, 3, 4, 12));
-    tw.addFix(createFix(300000, 3, 3, 4, 12));
-    tw.addFix(createFix(400000, 4, 6, 4, 12));
-    tw.addFix(createFix(500000, 4, 6, 4, 12));
-    tw.addFix(createFix(600000, 4, 6, 4, 12));
-    tw.addFix(createFix(700000, 4, 6, 4, 12));
+    tw.addFix(createFix2(100000, 1, 1, 4, 12));
+    tw.addFix(createFix2(200000, 2, 3, 4, 12));
+    tw.addFix(createFix2(300000, 3, 3, 4, 12));
+    tw.addFix(createFix2(400000, 4, 6, 4, 12));
+    tw.addFix(createFix2(500000, 4, 6, 4, 12));
+    tw.addFix(createFix2(600000, 4, 6, 4, 12));
+    tw.addFix(createFix2(700000, 4, 6, 4, 12));
 
     final WorldVector offset = new WorldVector(12, 12, 0);
     final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
@@ -2081,13 +2060,13 @@ public class TrackWrapper_Test extends TestCase
     // //////////////////////////////////
     final TrackWrapper tw = new TrackWrapper();
 
-    tw.addFix(createFix(100000, 1, 1, 4, 12));
-    tw.addFix(createFix(200000, 2, 3, 4, 12));
-    tw.addFix(createFix(300000, 3, 3, 4, 12));
-    tw.addFix(createFix(400000, 4, 6, 4, 12));
-    tw.addFix(createFix(500000, 4, 6, 4, 12));
-    tw.addFix(createFix(600000, 4, 6, 4, 12));
-    tw.addFix(createFix(700000, 4, 6, 4, 12));
+    tw.addFix(createFix2(100000, 1, 1, 4, 12));
+    tw.addFix(createFix2(200000, 2, 3, 4, 12));
+    tw.addFix(createFix2(300000, 3, 3, 4, 12));
+    tw.addFix(createFix2(400000, 4, 6, 4, 12));
+    tw.addFix(createFix2(500000, 4, 6, 4, 12));
+    tw.addFix(createFix2(600000, 4, 6, 4, 12));
+    tw.addFix(createFix2(700000, 4, 6, 4, 12));
 
     final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
     final double course = 33;
@@ -2149,11 +2128,11 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackGroup1()
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(310000, 32, 33));
-    ts2.addFix(createFix(311000, 32, 33));
-    ts2.addFix(createFix(312000, 32, 33));
-    ts2.addFix(createFix(313000, 32, 33));
-    ts2.addFix(createFix(314000, 32, 33));
+    ts2.addFix(createFix3(310000, 32, 33));
+    ts2.addFix(createFix3(311000, 32, 33));
+    ts2.addFix(createFix3(312000, 32, 33));
+    ts2.addFix(createFix3(313000, 32, 33));
+    ts2.addFix(createFix3(314000, 32, 33));
     final TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
     tw3.add(ts2);
@@ -2193,18 +2172,18 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackGroupOrder()
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(310000, 32, 33));
-    ts2.addFix(createFix(311000, 32, 33));
-    ts2.addFix(createFix(312000, 32, 33));
-    ts2.addFix(createFix(313000, 32, 33));
-    ts2.addFix(createFix(314000, 32, 33));
+    ts2.addFix(createFix3(310000, 32, 33));
+    ts2.addFix(createFix3(311000, 32, 33));
+    ts2.addFix(createFix3(312000, 32, 33));
+    ts2.addFix(createFix3(313000, 32, 33));
+    ts2.addFix(createFix3(314000, 32, 33));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(410000, 32, 33));
-    ts3.addFix(createFix(411000, 32, 33));
-    ts3.addFix(createFix(412000, 32, 33));
-    ts3.addFix(createFix(413000, 32, 33));
-    ts3.addFix(createFix(414000, 32, 33));
+    ts3.addFix(createFix3(410000, 32, 33));
+    ts3.addFix(createFix3(411000, 32, 33));
+    ts3.addFix(createFix3(412000, 32, 33));
+    ts3.addFix(createFix3(413000, 32, 33));
+    ts3.addFix(createFix3(414000, 32, 33));
 
     TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
@@ -2238,11 +2217,11 @@ public class TrackWrapper_Test extends TestCase
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
     ts2.setName("ts2");
-    ts2.addFix(createFix(910000, 32, 33));
-    ts2.addFix(createFix(911000, 32, 33));
-    ts2.addFix(createFix(912000, 32, 33));
-    ts2.addFix(createFix(913000, 32, 33));
-    ts2.addFix(createFix(914000, 32, 33));
+    ts2.addFix(createFix3(910000, 32, 33));
+    ts2.addFix(createFix3(911000, 32, 33));
+    ts2.addFix(createFix3(912000, 32, 33));
+    ts2.addFix(createFix3(913000, 32, 33));
+    ts2.addFix(createFix3(914000, 32, 33));
     final TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
     tw3.add(ts2);
@@ -2289,11 +2268,11 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackMerge2()
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(910000, 32, 33));
-    ts2.addFix(createFix(911000, 32, 33));
-    ts2.addFix(createFix(912000, 32, 33));
-    ts2.addFix(createFix(913000, 32, 33));
-    ts2.addFix(createFix(914000, 32, 33));
+    ts2.addFix(createFix3(910000, 32, 33));
+    ts2.addFix(createFix3(911000, 32, 33));
+    ts2.addFix(createFix3(912000, 32, 33));
+    ts2.addFix(createFix3(913000, 32, 33));
+    ts2.addFix(createFix3(914000, 32, 33));
     final TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
     tw3.add(ts2);
@@ -2324,11 +2303,11 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackMerge3()
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(310000, 32, 33));
-    ts2.addFix(createFix(311000, 32, 33));
-    ts2.addFix(createFix(312000, 32, 33));
-    ts2.addFix(createFix(313000, 32, 33));
-    ts2.addFix(createFix(314000, 32, 33));
+    ts2.addFix(createFix3(310000, 32, 33));
+    ts2.addFix(createFix3(311000, 32, 33));
+    ts2.addFix(createFix3(312000, 32, 33));
+    ts2.addFix(createFix3(313000, 32, 33));
+    ts2.addFix(createFix3(314000, 32, 33));
     final TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
     tw3.add(ts2);
@@ -2366,25 +2345,25 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackMergeAllSegments()
   {
     final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts1.addFix(createFix(110000, 32, 33));
-    ts1.addFix(createFix(111000, 32, 33));
-    ts1.addFix(createFix(112000, 32, 33));
-    ts1.addFix(createFix(113000, 32, 33));
-    ts1.addFix(createFix(114000, 32, 33));
+    ts1.addFix(createFix3(110000, 32, 33));
+    ts1.addFix(createFix3(111000, 32, 33));
+    ts1.addFix(createFix3(112000, 32, 33));
+    ts1.addFix(createFix3(113000, 32, 33));
+    ts1.addFix(createFix3(114000, 32, 33));
 
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(210000, 32, 33));
-    ts2.addFix(createFix(211000, 32, 33));
-    ts2.addFix(createFix(212000, 32, 33));
-    ts2.addFix(createFix(213000, 32, 33));
-    ts2.addFix(createFix(214000, 32, 33));
+    ts2.addFix(createFix3(210000, 32, 33));
+    ts2.addFix(createFix3(211000, 32, 33));
+    ts2.addFix(createFix3(212000, 32, 33));
+    ts2.addFix(createFix3(213000, 32, 33));
+    ts2.addFix(createFix3(214000, 32, 33));
 
     final TrackSegment ts3 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts3.addFix(createFix(910000, 32, 33));
-    ts3.addFix(createFix(911000, 32, 33));
-    ts3.addFix(createFix(912000, 32, 33));
-    ts3.addFix(createFix(913000, 32, 33));
-    ts3.addFix(createFix(914000, 32, 33));
+    ts3.addFix(createFix3(910000, 32, 33));
+    ts3.addFix(createFix3(911000, 32, 33));
+    ts3.addFix(createFix3(912000, 32, 33));
+    ts3.addFix(createFix3(913000, 32, 33));
+    ts3.addFix(createFix3(914000, 32, 33));
 
     final TrackWrapper tw = new TrackWrapper();
     tw.add(ts1);
@@ -2415,11 +2394,11 @@ public class TrackWrapper_Test extends TestCase
   public void testTrackStartEnd()
   {
     final TrackSegment ts2 = new TrackSegment(TrackSegment.ABSOLUTE);
-    ts2.addFix(createFix(910000, 32, 33));
-    ts2.addFix(createFix(911000, 32, 33));
-    ts2.addFix(createFix(912000, 32, 33));
-    ts2.addFix(createFix(913000, 32, 33));
-    ts2.addFix(createFix(914000, 32, 33));
+    ts2.addFix(createFix3(910000, 32, 33));
+    ts2.addFix(createFix3(911000, 32, 33));
+    ts2.addFix(createFix3(912000, 32, 33));
+    ts2.addFix(createFix3(913000, 32, 33));
+    ts2.addFix(createFix3(914000, 32, 33));
     final TrackWrapper tw3 = new TrackWrapper();
     tw3.setName("tw3");
     tw3.add(ts2);
@@ -2476,8 +2455,7 @@ public class TrackWrapper_Test extends TestCase
     return ctr;
   }
 
-  @SuppressWarnings("synthetic-access")
-  private int countVisibleFixes(final TrackWrapper tw)
+  private static int countVisibleFixes(final TrackWrapper tw)
   {
     int ctr = 0;
     final Enumeration<Editable> iter = tw.getPositionIterator();
@@ -2492,8 +2470,7 @@ public class TrackWrapper_Test extends TestCase
     return ctr;
   }
 
-  @SuppressWarnings("synthetic-access")
-  private int countVisibleSensorWrappers(final TrackWrapper tw)
+  private static int countVisibleSensorWrappers(final TrackWrapper tw)
   {
     final Enumeration<Editable> iter2 = tw.getSensors().elements();
     int sCtr = 0;
@@ -2513,8 +2490,7 @@ public class TrackWrapper_Test extends TestCase
     return sCtr;
   }
 
-  @SuppressWarnings("synthetic-access")
-  private int countVisibleSolutionWrappers(final TrackWrapper tw)
+  private static int countVisibleSolutionWrappers(final TrackWrapper tw)
   {
     final Enumeration<Editable> iter2 = tw.getSolutions().elements();
     int sCtr = 0;
@@ -2534,7 +2510,7 @@ public class TrackWrapper_Test extends TestCase
     return sCtr;
   }
 
-  private TrackWrapper getDummyTrack()
+  private static TrackWrapper getDummyTrack()
   {
     final TrackWrapper tw = new TrackWrapper();
 
@@ -2631,8 +2607,7 @@ public class TrackWrapper_Test extends TestCase
     return tw;
   }
 
-  @SuppressWarnings("synthetic-access")
-  public final void testFilterToTimePeriod()
+  public final static void testFilterToTimePeriod()
   {
     TrackWrapper tw = getDummyTrack();
     HiResDate startH = new HiResDate(150, 0);
@@ -2722,7 +2697,7 @@ public class TrackWrapper_Test extends TestCase
 
   }
 
-  public final void testGettingTimes() throws InterruptedException
+  public final static void testGettingTimes() throws InterruptedException
   {
     // Enumeration<SensorContactWrapper>
     final TrackWrapper tw = new TrackWrapper();
@@ -2815,7 +2790,7 @@ public class TrackWrapper_Test extends TestCase
 
   }
 
-  public final void testInterpolation()
+  public final static void testInterpolation()
   {
     final TrackWrapper tw = new TrackWrapper();
 

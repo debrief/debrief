@@ -24,7 +24,8 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       final TimeControlPreferences timePreferences)
   {
     super(layers, plainProjection, timePreferences.getAutoInterval()
-        .getMillis(), timePreferences.getSmallStep().getMillis());
+        .getMillis(), timePreferences.getSmallStep().getMillis(),
+        timePreferences.getDTGFormat());
   }
 
   private String getMasterTemplateFile()
@@ -84,7 +85,12 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
 
         // fix the filename
         final String exportLocation = exportDialog.getExportLocation();
-        String fileName = exportDialog.getFileName() + "-" + startTime;
+        
+        // check we don't get invalid characters in the string
+        // we're using for the filename
+        final String tidyName = tidyString(startTime);
+        
+        String fileName = exportDialog.getFileName() + "-" + tidyName;
 
         if (exportLocation != null && !"".equals(exportLocation))
         {
@@ -108,18 +114,44 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
           retVal.setMasterTemplate(masterTemplateFile);
           retVal.setFileName(fileName);
           retVal.setOpenOnComplete(exportDialog.getOpenOncomplete());
+          retVal.setScaleBarVisible(exportDialog.isScaleBarVisible());
+          retVal.setScaleBarUnit(exportDialog.getScaleBarUnit());
           retVal.setSelectedFile(exportFile);
           retVal.setStatus(true);
+        }
+        //if cancelled, then stop recording.
+        else {
+          retVal.setStatus(false);
+          retVal.setOpenOnComplete(false);
+          retVal.setSelectedFile(null);
         }
       }
     });
     return retVal;
   }
 
+  private static String tidyString(String startTime)
+  {
+    if(startTime!=null)
+    {
+      return startTime.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
+    }
+    return startTime;
+  }
+
   @Override
   protected void showMessageDialog(final String message)
   {
-    MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
-        .getActiveShell(), "Export", message, MessageDialog.INFORMATION);
+    Display.getDefault().asyncExec(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+        MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+            .getActiveShell(), "Export", message, MessageDialog.INFORMATION);    
+      }
+    });
+    
   }
 }

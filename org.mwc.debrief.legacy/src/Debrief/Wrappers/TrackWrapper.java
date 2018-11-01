@@ -80,6 +80,7 @@ import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
+import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -93,6 +94,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
@@ -151,7 +153,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       try
       {
         final PropertyDescriptor[] _coreDescriptors = new PropertyDescriptor[]
-        {displayExpertLongProp("SymbolType", "Symbol type",
+        {displayExpertLongProp("SymbolType", "Snail symbol type",
             "the type of symbol plotted for this label", FORMAT,
             SymbolFactoryPropertyEditor.class), displayExpertLongProp(
                 "LineThickness", "Line thickness",
@@ -186,14 +188,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             displayExpertLongProp("LabelFrequency", "Label frequency",
                 "the label frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                "the symbol frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ResampleDataAt", "Resample data at",
                 "the data sample rate", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ArrowFrequency", "Arrow frequency",
                 "the direction marker frequency", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                "the symbol frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayProp("CustomTrailLength", "Custom Snail Trail",
                 "to specify a custom snail trail length",
@@ -219,16 +221,26 @@ public class TrackWrapper extends LightweightTrackWrapper implements
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 2,
               _coreDescriptors.length);
           _coreDescriptorsWithSymbols[0] = displayExpertProp("SymbolLength",
-              "Symbol length", "Length of symbol", FORMAT);
+              "Snail symbol length", "Length of snail symbol", FORMAT);
           _coreDescriptorsWithSymbols[1] = displayExpertProp("SymbolWidth",
-              "Symbol width", "Width of symbol", FORMAT);
+              "Snail symbol width", "Width of snail symbol", FORMAT);
 
           // and now use the new value
           res = _coreDescriptorsWithSymbols;
         }
         else
         {
-          res = _coreDescriptors;
+          // yes = better create height/width editors
+          final PropertyDescriptor[] _coreDescriptorsWithSymbols =
+              new PropertyDescriptor[_coreDescriptors.length + 1];
+          System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
+              _coreDescriptors.length);
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
+              "Snail symbol size", "Size of symbol", FORMAT,
+              SymbolScalePropertyEditor.class);
+
+          // and now use the new value
+          res = _coreDescriptorsWithSymbols;
         }
 
         // TRACK COLORING HANDLING
@@ -619,7 +631,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // how did we get on?
     if (failedMsg != null)
     {
-      MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+      MessageProvider.Base.show("Merge tracks", "Sorry, " + failedMsg
           + " overlap in time. Please correct this and retry",
           MessageProvider.ERROR);
       return MessageProvider.ERROR;
@@ -737,7 +749,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // how did we get on?
     if (failedMsg != null)
     {
-      MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+      MessageProvider.Base.show("Merge tracks", "Sorry, " + failedMsg
           + " overlap in time. Please correct this and retry",
           MessageProvider.ERROR);
       return MessageProvider.ERROR;
@@ -1192,7 +1204,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             // for this segment
             if (rel.getHostName().equals(this.getName()))
             {
-              MessageProvider.Base.Provider.show("Paste track",
+              MessageProvider.Base.show("Paste track",
                   "Can't paste TMA track into it's reference track:" + this
                       .getName(), MessageProvider.ERROR);
               return;
@@ -1210,9 +1222,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
-          "Sorry it is not possible to add:" + point.getName() + " to " + this
-              .getName());
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
+      Trace.trace("Can't paste " + point + " into track", true);
     }
   }
 

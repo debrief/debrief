@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Video Player"
+            name="Media Player"
             icon="icons/16/video.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.media.views.VideoPlayerView"
@@ -167,7 +167,7 @@
        <command
              defaultHandler="org.mwc.cmap.media.actions.NewVideoPlayerAction"
              id="org.mwc.cmap.media.actions.NewVideoPlayerAction"
-             name="Video Player">
+             name="Media Player">
        </command>
        <command
              defaultHandler="org.mwc.cmap.media.actions.NewImagesViewAction"

@@ -122,6 +122,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * Class representing a cart-wheel type shape - drawn with inner and outer
@@ -154,11 +155,12 @@ public class RangeRingShape extends PlainShape implements Editable
 				{ 
 						displayProp("NumRings", "Number of rings", "the number of rings to plot"),
 						displayProp("RingWidth", "Ring width", "the width of the range rings"),
-						prop("Centre", "the centre of the Wheel"),
-						displayProp("RangeLabelLocation", "Range label location", "where to position the labels")
-				};
-
-				res[3].setPropertyEditorClass(LabelLocationPropertyEditor.class);
+						prop("Centre", "the centre of the range rings"),
+						prop("Color", "Color of the range rings"),
+            displayLongProp("RangeLabelLocation", "Range label location",
+                "where to position the labels",
+                LabelLocationPropertyEditor.class)				
+        };
 
 				return res;
 
@@ -264,6 +266,21 @@ public class RangeRingShape extends PlainShape implements Editable
 	// member functions
 	// ////////////////////////////////////////////////
 
+
+  /**
+   * get the 'anchor point' for any labels attached to this shape
+   */
+  public MWC.GenericData.WorldLocation getAnchor()
+  {
+    return _theCentre;
+  }
+
+  @Override
+  public MWC.GenericData.WorldArea getBounds()
+  {
+    return _theArea;
+  }
+
 	/**
 	 * calculate some convenience values based on the radius and centre of the
 	 * Wheel
@@ -273,34 +290,28 @@ public class RangeRingShape extends PlainShape implements Editable
 		// create our area
 		_theArea = new WorldArea(_theCentre, _theCentre);
 
-		// create & extend to top left
-		WorldLocation other = _theCentre.add(new WorldVector(0, getRingWidth()
-				.getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-				getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		_theArea.extend(other);
+		final WorldDistance ringWidth = getRingWidth();
+		if(ringWidth == null)
+		{
+		  Trace.trace("Range Rings must have non-null width");
+		}
+    else
+    {
+      // create & extend to top left
+      WorldLocation other = _theCentre.add(new WorldVector(0, getRingWidth()
+          .getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      _theArea.extend(other);
 
-		// create & extend to bottom right
-		other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(180), getRingWidth().getValueIn(WorldDistance.DEGS)
-				* _numRings, 0));
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-				getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		_theArea.extend(other);
-	}
-
-	/**
-	 * get the 'anchor point' for any labels attached to this shape
-	 */
-	public MWC.GenericData.WorldLocation getAnchor()
-	{
-		return _theCentre;
-	}
-
-	@Override
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return _theArea;
+      // create & extend to bottom right
+      other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
+          .Degs2Rads(180), getRingWidth().getValueIn(WorldDistance.DEGS)
+              * _numRings, 0));
+      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      _theArea.extend(other);
+    }
 	}
 
 	/**
@@ -382,9 +393,13 @@ public class RangeRingShape extends PlainShape implements Editable
 			dest.drawOval(origin.x, origin.y, thisRadius * 2, thisRadius * 2);
 
 			// sort out the labels
-			String thisLabel = ""
-					+ (getRingWidth().getValue() + getRingWidth().getValue() * i);
-			thisLabel += " " + getRingWidth().getUnitsLabel();
+      final double ringWidth = getRingWidth().getValue();
+      
+      // if the width is an integer, we don't need the decimal place
+      final String widthStr = ringWidth == (int) ringWidth ? ""
+          + (int) ringWidth * (i + 1) : "" + ringWidth * (i + 1);
+			
+      final String thisLabel = widthStr + " " + getRingWidth().getUnitsLabel();
 
 			final int strWidth = dest.getStringWidth(null, thisLabel);
 			final int strHeight = dest.getStringHeight(null);
@@ -455,7 +470,10 @@ public class RangeRingShape extends PlainShape implements Editable
 	public void setRangeLabelLocation(final int rangeLabelLocation)
 	{
 		_rangeLabelLocation = rangeLabelLocation;
-	}
+
+	   // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.TEXT_CHANGED, null, rangeLabelLocation);
+}
 
 	public WorldDistance getRingWidth()
 	{
@@ -470,7 +488,7 @@ public class RangeRingShape extends PlainShape implements Editable
 		calcPoints();
 
 		// and inform the parent (so it can move the label)
-		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
+		firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, ringWidth);
 	}
 
 	public BoundedInteger getNumRings()
@@ -495,6 +513,9 @@ public class RangeRingShape extends PlainShape implements Editable
 	public void setWheelColor(final Color val)
 	{
 		super.setColor(val);
+		
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.COLOR_CHANGED, null, null);
 	}
 
 	public void shift(final WorldVector vector)

@@ -219,7 +219,6 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
   {
     _layerListener = new DataListener()
     {
-
       @Override
       public void dataExtended(final Layers theData)
       {
@@ -231,7 +230,15 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
         {
           if (match instanceof IRollingNarrativeProvider)
           {
-            setInput((IRollingNarrativeProvider) match);
+            Display.getDefault().syncExec(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                setInput((IRollingNarrativeProvider) match);    
+              }
+            });
           }
         }
         else
@@ -239,10 +246,16 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
           // hmm, has our narrative been deleted?
           if (match == null)
           {
-            setInput(null);
+            Display.getDefault().syncExec(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                setInput(null);    
+              }
+            });
           }
         }
-
         // oh, oooh, see if we've learned some more colors
         refreshColors();
       }
@@ -669,7 +682,7 @@ public class NATViewerView extends ViewPart implements PropertyChangeListener,
     return null;
   }
 
-  private boolean internalEquals(final Color color1, final Color color2)
+  private static boolean internalEquals(final Color color1, final Color color2)
   {
     if (color1 == null && color2 == null)
     {

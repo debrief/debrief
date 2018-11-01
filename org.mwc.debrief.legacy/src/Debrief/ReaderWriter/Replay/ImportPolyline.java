@@ -14,6 +14,7 @@
  */
 package Debrief.ReaderWriter.Replay;
 
+import java.text.ParseException;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -55,7 +56,7 @@ final class ImportPolyline extends ImportPolygon
 	
 	public static class TestImportPolyline extends TestCase {
 		
-		public void testExport()
+		public void testExport() throws ParseException
 		{
 			final String line = ";POLYLINE: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
 			final ImportPolyline ip = new ImportPolyline();

@@ -135,6 +135,8 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Defaults;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Properties.ClassWithProperty;
 import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -144,7 +146,7 @@ import MWC.GenericData.WorldLocation;
  * parent for Shapes. Shapes are screen entities which are scaled using geographic coordinates, not
  * like @see PlainSymbol which is scaled using a screen scale factor
  */
-abstract public class PlainShape implements Serializable, DraggableItem
+abstract public class PlainShape implements Serializable, DraggableItem, ClassWithProperty
 {
 
   private static final int STANDARD_LINE_WIDTH = 2;
@@ -473,9 +475,12 @@ abstract public class PlainShape implements Serializable, DraggableItem
     _pSupport.removePropertyChangeListener(list);
   }
 
-  public void setColor(final Color Color)
+  public void setColor(final Color color)
   {
-    _foreColor = Color;
+    _foreColor = color;
+    
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.COLOR_CHANGED, null, color);
   }
 
   /**

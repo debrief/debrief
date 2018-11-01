@@ -22,6 +22,7 @@ import java.beans.PropertyDescriptor;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -213,6 +214,9 @@ public class LocalGridPainter extends GridPainter
 	public void setOrigin(final WorldLocation origin)
 	{
 		this._myOrigin = origin;
+		
+    // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, origin);
 	}
 
 	/**
@@ -234,7 +238,10 @@ public class LocalGridPainter extends GridPainter
 	public void setPlotOrigin(final boolean plotOrigin)
 	{
 		this._plotOrigin = plotOrigin;
-	}
+
+	   // and inform the parent (so it can move the label)
+    firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, plotOrigin);
+}
 
 	/**
 	 * whether the plotting algorithm should offset the origin to the nearest

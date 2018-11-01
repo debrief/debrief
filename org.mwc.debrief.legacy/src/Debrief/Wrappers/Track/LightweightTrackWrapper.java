@@ -41,7 +41,9 @@ import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Properties.NullableLocationPropertyEditor;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
+import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.IsTransientForChildren;
 import MWC.GenericData.HiResDate;
@@ -52,6 +54,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import junit.framework.TestCase;
 
 public class LightweightTrackWrapper extends PlainWrapper implements
@@ -71,7 +74,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       try
       {
         final PropertyDescriptor[] _coreDescriptors =
-        {displayExpertLongProp("SymbolType", "Symbol type",
+        {displayExpertLongProp("SymbolType", "Snail symbol type",
             "the type of symbol plotted for this label", FORMAT,
             SymbolFactoryPropertyEditor.class), displayExpertProp("SymbolColor",
                 "Symbol color", "the color of the symbol (when used)", FORMAT),
@@ -98,10 +101,12 @@ public class LightweightTrackWrapper extends PlainWrapper implements
                         LineStylePropertyEditor.class)};
 
         PropertyDescriptor[] res;
+
         // SPECIAL CASE: if we have a world scaled symbol, provide
         // editors for
         // the symbol size
-        final LightweightTrackWrapper item = (LightweightTrackWrapper) this.getData();
+        final LightweightTrackWrapper item = (LightweightTrackWrapper) this
+            .getData();
         if (item._theSnailShape instanceof WorldScaledSym)
         {
           // yes = better create height/width editors
@@ -110,16 +115,27 @@ public class LightweightTrackWrapper extends PlainWrapper implements
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 2,
               _coreDescriptors.length);
           _coreDescriptorsWithSymbols[0] = displayExpertProp("SymbolLength",
-              "Symbol length", "Length of symbol", FORMAT);
+              "Snail symbol length", "Length of symbol", FORMAT);
           _coreDescriptorsWithSymbols[1] = displayExpertProp("SymbolWidth",
-              "Symbol width", "Width of symbol", FORMAT);
+              "Snail symbol width", "Width of symbol", FORMAT);
 
           // and now use the new value
           res = _coreDescriptorsWithSymbols;
         }
         else
         {
-          res = _coreDescriptors;
+
+          // yes = better create height/width editors
+          final PropertyDescriptor[] _coreDescriptorsWithSymbols =
+              new PropertyDescriptor[_coreDescriptors.length + 1];
+          System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
+              _coreDescriptors.length);
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp(
+              "SnailSymbolSize", "Snail symbol size", "Size of symbol", FORMAT,
+              SymbolScalePropertyEditor.class);
+
+          // and now use the new value
+          res = _coreDescriptorsWithSymbols;
         }
 
         return res;
@@ -138,15 +154,30 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       boolean isValid(FixWrapper fix);
     }
+    
 
-    private FixWrapper create(final long date, final double lat,
+    public final void testMyParams1()
+    {
+      Editable ed = new LightweightTrackWrapper("name", true, true, Color.red, 1);
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    public final void testMyParams2()
+    {
+      Editable ed = new LightweightTrackWrapper();
+      editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+
+    private static FixWrapper create(final long date, final double lat,
         final double lon)
     {
       return new FixWrapper(new Fix(new HiResDate(date), new WorldLocation(lat,
           lon, 0), 0d, 0d));
     }
 
-    private int doCount(final LightweightTrackWrapper track,
+    private static int doCount(final LightweightTrackWrapper track,
         final IsValid aTest)
     {
       int ctr = 0;
@@ -162,7 +193,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return ctr;
     }
 
-    private LightweightTrackWrapper getTrack()
+    private static LightweightTrackWrapper getTrack()
     {
       final LightweightTrackWrapper track = new LightweightTrackWrapper();
       track.setName("light");
@@ -346,7 +377,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
 
     // set default line-style
     setLineStyle(LineStylePropertyEditor.SOLID);
-  }
+    
+    // initialise the symbol to use for plotting this track in snail mode
+    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
+        "Submarine");
+   }
 
   public LightweightTrackWrapper(final String name, final boolean visible,
       final boolean nameVisible, final Color color, final int lineStyle)
@@ -358,10 +393,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     setNameVisible(nameVisible);
     setColor(color);
     setLineStyle(lineStyle);
-
-    // initialise the symbol to use for plotting this track in snail mode
-    _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(
-        "Submarine");
   }
 
   /**
@@ -412,6 +443,14 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
   }
 
+  public void setSnailSymbolSize(final double scaleVal)
+  {
+    if (_theSnailShape != null)
+    {
+      _theSnailShape.setScaleVal(scaleVal);
+    }
+  }
+
   public final void setSymbolType(final String val)
   {
     // is this the type of our symbol?
@@ -423,13 +462,23 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     {
       // remember the size of the symbol
       final double scale = _theSnailShape.getScaleVal();
+      
       // remember the color of the symbol
       final Color oldCol = _theSnailShape.getColor();
 
       // replace our symbol with this new one
-      _theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
-      _theSnailShape.setColor(oldCol);
-      _theSnailShape.setScaleVal(scale);
+      final PlainSymbol shape =
+          MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
+      if (shape != null)
+      {
+        _theSnailShape = shape;
+        _theSnailShape.setColor(oldCol);
+        _theSnailShape.setScaleVal(scale);
+      }
+      else
+      {
+        Trace.trace("Failed to find symbol for type:" + val);
+      }
     }
   }
 
@@ -580,7 +629,10 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public HiResDate getEndDTG()
   {
-    return ((FixWrapper) _thePositions.last()).getTime();
+    final HiResDate res = _thePositions.isEmpty() ? null
+        : ((FixWrapper) _thePositions.last()).getTime();
+    return res;
+
   }
 
   @Override
@@ -728,7 +780,7 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   }
 
   @Override
-  public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
+  public PlainSymbol getSnailShape()
   {
     return _theSnailShape;
   }
@@ -762,6 +814,11 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     return _theSnailShape.getType();
   }
 
+  public final double getSnailSymbolSize()
+  {
+    return _theSnailShape.getScaleVal();
+  }
+
   public WorldDistance getSymbolWidth()
   {
     WorldDistance res = null;
@@ -776,7 +833,9 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   @Override
   public HiResDate getStartDTG()
   {
-    return ((FixWrapper) _thePositions.first()).getTime();
+    final HiResDate res = _thePositions.isEmpty() ? null
+        : ((FixWrapper) _thePositions.first()).getTime();
+    return res;
   }
 
   /**

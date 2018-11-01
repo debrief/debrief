@@ -1,131 +1,67 @@
 package org.mwc.debrief.core.loaders;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
 import MWC.GUI.Layers;
 import MWC.TacticalData.TrackDataProvider;
 
-public class MsDocLoader extends IPlotLoader.BaseLoader
+public class MsDocLoader extends CoreLoader
 {
 
+  public MsDocLoader()
+  {
+    super(".doc", ".doc");
+  }
+
   @Override
-  public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
+  protected IRunnableWithProgress getImporter(final IAdaptable target,
+      final Layers theLayers, final InputStream inputStream,
       final String fileName)
   {
-    final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
-    final TrackDataProvider trackData = (TrackDataProvider) thePlot.getAdapter(TrackDataProvider.class);
-    
-    try
+    return new IRunnableWithProgress()
     {
-
-      // hmm, is there anything in the file?
-      final int numAvailable = inputStream.available();
-      if (numAvailable > 0)
+      public void run(final IProgressMonitor pm)
       {
+        final TrackDataProvider trackData = (TrackDataProvider) target
+            .getAdapter(TrackDataProvider.class);
 
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IProgressService ps = wb.getProgressService();
-        ps.busyCursorWhile(new IRunnableWithProgress()
+        // ok. we'll pass it to the rider import. If that fails, we can offer it to the
+        // plain importer
+        ImportRiderNarrativeDocument iw = new ImportRiderNarrativeDocument(
+            theLayers, trackData);
+        iw.handleImport(fileName, inputStream);
+
+        // hey, it worked. now open the narrative viewer
+        Display.getDefault().asyncExec(new Runnable()
         {
-          public void run(final IProgressMonitor pm)
-          {
-            // right, better suspend the LayerManager extended updates from
-            // firing
-            theLayers.suspendFiringExtended(true);
 
+          @Override
+          public void run()
+          {
             try
             {
-              // ok, get reading
-              if (fileName.toLowerCase().endsWith(".doc"))
-              {
-                // ok. we'll pass it to the rider import. If that fails, we can offer it to the
-                // plain importer
-                ImportRiderNarrativeDocument iw =
-                    new ImportRiderNarrativeDocument(theLayers, trackData);
-                iw.handleImport(fileName, inputStream);                
-              }
-
-              // and inform the plot editor
-              thePlot.loadingComplete(this);
-
-              // hey, it worked. now nvopen the narrative viewer
-              Display.getDefault().asyncExec(new Runnable()
-              {
-
-                @Override
-                public void run()
-                {
-                  try
-                  {
-                    PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView(CorePlugin.BULK_NARRATIVE_VIEWER);
-                  }
-                  catch (PartInitException e)
-                  {
-                    CorePlugin.logError(Status.ERROR,
-                        "Failed opening narrative viewer", e);
-                    e.printStackTrace();
-                  }
-                }
-              });
+              PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                  .getActivePage().showView(CorePlugin.BULK_NARRATIVE_VIEWER);
             }
-            catch (final RuntimeException e)
+            catch (PartInitException e)
             {
-              DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-                  + fileName, e);
-            }
-            finally
-            {
-              // ok, allow the layers object to inform anybody what's
-              // happening
-              // again
-              theLayers.suspendFiringExtended(false);
-
-              // and trigger an update ourselves
-              // theLayers.fireExtended();
+              CorePlugin.logError(Status.ERROR,
+                  "Failed opening narrative viewer", e);
+              e.printStackTrace();
             }
           }
         });
-
       }
-
-    }
-    catch (final InvocationTargetException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
-          + fileName, e);
-    }
-    catch (final InterruptedException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
-          + fileName, e);
-    }
-    catch (final IOException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading MS Word document:"
-          + fileName, e);
-    }
-    finally
-    {
-    }
-    // }
-    // ok, load the data...
-    DebriefPlugin.logError(Status.INFO, "Successfully loaded MS Word document", null);
+    };
   }
-
 }

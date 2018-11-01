@@ -55,10 +55,10 @@ public class AISPositionB implements IAISMessage, IAISDecodable, Cloneable, IPos
 	 */
 	protected double sog;
 
-	/** longitude in degrees +-180° east=positiv west=negative */
+	/** longitude in degrees +-180\u00b0 east=positiv west=negative */
 	protected double longitude;
 
-	/** latitude in degrees +-90° north=positiv south=negative */
+	/** latitude in degrees +-90\u00b0 north=positiv south=negative */
 	protected double latitude;
 
 	/** course over ground in knots */

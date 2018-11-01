@@ -44,6 +44,7 @@ import Debrief.ReaderWriter.XML.GUIHandler;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
@@ -150,10 +151,17 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		{
 			HiResDate startTime = null;
 			// get a date from this
-			startTime = DebriefFormatDateTime.parseThis(start_time);
+			try
+      {
+        startTime = DebriefFormatDateTime.parseThis(start_time);
+        // set the cursor
+        timePrefs.setSliderStartTime(startTime);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
-			// set the cursor
-			timePrefs.setSliderStartTime(startTime);
 		}
 
 		// ////////////////////////////////////////////////////////////
@@ -163,7 +171,14 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			HiResDate endTime = null;
 
 			// get a date from this
-			endTime = DebriefFormatDateTime.parseThis(end_time);
+			try
+      {
+        endTime = DebriefFormatDateTime.parseThis(end_time);
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
 			// set the cursor
 			timePrefs.setSliderEndTime(endTime);
@@ -185,13 +200,22 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		if (currentTime != null)
 		{
 			// and set the time
-			final HiResDate dtg = DebriefFormatDateTime.parseThis(currentTime);
+			HiResDate dtg;
+      try
+      {
+        dtg = DebriefFormatDateTime.parseThis(currentTime);
+        
+        // did we find a valid dtg?
+        if (dtg != null)
+        {
+          timeController.setTime(this, dtg, false);
+        }
+      }
+      catch (ParseException e)
+      {
+        Trace.trace(e, "While parsing date");
+      }
 
-			// did we find a valid dtg?
-			if (dtg != null)
-			{
-				timeController.setTime(this, dtg, false);
-			}
 		}
 
 		// ////////////////////////////////////////////////////////////

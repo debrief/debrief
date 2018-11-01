@@ -77,7 +77,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
       super(val);
     }
 
-    public final void testImport()
+    public final void testImport() throws ParseException
     {
       // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
       // YYYY CCC SSS DDD xx.xx
@@ -130,7 +130,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 
     }
 
-    public final void testImportWithSpaces()
+    public final void testImportWithSpaces() throws ParseException
     {
       // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
       // YYYY CCC SSS DDD xx.xx
@@ -162,7 +162,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
       assertEquals("correct solution name", "TRACK 060", tc.getSolutionName());
     }
 
-    public final void testImportNoEllipse()
+    public final void testImportNoEllipse() throws ParseException
     {
       // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX
       // YYYY CCC SSS DDD xx.xx
@@ -215,7 +215,7 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
     }
   }
 
-  public static void main(final String[] args)
+  public static void main(final String[] args) throws ParseException
   {
     final testImportTMA_RngBrg tm = new testImportTMA_RngBrg("scrap");
     tm.testImport();
@@ -275,9 +275,10 @@ public final class ImportTMA_RngBrg extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
+   * @throws ParseException 
    */
   @Override
-  public final Object readThisLine(final String theLine)
+  public final Object readThisLine(final String theLine) throws ParseException
   {
 
     // ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ RRR.R BBB.B TT...TT OOO.O XXXX YYYY

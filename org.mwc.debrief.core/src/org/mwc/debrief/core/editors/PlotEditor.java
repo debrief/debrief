@@ -143,6 +143,7 @@ import org.mwc.debrief.core.actions.RadioHandler;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.interfaces.IPlotLoader.BaseLoader;
+import org.mwc.debrief.core.interfaces.IPlotLoader.CompleteListener;
 import org.mwc.debrief.core.interfaces.IPlotLoader.DeferredPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.ReplayLoader;
@@ -187,7 +188,6 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
-import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
@@ -226,7 +226,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       sensor.removeElement(sensor.elements().nextElement());
 
       assertEquals("now empty", 0, sensor.size());
-      ;
 
       // give it some freq data
       sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
@@ -258,7 +257,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       sensor.removeElement(sensor.elements().nextElement());
 
       assertEquals("now empty", 0, sensor.size());
-      ;
 
       // give it some freq data
       sensor.add(new SensorContactWrapper("the track", new HiResDate(1000000),
@@ -1640,15 +1638,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private boolean isVideoFile(final String fileName)
   {
-    String[] supportedVideoFormats = new String[]
-    {"avi"};
+    // NOTE: this is a copy of the formats listed in VideoPlayerView.
+    String[] supportedVideoFormats = CorePlugin.SUPPORTED_MEDIA_FORMATS;
     for(String format:supportedVideoFormats) {
-      if(format.equalsIgnoreCase(getFileNameExtension(fileName))) {
+      // trim the file wildcard
+      final String formatExtension = getFileNameExtension(format);
+      
+      final String fileNameExtension = getFileNameExtension(fileName);
+      if(formatExtension.equalsIgnoreCase(fileNameExtension)) {
         return true;
       }
     }
-
-    
     return false;
   }
 
@@ -1661,12 +1661,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     // ok, iterate through the files
     if(fileNames.length==1 && isVideoFile(fileNames[0]))
     {
-      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0]);
+      // get the current plot start-time
+      Date startTime = _timeManager.getTime().getDate();
+      OpenVideoPlayerUtil.openVideoPlayer(fileNames[0], startTime);
     }
     else {
       for (int i = 0; i < fileNames.length; i++)
       {
-  
         final String thisFilename = fileNames[i];
         loadThisFile(thisFilename);
       }
@@ -1692,14 +1693,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   @SuppressWarnings("rawtypes")
   public Object getAdapter(final Class adapter)
   {
-    Object res = null;
+    final Object res;
 
     if (adapter == Layers.class)
     {
-      if (_myLayers != null)
-      {
-        res = _myLayers;
-      }
+      res = _myLayers != null ? _myLayers : null;
     }
     else if (adapter == TrackManager.class)
     {
@@ -1739,7 +1737,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
     }
     else if (adapter == IGotoMarker.class)
     {
-      return new IGotoMarker()
+      res = new IGotoMarker()
       {
         @Override
         public void gotoMarker(final IMarker marker)
@@ -1752,23 +1750,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
             _timeManager.setTime(this, tNow, true);
           }
         }
-
       };
     }
-
     else if (adapter == IRollingNarrativeProvider.class)
     {
       // so, do we have any narrative data?
       final Layer narr = _myLayers.findLayer(LayerHandler.NARRATIVE_LAYER);
 
-      if (narr != null)
-      {
-        // did we find it?
-        // cool, cast to object
-        final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
-
-        res = wrapper;
-      }
+      res = narr != null ? narr : null;
     }
     else if (adapter == RelativeProjectionParent.class)
     {
@@ -1776,7 +1765,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         _myRelativeWrapper = new RelativeProjectionParent()
         {
-
           private Watchable getFirstPosition(final TrackDataProvider provider,
               final TimeManager manager)
           {
@@ -1856,8 +1844,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       }
       res = _propertySheetPage;
     }
-    // did we find anything?
-    if (res == null)
+    else if(PlotEditor.class.equals(adapter))
+    {
+      return this;
+    }
+    else
     {
       // nope, see if the parent can find anything
       res = super.getAdapter(adapter);
@@ -2198,6 +2189,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private void loadThisStream(final InputStream is, final String fileName)
   {
+    final CompleteListener listener = new CompleteListener() 
+    {
+      @Override
+      public void complete(final IPlotLoader loader)
+      {
+        loadingComplete(loader);
+      }
+    };
+    
     // right, see if any of them will do our edit
     final IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
     // did we find any?
@@ -2209,11 +2209,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
         for (int i = 0; i < loaders.length; i++)
         {
           final IPlotLoader thisLoader = loaders[i];
-
+          
           // get it to load. Just in case it's an asychronous load
           // operation, we
           // rely on it calling us back (loadingComplete)
-          thisLoader.loadFile(this, is, fileName);
+          thisLoader.loadFile(this, is, fileName, listener);
 
           // special handling - popup a dialog to allow sensor name/color to be
           // set if there's just one sensor

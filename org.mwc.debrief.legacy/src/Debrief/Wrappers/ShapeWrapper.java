@@ -349,7 +349,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 						prop("Visible", "whether this shape is visible", VISIBILITY),
 						displayProp("LabelVisible", "Label visible",
 								"whether the label is visible", VISIBILITY),
-						displayProp("Time_Start", "Time start",
+						displayProp("StartDTGProperty", "Time start",
 								"the start date time group", TEMPORAL),
 						displayLongProp("LineStyle", "Line style",
 								"the dot-dash style to use for plotting this shape",
@@ -359,7 +359,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
 						displayProp(
-								"TimeEnd",
+								"EndDTGProperty",
 								"Time end",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
@@ -403,9 +403,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		public final void testTimes()
 		{
 
-			final WorldLocation scrapLoc = new WorldLocation(1, 1, 1);
-			final WorldLocation scrapLoc2 = new WorldLocation(1, 3, 1);
-
+      final WorldLocation scrapLoc = new WorldLocation(1, 1, 1);
+      final WorldLocation scrapLoc2 = new WorldLocation(1, 3, 1);
+      
 			final WatchableList.TestWatchables tw = new WatchableList.TestWatchables()
 			{
 				@Override
@@ -427,8 +427,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 							return 5000 * 1000;
 						}
 					};
-					sw.setTime_Start(new HiResDate(startDate));
-					sw.setTimeEnd(new HiResDate(endDate));
+					sw.setStartDTG(new HiResDate(startDate));
+					sw.setEndDTG(new HiResDate(endDate));
 					return sw;
 				}
 
@@ -450,8 +450,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 							return 5000 * 1000;
 						}
 					};
-					sw.setTime_Start(null);
-					sw.setTimeEnd(null);
+					sw.setStartDTG(null);
+					sw.setEndDTG(null);
 					return sw;
 				}
 
@@ -473,8 +473,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 							return 5000 * 1000;
 						}
 					};
-					sw.setTime_Start(new HiResDate(startDate));
-					sw.setTimeEnd(null);
+					sw.setStartDTG(new HiResDate(startDate));
+					sw.setEndDTG(null);
 					return sw;
 				}
 			};
@@ -556,8 +556,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		super.setColor(theColor);
 
 		// store the date (which is initially used as a centre time)
-		setTime_Start(theDate);
-		setTimeEnd(null);
+		setStartDTG(theDate);
+		setEndDTG(null);
 
 		// also update the location of the text anchor
 		updateLabelLocation();
@@ -683,6 +683,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		// return value, or -1 to indicate not time related
 		return _theEndDTG;
 	}
+	
+  public final HiResDate getEndDTGProperty()
+  {
+    // return value, or -1 to indicate not time related
+    return HiResDate.wrapped(_theEndDTG);
+  }
 
 	public final Font getFont()
 	{
@@ -912,6 +918,13 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		// return value, or -1 to indicate not time related
 		return _theStartDTG;
 	}
+	
+  public final HiResDate getStartDTGProperty()
+  {
+    // return value, or -1 to indicate not time related
+    return HiResDate.wrapped(_theStartDTG);
+  }
+
 
 	/**
 	 * get the threshold for which points should be visible
@@ -954,31 +967,6 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getTime()
 	{
 		return getStartDTG();
-	}
-
-	// ////////////////////////////////////////////////
-	// PROPERTY ACCESSORS - we're providing DTG accessor methods
-	// which start with the same phrase so that in an alphabetically
-	// sorted property editor they appear together
-	// ////////////////////////////////////////////////
-	/**
-	 * get the start time for this shape
-	 */
-	public final HiResDate getTime_Start()
-	{
-		return getStartDTG();
-	}
-
-	// ////////////////////////////////////////////////////
-	// watchableList support
-	// ///////////////////////////////////////////////////
-
-	/**
-	 * get the end time for this shape
-	 */
-	public final HiResDate getTimeEnd()
-	{
-		return getEndDTG();
 	}
 
 	// ///////////////////////////////////
@@ -1133,23 +1121,42 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * set the start time for this shape
 	 */
-	public final void setTime_Start(final HiResDate val)
+	public final void setStartDTGProperty(final HiResDate val)
 	{
-		_theStartDTG = val;
+		_theStartDTG = HiResDate.unwrapped(val);
 	}
 
-	/**
-	 * set the start time for this shape
-	 */
-	public final void setTimeEnd(final HiResDate val)
-	{
-		_theEndDTG = val;
-	}
+
+	 /**
+   * set the start time for this shape
+   */
+  public final void setEndDTGProperty(final HiResDate val)
+  {
+    _theEndDTG = HiResDate.unwrapped(val);
+  }
+
+  /**
+   * set the start time for this shape
+   */
+  public final void setStartDTG(final HiResDate val)
+  {
+    _theStartDTG = val;
+  }
+
+
+   /**
+   * set the start time for this shape
+   */
+  public final void setEndDTG(final HiResDate val)
+  {
+    _theEndDTG = val;
+  }
+
 
 	public final void setTimePeriod(final TimePeriod val)
 	{
-		this.setTime_Start(val.getStartDTG());
-		this.setTimeEnd(val.getEndDTG());
+		this.setStartDTGProperty(val.getStartDTG());
+		this.setEndDTGProperty(val.getEndDTG());
 	}
 
 	@Override
