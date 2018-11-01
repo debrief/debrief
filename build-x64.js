@@ -3,13 +3,13 @@ var createMsi = require('msi-packager')
 var options = {
  
   // required
-  source: '/home/travis/build/debrief/org.mwc.debrief.product/target/products/DebriefNG/win32/win32/x86_64/DebriefNG',
-  output: '/home/travis/build/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi',
+  source: '/home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/target/products/DebriefNG/win32/win32/x86_64/DebriefNG',
+  output: '/home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi',
   name: 'DebriefNG',
   upgradeCode: '6d8fb213-e072-4f38-a184-bfbf7505307e',
   version: '3.0.454',
   manufacturer: 'Deep Blue C Technology Ltd',
-  iconPath: '/home/travis/build/debrief/org.mwc.debrief.product/icon.ico',
+  iconPath: '/home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/icon.ico',
   executable: 'DebriefNG.exe',
  
   // optional
