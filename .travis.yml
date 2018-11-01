@@ -33,7 +33,7 @@ deploy:
     on:
      tags: true
      all_branches: true
-  - provider:update-site
+  - provider: pages
     api_key:
 	  secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
     local-dir:
