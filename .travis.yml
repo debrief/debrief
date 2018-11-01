@@ -34,6 +34,8 @@ deploy:
     tags: true
     all_branches: true
 - provider: pages
+  api_key:
+    secure: $GITHUB_TOKEN
   local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site"
   verbose: true
   skip-cleanup: true
