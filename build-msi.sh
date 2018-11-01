@@ -4,4 +4,5 @@ npm install
 rm -rf node_modules/msi-packager
 git clone https://github.com/saulhidalgoaular/msi-packager.git
 mv msi-packager node_modules/
-node index.js
+node build-x86.js
+node build-x64.js
