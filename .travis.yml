@@ -10,6 +10,7 @@ addons:
   apt:
     packages:
     - libgsf-1-dev
+    - libgcab-dev
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
