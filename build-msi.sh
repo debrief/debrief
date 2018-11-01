@@ -1,5 +1,6 @@
 #!/bin/sh
 set -ex
+npm -i -g npm
 npm install
 rm -rf node_modules/msi-packager
 git clone https://github.com/saulhidalgoaular/msi-packager.git
