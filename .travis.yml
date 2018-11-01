@@ -9,11 +9,13 @@ install:
 addons:
   apt:
     packages:
+    - git
     - intltool
     - libgsf-1-dev
     - uuid-runtime
     - libglib2.0-dev
     - libxml2-dev
+    - nodejs
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
@@ -23,7 +25,9 @@ before_script:
 - sleep 3
 - ./install-msitools.sh
 script: mvn clean verify -U -B -fae
-after_success: ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
+after_success:
+- ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
+- ./install-npm-dependencies.sh
 deploy:
   provider: releases
   skip_cleanup: true
