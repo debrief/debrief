@@ -40,6 +40,8 @@ deploy:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true
      all_branches: true
