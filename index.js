@@ -18,7 +18,7 @@ var options = {
   localInstall: true
  
 }
- 
+
 createMsi(options, function (err) {
   if (err) throw err
   console.log('Outputed to ' + options.output)
