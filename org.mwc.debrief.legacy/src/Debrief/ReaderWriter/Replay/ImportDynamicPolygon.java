@@ -97,7 +97,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import Debrief.Wrappers.DynamicPolygonShapeWrapper;
-import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
@@ -295,7 +294,7 @@ class ImportDynamicPolygon extends AbstractPlainLineImporter
 		{
 			final String line = " ;POLY_RECT: @J \"Dynamic A\" 951212 051000.000 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
 			final ImportDynamicPolygon ip = new ImportDynamicPolygon();
-			final DynamicShapeWrapper res = (DynamicShapeWrapper) ip.readThisLine(line);
+			final DynamicPolygonShapeWrapper res = (DynamicPolygonShapeWrapper) ip.readThisLine(line);
 			assertEquals("label", res.getLabel());
 			assertNotNull("read it in", res);
 			final PolygonShape polygon = (PolygonShape) res.getShape();
