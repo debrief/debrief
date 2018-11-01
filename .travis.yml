@@ -9,6 +9,7 @@ install:
 addons:
   apt:
     packages:
+    - intltool
     - libgsf-1-dev
     - uuid-runtime
     - libglib2.0-dev
