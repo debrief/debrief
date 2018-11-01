@@ -29,12 +29,15 @@ deploy:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.tar.gz
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar	
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar
     on:
      tags: true
      all_branches: true
   - provider: pages
     api_key:
-	  secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
-    local-dir:
-      - /home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site
+     secure: KCCJkP6ELz9pIGkBmSRbazRzhKZPq7T58tEIZbthtVv+KoM/JWdN10h3IK/N5Oqdeb2/P5u+93ml1wlU9PkbuwxQ4mpUbaAW41G/9mbEF7U2JLEtS9xSxeIfEBIEtuHxdlECjsgMCLm2lh3CVxbu3S2y9jDnpt35rbh6AN3B44w=
+    local-dir: /home/travis/build/debrief/debrief/org.mwc.debrief.site/target/update-site
+    verbose: true
+    on:
+     tags: true
+     all_branches: true
