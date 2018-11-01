@@ -238,9 +238,10 @@ public abstract class FilteredNatTable extends Composite
     textChanged();
   }
 
-  private Image getImageFromJFaceResources(String imageDes) {
-    if(JFaceResources.getImageRegistry().getDescriptor(imageDes)!=null) {
-      return JFaceResources.getImageRegistry().getDescriptor(imageDes).createImage();
+  private static Image getImageFromJFaceResources(String imageDes) {
+    ImageDescriptor id = JFaceResources.getImageRegistry().getDescriptor(imageDes);
+    if(id != null) {
+      return id.createImage();
     }
     return null;
   }
