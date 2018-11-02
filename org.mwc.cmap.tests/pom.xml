@@ -14,18 +14,7 @@
 
   <build>
 	<plugins>
-		<plugin>
-			<groupId>org.eclipse.tycho</groupId>
-			<artifactId>tycho-surefire-plugin</artifactId>
-			<version>${tycho.version}</version>
-			<configuration>
-				<useUIThread>true</useUIThread>
-				<useUIHarness>true</useUIHarness>
-				<includes>
-					<include>**/*Tests.class</include>
-				</includes>
-			</configuration>
-		</plugin>
+
 	</plugins>
   </build>
 

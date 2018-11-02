@@ -58,7 +58,6 @@
     <module>org.mwc.cmap.legacy</module>
     <module>org.mwc.cmap.overview</module>
     <module>org.mwc.cmap.plotViewer</module>
-    <module>org.mwc.cmap.tests</module>
     <module>org.mwc.cmap.tote</module>
     <module>org.mwc.cmap.xyplot</module>
     <module>org.mwc.cmap.jfreechart</module>
@@ -77,7 +76,6 @@
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
     <module>org.mwc.debrief.test2</module>
-    <module>org.mwc.debrief.editable.test</module>
     <module>org.mwc.debrief.targetplatforms</module>
 <!--
     <module>org.mwc.debrief.site</module>
@@ -86,6 +84,7 @@
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
+    <module>org.mwc.debrief.ui_test</module>
   </modules>
 
   <build>
@@ -101,18 +100,18 @@
           <artifactId>tycho-versions-plugin</artifactId>
           <version>${tycho.version}</version>
       </plugin>
-      <plugin>  
-         <groupId>org.eclipse.tycho</groupId>  
-         <artifactId>target-platform-configuration</artifactId>  
-         <version>${tycho.version}</version>  
-         <configuration>  
-         <target>  
-           <artifact>  
-             <groupId>org.mwc.debrief</groupId>  
-             <artifactId>eclipse38</artifactId>  
-             <version>0.0.1-SNAPSHOT</version>  
-           </artifact>  
-         </target>  
+      <plugin>
+         <groupId>org.eclipse.tycho</groupId>
+         <artifactId>target-platform-configuration</artifactId>
+         <version>${tycho.version}</version>
+         <configuration>
+         <target>
+           <artifact>
+             <groupId>org.mwc.debrief</groupId>
+             <artifactId>eclipse38</artifactId>
+             <version>0.0.1-SNAPSHOT</version>
+           </artifact>
+         </target>
           <environments>
 <!--
             <environment>
@@ -142,8 +141,8 @@
               <arch>x86_64</arch>
             </environment>
           </environments>
-         </configuration>  
-      </plugin>  
+         </configuration>
+      </plugin>
       <plugin>
 	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>tycho-surefire-plugin</artifactId>
@@ -210,11 +209,11 @@
 		</executions>
 	</plugin>
 -->
-			
+
     </plugins>
   </build>
-  <profiles> 
-    <profile> 
+  <profiles>
+    <profile>
       <id>mac</id>
       <activation>
         <os>
@@ -232,8 +231,8 @@
             </configuration>
           </plugin>
         </plugins>
-      </build> 
-    </profile> 
+      </build>
+    </profile>
     <profile>
         <id>sign</id>
         <activation>
@@ -272,5 +271,5 @@
             </plugins>
         </build>
     </profile>
-  </profiles> 
+  </profiles>
 </project>
