@@ -653,7 +653,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   public static class TestResiduals extends TestCase
   {
-    private TrackWrapper getData(final String name) throws FileNotFoundException
+    private static TrackWrapper getData(final String name) throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -1008,7 +1008,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     };
   }
 
-  private Logger getLogger()
+  private static Logger getLogger()
   {
     final Logger logger;
     final boolean doLogging = TrackShiftActivator.getDefault()
@@ -1271,7 +1271,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       {
         final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(
             zone.getStart()), new HiResDate(zone.getEnd()));
-        final List<SensorContactWrapper> cuts = _myHelper.getBearings(_myHelper
+        final List<SensorContactWrapper> cuts = StackedDotHelper.getBearings(_myHelper
             .getPrimaryTrack(), true, period);
         final LegOfCuts leg = new LegOfCuts();
         leg.addAll(cuts);
