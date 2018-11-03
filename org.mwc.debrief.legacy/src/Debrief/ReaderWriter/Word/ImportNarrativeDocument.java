@@ -948,7 +948,7 @@ public class ImportNarrativeDocument
       final String str3 =
           "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
       final String str4 =
-          "160504,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_A FCS B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160504,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_A FCS B-311\u00b0 R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
       // create mock importer
       final String[] strings = new String[]
@@ -1148,10 +1148,10 @@ public class ImportNarrativeDocument
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
 
       final String str2 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12600 yds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311\u00b0 R-12600 yds. Classified AAAAAA CCCCCC AAAAAA.";
 
       final String str3 =
-          "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
+          "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge B-311\u00b0 R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
 
       final String str4 =
           "160403,16,09,2016,NONSUCH,FCS, M02 1234 Rge R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA. Source from S333.";
@@ -1207,7 +1207,7 @@ public class ImportNarrativeDocument
       final String str3 =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
       final String str4 =
-          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160403,16,09,2016,NONSUCH,FCS, M01 1234 Rge B-311\u00b0 R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
       assertEquals("got kyds", 5.1, FCSEntry.getRange(str1).getValueIn(
           WorldDistance.KYDS), 0.1);
@@ -1232,7 +1232,7 @@ public class ImportNarrativeDocument
       final String str3 =
           "160505,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-800 m C-321 S-6kts AAAAAAA. Classified AAAAAA \nBBBBBB AAAAAA.";
       final String str4 =
-          "160505,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_B FCS (AAAA) B-311� R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
+          "160505,16,08,2016,NONSUCH,FCS,  SV023 SOURCE_B FCS (AAAA) B-311\u00b0 R-12.4kyds. Classified AAAAAA CCCCCC AAAAAA.";
 
       // create mock importer
       final String[] strings = new String[]
@@ -1384,7 +1384,7 @@ public class ImportNarrativeDocument
         res = thisL.getName();
 
         // and politely tell the user
-        MessageProvider.Base.Provider.show("Import Narrative",
+        MessageProvider.Base.show("Import Narrative",
             "Since it looks like a WECDIS track, we've renamed " + existingName
                 + " to " + res + ", so we can add create FCSs.",
             MessageProvider.INFO);
@@ -2058,7 +2058,7 @@ public class ImportNarrativeDocument
               _declaredNoHostFound = true;
 
               // tell the user
-              MessageProvider.Base.Provider.show("Import Narrative",
+              MessageProvider.Base.show("Import Narrative",
                   "Narrative entries will be imported, but we won't be creating FCSs "
                       + "since we couldn't determine the host track for: "
                       + originalName + ".", MessageProvider.WARNING);

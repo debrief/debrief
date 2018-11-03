@@ -15,7 +15,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -44,18 +43,13 @@ import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
 import MWC.GUI.Properties.DebriefColors;
-import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -94,54 +88,65 @@ public class ConvertTrackToLightweightTrack implements
       _newLightweights = new Vector<LightweightTrackWrapper>();
       _oldTracks = new Vector<TrackWrapper>();
 
-      // right, get going through the track
-      for (int i = 0; i < _subjects.length; i++)
+      // suspend firing updates, to improve performance
+      _layers.suspendFiringExtended(true);
+
+      try
       {
-        final Editable thisE = _subjects[i];
-        if (thisE instanceof TrackWrapper)
+        // right, get going through the track
+        for (int i = 0; i < _subjects.length; i++)
         {
-          final TrackWrapper oldTrack = (TrackWrapper) thisE;
-
-          // generate the new object
-          final LightweightTrackWrapper newTrack = new LightweightTrackWrapper(
-              oldTrack.getName(), oldTrack.getVisible(), oldTrack
-                  .getNameVisible(), oldTrack.getColor(), oldTrack
-                      .getLineStyle());
-
-          _newLightweights.add(newTrack);
-          _oldTracks.add(oldTrack);
-
-          // switch off the old layer
-          oldTrack.setVisible(false);
-
-          // put it into the layer
-          _targetLayer.add(newTrack);
-
-          newTrack.setName(oldTrack.getName());
-          final Color hisColor = oldTrack.getCustomColor();
-          if (hisColor != null)
+          final Editable thisE = _subjects[i];
+          if (thisE instanceof TrackWrapper)
           {
-            newTrack.setColor(hisColor);
-          }
-          else
-          {
-            newTrack.setColor(DebriefColors.GOLD);
-          }
+            final TrackWrapper oldTrack = (TrackWrapper) thisE;
 
-          final Enumeration<Editable> numer = oldTrack.getPositionIterator();
-          while (numer.hasMoreElements())
-          {
-            final FixWrapper fix = (FixWrapper) numer.nextElement();
-            newTrack.add(fix);
-          }
+            // generate the new object
+            final LightweightTrackWrapper newTrack =
+                new LightweightTrackWrapper(oldTrack.getName(), oldTrack
+                    .getVisible(), oldTrack.getNameVisible(), oldTrack
+                        .getColor(), oldTrack.getLineStyle());
 
-          // actually, ditch the old track
-          _layers.removeThisLayer(oldTrack);
+            _newLightweights.add(newTrack);
+            _oldTracks.add(oldTrack);
+
+            // switch off the old layer
+            oldTrack.setVisible(false);
+
+            // put it into the layer
+            _targetLayer.add(newTrack);
+
+            newTrack.setName(oldTrack.getName());
+            final Color hisColor = oldTrack.getCustomColor();
+            if (hisColor != null)
+            {
+              newTrack.setColor(hisColor);
+            }
+            else
+            {
+              newTrack.setColor(DebriefColors.GOLD);
+            }
+
+            final Enumeration<Editable> numer = oldTrack.getPositionIterator();
+            while (numer.hasMoreElements())
+            {
+              final FixWrapper fix = (FixWrapper) numer.nextElement();
+              newTrack.add(fix);
+            }
+
+            // actually, ditch the old track
+            _layers.removeThisLayer(oldTrack);
+          }
         }
       }
+      finally
+      {
+        // allow updates to flow
+        _layers.suspendFiringExtended(false);
 
-      // sorted, do the update
-      _layers.fireExtended();
+        // sorted, do the update
+        _layers.fireExtended();
+      }
 
       return Status.OK_STATUS;
     }
@@ -239,45 +244,34 @@ public class ConvertTrackToLightweightTrack implements
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public testMe(final String val)
-    {
-      super(val);
-    }
-
-    public final void testIWork()
+    public final static void testIWork()
     {
       final Layers theLayers = new Layers();
       final BaseLayer holder = new BaseLayer();
       holder.setName("Trk");
       theLayers.addThisLayer(holder);
 
-      WorldLocation lastLoc = null;
-      for (int i = 0; i < 4; i++)
+      TrackWrapper track = new TrackWrapper();
+      track.setName("BIG ONE");
+      
+      
+      final int NUM_FIXES = 4;
+      for (int i = 0; i < NUM_FIXES; i++)
       {
         final WorldLocation thisLoc = new WorldLocation(0, i, 0, 'N', 0, 0, 0,
             'W', 0);
-        if (lastLoc != null)
-        {
-          // ok, add the line
-          final LineShape ls = new LineShape(lastLoc, thisLoc);
-
-          final long theDate1 = 20000000 + i * 60000;
-          final long theDate2 = 20000000 + i * 61000;
-
-          final ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red,
-              new HiResDate(theDate1));
-          sw.setTime_Start(new HiResDate(theDate1));
-          sw.setTimeEnd(new HiResDate(theDate2));
-          holder.add(sw);
-        }
-
-        // and remember the last location
-        lastLoc = thisLoc;
+        Fix theFix = new Fix(new HiResDate(i * 10000), thisLoc, 2 * i, NUM_FIXES * i);
+        FixWrapper fixW = new FixWrapper(theFix);
+        track.addFix(fixW);
       }
+      theLayers.addThisLayer(track);
+
+      assertEquals("heavy track present", 2, theLayers.size());
+      assertEquals("holder empty", 0, holder.size());
 
       // ok, now do the interpolation
       final ConvertIt ct = new ConvertIt("convert it", theLayers, new Editable[]
-      {holder}, null);
+      {track}, holder);
 
       try
       {
@@ -288,108 +282,27 @@ public class ConvertTrackToLightweightTrack implements
         fail("Exception thrown");
       }
 
+      assertEquals("heavy track gone", 1, theLayers.size());
+      
+      assertEquals("holder not empty", 1, holder.size());
+      
       // check the track got generated
-      final TrackWrapper tw = (TrackWrapper) theLayers.findLayer("T_Trk");
+      final LightweightTrackWrapper tw = (LightweightTrackWrapper) holder.elements().nextElement();
 
       // did we find it?
       assertNotNull("track generated", tw);
-
-      // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", tw.numFixes(), 4);
-
+      
+      assertEquals("correct name", "BIG ONE", tw.getName());
+      assertEquals("correct size", track.numFixes(), tw.numFixes());
+      assertEquals("correct size", NUM_FIXES, tw.numFixes());
+      assertEquals("correct color", track.getColor(), tw.getColor());
+      assertEquals("correct name", track.getName(), tw.getName());
     }
-  }
 
-  public static TrackWrapper generateTrackFor(final BaseLayer layer)
-  {
-    TrackWrapper res = new TrackWrapper();
-    res.setName("T_" + layer.getName());
-
-    Color trackColor = null;
-
-    // ok, step through the points
-    final Enumeration<Editable> numer = layer.elements();
-
-    // remember the last line viewed, since we want to add both of it's points
-    ShapeWrapper lastLine = null;
-
-    while (numer.hasMoreElements())
+    public testMe(final String val)
     {
-      final Plottable pl = (Plottable) numer.nextElement();
-      if (pl instanceof LabelWrapper)
-      {
-        final LabelWrapper label = (LabelWrapper) pl;
-
-        // just check we know the track color
-        if (trackColor == null)
-          trackColor = label.getColor();
-
-        HiResDate dtg = label.getStartDTG();
-        if (dtg == null)
-          dtg = new HiResDate(new Date());
-
-        final WorldLocation loc = label.getBounds().getCentre();
-        final Fix newFix = new Fix(dtg, loc, 0, 0);
-        final FixWrapper fw = new FixWrapper(newFix);
-
-        if (label.getColor() != trackColor)
-          fw.setColor(label.getColor());
-
-        res.add(fw);
-        fw.setTrackWrapper(res);
-
-        // forget the last-line, clearly we've moved on to other things
-        lastLine = null;
-
-      }
-      else if (pl instanceof ShapeWrapper)
-      {
-        final ShapeWrapper sw = (ShapeWrapper) pl;
-        final PlainShape shape = sw.getShape();
-        if (shape instanceof LineShape)
-        {
-          final LineShape line = (LineShape) shape;
-          // just check we know the track color
-          if (trackColor == null)
-            trackColor = line.getColor();
-
-          final HiResDate dtg = sw.getStartDTG();
-          final WorldLocation loc = line.getLine_Start();
-          final Fix newFix = new Fix(dtg, loc, 0, 0);
-          final FixWrapper fw = new FixWrapper(newFix);
-
-          if (line.getColor() != trackColor)
-            fw.setColor(line.getColor());
-          fw.setTrackWrapper(res);
-          res.add(fw);
-
-          // and remember this line
-          lastLine = sw;
-
-        }
-      }
+      super(val);
     }
-
-    // did we have a trailing line item?
-    if (lastLine != null)
-    {
-      final HiResDate dtg = lastLine.getEndDTG();
-      final LineShape line = (LineShape) lastLine.getShape();
-      final WorldLocation loc = line.getLineEnd();
-      final Fix newFix = new Fix(dtg, loc, 0, 0);
-      final FixWrapper fw = new FixWrapper(newFix);
-      fw.setTrackWrapper(res);
-      res.add(fw);
-    }
-
-    // update the track color
-    res.setColor(trackColor);
-
-    // did we find any?
-    if (res.numFixes() == 0)
-      res = null;
-
-    return res;
   }
 
   /**
@@ -465,7 +378,8 @@ public class ConvertTrackToLightweightTrack implements
       }
 
       // and a spare one, which creates a new layer
-      final Action convertToTrackInNewLayer = toNewLayer(theLayers, subjects, title);
+      final Action convertToTrackInNewLayer = toNewLayer(theLayers, subjects,
+          title);
 
       // ok - flash up the menu item
       listing.add(convertToTrackInNewLayer);
@@ -475,6 +389,17 @@ public class ConvertTrackToLightweightTrack implements
 
     }
 
+  }
+
+  /**
+   * put the operation firer onto the undo history. We've refactored this into a separate method so
+   * testing classes don't have to simulate the CorePlugin
+   *
+   * @param operation
+   */
+  protected void runIt(final IUndoableOperation operation)
+  {
+    CorePlugin.run(operation);
   }
 
   private Action toNewLayer(final Layers theLayers, final Editable[] subjects,
@@ -511,16 +436,5 @@ public class ConvertTrackToLightweightTrack implements
 
       }
     };
-  }
-
-  /**
-   * put the operation firer onto the undo history. We've refactored this into a separate method so
-   * testing classes don't have to simulate the CorePlugin
-   *
-   * @param operation
-   */
-  protected void runIt(final IUndoableOperation operation)
-  {
-    CorePlugin.run(operation);
   }
 }

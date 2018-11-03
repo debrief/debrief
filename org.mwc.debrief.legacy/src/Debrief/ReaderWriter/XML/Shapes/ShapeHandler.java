@@ -182,11 +182,11 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     }
     if (_startDTG != null)
     {
-      sw.setTime_Start(_startDTG);
+      sw.setStartDTG(_startDTG);
     }
     if ((_endDTG !=null) && (! _endDTG.equals(_startDTG)))
     {
-      sw.setTimeEnd(_endDTG);
+      sw.setEndDTG(_endDTG);
     }
     if (_theLocation != null)
     {

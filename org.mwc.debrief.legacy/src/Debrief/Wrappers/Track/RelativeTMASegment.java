@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Wrappers.Track;
 
@@ -25,7 +25,6 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -47,13 +46,14 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import junit.framework.TestCase;
 
 /**
  * extension of track segment that represents a single TMA solution as a series of fixes - based on
  * an offset from a specified other track
- * 
+ *
  * @author Ian Mayo
- * 
+ *
  */
 public class RelativeTMASegment extends CoreTMASegment implements
     NeedsToKnowAboutLayers
@@ -82,7 +82,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     /**
      * constructor for this editor, takes the actual track as a parameter
-     * 
+     *
      * @param data
      *          track being edited
      */
@@ -132,18 +132,18 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
-   * 
+   *
    */
   public static final String CUT_OFF_VALUE_DEGS = "SHADING_CUT_OFF_VALUE_DEGS";
 
   /**
    * preference name for the cut-off value for shading error plot (when REL TMA is being dragged)
-   * 
+   *
    */
   public static final String CUT_OFF_VALUE_HZ = "SHADING_CUT_OFF_VALUE_HZ";
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -151,26 +151,26 @@ public class RelativeTMASegment extends CoreTMASegment implements
    * name of the watchable list we're going to use as our origin. We need to support storing this as
    * a string so that we can defer finding the actual object pointer until after file-load is
    * complete
-   * 
+   *
    * @return
    */
   private final String _referenceTrackName;
 
   /**
    * name of the sensor we're going to use as our origin
-   * 
+   *
    */
   private final String _referenceSensorName;
 
   /**
    * the offset we apply to the origin
-   * 
+   *
    */
   private WorldVector _offset;
 
   /**
    * the feature we're based on
-   * 
+   *
    */
   private TrackWrapper _referenceTrack;
 
@@ -182,13 +182,13 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * our editable details
-   * 
+   *
    */
   private transient TMASegmentInfo _myInfo = null;
 
   /**
    * the layers we look at to find our host
-   * 
+   *
    */
   private transient Layers _theLayers;
 
@@ -199,7 +199,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * base constructor - sorts out the obvious
-   * 
+   *
    * @param courseDegs
    *          our course
    * @param speed
@@ -227,7 +227,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * kind of copy constructor. take the settings from the segment, but store the supplied cuts
-   * 
+   *
    * @param relevantSegment
    * @param theItems
    * @param theOffset
@@ -256,7 +256,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * build up a solution from the supplied sensor data
-   * 
+   *
    * @param observations
    *          create a single position for the DTG of each solution
    * @param offset
@@ -288,7 +288,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   }
 
   /**
-   * 
+   *
    * @param sensor
    * @param offset
    * @param speed
@@ -376,7 +376,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * create a fix at the specified dtg
-   * 
+   *
    * @param thisS
    * @return
    */
@@ -422,7 +422,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * create a fix from this sensor item
-   * 
+   *
    * @param thisS
    * @param override
    */
@@ -451,7 +451,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    * move the solution in or out from the ref track, maintaining the bearings to the host track
    * (changing speed but not course)
-   * 
+   *
    * @param vector
    *          how far to push it.
    */
@@ -606,7 +606,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * the point on the host track that we're offset from
-   * 
+   *
    * @return
    */
   public WorldLocation getHostLocation()
@@ -720,7 +720,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * provide access to the layers object (necessary in support of moving tracks between layers)
-   * 
+   *
    * @return
    */
   public Layers getLayers()
@@ -787,7 +787,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * get the start of this tma segment
-   * 
+   *
    * @return
    */
   @Override
@@ -803,12 +803,13 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * find the reference track for this relative solution
-   * 
+   *
    */
   private void identifyReferenceTrack()
   {
     // check we're not looking for ourselves
-    if(this.getWrapper() != null && this.getWrapper().getName().equals(_referenceTrackName))
+    if (this.getWrapper() != null && this.getWrapper().getName().equals(
+        _referenceTrackName))
     {
       Application.logError2(ErrorLogger.ERROR,
           "Data error - this TMA is trying to reference itself:"
@@ -817,7 +818,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // ok - something bad has gone down. Drop out.
       return;
     }
-    
+
     final TrackWrapper theTrack = (TrackWrapper) _theLayers.findLayer(
         _referenceTrackName);
 
@@ -1005,7 +1006,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * convenience method to find the location of the sensor at the specified time
-   * 
+   *
    * @param dtg
    *          the time we're hunting for
    * @return the location of the first sensor cut visible at that time
@@ -1116,14 +1117,14 @@ public class RelativeTMASegment extends CoreTMASegment implements
       // from that sensor
       if (this.getReferenceSensor() != null)
       {
-        SensorWrapper ref = this.getReferenceSensor();
-        Collection<Editable> cuts = ref.getItemsBetween(endDTG(), newEnd);
+        final SensorWrapper ref = this.getReferenceSensor();
+        final Collection<Editable> cuts = ref.getItemsBetween(endDTG(), newEnd);
         if (cuts != null)
         {
           handled = true;
-          for (Editable t : cuts)
+          for (final Editable t : cuts)
           {
-            SensorContactWrapper cut = (SensorContactWrapper) t;
+            final SensorContactWrapper cut = (SensorContactWrapper) t;
             addFix(theLoc, cut.getDTG().getDate().getTime());
           }
         }
@@ -1163,12 +1164,20 @@ public class RelativeTMASegment extends CoreTMASegment implements
   @FireExtended
   public void setDTG_Start(final HiResDate newStart)
   {
-    HiResDate theNewStart = newStart;
     // check that we're still after the start of the host track
-    if (theNewStart.lessThan(this.getReferenceTrack().getStartDTG()))
+    final HiResDate referenceStart = this.getReferenceTrack().getStartDTG();
+    final HiResDate theNewStart;
+    if (newStart.lessThan(referenceStart))
     {
-      theNewStart = new HiResDate(this.getReferenceTrack().getStartDTG());
+      theNewStart = new HiResDate(referenceStart);
     }
+    else
+    {
+      theNewStart = newStart;
+    }
+    
+    // get the new start time, as a long
+    final long newStartT = theNewStart.getDate().getTime();
 
     // ok, how far is this from the current end
     final long delta = theNewStart.getMicros() - startDTG().getMicros();
@@ -1232,61 +1241,52 @@ public class RelativeTMASegment extends CoreTMASegment implements
     // in...
     if (theNewStart.lessThan(startDTG()))
     {
-
       // right, we if we have to add another
-      // find the current last point
+      // find the current first point
       final FixWrapper theLoc = (FixWrapper) this.first();
-
-      // note: we don't want one large leap. So, insert a few points
-      final long oldStartT = startDTG().getDate().getTime();
-      final long newStartT = theNewStart.getDate().getTime();
-
-      // see if we've managed to find some cuts to use
-      final boolean handled;
 
       // If we have a reference sensor, take visible cuts
       // from that sensor
       if (this.getReferenceSensor() != null)
       {
-        SensorWrapper ref = this.getReferenceSensor();
-        Collection<Editable> cuts = ref.getItemsBetween(theNewStart,
+        final SensorWrapper ref = this.getReferenceSensor();
+        final Collection<Editable> cuts = ref.getItemsBetween(theNewStart,
             startDTG());
         if (cuts != null)
         {
-          handled = true;
-          for (Editable t : cuts)
+          for (final Editable t : cuts)
           {
-            SensorContactWrapper cut = (SensorContactWrapper) t;
+            final SensorContactWrapper cut = (SensorContactWrapper) t;
             addFix(theLoc, cut.getDTG().getDate().getTime());
           }
         }
-        else
-        {
-          handled = false;
-        }
       }
-      else
+    }
+    
+    // right, we may have pruned off too far. See if we need to put a bit back
+    // in...
+    if (theNewStart.lessThan(startDTG()))
+    {
+      // ok, we don't have sensor. just add some at "nice" sizes
+      final long typicalDelta = typicalTimeStep();
+
+      // right, we if we have to add another
+      // find the current first point
+      final FixWrapper theLoc = (FixWrapper) this.first();
+
+      // note: we don't want one large leap. So, insert a few points
+      final long oldStartT = startDTG().getDate().getTime();
+
+      // ok, insert new fix at the new start time
+      addFix(theLoc, newStartT);
+
+      // now walk forwards until we meet the old start time
+      long thisT = newStartT + typicalDelta;
+
+      while (thisT < oldStartT)
       {
-        handled = false;
-      }
-
-      // are we sorted?
-      if (!handled)
-      {
-        // ok, we don't have sensor. just add some at "nice" sizes
-        final long typicalDelta = typicalTimeStep();
-
-        // ok, insert new fix at the new start time
-        addFix(theLoc, newStartT);
-
-        // now walk forwards until we meet the old start time
-        long thisT = newStartT + typicalDelta;
-
-        while (thisT < oldStartT)
-        {
-          addFix(theLoc, thisT);
-          thisT += typicalDelta;
-        }
+        addFix(theLoc, thisT);
+        thisT += typicalDelta;
       }
     }
 
@@ -1295,7 +1295,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     // tell any listeners that we've changed
     super.fireAdjusted();
-
   }
 
   @Override
@@ -1348,7 +1347,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * manage the offset bearing (in degrees)
-   * 
+   *
    * @param offsetBearing
    */
   public void setOffsetBearing(final double offsetBearing)
@@ -1359,7 +1358,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * manage the offset range (in degrees)
-   * 
+   *
    * @param offsetRange
    */
   public void setOffsetRange(final WorldDistance offsetRange)
@@ -1531,7 +1530,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * stretch this whole track to the supplied distance
-   * 
+   *
    * @param rngDegs
    *          distance to stretch through (degs)
    * @param origin
@@ -1608,7 +1607,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * get the mean interval between the time steps
-   * 
+   *
    * @return
    */
   private long typicalTimeStep()
@@ -1650,7 +1649,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
   /**
    * tell the data points that course and speed have been updated
-   * 
+   *
    * @param courseVal
    *          the (optional) course to update
    * @param speedVal

@@ -45,6 +45,8 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 	 * timings, we check when asked, and remember the value here
 	 */
 	private static Boolean _hiResProcessing = null;
+	
+	public static final HiResDate NULL_DATE = new HiResDate(-1);
 
 	// the marker for incomplete hi-res changes:
 	// HI-RES NOT DONE
@@ -198,6 +200,23 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
     return true;
   }
 
-	
+  /** convert null date into the NULL_DATE object, which we 
+   * use in property editors
+   * @param date
+   * @return converted value
+   */
+  public static HiResDate wrapped(HiResDate date)
+  {
+    return date == null ? NULL_DATE : date;
+  }
 
+  /** convert NULL_DATE object back to null value, which we 
+   * use in property editors
+   * @param date
+   * @return converted value
+   */
+  public static HiResDate unwrapped(HiResDate date)
+  {
+    return NULL_DATE.equals(date) ? null : date;
+  }
 }

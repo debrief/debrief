@@ -34,6 +34,7 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -462,7 +463,7 @@ public class PolygonShape extends PlainShape implements Editable,
     final Iterator<PolygonNode> myPts = _nodes.iterator();
     while (myPts.hasNext())
     {
-      final WorldLocation thisLoc = (WorldLocation) myPts.next().getLocation();
+      final WorldLocation thisLoc = myPts.next().getLocation();
       // right, see if the cursor is at the centre (that's the easy component)
       checkThisOne(thisLoc, cursorLoc, currentNearest, this, parentLayer);
     }
@@ -637,22 +638,31 @@ public class PolygonShape extends PlainShape implements Editable,
 
     if (_nodes.size() > 0)
     {
-      // ok, step through the area
-      final Iterator<PolygonNode> points = _nodes.iterator();
-      while (points.hasNext())
+
+      // loop through the legs
+      final Enumeration<PolygonNode> points = _nodes.elements();
+
+      WorldLocation last = null;
+      WorldDistance shortest = null;
+      while (points.hasMoreElements())
       {
-        final WorldLocation next = (WorldLocation) points.next().getLocation();
-
-        final double thisD = next.rangeFrom(point);
-
-        // is this our first point?
-        if (res == -1)
+        final WorldLocation thisL = points.nextElement().getLocation();
+        if (last != null)
         {
-          res = thisD;
+          final WorldDistance dist = point.rangeFrom(last, thisL);
+
+          if (shortest == null)
+          {
+            shortest = dist;
+          }
+          else if (shortest.greaterThan(dist))
+          {
+            shortest = dist;
+          }
         }
-        else
-          res = Math.min(res, thisD);
+        last = thisL;
       }
+      res = shortest.getValueIn(WorldDistance.DEGS);
     }
 
     return res;
@@ -678,6 +688,12 @@ public class PolygonShape extends PlainShape implements Editable,
   public void setClosed(final boolean polygon)
   {
     _closePolygon = polygon;
+  }
+
+  @Override
+  public void setName(final String val)
+  {
+    _myName = val;
   }
 
   public void setPolygonColor(final Color val)
@@ -710,7 +726,7 @@ public class PolygonShape extends PlainShape implements Editable,
     final Iterator<PolygonNode> pts = _nodes.iterator();
     while (pts.hasNext())
     {
-      final WorldLocation pt = (WorldLocation) pts.next().getLocation();
+      final WorldLocation pt = pts.next().getLocation();
       final WorldLocation newLoc = pt.add(vector);
       pt.setLat(newLoc.getLat());
       pt.setLong(newLoc.getLong());
@@ -722,12 +738,6 @@ public class PolygonShape extends PlainShape implements Editable,
 
     // and inform the parent (so it can move the label)
     firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, null);
-  }
-
-  @Override
-  public void setName(String val)
-  {
-    _myName = val;
   }
 
 }

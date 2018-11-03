@@ -94,6 +94,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
@@ -187,14 +188,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             displayExpertLongProp("LabelFrequency", "Label frequency",
                 "the label frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
-                "the symbol frequency", TEMPORAL,
-                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ResampleDataAt", "Resample data at",
                 "the data sample rate", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayExpertLongProp("ArrowFrequency", "Arrow frequency",
                 "the direction marker frequency", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+            displayExpertLongProp("SymbolFrequency", "Symbol frequency",
+                "the symbol frequency", TEMPORAL,
                 MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
             displayProp("CustomTrailLength", "Custom Snail Trail",
                 "to specify a custom snail trail length",
@@ -630,7 +631,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // how did we get on?
     if (failedMsg != null)
     {
-      MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+      MessageProvider.Base.show("Merge tracks", "Sorry, " + failedMsg
           + " overlap in time. Please correct this and retry",
           MessageProvider.ERROR);
       return MessageProvider.ERROR;
@@ -748,7 +749,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     // how did we get on?
     if (failedMsg != null)
     {
-      MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+      MessageProvider.Base.show("Merge tracks", "Sorry, " + failedMsg
           + " overlap in time. Please correct this and retry",
           MessageProvider.ERROR);
       return MessageProvider.ERROR;
@@ -1203,7 +1204,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
             // for this segment
             if (rel.getHostName().equals(this.getName()))
             {
-              MessageProvider.Base.Provider.show("Paste track",
+              MessageProvider.Base.show("Paste track",
                   "Can't paste TMA track into it's reference track:" + this
                       .getName(), MessageProvider.ERROR);
               return;
@@ -1221,9 +1222,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
-          "Sorry it is not possible to add:" + point.getName() + " to " + this
-              .getName());
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
+      Trace.trace("Can't paste " + point + " into track", true);
     }
   }
 

@@ -162,7 +162,8 @@ public class Trace extends java.lang.Object
 	{ // do we have a logger?
 		if (_myParent != null)
 		{
-			_myParent.logError(ToolParent.INFO, "Exception caught:" + message, null);
+      _myParent.logError(ToolParent.INFO, "Exception caught:" + message, null,
+          showWarning);
 		}
 		else
 		{

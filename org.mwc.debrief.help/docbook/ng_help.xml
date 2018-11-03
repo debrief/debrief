@@ -6090,9 +6090,21 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Title</term>
+                <term>Footprint</term>
                 <listitem>
-                  <para>Title for engagement. (Text element named <code>time</code>.)</para>
+                  <para>Footprint to indicate the steps of the past plataform's positions. (Object named <code>footprint</code>)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Scale Value</term>
+                <listitem>
+                  <para>Text value that indicates that distance. (Object named <code>ScaleValue</code>)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Scale Bar</term>
+                <listitem>
+                  <para>This will consist of a rectangle, with width sized according to a particular distance. (Object named <code>ScaleBar</code>)</para>
                 </listitem>
               </varlistentry>
             </variablelist>
@@ -6101,7 +6113,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/MasterTemplate.png" width="100%"/>
+                    <imagedata fileref="figures/MasterTemplate2.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>

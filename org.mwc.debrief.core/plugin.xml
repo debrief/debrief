@@ -128,7 +128,11 @@
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.LogTrackLoader" extensions="csv"
-            name="S2087 Context Track File (.csv)"/>
+            name="S2087 Context Track File (.csv)" first_line="SYS_ORDINAL"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.UK_CSV_Loader" extensions="csv"
+            name="UK CSV Exchange Format (.csv)" first_line="# UK TRACK EXCHANGE FORMAT, V1.0" />
     </extension>
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.GPXLoader" extensions="gpx" name="GPX Plot File"

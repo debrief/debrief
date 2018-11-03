@@ -20,21 +20,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Enumeration;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -46,8 +41,13 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  */
-public class SATCSampleLoader extends IPlotLoader.BaseLoader
+public class SATCSampleLoader extends CoreLoader
 {
+
+  public SATCSampleLoader()
+  {
+    super("SATC Sample", null);
+  }
 
   private static class ImportSATCSample
   {
@@ -87,8 +87,8 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
       String fileName = file.getName();
 
       // ok, loop through the lines
-      final BufferedReader br =
-          new BufferedReader(new InputStreamReader(inputStream));
+      final BufferedReader br = new BufferedReader(new InputStreamReader(
+          inputStream));
 
       String nmea_sentence;
 
@@ -108,8 +108,8 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
         {
 
           // check this isn't a comment
-          if (nmea_sentence.startsWith("#Time")
-              || nmea_sentence.startsWith("DD HH"))
+          if (nmea_sentence.startsWith("#Time") || nmea_sentence.startsWith(
+              "DD HH"))
           {
             // ok, skip
             continue;
@@ -131,9 +131,8 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
             // final WorldLocation origin, final java.awt.Color color,
             // final String label, final int style, final String sensorName)
 
-            SensorContactWrapper scw =
-                new SensorContactWrapper(track.getName(), dt, null, brgDegs,
-                    null, thisCol, trackNum, 1, fileName);
+            SensorContactWrapper scw = new SensorContactWrapper(track.getName(),
+                dt, null, brgDegs, null, thisCol, trackNum, 1, fileName);
             sw.add(scw);
           }
 
@@ -154,9 +153,9 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
 
       // check the day
       int day = Integer.parseInt(string.substring(0, 2));
-      
+
       // fill in the month & year
-      if(day == 31)
+      if (day == 31)
       {
         dt.setYear(99);
         dt.setMonth(11);
@@ -166,7 +165,6 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
         dt.setYear(100);
         dt.setMonth(00);
       }
-      
 
       HiResDate res = new HiResDate(dt);
       return res;
@@ -181,93 +179,29 @@ public class SATCSampleLoader extends IPlotLoader.BaseLoader
    * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
    */
   @Override
-  public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
-      final String fileName)
+  protected IRunnableWithProgress getImporter(final IAdaptable target,
+      final Layers layers, final InputStream inputStream, final String fileName)
   {
 
     // ok, we'll need somewhere to put the data
-    final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
-
-    try
+    return new IRunnableWithProgress()
     {
-      // hmm, is there anything in the file?
-      final int numAvailable = inputStream.available();
-      if (numAvailable > 0)
+      @Override
+      public void run(final IProgressMonitor pm)
+
       {
-
-        final IWorkbench wb = PlatformUI.getWorkbench();
-        final IProgressService ps = wb.getProgressService();
-        ps.busyCursorWhile(new IRunnableWithProgress()
+        // ok - get loading going
+        ImportSATCSample importer = new ImportSATCSample(layers);
+        try
         {
-          @Override
-          public void run(final IProgressMonitor pm)
-          {
-            // right, better suspend the LayerManager extended updates from
-            // firing
-            theLayers.suspendFiringExtended(true);
-
-            try
-            {
-              DebriefPlugin.logError(Status.INFO, "about to start loading:"
-                  + fileName, null);
-
-              // ok - get loading going
-              ImportSATCSample importer = new ImportSATCSample(theLayers);
-              importer.importThis(fileName, inputStream);
-
-              DebriefPlugin.logError(Status.INFO, "completed loading:"
-                  + fileName, null);
-
-            }
-            catch (final RuntimeException e)
-            {
-              DebriefPlugin.logError(Status.ERROR,
-                  "Problem loading SATC Sample datafile:" + fileName, e);
-            }
-            catch (final Exception e)
-            {
-              DebriefPlugin.logError(Status.ERROR,
-                  "Problem loading SATC Sample datafile:" + fileName, e);
-            }
-            finally
-            {
-              // and inform the plot editor
-              thePlot.loadingComplete(this);
-
-              DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
-
-              // ok, allow the layers object to inform anybody what's
-              // happening
-              // again
-              theLayers.suspendFiringExtended(false);
-
-              // and trigger an update ourselves
-              // theLayers.fireExtended();
-            }
-          }
-        });
-
+          importer.importThis(fileName, inputStream);
+        }
+        catch (IOException | ParseException e)
+        {
+          DebriefPlugin.logError(Status.ERROR, "Problem loading " + _fileType
+              + ":" + fileName, e);
+        }
       }
-
-    }
-    catch (final InvocationTargetException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-          + fileName, e);
-    }
-    catch (final InterruptedException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
-          + fileName, e);
-    }
-    catch (final IOException e)
-    {
-      DebriefPlugin.logError(Status.ERROR, "Problem loading SATC Sample:"
-          + fileName, e);
-    }
-
-    // ok, load the data...
-    DebriefPlugin.logError(Status.INFO, "Successfully loaded SATC Sample file",
-        null);
+    };
   }
 }

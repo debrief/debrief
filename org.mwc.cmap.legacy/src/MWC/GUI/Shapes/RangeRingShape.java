@@ -122,6 +122,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * Class representing a cart-wheel type shape - drawn with inner and outer
@@ -265,6 +266,21 @@ public class RangeRingShape extends PlainShape implements Editable
 	// member functions
 	// ////////////////////////////////////////////////
 
+
+  /**
+   * get the 'anchor point' for any labels attached to this shape
+   */
+  public MWC.GenericData.WorldLocation getAnchor()
+  {
+    return _theCentre;
+  }
+
+  @Override
+  public MWC.GenericData.WorldArea getBounds()
+  {
+    return _theArea;
+  }
+
 	/**
 	 * calculate some convenience values based on the radius and centre of the
 	 * Wheel
@@ -274,34 +290,28 @@ public class RangeRingShape extends PlainShape implements Editable
 		// create our area
 		_theArea = new WorldArea(_theCentre, _theCentre);
 
-		// create & extend to top left
-		WorldLocation other = _theCentre.add(new WorldVector(0, getRingWidth()
-				.getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
-				getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		_theArea.extend(other);
+		final WorldDistance ringWidth = getRingWidth();
+		if(ringWidth == null)
+		{
+		  Trace.trace("Range Rings must have non-null width");
+		}
+    else
+    {
+      // create & extend to top left
+      WorldLocation other = _theCentre.add(new WorldVector(0, getRingWidth()
+          .getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270),
+          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      _theArea.extend(other);
 
-		// create & extend to bottom right
-		other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(180), getRingWidth().getValueIn(WorldDistance.DEGS)
-				* _numRings, 0));
-		other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
-				getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
-		_theArea.extend(other);
-	}
-
-	/**
-	 * get the 'anchor point' for any labels attached to this shape
-	 */
-	public MWC.GenericData.WorldLocation getAnchor()
-	{
-		return _theCentre;
-	}
-
-	@Override
-	public MWC.GenericData.WorldArea getBounds()
-	{
-		return _theArea;
+      // create & extend to bottom right
+      other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions
+          .Degs2Rads(180), getRingWidth().getValueIn(WorldDistance.DEGS)
+              * _numRings, 0));
+      other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90),
+          getRingWidth().getValueIn(WorldDistance.DEGS) * _numRings, 0));
+      _theArea.extend(other);
+    }
 	}
 
 	/**

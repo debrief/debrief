@@ -14,7 +14,12 @@
  */
 package MWC.GUI;
 
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Toolkit;
 import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 /**
  * interface for object that can show a message to the user
@@ -32,11 +37,25 @@ public interface MessageProvider
 	 */
 	public static class Base
 	{
-		public static MessageProvider Provider;
+		private static MessageProvider Provider;
 
 		public static void setProvider(final MessageProvider provider)
 		{
 			Provider = provider;
+		}
+		public static void show(final String title, final String message, final int status)
+		{
+		  if(Provider!=null) {
+		    Provider.show(title, message, status);
+		  }
+		  else {
+		    final Frame tmp = new Frame();
+	      // and put the frame in the centre of the screen
+	      final Dimension sz = Toolkit.getDefaultToolkit().getScreenSize();
+	      tmp.setLocation(sz.width / 2, sz.height / 2);
+	      JOptionPane.showMessageDialog(tmp, message, title,
+	          JOptionPane.INFORMATION_MESSAGE);
+		  }
 		}
 	}
 

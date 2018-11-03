@@ -26,14 +26,13 @@ import net.lingala.zip4j.exception.ZipException;
 public class JUnitTests
 {
   final private String[] donorFiles = new String[]
-  {"donor.pptx", "designed.pptx"};
+  {"master_template.pptx"};
   final private String[] trackFiles = new String[]
   {"long_tracks.txt", "multi_tracks.txt", "scenario_long_range.txt",
       "scenario_short_range.txt", "speed_change.txt"};
   final private String trackFolder = Utils.testFolder + File.separator
       + "track_data";
-  final private String donorFolder = Utils.testFolder + File.separator
-      + "donor_files";
+  final private String donorFolder = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats";
   final private String resultsFolder = Utils.testFolder;
   final private String slide1Path = "ppt" + File.separator + "slides"
       + File.separator + "slide1.xml";

@@ -64,7 +64,7 @@ public class PackPresentation
     final ZipFile zipFile = new ZipFile(path);
 
     final ZipParameters parameters = new ZipParameters();
-    parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+    parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_FAST);
 
     parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
     parameters.setIncludeRootFolder(false);

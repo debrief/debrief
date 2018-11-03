@@ -15,7 +15,6 @@
 package MWC.GUI.Shapes.Symbols.SVG;
 
 import java.awt.Point;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -227,7 +226,7 @@ public class SVGShape extends PlainSymbol
         break;
       default:
         // We have an unknown type.
-        Trace.trace("Unknown SVG element type encountered:" + svgElement);
+        Trace.trace("Unknown SVG element type encountered:" + svgElement.getNodeName());
         answer = null;
         break;
     }
@@ -241,29 +240,25 @@ public class SVGShape extends PlainSymbol
    */
   private Document getDocument()
   {
-      // remove the svg: prefix, if necesary
-      final String fName = _svgFileName.contains("svg:") ? _svgFileName
-          .substring(4) : _svgFileName;
+    // remove the svg: prefix, if necesary
+    final String fName = _svgFileName.contains("svg:") ? _svgFileName.substring(
+        4) : _svgFileName;
 
-      // retrieve symbol from relevant folder (operating system dependent)
-      final String system = System.getProperty("os.name");
-      final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
-      final String svgPath;
-      if(system.startsWith("Win"))
-      {
-        svgPath = "/" + SVG_SYMBOL_FOLDER + filePath;
-      }
-      else
-      {
-        svgPath = filePath;
-      }
-  
-      final InputStream inputStream = SVGShape.class.getResourceAsStream(svgPath);
+    final String filePath = "/" + fName + SymbolFactory.SVG_EXTENSION;
+    final String svgPath = filePath;
+
+    final InputStream pluginResource = SVGShape.class.getResourceAsStream("/"
+        + SVG_SYMBOL_FOLDER + filePath);
+
+    try (InputStream inputStream = pluginResource != null ? pluginResource
+        : SVGShape.class.getResourceAsStream(svgPath);)
+    {
 
       if (inputStream == null)
       {
         // Resource doesn't exist
-        Trace.trace(new FileNotFoundException(_svgFileName), "Failed to open SVG file " + _svgFileName + " from " + svgPath);
+        Trace.trace(new FileNotFoundException(_svgFileName),
+            "Failed to open SVG file " + _svgFileName + " from " + svgPath);
         return null;
       }
       else
@@ -282,20 +277,23 @@ public class SVGShape extends PlainSymbol
         }
         catch (ParserConfigurationException e)
         {
-          Trace.trace(e,  "While configuring parser");
+          Trace.trace(e, "While configuring parser");
           return null;
         }
         catch (SAXException e)
         {
-          Trace.trace(e,  "While parsing SVG file");
+          Trace.trace(e, "While parsing SVG file");
           return null;
         }
-        catch (IOException e)
-        {
-          Trace.trace(e,  "While reading document");
-          return null;
-        }
+
       }
+    }
+    catch (IOException e)
+    {
+
+      Trace.trace(e, "While reading document");
+      return null;
+    }
   }
 
   private void parseOrigin(Node element)

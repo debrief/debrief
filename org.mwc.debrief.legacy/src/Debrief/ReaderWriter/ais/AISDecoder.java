@@ -39,9 +39,9 @@ import MWC.GUI.ToolParent;
  * Implementation of the AISDecoder in accordance with<br>
  * IMO Recommendation ITU-R.M.1371-1<br>
  * and INTERNATIONAL STANDARD IEC 61993-2:<br>
- * "Maritime navigation and radio communication equipment and systems –
- * Automatic identification systems (AIS) – Part 2: Class A shipborne equipment
- * of the universal automatic identification system (AIS) – Operational and
+ * "Maritime navigation and radio communication equipment and systems -
+ * Automatic identification systems (AIS) - Part 2: Class A shipborne equipment
+ * of the universal automatic identification system (AIS) - Operational and
  * performance requirements, methods of test and required test results."
  * 
  * @author Alexander Lotter

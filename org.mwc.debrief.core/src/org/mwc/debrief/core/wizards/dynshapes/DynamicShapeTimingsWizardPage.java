@@ -30,10 +30,11 @@ import org.mwc.cmap.media.PlanetmayoFormats;
 import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 /**
- * This is the page used for the showing the timings for all the
- * dynamic shape wizards including sensor arcs.
- * @author Ayesha <ayesha.ma@gmail.com>
+ * This is the page used for the showing the timings for all the dynamic shape wizards including
+ * sensor arcs.
  * 
+ * @author Ayesha <ayesha.ma@gmail.com>
+ *
  */
 public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
 {
@@ -41,64 +42,63 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
   private CDateTime _cEndTime;
   private Button _chkStartTime;
   private Button _chkEndTime;
-  private Date _startTime,_endTime;
-  private String _type;
+  private final Date _startTime, _endTime;
+  private final String _type;
 
-  public DynamicShapeTimingsWizardPage(String pageName,String type,Date startTime,Date endTime)
+  public DynamicShapeTimingsWizardPage(final String pageName, final String type,
+      final Date startTime, final Date endTime)
   {
-    super(pageName);
+    super(pageName,type);
     this._startTime = startTime;
     this._endTime = endTime;
     this._type = type;
-    setTitle("Create dynamic "+type);
-    if(NewSensorArcWizard.SHAPE_NAME.equals(type)) {
-      setDescription("This wizard is used to create new track shapes (or sensor arcs)");  
-    }
-    else {
-      setDescription("This wizard is used to create new dynamic shapes");
-    }
-    
   }
 
   @Override
-  public void createControl(Composite parent)
+  public void createControl(final Composite parent)
   {
-    Composite mainComposite = new Composite(parent,SWT.NULL);
+    final Composite mainComposite = new Composite(parent, SWT.NULL);
     mainComposite.setLayout(new GridLayout());
     mainComposite.setLayoutData(new GridData(GridData.FILL));
-    Composite baseComposite = super.createBaseControl(mainComposite);
-    Composite composite = new Composite(baseComposite,SWT.NULL);
-    composite.setLayout(new GridLayout(3,false));
-    new Label(composite,SWT.NULL).setText("");
-    new Label(composite,SWT.BOLD).setText("Present");
-    new Label(composite,SWT.BOLD).setText("Value");
-    new Label(composite,SWT.NULL).setText("Start Time:");
-    _chkStartTime = new Button(composite,SWT.CHECK);
-    _cStartTime = new CDateTime(composite,CDT.BORDER);
-    GridData gd1 = new GridData();
-    gd1.minimumWidth=300;
-    gd1.grabExcessHorizontalSpace=true;
+    final Composite baseComposite = super.createBaseControl(mainComposite);
+    final Composite composite = new Composite(baseComposite, SWT.NULL);
+    composite.setLayout(new GridLayout(3, false));
+    new Label(composite, SWT.NULL).setText("");
+    new Label(composite, SWT.BOLD).setText("Present");
+    new Label(composite, SWT.BOLD).setText("Value");
+    new Label(composite, SWT.NULL).setText("Start Time:");
+    _chkStartTime = new Button(composite, SWT.CHECK);
+    _cStartTime = new CDateTime(composite, CDT.BORDER);
+    final GridData gd1 = new GridData();
+    gd1.minimumWidth = 300;
+    gd1.grabExcessHorizontalSpace = true;
     _cStartTime.setLayoutData(gd1);
-    _cStartTime.setPattern(PlanetmayoFormats.getInstance().getDateFormat().toPattern());
+    _cStartTime.setPattern(PlanetmayoFormats.getInstance().getDateFormat()
+        .toPattern());
     _cStartTime.setEnabled(false);
-    
+
     _chkStartTime.addSelectionListener(new SelectionAdapter()
     {
-      public void widgetSelected(SelectionEvent e) {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
         _cStartTime.setEnabled(_chkStartTime.getSelection());
         _cStartTime.setSelection(_startTime);
         setPageComplete(isPageComplete());
       };
     });
-    new Label(composite,SWT.NULL).setText("End Time:");
-    _chkEndTime = new Button(composite,SWT.CHECK);
-    _cEndTime = new CDateTime(composite,CDT.BORDER);
-    _cEndTime.setPattern(PlanetmayoFormats.getInstance().getDateFormat().toPattern());
+    new Label(composite, SWT.NULL).setText("End Time:");
+    _chkEndTime = new Button(composite, SWT.CHECK);
+    _cEndTime = new CDateTime(composite, CDT.BORDER);
+    _cEndTime.setPattern(PlanetmayoFormats.getInstance().getDateFormat()
+        .toPattern());
     _cEndTime.setEnabled(false);
     _cEndTime.setLayoutData(gd1);
     _chkEndTime.addSelectionListener(new SelectionAdapter()
     {
-      public void widgetSelected(SelectionEvent e) {
+      @Override
+      public void widgetSelected(final SelectionEvent e)
+      {
         _cEndTime.setEnabled(_chkEndTime.getSelection());
         _cEndTime.setSelection(_endTime);
         setPageComplete(isPageComplete());
@@ -107,57 +107,66 @@ public class DynamicShapeTimingsWizardPage extends DynamicShapeBaseWizardPage
     _cStartTime.addSelectionListener(new SelectionAdapter()
     {
       @Override
-      public void widgetSelected(SelectionEvent e)
+      public void widgetSelected(final SelectionEvent e)
       {
         setPageComplete(isPageComplete());
       }
-      
+
     });
     _cEndTime.addSelectionListener(new SelectionAdapter()
     {
       @Override
-      public void widgetSelected(SelectionEvent e)
+      public void widgetSelected(final SelectionEvent e)
       {
         setPageComplete(isPageComplete());
       }
     });
     setControl(mainComposite);
   }
-  
+
+  public Date getEndTime()
+  {
+    return _chkEndTime.getSelection() ? _cEndTime.getSelection() : null;
+  }
+
+  public Date getStartTime()
+  {
+    return _chkStartTime.getSelection() ? _cStartTime.getSelection() : null;
+  }
+
   @Override
   public boolean isPageComplete()
   {
-    
+
     boolean isComplete = false;
-    if(!NewSensorArcWizard.SHAPE_NAME.equals(_type)) {
+    if (!NewSensorArcWizard.SHAPE_NAME.equals(_type))
+    {
       setErrorMessage(null);
       isComplete = true;
     }
-    else {
-      isComplete = ((_chkStartTime.getSelection() && _cStartTime.getSelection()!=null) ||
-          (_chkEndTime.getSelection() && _cEndTime.getSelection()!=null));
-      if(!isComplete) {
-        setErrorMessage("Either start time or end time is required");
+    else
+    {
+      isComplete = ((_chkStartTime.getSelection() && _cStartTime
+          .getSelection() != null) || (_chkEndTime.getSelection() && _cEndTime
+              .getSelection() != null));
+      if (!isComplete)
+      {
+        setErrorMessage("Please enter one of starttime or endtime");
       }
-      else {
-        if(_chkStartTime.getSelection() && _chkEndTime.getSelection() && !_cStartTime.getSelection().before(_cEndTime.getSelection())) {
-          setErrorMessage("The start time must be before end time");
+      else
+      {
+        if (_chkStartTime.getSelection() && _chkEndTime.getSelection()
+            && !_cStartTime.getSelection().before(_cEndTime.getSelection()))
+        {
+          setErrorMessage("Please provide a starttime earlier than the endtime");
         }
-        else {
+        else
+        {
           setErrorMessage(null);
           isComplete = true;
         }
       }
     }
     return isComplete;
-  }
-
-  public Date getStartTime()
-  {
-    return _chkStartTime.getSelection()?_cStartTime.getSelection():null;
-  }
-  public Date getEndTime()
-  {
-    return _chkEndTime.getSelection()?_cEndTime.getSelection():null;
   }
 }
