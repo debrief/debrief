@@ -4111,6 +4111,13 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+				<xs:attribute name="PlotSensorLocation" type="xs:boolean"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to include sensor location (or just use "NULL")
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 				<xs:attribute name="record_decisions" type="xs:boolean"
 					use="required">
 					<xs:annotation>

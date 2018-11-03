@@ -67,6 +67,11 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * 
    */
   private String _subjectSensor;
+  
+  /** whether to include sensor location (or just null)
+   * 
+   */
+  private boolean _includeSensorLocation = false;
 
   /***************************************************************
    * constructor
@@ -440,7 +445,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     }
   }
 
-  private void outputThisLocation(WorldLocation loc,
+  private static void outputThisLocation(WorldLocation loc,
       java.io.OutputStreamWriter os, String message)
   {
     String locStr =
@@ -527,8 +532,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     // if (!haveOutputPositions)
     // return;
 
-    // use NULL as the location, so it's calculated from parent
-    String locStr ="NULL"; //  MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    final String locStr = isIncludeSensorLocation() ? 
+        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc) : "NULL";
 
     String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
@@ -611,7 +616,8 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
       Category hostCategory, Float bearing, Float ambigBearing,
       WorldDistance range, String sensor_name, String label, Float freq)
   {
-    final String locStr = "NULL";// MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
+    final String locStr = isIncludeSensorLocation() ? 
+        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc) : "NULL";
     
     final String dateStr =
         MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg);
@@ -756,5 +762,15 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   public String getTargetFolder()
   {
     return _targetFolder;
+  }
+
+  public boolean isIncludeSensorLocation()
+  {
+    return _includeSensorLocation;
+  }
+
+  public void setIncludeSensorLocation(final boolean includeSensorLocation)
+  {
+    this._includeSensorLocation = includeSensorLocation;
   }
 }
