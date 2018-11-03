@@ -31,6 +31,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
@@ -319,6 +320,7 @@ public class ImportWordDummy
     public NarrEntry(String entry) throws ParseException
     {
       DateFormat dateF = new GMTDateFormat("HH:mm:ss");
+      DateFormat dateF2 = new GMTDateFormat("HH:mm");
 
       String[] parts = entry.split(",");
       int ctr = 0;
@@ -335,7 +337,18 @@ public class ImportWordDummy
         Date datePart =
             new Date(Integer.parseInt(yrStr) - 1900,
                 Integer.parseInt(monStr) - 1, Integer.parseInt(dayStr));
-        Date timePart = dateF.parse(timeStr);
+        
+        Date timePart = null;
+        try
+        {
+          timePart = dateF.parse(timeStr);
+        }
+        catch (ParseException pe)
+        {
+          Trace.trace("Failed to correctly parse:" + timeStr
+              + " Trying for short time", false);
+          timePart = dateF2.parse(timeStr);
+        }
 
         dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
 
@@ -495,7 +508,7 @@ public class ImportWordDummy
       // hmmm, how many tracks
       assertEquals("got new tracks", 4, tLayers.size());
 
-      assertEquals("received messages", 2, tstMessages.size());
+      assertEquals("received messages", 1, tstMessages.size());
     }
 
   }

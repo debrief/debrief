@@ -1,0 +1,79 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: verify_vessel_positions_by_moving_slowly
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _qJ_jAMGCEeitrdPUr06k7w
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/30/18 10:12 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree|select "demo/sample_data/sample.dpf" | double-click
+with [get-view "Time Controller"] {
+    with [get-label "95/12/12 05:00"] {
+        get-property backgroundColor | equals "#000000" | verify-true
+        get-property foregroundColor | equals "#21FF16" | verify-true
+    }
+    with [get-button "Move to start of dataset"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move to start of dataset" | verify-true
+    }
+    with [get-button "Move backward large step (hold to repeat)"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move backward large step (hold to repeat)" | verify-true
+    }
+    with [get-button "Move backward small step (hold to repeat)"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move backward small step (hold to repeat)" | verify-true
+    }
+    with [get-button "Start automatically moving forward"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Start automatically moving forward" | verify-true
+    }
+    with [get-button "Move forward small step (hold to repeat)"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move forward small step (hold to repeat)" | verify-true
+    }
+    with [get-button "Move forward large step (hold to repeat)"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move forward large step (hold to repeat)" | verify-true
+    }
+    with [get-button "Move to end of dataset"] {
+        get-property enablement | equals true | verify-true
+        get-property tooltip | equals "Move to end of dataset" | verify-true
+    }
+}
+let [val display[get-view "Time Controller" | get-label "95/12/12 05:00"]] {
+		with [get-view "Time Controller" | get-button "Start automatically moving forward"] {
+		 $display | get-property "getText()" | equals "95/12/12 05:00" 
+		    | verify-true
+		      click //start 
+		      wait 3000
+			  click //stop 
+		   try -times 5 -delay 1000 -command {
+			   
+			   $display | get-property "getText()" | equals "95/12/12 05:03" 
+			    | verify-true
+			    
+		    } -catch {
+		    //ignore
+		    }
+		    
+		     $display | get-property "getText()" | equals "95/12/12 05:03" 
+			    | verify-true
+			  
+		}
+}		
+		
+
+//close opened sample.dpf file
+get-menu -path "File/Close" | click
+try {
+get-window "Save Resource" | get-button No | click
+}-catch {}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

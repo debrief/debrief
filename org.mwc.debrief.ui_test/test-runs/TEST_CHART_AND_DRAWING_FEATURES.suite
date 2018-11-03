@@ -1,0 +1,21 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: TEST_CHART_AND_DRAWING_FEATURES
+Element-Type: testsuite
+Element-Version: 2.0
+Id: _1HHLwLdZEeiM5eY0Whi1MQ
+Manually-Ordered: true
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 8:00 AM
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8
+Content-Type: text/testcase
+Entry-Name: testcase-items
+
+_QMn3MK9cEei4e5U78aujdw	// kind: 'test' name: 'create-new-sample-data-project-if-not-found' path: '../test-cases/create-new-sample-data-project-if-not-found.test'
+_YIcBYLZmEei9HbqzWP49ng	// kind: 'test' name: 'add_drawing_feature' path: '../test-cases/chart_and_drawing_features/add_drawing_feature.test'
+_0BDA0LaDEei9HbqzWP49ng	// kind: 'test' name: 'hide_chart_Features' path: '../test-cases/chart_and_drawing_features/hide_chart_Features.test'
+_Nw1a8LaTEei9HbqzWP49ng	// kind: 'test' name: 'modify_chart_feature' path: '../test-cases/chart_and_drawing_features/modify_chart_feature.test'
+_i7EO8LaREei9HbqzWP49ng	// kind: 'test' name: 'remove_chart_feature' path: '../test-cases/chart_and_drawing_features/remove_chart_feature.test'
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8--

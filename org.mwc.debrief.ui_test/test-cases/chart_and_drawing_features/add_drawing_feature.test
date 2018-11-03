@@ -1,0 +1,43 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: add_drawing_feature
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _YIcBYLZmEei9HbqzWP49ng
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:36 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | select "demo/sample_data/boat1t.dpf" | double-click
+with [get-view Outline | get-tree] {
+    get-item -path "Chart Features \\(1 items\\)" | get-property "getText()" | equals "Chart Features (1 items)" 
+        | verify-true
+    get-item -path "Chart Features \\(1 items\\)" | get-property "getItems().TreeItem[0].getText()" | equals Scale 
+        | verify-true
+}
+with [get-view Outline | get-tree] {
+    get-cell 0 0 | mouse down Right -count 1
+    get-cell 0 0 | mouse up Right -count 1
+}
+get-button Ellipse | click
+with [get-window "Adding new drawing feature"] {
+    get-table | select "Chart Features"
+    get-button OK | click
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Chart Features \\(2 items\\)" | get-property "getText()" | equals "Chart Features (2 items)" 
+        | verify-true
+    get-item -path "Chart Features \\(2 items\\)" | get-property "getItemCount()" | equals 2 | verify-true
+    get-item -path "Chart Features \\(2 items\\)" | get-property "getItems().TreeItem[0].getText()" 
+        | equals "Ellipse:New ellipse" | verify-true
+    get-item -path "Chart Features \\(2 items\\)" | get-property "getItems().TreeItem[1].getText()" | equals Scale 
+        | verify-true
+}
+get-editor "boat1t.dpf" | close
+get-window "Save Resource" | get-button No | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
