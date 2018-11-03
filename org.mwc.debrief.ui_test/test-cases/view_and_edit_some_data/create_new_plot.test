@@ -50,7 +50,7 @@ with [get-window -class WizardDialog] {
 set-dialog-result Color "255,0,128"
 with [get-window -class WizardDialog] {
     get-button Color | click
-    get-combo -after [get-label "Delta:"] | select [get-by-os -linux "1 km" -macosx "1.0 km" -default "1 km" ] // on mac (1.0 )
+    get-combo -after [get-label "Delta:"] | select [get-by-os -linux "1 km" -macosx "1 km" -default "1 km" ] // on mac (1.0 )
     get-button Finish | click
 }
 with [get-view Outline | get-tree] {
