@@ -27,6 +27,10 @@ import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import ASSET.NetworkParticipant;
 import ASSET.ScenarioType;
 import MWC.GenericData.WorldDistance;
@@ -45,6 +49,10 @@ abstract public class InitialSensor extends CoreSensor
   // member bariables
   ////////////////////////////////////////////////////
 
+  /** whether we should also export the sensor data in BRT format
+   * (csv with second since epoch followed by single relative bearing)
+   */
+  final boolean DEV_EXPORT_BRT_FORMAT = true;
 
   /**
 	 * 
@@ -91,7 +99,7 @@ abstract public class InitialSensor extends CoreSensor
     // useful values
     final WorldDistance rng = new WorldDistance(wv.getRange(), WorldDistance.DEGS);
     final double brg = MWC.Algorithms.Conversions.Rads2Degs(wv.getBearing());
-    final double crse = host.getStatus().getCourse();
+    final double crse = getHostCourseFor(host);
 
     // components of the sensor equation
     final double loss = getLoss(environment, targetLocation, hostLocation);
@@ -143,6 +151,21 @@ abstract public class InitialSensor extends CoreSensor
                                tgtSpeed,
                                tgtCourse,
                                target);
+      
+      // are we creating fake BRT data?
+      if(DEV_EXPORT_BRT_FORMAT)
+      {
+        // trim relative bearing
+        double relOut = RelBrg;
+        while(relOut < 0)
+        {
+          relOut += 360;
+        }
+        NumberFormat nf1 = new DecimalFormat("0.000000");        
+        NumberFormat nf2 = new DecimalFormat("0.00");        
+        double timeSecs = time / 1000.0;        
+        System.out.println(nf1.format(timeSecs) + ", " + nf2.format(relOut));
+      }
       
       // hmm, do we produce ambiguous bearings?
       if(isAmbiguous())
