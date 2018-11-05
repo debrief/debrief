@@ -11,7 +11,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -1204,9 +1203,10 @@ public class ZoneChart extends Composite
   public static ZoneChart create(final ZoneChartConfig config,
       final ZoneUndoRedoProvider undoRedoProviderIn, final Composite parent,
       final Zone[] zones, final TimeSeries xySeries,
-      final TimeSeriesCollection[] ambigCutsColl, final TimeSeries[] otherAxisSeries,
-      final ColorProvider blueProv, final ZoneSlicer zoneSlicer,
-      final Runnable deleteOperation, final Runnable resolveAmbiguityOperation)
+      final TimeSeriesCollection[] otherDatasets,
+      final TimeSeries[] otherAxisSeries, final ColorProvider blueProv,
+      final ZoneSlicer zoneSlicer, final Runnable deleteOperation,
+      final Runnable resolveAmbiguityOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -1237,48 +1237,57 @@ public class ZoneChart extends Composite
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
     dataset.addSeries(xySeries);
 
-    if (ambigCutsColl != null)
-    {
-      for (final TimeSeriesCollection coll : ambigCutsColl)
-      {
-        Iterator<?> iter = coll.getSeries().iterator();
-        while(iter.hasNext())
-        {
-          TimeSeries series = (TimeSeries) iter.next();
-          dataset.addSeries(series);
-        }
-      }
-    }
-
     final JFreeChart xylineChart = ChartFactory.createTimeSeriesChart(
         config._chartTitle, // String
         "Time", // String timeAxisLabel
         config._yTitle, // String valueAxisLabel,
-        dataset, false, true, false);
+        null, false, true, false);
 
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
     final DateAxis xAxis = new DateAxis();
     plot.setDomainAxis(xAxis);
 
+    // keep track of dataset creation
+    int datasetCounter = 0;
+    plot.setDataset(0, dataset);
+
+    // add our other datasets
+    if (otherDatasets != null)
+    {
+      for (final TimeSeriesCollection coll : otherDatasets)
+      {
+        ++datasetCounter;
+        plot.setDataset(datasetCounter, coll);
+
+        // sort out the renderer for this dataset
+        final WrappingResidualRenderer renderer = new WrappingResidualRenderer(
+            null, null, coll, 0, 360);
+        renderer.setSeriesShapesVisible(0, true);
+        renderer.setSeriesStroke(0, new BasicStroke(2));
+        plot.setRenderer(datasetCounter, renderer);
+
+      }
+    }
+
     plot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
     plot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
     plot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
 
+    // sort out the renderer for the main dataset
     final WrappingResidualRenderer renderer = new WrappingResidualRenderer(null,
         null, dataset, 0, 360);
-
     final Shape square = new Rectangle2D.Double(-2.0, -2.0, 3.0, 3.0);
     renderer.setSeriesPaint(0, config._lineColor);
     renderer.setSeriesShape(0, square);
     renderer.setSeriesShapesVisible(0, true);
     renderer.setSeriesStroke(0, new BasicStroke(2));
-    renderer.setSeriesStroke(1, new BasicStroke(2));
-    renderer.setSeriesStroke(2, new BasicStroke(2));
     plot.setRenderer(0, renderer);
 
     // do we have data for another dataset
     if (otherAxisSeries != null)
     {
+      datasetCounter++;
+
       // ok, put it into another dataset
       final TimeSeriesCollection ds2 = new TimeSeriesCollection();
       for (final TimeSeries series : otherAxisSeries)
@@ -1286,15 +1295,15 @@ public class ZoneChart extends Composite
         ds2.addSeries(series);
       }
       final NumberAxis y2 = new NumberAxis("\u00b0/sec");
-      plot.setDataset(1, ds2);
-      plot.setRangeAxis(1, y2);
+      plot.setDataset(datasetCounter, ds2);
+      plot.setRangeAxis(datasetCounter, y2);
       final XYLineAndShapeRenderer renderer2 = new XYLineAndShapeRenderer(true,
           true);
       renderer2.setSeriesPaint(0, Color.BLACK);
       renderer2.setSeriesStroke(0, new BasicStroke(2));
-      plot.setRenderer(1, renderer2);
+      plot.setRenderer(datasetCounter, renderer2);
       plot.mapDatasetToRangeAxis(0, 0);
-      plot.mapDatasetToRangeAxis(1, 1);
+      plot.mapDatasetToRangeAxis(datasetCounter, 1);
     }
 
     // ok, wrap it in the zone chart
@@ -1891,7 +1900,7 @@ public class ZoneChart extends Composite
     }
   }
 
-  private Layers getLayers()
+  private static Layers getLayers()
   {
     // ok, populate the data
     final IEditorPart curEditor = PlatformUI.getWorkbench()
