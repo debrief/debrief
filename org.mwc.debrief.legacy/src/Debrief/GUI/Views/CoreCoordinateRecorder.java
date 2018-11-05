@@ -523,7 +523,7 @@ public abstract class CoreCoordinateRecorder
           }
           else
           {
-            showMessageDialog("File exported to:" + expResult.exportedFile);
+            showMessageDialog("File Exported Successfully to:\n" + expResult.exportedFile);
           }
         }
         else
