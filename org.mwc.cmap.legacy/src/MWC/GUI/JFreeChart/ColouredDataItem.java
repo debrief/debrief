@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.JFreeChart;
 
@@ -37,7 +37,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   {
     /**
      * offset the provided time by the desired amount
-     * 
+     *
      * @param val
      *          the actual time value
      * @return the processed time value
@@ -46,42 +46,42 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   }
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   /**
    * the color for this item
    */
-  private Color _myColor;
+  private final Color _myColor;
 
   /**
    * whether to connect this data item to the previous one
-   * 
+   *
    */
-  private boolean _connectToPrevious;
+  private final boolean _connectToPrevious;
 
   /**
    * the provider for the time offset
-   * 
+   *
    */
-  private OffsetProvider _provider;
+  private final OffsetProvider _provider;
 
   /**
    * whether the symbol is visible in the parent object for this data item
    */
-  private boolean _parentSymVisible;
+  private final boolean _parentSymVisible;
 
-  private boolean _isFilled;
+  private final boolean _isFilled;
 
   /**
    * (optionally) store the Debrief item that is being represented by this chart point
    */
-  private Editable _payload;
+  private final Editable _payload;
 
   /**
    * Constructs a new data pair.
-   * 
+   *
    * @param period
    *          the time period.
    * @param value
@@ -111,7 +111,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * Constructs a new data pair.
-   * 
+   *
    * @param period
    *          the time period.
    * @param value
@@ -146,7 +146,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * whether to connect this data point to the previous one
-   * 
+   *
    * @return yes/no to connect
    */
   @Override
@@ -157,7 +157,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * get the color for this point
-   * 
+   *
    * @return the color
    */
   @Override
@@ -168,7 +168,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * the data item that we're rendering
-   * 
+   *
    * @return
    */
   public Editable getPayload()
@@ -178,7 +178,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * Returns the time period.
-   * 
+   *
    * @return the time period.
    */
   @Override
@@ -187,16 +187,15 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
     RegularTimePeriod res = super.getPeriod();
     if (_provider != null)
     {
-      res =
-          new FixedMillisecond(_provider.offsetTimeFor(res
-              .getMiddleMillisecond()));
+      res = new FixedMillisecond(_provider.offsetTimeFor(res
+          .getMiddleMillisecond()));
     }
     return res;
   }
 
   /**
    * whether the parent object this item refers to is visible
-   * 
+   *
    * @return
    */
   public boolean isParentSymVisible()
@@ -206,7 +205,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
 
   /**
    * whether we wish this shape to be filled
-   * 
+   *
    * @return
    */
   public boolean isShapeFilled()
