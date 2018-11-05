@@ -3,7 +3,7 @@ var createMsi = require('msi-packager')
 var options = {
 
   // required
-  source: 'org.mwc.debrief.product/target/products/target/products/DebriefNG/win32/win32/x86_64/DebriefNG',
+  source: 'org.mwc.debrief.product/target/products/DebriefNG/win32/win32/x86_64/DebriefNG',
   output: 'org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi',
   name: 'DebriefNG',
   upgradeCode: '6d8fb213-e072-4f38-a184-bfbf7505307e',
