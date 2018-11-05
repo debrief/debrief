@@ -9,13 +9,6 @@ install:
 addons:
   apt:
     packages:
-    - git
-    - intltool
-    - libgsf-1-dev
-    - uuid-runtime
-    - libglib2.0-dev
-    - libxml2-dev
-    - nodejs
     - pdftk
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
@@ -23,11 +16,9 @@ before_script:
 - export DISPLAY=:99
 - sh -e /etc/init.d/xvfb start
 - sleep 3
-- ./install-msitools.sh
 script: mvn clean verify -U -B -fae
 after_success:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
-- ./build-msi.sh
 deploy:
   provider: releases
   skip_cleanup: true
@@ -40,8 +31,6 @@ deploy:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true
      all_branches: true
