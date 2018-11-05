@@ -53,31 +53,31 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   /**
    * the color for this item
    */
-  private Color _myColor;
+  private final Color _myColor;
 
   /**
    * whether to connect this data item to the previous one
    * 
    */
-  private boolean _connectToPrevious;
+  private final boolean _connectToPrevious;
 
   /**
    * the provider for the time offset
    * 
    */
-  private OffsetProvider _provider;
+  private final OffsetProvider _provider;
 
   /**
    * whether the symbol is visible in the parent object for this data item
    */
-  private boolean _parentSymVisible;
+  private final boolean _parentSymVisible;
 
-  private boolean _isFilled;
+  private final boolean _isFilled;
 
   /**
    * (optionally) store the Debrief item that is being represented by this chart point
    */
-  private Editable _payload;
+  private final Editable _payload;
 
   /**
    * Constructs a new data pair.
