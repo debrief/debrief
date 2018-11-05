@@ -1248,7 +1248,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
-    final TimeSeriesCollection[] ambigCuts = getAmbiguousCutData();
+    final TimeSeriesCollection[] otherDatasets = new TimeSeriesCollection[]
+      {measuredValuesColl, ambigValuesColl};
 
     // let's stop outputting the score series for O/S cutting.
     // We're past that now
@@ -1257,7 +1258,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TimeSeries[] scoreSeries = null;
 
     ownshipZoneChart = ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm,
-        osZones, ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
+        osZones, ownshipCourseSeries, otherDatasets, scoreSeries, blueProv,
         ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
     ownshipZoneChart.updateControls();
 
@@ -2248,12 +2249,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * @return suitably formatted version
    */
   abstract protected String formatValue(final double value);
-
-  private TimeSeriesCollection[] getAmbiguousCutData()
-  {
-    return new TimeSeriesCollection[]
-    {measuredValuesColl, ambigValuesColl};
-  }
 
   private static void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
       final long wholeStart, final long wholeEnd, final List<Long> thisLegTimes,
