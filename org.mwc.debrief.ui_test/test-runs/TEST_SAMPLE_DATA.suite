@@ -1,0 +1,17 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: TEST_SAMPLE_DATA
+Element-Type: testsuite
+Element-Version: 2.0
+Id: _3EBIwLZmEei9HbqzWP49ng
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:26 AM
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8
+Content-Type: text/testcase
+Entry-Name: testcase-items
+
+_MGwK0K9YEei4e5U78aujdw	// kind: 'test' name: 'open_sample_dpf' path: '../test-cases/open_sample_dpf.test'
+_QMn3MK9cEei4e5U78aujdw	// kind: 'test' name: 'create-new-sample-data-project' path: '../test-cases/create-new-sample-data-project.test'
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8--

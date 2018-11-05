@@ -23,7 +23,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NarrativeViewer"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.overview"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.plotViewer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tests"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.TimeController"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tote"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.xyplot"/>

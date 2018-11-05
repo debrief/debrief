@@ -1,0 +1,216 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: add_sensor_data
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _JSPqAL_6EeiTV6DljcgL5w
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:35 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | get-item -path "demo/sample_data/sen_tracks.rep" | get-property "getText()" 
+    | equals "sen_tracks.rep" | verify-true
+
+get-view Navigator | get-tree | select "demo/sample_data/sen_tracks.rep" | double-click
+get-window "Select track mode" | get-button OK | click
+wait 1000
+try {
+get-window "Select track mode" | get-button OK | click
+}-catch {}
+get-view Outline | get-tree | get-cell 0 0 | click
+with [get-view Properties | get-tree] {
+    select "Format/Color" | activate-cell-edit -column 1
+    apply-cell-edit -deactivate
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Color" | get-property "values['Property']" | equals Color | verify-true
+    get-item -path "Format/Color" | get-property "values['Value']" | equals "(R:0 G:100 B:189)" | verify-true
+}
+get-view Outline | get-tree | get-cell 1 0 | click
+with [get-view Properties | get-tree] {
+    select "Format/Color" | activate-cell-edit -column 1
+    apply-cell-edit -deactivate
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Color" | get-property "values['Property']" | equals Color | verify-true
+    get-item -path "Format/Color" | get-property "values['Value']" | equals "(R:224 G:28 B:62)" | verify-true
+}
+get-button "Fit to window" | click
+with [get-view Navigator | get-tree] {
+    select "demo/sample_data/sen_ssk_sensor.dsf"
+    get-item -path "demo/sample_data/sen_ssk_sensor.dsf" | drag-start 23 10
+    get-item -path "demo/sample_data/sen_ssk_sensor.dsf" | drag-enter 39 14 -detail any
+    get-item -path "demo/sample_data/sen_ssk_sensor.dsf" | drag-over 39 14
+    get-item -path "demo/sample_data/sen_tracks.rep" | drag-over 178 16
+    get-item -path "demo/sample_data/sen_ssk_sensor.dsf" | drag-exit
+}
+with [get-control Any -index 155] {
+    drag-enter 1 141 -detail any
+    drag-over 1 141 -detail copy
+    drag-exit
+}
+with [get-editor "sen_tracks.rep" | get-canvas] {
+    drag-enter 0 113
+    drag-over 187 137 -detail copy
+    drag-exit
+    drag-accept 187 137 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "sen_tracks.rep" | get-canvas | drop 187 137 -detail copy
+with [get-window -class WizardDialog] {
+    with [get-editbox -after [get-label "Name:"]] {
+        set-text "New_"
+        key-type "M1+z"
+        set-text "New_SSK_BB"
+    }
+    with [get-button "Next >"] {
+        click
+        click
+        click
+        click
+    }
+    get-button Finish | click
+}
+with [get-view Navigator | get-tree] {
+    drag-end -detail copy
+    select "demo/sample_data/sen_frig_sensor.dsf"
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-start 65 11
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-enter 81 16 -detail any
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-over 81 16
+    get-item -path "demo/sample_data/sen_missing_host_sensor.dsf" | drag-over 124 17
+    get-item -path "demo/sample_data/sen_ssk_freq.dsf" | drag-over 171 12
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-exit
+}
+with [get-editor "sen_tracks.rep" | get-canvas] {
+    drag-enter 137 111
+    drag-over 353 170 -detail copy
+    drag-exit
+    drag-accept 353 170 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "sen_tracks.rep" | get-canvas | drop 353 170 -detail copy
+get-view Navigator | get-tree | drag-end -detail copy
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate" | expand
+    get-cell 2 0 | click
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getText()" | equals "Sensors (5 items)" 
+        | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[0].getText()" 
+        | equals "Sensor:Frigate Optic5 (6 cuts)" | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[0].getChecked()" 
+        | equals false | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[1].getText()" 
+        | equals "Sensor:Frigate_Optic (47 cuts)" | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[1].getChecked()" 
+        | equals false | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[2].getText()" 
+        | equals "Sensor:Frigate_Optic2 (16 cuts)" | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[2].getChecked()" 
+        | equals false | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[3].getText()" 
+        | equals "Sensor:Frigate_Optic3 (16 cuts)" | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[3].getChecked()" 
+        | equals false | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[4].getText()" 
+        | equals "Sensor:Frigate_Optic4 (10 cuts)" | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[4].getChecked()" 
+        | equals false | verify-true
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 3 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 4 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 5 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 6 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 7 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+//checking wether they are visible on the outline view
+/*with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[0].getChecked()" 
+        | equals true | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[1].getChecked()" 
+        | equals true | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[2].getChecked()" 
+        | equals true | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[3].getChecked()" 
+        | equals true | verify-true
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | get-property "getItems().TreeItem[4].getChecked()" 
+        | equals true | verify-true
+}*/
+with [get-view Outline | get-tree] {
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)" | get-property "getText()" | equals "Sensors (1 items)" 
+        | verify-true
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)" | get-property "getItems().TreeItem[0].getText()" 
+        | equals "Sensor:New_SSK_BB (15 cuts)" | verify-true
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)" | expand
+    get-cell 11 1 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 3 0 | mouse down Right -count 1
+    get-cell 3 0 | mouse up Right -count 1
+    get-cell 8 0 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 3 0 | click
+}
+//No editing support for tree column viewer error happens here
+/*with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 4 1 | check
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 4 1 | check
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 6 1 | check
+}*/
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

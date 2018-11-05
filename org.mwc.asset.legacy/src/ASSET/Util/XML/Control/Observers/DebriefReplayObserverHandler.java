@@ -86,6 +86,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   final private List<String> _formatHelpers = new ArrayList<String>();
   private String _subjectSensor = null;
   private String _targetFolder = null;
+  private Boolean _includeSensorLocation = null;
 
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
@@ -93,6 +94,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   private static final String TARGET_TYPE = "SubjectToTrack";
   private static final String SUBJECT_SENSOR = "SubjectSensor";
   private static final String TARGET_FOLDER = "TargetFolder";
+  private static final String PLOT_SENSOR_LOCATION = "PlotSensorLocation"; 
 
   public DebriefReplayObserverHandler(String type)
   {
@@ -124,6 +126,13 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final boolean val)
       {
         _recordDecisions = val;
+      }
+    });
+    addAttributeHandler(new HandleBooleanAttribute(PLOT_SENSOR_LOCATION)
+    {
+      public void setValue(String name, final boolean val)
+      {
+        _includeSensorLocation = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS)
@@ -173,6 +182,11 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
       debriefObserver.setTargetFolder(_targetFolder);
     }
     
+    if(_includeSensorLocation != null)
+    {
+      debriefObserver.setIncludeSensorLocation(_includeSensorLocation);
+    }
+    
     setObserver(debriefObserver);
 
     // close the parenet
@@ -185,6 +199,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
     _targetType = null;
     _subjectSensor = null;
     _targetFolder = null;
+    _includeSensorLocation = null;
     
     // and clear the format helpers
     _formatHelpers.clear();

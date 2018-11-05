@@ -1760,7 +1760,8 @@ public class ImportNarrativeDocument
     }
     boolean proceed = true;
     ImportNarrativeEnum whatToImport = null;
-    if(trimNarrativeHelper!=null) {
+    if(trimNarrativeHelper!=null) 
+    {
       whatToImport = trimNarrativeHelper.findWhatToImport();
     }
     else {

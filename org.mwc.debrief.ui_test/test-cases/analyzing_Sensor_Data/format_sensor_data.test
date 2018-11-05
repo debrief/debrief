@@ -1,0 +1,174 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: format_sensor_data
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _ZwXisMCREeiqq4LbHeQqIQ
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:35 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | select "demo/sample_data/sen_tracks.rep" | double-click
+get-window "Select track mode" | get-button OK | click
+wait 1000
+try {
+get-window "Select track mode" | get-button OK | click
+}-catch {}
+
+with [get-view Navigator | get-tree] {
+    select "demo/sample_data/sen_ssk_sensor.dsf"
+    get-item -path "demo/sample_data/sen_ssk_sensor.dsf" | drag-start 48 12
+}
+with [get-editor "sen_tracks.rep" | get-canvas] {
+    drag-enter 60 81
+    drag-over 192 89 -detail copy
+    drag-exit
+    drag-accept 192 89 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "sen_tracks.rep" | get-canvas | drop 192 89 -detail copy
+with [get-window -class WizardDialog] {
+    get-editbox -after [get-label "Name:"] | set-focus
+    with [get-button "Next >"] {
+        click
+        click
+        click
+        click
+    }
+    get-button Finish | click
+}
+with [get-view Navigator | get-tree] {
+    drag-end -detail copy
+    select "demo/sample_data/sen_frig_sensor.dsf"
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-start 62 10
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-enter 71 10 -detail any
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-over 71 10
+    get-item -path "demo/sample_data/sen_missing_host_sensor.dsf" | drag-over 325 17
+    get-item -path "demo/sample_data/sen_ssk_freq.dsf" | drag-over 354 5
+    get-item -path "demo/sample_data/sen_frig_sensor.dsf" | drag-exit
+}
+with [get-editor "sen_tracks.rep" | get-canvas] {
+    drag-enter 9 63
+    drag-over 355 119 -detail copy
+    drag-exit
+    drag-accept 355 119 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "sen_tracks.rep" | get-canvas | drop 355 119 -detail copy
+get-view Navigator | get-tree | drag-end -detail copy
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 3 1 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 4 1 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 5 1 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 6 1 | click
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 7 1 | click
+}
+//make each sensor data visible
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 3 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 4 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 5 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 6 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:Frigate/Sensors \\(5 items\\)" | expand
+    get-cell 7 0 | click
+}
+with [get-view Properties | get-tree] {
+    select "Misc/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit
+    key-type Enter
+}
+
+
+with [get-view Outline | get-tree] {
+    select "Track:New_SSK" | get-item -path "Track:New_SSK/Sensors \\(1 items\\)" | expand
+    get-cell 11 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)" | expand
+    get-cell 11 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 12 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 13 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 14 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 15 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 16 1 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 12 0 | click
+    get-item -path "Track:New_SSK/Sensors \\(1 items\\)/Sensor:New_SSK_BB \\(15 cuts\\)" | expand
+    get-cell 16 0 | mouse down -with M2 -count 1
+    get-cell 16 0 | mouse up -with M2 -count 1
+}
+with [get-view Properties | get-tree] {
+    select "Format/Visible" | activate-cell-edit -column 1
+    get-combo | select Yes
+    apply-cell-edit -deactivate
+    key-type Enter
+    select "Format/Color" | activate-cell-edit -column 1
+    apply-cell-edit -deactivate
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Color" | get-property "values['Property']" | equals Color | verify-true
+    get-item -path "Format/Color" | get-property "values['Value']" | equals "(R:255 G:0 B:0)" | verify-true
+}
+get-view Properties | get-tree | select "Format/Color" | activate-cell-edit -column 1
+set-dialog-result Color "255,255,0"
+with [get-view Properties | get-tree] {
+    get-button "..." | click
+    apply-cell-edit -deactivate
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Format/Color" | get-property "values['Property']" | equals Color | verify-true
+    get-item -path "Format/Color" | get-property "values['Value']" | equals "(R:255 G:255 B:0)" | verify-true
+}
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

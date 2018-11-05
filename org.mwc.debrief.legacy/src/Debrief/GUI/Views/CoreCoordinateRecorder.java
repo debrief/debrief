@@ -32,7 +32,6 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -154,7 +153,7 @@ public abstract class CoreCoordinateRecorder
 
   private final Layers _myLayers;
   private final PlainProjection _projection;
-  final private Map<String, Track> _tracks = new HashMap<>();
+  final protected Map<String, Track> _tracks = new HashMap<>();
   final private List<String> _times = new ArrayList<String>();
   private boolean _running = false;
   protected String startTime = null;
@@ -368,7 +367,7 @@ public abstract class CoreCoordinateRecorder
       td.setScaleAmount(-1);
       return;
     }
-    
+
     // create the list of units
     setupUnits();
 
@@ -461,19 +460,11 @@ public abstract class CoreCoordinateRecorder
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final double screenHeight = _projection.getScreenArea().getHeight();
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
-              .getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
-              .getValueIn(WorldSpeed.ft_sec) / 3;
-          final TrackPoint trackPoint = new TrackPoint();
-          trackPoint.setCourse((float) courseRads);
-          trackPoint.setSpeed((float) speedYps);
-          trackPoint.setLatitude((float) (screenHeight - point.getY()));
-          trackPoint.setLongitude((float) point.getX());
-          trackPoint.setElevation((float) fix.getLocation().getDepth());
-          trackPoint.setTime(fix.getDTG().getDate());
-          trackPoint.setFormattedTime(_times.get(_times.size() - 1));
-          tp.getSegments().add(trackPoint);
+          final TrackPoint trackPoint = new TrackPoint((float) (screenHeight
+              - point.getY()), (float) point.getX(), (float) fix.getLocation()
+                  .getDepth(), fix.getDTG().getDate(), _times.get(_times.size()
+                      - 1));
+          tp.getPoints().add(trackPoint);
         }
       }
     };
@@ -515,7 +506,7 @@ public abstract class CoreCoordinateRecorder
       // output tracks object.
       // showDialog now
       final ExportDialogResult dialogResult = showExportDialog();
-      
+
       // collate the data object
       if (dialogResult.getStatus())
       {
@@ -560,7 +551,7 @@ public abstract class CoreCoordinateRecorder
       // ok, get the bounding time period
       for (final Track track : tracks.values())
       {
-        final ArrayList<TrackPoint> segs = track.getSegments();
+        final ArrayList<TrackPoint> segs = track.getPoints();
         for (final TrackPoint point : segs)
         {
           final Date thisTime = point.getTime();
@@ -627,7 +618,8 @@ public abstract class CoreCoordinateRecorder
     */
     private static final long serialVersionUID = 1L;
 
-    /** convert this value to our units
+    /**
+     * convert this value to our units
      * 
      * @param degs
      * @return

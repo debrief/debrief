@@ -1,0 +1,100 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: check-maritime_analysis_default_selection
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _tVBEcLKjEeim6Z1_sLeZ9g
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:38 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-preferences-menu | click
+get-window Preferences | get-tree | select "Maritime Analysis"
+with [get-window Preferences] {
+    get-label "Maritime Analysis" | get-property "getText()" | equals "Maritime Analysis" | verify-true
+    with [get-control Any -after [get-label "Settings applicable to Maritime Analysis"]] {
+        get-property "getChildren().Control[0].getText()" 
+            | equals "Default &track import mode: (use 'Ask user' to allow specification of import frequency)" 
+            | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[0].getText()" | equals "DR Track" | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[0].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[1].getText()" | equals "OTG Track" | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[1].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[2].getText()" | equals "Ask user" | verify-true
+        get-property "getChildren().Control[1].getChildren().Control[2].getSelection()" | equals true | verify-true
+        get-property "getChildren().Control[2].getText()" | equals "Default &range units:" | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[0].getText()" | equals yd | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[0].getSelection()" | equals true | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[1].getText()" | equals kyd | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[1].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[2].getText()" | equals nm | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[2].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[3].getText()" | equals km | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[3].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[4].getText()" | equals m | verify-true
+        get-property "getChildren().Control[3].getChildren().Control[4].getSelection()" | equals false | verify-true
+        get-property "getChildren().Control[4].getText()" | equals "Relative &bearing format:" | verify-true
+        get-property "getChildren().Control[5].getChildren().Control[0].getText()" | equals "UK format (R180..G180)" 
+            | verify-true
+        get-property "getChildren().Control[5].getChildren().Control[0].getSelection()" | equals true | verify-true
+        get-property "getChildren().Control[5].getChildren().Control[1].getText()" | equals "US format (0..360)" 
+            | verify-true
+        get-property "getChildren().Control[5].getChildren().Control[1].getSelection()" | equals false | verify-true
+    }
+    
+}
+get-window Preferences | get-button Cancel | click
+// open boat1 rep file and check wether it brings the select track mode dialog
+
+get-view Navigator | get-tree | select "demo/sample_data/boat1.rep" | double-click
+
+with [get-window "Select track mode"] {
+    with [get-button "Dead Reckoning (DR) - positions are calculated using recorded course and speed"] {
+        get-property caption | equals "Dead Reckoning (DR) - positions are calculated using recorded course and speed" 
+            | verify-true
+        get-property selected | equals false | verify-true
+    }
+    with [get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location"] {
+        get-property caption 
+            | equals "Over The Ground (OTG) - where positions are plotted according to the recorded location" 
+            | verify-true
+        get-property selected | equals true | verify-true
+    }
+    with [get-button OK] {
+        get-property enablement | equals true | verify-true
+        get-property caption | equals OK | verify-true
+    }
+    with [get-button Cancel] {
+        get-property enablement | equals true | verify-true
+        get-property caption | equals Cancel | verify-true
+    }
+}
+get-window "Select track mode" | get-button Cancel | click
+
+get-menu -path "File/Close" | click
+try {
+get-window "Save Resource" | get-button No | click
+}-catch {}
+//exec-with-options {
+  //get-window "Select track mode" |  get-property title | equals "Select track mode" | verify-true
+   /* with [get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location"] {
+        get-property "getSelection()" | equals true | verify-true
+        get-property "getText()" 
+            | equals "Over The Ground (OTG) - where positions are plotted according to the recorded location" 
+            | verify-true
+    }*/
+//} -allowStatusDialog
+//set-q7-option eclExecutionDelay 1000  
+/*exec-with-options -disableJobWaiting -command {
+
+ get-window "select track mode" |  get-button Cancel | click
+
+*/
+
+//set-q7-option eclExecutionDelay 0
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

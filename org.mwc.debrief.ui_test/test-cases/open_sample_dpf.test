@@ -1,0 +1,42 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: open_sample_dpf
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _MGwK0K9YEei4e5U78aujdw
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:32 AM
+Testcase-Type: ecl
+
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
+Content-Type: text/plain
+Entry-Name: .description
+
+This test case will import sample data project and opens sample.dpf file and validate that it's seven layer in outline view.
+------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa--
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | select "demo/sample_data/sample.dpf" | double-click
+get-menu -path "Window/Show View/Outline" | click
+
+//validate the 7 layers found in outline view
+with [get-view Outline | get-tree] {
+   
+    get-item -path "Annotations \\(0 items\\)" | get-property "getText()" | equals "Annotations (0 items)" | verify-true
+    get-item -path "Chart Features \\(4 items\\)" | get-property "getText()" | equals "Chart Features (4 items)" 
+        | verify-true
+    get-item -path "Chart lib:JW_Area_1 \\(181 items\\)" | get-property "getText()" 
+        | equals "Chart lib:JW_Area_1 (181 items)" | verify-true
+    get-item -path "Misc \\(5 items\\)" | get-property "getText()" | equals "Misc (5 items)" | verify-true
+    get-item -path "Track:COLLINGWOOD" | get-property "getText()" | equals "Track:COLLINGWOOD" | verify-true
+    get-item -path "Track:NELSON" | get-property "getText()" | equals "Track:NELSON" | verify-true
+    get-item -path "Narratives \\(19 items\\)" | get-property "getText()" | equals "Narratives (19 items)" | verify-true
+}
+
+//close sample.dpf editor
+wait 500
+get-menu -path "File/Close" | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

@@ -4,17 +4,21 @@ import java.util.Date;
 
 public class TrackPoint
 {
-  private float latitude;
-  private float longitude;
-  private float elevation;
-  private Date time;
-  private float course;
-  private float speed;
-  private String formattedTime;
+  private final float latitude;
+  private final float longitude;
+  private final float elevation;
+  private final Date time;
+  private final String formattedTime;
 
-  public float getCourse()
+  public TrackPoint(final float latitude, final float longitude,
+      final float elevation, final Date time, final String formattedTime)
   {
-    return course;
+    super();
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.elevation = elevation;
+    this.time = time;
+    this.formattedTime = formattedTime;
   }
 
   public float getElevation()
@@ -32,54 +36,14 @@ public class TrackPoint
     return longitude;
   }
 
-  public float getSpeed()
-  {
-    return speed;
-  }
-
   public Date getTime()
   {
     return time;
   }
 
-  public void setCourse(final float course)
-  {
-    this.course = course;
-  }
-
-  public void setElevation(final float elevation)
-  {
-    this.elevation = elevation;
-  }
-
-  public void setLatitude(final float latitude)
-  {
-    this.latitude = latitude;
-  }
-
-  public void setLongitude(final float longitude)
-  {
-    this.longitude = longitude;
-  }
-
-  public void setSpeed(final float speed)
-  {
-    this.speed = speed;
-  }
-
-  public void setTime(final Date time)
-  {
-    this.time = time;
-  }
-  
   public String getFormattedTime()
   {
     return formattedTime;
-  }
-
-  public void setFormattedTime(String formattedTime)
-  {
-    this.formattedTime = formattedTime;
   }
 
   @Override
@@ -87,11 +51,11 @@ public class TrackPoint
   {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Float.floatToIntBits(course);
     result = prime * result + Float.floatToIntBits(elevation);
+    result = prime * result + ((formattedTime == null) ? 0 : formattedTime
+        .hashCode());
     result = prime * result + Float.floatToIntBits(latitude);
     result = prime * result + Float.floatToIntBits(longitude);
-    result = prime * result + Float.floatToIntBits(speed);
     result = prime * result + ((time == null) ? 0 : time.hashCode());
     return result;
   }
@@ -106,17 +70,20 @@ public class TrackPoint
     if (getClass() != obj.getClass())
       return false;
     TrackPoint other = (TrackPoint) obj;
-    if (Float.floatToIntBits(course) != Float.floatToIntBits(other.course))
-      return false;
     if (Float.floatToIntBits(elevation) != Float.floatToIntBits(
         other.elevation))
+      return false;
+    if (formattedTime == null)
+    {
+      if (other.formattedTime != null)
+        return false;
+    }
+    else if (!formattedTime.equals(other.formattedTime))
       return false;
     if (Float.floatToIntBits(latitude) != Float.floatToIntBits(other.latitude))
       return false;
     if (Float.floatToIntBits(longitude) != Float.floatToIntBits(
         other.longitude))
-      return false;
-    if (Float.floatToIntBits(speed) != Float.floatToIntBits(other.speed))
       return false;
     if (time == null)
     {
@@ -127,4 +94,5 @@ public class TrackPoint
       return false;
     return true;
   }
+
 }
