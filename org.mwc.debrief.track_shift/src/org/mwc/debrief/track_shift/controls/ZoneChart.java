@@ -1891,7 +1891,7 @@ public class ZoneChart extends Composite
     }
   }
 
-  private Layers getLayers()
+  private static Layers getLayers()
   {
     // ok, populate the data
     final IEditorPart curEditor = PlatformUI.getWorkbench()
