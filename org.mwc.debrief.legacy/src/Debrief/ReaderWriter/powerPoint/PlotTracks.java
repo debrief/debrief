@@ -549,7 +549,7 @@ public class PlotTracks
 
       String animation_path;
 
-      final ArrayList<TrackPoint> coordinates = track.getSegments();
+      final ArrayList<TrackPoint> coordinates = track.getPoints();
 
       int num_coordinate = 0;
 
@@ -696,7 +696,7 @@ public class PlotTracks
     for (Track track : trackData.getTracks())
     {
       int time_delay = intervalDuration * (1 + track.getStepsToSkip());
-      for (int i = 0; i < track.getSegments().size(); i++)
+      for (int i = 0; i < track.getPoints().size(); i++)
       {
         // handle animation objs for time
         Element temp_time_anim = time_anim_tag_first.clone();
@@ -748,7 +748,7 @@ public class PlotTracks
     // we will get the timestamps from the first track
 
     final Track firstItem = trackData.getTracks().get(0);
-    final ArrayList<TrackPoint> coordinates = firstItem.getSegments();
+    final ArrayList<TrackPoint> coordinates = firstItem.getPoints();
     for (final TrackPoint coordinate : coordinates)
     {
       final String timestampString = coordinate.getFormattedTime();
