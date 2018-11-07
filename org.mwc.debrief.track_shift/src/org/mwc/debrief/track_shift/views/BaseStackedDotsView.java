@@ -241,7 +241,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
      * @param date
      * @return
      */
-    private boolean isMidnight(final Date date)
+    private static boolean isMidnight(final Date date)
     {
       final Calendar myCal = Calendar.getInstance();
       myCal.setTimeInMillis(date.getTime());
@@ -302,7 +302,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // now find data in the primary track
         final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
             .getStartDTG(), secondary.getEndDTG());
-        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+        final List<SensorContactWrapper> bearings = StackedDotHelper.getBearings(
             _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
 
         // note: the slicer depends upon bearing. check we have bearing
@@ -338,7 +338,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
         // now find data in the primary track
         final TimePeriod period = new TimePeriod.BaseTimePeriod(secondary
             .getStartDTG(), secondary.getEndDTG());
-        final List<SensorContactWrapper> bearings = _myHelper.getBearings(
+        final List<SensorContactWrapper> bearings = StackedDotHelper.getBearings(
             _myHelper.getPrimaryTrack(), _onlyVisible.isChecked(), period);
 
         // note: the slicer depends upon bearing. check we have bearing
@@ -839,7 +839,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    * 
    * @param coll
    */
-  private void clearCollection(final TimeSeriesCollection coll)
+  private static void clearCollection(final TimeSeriesCollection coll)
   {
     final Iterator<?> iter = coll.getSeries().iterator();
     while (iter.hasNext())
@@ -1034,7 +1034,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @since 1.0.11
    */
-  private TickUnitSource createMyStandardDateTickUnits()
+  private static TickUnitSource createMyStandardDateTickUnits()
   {
     final TickUnits units = new TickUnits();
 
@@ -1248,7 +1248,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
     // if we have any ambiguous cuts, produce a array
     // containing core bearing then ambig bearing
-    final TimeSeriesCollection[] ambigCuts = getAmbiguousCutData();
+    final TimeSeriesCollection[] otherDatasets = new TimeSeriesCollection[]
+      {measuredValuesColl, ambigValuesColl};
 
     // let's stop outputting the score series for O/S cutting.
     // We're past that now
@@ -1257,7 +1258,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     final TimeSeries[] scoreSeries = null;
 
     ownshipZoneChart = ZoneChart.create(oZoneConfig, undoRedoProvider, sashForm,
-        osZones, ownshipCourseSeries, ambigCuts, scoreSeries, blueProv,
+        osZones, ownshipCourseSeries, otherDatasets, scoreSeries, blueProv,
         ownshipLegSlicer, deleteCutsInTurn, resolveAmbiguity);
     ownshipZoneChart.updateControls();
 
@@ -2249,13 +2250,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    */
   abstract protected String formatValue(final double value);
 
-  private TimeSeriesCollection[] getAmbiguousCutData()
-  {
-    return new TimeSeriesCollection[]
-    {measuredValuesColl, ambigValuesColl};
-  }
-
-  private void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
+  private static void getCutsForThisLeg(final List<SensorContactWrapper> cuts,
       final long wholeStart, final long wholeEnd, final List<Long> thisLegTimes,
       final List<Double> thisLegBearings)
   {
@@ -2294,7 +2289,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
   abstract protected ZoneSlicer getOwnshipZoneSlicer(
       final ColorProvider blueProv);
 
-  private double getPrecision(final Precision slicePrecision)
+  private static double getPrecision(final Precision slicePrecision)
   {
     final double RMS_ZIG_RATIO;
     switch (slicePrecision)
@@ -3043,7 +3038,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
       // get the host cuts for this time period
       final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(leg
           .getStart()), new HiResDate(leg.getEnd()));
-      final List<SensorContactWrapper> cuts = _myHelper.getBearings(
+      final List<SensorContactWrapper> cuts = StackedDotHelper.getBearings(
           primaryTrack, false, period);
       final SensorContactWrapper[] observations = cuts.toArray(
           new SensorContactWrapper[]
@@ -3159,7 +3154,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     updateTargetZones();
   }
 
-  private void showThisSelectionInOutline(final List<EditableWrapper> subjects,
+  private static void showThisSelectionInOutline(final List<EditableWrapper> subjects,
       final IEditorPart editor)
   {
     final IStructuredSelection selection = new StructuredSelection(subjects);
@@ -3422,7 +3417,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     return legs;
   }
 
-  private void sliceThisLeg(final List<SensorContactWrapper> cuts,
+  private static void sliceThisLeg(final List<SensorContactWrapper> cuts,
       final ZigDetector slicer, final IZigStorer zigStorer,
       final ILegStorer legStorer, final double optimiseTolerance,
       final double RMS_ZIG_RATIO, final ILog log, final Zone thisZ)
@@ -3861,7 +3856,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
   }
 
-  private EditableWrapper wrapThisCut(final SensorContactWrapper cut,
+  private static EditableWrapper wrapThisCut(final SensorContactWrapper cut,
       final Layers layers)
   {
     final SensorWrapper sensor = cut.getSensor();
@@ -3878,7 +3873,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     return new EditableWrapper(cut, leg, layers);
   }
 
-  private EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
+  private static EditableWrapper wrapThisFix(final FixWrapper fix, final Layers layers)
   {
     final EditableWrapper res;
 
