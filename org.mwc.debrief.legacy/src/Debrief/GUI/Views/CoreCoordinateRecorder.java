@@ -154,7 +154,7 @@ public abstract class CoreCoordinateRecorder
   private final Layers _myLayers;
   private final PlainProjection _projection;
   final protected Map<String, Track> _tracks = new HashMap<>();
-  final private List<String> _times = new ArrayList<String>();
+  final private List<HiResDate> _times = new ArrayList<>();
   private boolean _running = false;
   protected String startTime = null;
   private long _startMillis;
@@ -425,18 +425,26 @@ public abstract class CoreCoordinateRecorder
     return _running;
   }
 
+  private boolean singlePointTrackIsStarting(FixWrapper point,
+      HiResDate timeNow)
+  {
+    return (point.getDTG().equals(timeNow) || (timeNow.greaterThan(point
+        .getDTG()) && !_times.isEmpty() && point.getDTG().greaterThan(_times
+            .get(_times.size() - 1))));
+  }
+
   public void newTime(final HiResDate timeNow)
   {
     if (!_running)
       return;
 
     // get the new time.
-    final String time = _dateFormat.format(timeNow.getDate());
+    final String timeString = _dateFormat.format(timeNow.getDate());
     if (startTime == null)
     {
-      startTime = time;
+      startTime = timeString;
     }
-    _times.add(time);
+    _times.add(timeNow);
 
     final OperateFunction outputIt = new OperateFunction()
     {
@@ -446,7 +454,9 @@ public abstract class CoreCoordinateRecorder
       {
         final LightweightTrackWrapper track = (LightweightTrackWrapper) item;
         final Watchable[] items = track.getNearestTo(timeNow);
-        if (items != null && items.length > 0 && items[0] != null)
+        if (items != null && items.length > 0 && items[0] != null && (!track
+            .isSinglePointTrack() || singlePointTrackIsStarting(
+                (FixWrapper) items[0], timeNow)))
         {
           final FixWrapper fix = (FixWrapper) items[0];
           Track tp = _tracks.get(track.getName());
@@ -462,8 +472,8 @@ public abstract class CoreCoordinateRecorder
           final double screenHeight = _projection.getScreenArea().getHeight();
           final TrackPoint trackPoint = new TrackPoint((float) (screenHeight
               - point.getY()), (float) point.getX(), (float) fix.getLocation()
-                  .getDepth(), fix.getDTG().getDate(), _times.get(_times.size()
-                      - 1));
+                  .getDepth(), fix.getDTG().getDate(), _dateFormat.format(_times
+                      .get(_times.size() - 1).getDate()));
           tp.getPoints().add(trackPoint);
         }
       }
@@ -523,7 +533,8 @@ public abstract class CoreCoordinateRecorder
           }
           else
           {
-            showMessageDialog("File Exported Successfully to:\n" + expResult.exportedFile);
+            showMessageDialog("File Exported Successfully to:\n"
+                + expResult.exportedFile);
           }
         }
         else
