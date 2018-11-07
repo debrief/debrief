@@ -288,8 +288,7 @@ public class ExportPPTDialog extends Dialog
 
   private boolean isValid()
   {
-    return !isNullOrEmpty(txtExportLocation.getText()) && !isNullOrEmpty(
-        txtFilename.getText());
+    return isValidFileName(txtFilename.getText()) && isExportLocationValid();
   }
 
   private void initUI()
@@ -374,6 +373,12 @@ public class ExportPPTDialog extends Dialog
     return text == null || text.trim().isEmpty();
   }
 
+  private boolean isValidFileName(final String text)
+  {
+    return !isNullOrEmpty(text) && text.equals(text.replaceAll(
+        "[^a-zA-Z0-9-_\\.]", "_"));
+  }
+
   @Override
   protected boolean isResizable()
   {
@@ -394,7 +399,7 @@ public class ExportPPTDialog extends Dialog
     {
       return false;
     }
-    return new File(txtExportLocation.getText()).exists();
+    return new File(txtExportLocation.getText()).isDirectory();
   }
 
   @Override
@@ -451,7 +456,7 @@ public class ExportPPTDialog extends Dialog
 
   public void setFileName(final String fileName)
   {
-    this.fileName = fileName;
+    this.fileName = fileName.replaceAll("[^a-zA-Z0-9-_\\.]", "_");
   }
 
   public void setOpenOnComplete(final Boolean openFile)
