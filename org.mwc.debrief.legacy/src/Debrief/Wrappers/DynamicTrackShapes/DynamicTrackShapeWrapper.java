@@ -42,7 +42,7 @@ abstract public class DynamicTrackShapeWrapper extends PlainWrapper implements
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static interface DynamicShape
+	public static interface DynamicShape extends java.io.Serializable
 	{
 		/** paint this dynamic shape
 		 * 
