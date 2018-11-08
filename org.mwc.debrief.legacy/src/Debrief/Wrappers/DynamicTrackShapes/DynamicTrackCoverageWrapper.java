@@ -107,7 +107,11 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	public static class DynamicCoverageShape implements DynamicShape
 	{
 
-		final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
 
 		public DynamicCoverageShape(int MinAngleDegs, int MaxAngleDegs, int minYds,
 				int maxYds)
