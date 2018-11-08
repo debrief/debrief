@@ -3101,6 +3101,40 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("We didnt paint enough polygons points", 8, pointCount);
 
   }
+  
+  public void testDynamicInfillLabel()
+  {
+    final TrackSegment ts0 = getDummyList();
+
+    final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
+    final FixWrapper newFix5 =
+        new FixWrapper(new Fix(new HiResDate(150000),
+            new WorldLocation(3, 4, 3), 1, 2));
+    final FixWrapper newFix6 =
+        new FixWrapper(new Fix(new HiResDate(160000),
+            new WorldLocation(4, 4, 3), 1, 2));
+    final FixWrapper newFix7 =
+        new FixWrapper(new Fix(new HiResDate(170000),
+            new WorldLocation(5, 4, 3), 1, 2));
+    final FixWrapper newFix8 =
+        new FixWrapper(new Fix(new HiResDate(180000),
+            new WorldLocation(6, 4, 3), 1, 2));
+    ts1.addFix(newFix5);
+    ts1.addFix(newFix6);
+    ts1.addFix(newFix7);
+    ts1.addFix(newFix8);
+    
+    // set the label showing on the last point in the first leg
+    FixWrapper last = (FixWrapper) ts0.last();
+    last.setLabelShowing(true);
+    
+    TrackSegment newS = new DynamicInfillSegment(ts0, ts1);
+    assertEquals("got lots of points", 10, newS.size());
+    
+    // does the first one have a label showing
+    FixWrapper first = (FixWrapper) newS.elements().nextElement();
+    assertFalse("label not showing", first.getLabelShowing());
+  }
 
   public void testDynamicInfill()
   {
@@ -3126,6 +3160,10 @@ public class TrackWrapper_Test extends TestCase
 
     TrackSegment newS = new DynamicInfillSegment(ts0, ts1);
     assertEquals("got lots of points", 10, newS.size());
+    
+    // does the first one have a label showing
+    FixWrapper first = (FixWrapper) newS.elements().nextElement();
+    assertFalse("label not showing", first.getLabelShowing());
 
     // have a look at the generated points
     final Enumeration<Editable> pts = newS.elements();
