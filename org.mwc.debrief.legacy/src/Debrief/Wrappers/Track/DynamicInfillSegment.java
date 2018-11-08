@@ -670,7 +670,10 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // remember how the previous track is styled
     final String labelFormat = origin.getLabelFormat();
-    final boolean labelOn = origin.getLabelShowing();
+    final boolean labelOn = false; // see note below.
+    // don't show labels for every item...
+    // of the infill if the last item has label visible.  
+    // was: origin.getLabelShowing();
     final Integer labelLoc = origin.getLabelLocation();
 
     if (_myParent != null)
