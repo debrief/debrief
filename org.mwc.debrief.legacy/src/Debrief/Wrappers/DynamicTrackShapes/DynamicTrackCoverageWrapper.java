@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -104,10 +105,15 @@ public class DynamicTrackCoverageWrapper extends DynamicTrackShapeWrapper
 	 * @author ian
 	 * 
 	 */
-	public static class DynamicCoverageShape implements DynamicShape
+	public static class DynamicCoverageShape implements DynamicShape,Serializable
 	{
 
-		final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
+		/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+    final public int minYds, maxYds, minAngleDegs, maxAngleDegs;
 
 		public DynamicCoverageShape(int MinAngleDegs, int MaxAngleDegs, int minYds,
 				int maxYds)
