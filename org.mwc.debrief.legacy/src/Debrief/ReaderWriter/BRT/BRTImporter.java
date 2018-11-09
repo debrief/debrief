@@ -43,10 +43,19 @@ public class BRTImporter
 
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
+    private static TrackWrapper createTrack(final String name,
+        final Color color)
+    {
+      final TrackWrapper res = new TrackWrapper();
+      res.setColor(color);
+      res.setName(name);
+      return res;
+    }
+
     Layer[] allLayers = new Layer[]
-    {new NarrativeWrapper("Test0"), new NarrativeWrapper("Test1"),
-        new TrackWrapper("1", Color.BLUE), new NarrativeWrapper("Test2"),
-        new TrackWrapper("2", Color.BLUE), new TrackWrapper("3", Color.RED)};
+    {new NarrativeWrapper("Test0"), new NarrativeWrapper("Test1"), createTrack(
+        "1", Color.BLUE), new NarrativeWrapper("Test2"), createTrack("2",
+            Color.BLUE), createTrack("3", Color.RED)};
 
     public void findTrack()
     {

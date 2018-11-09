@@ -235,8 +235,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
               new PropertyDescriptor[_coreDescriptors.length + 1];
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
               _coreDescriptors.length);
-          _coreDescriptorsWithSymbols[0] = displayExpertLongProp(
-              "SnailSymbolSize", "Snail symbol size", "Size of symbol", FORMAT,
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
+              "Snail symbol size", "Size of symbol", FORMAT,
               SymbolScalePropertyEditor.class);
 
           // and now use the new value
@@ -1013,13 +1013,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     setLineThickness(3);
   }
 
-  public TrackWrapper(final String name, final Color color)
-  {
-    this();
-    setColor(color);
-    setName(name);
-  }
-
   /**
    * add the indicated point to the track
    *
@@ -1086,9 +1079,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // just check we don't alraedy have it
       if (_myDynamicShapes.contains(swr))
       {
-        MWC.Utilities.Errors.Trace.trace(
-            "Not adding shape-set, it's already present" + swr.getName(),
-            false);
+        MWC.Utilities.Errors.Trace.trace("Not adding shape-set, it's already present"
+            + swr.getName(), false);
       }
       else
       {
@@ -1102,7 +1094,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else if (point instanceof DynamicTrackShapeWrapper)
     {
-      final DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
+      DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
       DynamicTrackShapeSetWrapper target = null;
       final Enumeration<Editable> iter = getDynamicShapes().elements();
       if (iter != null)
@@ -1230,13 +1222,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MessageProvider.Base.show("Paste Error", "Can't paste " + point
-          + " into track", MessageProvider.ERROR);
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
       Trace.trace("Can't paste " + point + " into track", true);
     }
   }
 
-  @Override
   public void addFix(final FixWrapper theFix)
   {
     // do we have any track segments
@@ -2639,12 +2629,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return _showPositions;
   }
 
-  public PropertyChangeListener[] getPropertyChangeListeners(
-      final String propertyName)
-  {
-    return getSupport().getPropertyChangeListeners(propertyName);
-  }
-
   /**
    * get our child segments
    *
@@ -2820,7 +2804,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    *
    * @return
    */
-  @Override
   public int numFixes()
   {
     int res = 0;
@@ -2975,10 +2958,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
   }
-
-  // ////////////////////////////////////////////////////
-  // LAYER support methods
-  // /////////////////////////////////////////////////////
 
   /**
    * paint the fixes for this track
@@ -3252,6 +3231,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return endPoints;
   }
+
+  // ////////////////////////////////////////////////////
+  // LAYER support methods
+  // /////////////////////////////////////////////////////
 
   /**
    * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
@@ -3537,14 +3520,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
   }
 
-  // ////////////////////////////////////////////////////
-  // track-shifting operation
-  // /////////////////////////////////////////////////////
-
-  // /////////////////////////////////////////////////
-  // support for dragging the track around
-  // ////////////////////////////////////////////////
-
   /**
    * return the range from the nearest corner of the track
    *
@@ -3566,6 +3541,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return nearest;
   }
+
+  // ////////////////////////////////////////////////////
+  // track-shifting operation
+  // /////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////
+  // support for dragging the track around
+  // ////////////////////////////////////////////////
 
   /**
    * if a track segment is going to be split (and then deleted), re-attach any infills to one of the
@@ -4566,6 +4549,12 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
     return visible;
+  }
+
+  public PropertyChangeListener[] getPropertyChangeListeners(
+      final String propertyName)
+  {
+    return getSupport().getPropertyChangeListeners(propertyName);
   }
 
 }
