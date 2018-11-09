@@ -45,8 +45,8 @@ public class BRTImporter
 
     Layer[] allLayers = new Layer[]
     {new NarrativeWrapper("Test0"), new NarrativeWrapper("Test1"),
-        new TrackWrapper(Color.BLUE), new NarrativeWrapper("Test2"),
-        new TrackWrapper(Color.BLUE), new TrackWrapper(Color.RED)};
+        new TrackWrapper("1", Color.BLUE), new NarrativeWrapper("Test2"),
+        new TrackWrapper("2", Color.BLUE), new TrackWrapper("3", Color.RED)};
 
     public void findTrack()
     {
@@ -120,7 +120,7 @@ public class BRTImporter
       final TrackWrapper[] tracks = importer.getTracks();
       assertEquals("getTrack getting TrackWrapper", allLayers[2], tracks[0]);
       assertEquals("getTrack getting TrackWrapper", allLayers[4], tracks[1]);
-      assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[1]);
+      assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[2]);
       assertEquals("amount of tracks extracted", 3, tracks.length);
     }
 

@@ -1013,10 +1013,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     setLineThickness(3);
   }
 
-  public TrackWrapper(Color color)
+  public TrackWrapper(final String name, final Color color)
   {
     this();
     setColor(color);
+    setName(name);
   }
 
   /**
@@ -1101,7 +1102,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else if (point instanceof DynamicTrackShapeWrapper)
     {
-      DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
+      final DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
       DynamicTrackShapeSetWrapper target = null;
       final Enumeration<Editable> iter = getDynamicShapes().elements();
       if (iter != null)
@@ -1235,6 +1236,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
   }
 
+  @Override
   public void addFix(final FixWrapper theFix)
   {
     // do we have any track segments
@@ -2637,6 +2639,12 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return _showPositions;
   }
 
+  public PropertyChangeListener[] getPropertyChangeListeners(
+      final String propertyName)
+  {
+    return getSupport().getPropertyChangeListeners(propertyName);
+  }
+
   /**
    * get our child segments
    *
@@ -2812,6 +2820,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    *
    * @return
    */
+  @Override
   public int numFixes()
   {
     int res = 0;
@@ -2966,6 +2975,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
   }
+
+  // ////////////////////////////////////////////////////
+  // LAYER support methods
+  // /////////////////////////////////////////////////////
 
   /**
    * paint the fixes for this track
@@ -3239,10 +3252,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return endPoints;
   }
-
-  // ////////////////////////////////////////////////////
-  // LAYER support methods
-  // /////////////////////////////////////////////////////
 
   /**
    * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
@@ -3528,6 +3537,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
   }
 
+  // ////////////////////////////////////////////////////
+  // track-shifting operation
+  // /////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////
+  // support for dragging the track around
+  // ////////////////////////////////////////////////
+
   /**
    * return the range from the nearest corner of the track
    *
@@ -3549,14 +3566,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return nearest;
   }
-
-  // ////////////////////////////////////////////////////
-  // track-shifting operation
-  // /////////////////////////////////////////////////////
-
-  // /////////////////////////////////////////////////
-  // support for dragging the track around
-  // ////////////////////////////////////////////////
 
   /**
    * if a track segment is going to be split (and then deleted), re-attach any infills to one of the
@@ -4557,12 +4566,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
     return visible;
-  }
-
-  public PropertyChangeListener[] getPropertyChangeListeners(
-      final String propertyName)
-  {
-    return getSupport().getPropertyChangeListeners(propertyName);
   }
 
 }
