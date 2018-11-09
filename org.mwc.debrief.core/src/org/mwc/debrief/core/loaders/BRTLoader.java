@@ -22,11 +22,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.mwc.cmap.core.wizards.ImportBRTDialog;
-import org.mwc.cmap.core.wizards.ImportNMEADialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.BRT.BRTImporter;
-import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import MWC.GUI.Layers;
 
 public class BRTLoader extends CoreLoader
@@ -39,7 +37,7 @@ public class BRTLoader extends CoreLoader
 
   @Override
   protected IRunnableWithProgress getImporter(IAdaptable target, Layers layers,
-      InputStream inputStream, String fileName) throws Exception
+      final InputStream inputStream,final String fileName) throws Exception
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
 
