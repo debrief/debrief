@@ -235,8 +235,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
               new PropertyDescriptor[_coreDescriptors.length + 1];
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
               _coreDescriptors.length);
-          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
-              "Snail symbol size", "Size of symbol", FORMAT,
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp(
+              "SnailSymbolSize", "Snail symbol size", "Size of symbol", FORMAT,
               SymbolScalePropertyEditor.class);
 
           // and now use the new value
@@ -1013,6 +1013,12 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     setLineThickness(3);
   }
 
+  public TrackWrapper(Color color)
+  {
+    this();
+    setColor(color);
+  }
+
   /**
    * add the indicated point to the track
    *
@@ -1079,8 +1085,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // just check we don't alraedy have it
       if (_myDynamicShapes.contains(swr))
       {
-        MWC.Utilities.Errors.Trace.trace("Not adding shape-set, it's already present"
-            + swr.getName(), false);
+        MWC.Utilities.Errors.Trace.trace(
+            "Not adding shape-set, it's already present" + swr.getName(),
+            false);
       }
       else
       {
@@ -1222,7 +1229,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point
+          + " into track", MessageProvider.ERROR);
       Trace.trace("Can't paste " + point + " into track", true);
     }
   }

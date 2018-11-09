@@ -10,21 +10,24 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.ReaderWriter.BRT;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import org.junit.Assert;
+
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -35,130 +38,6 @@ import junit.framework.TestCase;
 public class BRTImporter
 {
 
-  /**
-   * layer that we are going to be load data to
-   * 
-   */
-  private final Layers _layers;
-
-  /**
-   * brt info given by user.
-   */
-  private final BRTHelper _brtHelper;
-
-  private BRTData brtData;
-
-  /**
-   * Default Constructor
-   * 
-   * @param hB
-   *          Contains the information given by the user using the UI.
-   * @param _layers
-   *          layers available in the plot
-   */
-  public BRTImporter(BRTHelper hB, Layers _layers)
-  {
-    super();
-    this._layers = _layers;
-    this._brtHelper = hB;
-  }
-
-  public BRTData getBrtData()
-  {
-    return brtData;
-  }
-
-  /**
-   * loop through layers, find tracks
-   * 
-   * @param layers
-   *          Layers to loop
-   * @return Tracks available in the layers
-   */
-  private TrackWrapper[] getTracks()
-  {
-    List<TrackWrapper> result = new ArrayList<>();
-
-    Enumeration<Editable> layerIterator = _layers.elements();
-
-    while (layerIterator.hasMoreElements())
-    {
-      Layer layer = (Layer) layerIterator.nextElement();
-      if (TrackWrapper.class.isAssignableFrom(layer.getClass()))
-      {
-        result.add((TrackWrapper) layer);
-      }
-    }
-
-    return result.toArray(new TrackWrapper[]
-    {});
-  }
-
-  public ImportBRTAction importThis(final String fName, final InputStream is)
-  {
-    // TODO.
-    return createImportAction(fName);
-  }
-
-  private ImportBRTAction createImportAction(final String fName)
-  {
-    // find track
-    TrackWrapper track = findTrack();
-    SensorWrapper sensor = new SensorWrapper(fName);
-    // load data
-    // determine color/cut-length to sensor
-    // create sensor
-    final ImportBRTAction action = new ImportBRTAction(sensor, track);
-    // set default color
-    // set array offset (if needed)
-    //loadThese(Sensor…, color, cut-length)
-    return action;
-  }
-
-  private TrackWrapper findTrack()
-  {
-    // TODO
-    return null;
-  }
-
-  public static class ImportBRTAction implements Action
-  {
-    private SensorWrapper sensorAdded;
-    private TrackWrapper track;
-
-    public ImportBRTAction(SensorWrapper sensorAdded, TrackWrapper track)
-    {
-      super();
-      this.sensorAdded = sensorAdded;
-      this.track = track;
-    }
-
-    @Override
-    public boolean isUndoable()
-    {
-      return true;
-    }
-
-    @Override
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    @Override
-    public void undo()
-    {
-      track.removeElement(sensorAdded);
-    }
-
-    @Override
-    public void execute()
-    {
-      track.add(sensorAdded);
-    }
-
-  }
-
   public static class BRTImporterTest extends TestCase
   {
 
@@ -166,76 +45,83 @@ public class BRTImporter
 
     Layer[] allLayers = new Layer[]
     {new NarrativeWrapper("Test0"), new NarrativeWrapper("Test1"),
-        new LightweightTrackWrapper("firstBlue", true, true, Color.BLUE, 1),
-        new NarrativeWrapper("Test2"), new LightweightTrackWrapper("secondBlue",
-            true, true, Color.BLUE, 1), new LightweightTrackWrapper("firstRed",
-                true, true, Color.RED, 1)};
+        new TrackWrapper(Color.BLUE), new NarrativeWrapper("Test2"),
+        new TrackWrapper(Color.BLUE), new TrackWrapper(Color.RED)};
 
-    public void testGetTracks()
+    public void findTrack()
     {
-      Layers testLayers = new Layers();
-      for (Layer l : allLayers)
+      final Layers testLayers = new Layers();
+      for (final Layer l : allLayers)
       {
         testLayers.addThisLayer(l);
       }
 
-      BRTImporter importer = new BRTImporter(null, testLayers);
-      TrackWrapper[] tracks = importer.getTracks();
+      final BRTHelperHeadless headless = new BRTHelperHeadless(true, null, null,
+          null, 0);
+
+      BRTImporter importer = new BRTImporter(headless, testLayers);
+      TrackWrapper selectedTrack;
+      try
+      {
+        selectedTrack = importer.findTrack();
+        assertEquals("Selecting first track, having several blue tracks",
+            allLayers[2], selectedTrack);
+
+        importer = new BRTImporter(new BRTHelperHeadless(true, null, null, null,
+            1), testLayers);
+        selectedTrack = importer.findTrack();
+        assertEquals("Selecting first track, having several blue tracks",
+            allLayers[4], selectedTrack);
+
+        testLayers.clear();
+        testLayers.addThisLayer(allLayers[0]);
+        testLayers.addThisLayer(allLayers[4]);
+
+        importer = new BRTImporter(headless, testLayers);
+        selectedTrack = importer.findTrack();
+        assertEquals("Selecting track from only one blue track", allLayers[4],
+            selectedTrack);
+
+        testLayers.clear();
+        testLayers.addThisLayer(allLayers[0]);
+        testLayers.addThisLayer(allLayers[4]);
+        testLayers.addThisLayer(allLayers[5]);
+
+        importer = new BRTImporter(headless, testLayers);
+        selectedTrack = importer.findTrack();
+        assertEquals("Selecting track from only one blue track", allLayers[4],
+            selectedTrack);
+
+        testLayers.clear();
+        testLayers.addThisLayer(allLayers[0]);
+        testLayers.addThisLayer(allLayers[5]);
+
+        importer = new BRTImporter(headless, testLayers);
+        selectedTrack = importer.findTrack();
+        assertEquals("Selecting track from only one track", allLayers[5],
+            selectedTrack);
+
+      }
+      catch (final Exception e)
+      {
+        Assert.fail(e.getMessage());
+      }
+    }
+
+    public void testGetTracks()
+    {
+      final Layers testLayers = new Layers();
+      for (final Layer l : allLayers)
+      {
+        testLayers.addThisLayer(l);
+      }
+
+      final BRTImporter importer = new BRTImporter(null, testLayers);
+      final TrackWrapper[] tracks = importer.getTracks();
       assertEquals("getTrack getting TrackWrapper", allLayers[2], tracks[0]);
       assertEquals("getTrack getting TrackWrapper", allLayers[4], tracks[1]);
       assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[1]);
       assertEquals("amount of tracks extracted", 3, tracks.length);
-    }
-
-    public void findTrack()
-    {
-      Layers testLayers = new Layers();
-      for (Layer l : allLayers)
-      {
-        testLayers.addThisLayer(l);
-      }
-
-      BRTHelperHeadless headless = new BRTHelperHeadless(true, null, null, null,
-          0);
-
-      BRTImporter importer = new BRTImporter(headless, testLayers);
-      TrackWrapper selectedTrack = importer.findTrack();
-      assertEquals("Selecting first track, having several blue tracks",
-          (TrackWrapper) allLayers[2], selectedTrack);
-
-      importer = new BRTImporter(new BRTHelperHeadless(true, null, null, null,
-          1), testLayers);
-      selectedTrack = importer.findTrack();
-      assertEquals("Selecting first track, having several blue tracks",
-          (TrackWrapper) allLayers[4], selectedTrack);
-
-      testLayers.clear();
-      testLayers.addThisLayer(allLayers[0]);
-      testLayers.addThisLayer(allLayers[4]);
-
-      importer = new BRTImporter(headless, testLayers);
-      selectedTrack = importer.findTrack();
-      assertEquals("Selecting track from only one blue track",
-          (TrackWrapper) allLayers[4], selectedTrack);
-
-      testLayers.clear();
-      testLayers.addThisLayer(allLayers[0]);
-      testLayers.addThisLayer(allLayers[4]);
-      testLayers.addThisLayer(allLayers[5]);
-
-      importer = new BRTImporter(headless, testLayers);
-      selectedTrack = importer.findTrack();
-      assertEquals("Selecting track from only one blue track",
-          (TrackWrapper) allLayers[4], selectedTrack);
-
-      testLayers.clear();
-      testLayers.addThisLayer(allLayers[0]);
-      testLayers.addThisLayer(allLayers[5]);
-
-      importer = new BRTImporter(headless, testLayers);
-      selectedTrack = importer.findTrack();
-      assertEquals("Selecting track from only one track",
-          (TrackWrapper) allLayers[5], selectedTrack);
     }
 
     public void testImport()
@@ -244,19 +130,26 @@ public class BRTImporter
       final String fileContent = "1263297600.000000, 69.00\n"
           + "1263297840.000000, 58.90\n" + "1263298080.000000, 56.70";
 
-      BRTHelperHeadless headless = new BRTHelperHeadless(true, null, Color.BLUE,
-          null, 0);
-      Layers testLayers = new Layers();
-      for (Layer l : allLayers)
+      final BRTHelperHeadless headless = new BRTHelperHeadless(true, null,
+          Color.BLUE, null, 0);
+      final Layers testLayers = new Layers();
+      for (final Layer l : allLayers)
       {
         testLayers.addThisLayer(l);
       }
 
-      BRTImporter importer = new BRTImporter(headless, testLayers);
-      importer.importThis(filename, new ByteArrayInputStream(fileContent
-          .getBytes(StandardCharsets.UTF_8)));
+      final BRTImporter importer = new BRTImporter(headless, testLayers);
+      try
+      {
+        importer.importThis(filename, new ByteArrayInputStream(fileContent
+            .getBytes(StandardCharsets.UTF_8)));
+      }
+      catch (final Exception e)
+      {
+        Assert.fail(e.getMessage());
+      }
 
-      BRTData data = importer.getBrtData();
+      final BRTData data = importer.getBrtData();
       assertEquals("Size of bearing is correct", 3, data.getBearings().length);
       assertEquals("Size of time is correct", 3, data.getTimes().length);
       assertEquals("Reading first bearing correctly", 69.0, data
@@ -273,5 +166,159 @@ public class BRTImporter
       assertEquals("Reading first date correctly", 1263298080000L, (long) data
           .getTimes()[2]);
     }
+  }
+
+  public static class ImportBRTAction implements Action
+  {
+    private final SensorWrapper sensorAdded;
+    private final TrackWrapper track;
+
+    public ImportBRTAction(final SensorWrapper sensorAdded,
+        final TrackWrapper track)
+    {
+      super();
+      this.sensorAdded = sensorAdded;
+      this.track = track;
+    }
+
+    @Override
+    public void execute()
+    {
+      track.add(sensorAdded);
+    }
+
+    @Override
+    public boolean isRedoable()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+
+    @Override
+    public void undo()
+    {
+      track.removeElement(sensorAdded);
+    }
+
+  }
+
+  /**
+   * layer that we are going to be load data to
+   *
+   */
+  private final Layers _layers;
+
+  /**
+   * brt info given by user.
+   */
+  private final BRTHelper _brtHelper;
+
+  private BRTData brtData;
+
+  /**
+   * Default Constructor
+   *
+   * @param hB
+   *          Contains the information given by the user using the UI.
+   * @param _layers
+   *          layers available in the plot
+   */
+  public BRTImporter(final BRTHelper hB, final Layers _layers)
+  {
+    super();
+    this._layers = _layers;
+    this._brtHelper = hB;
+  }
+
+  private ImportBRTAction createImportAction(final String fName)
+      throws Exception
+  {
+    // find track
+    final TrackWrapper track = findTrack();
+    final SensorWrapper sensor = new SensorWrapper(fName);
+    // load data
+    // determine color/cut-length to sensor
+    // create sensor
+    final ImportBRTAction action = new ImportBRTAction(sensor, track);
+    // set default color
+    // set array offset (if needed)
+    // loadThese(Sensor…, color, cut-length)
+    return action;
+  }
+
+  private TrackWrapper findTrack() throws Exception
+  {
+    return _brtHelper.select(getTracks());
+  }
+
+  public BRTData getBrtData()
+  {
+    return brtData;
+  }
+
+  /**
+   * loop through layers, find tracks
+   *
+   * @param layers
+   *          Layers to loop
+   * @return Tracks available in the layers
+   */
+  private TrackWrapper[] getTracks()
+  {
+    final List<TrackWrapper> result = new ArrayList<>();
+
+    final Enumeration<Editable> layerIterator = _layers.elements();
+
+    while (layerIterator.hasMoreElements())
+    {
+      final Layer layer = (Layer) layerIterator.nextElement();
+      if (TrackWrapper.class.isAssignableFrom(layer.getClass()))
+      {
+        result.add((TrackWrapper) layer);
+      }
+    }
+
+    return result.toArray(new TrackWrapper[]
+    {});
+  }
+
+  public ImportBRTAction importThis(final String fName, final InputStream is)
+      throws Exception
+  {
+    final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    String line;
+    int lineCounter = 0;
+
+    final ArrayList<Long> times = new ArrayList<>();
+    final ArrayList<Double> bearings = new ArrayList<>();
+    while ((line = reader.readLine()) != null)
+    {
+      final String[] tokens = line.split(",");
+      if (tokens.length != 2)
+      {
+        throw new Exception(
+            "Wrong format in BRT file. Please consult the user manual");
+      }
+      final Long time = (long) (Double.parseDouble(tokens[0]) * 1000);
+      final Double bearing = Double.parseDouble(tokens[1]);
+      times.add(time);
+      bearings.add(bearing);
+
+      ++lineCounter;
+    }
+
+    brtData = new BRTData(times.toArray(new Long[]
+    {}), bearings.toArray(new Double[]
+    {}));
+
+    System.out.println(lineCounter + " lines read successfully");
+
+    // TODO.
+    return createImportAction(fName);
   }
 }
