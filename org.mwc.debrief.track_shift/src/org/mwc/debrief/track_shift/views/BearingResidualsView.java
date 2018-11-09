@@ -779,10 +779,110 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     PRIMARY, SECONDARY, CLEAR;
   }
 
+  private static class DeleteAmbiguousCutsOperation extends CMAPOperation
+  {
+  
+    /**
+     * the cuts to be deleted
+     *
+     */
+    final private List<SensorContactWrapper> _cutsToDelete;
+  
+    private final Runnable _fireUpdateData;
+  
+    private final ZoneChart zoneChart;
+  
+    public DeleteAmbiguousCutsOperation(final List<SensorContactWrapper> cutsToDelete,
+        final Runnable updateData, final ZoneChart zoneChart)
+    {
+      super("Delete ambiguous cuts");
+  
+      _cutsToDelete = cutsToDelete;
+      _fireUpdateData = updateData;
+      this.zoneChart = zoneChart;
+    }
+  
+    @Override
+    public boolean canRedo()
+    {
+      return false;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return false;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+      
+      for (final SensorContactWrapper t : _cutsToDelete)
+      {
+         t.setAmbiguousBearing(Double.NaN);
+      }
+      
+      // share the good news
+      fireModified();
+  
+      // and refresh
+      _fireUpdateData.run();
+  
+      // and the ownship zone chart
+  
+      final IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Delete ambiguous cuts successful", null);
+      return res;
+    }
+  
+    private void fireModified()
+    {
+      // remember the zones
+      final List<Zone> zones = zoneChart.getZones();
+
+      // hmm let's take a safe copy, in case the next call
+      // clears the zone list
+      final List<Zone> zoneList = new ArrayList<Zone>();
+      zoneList.addAll(zones);
+
+      // and restore the zones
+      zoneChart.setZones(zoneList);
+
+    }
+  
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      throw new IllegalArgumentException("Undo not supported");
+    }
+  }
+
   private static final String SHOW_COURSE = "SHOW_COURSE";
 
   private static final String SCALE_ERROR = "SCALE_ERROR";
 
+  protected static void deleteAmbiguousCuts(final TrackWrapper primaryTrack,
+      final Runnable updateData, final ZoneChart ownshipZoneChart,
+      final ZoneUndoRedoProvider undoRedoProvider)
+  {
+    // find the time period of hte chart
+    final TimePeriod outerPeriod = ownshipZoneChart.getVisiblePeriod();
+
+    // ok, produce the list of cuts to cull
+    final LegOfCuts cutsToDelete = findResolvedAmbiguousCuts(
+        outerPeriod, primaryTrack);
+
+    // delete the ambiguous cuts
+    final IUndoableOperation deleteOperation = new DeleteAmbiguousCutsOperation(
+        cutsToDelete, updateData, ownshipZoneChart);
+
+    // wrap the operation
+    undoRedoProvider.execute(deleteOperation);
+  }
+  
   protected static void deleteCutsInTurnB(final TrackWrapper primaryTrack,
       final Runnable updateData, final ZoneChart ownshipZoneChart,
       final ZoneUndoRedoProvider undoRedoProvider)
@@ -855,6 +955,39 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     return res;
   }
 
+  public static LegOfCuts findResolvedAmbiguousCuts(final TimePeriod outerPeriod, 
+      final TrackWrapper primaryTrack)
+  {
+    final LegOfCuts res = new LegOfCuts();
+    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
+    while (sensors.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+      if (sensor.getVisible())
+      {
+        final Enumeration<Editable> cuts = sensor.elements();
+        while (cuts.hasMoreElements())
+        {
+          final SensorContactWrapper cut = (SensorContactWrapper) cuts
+              .nextElement();
+          if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
+          {
+            // was it in a zone, and has it been resolved?
+            if (!cut.getHasAmbiguousBearing())
+            {
+              // is there still a value sitting there?
+              if (!Double.isNaN(cut.getAmbiguousBearing()))
+              {
+                res.add(cut);
+              }
+            }
+          }
+        }
+      }
+    }
+    return res;
+  }
+  
   private static void restoreCuts(
       final Map<SensorWrapper, LegOfCuts> deletedCuts)
   {
@@ -976,6 +1109,37 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     return res;
   }
 
+  protected Runnable getDeleteAmbiguousCutsOperation()
+  {
+    return new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        final Runnable wrappedDelete = new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            final Runnable updateData = new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                updateData(true);
+              }
+            };
+
+            deleteAmbiguousCuts(_myHelper.getPrimaryTrack(), updateData,
+                ownshipZoneChart, undoRedoProvider);
+          }
+        };
+        BusyIndicator.showWhile(Display.getCurrent(), wrappedDelete);
+      }
+    };
+  }
+  
   @Override
   protected Runnable getDeleteCutsOperation()
   {

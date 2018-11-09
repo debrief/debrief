@@ -1206,7 +1206,8 @@ public class ZoneChart extends Composite
       final TimeSeriesCollection[] otherDatasets,
       final TimeSeries[] otherAxisSeries, final ColorProvider blueProv,
       final ZoneSlicer zoneSlicer, final Runnable deleteOperation,
-      final Runnable resolveAmbiguityOperation)
+      final Runnable resolveAmbiguityOperation, 
+      final Runnable deleteAmbiguousCutsOperation)
   {
 
     final ZoneUndoRedoProvider undoRedoProvider;
@@ -1309,7 +1310,8 @@ public class ZoneChart extends Composite
     // ok, wrap it in the zone chart
     final ZoneChart zoneChart = new ZoneChart(parent, xylineChart,
         undoRedoProvider, zones, blueProv, zoneSlicer, xySeries,
-        deleteOperation, resolveAmbiguityOperation, config._goingHolistic);
+        deleteOperation, resolveAmbiguityOperation, config._goingHolistic,
+        deleteAmbiguousCutsOperation);
 
     // done
     return zoneChart;
@@ -1618,7 +1620,9 @@ public class ZoneChart extends Composite
 
   private final ZoneUndoRedoProvider undoRedoProvider;
 
-  private final Runnable deleteEvent;
+  private final Runnable deleteNotInLegEvent;
+  
+  private final Runnable deleteAmbiguousCutsEvent;
 
   private final Runnable resolveAmbiguityEvent;
 
@@ -1629,13 +1633,15 @@ public class ZoneChart extends Composite
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
       final ColorProvider colorProvider, final ZoneSlicer zoneSlicer,
       final TimeSeries xySeries, final Runnable deleteEvent,
-      final Runnable resolveAmbiguityOperation, final boolean goingHolistic)
+      final Runnable resolveAmbiguityOperation, final boolean goingHolistic,
+      final Runnable deleteAmbiguousCutsEvent)
   {
     super(parent, SWT.NONE);
     this.undoRedoProvider = undoRedoProvider;
     this.chart = xylineChart;
-    this.deleteEvent = deleteEvent;
+    this.deleteNotInLegEvent = deleteEvent;
     this.resolveAmbiguityEvent = resolveAmbiguityOperation;
+    this.deleteAmbiguousCutsEvent = deleteAmbiguousCutsEvent;
     buildUI(xylineChart, goingHolistic);
 
     /**
@@ -1750,6 +1756,8 @@ public class ZoneChart extends Composite
       @SuppressWarnings("unused")
       final Label placeHolder = new Label(col1, SWT.NONE);
     }
+    
+    
 
     createButton(col1, SWT.PUSH, fitToWin24, "Reveal", "Reveal all data",
         new Runnable()
@@ -1784,10 +1792,10 @@ public class ZoneChart extends Composite
       createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
           "Automatically slice zones", getSliceOp(true));
 
-      if (deleteEvent != null)
+      if (deleteNotInLegEvent != null)
       {
         createButton(col1, SWT.PUSH, autoDelete24, "Delete",
-            "Delete cuts not in a leg", deleteEvent);
+            "Delete cuts not in a leg", deleteNotInLegEvent);
       }
     }
     if (resolveAmbiguityEvent != null)
@@ -1795,6 +1803,13 @@ public class ZoneChart extends Composite
       ambigControls.add(createButton(col1, SWT.PUSH, autoResolve24, "Resolve",
           "Resolve Ambiguity", resolveAmbiguityEvent));
     }
+
+    if (deleteAmbiguousCutsEvent != null)
+    {
+      ambigControls.add(createButton(col1, SWT.PUSH, autoResolve24, "Delete Ambig",
+          "Delete ambiguous cuts", deleteAmbiguousCutsEvent));
+    }
+
 
   }
 
