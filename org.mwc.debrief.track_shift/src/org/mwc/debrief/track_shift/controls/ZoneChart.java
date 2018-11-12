@@ -1248,6 +1248,10 @@ public class ZoneChart extends Composite
     final DateAxis xAxis = new DateAxis();
     plot.setDomainAxis(xAxis);
 
+    // make the plot resize, to show all data
+    xAxis.setAutoRange(true);
+    plot.getRangeAxis().setAutoRange(true);
+    
     // keep track of dataset creation
     int datasetCounter = 0;
     plot.setDataset(0, dataset);
@@ -1266,7 +1270,6 @@ public class ZoneChart extends Composite
         renderer.setSeriesShapesVisible(0, true);
         renderer.setSeriesStroke(0, new BasicStroke(2));
         plot.setRenderer(datasetCounter, renderer);
-
       }
     }
 
