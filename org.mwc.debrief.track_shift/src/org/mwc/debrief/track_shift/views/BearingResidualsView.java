@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.io.File;
 import java.io.FileInputStream;
@@ -77,6 +78,7 @@ import Debrief.Wrappers.Track.ITimeVariableProvider;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.SupportsPropertyListeners;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import junit.framework.TestCase;
@@ -653,7 +655,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
   public static class TestResiduals extends TestCase
   {
-    private static TrackWrapper getData(final String name) throws FileNotFoundException
+    private static TrackWrapper getData(final String name)
+        throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -673,6 +676,62 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // get the sensor track
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
       return track;
+    }
+
+    public void testDeleteAmbiguous() throws FileNotFoundException
+    {
+      TrackWrapper track = new TrackWrapper();
+      track.setName("track");
+
+      SensorWrapper s1 = new SensorWrapper("s1");
+
+      SensorContactWrapper sc1 = new SensorContactWrapper(track.getName(),
+          new HiResDate(100000), null, 100d, 120d, null, null, Color.RED, "one",
+          LineStylePropertyEditor.DOT_DASH, "sensor");
+      SensorContactWrapper sc2 = new SensorContactWrapper(track.getName(),
+          new HiResDate(200000), null, 101d, 121d, null, null, Color.RED, "one",
+          LineStylePropertyEditor.DOT_DASH, "sensor");
+      SensorContactWrapper sc3 = new SensorContactWrapper(track.getName(),
+          new HiResDate(300000), null, 102d, 122d, null, null, Color.RED, "one",
+          LineStylePropertyEditor.DOT_DASH, "sensor");
+      SensorContactWrapper sc4 = new SensorContactWrapper(track.getName(),
+          new HiResDate(400000), null, 103d, 123d, null, null, Color.RED, "one",
+          LineStylePropertyEditor.DOT_DASH, "sensor");
+      SensorContactWrapper sc5 = new SensorContactWrapper(track.getName(),
+          new HiResDate(500000), null, 104d, 124d, null, null, Color.RED, "one",
+          LineStylePropertyEditor.DOT_DASH, "sensor");
+
+      s1.add(sc1);
+      s1.add(sc2);
+      s1.add(sc3);
+      s1.add(sc4);
+      s1.add(sc5);
+
+      track.add(s1);
+      ;
+
+      TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(250000),
+          new HiResDate(500000));
+      LegOfCuts resolved = findResolvedAmbiguousCuts(period, track);
+      assertEquals("found none, sensor not visible", 0, resolved.size());
+
+      s1.setVisible(true);
+
+      resolved = findResolvedAmbiguousCuts(period, track);
+      assertEquals("found none, they're not resolved ones", 0, resolved.size());
+
+      // ok, now resolve some
+      sc3.setHasAmbiguousBearing(false);
+      sc4.setHasAmbiguousBearing(false);
+
+      resolved = findResolvedAmbiguousCuts(period, track);
+      assertEquals("found correct ones", 2, resolved.size());
+
+      sc5.setHasAmbiguousBearing(false);
+
+      resolved = findResolvedAmbiguousCuts(period, track);
+      assertEquals("found correct ones", 3, resolved.size());
+
     }
 
     public void testDitchUsingAmbiguity() throws FileNotFoundException
@@ -779,9 +838,116 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     PRIMARY, SECONDARY, CLEAR;
   }
 
+  /**
+   * once an ambiguous cut has been resolved, we continue to remember the ambiguous bearing, to
+   * allow the analyst to change their mind. But, at some point, once the analyst is happy with the
+   * resolution, they may wish to drop the ambiguous bearing, and only deal with the resolved one.
+   * 
+   * @author ian
+   *
+   */
+  private static class DeleteAmbiguousBearingsOperation extends CMAPOperation
+  {
+
+    /**
+     * the cuts to be deleted
+     *
+     */
+    final private List<SensorContactWrapper> _cutsToDelete;
+
+    private final Runnable _fireUpdateData;
+
+    private final ZoneChart zoneChart;
+
+    public DeleteAmbiguousBearingsOperation(
+        final List<SensorContactWrapper> cutsToDelete,
+        final Runnable updateData, final ZoneChart zoneChart)
+    {
+      super("Delete ambiguous cuts");
+
+      _cutsToDelete = cutsToDelete;
+      _fireUpdateData = updateData;
+      this.zoneChart = zoneChart;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+      return false;
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return false;
+    }
+
+    @Override
+    public IStatus execute(final IProgressMonitor monitor,
+        final IAdaptable info) throws ExecutionException
+    {
+
+      for (final SensorContactWrapper t : _cutsToDelete)
+      {
+        t.setAmbiguousBearing(Double.NaN);
+      }
+
+      // share the good news
+      fireModified();
+
+      final IStatus res = new Status(IStatus.OK, TrackShiftActivator.PLUGIN_ID,
+          "Delete ambiguous cuts successful", null);
+      return res;
+    }
+
+    private void fireModified()
+    {
+      // remember the zones
+      final List<Zone> zones = zoneChart.getZones();
+
+      // hmm let's take a safe copy, in case the next call
+      // clears the zone list
+      final List<Zone> zoneList = new ArrayList<Zone>();
+      zoneList.addAll(zones);
+
+      // and refresh
+      _fireUpdateData.run();
+
+      // and restore the zones
+      zoneChart.setZones(zoneList);
+    }
+
+    @Override
+    public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      throw new IllegalArgumentException("Undo not supported");
+    }
+  }
+
   private static final String SHOW_COURSE = "SHOW_COURSE";
 
   private static final String SCALE_ERROR = "SCALE_ERROR";
+
+  protected static void deleteAmbiguousCuts(final TrackWrapper primaryTrack,
+      final Runnable updateData, final ZoneChart ownshipZoneChart,
+      final ZoneUndoRedoProvider undoRedoProvider)
+  {
+    // find the time period of hte chart
+    final TimePeriod outerPeriod = ownshipZoneChart.getVisiblePeriod();
+
+    // ok, produce the list of cuts to cull
+    final LegOfCuts cutsToDelete = findResolvedAmbiguousCuts(outerPeriod,
+        primaryTrack);
+
+    // delete the ambiguous cuts
+    final IUndoableOperation deleteOperation =
+        new DeleteAmbiguousBearingsOperation(cutsToDelete, updateData,
+            ownshipZoneChart);
+
+    // wrap the operation
+    undoRedoProvider.execute(deleteOperation);
+  }
 
   protected static void deleteCutsInTurnB(final TrackWrapper primaryTrack,
       final Runnable updateData, final ZoneChart ownshipZoneChart,
@@ -847,6 +1013,39 @@ public class BearingResidualsView extends BaseStackedDotsView implements
             {
               // ok, have to delete it
               res.add(cut);
+            }
+          }
+        }
+      }
+    }
+    return res;
+  }
+
+  public static LegOfCuts findResolvedAmbiguousCuts(
+      final TimePeriod outerPeriod, final TrackWrapper primaryTrack)
+  {
+    final LegOfCuts res = new LegOfCuts();
+    final Enumeration<Editable> sensors = primaryTrack.getSensors().elements();
+    while (sensors.hasMoreElements())
+    {
+      final SensorWrapper sensor = (SensorWrapper) sensors.nextElement();
+      if (sensor.getVisible())
+      {
+        final Enumeration<Editable> cuts = sensor.elements();
+        while (cuts.hasMoreElements())
+        {
+          final SensorContactWrapper cut = (SensorContactWrapper) cuts
+              .nextElement();
+          if (cut.getVisible() && outerPeriod.contains(cut.getDTG()))
+          {
+            // was it in a zone, and has it been resolved?
+            if (!cut.getHasAmbiguousBearing())
+            {
+              // is there still a value sitting there?
+              if (!Double.isNaN(cut.getAmbiguousBearing()))
+              {
+                res.add(cut);
+              }
             }
           }
         }
@@ -974,6 +1173,37 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     }
 
     return res;
+  }
+
+  protected Runnable getDeleteAmbiguousCutsOperation()
+  {
+    return new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        final Runnable wrappedDelete = new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            final Runnable updateData = new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                updateData(true);
+              }
+            };
+
+            deleteAmbiguousCuts(_myHelper.getPrimaryTrack(), updateData,
+                ownshipZoneChart, undoRedoProvider);
+          }
+        };
+        BusyIndicator.showWhile(Display.getCurrent(), wrappedDelete);
+      }
+    };
   }
 
   @Override
@@ -1271,8 +1501,8 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       {
         final TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(
             zone.getStart()), new HiResDate(zone.getEnd()));
-        final List<SensorContactWrapper> cuts = StackedDotHelper.getBearings(_myHelper
-            .getPrimaryTrack(), true, period);
+        final List<SensorContactWrapper> cuts = StackedDotHelper.getBearings(
+            _myHelper.getPrimaryTrack(), true, period);
         final LegOfCuts leg = new LegOfCuts();
         leg.addAll(cuts);
 
@@ -1297,7 +1527,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
     memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
     memento.putBoolean(SCALE_ERROR, scaleError.isChecked());
   }
-  
+
   @Override
   protected void updateData(final boolean updateDoublets)
   {
@@ -1317,21 +1547,20 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         .getDataset();
     TimeSeriesCollection lineData = (TimeSeriesCollection) _linePlot
         .getDataset();
-    
+
     // have we been created?
     if (_holder == null || _holder.isDisposed())
     {
       return;
     }
-    
-    
-    
-    _myHelper.updateBearingData(errorData, lineData, _switchableTrackDataProvider,
-        _onlyVisible.isChecked(), showCourse.isChecked(), relativeAxes
-            .isChecked(), this, updateDoublets, _targetCourseSeries,
-        _targetSpeedSeries, measuredValuesColl, ambigValuesColl,
-        ownshipCourseSeries, targetBearingSeries, targetCalculatedSeries,
-        _overviewSpeedRenderer, _overviewCourseRenderer, backShader);
+
+    _myHelper.updateBearingData(errorData, lineData,
+        _switchableTrackDataProvider, _onlyVisible.isChecked(), showCourse
+            .isChecked(), relativeAxes.isChecked(), this, updateDoublets,
+        _targetCourseSeries, _targetSpeedSeries, measuredValuesColl,
+        ambigValuesColl, ownshipCourseSeries, targetBearingSeries,
+        targetCalculatedSeries, _overviewSpeedRenderer, _overviewCourseRenderer,
+        backShader);
 
     // and tell the O/S zone chart to update it's controls
     if (ownshipZoneChart != null)
