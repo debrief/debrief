@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.21.0</tycho.version>
-    <tycho-extras.version>0.21.0</tycho-extras.version>
+    <tycho.version>0.22.0</tycho.version>
+    <tycho-extras.version>0.22.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -99,18 +99,18 @@
           <artifactId>tycho-versions-plugin</artifactId>
           <version>${tycho.version}</version>
       </plugin>
-      <plugin>  
-         <groupId>org.eclipse.tycho</groupId>  
-         <artifactId>target-platform-configuration</artifactId>  
-         <version>${tycho.version}</version>  
-         <configuration>  
-         <target>  
-           <artifact>  
-             <groupId>org.mwc.debrief</groupId>  
-             <artifactId>eclipse38</artifactId>  
-             <version>0.0.1-SNAPSHOT</version>  
-           </artifact>  
-         </target>  
+      <plugin>
+         <groupId>org.eclipse.tycho</groupId>
+         <artifactId>target-platform-configuration</artifactId>
+         <version>${tycho.version}</version>
+         <configuration>
+         <target>
+           <artifact>
+             <groupId>org.mwc.debrief</groupId>
+             <artifactId>eclipse38</artifactId>
+             <version>0.0.1-SNAPSHOT</version>
+           </artifact>
+         </target>
           <environments>
 <!--
             <environment>
@@ -140,8 +140,8 @@
               <arch>x86_64</arch>
             </environment>
           </environments>
-         </configuration>  
-      </plugin>  
+         </configuration>
+      </plugin>
       <plugin>
 	<groupId>org.eclipse.tycho</groupId>
 	<artifactId>tycho-surefire-plugin</artifactId>
@@ -208,11 +208,11 @@
 		</executions>
 	</plugin>
 -->
-			
+
     </plugins>
   </build>
-  <profiles> 
-    <profile> 
+  <profiles>
+    <profile>
       <id>mac</id>
       <activation>
         <os>
@@ -230,8 +230,8 @@
             </configuration>
           </plugin>
         </plugins>
-      </build> 
-    </profile> 
+      </build>
+    </profile>
     <profile>
         <id>sign</id>
         <activation>
@@ -270,5 +270,5 @@
             </plugins>
         </build>
     </profile>
-  </profiles> 
+  </profiles>
 </project>
