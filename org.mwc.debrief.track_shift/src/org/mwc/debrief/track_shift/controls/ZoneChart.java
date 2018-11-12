@@ -1676,7 +1676,7 @@ public class ZoneChart extends Composite
     final GridData data = new GridData(GridData.FILL_BOTH
         | GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL);
 
-    data.verticalSpan = 6;
+    data.verticalSpan = 7;
 
     chartComposite.setLayoutData(data);
     createToolbar(this, goingHolistic);
