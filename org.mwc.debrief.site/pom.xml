@@ -9,20 +9,56 @@
         </parent>
 
         <groupId>org.mwc.debrief</groupId>
-        <artifactId>site</artifactId>
+        <artifactId>org.mwc.site</artifactId>
         <name>Debrief update site</name>
+        <version>1.0.348</version>
 
-        <packaging>eclipse-repository</packaging>
+        <packaging>eclipse-feature</packaging>
        
         <build>
         <plugins>
         <plugin>
-		      <groupId>org.eclipse.tycho</groupId>
-		      <artifactId>tycho-packaging-plugin</artifactId>
-		      <configuration>
-		        <archiveSite>true</archiveSite>
-		      </configuration>
-	    </plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<configuration>
+					<deployableFeature>true</deployableFeature>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>categorization</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>category-p2-metadata</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<metadataRepositoryName>Debrief</metadataRepositoryName>
+					<artifactRepositoryName>Debrief</artifactRepositoryName>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/main/assembly/assembly.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 	    <plugin>
        		<groupId>org.apache.maven.plugins</groupId>
        		<artifactId>maven-antrun-plugin</artifactId>
@@ -33,7 +69,7 @@
             		<configuration>
             		<target>
             			DebriefUpdate_zip
-            			<move file="${basedir}/target/site-${version}.zip" tofile="${basedir}/target/update-site/Debrief_UpdateSite.zip" verbose="yes"/>
+            			<move file="${basedir}/target/org.mwc.site-${version}-site.zip" tofile="${basedir}/target/update-site/Debrief_UpdateSite.zip" verbose="yes"/>
               		</target>
              		</configuration>
              		<goals>
@@ -43,6 +79,7 @@
             			
             	</executions>
 	    </plugin>
+	    
 		    
 		    </plugins>
         </build>
