@@ -1429,7 +1429,9 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       final double theScale = _theLocationWrapper.getSymbolScale();
 
-      final double len = 30d * theScale;
+      // derived mx + c empirically by converting symbol
+      // scale values to roughly desired size
+      final double len = 7d * theScale + 10d;
       final double angle = MWC.Algorithms.Conversions.Degs2Rads(20);
 
       // move the start point forward, so the centre of the triangle is over the
