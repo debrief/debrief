@@ -198,14 +198,6 @@ Library.
          version="0.0.0"/>
 
    <includes
-         id="org.mwc.cmap.combined.feature"
-         version="0.0.0"/>
-
-   <includes
-         id="org.mwc.debrief.combined.feature"
-         version="0.0.0"/>
-
-   <includes
          id="org.mwc.debrief.xmleditor.feature"
          version="0.0.0"/>
 

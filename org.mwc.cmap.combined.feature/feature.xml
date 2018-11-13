@@ -196,14 +196,29 @@ Library.
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.jface" version="3.4.1" match="greaterOrEqual"/>
-      <import plugin="com.ibm.icu" version="3.8.1" match="greaterOrEqual"/>
-      <import plugin="org.mwc.debrief.core"/>
       <import plugin="org.eclipse.help"/>
-      <import plugin="org.eclipse.ui.ide" version="3.5.2" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="com.ibm.icu"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.mwc.cmap.jfreechart" version="1.0.16" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.ide" version="3.5.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="3.5.0" match="greaterOrEqual"/>
-      <import plugin="org.hamcrest.core" version="1.1.0" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.legacy" version="1.0.50" match="greaterOrEqual"/>
+      <import plugin="org.apache.commons.logging"/>
+      <import plugin="org.mwc.cmap.gt2Plot" version="1.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.plotViewer" match="greaterOrEqual"/>
+      <import plugin="org.mwc.debrief.core"/>
+      <import plugin="org.mwc.cmap.core" version="1.0.143" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.legacy" version="1.0.137" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.nebula.widgets.cdatetime" version="0.14.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.databinding" version="1.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.nebula.cwt" version="0.9.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.legacy" version="1.0.190" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.nebula.jface.cdatetime" version="0.14.0" match="greaterOrEqual"/>
    </requires>
 
    <plugin
@@ -238,12 +253,6 @@ Library.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
-   <plugin
-         id="org.mwc.cmap.plotViewer"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
    <plugin
          id="org.mwc.cmap.TimeController"
