@@ -149,8 +149,6 @@ public class ImagesView extends ViewPart
     }
   }
 
-  private static final String STATE_FOLDER = "folder";
-  private static final String STATE_SELECTED_IMAGE = "selectedImage";
   private static final String STATE_STRETCH = "stretch";
 
   private static final String STATE_THUMBNAIL_WIDTH = "thumbnailWidth";
@@ -627,10 +625,6 @@ public class ImagesView extends ViewPart
         setSmallThumbnails();
       }
     }
-    if (memento.getString(STATE_FOLDER) != null)
-    {
-      openFolder(memento.getString(STATE_FOLDER));
-    }
   }
 
   @Override
@@ -654,15 +648,6 @@ public class ImagesView extends ViewPart
       memento.putInteger(STATE_THUMBNAIL_HEIGHT, MEDIUM_ICON_HEIGHT);
     }
 
-    if (openedFolder != null)
-    {
-      memento.putString(STATE_FOLDER, openedFolder);
-      final ImageMetaData meta = gallery.getSelectedImage();
-      if (meta != null)
-      {
-        memento.putString(STATE_SELECTED_IMAGE, meta.getFileName());
-      }
-    }
   }
 
   private void selectImage(final int index)
