@@ -39,7 +39,7 @@ deploy:
     all_branches: true
 - provider: pages
   github-token: "$GITHUB_TOKEN"
-  local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/repository"
+  local-dir: "/home/travis/build/debrief/debrief/org.mwc.debrief.site/target/site"
   verbose: true
   name: IanMayo
   skip-cleanup: true
