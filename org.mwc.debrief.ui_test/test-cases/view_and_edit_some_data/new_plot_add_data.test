@@ -1,0 +1,85 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: new_plot_add_data
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _yCgJwL2EEeiF7-_i47hJpQ
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/22/18 11:19 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+with [get-view Navigator | get-tree] {
+    select "demo/plot1.dpf" | double-click
+    select "demo/sample_data/boat1.rep"
+    get-item -path "demo/sample_data/boat1.rep" | drag-start 41 8
+}
+with [get-editor "plot1.dpf" | get-canvas] {
+    drag-enter "-2" 144
+    drag-over 192 146 -detail copy
+    drag-exit
+    drag-accept 192 146 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "plot1.dpf" | get-canvas | drop 192 146 -detail copy
+with [get-window "Select track mode"] {
+    get-button "Dead Reckoning (DR) - positions are calculated using recorded course and speed" | click
+    get-button "Over The Ground (OTG) - where positions are plotted according to the recorded location" | click
+    get-button OK | click
+}
+get-view Navigator | get-tree | drag-end -detail copy
+with [get-view Outline | get-tree] {
+    get-item -path "Chart Features \\(3 items\\)" | get-property "getText()" | equals "Chart Features (3 items)" 
+        | verify-true
+    get-item -path "Natural Earth" | get-property "getText()" | equals "Natural Earth" | verify-true
+    get-item -path "Track:NELSON" | get-property "getText()" | equals "Track:NELSON" | verify-true
+}
+get-view Outline | get-tree | get-item -path "Track:NELSON" | get-property "getItems().TreeItem[0].getText()" 
+    | equals "120500.00 (402 positions)" | verify-true
+try {
+get-view Outline | get-tree | get-cell 5 0 | click
+}
+get-view Properties | get-label "Track:NELSON" | get-property caption | equals "Track:NELSON" | verify-true
+get-tab-folder | get-property activePage | equals "*plot1.dpf" | verify-true
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+
+//Drag in complex plot like sample.dpf for complex data anaylsis
+with [get-view Navigator | get-tree] {
+    select "demo/plot1.dpf" | double-click
+    select "demo/sample_data/sample.dpf"
+    get-item -path "demo/sample_data/sample.dpf" | drag-start 39 6
+}
+with [get-editor "plot1.dpf" | get-canvas] {
+    drag-enter 18 156
+    drag-over 150 183 -detail copy
+    drag-exit
+    drag-accept 150 183 -detail copy
+}
+get-view Navigator | get-tree | drag-set-data
+get-editor "plot1.dpf" | get-canvas | drop 150 183 -detail copy
+get-view Navigator | get-tree | drag-end -detail copy
+with [get-view Outline | get-tree] {
+    get-item -path "Annotations \\(0 items\\)" | get-property "getText()" | equals "Annotations (0 items)" | verify-true
+    get-item -path "Chart Features \\(6 items\\)" | get-property "getText()" | equals "Chart Features (6 items)" 
+        | verify-true
+    get-item -path "Chart lib:JW_Area_1 \\(181 items\\)" | get-property "getText()" 
+        | equals "Chart lib:JW_Area_1 (181 items)" | verify-true
+    get-item -path "Track:COLLINGWOOD" | get-property "getText()" | equals "Track:COLLINGWOOD" | verify-true
+    get-item -path "Track:NELSON" | get-property "getText()" | equals "Track:NELSON" | verify-true
+    get-item -path "Narratives \\(19 items\\)" | get-property "getText()" | equals "Narratives (19 items)" | verify-true
+}
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+
+
+//Remove the created plot above
+get-view Navigator | get-tree | select "demo/plot1.dpf" | get-menu -path Delete | click
+get-window "Delete Resources" | get-button OK | click
+
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

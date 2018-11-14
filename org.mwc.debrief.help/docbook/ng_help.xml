@@ -6090,9 +6090,21 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 </listitem>
               </varlistentry>
               <varlistentry>
-                <term>Title</term>
+                <term>Footprint</term>
                 <listitem>
-                  <para>Title for engagement. (Text element named <code>time</code>.)</para>
+                  <para>Footprint to indicate the steps of the past plataform's positions. (Object named <code>footprint</code>)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Scale Value</term>
+                <listitem>
+                  <para>Text value that indicates that distance. (Object named <code>ScaleValue</code>)</para>
+                </listitem>
+              </varlistentry>
+              <varlistentry>
+                <term>Scale Bar</term>
+                <listitem>
+                  <para>This will consist of a rectangle, with width sized according to a particular distance. (Object named <code>ScaleBar</code>)</para>
                 </listitem>
               </varlistentry>
             </variablelist>
@@ -6101,7 +6113,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/MasterTemplate.png" width="100%"/>
+                    <imagedata fileref="figures/MasterTemplate2.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -7476,19 +7488,6 @@ and entry type can be multi-word if surrounded by quotes (").
           </para>
         </sect2>
       </sect1>
-      <sect1 xml:id="SVG_symbol_format">
-        <title>SVG Symbol Format</title>
-        <sect2>
-          <title>Introduction</title>
-          <para>Traditionally, symbols were hard-coded in Java code, within Debrief.  When a new symbol was required, the graphically talented analyst
-          would develop a set of pairs of coordinates for the new shape in Excel, then pass these to the maintainer, for their translation
-          into source code.  Adopting SVG as a standard is seen as a way to get artist-drawn icons and symbols into Debrief.</para>
-        </sect2>
-        <sect2>
-          <title>Implementation</title>
-          <para>How to structure SVG files...</para>
-        </sect2>
-      </sect1>
 
       <sect1 xml:id="Section_KML">
         <title xml:id="SectionKML_Title">KML file format</title>
@@ -7835,6 +7834,72 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
 8.322246514887131,323.8,9.649891895292325,322.2,303,48,-570.0,511.3,317.0,TA_DEPLOYED,70,64,-81.9,
 66.3,319.0,TB_DEPLOYED,1513.51,16.0,0.0,0.0,0.0,0.0,0.0,0.0</screen></para>
         </sect2>
+      </sect1>
+      <sect1 xml:id="SVG_symbol_format">
+        <title>SVG Symbol Format</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>Traditionally, symbols were hard-coded in Java code, within Debrief.  When a new symbol was required, the graphically talented analyst
+          would develop a set of pairs of coordinates for the new shape in Excel, then pass these to the maintainer, for their translation
+          into source code.  Adopting SVG as a standard is seen as a way to get artist-drawn icons and symbols into Debrief.
+          Learn more about the symbols provided in <xref linkend="symbol_sets"/>.</para>
+        </sect2>
+        <sect2>
+          <title>Implementation</title>
+          <para>SVG files are XML-based language schema showing how to render the images. Debrief has implemented a subset of the SVG format. It supports
+          the following shapes: Circle, Ellipse, Line, Poligon, Polyline and Rectangle. Any other shape would be ignored in the rendering process. There
+          are also some extra rules to guarantee that all the icons in Debrief have a consistant appearance.
+   		  </para>
+          <itemizedlist>
+	          <listitem>
+	            <para>They must have a size of 100x100 pixels</para>
+	          </listitem>
+	          <listitem>
+	            <para>There must be an circle shape having the id <computeroutput>origin</computeroutput>. It indicates where is the center of the image, which is important to place it
+	            in the correct position on tracks, labels, etc. This origin is also the centre of rotation for the shape, for shapes that are able to rotate.</para>
+	          </listitem>
+	          <listitem>
+	            <para>If the user needs the shape to be able to rotate, you need to set the Circle color to Green. If you need to remain aligned as the original, just 
+	            assign any other color</para>
+	          </listitem>
+	          <listitem>
+	            <para>Image filling is very similar to the regular SVG shape. If the style is set to `<computeroutput>fill: none</computeroutput>` or `<computeroutput>fill-opacity: 0</computeroutput>` it will be empty.
+	            It could also be assigned using the traditional XML attribute `fill-opacity` instead of style.</para>
+	          </listitem>
+	          <listitem>
+	          	<para>In case you need to specify a color, you could do it using the attribute `<computeroutput>fill</computeroutput>`, assigning the color in hexagonal format.
+	          	</para>
+	          </listitem>
+           </itemizedlist>
+         </sect2>
+	     <sect2>
+	     	<title>Here are some examples:</title>
+         	<para>
+	          	<programlisting><![CDATA[ 
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <polyline fill="#000000" fill-opacity="0" fill-rule="nonzero" stroke="#000000" stroke-width="5" points="5 53 20 24 35 53 50 24 65 53 80 24 95 53"/>
+  <polyline fill="#000000" fill-opacity="0" fill-rule="nonzero" stroke="#000000" stroke-width="5" points="5 76 20 47 35 76 50 47 65 76 80 47 95 76"/>
+  <circle id="origin" cx="50" cy="50" r="2.5" style="fill: rgb(255, 0, 0);"/>
+</svg>
+          	]]> </programlisting>
+          	</para>
+          	<para> In this case, we have an image with two polyline shape. Also pay attention to the circle shape which _must_ have the `id` attribute
+          	value as `origin`.</para>
+          	<para>
+          		<programlisting><![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <polygon id="Triangle-2" points="49.5 0 67.5 100 32.5 100"/>
+  <circle id="origin" cx="50" cy="69" r="2.5" style="fill: rgb(0, 255, 0);"/>
+</svg>
+          		]]></programlisting>
+          	</para>
+          		
+          		<para>We have only one polygon in this case. Please notice that this shape is able to rotate according to the subject vehicle.</para>
+          		
+	     </sect2>
+          	
       </sect1>
 
 

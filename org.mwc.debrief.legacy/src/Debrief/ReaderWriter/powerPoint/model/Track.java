@@ -8,7 +8,7 @@ public class Track
 {
   private final String name;
   private final int stepsToSkip;
-  private final ArrayList<TrackPoint> segments = new ArrayList<>();
+  private final ArrayList<TrackPoint> points = new ArrayList<>();
   private final Color color;
 
   public Track(final String name, final String color, final int stepsToSkip_in)
@@ -44,9 +44,9 @@ public class Track
     return name;
   }
 
-  public ArrayList<TrackPoint> getSegments()
+  public ArrayList<TrackPoint> getPoints()
   {
-    return segments;
+    return points;
   }
 
   public int getStepsToSkip()
@@ -72,7 +72,7 @@ public class Track
     int result = 1;
     result = prime * result + ((color == null) ? 0 : color.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((segments == null) ? 0 : segments.hashCode());
+    result = prime * result + ((points == null) ? 0 : points.hashCode());
     return result;
   }
 
@@ -94,6 +94,6 @@ public class Track
     {
       return false;
     }
-    return Objects.equals(segments, other.segments);
+    return Objects.equals(points, other.points);
   }
 }

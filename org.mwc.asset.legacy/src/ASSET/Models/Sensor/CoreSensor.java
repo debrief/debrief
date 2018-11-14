@@ -24,16 +24,29 @@ package ASSET.Models.Sensor;
  */
 
 import java.beans.MethodDescriptor;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
-import ASSET.*;
-import ASSET.Models.*;
-import ASSET.Models.Detection.*;
+import ASSET.NetworkParticipant;
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
+import ASSET.Models.MWCModel;
+import ASSET.Models.SensorType;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Participants.*;
+import ASSET.Participants.DemandedSensorStatus;
+import ASSET.Participants.ParticipantDetectedListener;
+import ASSET.Participants.Status;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
+import MWC.GenericData.WorldSpeed;
+import MWC.TacticalData.Fix;
 
 /**
  * base implementation of a sensor
@@ -199,6 +212,12 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
   {
     // clear out the past detections
     _pastDetections.removeAllElements();
+    
+    if(_backTrack != null)
+    {
+      _backTrack.clearPositions();
+      _backTrack = null;
+    }
   }
 
   // let the user watch this sensor
@@ -537,22 +556,45 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     return participant.getStatus().getLocation();
   }
 
-  
+  TrackWrapper _backTrack = null;
+
   /**
    * get the target location
    * 
    * @param participant
    * @return
    */
-  protected WorldLocation getHostLocationFor(ParticipantType participant)
+  protected final WorldLocation getHostLocationFor(ParticipantType participant)
   {
     final WorldLocation sensorLoc = participant.getStatus().getLocation();
     final WorldLocation res;
     final WorldDistance offset = getSensorOffset();
     if(offset != null)
     {
-      final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(participant.getStatus().getCourse());
-      res = sensorLoc.add(new WorldVector(courseRads, offset, new WorldDistance(0, WorldDistance.FT)));      
+      if(_backTrack == null)
+      {
+        _backTrack = new TrackWrapper();
+      }
+
+      _backTrack.addFix(createFix(participant.getStatus()));
+      
+      ArrayLength len = new WorldDistance.ArrayLength(offset);
+      final long time = participant.getStatus().getTime();
+      FixWrapper trackPoint = _backTrack.getBacktraceTo(new HiResDate(time), len, true);
+      if(trackPoint != null)
+      {
+        res = trackPoint.getLocation();       
+      }
+      else
+      {
+        res = null;
+      }
+      
+      // ok, we need to maintain a back-track of locations for this participant, so
+      // we can do worm in the hole
+      
+   //   final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(participant.getStatus().getCourse());
+     // res = sensorLoc.add(new WorldVector(courseRads, offset, new WorldDistance(0, WorldDistance.FT)));      
     }
     else
     {
@@ -560,6 +602,55 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     }
     
     return res;
+  }
+  
+  /**
+   * get the target course (Degs)
+   * 
+   * @param participant
+   * @return
+   */
+  protected final double getHostCourseFor(ParticipantType participant)
+  {
+    final double res;
+    final WorldDistance offset = getSensorOffset();
+    if(offset != null && _backTrack != null)
+    {
+      ArrayLength len = new WorldDistance.ArrayLength(offset);
+      final long time = participant.getStatus().getTime();
+      FixWrapper trackPoint = _backTrack.getBacktraceTo(new HiResDate(time), len, true);
+      if(trackPoint != null)
+      {
+        res = trackPoint.getCourseDegs();     
+      }
+      else
+      {
+        res = 0d;
+      }
+      
+      // ok, we need to maintain a back-track of locations for this participant, so
+      // we can do worm in the hole
+      
+   //   final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(participant.getStatus().getCourse());
+     // res = sensorLoc.add(new WorldVector(courseRads, offset, new WorldDistance(0, WorldDistance.FT)));      
+    }
+    else
+    {
+      res =  participant.getStatus().getCourse();
+    }
+    
+    return res;
+  }
+
+  private FixWrapper createFix(Status status)
+  {
+    HiResDate time = new HiResDate(status.getTime());
+    WorldLocation location = status.getLocation();
+    double courseRads = MWC.Algorithms.Conversions.Degs2Rads(status.getCourse());
+    double speedYps = status.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3d;
+    Fix newF = new Fix(time, location, courseRads, speedYps);
+    FixWrapper newW = new FixWrapper(newF);
+    return newW;
   }
 
   /**

@@ -44,8 +44,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
 
   public DynamicPolygonBoundsPage(final String pageName)
   {
-    super(pageName);
-    setTitle("Create dynamic polygon");
+    super(pageName,"Polygon");
     setDescription(DETAIL_MESSAGE);
   }
 
@@ -92,7 +91,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
     final PolygonShape polygon = new PolygonShape(coordinates);
 
     final StringTokenizer st = new StringTokenizer(text);
-
+    int counter=0;
     while (st.hasMoreTokens())
     {
       // meet the label
@@ -100,7 +99,7 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
       final String[] coords = sts.split(",");
       final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
           Double.valueOf(coords[1]), 0);
-      final PolygonNode newNode = new PolygonNode("1", wl, polygon);
+      final PolygonNode newNode = new PolygonNode((++counter)+"", wl, polygon);
       polygon.add(newNode);
     }
     return polygon;
@@ -120,9 +119,11 @@ public class DynamicPolygonBoundsPage extends DynamicShapeBaseWizardPage
         final String[] coords = token.split(",");
         valid = coords.length == 2;
         valid = valid && isDouble(coords[0]) && isDouble(coords[1]);
-        final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
-            Double.valueOf(coords[1]), 0);
-        valid = (wl == null) ? false : true;
+        if(valid) {
+          final WorldLocation wl = new WorldLocation(Double.valueOf(coords[0]),
+                Double.valueOf(coords[1]), 0);
+            valid = (wl == null) ? false : true;  
+        }
       }
     }
     return valid;

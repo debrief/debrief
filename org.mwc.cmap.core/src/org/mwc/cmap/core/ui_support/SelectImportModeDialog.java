@@ -25,14 +25,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Dialog;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
@@ -43,7 +39,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSetti
 /**
  * This class demonstrates how to create your own dialog classes. It allows users to input a String
  */
-public class SelectImportModeDialog extends Dialog implements SelectionListener
+public class SelectImportModeDialog extends ThreadSafeDialog<ImportSettings> implements SelectionListener
 {
   private final String message;
   private String input;
@@ -81,8 +77,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
       final int style)
   {
     // Let users override the default styles
-    super(parent, style);
-    setText("Select track mode");
+    super(parent);
     message =
         "Debrief can plot tracks using one of two modes."
             + "\nUse this dialog to select how to import the track titled "
@@ -118,41 +113,23 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
   {
     this.input = input;
   }
+  
+  
+  
+  
+
 
   /**
    * Opens the dialog and returns the input
    * 
    * @return String
    */
-  public ImportSettings open()
+  public ImportSettings internalOpenDialog()
   {
     
-    Shell activeShell = Display.getCurrent().getActiveShell();
-    if(activeShell==null)
-      activeShell = Display.getDefault().getShells()[0];//switch to default shell 
-    // Create the dialog window
-    final Shell shell = new Shell(activeShell, SWT.PRIMARY_MODAL|SWT.TITLE|SWT.SHELL_TRIM);
-    shell.setText(getText());
-    createContents(shell);
-    shell.pack();
-    
-    //centreLocation
-    Rectangle shellBounds = activeShell.getBounds();
-    Point dialogSize = shell.getSize();
-    shell.setLocation(shellBounds.x + (shellBounds.width - dialogSize.x) / 2, shellBounds.y + (shellBounds.height - dialogSize.y) / 2);
-    
-    shell.open();
-    
-   
-    final Display display = getParent().getDisplay();
-    while (!shell.isDisposed())
-    {
-      if (!display.readAndDispatch())
-      {
-        display.sleep();
-      }
-    }
-
+    create();
+    getShell().setText("Select track mode");    
+    open();
     // Return the entered value (will be null if user cancelled)
     ImportSettings res;
     if (_mode == null)
@@ -182,7 +159,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
   /**
    * @param shell
    */
-  private void createContents(final Shell shell)
+  public Composite createContents(final Composite shell)
   {
     shell.setLayout(new GridLayout(1, true));
 
@@ -307,7 +284,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
               Long.toString(_resampleFrequency));
         }
 
-        shell.close();
+        close();
       }
     });
 
@@ -323,14 +300,16 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener
       {
         // clear the selection
         _mode = null;
-        shell.close();
+        close();
       }
     });
 
     // Set the OK button as the default, so
     // user can type input and press Enter
     // to dismiss
-    shell.setDefaultButton(ok);
+    getShell().setDefaultButton(ok);
+    
+    return shell;
   }
 
   public void widgetDefaultSelected(final SelectionEvent e)

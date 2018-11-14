@@ -5,6 +5,7 @@ package Debrief.GUI.Views;
 
 import java.awt.Point;
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import MWC.GUI.Layers.OperateFunction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
-import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
@@ -50,6 +51,8 @@ public abstract class CoreCoordinateRecorder
     private String fileName;
     private String masterTemplate;
     private boolean openOnComplete;
+    private boolean scaleBarVisible;
+    private String scaleBarUnit;
 
     public String getFileName()
     {
@@ -100,6 +103,26 @@ public abstract class CoreCoordinateRecorder
     {
       this.status = status;
     }
+
+    public boolean isScaleBarVisible()
+    {
+      return scaleBarVisible;
+    }
+
+    public void setScaleBarVisible(boolean scaleBarVisible)
+    {
+      this.scaleBarVisible = scaleBarVisible;
+    }
+
+    public String getScaleBarUnit()
+    {
+      return scaleBarUnit;
+    }
+
+    public void setScaleBarUnit(String scaleBarUnit)
+    {
+      this.scaleBarUnit = scaleBarUnit;
+    }
   }
 
   public static class ExportResult
@@ -130,11 +153,22 @@ public abstract class CoreCoordinateRecorder
 
   private final Layers _myLayers;
   private final PlainProjection _projection;
-  final private Map<String, Track> _tracks = new HashMap<>();
-  final private List<String> _times = new ArrayList<String>();
+  final protected Map<String, Track> _tracks = new HashMap<>();
+  final private List<HiResDate> _times = new ArrayList<>();
   private boolean _running = false;
   protected String startTime = null;
   private long _startMillis;
+
+  /**
+   * set of values used to doDecide on what steps to use for the scale
+   */
+  transient private Label_Limit _limits[];
+
+  /**
+   * the list of units types we know about (we don't remember this when serialising, we create it
+   * afresh)
+   */
+  private static transient HashMap<String, UnitsConverter> _unitsList;
 
   private final long _worldIntervalMillis;
 
@@ -152,9 +186,135 @@ public abstract class CoreCoordinateRecorder
     _dateFormat = new GMTDateFormat(dateFormat);
   }
 
+  /**
+   * setup the list
+   */
+  private void initialiseLimits()
+  {
+    // create the array of limits values in a tmp parameter
+    final Label_Limit[] tmp =
+    {new Label_Limit(7, 1), new Label_Limit(20, 5), new Label_Limit(70, 10),
+        new Label_Limit(200, 50), new Label_Limit(700, 100), new Label_Limit(
+            2000, 500), new Label_Limit(7000, 1000), new Label_Limit(20000,
+                5000), new Label_Limit(70000, 10000), new Label_Limit(200000,
+                    50000), new Label_Limit(700000, 100000), new Label_Limit(
+                        2000000, 500000), new Label_Limit(7000000, 1000000),
+        new Label_Limit(20000000, 5000000), new Label_Limit(70000000,
+            10000000)};
+
+    // and now store the array in our local variable
+    _limits = tmp;
+  }
+
+  /////////////////////////////////////////////////////////////
+  // scale limits and labels from a data range
+  ////////////////////////////////////////////////////////////
+  class Label_Limit implements Serializable
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public long upper_limit;
+    public long increment;
+
+    Label_Limit(final long limit, final long inc)
+    {
+      upper_limit = limit;
+      increment = inc;
+    }
+  }
+
+  /**
+   * setup the list of units converters
+   */
+  private synchronized void setupUnits()
+  {
+
+    // just check it hasn't already been generated
+    if (_unitsList != null)
+      return;
+
+    // create the list itself
+    _unitsList = new HashMap<String, UnitsConverter>();
+
+    // and put in the converters
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS,
+        new UnitsConverter()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Km(degs);
+          }
+        });
+
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.METRES_UNITS,
+        new UnitsConverter()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2m(degs);
+          }
+        });
+
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.NM_UNITS,
+        new UnitsConverter()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Nm(degs);
+          }
+        });
+
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.YDS_UNITS,
+        new UnitsConverter()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Yds(degs);
+          }
+        });
+
+    _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KYD_UNITS,
+        new UnitsConverter()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          public double convertThis(final double degs)
+          {
+            return MWC.Algorithms.Conversions.Degs2Yds(degs) / 1000;
+          }
+        });
+
+  }
+
   private ExportResult exportFile(final String fileName,
       final String exportFile, final String masterTemplateFile,
-      final long interval)
+      final long interval, String scaleBarUnit, boolean scaleVisible)
   {
     final ExportResult retVal = new ExportResult();
     final TrackData td = new TrackData();
@@ -165,6 +325,7 @@ public abstract class CoreCoordinateRecorder
     td.getTracks().addAll(_tracks.values());
     storeNarrativesInto(td.getNarrativeEntries(), _myLayers, _tracks,
         _startMillis);
+    calculateScaleWidth(td, _projection, scaleVisible ? scaleBarUnit : "");
 
     // start export
     final PlotTracks plotTracks = new PlotTracks();
@@ -196,9 +357,80 @@ public abstract class CoreCoordinateRecorder
     return retVal;
   }
 
+  private void calculateScaleWidth(TrackData td, PlainProjection proj,
+      String scaleBarUnit)
+  {
+    if ("".equals(scaleBarUnit))
+    {
+      td.setScaleUnit("");
+      td.setScaleWidth(-1);
+      td.setScaleAmount(-1);
+      return;
+    }
+
+    // create the list of units
+    setupUnits();
+
+    /**
+     * the units to use for the scale
+     */
+    final UnitsConverter _DisplayUnits = _unitsList.get(scaleBarUnit);
+
+    // find the screen width
+    final java.awt.Dimension screen_size = proj.getScreenArea().getSize();
+    final long screen_width = screen_size.width;
+
+    // generate screen points in the middle on the left & right-hand sides
+    final Point left = new Point(0, (int) screen_size.getHeight() / 2);
+    final Point right = new Point((int) screen_width, (int) screen_size
+        .getHeight() / 2);
+
+    // and now world locations to represent them
+    final WorldLocation leftLoc = new WorldLocation(proj.toWorld(left));
+    final WorldLocation rightLoc = proj.toWorld(right);
+
+    // and get the distance between them
+    double data_width = rightLoc.rangeFrom(leftLoc);
+
+    // convert this data width (in degs) to our units
+    data_width = _DisplayUnits.convertThis(data_width);
+
+    // make a guess at the scale
+    final double scale = data_width / screen_width;
+
+    // check we have our set of data
+    if (_limits == null)
+      initialiseLimits();
+
+    // find the range we are working in
+    int counter = 0;
+    while ((counter < _limits.length)
+        && (data_width > _limits[counter].upper_limit))
+    {
+      counter++;
+    }
+
+    // set our increment counter
+    final long _scaleStep = _limits[counter].increment;
+
+    final int tick_step = (int) (_scaleStep / scale);
+
+    td.setScaleWidth(tick_step);
+    td.setScaleAmount(_scaleStep);
+    td.setScaleUnit(scaleBarUnit);
+  }
+
   public boolean isRecording()
   {
     return _running;
+  }
+
+  private boolean singlePointTrackIsStarting(FixWrapper point,
+      HiResDate timeNow)
+  {
+    return (point.getDTG().equals(timeNow) || (timeNow.greaterThan(point
+        .getDTG()) && !_times.isEmpty() && point.getDTG().greaterThan(_times
+            .get(_times.size() - 1))));
   }
 
   public void newTime(final HiResDate timeNow)
@@ -207,12 +439,12 @@ public abstract class CoreCoordinateRecorder
       return;
 
     // get the new time.
-    final String time = _dateFormat.format(timeNow.getDate());
+    final String timeString = _dateFormat.format(timeNow.getDate());
     if (startTime == null)
     {
-      startTime = time;
+      startTime = timeString;
     }
-    _times.add(time);
+    _times.add(timeNow);
 
     final OperateFunction outputIt = new OperateFunction()
     {
@@ -222,7 +454,9 @@ public abstract class CoreCoordinateRecorder
       {
         final LightweightTrackWrapper track = (LightweightTrackWrapper) item;
         final Watchable[] items = track.getNearestTo(timeNow);
-        if (items != null && items.length > 0 && items[0] != null)
+        if (items != null && items.length > 0 && items[0] != null && (!track
+            .isSinglePointTrack() || singlePointTrackIsStarting(
+                (FixWrapper) items[0], timeNow)))
         {
           final FixWrapper fix = (FixWrapper) items[0];
           Track tp = _tracks.get(track.getName());
@@ -236,19 +470,11 @@ public abstract class CoreCoordinateRecorder
           }
           final Point point = _projection.toScreen(fix.getLocation());
           final double screenHeight = _projection.getScreenArea().getHeight();
-          final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(fix
-              .getCourseDegs());
-          final double speedYps = new WorldSpeed(fix.getSpeed(), WorldSpeed.Kts)
-              .getValueIn(WorldSpeed.ft_sec) / 3;
-          final TrackPoint trackPoint = new TrackPoint();
-          trackPoint.setCourse((float) courseRads);
-          trackPoint.setSpeed((float) speedYps);
-          trackPoint.setLatitude((float) (screenHeight - point.getY()));
-          trackPoint.setLongitude((float) point.getX());
-          trackPoint.setElevation((float) fix.getLocation().getDepth());
-          trackPoint.setTime(fix.getDTG().getDate());
-          trackPoint.setFormattedTime(_times.get(_times.size() - 1));
-          tp.getSegments().add(trackPoint);
+          final TrackPoint trackPoint = new TrackPoint((float) (screenHeight
+              - point.getY()), (float) point.getX(), (float) fix.getLocation()
+                  .getDepth(), fix.getDTG().getDate(), _dateFormat.format(_times
+                      .get(_times.size() - 1).getDate()));
+          tp.getPoints().add(trackPoint);
         }
       }
     };
@@ -273,35 +499,50 @@ public abstract class CoreCoordinateRecorder
   {
     _running = false;
 
-    final List<Track> list = new ArrayList<Track>();
-    list.addAll(_tracks.values());
-    final long interval = _worldIntervalMillis;
-    // output tracks object.
-    // showDialog now
-    final ExportDialogResult exportResult = showExportDialog();
-    // collate the data object
-    if (exportResult.getStatus())
+    if (_tracks.values().size() > PlotTracks.MARKER_FOOTPRINT_DELTA)
     {
-      final ExportResult expResult = exportFile(exportResult.fileName,
-          exportResult.selectedFile, exportResult.masterTemplate, interval);
+      // export failed.
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+          "There are too many tracks. No more than "
+              + PlotTracks.MARKER_FOOTPRINT_DELTA
+              + " can be exported in the same presentation file.");
+    }
+    else
+    {
 
-      if (expResult.errorMessage == null)
+      final List<Track> list = new ArrayList<Track>();
+      list.addAll(_tracks.values());
+      final long interval = _worldIntervalMillis;
+      // output tracks object.
+      // showDialog now
+      final ExportDialogResult dialogResult = showExportDialog();
+
+      // collate the data object
+      if (dialogResult.getStatus())
       {
-        // do we open resulting file?
-        if (exportResult.openOnComplete)
+        final ExportResult expResult = exportFile(dialogResult.fileName,
+            dialogResult.selectedFile, dialogResult.masterTemplate, interval,
+            dialogResult.getScaleBarUnit(), dialogResult.isScaleBarVisible());
+
+        if (expResult.errorMessage == null)
         {
-          openFile(expResult.exportedFile);
+          // do we open resulting file?
+          if (dialogResult.openOnComplete)
+          {
+            openFile(expResult.exportedFile);
+          }
+          else
+          {
+            showMessageDialog("File Exported Successfully to:\n"
+                + expResult.exportedFile);
+          }
         }
         else
         {
-          showMessageDialog("File exported to:" + expResult.exportedFile);
+          // export failed.
+          MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
+              "Exporting to PPTX failed. See error log for more details");
         }
-      }
-      else
-      {
-        // export failed.
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Export to PPTX Errors",
-            "Exporting to PPTX failed. See error log for more details");
       }
     }
   }
@@ -321,7 +562,7 @@ public abstract class CoreCoordinateRecorder
       // ok, get the bounding time period
       for (final Track track : tracks.values())
       {
-        final ArrayList<TrackPoint> segs = track.getSegments();
+        final ArrayList<TrackPoint> segs = track.getPoints();
         for (final TrackPoint point : segs)
         {
           final Date thisTime = point.getTime();
@@ -349,7 +590,8 @@ public abstract class CoreCoordinateRecorder
           firstTime), new HiResDate(lastTime));
 
       // sort out a scale factor
-      final double scale = _worldIntervalMillis / _modelIntervalMillis;
+      final double scale = ((double) _worldIntervalMillis)
+          / _modelIntervalMillis;
 
       final SimpleDateFormat df = new GMTDateFormat("ddHHmm.ss");
 
@@ -377,4 +619,22 @@ public abstract class CoreCoordinateRecorder
     }
   }
 
+  ////////////////////////////////////
+  // static interior class to convert between units
+  ////////////////////////////////////
+  abstract private static class UnitsConverter implements Serializable
+  {
+    /**
+    * 
+    */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * convert this value to our units
+     * 
+     * @param degs
+     * @return
+     */
+    abstract public double convertThis(double degs);
+  }
 }

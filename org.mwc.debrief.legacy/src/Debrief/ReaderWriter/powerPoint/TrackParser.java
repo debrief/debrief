@@ -135,26 +135,16 @@ public class TrackParser
 
       for (final Element coordinate : track.select("trkpt"))
       {
-        final TrackPoint point = new TrackPoint();
-        point.setLongitude(Float.parseFloat(coordinate.attr("lon")));
-        point.setLatitude(Float.parseFloat(coordinate.attr("lat")));
-
         final DateFormat dateTimeFormatter = new GMTDateFormat(
             "yyyy-MM-dd'T'HH:mm:ss'Z'");
         final Date dateTime = dateTimeFormatter.parse(coordinate.selectFirst(
             "time").text());
-        point.setTime(dateTime);
+        final TrackPoint point = new TrackPoint(Float.parseFloat(coordinate
+            .attr("lat")), Float.parseFloat(coordinate.attr("lon")), Float
+                .parseFloat(coordinate.selectFirst("ele").text()), dateTime,
+            coordinate.selectFirst("time").text());
 
-        point.setCourse(Float.parseFloat(coordinate.selectFirst("course")
-            .text()));
-        point.setElevation(Float.parseFloat(coordinate.selectFirst("ele")
-            .text()));
-        point.setSpeed(Float.parseFloat(coordinate.selectFirst("speed")
-            .text()));
-
-        point.setFormattedTime(coordinate.selectFirst("time").text());
-
-        currentTrack.getSegments().add(point);
+        currentTrack.getPoints().add(point);
       }
       trackData.getTracks().add(currentTrack);
     }

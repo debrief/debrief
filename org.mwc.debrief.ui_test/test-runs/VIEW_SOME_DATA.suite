@@ -1,0 +1,18 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: VIEW_SOME_DATA
+Element-Type: testsuite
+Element-Version: 2.0
+Id: _UURv8LzMEeiO58lDElrrcw
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 8:00 AM
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8
+Content-Type: text/testcase
+Entry-Name: testcase-items
+
+_gtVz0LzLEeiO58lDElrrcw	// kind: 'test' name: 'create_new_plot' path: '../test-cases/view_and_edit_some_data/create_new_plot.test'
+_yCgJwL2EEeiF7-_i47hJpQ	// kind: 'test' name: 'new_plot_add_data' path: '../test-cases/view_and_edit_some_data/new_plot_add_data.test'
+_QMn3MK9cEei4e5U78aujdw	// kind: 'test' name: 'create-new-sample-data-project-if-not-found' path: '../test-cases/create-new-sample-data-project-if-not-found.test'
+
+------=_testcase-items-62c497da-4241-31f4-811a-6b453a3ecff8--

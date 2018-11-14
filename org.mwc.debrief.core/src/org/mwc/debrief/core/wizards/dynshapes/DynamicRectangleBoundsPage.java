@@ -39,7 +39,7 @@ public class DynamicRectangleBoundsPage extends DynamicShapeBaseWizardPage
   public DynamicRectangleBoundsPage(final String pageName,
       final WorldLocation centre)
   {
-    super(pageName);
+    super(pageName,"Rectangle");
     _centre = centre;
     setTitle("Create dynamic rectangle");
   }
