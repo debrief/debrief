@@ -58,6 +58,64 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
     {
       fail("failed");
     }
+    
+    private static boolean isOnTrackDegs(final double existingDegs, final double newDegs)
+    {
+      return isOnTrack(MWC.Algorithms.Conversions.Degs2Rads(existingDegs), MWC.Algorithms.Conversions.Degs2Rads(newDegs));
+    }
+    
+    public static void testOnTrack()
+    {
+      assertTrue("is on track", isOnTrackDegs(90, 90));
+      assertTrue("is on track", isOnTrackDegs(90, 1));
+      assertTrue("is on track", isOnTrackDegs(90, 179));
+
+      assertFalse("not on track", isOnTrackDegs(90, 359));
+      assertFalse("not on track", isOnTrackDegs(90, 270));
+      assertFalse("not on track", isOnTrackDegs(90, 181));
+      assertFalse("not on track", isOnTrackDegs(90, -90));
+      assertFalse("not on track", isOnTrackDegs(90, -1));
+      
+      assertTrue("is on track", isOnTrackDegs(-90, -90));
+      assertTrue("is on track", isOnTrackDegs(-90, 270));
+      assertTrue("is on track", isOnTrackDegs(-90, -1));
+      assertTrue("is on track", isOnTrackDegs(-90, -179));
+      assertTrue("is on track", isOnTrackDegs(-90, 181));
+      assertTrue("is on track", isOnTrackDegs(-90, 359));
+
+      assertFalse("is on track", isOnTrackDegs(-90, 90));
+      assertFalse("is on track", isOnTrackDegs(-90, -270));
+      assertFalse("is on track", isOnTrackDegs(-90, 1));
+      assertFalse("is on track", isOnTrackDegs(-90, 179));
+      assertFalse("is on track", isOnTrackDegs(-90, -181));
+      assertFalse("is on track", isOnTrackDegs(-90, -359));
+
+      assertTrue("is on track", isOnTrackDegs(0, 89));
+      assertTrue("is on track", isOnTrackDegs(0, 1));
+      assertTrue("is on track", isOnTrackDegs(0, -89));
+      assertTrue("is on track", isOnTrackDegs(0, -1));
+      assertTrue("is on track", isOnTrackDegs(0, 0));
+
+      assertFalse("not on track", isOnTrackDegs(0, 159));
+      assertFalse("not on track", isOnTrackDegs(0, 260));
+      assertFalse("not on track", isOnTrackDegs(0, 181));
+      assertFalse("not on track", isOnTrackDegs(0, -91));
+      assertFalse("not on track", isOnTrackDegs(0, -260));
+
+      assertTrue("is on track", isOnTrackDegs(180, 159));
+      assertTrue("is on track", isOnTrackDegs(180, 260));
+      assertTrue("is on track", isOnTrackDegs(180, 181));
+      assertTrue("is on track", isOnTrackDegs(180, -91));
+      assertTrue("is on track", isOnTrackDegs(-180, 181));
+      assertTrue("is on track", isOnTrackDegs(-180, -91));
+      assertTrue("is on track", isOnTrackDegs(180, -260));
+
+      assertFalse("not on track", isOnTrackDegs(180, 89));
+      assertFalse("not on track", isOnTrackDegs(180, 1));
+      assertFalse("not on track", isOnTrackDegs(180, -89));
+      assertFalse("not on track", isOnTrackDegs(180, -1));
+      assertFalse("not on track", isOnTrackDegs(180, 0));
+    }
   }
 
 	/**
@@ -173,27 +231,38 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 		}
 
 	}
+	
+	private static boolean isOnTrack(final double existingRads, final double newRads)
+	{
+	  double delta = Math.abs(newRads - existingRads);
+	  
+	  // we're having troubles where large numbers aren't recognised as multiple circles.
+	  delta += 0.00001;
+	  
+	  while(delta > Math.PI)
+	  {
+	    delta -= Math.PI * 2;
+	  }
+
+	  return Math.abs(delta) <= Math.PI / 2;
+	}
 
 	/** find the legs in the block of data
 	 * 
 	 * @param points
 	 * @return
 	 */
-	static ArrayList<Leg> getLegs(final Collection<Editable> points)
+	static HashMap<FixWrapper, WorldLocation> getLegs(final Collection<Editable> points)
 	{
 		// prepare to store the legs
-		final ArrayList<Leg> legs = new ArrayList<Leg>();
+	  final HashMap<FixWrapper, WorldLocation> res = new HashMap<FixWrapper, WorldLocation>();
 
 		// get the points
 		final Iterator<Editable> iter = points.iterator();
 
-		// store the first point as a start
-		FixWrapper startP = (FixWrapper) iter.next();
-		
 		// ok, here's the logic.  We establish the direction of travel from n-3 to n-2.
 		// if n-1 doesnt' follow that general trend, but n does, then
 		// n-1 is replaced by it's interpolated equivalent.
-		
 
 		// remember the previous position (which we use to "plot on" the last point)
     FixWrapper n_minus_3 = null;
@@ -214,33 +283,20 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 			  final double testVector = n_minus_1.getLocation().bearingFrom(n_minus_2.getLocation());
 			  
 			  // ok, does it appear to back-track?
-			  double deltaCourse = testVector - coreVector;
-			  if(deltaCourse > Math.PI * 2d)
-			  {
-			    deltaCourse -= Math.PI * 2d;
-			  }
-			  else if(deltaCourse < Math.PI * 2d)
-			  {
-			    deltaCourse += Math.PI * 2d;
-			  }
-			  final boolean back_track = Math.abs(deltaCourse) > Math.PI / 2;
-			  
-			  if(back_track)
+			  if(!isOnTrack(coreVector, testVector))
 			  {
 			    // ok, compare with the next leg
 	        final double nextVector = subject.getLocation().bearingFrom(n_minus_2.getLocation());
 	        
 	        // do the test for if it's inline
-	        final boolean inline = true;
+	        final boolean inline = isOnTrack(coreVector, nextVector);
 	        
 	        if(inline)
 	        {
 	          // ok, we have to generate the interpolated fix location for the n_minus_1
 	          FixWrapper newF = FixWrapper.interpolateFix(n_minus_2, subject, n_minus_1.getDateTimeGroup());
-	          n_minus_1.setLocation(new WorldLocation(newF.getLocation()));
 	          
-	   //       don't change the location. store a hashmap of fixes and new locations. In execute, put the new locaiton in the 
-	     //     fix (but put hte old location in the map). For undo, swap them back
+	          res.put(n_minus_1, new WorldLocation(newF.getLocation()));
 	        }
 			  }
 
@@ -252,7 +308,7 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 			n_minus_1 = subject;
 		}
 
-		return legs;
+		return res;
 	}
 
 	/**
@@ -352,14 +408,11 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 		public IStatus execute(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			// get ready to store the old positions
-			_newFixes = new HashMap<FixWrapper, WorldLocation>();
-
-			// PART ONE - FIND THE JUMPS
-			ArrayList<Leg> legs = getLegs(_points);
+		  // fina what needs fixing
+			_newFixes = getLegs(_points);
 
 			// did we find any?
-			if (legs == null || legs.size() == 0)
+			if (_newFixes == null || _newFixes.size() == 0)
 			{
 				showMessage("Smooth jumps",
 						"No back-tracking jumps were detected in the track segment\n\n"
@@ -371,40 +424,32 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 			}
 			else
 			{
-
-				// PART TWO apply the offsets
-				applyOffsets(legs, _points, _newFixes);
+				applyFixes(_newFixes);
 
 				// sorted, do the update
 				if (_layers != null)
 					_layers.fireModified(_track);
 				return Status.OK_STATUS;
 			}
-
 		}
 
+    public IStatus redo(final IProgressMonitor monitor, final IAdaptable info)
+        throws ExecutionException
+    {
+      applyFixes(_newFixes);
+      if (_layers != null)
+        _layers.fireModified(_track);
+
+      return Status.OK_STATUS;
+    }
+
+		
 		public IStatus undo(final IProgressMonitor monitor, final IAdaptable info)
 				throws ExecutionException
 		{
-			// loop through the positions
-			for (Iterator<Editable> iterator = _points.iterator(); iterator.hasNext();)
-			{
-				FixWrapper fix = (FixWrapper) iterator.next();
-				// get this location
-				WorldLocation loc = _newFixes.get(fix);
-
-				// was an offset applied?
-				if (loc != null)
-				{
-					// put the location back in
-					fix.setLocation(loc);
-				}
-			}
-
-			// and clear the new tracks item
-			_newFixes.clear();
-			_newFixes = null;
-			_layers.fireModified(_track);
+		  applyFixes(_newFixes);
+      if (_layers != null)
+        _layers.fireModified(_track);
 
 			return Status.OK_STATUS;
 		}
@@ -508,5 +553,24 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
 			return res;
 		}
 	}
+
+  private static void applyFixes(final HashMap<FixWrapper, WorldLocation> newFixes)
+  {
+    for(final FixWrapper fix: newFixes.keySet())
+    {
+      // what's the new location?
+      final WorldLocation newLoc = new WorldLocation(newFixes.get(fix));
+      
+      // what's the current location
+      final WorldLocation oldLoc = new WorldLocation(fix.getLocation());
+      
+      // store the new location
+      fix.setLocation(newLoc);
+      
+      // and remember the old value
+      newFixes.put(fix, oldLoc);
+      
+    }
+  }
 
 }
