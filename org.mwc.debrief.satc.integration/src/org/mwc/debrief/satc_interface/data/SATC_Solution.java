@@ -734,7 +734,7 @@ public class SATC_Solution extends BaseLayer implements
         final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
         if(editor != null)
         {
-          final TrackManager provider = editor.getAdapter(TrackManager.class);
+          final TrackManager provider = (TrackManager) editor.getAdapter(TrackManager.class);
           if(provider != null)
           {
             provider.setSecondary(newT);
