@@ -23,6 +23,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.wizards.ImportBRTDialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -39,7 +40,7 @@ public class BRTLoader extends CoreLoader
 
   @Override
   protected IRunnableWithProgress getImporter(IAdaptable target, Layers layers,
-      final InputStream inputStream,final String fileName) throws Exception
+      final InputStream inputStream, final String fileName) throws Exception
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
 
@@ -47,19 +48,25 @@ public class BRTLoader extends CoreLoader
     {
       public void run(final IProgressMonitor pm)
       {
-
         try
         {
-          final ImportBRTDialog wizard = new ImportBRTDialog();
-          final WizardDialog dialog = new WizardDialog(Display.getCurrent()
-              .getActiveShell(), wizard);
+          final BRTImporter importer = new BRTImporter(theLayers);
+          final ImportBRTDialog wizard = new ImportBRTDialog(importer
+              .findTrack(), importer.getTracks());
 
-          dialog.create();
-          dialog.open();
+
+          final WizardDialog dialog = new WizardDialog(null, wizard);
+          Display.getDefault().syncExec(new Runnable() {
+            public void run() {
+              
+
+              dialog.create();
+              dialog.open();
+              }
+          });
           if (dialog.getReturnCode() == WizardDialog.OK)
           {
-            final BRTImporter importer = new BRTImporter(wizard, theLayers);
-            importer.importThis(fileName, inputStream);
+            importer.importThis(wizard, fileName, inputStream);
           }
           else
           {

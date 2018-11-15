@@ -60,121 +60,84 @@ public class BRTImporter
 
     public void testFindTrack()
     {
-      /*final Layers testLayers = new Layers();
-      for (final Layer l : allLayers)
-      {
-        testLayers.addThisLayer(l);
-      }
-
-      final BRTHelperHeadless headless = new BRTHelperHeadless(true, null, null,
-          null, 0);
-
-      BRTImporter importer = new BRTImporter(headless, testLayers);
-      TrackWrapper selectedTrack;
-      try
-      {
-        selectedTrack = importer.findTrack();
-        assertEquals("Selecting first track, having several blue tracks",
-            allLayers[2], selectedTrack);
-
-        importer = new BRTImporter(new BRTHelperHeadless(true, null, null, null,
-            1), testLayers);
-        selectedTrack = importer.findTrack();
-        assertEquals("Selecting first track, having several blue tracks",
-            allLayers[4], selectedTrack);
-
-        testLayers.clear();
-        testLayers.addThisLayer(allLayers[0]);
-        testLayers.addThisLayer(allLayers[4]);
-
-        importer = new BRTImporter(headless, testLayers);
-        selectedTrack = importer.findTrack();
-        assertEquals("Selecting track from only one blue track", allLayers[4],
-            selectedTrack);
-
-        testLayers.clear();
-        testLayers.addThisLayer(allLayers[0]);
-        testLayers.addThisLayer(allLayers[4]);
-        testLayers.addThisLayer(allLayers[5]);
-
-        importer = new BRTImporter(headless, testLayers);
-        selectedTrack = importer.findTrack();
-        assertEquals("Selecting track from two blue tracks", allLayers[4],
-            selectedTrack);
-
-        testLayers.clear();
-        testLayers.addThisLayer(allLayers[0]);
-        testLayers.addThisLayer(allLayers[5]);
-
-        importer = new BRTImporter(headless, testLayers);
-        selectedTrack = importer.findTrack();
-        assertEquals("Selecting track from only one track", allLayers[5],
-            selectedTrack);
-
-      }
-      catch (final Exception e)
-      {
-        Assert.fail(e.getMessage());
-      }*/
+      /*
+       * final Layers testLayers = new Layers(); for (final Layer l : allLayers) {
+       * testLayers.addThisLayer(l); }
+       * 
+       * final BRTHelperHeadless headless = new BRTHelperHeadless(true, null, null, null, 0);
+       * 
+       * BRTImporter importer = new BRTImporter(headless, testLayers); TrackWrapper selectedTrack;
+       * try { selectedTrack = importer.findTrack();
+       * assertEquals("Selecting first track, having several blue tracks", allLayers[2],
+       * selectedTrack);
+       * 
+       * importer = new BRTImporter(new BRTHelperHeadless(true, null, null, null, 1), testLayers);
+       * selectedTrack = importer.findTrack();
+       * assertEquals("Selecting first track, having several blue tracks", allLayers[4],
+       * selectedTrack);
+       * 
+       * testLayers.clear(); testLayers.addThisLayer(allLayers[0]);
+       * testLayers.addThisLayer(allLayers[4]);
+       * 
+       * importer = new BRTImporter(headless, testLayers); selectedTrack = importer.findTrack();
+       * assertEquals("Selecting track from only one blue track", allLayers[4], selectedTrack);
+       * 
+       * testLayers.clear(); testLayers.addThisLayer(allLayers[0]);
+       * testLayers.addThisLayer(allLayers[4]); testLayers.addThisLayer(allLayers[5]);
+       * 
+       * importer = new BRTImporter(headless, testLayers); selectedTrack = importer.findTrack();
+       * assertEquals("Selecting track from two blue tracks", allLayers[4], selectedTrack);
+       * 
+       * testLayers.clear(); testLayers.addThisLayer(allLayers[0]);
+       * testLayers.addThisLayer(allLayers[5]);
+       * 
+       * importer = new BRTImporter(headless, testLayers); selectedTrack = importer.findTrack();
+       * assertEquals("Selecting track from only one track", allLayers[5], selectedTrack);
+       * 
+       * } catch (final Exception e) { Assert.fail(e.getMessage()); }
+       */
     }
 
     public void testGetTracks()
     {
-      /*final Layers testLayers = new Layers();
-      for (final Layer l : allLayers)
-      {
-        testLayers.addThisLayer(l);
-      }
-
-      final BRTImporter importer = new BRTImporter(null, testLayers);
-      final TrackWrapper[] tracks = importer.getTracks();
-      assertEquals("getTrack getting TrackWrapper", allLayers[2], tracks[0]);
-      assertEquals("getTrack getting TrackWrapper", allLayers[4], tracks[1]);
-      assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[2]);
-      assertEquals("amount of tracks extracted", 3, tracks.length);*/
+      /*
+       * final Layers testLayers = new Layers(); for (final Layer l : allLayers) {
+       * testLayers.addThisLayer(l); }
+       * 
+       * final BRTImporter importer = new BRTImporter(null, testLayers); final TrackWrapper[] tracks
+       * = importer.getTracks(); assertEquals("getTrack getting TrackWrapper", allLayers[2],
+       * tracks[0]); assertEquals("getTrack getting TrackWrapper", allLayers[4], tracks[1]);
+       * assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[2]);
+       * assertEquals("amount of tracks extracted", 3, tracks.length);
+       */
     }
 
     public void testImport()
     {
-      /*final String filename = "TestStringInputStreamFile";
-      final String fileContent = "1263297600.000000, 69.00\n"
-          + "1263297840.000000, 58.90\n" + "1263298080.000000, 56.70";
-
-      final BRTHelperHeadless headless = new BRTHelperHeadless(true, null,
-          DebriefColors.BLUE, null, 0);
-      final Layers testLayers = new Layers();
-      for (final Layer l : allLayers)
-      {
-        testLayers.addThisLayer(l);
-      }
-
-      final BRTImporter importer = new BRTImporter(headless, testLayers);
-      try
-      {
-        importer.importThis(filename, new ByteArrayInputStream(fileContent
-            .getBytes(StandardCharsets.UTF_8)));
-      }
-      catch (final Exception e)
-      {
-        Assert.fail(e.getMessage());
-      }
-
-      final BRTData data = importer.getBrtData();
-      assertEquals("Size of bearing is correct", 3, data.getBearings().length);
-      assertEquals("Size of time is correct", 3, data.getTimes().length);
-      assertEquals("Reading first bearing correctly", 69.0, data
-          .getBearings()[0], 0.001);
-      assertEquals("Reading second bearing correctly", 58.9, data
-          .getBearings()[1], 0.001);
-      assertEquals("Reading third bearing correctly", 56.7, data
-          .getBearings()[2], 0.001);
-
-      assertEquals("Reading first date correctly", 1263297600000L, (long) data
-          .getTimes()[0]);
-      assertEquals("Reading first date correctly", 1263297840000L, (long) data
-          .getTimes()[1]);
-      assertEquals("Reading first date correctly", 1263298080000L, (long) data
-          .getTimes()[2]);*/
+      /*
+       * final String filename = "TestStringInputStreamFile"; final String fileContent =
+       * "1263297600.000000, 69.00\n" + "1263297840.000000, 58.90\n" + "1263298080.000000, 56.70";
+       * 
+       * final BRTHelperHeadless headless = new BRTHelperHeadless(true, null, DebriefColors.BLUE,
+       * null, 0); final Layers testLayers = new Layers(); for (final Layer l : allLayers) {
+       * testLayers.addThisLayer(l); }
+       * 
+       * final BRTImporter importer = new BRTImporter(headless, testLayers); try {
+       * importer.importThis(filename, new ByteArrayInputStream(fileContent
+       * .getBytes(StandardCharsets.UTF_8))); } catch (final Exception e) {
+       * Assert.fail(e.getMessage()); }
+       * 
+       * final BRTData data = importer.getBrtData(); assertEquals("Size of bearing is correct", 3,
+       * data.getBearings().length); assertEquals("Size of time is correct", 3,
+       * data.getTimes().length); assertEquals("Reading first bearing correctly", 69.0, data
+       * .getBearings()[0], 0.001); assertEquals("Reading second bearing correctly", 58.9, data
+       * .getBearings()[1], 0.001); assertEquals("Reading third bearing correctly", 56.7, data
+       * .getBearings()[2], 0.001);
+       * 
+       * assertEquals("Reading first date correctly", 1263297600000L, (long) data .getTimes()[0]);
+       * assertEquals("Reading first date correctly", 1263297840000L, (long) data .getTimes()[1]);
+       * assertEquals("Reading first date correctly", 1263298080000L, (long) data .getTimes()[2]);
+       */
     }
   }
 
@@ -223,11 +186,6 @@ public class BRTImporter
    */
   private final Layers _layers;
 
-  /**
-   * brt info given by user.
-   */
-  private final BRTHelper _brtHelper;
-
   private BRTData brtData;
 
   /**
@@ -238,11 +196,10 @@ public class BRTImporter
    * @param _layers
    *          layers available in the plot
    */
-  public BRTImporter(final BRTHelper hB, final Layers _layers)
+  public BRTImporter(final Layers _layers)
   {
     super();
     this._layers = _layers;
-    this._brtHelper = hB;
   }
 
   private ImportBRTAction createImportAction(final String fName)
@@ -261,7 +218,7 @@ public class BRTImporter
     return action;
   }
 
-  private TrackWrapper findTrack() throws Exception
+  public TrackWrapper findTrack() throws Exception
   {
     TrackWrapper[] allTracks = getTracks();
     if (allTracks.length == 1)
@@ -271,13 +228,13 @@ public class BRTImporter
     int amountOfBlueTracks = 0, indexOfBlueTrack = 0;
     for (int i = 0; i < allTracks.length; i++)
     {
-      if ( DebriefColors.BLUE.equals(allTracks[i].getTrackColor()) )
+      if (DebriefColors.BLUE.equals(allTracks[i].getTrackColor()))
       {
         ++amountOfBlueTracks;
         indexOfBlueTrack = 0;
       }
     }
-    if ( amountOfBlueTracks == 1 )
+    if (amountOfBlueTracks == 1)
     {
       return allTracks[indexOfBlueTrack];
     }
@@ -296,7 +253,7 @@ public class BRTImporter
    *          Layers to loop
    * @return Tracks available in the layers
    */
-  private TrackWrapper[] getTracks()
+  public TrackWrapper[] getTracks()
   {
     final List<TrackWrapper> result = new ArrayList<>();
 
@@ -315,8 +272,8 @@ public class BRTImporter
     {});
   }
 
-  public ImportBRTAction importThis(final String fName, final InputStream is)
-      throws Exception
+  public ImportBRTAction importThis(final BRTHelper brtHelper,
+      final String fName, final InputStream is) throws Exception
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line;

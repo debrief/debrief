@@ -42,7 +42,7 @@ public class SelectTrackPage extends CoreEditableWizardPage
     @Override
     public boolean hasEditor()
     {
-      return true;
+      return false;
     }
 
     @Override

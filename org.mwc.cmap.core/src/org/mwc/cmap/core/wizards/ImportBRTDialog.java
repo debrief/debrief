@@ -71,6 +71,18 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
   }
+  
+  
+
+  @Override
+  public void addPages()
+  {
+    addPage(trackPage);
+    addPage(isTowedPage);
+    addPage(towedOffsetPage);
+    addPage(colorPage);
+    addPage(cutLengthPage);
+  }
 
   @Override
   public WorldDistance arrayOffset()
