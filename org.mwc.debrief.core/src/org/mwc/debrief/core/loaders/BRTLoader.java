@@ -21,6 +21,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.wizards.ImportBRTDialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -48,10 +50,15 @@ public class BRTLoader extends CoreLoader
 
         try
         {
-          final ImportBRTDialog dialog = new ImportBRTDialog();
-          if (dialog.open() != Dialog.CANCEL)
+          final ImportBRTDialog wizard = new ImportBRTDialog();
+          final WizardDialog dialog = new WizardDialog(Display.getCurrent()
+              .getActiveShell(), wizard);
+
+          dialog.create();
+          dialog.open();
+          if (dialog.getReturnCode() == WizardDialog.OK)
           {
-            final BRTImporter importer = new BRTImporter(dialog, theLayers);
+            final BRTImporter importer = new BRTImporter(wizard, theLayers);
             importer.importThis(fileName, inputStream);
           }
           else

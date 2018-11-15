@@ -16,60 +16,90 @@ package org.mwc.cmap.core.wizards;
 
 import java.awt.Color;
 
+import org.eclipse.jface.wizard.IWizardPage;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 import Debrief.ReaderWriter.BRT.BRTHelper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.WorldDistance;
 
-public class ImportBRTDialog extends CoreFreqImportDialog implements BRTHelper
+public class ImportBRTDialog extends Wizard implements BRTHelper
 {
 
-  public ImportBRTDialog()
-  {
-    this(Display.getDefault().getActiveShell());
-  }
-
-  public ImportBRTDialog(Shell parentShell)
-  {
-    super(parentShell);
-    // TODO Auto-generated constructor stub
-  }
+  private final EnterBooleanPage isTowedPage;
+  private final EnterRangePage towedOffsetPage;
+  private final SelectColorPage colorPage;
+  private final EnterRangePage cutLengthPage;
+  private final SelectTrackPage trackPage;
+  // private final EnterStringPage
+  // Create a page that returns a wizard.
+  // It must have a list of tracks in the constructor.
+  // having a getSelection method which returns the selected.
+  // check setPageComplete ONLY if the track was selected.
+  //
+  /* private final WizardDialog dialog; */
 
   @Override
   public Boolean isTowed()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return isTowedPage.getBoolean();
+  }
+
+  public ImportBRTDialog(TrackWrapper autoSelectedTrack, TrackWrapper[] allTracks)
+  {
+    final String imagePath = "images/NameSensor.jpg";
+
+    final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
+
+    this.isTowedPage = new EnterBooleanPage(null, true, "Is It a Towed Array?",
+        "BRT Import", "Please, indicate if It is a Towed Array. (yes/no)", null,
+        imagePath, "Click Yes if is a Towed Array");
+    this.towedOffsetPage = new EnterRangePage(null, "Import Sensor data",
+        "Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
+        "Default range", defaultWidth, imagePath, null, null);
+    this.colorPage = new SelectColorPage(null, DebriefColors.BLUE,
+        "Import Sensor data", "Now format the new sensor cut",
+        "The color for this new sensor cut", imagePath, null, null, false);
+    final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
+    this.cutLengthPage = new EnterRangePage(null, "Import Sensor data",
+        "Please provide a default length for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
+        "Default range", defRange, imagePath, null, null);
+    this.trackPage = new SelectTrackPage(null, "Import Sensor data",
+        "Select a track", "Please, select the track to add the sensor data",
+        imagePath, null, false, null, allTracks, autoSelectedTrack);
   }
 
   @Override
   public WorldDistance arrayOffset()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return towedOffsetPage.getRange();
   }
 
   @Override
-  public TrackWrapper select(TrackWrapper[] tracks)
+  public TrackWrapper select()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return trackPage.getValue();
   }
 
   @Override
   public Color getColor()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return colorPage.getColor();
   }
 
   @Override
   public WorldDistance defaultLength()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return cutLengthPage.getRange();
   }
 
+  @Override
+  public boolean performFinish()
+  {
+    // TODO Auto-generated method stub
+    return false;
+  }
 }

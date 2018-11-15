@@ -25,7 +25,7 @@ public interface BRTHelper
 
   WorldDistance arrayOffset();
 
-  TrackWrapper select(TrackWrapper[] tracks);
+  TrackWrapper select();
 
   Color getColor();
 

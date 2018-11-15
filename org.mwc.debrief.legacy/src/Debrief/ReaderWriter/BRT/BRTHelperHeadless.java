@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.ReaderWriter.BRT;
 
@@ -21,15 +21,16 @@ import MWC.GenericData.WorldDistance;
 
 public class BRTHelperHeadless implements BRTHelper
 {
-  
+
   final private boolean towed;
   final private WorldDistance offset;
   final private Color color;
   final private WorldDistance length;
-  final private int trackToSelect;
+  final private TrackWrapper trackToSelect;
 
-  public BRTHelperHeadless(boolean towed, WorldDistance offset, Color color,
-      WorldDistance length, int trackToSelect)
+  public BRTHelperHeadless(final boolean towed, final WorldDistance offset,
+      final Color color, final WorldDistance length,
+      final TrackWrapper trackToSelect)
   {
     super();
     this.towed = towed;
@@ -40,21 +41,15 @@ public class BRTHelperHeadless implements BRTHelper
   }
 
   @Override
-  public Boolean isTowed()
-  {
-    return towed;
-  }
-
-  @Override
   public WorldDistance arrayOffset()
   {
     return offset;
   }
 
   @Override
-  public TrackWrapper select(TrackWrapper[] tracks)
+  public WorldDistance defaultLength()
   {
-    return tracks[trackToSelect];
+    return length;
   }
 
   @Override
@@ -64,9 +59,18 @@ public class BRTHelperHeadless implements BRTHelper
   }
 
   @Override
-  public WorldDistance defaultLength()
+  public Boolean isTowed()
   {
-    return length;
+    return towed;
+  }
+
+  @Override
+  /**
+   * User will always pick the option given at trackToSelect
+   */
+  public TrackWrapper select()
+  {
+    return trackToSelect;
   }
 
 }
