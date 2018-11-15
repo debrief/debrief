@@ -1828,12 +1828,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         // see if we're recording
         if (_coordinateRecorder != null && _coordinateRecorder.isRecording())
         {
-          animatedGif = new AnimatedGif(_recordingLabel, ICON_PULSATING_GIF);
-          if (_recordingLabel.getImage() == null)
-          {
-            _recordingLabel.setImage(animatedGif.getImage());
+          if(animatedGif == null) {
+            animatedGif = new AnimatedGif(_recordingLabel, ICON_PULSATING_GIF);
+            if (_recordingLabel.getImage() == null)
+            {
+              _recordingLabel.setImage(animatedGif.getImage());
+            }
+            animatedGif.animate();
           }
-          animatedGif.animate();
+          else {
+            animatedGif.resume(_recordingLabel.getBounds());
+          }
           _recordingLabel.setVisible(true);
 
           newVal += " [REC]";
@@ -1861,7 +1866,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
   private void resetRecordingLabel()
   {
-    Display.getDefault().syncExec(new Runnable()
+    Display.getDefault().asyncExec(new Runnable()
     {
 
       @Override

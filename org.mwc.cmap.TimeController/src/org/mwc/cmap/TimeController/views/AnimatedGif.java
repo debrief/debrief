@@ -31,6 +31,7 @@ public class AnimatedGif
   private ImageData[] imageDataArray;
   private Label lbl;
   private boolean cancel;
+  private Rectangle bounds;
   public AnimatedGif(Label lbl,String filename) {
     this.lbl = lbl;
     try
@@ -43,11 +44,15 @@ public class AnimatedGif
     }
   }
 
+  public void resume(Rectangle newBounds) {
+    this.cancel=false;
+    bounds = newBounds;
+  }
   public void animate() {
     final Display display = lbl.getDisplay();
     final GC shellGC = new GC(lbl);
     final Color shellBackground = lbl.getBackground();
-    final Rectangle bounds = lbl.getBounds();
+    bounds = lbl.getBounds();
     //when animate is called, restart thread
     cancel=false;
     if(imageDataArray.length>1) {
@@ -55,6 +60,7 @@ public class AnimatedGif
         @SuppressWarnings("unused")
         public void run() {
           //run only if not cancel.
+          
           if(!cancel) {
             Image offScreenImage = new Image(display, loader.logicalScreenWidth, loader.logicalScreenHeight);
             GC offScreenImageGC = new GC(offScreenImage);
@@ -65,7 +71,7 @@ public class AnimatedGif
               /* Create the first image and draw it on the off-screen image. */
               int imageDataIndex = 0;  
               ImageData imageData = imageDataArray[imageDataIndex];
-
+              offScreenImageGC.setBackground(shellBackground);
               if (image != null && !image.isDisposed()) image.dispose();
               image = new Image(display, imageData);
               offScreenImageGC.drawImage(
@@ -82,7 +88,7 @@ public class AnimatedGif
               /* Now loop through the images, creating and drawing each one
                * on the off-screen image before drawing it on the shell. */
               int repeatCount = loader.repeatCount;
-              while (loader.repeatCount == 0 || repeatCount > 0) {
+              while (loader.repeatCount == 0 || repeatCount > 0 ) {
                 switch (imageData.disposalMethod) {
                   case SWT.DM_FILL_BACKGROUND:
                     /* Fill with the background color before drawing. */
@@ -125,7 +131,7 @@ public class AnimatedGif
 
                 /* Draw the off-screen image to the shell. */
                 shellGC.drawImage(offScreenImage, bounds.width-imageData.width-5, bounds.height/2-imageData.height/2);
-
+               
                 /* Sleep for the specified delay time (adding commonly-used slow-down fudge factors). */
                 try {
                   int ms = imageData.delayTime * 10;
@@ -139,27 +145,27 @@ public class AnimatedGif
                 if (imageDataIndex == imageDataArray.length - 1) repeatCount--;
               }
             } catch (SWTException ex) {
-              System.out.println("There was an error animating the GIF");
+              System.err.println("There was an error animating the GIF");
             } finally {
               if (offScreenImage != null && !offScreenImage.isDisposed()) offScreenImage.dispose();
               if (offScreenImageGC != null && !offScreenImageGC.isDisposed()) offScreenImageGC.dispose();
               if (image != null && !image.isDisposed()) image.dispose();
             } 
           }
-        }
+          }
       };
-      animateThread.setDaemon(true);
       animateThread.start();
     }
   }
 
   public void cancel() {
-    this.cancel = true;
+    this.cancel = true;    
   }
 
   public Image getImage()
   {
     return image;
   }
+
 
 }
