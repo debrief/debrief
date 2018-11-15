@@ -43,6 +43,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.util.ReadOnlyIterator;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.satc_interface.data.wrappers.BMC_Wrapper;
 import org.mwc.debrief.satc_interface.data.wrappers.ContributionWrapper;
@@ -725,10 +726,20 @@ public class SATC_Solution extends BaseLayer implements
 
         // and store it
         _myLayers.addThisLayer(newT);
-
+        
         // and hide ourselves
         setVisible(false);
 
+        // see if we can set this track as secondary
+        final IEditorPart editor = CorePlugin.getActivePage().getActiveEditor();
+        if(editor != null)
+        {
+          final TrackManager provider = editor.getAdapter(TrackManager.class);
+          if(provider != null)
+          {
+            provider.setSecondary(newT);
+          }
+        }
       }
     }
   }
