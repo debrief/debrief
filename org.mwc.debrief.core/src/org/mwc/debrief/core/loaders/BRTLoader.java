@@ -16,19 +16,25 @@ package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.wizards.ImportBRTDialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.BRT.BRTImporter;
+import Debrief.ReaderWriter.BRT.BRTImporter.ImportBRTAction;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
+import MWC.GUI.Tools.Action;
 
 public class BRTLoader extends CoreLoader
 {
@@ -50,23 +56,23 @@ public class BRTLoader extends CoreLoader
       {
         try
         {
-          final BRTImporter importer = new BRTImporter(theLayers);
-          final ImportBRTDialog wizard = new ImportBRTDialog(importer
-              .findTrack(), importer.getTracks());
-
+          final BRTImporter importer = new BRTImporter();
+          TrackWrapper[] allTracks = BRTImporter.getTracks(theLayers);
+          final TrackWrapper theTrack = BRTImporter.findTrack(allTracks);
+          final ImportBRTDialog wizard = new ImportBRTDialog(theTrack, allTracks);
 
           final WizardDialog dialog = new WizardDialog(null, wizard);
           Display.getDefault().syncExec(new Runnable() {
             public void run() {
-              
-
               dialog.create();
               dialog.open();
               }
           });
           if (dialog.getReturnCode() == WizardDialog.OK)
           {
-            importer.importThis(wizard, fileName, inputStream);
+            ImportBRTAction action = importer.importThis(wizard, fileName, inputStream);
+            IUndoableOperation operation = new WrapAction(action);
+            CorePlugin.getHistory().add(operation);
           }
           else
           {
@@ -81,6 +87,98 @@ public class BRTLoader extends CoreLoader
         }
       }
     };
+  }
+  
+  private static class WrapAction implements IUndoableOperation
+  {
+    private Action _action;
+
+    public WrapAction(final Action action)
+    {
+      _action = action;
+    }
+
+    @Override
+    public void addContext(IUndoContext context)
+    {
+      // skip;
+    }
+
+    @Override
+    public boolean canExecute()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean canRedo()
+    {
+      return _action.isRedoable();
+    }
+
+    @Override
+    public boolean canUndo()
+    {
+      return _action.isUndoable();
+    }
+    
+    @Override
+    public void dispose()
+    {
+      // skip.
+    }
+
+    @Override
+    public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      _action.execute();
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public IUndoContext[] getContexts()
+    {
+      
+      return null;
+    }
+
+    @Override
+    public String getLabel()
+    {
+      
+      return _action.toString();
+    }
+
+    @Override
+    public boolean hasContext(IUndoContext context)
+    {
+      
+      return false;
+    }
+
+    @Override
+    public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      _action.execute();
+      return Status.OK_STATUS;
+    }
+
+    @Override
+    public void removeContext(IUndoContext context)
+    {
+      // skip.
+    }
+
+    @Override
+    public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+        throws ExecutionException
+    {
+      _action.undo();
+      return Status.OK_STATUS;
+    }
+    
   }
 
 }
