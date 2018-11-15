@@ -154,6 +154,7 @@ public class AnimatedGif
           }
           }
       };
+      animateThread.setDaemon(true);
       animateThread.start();
     }
   }
