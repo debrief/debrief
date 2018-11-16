@@ -652,26 +652,6 @@ public class SATC_Solution extends BaseLayer implements
             // remember this leg
             lastLeg = abs;
 
-            // // quick check to see if we have some frequency data
-            // IContributions conts = _mySolver.getContributions();
-            // Iterator<BaseContribution> iter = conts.iterator();
-            // while (iter.hasNext())
-            // {
-            // BaseContribution cont = (BaseContribution) iter.next();
-            // if (cont instanceof Range1959ForecastContribution)
-            // {
-            // // ok, does it overlap this leg?
-            // if (cont.getStartDate().before(straight.getEndTime())
-            // && cont.getFinishDate().after(straight.getStartTime()))
-            // {
-            // // ok, retrieve the frequency
-            // Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
-            // double freq = freqC.getfNought();
-            // abs.setBaseFrequency(freq);
-            // }
-            // }
-            // }
-
             // ok, do we have a pending alteartion?
             if (pendingAlteration != null)
             {
@@ -697,30 +677,7 @@ public class SATC_Solution extends BaseLayer implements
 
             // COMMENTED OUT THIS NEXT BLOCK - WE'RE NOT GOING TO USE THE DERIVED ALTERATION,
             // WE'LL JUST USE OUR DYNAMIC INFILL SEGMENTS
-            // final TrackSegment segment = new TrackSegment();
-            // segment.setName(altering.getName());
-            //
-            // final ArrayList<State> states = altering.getStates();
-            // for (final State thisS : states)
-            // {
-            // final double theCourse = thisS.getCourse();
-            // final WorldSpeed theSpeed = new WorldSpeed(thisS.getSpeed(),
-            // WorldSpeed.M_sec);
-            // final WorldLocation theLocation = conversions.toLocation(thisS
-            // .getLocation().getCoordinate());
-            // final HiResDate theTime = new HiResDate(thisS.getTime().getTime());
-            //
-            // final Fix theFix = new Fix(theTime, theLocation, theCourse,
-            // theSpeed.getValueIn(WorldSpeed.ft_sec) / 3d);
-            // final FixWrapper newFix = new FixWrapper(theFix);
-            // newFix.resetName();
-            // segment.addFix(newFix);
-            // }
-            //
-            // // make it dotted, that's our way of doing it.
-            // segment.setLineStyle(CanvasType.DOTTED);
-            //
-            // newT.add(segment);
+
           }
           else
             DebriefPlugin.logError(IStatus.ERROR,
