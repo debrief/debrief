@@ -172,7 +172,7 @@ public class BRTLoader extends CoreLoader
             final ImportBRTAction action = importer.importThis(wizard, fileName,
                 inputStream);
             final IUndoableOperation operation = new WrapAction(action);
-            CorePlugin.getHistory().add(operation);
+            CorePlugin.run(operation);
           }
           else
           {
