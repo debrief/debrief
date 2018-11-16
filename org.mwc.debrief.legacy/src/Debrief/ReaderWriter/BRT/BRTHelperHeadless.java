@@ -27,10 +27,11 @@ public class BRTHelperHeadless implements BRTHelper
   final private Color color;
   final private WorldDistance length;
   final private TrackWrapper trackToSelect;
+  final private boolean isVisible;
 
   public BRTHelperHeadless(final boolean towed, final WorldDistance offset,
       final Color color, final WorldDistance length,
-      final TrackWrapper trackToSelect)
+      final TrackWrapper trackToSelect, final boolean isVisible)
   {
     super();
     this.towed = towed;
@@ -38,6 +39,7 @@ public class BRTHelperHeadless implements BRTHelper
     this.color = color;
     this.length = length;
     this.trackToSelect = trackToSelect;
+    this.isVisible = isVisible;
   }
 
   @Override
@@ -71,6 +73,12 @@ public class BRTHelperHeadless implements BRTHelper
   public TrackWrapper select()
   {
     return trackToSelect;
+  }
+
+  @Override
+  public Boolean isVisible()
+  {
+    return isVisible;
   }
 
 }

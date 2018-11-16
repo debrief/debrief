@@ -32,6 +32,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   private final SelectColorPage colorPage;
   private final EnterRangePage cutLengthPage;
   private final SelectTrackPage trackPage;
+  private final EnterBooleanPage showSensorOnTrackPage;
   // Create a page that returns a wizard.
   // It must have a list of tracks in the constructor.
   // having a getSelection method which returns the selected.
@@ -63,6 +64,9 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     this.trackPage = new SelectTrackPage(null, "Import Sensor data",
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
+    this.showSensorOnTrackPage = new EnterBooleanPage(null, true, "Import Sensor data",
+        "Sensor Visibility", "Please, indicate if want the sensor visible. (yes/no)", imagePath,
+        null, "Click Yes to add visibility to the sensor");
   }
 
   @Override
@@ -76,6 +80,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     addPage(towedOffsetPage);
     addPage(colorPage);
     addPage(cutLengthPage);
+    addPage(showSensorOnTrackPage);
   }
 
   @Override
@@ -122,5 +127,11 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   public TrackWrapper select()
   {
     return trackPage.getValue();
+  }
+
+  @Override
+  public Boolean isVisible()
+  {
+    return showSensorOnTrackPage.getBoolean();
   }
 }

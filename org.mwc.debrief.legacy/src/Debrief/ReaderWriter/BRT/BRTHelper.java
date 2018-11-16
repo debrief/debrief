@@ -30,4 +30,6 @@ public interface BRTHelper
   Color getColor();
 
   WorldDistance defaultLength();
+  
+  Boolean isVisible();
 }

@@ -180,7 +180,7 @@ public class BRTImporter
       WorldDistance offset = new WorldDistance(1000, WorldDistance.METRES);
       WorldDistance length = new WorldDistance(20000, WorldDistance.METRES);
       final BRTHelperHeadless headless = new BRTHelperHeadless(true, offset,
-          DebriefColors.BLUE, length, sensorTrack);
+          DebriefColors.BLUE, length, sensorTrack, true);
       
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
@@ -236,7 +236,7 @@ public class BRTImporter
       WorldDistance offset = null;
       WorldDistance length = new WorldDistance(20000, WorldDistance.METRES);
       final BRTHelperHeadless headless = new BRTHelperHeadless(false, offset,
-          DebriefColors.BLUE, length, sensorTrack);
+          DebriefColors.BLUE, length, sensorTrack, true);
       
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
@@ -374,6 +374,7 @@ public class BRTImporter
     loadThese(brtData, sensor, track, helper
         .defaultLength(), helper.isTowed());
 
+    sensor.setVisible(helper.isVisible());
     return new ImportBRTAction(sensor, track);
   }
 
