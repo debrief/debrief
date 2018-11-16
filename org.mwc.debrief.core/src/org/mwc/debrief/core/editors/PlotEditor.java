@@ -2382,16 +2382,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
       {
         // and the base frequency
         final String freqStr = importHelper.getBaseFrequency();
-        try
+        if(freqStr != null)
         {
-          final double freq = Double.parseDouble(freqStr);
-          thisS.setBaseFrequency(freq);
-        }
-        catch (final NumberFormatException e)
-        {
-          CorePlugin.logError(IStatus.ERROR, "Couldn't parse base frequency:"
-              + freqStr, e);
-          e.printStackTrace();
+          try
+          {
+            final double freq = Double.parseDouble(freqStr);
+            thisS.setBaseFrequency(freq);
+          }
+          catch (final NumberFormatException e)
+          {
+            CorePlugin.logError(IStatus.ERROR, "Couldn't parse base frequency:"
+                + freqStr, e);
+            e.printStackTrace();
+          }
         }
       }
 

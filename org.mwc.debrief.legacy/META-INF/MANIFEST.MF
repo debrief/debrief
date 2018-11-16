@@ -121,6 +121,7 @@ Export-Package:
    MWC.GUI.Canvas.Swing,
    MWC.GUI,
    MWC.GUI.Tools",
+ Debrief.ReaderWriter.BRT,
  Debrief.ReaderWriter.FlatFile;
   uses:="Debrief.Wrappers,
    junit.framework,
