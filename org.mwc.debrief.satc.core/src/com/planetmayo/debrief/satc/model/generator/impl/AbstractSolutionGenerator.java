@@ -501,7 +501,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			}
 			before = after;
 			after = nxt;
-			AlteringRoute altering = new AlteringRoute("", before.getEndPoint(),
+			AlteringRoute altering = new AlteringRoute(before.getName()+"_a", before.getEndPoint(),
 					before.getEndTime(), after.getStartPoint(), after.getStartTime());
 			altering.constructRoute(before, after);
 			altering.generateSegments(problemSpaceView.getBoundedStatesBetween(
