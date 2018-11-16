@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -38,6 +39,7 @@ import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
@@ -207,8 +209,8 @@ public class BRTImporter
       SensorContactWrapper cut = (SensorContactWrapper) sensor.elements().nextElement();
       assertEquals("correct length", length, cut.getRange());
       assertEquals("correct track", sensorTrack.getName(), cut.getTrackName());
-      assertEquals("correct bearing", 69d, cut.getBearing());
-      assertEquals("correct ambig bearing", -69d, cut.getAmbiguousBearing());
+      assertEquals("correct bearing", 0d, cut.getBearing());
+      assertEquals("correct ambig bearing", 222d, cut.getAmbiguousBearing());
 
       double course = MWC.Algorithms.Conversions.Rads2Degs(sensorTrack.getNearestTo(cut.getDTG())[0].getCourse());
       assertEquals("correct ownship course", 291d, course);
@@ -263,7 +265,7 @@ public class BRTImporter
       SensorContactWrapper cut = (SensorContactWrapper) sensor.elements().nextElement();
       assertEquals("correct length", length, cut.getRange());
       assertEquals("correct track", sensorTrack.getName(), cut.getTrackName());
-      assertEquals("correct bearing", 69d, cut.getBearing());
+      assertEquals("correct bearing", 0d, cut.getBearing());
       assertEquals("correct ambig bearing", Double.NaN, cut.getAmbiguousBearing());
 
       double course = MWC.Algorithms.Conversions.Rads2Degs(sensorTrack.getNearestTo(cut.getDTG())[0].getCourse());
@@ -367,7 +369,7 @@ public class BRTImporter
     }
 
     // populate the sensor
-    loadThese(brtData, sensor, track, helper.arrayOffset(), helper
+    loadThese(brtData, sensor, track, helper
         .defaultLength(), helper.isTowed());
 
     return new ImportBRTAction(sensor, track);
@@ -423,29 +425,47 @@ public class BRTImporter
   }
 
   private static void loadThese(final BRTData data, final SensorWrapper sensor,
-      final TrackWrapper track, final WorldDistance arrayOffset,
-      final WorldDistance defaultLength, final boolean isAmbiguous)
+      final TrackWrapper track, final WorldDistance defaultLength,
+      final boolean isAmbiguous)
   {
     final int num = data.getTimes().length;
     for (int i = 0; i < num; i++)
     {
-      final long thisT = data.getTimes()[i]; // TODO: this is expecting millis, check if we're
-                                             // converting data-file seconds to millis
+      final long thisT = data.getTimes()[i]; 
       
-                                             // Yes, at function `readBRT` it is converted to milliseconds.
-      final double thisB = data.getBearings()[i];
-      final Double ambig = isAmbiguous ? -thisB : null;
-      final SensorContactWrapper newS = new SensorContactWrapper(track
-          .getName(), new HiResDate(thisT), null, thisB, ambig, null, null,
-          Color.yellow, "pt:" + i, LineStylePropertyEditor.SOLID, sensor
-              .getName());
-
-      if (defaultLength != null)
+      // find the ownship course at this time
+      Watchable[] nearest = track.getNearestTo(new HiResDate(thisT));
+      if(nearest != null && nearest.length > 0)
       {
-        newS.setRange(defaultLength);
-      }
+        final FixWrapper fix = (FixWrapper) nearest[0];
+        final double relBearingDegs = data.getBearings()[i];
+        final double hisCourse = MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse());
+        
+        double bearingDegs = hisCourse + relBearingDegs;
+        if(bearingDegs >= 360d)
+        {
+          bearingDegs -= 360d;
+        }
+        Double ambigDegs = isAmbiguous ? hisCourse - relBearingDegs
+            : null;
+        if(ambigDegs != null && ambigDegs >= 360d)
+        {
+          ambigDegs -= 360d;
+        }
+        
+        final SensorContactWrapper newS = new SensorContactWrapper(track
+            .getName(), new HiResDate(thisT), null, bearingDegs, ambigDegs, null, null,
+            null, "pt:" + i, LineStylePropertyEditor.SOLID, sensor
+                .getName());
 
-      sensor.add(newS);
+        if (defaultLength != null)
+        {
+          newS.setRange(defaultLength);
+        }
+
+        sensor.add(newS);
+      }
+      
     }
   }
 
