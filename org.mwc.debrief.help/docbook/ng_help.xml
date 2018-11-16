@@ -7900,8 +7900,33 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
           		
 	     </sect2>
           	
+          	
       </sect1>
-
+      <sect1 xml:id="BRT_format">
+        <title>Third Party BRT Format</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>Some analysts use a third party software package to produce their bearing data.  Unfortunately, for towed array data
+            the package calculates the absolute bearing using the current platform heading, not the heading for the platform
+            was following when it was at the current array centre.
+           </para>
+          <para>
+            But, since the packagea already outputs a data-file containing the relative bearing we're able to do our own calculation of
+            absolute bearing, using a better value for ownship heading.
+          </para>
+        </sect2>
+        <sect2>
+          <title>Format</title>
+          <para>The data is in two columns, elapsed seconds since the epoch, and the relative bearing in Degreees, like this:
+          <programlisting>
+            1263297600.000000, 69.00
+            1263297840.000000, 67.85
+            1263298080.000000, 65.63
+            1263298320.000000, 63.33
+          </programlisting>
+          </para>
+        </sect2>
+      </sect1>
 
     </chapter>
     <chapter xml:id="GeoToolsRef">
