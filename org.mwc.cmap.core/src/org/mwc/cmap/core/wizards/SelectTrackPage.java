@@ -98,6 +98,7 @@ public class SelectTrackPage extends CoreEditableWizardPage
     _fieldExplanation = description;
     _defaultTrackValue = defaultWrapper;
     this.allTracks = allTracks;
+    createMe();
   }
 
   @Override
