@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.core.wizards;
 
@@ -18,8 +18,6 @@ import java.awt.Color;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.jface.wizard.WizardDialog;
-import org.eclipse.swt.widgets.Display;
 
 import Debrief.ReaderWriter.BRT.BRTHelper;
 import Debrief.Wrappers.TrackWrapper;
@@ -34,21 +32,14 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   private final SelectColorPage colorPage;
   private final EnterRangePage cutLengthPage;
   private final SelectTrackPage trackPage;
-  // private final EnterStringPage
   // Create a page that returns a wizard.
   // It must have a list of tracks in the constructor.
   // having a getSelection method which returns the selected.
   // check setPageComplete ONLY if the track was selected.
   //
-  /* private final WizardDialog dialog; */
 
-  @Override
-  public Boolean isTowed()
-  {
-    return isTowedPage.getBoolean();
-  }
-
-  public ImportBRTDialog(TrackWrapper autoSelectedTrack, TrackWrapper[] allTracks)
+  public ImportBRTDialog(final TrackWrapper autoSelectedTrack,
+      final TrackWrapper[] allTracks)
   {
     final String imagePath = "images/NameSensor.jpg";
 
@@ -71,13 +62,14 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
   }
-  
-  
 
   @Override
   public void addPages()
   {
-    addPage(trackPage);
+    if (trackPage.getDefaultTrackValue() == null)
+    {
+      addPage(trackPage);
+    }
     addPage(isTowedPage);
     addPage(towedOffsetPage);
     addPage(colorPage);
@@ -91,9 +83,9 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   }
 
   @Override
-  public TrackWrapper select()
+  public WorldDistance defaultLength()
   {
-    return trackPage.getValue();
+    return cutLengthPage.getRange();
   }
 
   @Override
@@ -103,9 +95,19 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   }
 
   @Override
-  public WorldDistance defaultLength()
+  public IWizardPage getNextPage(final IWizardPage page)
   {
-    return cutLengthPage.getRange();
+    if (page == isTowedPage && !isTowedPage.getBoolean())
+    {
+      return colorPage;
+    }
+    return super.getNextPage(page);
+  }
+
+  @Override
+  public Boolean isTowed()
+  {
+    return isTowedPage.getBoolean();
   }
 
   @Override
@@ -113,5 +115,11 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   {
     // TODO Auto-generated method stub
     return false;
+  }
+
+  @Override
+  public TrackWrapper select()
+  {
+    return trackPage.getValue();
   }
 }

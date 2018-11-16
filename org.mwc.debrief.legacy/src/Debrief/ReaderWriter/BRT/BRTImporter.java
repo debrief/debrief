@@ -189,7 +189,7 @@ public class BRTImporter
   {
     // find track
     final TrackWrapper track = helper.select();
-    
+
     // create sensor
     final SensorWrapper sensor = new SensorWrapper(fName);
 
@@ -197,7 +197,7 @@ public class BRTImporter
     sensor.setColor(helper.getColor());
 
     // set array offset (if needed)
-    if ( helper.isTowed())
+    if (helper.isTowed())
     {
       final WorldDistance offset = helper.arrayOffset();
       if (offset != null)

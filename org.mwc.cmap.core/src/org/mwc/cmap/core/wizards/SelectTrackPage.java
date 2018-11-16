@@ -112,6 +112,11 @@ public class SelectTrackPage extends CoreEditableWizardPage
     return _myTrack;
   }
 
+  public TrackWrapper getDefaultTrackValue()
+  {
+    return _defaultTrackValue;
+  }
+
   @Override
   protected PropertyDescriptor[] getPropertyDescriptors()
   {
