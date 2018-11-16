@@ -18,6 +18,7 @@ import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -139,36 +141,134 @@ public class BRTImporter
       assertEquals("getTrack getting TrackWrapper", allLayers[2], tracks[0]);
       assertEquals("getTrack getting TrackWrapper", allLayers[4], tracks[1]);
       assertEquals("getTrack getting TrackWrapper", allLayers[5], tracks[2]);
-      assertEquals("amount of tracks extracted", 3, tracks.length);
+      assertEquals("amount of tracks extracted", 4, tracks.length);
 
     }
 
-    public void testImport()
+    private static void loadLayers(final Layers layers, final String filename, String root) throws IOException
     {
-      
-//      final String filename = "TestStringInputStreamFile";
-//      final String fileContent = "1263297600.000000, 69.00\n"
-//          + "1263297840.000000, 58.90\n" + "1263298080.000000, 56.70";
-//
-//      final BRTHelperHeadless headless = new BRTHelperHeadless(true, null,
-//          DebriefColors.BLUE, null, 0);
-//      final Layers testLayers = new Layers();
-//      for (final Layer l : allLayers)
-//      {
-//        testLayers.addThisLayer(l);
-//      }
-//
-//      final BRTImporter importer = new BRTImporter(headless, testLayers);
-//      try
-//      {
-//        importer.importThis(filename, new ByteArrayInputStream(fileContent
-//            .getBytes(StandardCharsets.UTF_8)));
-//      }
-//      catch (final Exception e)
-//      {
-//        Assert.fail(e.getMessage());
-//      }
+      final String fName =
+          root + filename;
+      // start off with the ownship track
+      final File boatFile = new File(fName);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
 
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(fName, bs, layers);
+    }
+    
+    public void testImportTowed() throws Exception
+    {
+      final Layers layers = new Layers();
+      final String root = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_data/brt_import/";
+      
+      // load the parent track
+      loadLayers(layers, "All Tracks.rep", root);
+
+      assertEquals("read in track", 2, layers.size());
+
+      final String brtName = root + "TOWED_1000m.brt";
+      
+      final TrackWrapper sensorTrack = (TrackWrapper) layers.findLayer("SENSOR");
+      WorldDistance offset = new WorldDistance(1000, WorldDistance.METRES);
+      WorldDistance length = new WorldDistance(20000, WorldDistance.METRES);
+      final BRTHelperHeadless headless = new BRTHelperHeadless(true, offset,
+          DebriefColors.BLUE, length, sensorTrack);
+      
+      assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
+
+      final BRTImporter importer = new BRTImporter();
+      ImportBRTAction action = importer.importThis(headless, brtName, new FileInputStream(brtName));
+      
+      action.execute();
+      
+      // check the data is loaded as expected
+      assertEquals("now has new sensor", 1, sensorTrack.getSensors().size());
+
+      action.undo();
+      
+      // check the data is loaded as expected
+      assertEquals("now has zero sensors", 0, sensorTrack.getSensors().size());
+
+      action.execute();
+      
+      // check the data is loaded as expected
+      assertEquals("now has new sensor", 1, sensorTrack.getSensors().size());
+      
+      // have a look at the data
+      SensorWrapper sensor = (SensorWrapper) sensorTrack.getSensors().elements().nextElement();
+      assertEquals("has all cuts", 31, sensor.size());
+      assertEquals("correct offset", offset, sensor.getSensorOffset());
+      
+      // look at a cut
+      SensorContactWrapper cut = (SensorContactWrapper) sensor.elements().nextElement();
+      assertEquals("correct length", length, cut.getRange());
+      assertEquals("correct track", sensorTrack.getName(), cut.getTrackName());
+      assertEquals("correct bearing", 69d, cut.getBearing());
+      assertEquals("correct ambig bearing", -69d, cut.getAmbiguousBearing());
+
+      double course = MWC.Algorithms.Conversions.Rads2Degs(sensorTrack.getNearestTo(cut.getDTG())[0].getCourse());
+      assertEquals("correct ownship course", 291d, course);
+      
+    }
+    
+
+    public void testImportHull() throws Exception
+    {
+      final Layers layers = new Layers();
+      final String root = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/test_data/brt_import/";
+      
+      // load the parent track
+      loadLayers(layers, "All Tracks.rep", root);
+
+      assertEquals("read in track", 2, layers.size());
+
+      final String brtName = root + "HULL_ZERO.brt";
+      
+      final TrackWrapper sensorTrack = (TrackWrapper) layers.findLayer("SENSOR");
+      WorldDistance offset = null;
+      WorldDistance length = new WorldDistance(20000, WorldDistance.METRES);
+      final BRTHelperHeadless headless = new BRTHelperHeadless(false, offset,
+          DebriefColors.BLUE, length, sensorTrack);
+      
+      assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
+
+      final BRTImporter importer = new BRTImporter();
+      ImportBRTAction action = importer.importThis(headless, brtName, new FileInputStream(brtName));
+      
+      action.execute();
+      
+      // check the data is loaded as expected
+      assertEquals("now has new sensor", 1, sensorTrack.getSensors().size());
+
+      action.undo();
+      
+      // check the data is loaded as expected
+      assertEquals("now has zero sensors", 0, sensorTrack.getSensors().size());
+
+      action.execute();
+      
+      // check the data is loaded as expected
+      assertEquals("now has new sensor", 1, sensorTrack.getSensors().size());
+      
+      // have a look at the data
+      SensorWrapper sensor = (SensorWrapper) sensorTrack.getSensors().elements().nextElement();
+      assertEquals("has all cuts", 31, sensor.size());
+      assertEquals("correct offset", 0d, sensor.getSensorOffset().getValue());
+      
+      // look at a cut
+      SensorContactWrapper cut = (SensorContactWrapper) sensor.elements().nextElement();
+      assertEquals("correct length", length, cut.getRange());
+      assertEquals("correct track", sensorTrack.getName(), cut.getTrackName());
+      assertEquals("correct bearing", 69d, cut.getBearing());
+      assertEquals("correct ambig bearing", Double.NaN, cut.getAmbiguousBearing());
+
+      double course = MWC.Algorithms.Conversions.Rads2Degs(sensorTrack.getNearestTo(cut.getDTG())[0].getCourse());
+      assertEquals("correct ownship course", 291d, course);
+      
     }
     public void testLoadBRT() throws IOException, Exception
     {
@@ -238,7 +338,7 @@ public class BRTImporter
   }
 
   private static ImportBRTAction createImportAction(final BRTHelper helper,
-      final BRTData brtData, final String fName) throws Exception
+      final BRTData brtData, final String fName)
   {
     // find track
     final TrackWrapper track = helper.select();
@@ -268,7 +368,7 @@ public class BRTImporter
 
     // populate the sensor
     loadThese(brtData, sensor, track, helper.arrayOffset(), helper
-        .defaultLength());
+        .defaultLength(), helper.isTowed());
 
     return new ImportBRTAction(sensor, track);
   }
@@ -324,7 +424,7 @@ public class BRTImporter
 
   private static void loadThese(final BRTData data, final SensorWrapper sensor,
       final TrackWrapper track, final WorldDistance arrayOffset,
-      final WorldDistance defaultLength)
+      final WorldDistance defaultLength, final boolean isAmbiguous)
   {
     final int num = data.getTimes().length;
     for (int i = 0; i < num; i++)
@@ -334,8 +434,9 @@ public class BRTImporter
       
                                              // Yes, at function `readBRT` it is converted to milliseconds.
       final double thisB = data.getBearings()[i];
+      final Double ambig = isAmbiguous ? -thisB : null;
       final SensorContactWrapper newS = new SensorContactWrapper(track
-          .getName(), new HiResDate(thisT), null, thisB, -thisB, null, null,
+          .getName(), new HiResDate(thisT), null, thisB, ambig, null, null,
           Color.yellow, "pt:" + i, LineStylePropertyEditor.SOLID, sensor
               .getName());
 
@@ -369,11 +470,10 @@ public class BRTImporter
     return createImportAction(brtHelper, brtData, fName);
   }
 
-  private static BRTData readBRT(final InputStream is) throws IOException, Exception
+  private static BRTData readBRT(final InputStream is) throws NumberFormatException, IOException, Exception 
   {
     final BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     String line;
-    int lineCounter = 0;
 
     final ArrayList<Long> times = new ArrayList<>();
     final ArrayList<Double> bearings = new ArrayList<>();
@@ -389,15 +489,12 @@ public class BRTImporter
       final Double bearing = Double.parseDouble(tokens[1]);
       times.add(time);
       bearings.add(bearing);
-
-      ++lineCounter;
     }
 
     final BRTData brtData = new BRTData(times.toArray(new Long[]
     {}), bearings.toArray(new Double[]
     {}));
 
-    System.out.println(lineCounter + " lines read successfully");
     return brtData;
   }
 }
