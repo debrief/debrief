@@ -143,7 +143,8 @@ import org.junit.runners.Suite;
     org.mwc.debrief.core.ContextOperations.ConvertLightweightTrackToTrack.testMe.class,
     org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack.testMe.class,
     org.mwc.cmap.TimeController.recorders.CoordinateRecorder.CoordinateRecorderTest.class,
-    Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class,
+    org.mwc.debrief.core.ContextOperations.SmoothTrackJumps.TestMe.class,
+    Debrief.ReaderWriter.BRT.BRTImporter.BRTImporterTest.class
     })
 @RunWith(Suite.class)
 public class AllTests
