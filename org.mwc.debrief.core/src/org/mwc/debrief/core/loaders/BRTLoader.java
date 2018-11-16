@@ -19,6 +19,7 @@ import java.io.InputStream;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.IUndoContext;
 import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.commands.operations.UndoContext;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -90,8 +91,7 @@ public class BRTLoader extends CoreLoader
     @Override
     public IUndoContext[] getContexts()
     {
-
-      return null;
+      return new UndoContext[] {};
     }
 
     @Override
