@@ -32,6 +32,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.WormInHoleOffset;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -41,6 +42,7 @@ import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
 
@@ -432,17 +434,46 @@ public class BRTImporter
     for (int i = 0; i < num; i++)
     {
       final long thisT = data.getTimes()[i]; 
+      final HiResDate dtg = new HiResDate(thisT);
       
-      // find the ownship course at this time
-      Watchable[] nearest = track.getNearestTo(new HiResDate(thisT));
-      if(nearest != null && nearest.length > 0)
+      final Double course;
+      final ArrayLength offset = sensor.getSensorOffset();
+      
+      // is it ambiguous, and do we have an offset?
+      if(isAmbiguous && offset != null && offset.getValue() != 0)
       {
-        final FixWrapper fix = (FixWrapper) nearest[0];
+        // ok, walk back down the track for the relevant distnace
+        
+        // work out where the ship was when walk back through the
+        // offset distance
+        final FixWrapper fix = WormInHoleOffset.getWormOffsetFor(track, dtg, offset);
+        
+        // if we found a position, retrieve the course
+        course = fix != null ? MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse()) : null;
+      }
+      else
+      {
+        // just use the current location
+        // find the ownship course at this time
+        final Watchable[] nearest = track.getNearestTo(new HiResDate(thisT));
+        if(nearest != null && nearest.length > 0)
+        {
+          final FixWrapper fix = (FixWrapper) nearest[0];
+          course = MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse());
+        }
+        else
+        {
+          course = null;
+        }
+      }
+      
+      // did we find a course?
+      if(course != null)
+      {
         final double relBearingDegs = data.getBearings()[i];
-        final double hisCourse = MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse());
         
         // convert from rel brg to bearing by adding to course
-        double bearingDegs = hisCourse + relBearingDegs;
+        double bearingDegs = course + relBearingDegs;
         if(bearingDegs >= 360d)
         {
           bearingDegs -= 360d;
@@ -450,7 +481,7 @@ public class BRTImporter
         
         // if it's towed (ambiguous) we need to generate the
         // mirror (ambiguous) bearing
-        Double ambigDegs = isAmbiguous ? hisCourse - relBearingDegs
+        Double ambigDegs = isAmbiguous ? course - relBearingDegs
             : null;
         if(ambigDegs != null && ambigDegs >= 360d)
         {
@@ -458,7 +489,7 @@ public class BRTImporter
         }
         
         final SensorContactWrapper newS = new SensorContactWrapper(track
-            .getName(), new HiResDate(thisT), null, bearingDegs, ambigDegs, null, null,
+            .getName(), dtg, null, bearingDegs, ambigDegs, null, null,
             null, "pt:" + i, LineStylePropertyEditor.SOLID, sensor
                 .getName());
 
