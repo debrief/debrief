@@ -646,6 +646,8 @@ public class SATC_Solution extends BaseLayer implements
             final AbsoluteTMASegment abs =
                 new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
                     endTime);
+            
+            abs.setName(straight.getName());
 
             // remember this leg
             lastLeg = abs;
@@ -678,6 +680,7 @@ public class SATC_Solution extends BaseLayer implements
               // ok, stick in a dynamic infill
               final DynamicInfillSegment infill =
                   new DynamicInfillSegment(pendingAlteration, abs);
+              infill.setName(pendingAlteration.getName() + "_a");
               newT.add(infill);
               pendingAlteration = null;
             }
