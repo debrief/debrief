@@ -49,29 +49,28 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final String CUTLENGTH_PREF = "BRT_SENSOR_CUTLENGTH_PREF";
 
     this.isTowedPage = new EnterBooleanPage(null, true, "Import Sensor data",
-        "Is It a Towed Array?",
-        "Please, indicate if It is a Towed Array. (yes/no)", imagePath, null,
-        "Click Yes if is a Towed Array");
+        "Please indicate if this data is for a Towed Array",
+        "Towed Array Sensor? (yes/no)", imagePath, null,
+        "(You'll next be invited to enter the array length if it is)");
     this.towedOffsetPage = new EnterRangePage(null, "Import Sensor data",
-        "Please provide a default range for the Towed Offset. It must be as a"
-            + " negative value, since it is below the vessel."
-            + "\n(or enter 0.0 to leave them as infinite length)",
-        "Default range", defaultWidth, imagePath, null, null,
+        "Please provide the length of the Towed Array Offset, typically a"
+            + " negative value, since it is behind the vessel.",
+        "Array Offset", defaultWidth, imagePath, null, null,
         TOWED_OFFSET_PREF);
     this.colorPage = new SelectColorPage(null, DebriefColors.BLUE,
-        "Import Sensor data", "Now format the new sensor cut",
-        "The color for this new sensor cut", imagePath, null, null, false);
+        "Import Sensor data", "Please now format the new sensor",
+        "The default color for this new sensor", imagePath, null, null, false);
     final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
     this.cutLengthPage = new EnterRangePage(null, "Import Sensor data",
-        "Please provide a default length for the sensor cuts\n(or enter 0.0 to leave them as infinite length)",
+        "Please provide a default range for the bearing lines\n(or enter 0.0 to leave them as infinite length)",
         "Default range", defRange, imagePath, null, null, CUTLENGTH_PREF);
     this.trackPage = new SelectTrackPage(null, "Import Sensor data",
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
     this.showSensorOnTrackPage = new EnterBooleanPage(null, true,
-        "Import Sensor data", "Sensor Visibility",
-        "Please, indicate if want the sensor visible. (yes/no)", imagePath,
-        null, "Click Yes to add visibility to the sensor");
+        "Import Sensor data", "Please, indicate if want the sensor visible once loaded",
+        "Sensor visibility (yes/no)", imagePath,
+        null, null);
   }
 
   @Override
