@@ -44,20 +44,22 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final String imagePath = "images/NameSensor.jpg";
 
     final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
+    final String TOWED_OFFSET_PREF = "BRT_SENSOR_OFFSET_PREF";
+    final String CUTLENGTH_PREF = "BRT_SENSOR_CUTLENGTH_PREF";
 
     this.isTowedPage = new EnterBooleanPage(null, true, "Is It a Towed Array?",
         "BRT Import", "Please, indicate if It is a Towed Array. (yes/no)", null,
         imagePath, "Click Yes if is a Towed Array");
     this.towedOffsetPage = new EnterRangePage(null, "Import Sensor data",
-        "Please provide a default range for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
-        "Default range", defaultWidth, imagePath, null, null);
+        "Please provide a default range for the Towed Offset\n(or enter 0.0 to leave them as infinite length)",
+        "Default range", defaultWidth, imagePath, null, null, TOWED_OFFSET_PREF);
     this.colorPage = new SelectColorPage(null, DebriefColors.BLUE,
         "Import Sensor data", "Now format the new sensor cut",
         "The color for this new sensor cut", imagePath, null, null, false);
     final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
     this.cutLengthPage = new EnterRangePage(null, "Import Sensor data",
-        "Please provide a default length for the sensor cuts \n(or enter 0.0 to leave them as infinite length)",
-        "Default range", defRange, imagePath, null, null);
+        "Please provide a default length for the sensor cuts\n(or enter 0.0 to leave them as infinite length)",
+        "Default range", defRange, imagePath, null, null, CUTLENGTH_PREF);
     this.trackPage = new SelectTrackPage(null, "Import Sensor data",
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
@@ -113,8 +115,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   @Override
   public boolean performFinish()
   {
-    // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
   @Override
