@@ -49,11 +49,15 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final String CUTLENGTH_PREF = "BRT_SENSOR_CUTLENGTH_PREF";
 
     this.isTowedPage = new EnterBooleanPage(null, true, "Import Sensor data",
-        "Is It a Towed Array?", "Please, indicate if It is a Towed Array. (yes/no)", imagePath,
-        null, "Click Yes if is a Towed Array");
+        "Is It a Towed Array?",
+        "Please, indicate if It is a Towed Array. (yes/no)", imagePath, null,
+        "Click Yes if is a Towed Array");
     this.towedOffsetPage = new EnterRangePage(null, "Import Sensor data",
-        "Please provide a default range for the Towed Offset\n(or enter 0.0 to leave them as infinite length)",
-        "Default range", defaultWidth, imagePath, null, null, TOWED_OFFSET_PREF);
+        "Please provide a default range for the Towed Offset. It must be as a"
+            + " negative value, since it is below the vessel."
+            + "\n(or enter 0.0 to leave them as infinite length)",
+        "Default range", defaultWidth, imagePath, null, null,
+        TOWED_OFFSET_PREF);
     this.colorPage = new SelectColorPage(null, DebriefColors.BLUE,
         "Import Sensor data", "Now format the new sensor cut",
         "The color for this new sensor cut", imagePath, null, null, false);
@@ -64,8 +68,9 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     this.trackPage = new SelectTrackPage(null, "Import Sensor data",
         "Select a track", "Please, select the track to add the sensor data",
         imagePath, null, false, null, allTracks, autoSelectedTrack);
-    this.showSensorOnTrackPage = new EnterBooleanPage(null, true, "Import Sensor data",
-        "Sensor Visibility", "Please, indicate if want the sensor visible. (yes/no)", imagePath,
+    this.showSensorOnTrackPage = new EnterBooleanPage(null, true,
+        "Import Sensor data", "Sensor Visibility",
+        "Please, indicate if want the sensor visible. (yes/no)", imagePath,
         null, "Click Yes to add visibility to the sensor");
   }
 
