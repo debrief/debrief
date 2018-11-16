@@ -47,9 +47,9 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final String TOWED_OFFSET_PREF = "BRT_SENSOR_OFFSET_PREF";
     final String CUTLENGTH_PREF = "BRT_SENSOR_CUTLENGTH_PREF";
 
-    this.isTowedPage = new EnterBooleanPage(null, true, "Is It a Towed Array?",
-        "BRT Import", "Please, indicate if It is a Towed Array. (yes/no)", null,
-        imagePath, "Click Yes if is a Towed Array");
+    this.isTowedPage = new EnterBooleanPage(null, true, "Import Sensor data",
+        "Is It a Towed Array?", "Please, indicate if It is a Towed Array. (yes/no)", imagePath,
+        null, "Click Yes if is a Towed Array");
     this.towedOffsetPage = new EnterRangePage(null, "Import Sensor data",
         "Please provide a default range for the Towed Offset\n(or enter 0.0 to leave them as infinite length)",
         "Default range", defaultWidth, imagePath, null, null, TOWED_OFFSET_PREF);
