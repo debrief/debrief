@@ -47,33 +47,33 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final WorldDistance defaultWidth = new WorldDistance(1, WorldDistance.NM);
     final String TOWED_OFFSET_PREF = "BRT_SENSOR_OFFSET_PREF";
     final String CUTLENGTH_PREF = "BRT_SENSOR_CUTLENGTH_PREF";
-    
+
     final String pageTitle = "Import BRT Sensor data";
     final String helpContext = null;
-    
+
     this.isTowedPage = new EnterBooleanPage(null, true, pageTitle,
         "Please indicate if this data is for a Towed Array",
         "Towed Array Sensor? (yes/no)", imagePath, helpContext,
         "(You'll next be invited to enter the array length if it is)");
     this.towedOffsetPage = new EnterRangePage(null, pageTitle,
         "Please provide the length of the Towed Array Offset, typically a"
-            + " negative value, since it is behind the vessel.",
-        "Array Offset", defaultWidth, imagePath, helpContext, null,
-        TOWED_OFFSET_PREF);
-    this.colorPage = new SelectColorPage(null, DebriefColors.BLUE,
-        pageTitle, "Please now format the new sensor",
-        "The default color for this new sensor", imagePath, helpContext, null, false);
+            + " negative value, since it is behind the vessel.", "Array Offset",
+        defaultWidth, imagePath, helpContext, null, TOWED_OFFSET_PREF);
+    this.colorPage = new SelectColorPage(null, DebriefColors.BLUE, pageTitle,
+        "Please now format the new sensor",
+        "The default color for this new sensor", imagePath, helpContext, null,
+        false);
     final WorldDistance defRange = new WorldDistance(5, WorldDistance.KYDS);
     this.cutLengthPage = new EnterRangePage(null, pageTitle,
         "Please provide a default range for the bearing lines\n(or enter 0.0 to leave them as infinite length)",
-        "Default range", defRange, imagePath, helpContext, null, CUTLENGTH_PREF);
-    this.trackPage = new SelectTrackPage(null, pageTitle,
-        "Select a track", "Please, select the track to add the sensor data",
-        imagePath, helpContext, false, null, allTracks, autoSelectedTrack);
-    this.showSensorOnTrackPage = new EnterBooleanPage(null, true,
-        pageTitle, "Please, indicate if want the sensor visible once loaded",
-        "Sensor visibility (yes/no)", imagePath,
-        helpContext, null);
+        "Default range", defRange, imagePath, helpContext, null,
+        CUTLENGTH_PREF);
+    this.trackPage = new SelectTrackPage(null, pageTitle, "Select a track",
+        "Please, select the track to add the sensor data", imagePath,
+        helpContext, false, null, allTracks, autoSelectedTrack);
+    this.showSensorOnTrackPage = new EnterBooleanPage(null, true, pageTitle,
+        "Please, indicate if want the sensor visible once loaded",
+        "Sensor visibility (yes/no)", imagePath, helpContext, null);
   }
 
   @Override
@@ -125,6 +125,12 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   }
 
   @Override
+  public Boolean isVisible()
+  {
+    return showSensorOnTrackPage.getBoolean();
+  }
+
+  @Override
   public boolean performFinish()
   {
     return true;
@@ -134,11 +140,5 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   public TrackWrapper select()
   {
     return trackPage.getValue();
-  }
-
-  @Override
-  public Boolean isVisible()
-  {
-    return showSensorOnTrackPage.getBoolean();
   }
 }

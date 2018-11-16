@@ -91,7 +91,8 @@ public class BRTLoader extends CoreLoader
     @Override
     public IUndoContext[] getContexts()
     {
-      return new UndoContext[] {};
+      return new UndoContext[]
+      {};
     }
 
     @Override
@@ -142,7 +143,7 @@ public class BRTLoader extends CoreLoader
       final Layers layers, final InputStream inputStream, final String fileName)
       throws Exception
   {
-    final Layers theLayers = (Layers) target.getAdapter(Layers.class);
+    final Layers theLayers = target.getAdapter(Layers.class);
 
     return new IRunnableWithProgress()
     {
