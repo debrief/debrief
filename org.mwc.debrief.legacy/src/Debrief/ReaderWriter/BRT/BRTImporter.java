@@ -441,11 +441,15 @@ public class BRTImporter
         final double relBearingDegs = data.getBearings()[i];
         final double hisCourse = MWC.Algorithms.Conversions.Rads2Degs(fix.getCourse());
         
+        // convert from rel brg to bearing by adding to course
         double bearingDegs = hisCourse + relBearingDegs;
         if(bearingDegs >= 360d)
         {
           bearingDegs -= 360d;
         }
+        
+        // if it's towed (ambiguous) we need to generate the
+        // mirror (ambiguous) bearing
         Double ambigDegs = isAmbiguous ? hisCourse - relBearingDegs
             : null;
         if(ambigDegs != null && ambigDegs >= 360d)
@@ -458,11 +462,13 @@ public class BRTImporter
             null, "pt:" + i, LineStylePropertyEditor.SOLID, sensor
                 .getName());
 
+        // was a length specified?
         if (defaultLength != null)
         {
           newS.setRange(defaultLength);
         }
 
+        // ok, done.
         sensor.add(newS);
       }
       
