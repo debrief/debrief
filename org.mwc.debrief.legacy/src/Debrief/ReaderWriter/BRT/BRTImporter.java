@@ -17,6 +17,7 @@ package Debrief.ReaderWriter.BRT;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -243,7 +244,12 @@ public class BRTImporter
     final TrackWrapper track = helper.select();
 
     // create sensor
-    final SensorWrapper sensor = new SensorWrapper(fName);
+    String fileName = new File(fName).getName();
+    if ( fileName.lastIndexOf('.') > 0 )
+    {
+      fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+    }
+    final SensorWrapper sensor = new SensorWrapper(fileName);
 
     // set default color
     sensor.setColor(helper.getColor());
@@ -325,6 +331,8 @@ public class BRTImporter
     {
       final long thisT = data.getTimes()[i]; // TODO: this is expecting millis, check if we're
                                              // converting data-file seconds to millis
+      
+                                             // Yes, at function `readBRT` it is converted to milliseconds.
       final double thisB = data.getBearings()[i];
       final SensorContactWrapper newS = new SensorContactWrapper(track
           .getName(), new HiResDate(thisT), null, thisB, -thisB, null, null,
