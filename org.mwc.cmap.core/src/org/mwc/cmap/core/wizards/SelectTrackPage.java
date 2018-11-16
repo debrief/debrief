@@ -24,25 +24,20 @@ import MWC.GUI.Editable;
 public class SelectTrackPage extends CoreEditableWizardPage
 {
 
-  TrackWrapper _defaultTrackValue;
-  private TrackDataItem _myTrack;
-  private final String _fieldExplanation;
-
   public static class TrackDataItem implements Editable
   {
 
-    TrackWrapper _track;
+    TrackWrapper _selectedTrack;
+    final TrackWrapper[] _allTracksAvailable;
 
-    @Override
-    public String getName()
+    public TrackDataItem(final TrackWrapper[] _allTracks)
     {
-      return "Track";
+      _allTracksAvailable = _allTracks;
     }
 
-    @Override
-    public boolean hasEditor()
+    public TrackWrapper[] getAllTracksAvailable()
     {
-      return false;
+      return _allTracksAvailable;
     }
 
     @Override
@@ -51,16 +46,46 @@ public class SelectTrackPage extends CoreEditableWizardPage
       return null;
     }
 
-    public TrackWrapper getTrack()
+    public TrackWrapper getItemByName(final String name)
     {
-      return _track;
+      for (final TrackWrapper track : _allTracksAvailable)
+      {
+        if (track.getName().equals(name))
+        {
+          return track;
+        }
+      }
+      return null;
     }
 
-    public void setTrack(TrackWrapper _track)
+    @Override
+    public String getName()
     {
-      this._track = _track;
+      return "Track";
+    }
+
+    public TrackWrapper getTrack()
+    {
+      return _selectedTrack;
+    }
+
+    @Override
+    public boolean hasEditor()
+    {
+      return false;
+    }
+
+    public void setTrack(final TrackWrapper _track)
+    {
+      this._selectedTrack = _track;
     }
   }
+
+  TrackWrapper _defaultTrackValue;
+  private TrackDataItem _myTrack;
+  private final String _fieldExplanation;
+
+  private final TrackWrapper[] allTracks;
 
   public SelectTrackPage(final ISelection selection, final String pageName,
       final String title, final String description, final String imageName,
@@ -72,11 +97,7 @@ public class SelectTrackPage extends CoreEditableWizardPage
         optional, trailingMsg);
     _fieldExplanation = description;
     _defaultTrackValue = defaultWrapper;
-  }
-
-  public TrackWrapper getValue()
-  {
-    return _myTrack.getTrack();
+    this.allTracks = allTracks;
   }
 
   @Override
@@ -84,7 +105,7 @@ public class SelectTrackPage extends CoreEditableWizardPage
   {
     if (_myTrack == null)
     {
-      _myTrack = new TrackDataItem();
+      _myTrack = new TrackDataItem(allTracks);
       _myTrack.setTrack(_defaultTrackValue);
     }
 
@@ -97,6 +118,11 @@ public class SelectTrackPage extends CoreEditableWizardPage
     final PropertyDescriptor[] descriptors =
     {prop("Track", _fieldExplanation, getEditable())};
     return descriptors;
+  }
+
+  public TrackWrapper getValue()
+  {
+    return _myTrack.getTrack();
   }
 
 }

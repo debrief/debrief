@@ -149,7 +149,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
       _myHelperList.add(new DurationHelper());
       _myHelperList.add(new DoubleHelper());
       _myHelperList.add(new FileNameHelper());
-
+      _myHelperList.add(new TrackSelectionHelper());
     }
   }
 
