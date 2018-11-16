@@ -400,6 +400,8 @@ public class DynamicInfillSegment extends TrackSegment implements
     // ok, remember the tracks
     _before = before;
     _after = after;
+    
+    this.setWrapper(before.getWrapper());
 
     // also, we need to listen out for changes in these tracks
     startWatching(_before);
@@ -585,6 +587,9 @@ public class DynamicInfillSegment extends TrackSegment implements
    */
   public void reconstruct()
   {
+    // see if we're currently empty
+    final boolean wasEmpty = size() < 2;
+    
     // check we know our data
     if (_before == null || _after == null)
       return;
@@ -658,10 +663,17 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // also produce a minimum time, in case the tracks either side are really sparse
     tDelta = Math.min(tDelta, 60000);
-
+    
     // sort out the start & end times of the infill segment
     final long tStart = _before.endDTG().getDate().getTime() + tDelta;
     final long tEnd = _after.startDTG().getDate().getTime();
+
+    // if the tDelta only allows one step, make it smaller
+    if(tEnd - tStart < tDelta * 2)
+    {
+      tDelta = tDelta / 2;
+    }
+
 
     // remember the last point on the first track, in case we're generating
     // a
@@ -788,6 +800,12 @@ public class DynamicInfillSegment extends TrackSegment implements
     if (this.size() == 1)
     {
       this.getData().clear();
+    }
+    
+    if(wasEmpty && size() >= 2)
+    {
+      // ok, we can now share our name
+      this.getWrapper().firePropertyChange(PlainWrapper.TEXT_CHANGED, null, getName());
     }
 
     // also make it dotted, since it's artificially generated
