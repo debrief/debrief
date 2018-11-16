@@ -2462,7 +2462,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final TrackSegment firstSeg = (TrackSegment) _theSegments.first();
       final TrackSegment lastSeg = (TrackSegment) _theSegments.last();
 
-      if ((firstSeg != null) && (!firstSeg.isEmpty()))
+      // check we have some data
+      if ((firstSeg != null) && (!firstSeg.isEmpty()) && (lastSeg != null
+          && !lastSeg.isEmpty()))
       {
 
         // see if this DTG is inside our data range
