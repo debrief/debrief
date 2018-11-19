@@ -39,6 +39,8 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   private final EnterRangePage cutLengthPage;
   private final SelectTrackPage trackPage;
   private final EnterBooleanPage showSensorOnTrackPage;
+  private final TrackWrapper defaultTrack;
+  
   // Create a page that returns a wizard.
   // It must have a list of tracks in the constructor.
   // having a getSelection method which returns the selected.
@@ -56,7 +58,9 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
 
     final String PAGE_TITLE = "Import BRT Sensor data";
     final String helpContext = null;
-
+    
+    defaultTrack = autoSelectedTrack;
+    
     // ok, we need to let the user enter the solution wrapper name
     this.namePage = new EnterStringPage(null, defaultSensorName, PAGE_TITLE,
         "This wizard will lead you through creating a new Sensor.\n"
@@ -79,9 +83,18 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
         "Please provide a default range for the bearing lines\n(or enter 0.0 to leave them as infinite length)",
         "Default range", defRange, imagePath, helpContext, null,
         CUTLENGTH_PREF);
-    this.trackPage = new SelectTrackPage(null, PAGE_TITLE, "Select a track",
-        "Please, select the track to add the sensor data", imagePath,
-        helpContext, false, null, allTracks, autoSelectedTrack);
+    
+    if(defaultTrack == null && allTracks.length > 0)
+    {
+      this.trackPage = new SelectTrackPage(null, PAGE_TITLE, "Select a track",
+          "Please, select the track to add the sensor data", imagePath,
+          helpContext, false, null, allTracks, allTracks[0]);      
+    }
+    else
+    {
+      this.trackPage = null;
+    }
+    
     this.showSensorOnTrackPage = new EnterBooleanPage(null, true, PAGE_TITLE,
         "Please, indicate if want the sensor visible once loaded",
         "Sensor visibility (yes/no)", imagePath, helpContext, null);
@@ -91,7 +104,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   public void addPages()
   {
     addPage(namePage);
-    if (trackPage.getDefaultTrackValue() == null)
+    if (trackPage != null)
     {
       addPage(trackPage);
     }
@@ -151,7 +164,10 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   @Override
   public TrackWrapper select()
   {
-    return trackPage.getValue();
+    if (defaultTrack != null)
+      return defaultTrack;
+    else
+      return trackPage.getValue();
   }
 
   @Override
