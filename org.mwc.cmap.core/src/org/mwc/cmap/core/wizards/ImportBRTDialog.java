@@ -41,7 +41,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
   //
 
   public ImportBRTDialog(final TrackWrapper autoSelectedTrack,
-      final TrackWrapper[] allTracks, final String namePage)
+      final TrackWrapper[] allTracks, final String defaultSensorName)
   {
     final String imagePath = "images/NameSensor.jpg";
 
@@ -53,7 +53,7 @@ public class ImportBRTDialog extends Wizard implements BRTHelper
     final String helpContext = null;
 
     // ok, we need to let the user enter the solution wrapper name
-    this.namePage = new EnterStringPage(null, namePage, PAGE_TITLE,
+    this.namePage = new EnterStringPage(null, defaultSensorName, PAGE_TITLE,
         "This wizard will lead you through creating a new Sensor.\n"
             + "Please provide the name for this sensor",
         "a one-word title for this block of sensor contacts (e.g. S2046)", imagePath, helpContext, false, null);

@@ -159,14 +159,14 @@ public class BRTLoader extends CoreLoader
           
 
           // create sensor
-          String fileName = new File(_fileName).getName();
-          if (fileName.lastIndexOf('.') > 0)
+          String defaultSensorName = new File(_fileName).getName();
+          if (defaultSensorName.lastIndexOf('.') > 0)
           {
-            fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+            defaultSensorName = defaultSensorName.substring(0, defaultSensorName.lastIndexOf('.'));
           }
           
           final ImportBRTDialog wizard = new ImportBRTDialog(theTrack,
-              allTracks, fileName);
+              allTracks, defaultSensorName);
 
           final WizardDialog dialog = new WizardDialog(null, wizard);
           Display.getDefault().syncExec(new Runnable()
@@ -180,7 +180,7 @@ public class BRTLoader extends CoreLoader
           });
           if (dialog.getReturnCode() == Window.OK)
           {
-            final ImportBRTAction action = importer.importThis(wizard, fileName,
+            final ImportBRTAction action = importer.importThis(wizard,
                 inputStream);
             final IUndoableOperation operation = new WrapAction(action);
             CorePlugin.run(operation);
@@ -188,7 +188,7 @@ public class BRTLoader extends CoreLoader
           else
           {
             DebriefPlugin.logError(IStatus.INFO, "User cancelled loading:"
-                + fileName, null);
+                + _fileName, null);
           }
         }
         catch (final Exception e)

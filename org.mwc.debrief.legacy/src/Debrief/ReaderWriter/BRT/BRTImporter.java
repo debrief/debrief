@@ -183,7 +183,7 @@ public class BRTImporter
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
       final BRTImporter importer = new BRTImporter();
-      final ImportBRTAction action = importer.importThis(headless, brtName,
+      final ImportBRTAction action = importer.importThis(headless,
           new FileInputStream(brtName));
 
       action.execute();
@@ -247,7 +247,7 @@ public class BRTImporter
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
       final BRTImporter importer = new BRTImporter();
-      final ImportBRTAction action = importer.importThis(headless, brtName,
+      final ImportBRTAction action = importer.importThis(headless,
           new FileInputStream(brtName));
 
       action.execute();
@@ -553,7 +553,7 @@ public class BRTImporter
   }
 
   public ImportBRTAction importThis(final BRTHelper brtHelper,
-      final String fName, final InputStream is) throws Exception
+      final InputStream is) throws Exception
   {
     final BRTData brtData = readBRT(is);
 
