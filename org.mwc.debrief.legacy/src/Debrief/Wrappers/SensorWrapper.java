@@ -826,7 +826,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
                     "the thickness to draw these sensor lines"),
                 displayProp("DefaultColor", "Default color",
                     "the default colour to plot this set of sensor data"),
-                displayProp("Coverage", "Start/Finish DTG",
+                displayReadOnlyProp("Coverage", "Start/Finish DTG",
                     "the time coverage for this sensor"),
                 displayLongProp("VisibleFrequency", "Visible frequency",
                     "How frequently to display sensor cuts",
@@ -890,6 +890,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
       super(val);
     }
 
+    public final void testMyParams()
+    {
+      MWC.GUI.Editable ed = new SensorWrapper("my name");
+      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+    
     public void testMeasuredData() throws ParseException
     {
       TrackWrapper tw = new TrackWrapper();
@@ -1482,10 +1489,10 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * @param val
    *          new value of coverage (ignored)
    */
-  public void setCoverage(String val)
-  {
-    System.err.println("We don't support setting hte coverage value");
-  }
+//  public void setCoverage(String val)
+//  {
+//    System.err.println("We don't support setting hte coverage value");
+//  }
 
   @Override
   public void doSave(final String message)
