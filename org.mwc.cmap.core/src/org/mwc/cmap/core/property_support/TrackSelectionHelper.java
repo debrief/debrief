@@ -50,12 +50,34 @@ public class TrackSelectionHelper extends EditorHelper
     final Editable editable = ((DebriefProperty) property).getEditable();
     final TrackDataItem trackDataItem = (TrackDataItem) editable;
     final ArrayList<String> items = new ArrayList<>();
+    
+    // find the current item
+    final TrackWrapper current = trackDataItem.getTrack();
+    final String currentStr = current != null ? current.getName() : null;
+    
+    int ctr = 0;
+    int currentIndex = -1;
     for (final TrackWrapper item : trackDataItem.getAllTracksAvailable())
     {
       items.add(item.getName());
+      
+      // is this the current one?
+      if(item.getName().equals(currentStr))
+      {
+        currentIndex = ctr;
+      }
+      ctr++;
     }
     comboBox.setItems(items.toArray(new String[]
     {}));
+    
+    // did we find the index of the current one?
+    if(currentIndex != -1)
+    {      
+      // ok, select it
+      comboBox.select(currentIndex);
+    }
+    
     comboBox.addSelectionListener(new SelectionListener()
     {
       @Override
