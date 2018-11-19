@@ -30,8 +30,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.wizards.ImportBRTDialog;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.wizards.ImportBRTDialog;
 
 import Debrief.ReaderWriter.BRT.BRTImporter;
 import Debrief.ReaderWriter.BRT.BRTImporter.ImportBRTAction;

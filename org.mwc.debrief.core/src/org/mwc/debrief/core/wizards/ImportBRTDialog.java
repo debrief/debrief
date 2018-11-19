@@ -12,12 +12,17 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.cmap.core.wizards;
+package org.mwc.debrief.core.wizards;
 
 import java.awt.Color;
 
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
+import org.mwc.cmap.core.wizards.EnterBooleanPage;
+import org.mwc.cmap.core.wizards.EnterRangePage;
+import org.mwc.cmap.core.wizards.EnterStringPage;
+import org.mwc.cmap.core.wizards.SelectColorPage;
+import org.mwc.cmap.core.wizards.SelectTrackPage;
 
 import Debrief.ReaderWriter.BRT.BRTHelper;
 import Debrief.Wrappers.TrackWrapper;
