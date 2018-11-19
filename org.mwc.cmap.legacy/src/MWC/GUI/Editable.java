@@ -1213,36 +1213,46 @@ public interface Editable
               Assert.fail("getter not visible for " + toBeTested);
             }
 
-            try
+            // note: we may not have a setter method
+            if (setter != null)
             {
-              final Object[] params = { res };
-              // sort out the setter
-              setter.invoke(data, params);
-            }
-            catch (final InvocationTargetException ie)
-            {
-              // just check that we were using a valid value for the res
-              if (res != null)
+              try
               {
-                Assert.fail("missing setter for "
-                    + p.getWriteMethod().getName() + ", "
-                    + toBeTested.getClass());
+                final Object[] params =
+                {res};
+                // sort out the setter
+                setter.invoke(data, params);
               }
-              else
-                System.out
-                    .println("######## null value returned form getter for "
-                        + p.getReadMethod().getName());
-            }
-            catch (final IllegalAccessException al)
-            {
-              Assert.fail("setter not visible for " + toBeTested);
-            }
+              catch (final InvocationTargetException ie)
+              {
+                // just check that we were using a valid value for the res
+                if (res != null)
+                {
+                  Assert.fail("missing setter for " + p.getWriteMethod()
+                      .getName() + ", " + toBeTested.getClass());
+                }
+                else
+                  System.out.println(
+                      "######## null value returned form getter for " + p
+                          .getReadMethod().getName());
+              }
+              catch (final IllegalAccessException al)
+              {
+                Assert.fail("setter not visible for " + toBeTested);
+              }
 
-            // check if we can get a property editor GUI component for this
-            SwingPropertyEditor2.checkPropertyEditors();
-            final PropertyEditor editor = SwingPropertyEditor2.findEditor(p);
-            Assert.assertNotNull("could not find GUI editor component for:" + data
-                + " getter:" + p.getReadMethod().getName(), editor);
+              // check if we can get a property editor GUI component for this
+              SwingPropertyEditor2.checkPropertyEditors();
+              final PropertyEditor editor = SwingPropertyEditor2.findEditor(p);
+
+              if (editor == null)
+              {
+                // don't fail if we can't find a Swing editor, maybe there's just an SWT one
+                System.err.println(
+                    "could not find Swing GUI editor component for:" + data
+                        + " getter:" + p.getReadMethod().getName());
+              }
+            }
 
           }
         } // whether there was a customizer class
