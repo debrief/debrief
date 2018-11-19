@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -140,7 +141,7 @@ public class BRTLoader extends CoreLoader
 
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers layers, final InputStream inputStream, final String fileName)
+      final Layers layers, final InputStream inputStream, final String _fileName)
       throws Exception
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
@@ -155,8 +156,17 @@ public class BRTLoader extends CoreLoader
           final BRTImporter importer = new BRTImporter();
           final TrackWrapper[] allTracks = BRTImporter.getTracks(theLayers);
           final TrackWrapper theTrack = BRTImporter.findTrack(allTracks);
+          
+
+          // create sensor
+          String fileName = new File(_fileName).getName();
+          if (fileName.lastIndexOf('.') > 0)
+          {
+            fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+          }
+          
           final ImportBRTDialog wizard = new ImportBRTDialog(theTrack,
-              allTracks);
+              allTracks, fileName);
 
           final WizardDialog dialog = new WizardDialog(null, wizard);
           Display.getDefault().syncExec(new Runnable()
@@ -184,7 +194,7 @@ public class BRTLoader extends CoreLoader
         catch (final Exception e)
         {
           DebriefPlugin.logError(IStatus.ERROR, "Problem loading BRT datafile:"
-              + fileName, e);
+              + _fileName, e);
         }
       }
     };

@@ -178,7 +178,7 @@ public class BRTImporter
       final WorldDistance length = new WorldDistance(20000,
           WorldDistance.METRES);
       final BRTHelperHeadless headless = new BRTHelperHeadless(false, offset,
-          DebriefColors.BLUE, length, sensorTrack, true);
+          DebriefColors.BLUE, length, sensorTrack, true, "test_headless_sensor");
 
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
@@ -242,7 +242,7 @@ public class BRTImporter
       final WorldDistance length = new WorldDistance(20000,
           WorldDistance.METRES);
       final BRTHelperHeadless headless = new BRTHelperHeadless(true, offset,
-          DebriefColors.BLUE, length, sensorTrack, true);
+          DebriefColors.BLUE, length, sensorTrack, true, "test_headless_sensor");
 
       assertEquals("has zero sensors", 0, sensorTrack.getSensors().size());
 
@@ -352,18 +352,12 @@ public class BRTImporter
   }
 
   private static ImportBRTAction createImportAction(final BRTHelper helper,
-      final BRTData brtData, final String fName)
+      final BRTData brtData)
   {
     // find track
     final TrackWrapper track = helper.select();
 
-    // create sensor
-    String fileName = new File(fName).getName();
-    if (fileName.lastIndexOf('.') > 0)
-    {
-      fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-    }
-    final SensorWrapper sensor = new SensorWrapper(fileName);
+    final SensorWrapper sensor = new SensorWrapper(helper.getName());
 
     // set default color
     sensor.setColor(helper.getColor());
@@ -563,6 +557,6 @@ public class BRTImporter
   {
     final BRTData brtData = readBRT(is);
 
-    return createImportAction(brtHelper, brtData, fName);
+    return createImportAction(brtHelper, brtData);
   }
 }
