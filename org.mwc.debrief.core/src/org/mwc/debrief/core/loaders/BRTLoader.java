@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
+import java.io.File;
 import java.io.InputStream;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -29,8 +30,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.wizards.ImportBRTDialog;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.wizards.ImportBRTDialog;
 
 import Debrief.ReaderWriter.BRT.BRTImporter;
 import Debrief.ReaderWriter.BRT.BRTImporter.ImportBRTAction;
@@ -140,7 +141,7 @@ public class BRTLoader extends CoreLoader
 
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
-      final Layers layers, final InputStream inputStream, final String fileName)
+      final Layers layers, final InputStream inputStream, final String _fileName)
       throws Exception
   {
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
@@ -155,8 +156,17 @@ public class BRTLoader extends CoreLoader
           final BRTImporter importer = new BRTImporter();
           final TrackWrapper[] allTracks = BRTImporter.getTracks(theLayers);
           final TrackWrapper theTrack = BRTImporter.findTrack(allTracks);
+          
+
+          // create sensor
+          String defaultSensorName = new File(_fileName).getName();
+          if (defaultSensorName.lastIndexOf('.') > 0)
+          {
+            defaultSensorName = defaultSensorName.substring(0, defaultSensorName.lastIndexOf('.'));
+          }
+          
           final ImportBRTDialog wizard = new ImportBRTDialog(theTrack,
-              allTracks);
+              allTracks, defaultSensorName);
 
           final WizardDialog dialog = new WizardDialog(null, wizard);
           Display.getDefault().syncExec(new Runnable()
@@ -170,7 +180,7 @@ public class BRTLoader extends CoreLoader
           });
           if (dialog.getReturnCode() == Window.OK)
           {
-            final ImportBRTAction action = importer.importThis(wizard, fileName,
+            final ImportBRTAction action = importer.importThis(wizard,
                 inputStream);
             final IUndoableOperation operation = new WrapAction(action);
             CorePlugin.run(operation);
@@ -178,13 +188,13 @@ public class BRTLoader extends CoreLoader
           else
           {
             DebriefPlugin.logError(IStatus.INFO, "User cancelled loading:"
-                + fileName, null);
+                + _fileName, null);
           }
         }
         catch (final Exception e)
         {
           DebriefPlugin.logError(IStatus.ERROR, "Problem loading BRT datafile:"
-              + fileName, e);
+              + _fileName, e);
         }
       }
     };

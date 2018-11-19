@@ -32,4 +32,6 @@ public interface BRTHelper
   WorldDistance defaultLength();
   
   Boolean isVisible();
+  
+  String getName();
 }
