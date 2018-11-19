@@ -24,6 +24,7 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -154,6 +155,22 @@ public class BRTLoader extends CoreLoader
         {
           final BRTImporter importer = new BRTImporter();
           final TrackWrapper[] allTracks = BRTImporter.getTracks(theLayers);
+          if (allTracks.length == 0)
+          {
+            Display.getDefault().asyncExec(new Runnable()
+            {
+
+              @Override
+              public void run()
+              {
+                MessageDialog.open(MessageDialog.INFORMATION, Display.getDefault()
+                    .getActiveShell(), "BRT Import",
+                    "You need to have at least 1 track loaded to add the BRT Data",
+                    MessageDialog.INFORMATION);
+              }
+            });
+            return;
+          }
           final TrackWrapper theTrack = BRTImporter.findTrack(allTracks);
           final ImportBRTDialog wizard = new ImportBRTDialog(theTrack,
               allTracks);
