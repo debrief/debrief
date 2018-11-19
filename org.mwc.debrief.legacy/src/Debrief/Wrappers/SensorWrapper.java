@@ -1483,17 +1483,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
     return res;
   }
 
-  /**
-   * we need a getter in order to support Java Beans, though we don't actually allow it to be edited
-   * 
-   * @param val
-   *          new value of coverage (ignored)
-   */
-//  public void setCoverage(String val)
-//  {
-//    System.err.println("We don't support setting hte coverage value");
-//  }
-
   @Override
   public void doSave(final String message)
   {
