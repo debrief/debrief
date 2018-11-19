@@ -479,11 +479,23 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
 
     final long currentStart = this.getStartDTG().getMicros();
-    long startTime = (currentStart / interval) * interval;
+    
+    // determine when the resampling should start
+    final long startTime;
+    if(interval > 0)
+    {
+      long tmpStartTime = (currentStart / interval) * interval;
 
-    // just check we're in the range
-    if (startTime < currentStart)
-      startTime += interval;
+      // just check we're in the range
+      if (tmpStartTime < currentStart)
+        tmpStartTime += interval;
+      
+      startTime = tmpStartTime;
+    }
+    else
+    {
+      startTime = currentStart;
+    }
 
     // just check it's not a barking frequency
     if (theVal.getDate().getTime() <= 0)
