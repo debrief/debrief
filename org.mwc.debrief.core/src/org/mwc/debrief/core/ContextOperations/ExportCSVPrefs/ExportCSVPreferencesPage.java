@@ -75,6 +75,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {"*.csv"};//$NON-NLS-1$
 
   private FileFieldEditor myFileEditor;
+  private BooleanFieldEditor enabledEditor;
 
   public ExportCSVPreferencesPage()
   {
@@ -86,7 +87,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   private void addEnabledButton()
   {
     final Composite parent = getFieldEditorParent();
-    final BooleanFieldEditor enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
+    enabledEditor = new BooleanFieldEditor(PreferenceConstants.INCLUDE_COMMAND,
         "Include 'Export track to CSV Text format' in Track drop-down menu", parent);
     addField(enabledEditor);
   }
@@ -191,6 +192,19 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     return myFileEditor.getStringValue();
   }
+  
+  private boolean isFileNameProvided(final String fileName) {
+    
+    if ((fileName == null) || (fileName.length() == 0))
+    {
+      MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+          "Edit CSV Dropdowns file",
+          "CSV Dropdowns file not assigned, \nplease create file as descried in Debrief help (link button below),"
+              + "\nand select it using the above Browse button");
+      return false;
+    }
+    return true;
+  }
 
   /**
    * if we have a file specified, open it - else throw error
@@ -199,14 +213,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   private void openSystemEditor()
   {
     final String fileName = getFileName();
-    if ((fileName == null) || (fileName.length() == 0))
-    {
-      MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
-          "Edit CSV Dropdowns file",
-          "CSV Dropdowns file not assigned, \nplease create file as descried in Debrief help (link button below),"
-              + "\nand select it using the above Browse button");
-    }
-    else
+    if(!isFileNameProvided(fileName))
     {
       final File file = new File(fileName);
       try
@@ -242,4 +249,23 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
   {
     // TODO Auto-generated method stub
   }
+  
+  private boolean isEnabled() {
+    return enabledEditor.getBooleanValue();
+  }
+  public boolean validateFields()
+  {
+    if(isEnabled()) {
+      final String fileName = getFileName();
+      return isFileNameProvided(fileName);
+    }
+    return true;
+  }
+  @Override
+  public boolean performOk()
+  {
+    return validateFields() && 
+        super.performOk();
+  }
+  
 }

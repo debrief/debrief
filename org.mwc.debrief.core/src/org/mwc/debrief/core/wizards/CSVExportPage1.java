@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.core.wizards;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -145,7 +146,13 @@ public class CSVExportPage1 extends CustomWizardPage
     final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
     gridData.widthHint = 120;
     typeCmb.setContentProvider(new ArrayContentProvider());
-    typeCmb.setInput(provider.getValuesFor(key).toArray());
+    List<String> values = provider.getValuesFor(key);
+    if(values==null) {
+      values = new ArrayList<String>();
+      setErrorMessage("No value for "+ title +" in file, may be an invalid file");
+      setPageComplete(false);
+    }
+    typeCmb.setInput(values.toArray());
     typeCmb.getCombo().setLayoutData(gridData);
     if (val != null)
       typeCmb.getCombo().setText(val);

@@ -40,7 +40,7 @@ public abstract class CustomWizardPage extends WizardPage
   {
     IPreferenceStore preferenceStore = CorePlugin.getDefault()
         .getPreferenceStore();
-    String newVal = preferenceStore.getString(key);
+    String newVal = preferenceStore.getString(key.toUpperCase());
 
     return (newVal == null || newVal.isEmpty()) ? currentVal : newVal;
   }
