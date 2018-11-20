@@ -116,17 +116,20 @@ public class CSVExportPage3 extends CustomWizardPage
 
   }
 
+  private String getValueFor(final String field) {
+    List<String> values = provider.getValuesFor(field);
+    if(values!=null && !values.isEmpty()) {
+      return values.get(0);
+    }
+    setErrorMessage("No "+field.toLowerCase()+" has been specified, may be an invalid file");
+    setPageComplete(false);
+
+    return null;
+  }
   private void addPurposeField(final Composite contents)
   {
     if (purpose == null) {
-      List<String> values = provider.getValuesFor(PURPOSE);
-      if(values!=null && !values.isEmpty()) {
-        purpose = provider.getValuesFor(PURPOSE).get(0);
-      }
-      else {
-        setErrorMessage("No purpose has been specified, may be an invalid file");
-        setPageComplete(false);
-      }
+      purpose = getValueFor(PURPOSE);
     }
 
     final Label lbl = new Label(contents, SWT.NONE);
@@ -150,14 +153,7 @@ public class CSVExportPage3 extends CustomWizardPage
   {
 
     if (statement == null) {
-      List<String> values = provider.getValuesFor(DISTRIBUTION);
-      if(values!=null && !values.isEmpty()) {
-        statement = provider.getValuesFor(DISTRIBUTION).get(0);
-      }
-      else {
-        setErrorMessage("No statement has been specified, may be an invalid file");
-        setPageComplete(false);
-      }
+      statement = getValueFor(DISTRIBUTION);
     }
 
     final Label lbl = new Label(contents, SWT.NONE);
