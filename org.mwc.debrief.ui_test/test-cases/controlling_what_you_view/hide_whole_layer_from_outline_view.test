@@ -1,0 +1,64 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: hide_whole_layer_from_outline_view
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _uxSgQMFsEeitrdPUr06k7w
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/22/18 7:40 PM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator | get-tree | select "demo/sample_data/sample.dpf" | double-click
+with [get-view Outline | get-tree] {
+    select "Track:COLLINGWOOD"
+    get-cell 4 0 | mouse up -count 1
+}
+get-view Outline | get-button "Hide selected items" | click
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals No | verify-true
+}
+with [get-view Outline | get-tree] {
+    select "Track:COLLINGWOOD"
+    get-cell 4 0 | mouse up -count 1
+}
+get-view Outline | get-button "Reveal selected items" | click
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals Yes | verify-true
+}
+with [get-view Outline | get-tree] {
+    get-item -path "Track:COLLINGWOOD/Positions \\(403 positions\\)" | expand
+    get-cell 6 0 | click
+    get-item -path "Track:COLLINGWOOD/Positions \\(403 positions\\)" | expand
+    get-cell 11 0 | mouse down -with M2 -count 1
+    get-cell 11 0 | mouse up -with M2 -count 1
+    get-item -path "Track:COLLINGWOOD/Positions \\(403 positions\\)" | expand
+    get-cell 6 0 | mouse down Right -count 1
+    get-cell 6 0 | mouse up Right -count 1
+    select "Track:COLLINGWOOD/Positions (403 positions)/0508" "Track:COLLINGWOOD/Positions (403 positions)/0507" "Track:COLLINGWOOD/Positions (403 positions)/0506" "Track:COLLINGWOOD/Positions (403 positions)/0505" "Track:COLLINGWOOD/Positions (403 positions)/0504" "Track:COLLINGWOOD/Positions (403 positions)/120503"
+    get-menu -path "Multiple items/Visible" | click
+}
+with [get-view Properties | get-tree] {
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals No | verify-true
+}
+//Reveal selected items
+with [get-view Outline] {
+    get-button "Hide selected items" | click
+    get-button "Reveal selected items" | click
+}
+with [get-view Properties | get-tree] {
+
+    get-item -path "Visibility/Visible" | get-property "values['Property']" | equals Visible | verify-true
+    get-item -path "Visibility/Visible" | get-property "values['Value']" | equals Yes | verify-true
+}
+//close opened sample.dpf file
+get-menu -path "File/Close" | click
+get-window "Save Resource" | get-button No | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

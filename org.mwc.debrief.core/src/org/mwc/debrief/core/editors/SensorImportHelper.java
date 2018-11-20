@@ -100,7 +100,7 @@ public interface SensorImportHelper
               + "'Show the wizard when importing sensor data from REP'";
       getName =
           new EnterStringPage(null, sensorName, "Import Sensor data",
-              "Please provide the name for this sensor" + explain, introString,
+              "Please provide the name for this sensor", introString,
               imagePath, null, false, explain);
       getColor =
           new SelectColorPage(null, sensorColor, "Import Sensor data",
@@ -127,7 +127,7 @@ public interface SensorImportHelper
       getBaseFreq =
           new EnterStringPage(null, " 220.00", "Import Sensor data",
               "Please provide the base frequency for this sensor", "Hz",
-              imagePath2, null, true, null, "BASE_FREQ");
+              imagePath2, null, true, null, "BASE_FREQ", "Base freq:");
       applyRainbowInRainbowColors =
           new EnterBooleanPage(null, false, "Import Sensor data",
               "Should Debrief apply Rainbow Shades to these sensor cuts?",

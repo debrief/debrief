@@ -58,7 +58,8 @@
     <module>org.mwc.cmap.legacy</module>
     <module>org.mwc.cmap.overview</module>
     <module>org.mwc.cmap.plotViewer</module>
-    <module>org.mwc.cmap.tests</module>
+<!--
+    <module>org.mwc.cmap.tests</module>  -->
     <module>org.mwc.cmap.tote</module>
     <module>org.mwc.cmap.xyplot</module>
     <module>org.mwc.cmap.jfreechart</module>
@@ -83,6 +84,9 @@
     <module>org.mwc.debrief.satc.core</module>
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
+
+    <module>org.mwc.debrief.ui_test</module>
+
   </modules>
 
   <build>

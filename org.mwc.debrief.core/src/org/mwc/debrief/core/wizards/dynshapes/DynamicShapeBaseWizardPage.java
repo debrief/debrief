@@ -25,6 +25,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.mwc.debrief.core.wizards.sensorarc.NewSensorArcWizard;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -38,10 +39,21 @@ public abstract class DynamicShapeBaseWizardPage extends WizardPage
   private Font font;
   private Font regularFont;
 
-  protected DynamicShapeBaseWizardPage(final String pageName)
+  protected DynamicShapeBaseWizardPage(final String pageName,String shapeName)
   {
     super(pageName);
-    setDescription("This wizard is used to create new dynamic shapes");
+    
+    if(shapeName!=null && !shapeName.isEmpty()) {
+      if(NewSensorArcWizard.SHAPE_NAME.equals(shapeName)) {
+        setTitle("Create dynamic track shapes");
+        setDescription("This wizard is used to create new track shapes (or sensor arcs)");
+      }
+      else {
+        setTitle("Create Dynamic "+shapeName);
+        setDescription("This wizard is used to create new dynamic "+shapeName.toLowerCase());
+      }
+    }
+    
   }
 
   protected Composite createBaseControl(final Composite parent)

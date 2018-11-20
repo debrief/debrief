@@ -46,8 +46,8 @@
             contributorClass="org.mwc.debrief.core.editors.PlotEditorActionBarContributor"
             icon="icons/16/sensor_file.png" id="org.mwc.debrief.SensorEditor"
             name="Debrief Plot Editor">
-            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile"
-            > </contentTypeBinding>
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile"/> 
+            <contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.BRTSensorFile"/> 
         </editor>
     </extension>
 
@@ -101,6 +101,9 @@
             name="SATC Sample file" priority="high">
             <describer class="org.mwc.debrief.core.contenttype.SATCSampleContentDescriber"/>
         </content-type>
+        <content-type base-type="org.eclipse.core.runtime.text"
+            id="org.mwc.debrief.contenttype.BRTSensorFile" file-extensions="brt"
+            name="Third Party Relative Bearing File" priority="normal"> </content-type>
     </extension>
 
     <extension-point id="DebriefPlotLoader" name="Plot Loader"
@@ -173,6 +176,10 @@
     <extension point="org.mwc.debrief.core.DebriefPlotLoader">
         <loader class="org.mwc.debrief.core.loaders.PdfLoader" extensions="pdf"
             name="PDF Document"/>
+    </extension>
+    <extension point="org.mwc.debrief.core.DebriefPlotLoader">
+        <loader class="org.mwc.debrief.core.loaders.BRTLoader" extensions="brt"
+            name="BRT Document"/>
     </extension>
 
     <extension point="org.eclipse.ui.menus">
@@ -1232,6 +1239,7 @@
         <helper class="org.mwc.debrief.core.operations.ExportTrackToGPX"/>
         <helper class="org.mwc.debrief.core.ContextOperations.ExportTrackAsCSV"/>
         <helper class="org.mwc.debrief.core.ContextOperations.RemoveTrackJumps"/>
+        <helper class="org.mwc.debrief.core.ContextOperations.SmoothTrackJumps"/>
         <helper class="org.mwc.debrief.core.ContextOperations.CalculateTrackLength"/>
         <helper class="org.mwc.debrief.core.ContextOperations.SelectAllChildren"/>
     </extension>

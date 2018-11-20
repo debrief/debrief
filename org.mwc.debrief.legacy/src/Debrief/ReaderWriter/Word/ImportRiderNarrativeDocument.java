@@ -1555,7 +1555,7 @@ public class ImportRiderNarrativeDocument
               _declaredNoHostFound = true;
 
               // tell the user
-              MessageProvider.Base.Provider.show("Import Rider's Narrative",
+              MessageProvider.Base.show("Import Rider's Narrative",
                   "Platform in Rider's narrative doesn't match any loaded tracks.\nPlease assign a primary, and the cuts will be added to that platform.",
                   MessageProvider.ERROR);
 

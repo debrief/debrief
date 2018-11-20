@@ -37,6 +37,11 @@ import net.lingala.zip4j.exception.ZipException;
 public class PlotTracks
 {
 
+  final public static int INITIAL_MARKER_ID = 10000;
+  final public static int MARKER_FOOTPRINT_DELTA = 20000;
+  final public static int INITIAL_FOOTPRINT_ID = INITIAL_MARKER_ID
+      + MARKER_FOOTPRINT_DELTA;
+
   /**
    * It returns null (for success) or a series of String messages for the invalid conditions.
    * 
@@ -95,22 +100,27 @@ public class PlotTracks
       final Document soup = Jsoup.parse(new String(encoded), "", Parser
           .xmlParser());
       final Element[] shapes = getShapes(soup);
+      String updateTemplate =
+          "(Please, update the version of the master template)";
       if (shapes[0] == null)
-      {
-        returnValue = "Corrupted Track or missing";
-      }
-      else if (shapes[1] == null)
       {
         returnValue = "Corrupted Marker or missing";
       }
-      else if (shapes[2] == null)
+      else if (shapes[1] == null)
       {
         returnValue = "Corrupted Time or missing";
       }
+      else if (shapes[3] == null)
+      {
+        returnValue = "Corrupted or missing footprint " + updateTemplate;
+      }
       else if (shapes[4] == null)
       {
-        returnValue =
-            "Corrupted footprint or missing (old version of the master template)";
+        returnValue = "Corrupted or missing Scale Bar " + updateTemplate;
+      }
+      else if (shapes[5] == null)
+      {
+        returnValue = "Corrupted or missing Scale Value " + updateTemplate;
       }
 
       try
@@ -406,11 +416,35 @@ public class PlotTracks
 
     // getting shape tags
     final Element[] shapes_temp = getShapes(soup);
-    final Element shape_tag = shapes_temp[0];
-    final Element arrow_tag = shapes_temp[1];
-    final Element time_tag = shapes_temp[2];
-    final Element narrative_tag = shapes_temp[3];
-    final Element footprint_tag = shapes_temp[4];
+    final Element arrow_tag = shapes_temp[0];
+    final Element time_tag = shapes_temp[1];
+    final Element narrative_tag = shapes_temp[2];
+    final Element footprint_tag = shapes_temp[3];
+    final Element scaleBarTag = shapes_temp[4];
+    final Element scaleValueTag = shapes_temp[5];
+
+    // Set the scale bar size
+
+    if ("".equals(trackData.getScaleUnit()))
+    {
+      scaleBarTag.remove();
+      scaleValueTag.remove();
+    }else {
+      int[] scale_size_tmp = coordinateTransformation(trackData.getScaleWidth(),
+          0, dimensionWidth, dimensionHeight, 0, 0, mapCX, mapCY, 1);
+      scaleBarTag.selectFirst("a|xfrm").selectFirst("a|ext").attr("cx",
+          scale_size_tmp[0] + "");
+
+      String scaleName = trackData.getScaleUnit();
+      if (trackData.getScaleAmount() > 1)
+      {
+        scaleName += "s";
+      }
+      scaleValueTag.selectFirst("a|t").text(trackData.getScaleAmount() + " "
+          + scaleName);      
+    }
+
+    footprint_tag.selectFirst("p|cNvPr").attr("id", INITIAL_FOOTPRINT_ID + "");
 
     // Remove all the remaining shapes.
     // cleanSpTree(soup);
@@ -432,18 +466,12 @@ public class PlotTracks
         .attr("cy"));
 
     int trackCount = 0;
-    int current_shape_id = Integer.parseInt(shape_tag.selectFirst("p|cNvPr")
-        .attr("id"));
     int current_arrow_id = Integer.parseInt(arrow_tag.selectFirst("p|cNvPr")
         .attr("id"));
-    Application.logError2(Application.INFO, "Last Shape Id::::: "
-        + current_shape_id, null);
     Application.logError2(Application.INFO, "Last Arrow Id::::: "
         + current_arrow_id, null);
 
-    final ArrayList<Integer> shape_ids = new ArrayList<>();
     final ArrayList<Integer> arrow_ids = new ArrayList<>();
-    final ArrayList<Element> shape_objs = new ArrayList<>();
     final ArrayList<Element> arrow_objs = new ArrayList<>();
     final ArrayList<ArrayList<Element>> marker_animation_objs =
         new ArrayList<>();
@@ -468,7 +496,6 @@ public class PlotTracks
       marker_appearing.add(temp_time_anim_for_marker);
 
       final Element temp_arrow_tag = arrow_tag.clone();
-      final Element temp_shape_tag = shape_tag.clone();
 
       // getting coordinates arrow pointer
       final int[] arrow_pointer_temp = getArrowPointerCoordinates(
@@ -515,27 +542,14 @@ public class PlotTracks
       temp_arrow_tag.selectFirst("p|txBody").selectFirst("a|p").selectFirst(
           "a|r").selectFirst("a|t").text(trackName);
 
-      shape_ids.add(current_shape_id);
       arrow_ids.add(current_arrow_id);
 
       // Assign ids to arrow shape and path shape
       temp_arrow_tag.selectFirst("p|cNvPr").attr("id", current_arrow_id + "");
-      temp_shape_tag.selectFirst("p|cNvPr").attr("id", current_shape_id + "");
-
-      // Get Shape offsets and exts
-      final int temp_shape_x = Integer.parseInt(temp_shape_tag.selectFirst(
-          "a|off").attr("x"));
-      final int temp_shape_y = Integer.parseInt(temp_shape_tag.selectFirst(
-          "a|off").attr("y"));
 
       String animation_path;
-      final Element path_tag = temp_shape_tag.selectFirst("a|path");
-      for (final Element child : path_tag.children())
-      {
-        child.remove();
-      }
 
-      final ArrayList<TrackPoint> coordinates = track.getSegments();
+      final ArrayList<TrackPoint> coordinates = track.getPoints();
 
       int num_coordinate = 0;
 
@@ -621,8 +635,6 @@ public class PlotTracks
         footprint_count++;
 
         // remove the offsets for the track object
-        x_int = x_int - temp_shape_x;
-        y_int = y_int - temp_shape_y;
 
         final Element coordinate_soup = Jsoup.parse("<a:pt x='" + x_int
             + "' y='" + y_int + "'/>", "", Parser.xmlParser());
@@ -634,13 +646,11 @@ public class PlotTracks
         {
           coordinate_soup.tagName("a:lnTo");
         }
-        path_tag.insertChildren(path_tag.childNodeSize(), coordinate_soup);
         num_coordinate++;
       }
 
       marker_animation_objs.add(track_anim_objs);
       all_footprints_objs.add(footprints_objs);
-      temp_shape_tag.selectFirst("a|srgbClr").attr("val", colorHexValue);
 
       // changing arrow to rect callout -
       temp_arrow_tag.selectFirst("a|prstGeom").attr("prst", "wedgeRectCallout");
@@ -650,15 +660,12 @@ public class PlotTracks
           "a|solidFill").selectFirst("a|srgbClr").attr("val", colorHexValue);
 
       // We will add the shape and arrow objects in arrays for now
-      shape_objs.add(temp_shape_tag);
       arrow_objs.add(temp_arrow_tag);
 
       if (trackCount == 0)
       {
-        current_shape_id = 500;
-        current_arrow_id = 600;
+        current_arrow_id = INITIAL_MARKER_ID;
       }
-      current_shape_id++;
       current_arrow_id++;
       trackCount++;
     }
@@ -689,7 +696,7 @@ public class PlotTracks
     for (Track track : trackData.getTracks())
     {
       int time_delay = intervalDuration * (1 + track.getStepsToSkip());
-      for (int i = 0; i < track.getSegments().size(); i++)
+      for (int i = 0; i < track.getPoints().size(); i++)
       {
         // handle animation objs for time
         Element temp_time_anim = time_anim_tag_first.clone();
@@ -741,7 +748,7 @@ public class PlotTracks
     // we will get the timestamps from the first track
 
     final Track firstItem = trackData.getTracks().get(0);
-    final ArrayList<TrackPoint> coordinates = firstItem.getSegments();
+    final ArrayList<TrackPoint> coordinates = firstItem.getPoints();
     for (final TrackPoint coordinate : coordinates)
     {
       final String timestampString = coordinate.getFormattedTime();
@@ -960,11 +967,12 @@ public class PlotTracks
    */
   private Element[] getShapes(final Document soup)
   {
-    Element shape_tag = null;
     Element arrow_tag = null;
     Element time_tag = null;
     Element narrative_tag = null;
     Element footprint_tag = null;
+    Element scaleBarTag = null;
+    Element scaleValueTag = null;
 
     // retrieve the sample arrow and path tag
     final Elements all_shape_tags = soup.select("p|sp");
@@ -972,12 +980,7 @@ public class PlotTracks
     for (final Element shape : all_shape_tags)
     {
       final String name = shape.select("p|cNvPr").get(0).attr("name");
-      if ("track".equals(name))
-      {
-        shape_tag = shape;
-        toRemove.add(shape_tag);
-      }
-      else if ("marker".equals(name))
+      if ("marker".equals(name))
       {
         arrow_tag = shape;
         toRemove.add(arrow_tag);
@@ -997,6 +1000,14 @@ public class PlotTracks
         footprint_tag = shape;
         toRemove.add(footprint_tag);
       }
+      else if ("ScaleBar".equals(name))
+      {
+        scaleBarTag = shape;
+      }
+      else if ("ScaleValue".equals(name))
+      {
+        scaleValueTag = shape;
+      }
     }
 
     for (Element toRemoveElement : toRemove)
@@ -1004,7 +1015,8 @@ public class PlotTracks
       toRemoveElement.remove();
     }
     return new Element[]
-    {shape_tag, arrow_tag, time_tag, narrative_tag, footprint_tag};
+    {arrow_tag, time_tag, narrative_tag, footprint_tag, scaleBarTag,
+        scaleValueTag};
   }
 
   private void writeSoup(final String slide_path, final Document soup)

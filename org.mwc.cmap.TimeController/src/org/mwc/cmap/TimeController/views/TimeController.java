@@ -1794,7 +1794,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   }
 
   @SuppressWarnings(
-  {"rawtypes", "unchecked"})
+  {"rawtypes"})
   @Override
   public Object getAdapter(final Class adapter)
   {
@@ -1828,12 +1828,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         // see if we're recording
         if (_coordinateRecorder != null && _coordinateRecorder.isRecording())
         {
-          animatedGif = new AnimatedGif(_recordingLabel, ICON_PULSATING_GIF);
-          if (_recordingLabel.getImage() == null)
-          {
-            _recordingLabel.setImage(animatedGif.getImage());
+          if(animatedGif == null) {
+            animatedGif = new AnimatedGif(_recordingLabel, ICON_PULSATING_GIF);
+            if (_recordingLabel.getImage() == null)
+            {
+              _recordingLabel.setImage(animatedGif.getImage());
+            }
+            animatedGif.animate();
           }
-          animatedGif.animate();
+          else {
+            animatedGif.resume(_recordingLabel.getBounds());
+          }
           _recordingLabel.setVisible(true);
 
           newVal += " [REC]";
@@ -1855,6 +1860,28 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       }
     }
     return newVal;
+  }
+
+  // reset the buttons and labels are recording is done.
+
+  private void resetRecordingLabel()
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        final String newVal = getFormattedDate(_myTemporalDataset.getTime());
+        _timeLabel.setText(newVal);
+        if (animatedGif != null)
+        {
+          animatedGif.cancel();
+        }
+        _recordingLabel.setVisible(false);
+      }
+    });
+
   }
 
   @Override
@@ -3129,12 +3156,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
         // and update the VCR buttons
         setVCREnabled(true);
+
       }
     });
 
     if (_coordinateRecorder != null)
     {
       _coordinateRecorder.stopStepping(timeNow);
+      resetRecordingLabel();
       _coordinateRecorder = null;
     }
   }

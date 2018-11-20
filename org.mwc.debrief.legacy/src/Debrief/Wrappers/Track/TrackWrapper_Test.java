@@ -1025,25 +1025,25 @@ public class TrackWrapper_Test extends TestCase
 
     assertNotNull("returned an area", layers.getBounds());
     assertEquals("correct location",
-        " 50°51'17.63\"N 001°20'32.10\"W ", layers.getBounds()
+        " 50\u00b051'17.63\"N 001\u00b020'32.10\"W ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 51°12'08.27\"N 001°58'07.62\"W ", layers.getBounds()
+        " 51\u00b012'08.27\"N 001\u00b058'07.62\"W ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 50°30'26.99\"N 000°42'56.58\"W ", layers.getBounds()
+        " 50\u00b030'26.99\"N 000\u00b042'56.58\"W ", layers.getBounds()
             .getBottomRight().toString());
 
     // ok, now put the track in the layers
     layers.addThisLayer(track);
     assertEquals("correct location",
-        " 10°00'00.00\"N 020°00'00.00\"E ", layers.getBounds()
+        " 10\u00b000'00.00\"N 020\u00b000'00.00\"E ", layers.getBounds()
             .getCentre().toString());
     assertEquals("correct location",
-        " 10°00'42.43\"N 019°59'16.92\"E ", layers.getBounds()
+        " 10\u00b000'42.43\"N 019\u00b059'16.92\"E ", layers.getBounds()
             .getTopLeft().toString());
     assertEquals("correct location",
-        " 09°59'17.57\"N 020°00'43.08\"E ", layers.getBounds()
+        " 09\u00b059'17.57\"N 020\u00b000'43.08\"E ", layers.getBounds()
             .getBottomRight().toString());
 
   }
@@ -3101,6 +3101,40 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("We didnt paint enough polygons points", 8, pointCount);
 
   }
+  
+  public void testDynamicInfillLabel()
+  {
+    final TrackSegment ts0 = getDummyList();
+
+    final TrackSegment ts1 = new TrackSegment(TrackSegment.ABSOLUTE);
+    final FixWrapper newFix5 =
+        new FixWrapper(new Fix(new HiResDate(150000),
+            new WorldLocation(3, 4, 3), 1, 2));
+    final FixWrapper newFix6 =
+        new FixWrapper(new Fix(new HiResDate(160000),
+            new WorldLocation(4, 4, 3), 1, 2));
+    final FixWrapper newFix7 =
+        new FixWrapper(new Fix(new HiResDate(170000),
+            new WorldLocation(5, 4, 3), 1, 2));
+    final FixWrapper newFix8 =
+        new FixWrapper(new Fix(new HiResDate(180000),
+            new WorldLocation(6, 4, 3), 1, 2));
+    ts1.addFix(newFix5);
+    ts1.addFix(newFix6);
+    ts1.addFix(newFix7);
+    ts1.addFix(newFix8);
+    
+    // set the label showing on the last point in the first leg
+    FixWrapper last = (FixWrapper) ts0.last();
+    last.setLabelShowing(true);
+    
+    TrackSegment newS = new DynamicInfillSegment(ts0, ts1);
+    assertEquals("got lots of points", 10, newS.size());
+    
+    // does the first one have a label showing
+    FixWrapper first = (FixWrapper) newS.elements().nextElement();
+    assertFalse("label not showing", first.getLabelShowing());
+  }
 
   public void testDynamicInfill()
   {
@@ -3126,6 +3160,10 @@ public class TrackWrapper_Test extends TestCase
 
     TrackSegment newS = new DynamicInfillSegment(ts0, ts1);
     assertEquals("got lots of points", 10, newS.size());
+    
+    // does the first one have a label showing
+    FixWrapper first = (FixWrapper) newS.elements().nextElement();
+    assertFalse("label not showing", first.getLabelShowing());
 
     // have a look at the generated points
     final Enumeration<Editable> pts = newS.elements();

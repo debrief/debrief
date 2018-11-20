@@ -1,0 +1,401 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: check_main_toolbar_items
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _sj6nMLTeEeiX54HPutJ62Q
+Runtime-Version: 2.3.0.201806262310
+Save-Time: 10/17/18 1:38 AM
+Testcase-Type: ecl
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-view Navigator |get-tree | select "demo/sample_data/boat1t.dpf" | double-click
+wait 500
+with [get-button "Save (M1+S)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Save (M1+S)" | verify-true
+    get-property "getToolTipText()" | equals "Save (M1+S)" | verify-true
+}
+with [get-button "Open Prefs"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Open Prefs" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/gears.png" | verify-true
+}
+with [get-button "Manually select target layer"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Manually select target layer" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/auto_layer.png" | verify-true
+}
+with [get-button Ellipse] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Ellipse" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/ellipse.png" | verify-true
+}
+with [get-button Polygon] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Polygon" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/polygon.png" | verify-true
+}
+with [get-button Line] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Line" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/line.png" | verify-true
+}
+with [get-button Rectangle] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Recta&ngle" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/rectangle.png" | verify-true
+}
+with [get-button Wheel] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Wheel" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/wheel.png" | verify-true
+}
+with [get-button Circle] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Circle" | verify-true
+    get-property "image.path" | equals "org.mwc.debrief.core/icons/24/circle.png" | verify-true
+}
+with [get-button Arc] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Arc" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button Label] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "La&bel" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Furthest On Circles"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Furthest On Circles" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Range Rings"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Range Rings" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Track Segment"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Track Segment" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button Vector] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Vector" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Natural Earth"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Natural Earth" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Drag Track Segment (M3+1)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Drag Track Segment (M3+1)" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Drag Component (M3+2)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Drag Component (M3+2)" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Drag Whole Feature (M3+3)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Drag Whole Feature (M3+3)" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Measure range bearing (M3+4)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Measure range bearing (M3+4)" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Pan (M3+5)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Pan (M3+5)" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Zoom In (M3+6)"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Zoom In (M3+6)" | verify-true
+    get-property selected | equals true | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Zoom Out"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "Zoom &Out" | verify-true
+    get-property "getImage().getImageData().getClassName()" | equals "org.eclipse.swt.graphics.ImageData" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button "Fit to window"] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Fit to window" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+with [get-button Redraw] {
+    get-property enablement | equals true | verify-true
+    get-property tooltip | equals "&Redraw" | verify-true
+    get-property "getImage().getImageData().width" | equals 24 | verify-true
+    get-property "getImage().getImageData().height" | equals 24 | verify-true
+    get-property "getImage().getImageData().depth" | equals 32 | verify-true
+    get-property "getImage().getImageData().scanlinePad" | equals 4 | verify-true
+    get-property "getImage().getImageData().bytesPerLine" | equals 96 | verify-true
+    get-property "getImage().getImageData().transparentPixel" | equals "-1" | verify-true
+    get-property "getImage().getImageData().maskData" | equals null | verify-true
+    get-property "getImage().getImageData().maskPad" | equals 0 | verify-true
+    get-property "getImage().getImageData().alpha" | equals "-1" | verify-true
+    get-property "getImage().getImageData().type" | equals "-1" | verify-true
+    get-property "getImage().getImageData().x" | equals 0 | verify-true
+    get-property "getImage().getImageData().y" | equals 0 | verify-true
+    get-property "getImage().getImageData().disposalMethod" | equals 0 | verify-true
+    get-property "getImage().getImageData().delayTime" | equals 0 | verify-true
+    get-property "getImage().getImageData().getTransparencyType()" | equals 1 | verify-true
+    get-property "getImage().getImageData().getRGBs()" | equals null | verify-true
+}
+get-editor "boat1t.dpf" | close
+get-window "Save Resource" | get-button No | click
+get-view Navigator | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

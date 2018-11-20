@@ -41,8 +41,8 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 import org.mwc.debrief.core.ContextOperations.ConvertAbsoluteTmaToRelative;
-import org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack;
 import org.mwc.debrief.core.ContextOperations.ConvertLightweightTrackToTrack;
+import org.mwc.debrief.core.ContextOperations.ConvertTrackToLightweightTrack;
 import org.mwc.debrief.core.ContextOperations.CopyBearingsToClipboard;
 import org.mwc.debrief.core.ContextOperations.GenerateInfillSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateNewInsertSensorArcAction;
@@ -284,7 +284,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
       }
     });
   }
-
   /**
    * This method is called upon plug-in activation
    */

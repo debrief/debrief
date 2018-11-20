@@ -38,8 +38,8 @@ import java.util.regex.Pattern;
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 import Debrief.Wrappers.DynamicShapeLayer;
-import Debrief.Wrappers.DynamicShapeWrapper;
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.IDynamicShapeWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -2236,10 +2236,10 @@ public class ImportReplay extends PlainImporterBase
     {
       res = processReplayFix((ReplayFix) thisObject);
     }
-    else if (thisObject instanceof DynamicShapeWrapper)
+    else if (thisObject instanceof IDynamicShapeWrapper)
     {
       proccessShapeWrapper(thisOne, thisObject);
-      final DynamicShapeWrapper thisWrapper = (DynamicShapeWrapper) thisObject;
+      final IDynamicShapeWrapper thisWrapper = (IDynamicShapeWrapper) thisObject;
       final String trackName = thisWrapper.getTrackName();
       DynamicShapeLayer dsl = (DynamicShapeLayer) getLayerFor(trackName);
       if (dsl == null)

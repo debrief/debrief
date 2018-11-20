@@ -2036,7 +2036,9 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   @Override
   public void setFocus()
   {
-    _treeViewer.getControl().setFocus();
+    if(_treeViewer!=null) {
+      _treeViewer.getControl().setFocus();
+    }
   }
 
   @Override
