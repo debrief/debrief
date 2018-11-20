@@ -2644,6 +2644,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
           }
         });
+    _myPartMonitor.addPartListener(PlotEditor.class, PartMonitor.CLOSED, new PartMonitor.ICallback()
+    {
+      
+      @Override
+      public void eventTriggered(String type, Object part,
+          IWorkbenchPart parentPart)
+      {
+        if(part == _currentEditor) {
+            populateDropDownList(_layerPainterManager);
+        }
+      }
+    });
     _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
