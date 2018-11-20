@@ -16,6 +16,44 @@
 	
 	<build>
 		<plugins>
+		
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-p2-repository-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<includeAllDependencies>true</includeAllDependencies>
+				</configuration>
+				<executions>
+					<execution>
+						<id>p2</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>archive-repository</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+	    <plugin>
+       		<groupId>org.apache.maven.plugins</groupId>
+       		<artifactId>maven-antrun-plugin</artifactId>
+       		<version>1.7</version>
+			<executions>
+          		<execution>
+            		<phase>verify</phase>
+            		<configuration>
+            		<target>
+            			DebriefUpdate_zip
+            			<move file="${basedir}/target/product-${version}.zip" tofile="${basedir}/target/update-site/Debrief_UpdateSite.zip" verbose="yes"/>
+              		</target>
+             		</configuration>
+             		<goals>
+             			<goal>run</goal>
+             		</goals>
+            		</execution>
+            			
+            	</executions>
+	    </plugin>
 			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-p2-director-plugin</artifactId>
