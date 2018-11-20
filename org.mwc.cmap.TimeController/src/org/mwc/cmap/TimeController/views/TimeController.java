@@ -2060,9 +2060,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _filterToSelectionAction.setToolTipText(
         "Filter plot data to selected time period");
     _filterToSelectionAction.setChecked(true);
-    menuManager.add(_filterToSelectionAction);
-    toolManager.add(_filterToSelectionAction);
-
+    if(_myTemporalDataset!=null) {
+      menuManager.add(_filterToSelectionAction);
+      toolManager.add(_filterToSelectionAction);
+    }
     // and another separator
     menuManager.add(new Separator());
 
