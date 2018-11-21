@@ -16,14 +16,10 @@ package org.mwc.debrief.core.wizards;
 
 import java.util.List;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.debrief.core.ContextOperations.ExportCSVPrefs.DropdownProvider;
 
@@ -41,34 +37,6 @@ public class CSVExportPage1 extends CustomWizardPage
   protected List<String> getPageNames()
   {
     return CSVExportWizard.PAGE_NAMES;
-  }
-
-  protected static String getCmbVal(final ComboViewer comboViewer, String val)
-  {
-    final String res;
-    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
-    {
-      final StructuredSelection selection = (StructuredSelection) comboViewer
-          .getSelection();
-      if (selection.isEmpty())
-      {
-        // ah, it's not one of the drop downs, so
-        // get the value from the combo
-        final String comboText = comboViewer.getCombo().getText();
-        res = comboText == null ? val : comboText;
-      }
-      else
-      {
-        // just get the selected item
-        res = (String) selection.getFirstElement();
-      }
-    }
-    else
-    {
-      res = val;
-    }
-
-    return res;
   }
 
   private final DropdownProvider provider;
@@ -109,53 +77,8 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  private Text addTxtField(final Composite contents, final String label,
-      String tooltip, final String initialValue)
-  {
 
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(label);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    final Text textControl = new Text(contents, SWT.BORDER);
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    textControl.setLayoutData(gridData);
-    if (initialValue != null)
-      textControl.setText(initialValue);
-
-    return textControl;
-
-  }
-
-  private ComboViewer addCmbField(final Composite contents, final String key,
-      final String title, String tooltip, final boolean edit, final String val)
-  {
-
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(title);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
-        : SWT.READ_ONLY | SWT.BORDER));
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    typeCmb.setContentProvider(new ArrayContentProvider());
-    typeCmb.setInput(provider.getValuesFor(key).toArray());
-    typeCmb.getCombo().setLayoutData(gridData);
-    if (val != null)
-      typeCmb.getCombo().setText(val);
-    else if (typeCmb.getCombo().getItemCount() > 0)
-      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
-
-    return typeCmb;
-
-  }
-
+ 
   @Override
   protected Composite createDataSection(Composite parent)
   {
@@ -165,13 +88,13 @@ public class CSVExportPage1 extends CustomWizardPage
     provenanceTxt = addTxtField(contents, "Provenance:", "Source platform, \n"
         + "Eg: HMS Nelson", provenance);
     sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
-        true, sensor);
+        true, sensor, this, provider);
 
     unitNameTxt = addTxtField(contents, "Unit Name:", "Subject platform",
         unitName);
 
     flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
-        true, flag);
+        true, flag, this, provider);
     typeTxt = addTxtField(contents, "Type:", "Subject platform type", type);
 
     semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):",
@@ -196,18 +119,6 @@ public class CSVExportPage1 extends CustomWizardPage
   public String getSensor()
   {
     return sensor;
-  }
-
-  private String getTxtVal(final Text control, final String val)
-  {
-    if (control != null && !control.isDisposed())
-    {
-      return control.getText().trim();
-    }
-    else
-    {
-      return val;
-    }
   }
 
   public String getType()
