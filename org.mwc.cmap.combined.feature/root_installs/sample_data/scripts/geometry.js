@@ -22,6 +22,7 @@ function wait(ms) {
 
 var editor = getEditor();
 
+
 if (editor == null) {
 	print("Can't retrieve editor");
 } else {
@@ -29,6 +30,7 @@ if (editor == null) {
 	var layers = editor.getLayers();
 	var shapes = layers.createLayer("Shapes");
 	var centre = editor.getCentre();
+	
 	for(i=0;i<12;i++)
 	{
 		for(j=0;j<12;j++)
@@ -40,15 +42,19 @@ if (editor == null) {
 			var line = createLine(startP, endP, "name" + ctr, color);
 			shapes.add(line);
 
-			var centre = centre.add(createVector((j + 4) * 1000, (j + 2) * 100));
-			var distance = createDistance(2 + i * 6);
+			// @type MWC.GenericData.WorldVector
+			var distM = (j + 4) * 1000;
+			var brgDegs = (j + 2) * 100;
+			var vector = createVector(distM, brgDegs);
+			var centre = centre.add(vector);
+			var distance = createDistance(2 + i * 6, KM);
 			var circle = createCircle(centre, distance, "circle:"+ctr, color);
 			shapes.add(circle);
-			
 			wait(50);
 			layers.fireModified();
 		}
 	}
 	layers.fireModified();
+	
 	
 }
