@@ -1226,7 +1226,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             @Override
             public void run()
             {
-              populateDropDownList(myLayerPainterManager);
+              updateToolbarAndMenu();
             }
           });
 
@@ -1321,7 +1321,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             @Override
             public void run()
             {
-              populateDropDownList(myLayerPainterManager);
+              updateToolbarAndMenu();
             }
           });
         }
@@ -1794,7 +1794,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   }
 
   @SuppressWarnings(
-  {"rawtypes"})
+  {"rawtypes", "unchecked"})
   @Override
   public Object getAdapter(final Class adapter)
   {
@@ -2007,8 +2007,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * ok - put in the stepper mode buttons - and any others we think of.
    */
-  private void populateDropDownList(
-      final LayerPainterManager myLayerPainterManager)
+  private void updateToolbarAndMenu()
   {
     
     // clear the list
@@ -2025,18 +2024,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
       final ISelectionProvider provider = this;
   
       // right, do we have something with editable layer details?
-      if (myLayerPainterManager != null)
+      if (_layerPainterManager != null)
       {
   
         // ok - add the painter selectors/editors
-        createPainterOptions(myLayerPainterManager, menuManager, toolManager,
+        createPainterOptions(_layerPainterManager, menuManager, toolManager,
             provider);
   
         // ok, let's have a separator
         toolManager.add(new Separator());
   
         // now add the highlighter options/editors
-        createHighlighterOptions(myLayerPainterManager, menuManager, provider);
+        createHighlighterOptions(_layerPainterManager, menuManager, provider);
   
         // and another separator
         menuManager.add(new Separator());
@@ -2082,15 +2081,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
           ICON_BKMRK_NAV));
       _setAsBookmarkAction.setToolTipText(
           "Add this DTG to the list of bookmarks");
-      _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give
-                                                     // it
-                                                     // an
-                                                     // id,
-                                                     // so
-                                                     // we
-                                                     // can
-      menuManager.add(_setAsBookmarkAction);
+      _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); 
+      // give it an id, so we can
       // refer to this later on.
+      menuManager.add(_setAsBookmarkAction);
   
       // and another separator
       menuManager.add(new Separator());
@@ -2319,7 +2313,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _btnPanel.pack(true);
 
     // sort out the dropdowns
-    populateDropDownList(null);
+    updateToolbarAndMenu();
 
   }
 
@@ -2647,18 +2641,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
           }
         });
-    _myPartMonitor.addPartListener(PlotEditor.class, PartMonitor.CLOSED, new PartMonitor.ICallback()
-    {
-      
-      @Override
-      public void eventTriggered(String type, Object part,
-          IWorkbenchPart parentPart)
-      {
-        if(part == _currentEditor) {
-            populateDropDownList(_layerPainterManager);
-        }
-      }
-    });
     _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
         new PartMonitor.ICallback()
         {
@@ -2667,7 +2649,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               final IWorkbenchPart parentPart)
           {
             // was it our one?
-            if (_myTemporalDataset == part)
+            if (part.equals(_myTemporalDataset))
             {
               // ok, stop listening to this object (just in case
               // we were,
@@ -2677,7 +2659,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 
+              // clear the temporal dataset
               _myTemporalDataset = null;
+
+              // and update the toolbar/UI
+              updateToolbarAndMenu();
+
             }
 
             // and sort out whether we should be active or not.
@@ -2970,7 +2957,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               // ones
 
               _layerPainterManager = (LayerPainterManager) part;
-              populateDropDownList(_layerPainterManager);
+              updateToolbarAndMenu();
             }
           }
 
