@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,35 +41,6 @@ public class CSVExportPage2 extends CustomWizardPage
   {
     return CSVExportWizard.PAGE_NAMES;
   }
-  
-  protected static String getCmbVal(final ComboViewer comboViewer, String val)
-  {
-    final String res;
-    if (comboViewer != null && !comboViewer.getCombo().isDisposed())
-    {
-      final StructuredSelection selection = (StructuredSelection) comboViewer
-          .getSelection();
-      if (selection.isEmpty())
-      {
-        // ah, it's not one of the drop downs, so
-        // get the value from the combo
-        final String comboText = comboViewer.getCombo().getText();
-        res = comboText == null ? val : comboText;
-      }
-      else
-      {
-        // just get the selected item
-        res = (String) selection.getFirstElement();
-      }
-    }
-    else
-    {
-      res = val;
-    }
-
-    return res;
-  }
-
   
   private final DropdownProvider provider;
   // Data Fields ---- TODO: change default values
@@ -106,7 +76,7 @@ public class CSVExportPage2 extends CustomWizardPage
 
   }
 
-  private Text addCaseNumberField(final Composite contents, final String label, String tooltip,
+  private static Text addCaseNumberField(final Composite contents, final String label, String tooltip,
       final String initialValue)
   {
 
@@ -136,19 +106,19 @@ public class CSVExportPage2 extends CustomWizardPage
     caseNumbertxt = addCaseNumberField(contents, "Case Number:", "Case number",
         caseNumber);
 
-    classificationCmb = CSVExportWizard.addCmbField(contents, "CLASSIFICATION",
+    classificationCmb = addCmbField(contents, "CLASSIFICATION",
         "Classification:", "Protective marking for this data", true,
         classification, this, provider);
 
-    suppliedByCmb = CSVExportWizard.addCmbField(contents, "SUPPLIED_BY",
+    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY",
         "Supplied by:", "Supplier organisation", false, suppliedBy, this,
         provider);
 
-    likelihoodCmb = CSVExportWizard.addCmbField(contents, "LIKELIHOOD",
+    likelihoodCmb = addCmbField(contents, "LIKELIHOOD",
         "Likelihood:", "Likelihood of subject identification", false,
         likelihood, this, provider);
 
-    confidenceCmb = CSVExportWizard.addCmbField(contents, "CONFIDENCE",
+    confidenceCmb = addCmbField(contents, "CONFIDENCE",
         "Confidence:", "Confidence in subject track", false, confidence, this,
         provider);
 
@@ -170,8 +140,6 @@ public class CSVExportPage2 extends CustomWizardPage
     return confidence;
   }
 
-  
-
   @SuppressWarnings("deprecation")
   public String getInfoCutoffDate()
   {
@@ -183,26 +151,10 @@ public class CSVExportPage2 extends CustomWizardPage
     return likelihood;
   }
 
-
-
   public String getSuppliedBy()
   {
     return suppliedBy;
   }
-
-  private String getTxtVal(final Text control, final String val)
-  {
-    if (control != null && !control.isDisposed())
-    {
-      return control.getText().trim();
-    }
-    else
-    {
-      return val;
-    }
-  }
-
-
 
   public void readFormPref()
   {
