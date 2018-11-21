@@ -14,10 +14,8 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -131,38 +129,7 @@ public class CSVExportPage1 extends CustomWizardPage
 
   }
 
-  private ComboViewer addCmbField(final Composite contents, final String key,
-      final String title, String tooltip, final boolean edit, final String val)
-  {
-
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(title);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
-        : SWT.READ_ONLY | SWT.BORDER));
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    typeCmb.setContentProvider(new ArrayContentProvider());
-    List<String> values = provider.getValuesFor(key);
-    if(values==null) {
-      values = new ArrayList<String>();
-      setErrorMessage("No value for "+ title +" in file, may be an invalid file");
-      setPageComplete(false);
-    }
-    typeCmb.setInput(values.toArray());
-    typeCmb.getCombo().setLayoutData(gridData);
-    if (val != null)
-      typeCmb.getCombo().setText(val);
-    else if (typeCmb.getCombo().getItemCount() > 0)
-      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
-
-    return typeCmb;
-
-  }
-
+ 
   @Override
   protected Composite createDataSection(Composite parent)
   {
@@ -171,14 +138,14 @@ public class CSVExportPage1 extends CustomWizardPage
 
     provenanceTxt = addTxtField(contents, "Provenance:", "Source platform, \n"
         + "Eg: HMS Nelson", provenance);
-    sensorCmb = addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
-        true, sensor);
+    sensorCmb = CSVExportWizard.addCmbField(contents, "SENSOR", "Sensor:", "Source sensor",
+        true, sensor, this, provider);
 
     unitNameTxt = addTxtField(contents, "Unit Name:", "Subject platform",
         unitName);
 
-    flagCmb = addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
-        true, flag);
+    flagCmb = CSVExportWizard.addCmbField(contents, "FLAG", "Flag:", "Subject nationality",
+        true, flag, this, provider);
     typeTxt = addTxtField(contents, "Type:", "Subject platform type", type);
 
     semiMajorAxisTxt = addTxtField(contents, "Semi-Major Axis (Nm):",

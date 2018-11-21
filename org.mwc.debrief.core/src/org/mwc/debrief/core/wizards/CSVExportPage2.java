@@ -14,11 +14,9 @@
  */
 package org.mwc.debrief.core.wizards;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -128,42 +126,6 @@ public class CSVExportPage2 extends CustomWizardPage
     return textControl;
 
   }
-
-  private ComboViewer addCmbField(final Composite contents, final String key,
-      final String title, String tooltip, final boolean edit, final String val)
-  {
-
-    final Label lbl = new Label(contents, SWT.NONE);
-    lbl.setText(title);
-    lbl.setToolTipText(tooltip);
-    lbl.setAlignment(SWT.RIGHT);
-    lbl.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
-
-    final ComboViewer typeCmb = new ComboViewer(contents, (edit ? SWT.BORDER
-        : SWT.READ_ONLY | SWT.BORDER));
-    final GridData gridData = new GridData(GridData.FILL_HORIZONTAL);
-    gridData.widthHint = 120;
-    typeCmb.setContentProvider(new ArrayContentProvider());
-    List<String> values = provider.getValuesFor(key);
-    if(values==null) {
-      values = new ArrayList<>();
-      setErrorMessage("No value for "+title+" in file, may be an invalid file");
-      setPageComplete(false);
-    }
-    typeCmb.setInput(values.toArray());
-     
-    typeCmb.getCombo().setLayoutData(gridData);
-    if (val != null)
-      typeCmb.getCombo().setText(val);
-    else if (typeCmb.getCombo().getItemCount() > 0)
-      typeCmb.getCombo().setText(typeCmb.getCombo().getItem(0));// select default first item
-
-    return typeCmb;
-
-  }
-
-
-  
   
   @Override
   protected Composite createDataSection(Composite parent)
@@ -171,27 +133,27 @@ public class CSVExportPage2 extends CustomWizardPage
     final Composite contents = new Composite(parent, SWT.NONE);
     contents.setLayout(new GridLayout(2, false));
 
-    caseNumbertxt = addCaseNumberField(contents, "Case Number:","Case number", caseNumber);
+    caseNumbertxt = addCaseNumberField(contents, "Case Number:", "Case number",
+        caseNumber);
 
-    classificationCmb = addCmbField(contents, "CLASSIFICATION",
-        "Classification:","Protective marking for this data", true, classification);
+    classificationCmb = CSVExportWizard.addCmbField(contents, "CLASSIFICATION",
+        "Classification:", "Protective marking for this data", true,
+        classification, this, provider);
 
-    suppliedByCmb = addCmbField(contents, "SUPPLIED_BY", "Supplied by:","Supplier organisation", false,
-        suppliedBy);
-    
-    likelihoodCmb = addCmbField(contents, "LIKELIHOOD", "Likelihood:","Likelihood of subject identification", false,
-        likelihood);
-    
-    confidenceCmb = addCmbField(contents, "CONFIDENCE", "Confidence:","Confidence in subject track", false,
-        confidence);
-    
+    suppliedByCmb = CSVExportWizard.addCmbField(contents, "SUPPLIED_BY",
+        "Supplied by:", "Supplier organisation", false, suppliedBy, this,
+        provider);
 
+    likelihoodCmb = CSVExportWizard.addCmbField(contents, "LIKELIHOOD",
+        "Likelihood:", "Likelihood of subject identification", false,
+        likelihood, this, provider);
+
+    confidenceCmb = CSVExportWizard.addCmbField(contents, "CONFIDENCE",
+        "Confidence:", "Confidence in subject track", false, confidence, this,
+        provider);
 
     return contents;
   }
-
-
-  
 
   public String getCaseNumber()
   {
