@@ -15,12 +15,14 @@
 package org.mwc.debrief.core.loaders;
 
 import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.wizards.ImportNMEADialog;
 import org.mwc.debrief.core.DebriefPlugin;
 
@@ -45,10 +47,8 @@ public class NMEALoader extends CoreLoader
    */
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
-      Layers layers, final InputStream inputStream,
-      final String fileName)
+      Layers layers, final InputStream inputStream, final String fileName)
   {
-
     // ok, we'll need somewhere to put the data
     final Layers theLayers = (Layers) target.getAdapter(Layers.class);
 
@@ -56,12 +56,27 @@ public class NMEALoader extends CoreLoader
     {
       public void run(final IProgressMonitor pm)
       {
-
+        // create way of passing reference back from dialog
+        final AtomicReference<ImportNMEADialog> dialogO =
+            new AtomicReference<ImportNMEADialog>();
+        Display.getDefault().syncExec(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            final ImportNMEADialog dialog = new ImportNMEADialog();
+            if (dialog.open() != Dialog.CANCEL)
+            {
+              dialogO.set(dialog);
+            }
+          }
+        });
         try
         {
-          final ImportNMEADialog dialog = new ImportNMEADialog();
-          if (dialog.open() != Dialog.CANCEL)
+          // did user press finish?
+          if (dialogO.get() != null)
           {
+            ImportNMEADialog dialog = dialogO.get();
             // get the selected values
             final long osFreq = dialog.getOwnshipFreq();
             final long tgtFreq = dialog.getThirdPartyFreq();
