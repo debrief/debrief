@@ -199,7 +199,7 @@ public class ExportCSVPreferencesPage extends FieldEditorPreferencePage
     {
       MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
           "Edit CSV Dropdowns file",
-          "CSV Dropdowns file not assigned, \nplease create file as descried in Debrief help (link button below),"
+          "CSV Dropdowns file not assigned, \nplease create file as descried in Debrief help,"
               + "\nand select it using the above Browse button");
       return false;
     }
