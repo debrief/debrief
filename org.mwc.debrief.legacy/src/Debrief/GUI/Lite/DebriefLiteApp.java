@@ -17,6 +17,8 @@ package Debrief.GUI.Lite;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.WindowAdapter;
 
 import javax.swing.ImageIcon;
@@ -26,6 +28,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -75,19 +78,23 @@ public class DebriefLiteApp
     final Dimension frameSize = theFrame.getSize();
     final int width = (int)frameSize.getWidth();
     final int height = (int)frameSize.getHeight();
-    JScrollPane timeControllerPane = createScrollPane(new Dimension(width/5,height/2));
-    JScrollPane outlinePane = createScrollPane(null);
-    JScrollPane editorPane = createScrollPane(null);
-    JScrollPane graphPane = createScrollPane(null);
-    JSplitPane splitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,timeControllerPane,outlinePane);
-    JSplitPane splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,editorPane,graphPane);
-    JSplitPane splitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane1,splitPane2);
-    JSplitPane splitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane3,new JPanel());
+    final JScrollPane timeControllerPane = createScrollPane(new Dimension(width/5,height/2));
+    final JScrollPane outlinePane = createScrollPane(null);
+    final JScrollPane editorPane = createScrollPane(null);
+    final JScrollPane graphPane = createScrollPane(null);
+    final JSplitPane splitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,timeControllerPane,outlinePane);
+    final JSplitPane splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,editorPane,graphPane);
+    final JSplitPane splitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane1,splitPane2);
+    final JSplitPane splitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane3,new JPanel());
     splitPane4.setOneTouchExpandable(true);
-    splitPane4.setDividerLocation(width-50);
+    
     splitPane1.setOneTouchExpandable(true);
     splitPane2.setOneTouchExpandable(true);
+    splitPane4.setDividerLocation(width-50);
     splitPane2.setDividerLocation(height/2+height/5);
+    splitPane4.setResizeWeight(0.9);
+    splitPane2.setResizeWeight(0.8);
+    
     splitPane3.setOneTouchExpandable(true);
     theFrame.add(splitPane4,BorderLayout.CENTER);
     addStatusBar();
