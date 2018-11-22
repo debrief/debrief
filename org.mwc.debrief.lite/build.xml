@@ -91,7 +91,7 @@
               	
     <target name="TestFrame" depends = "build-project">
     	
-        <java classname="org.mwc.debrief.lite.core.TestFrame" failonerror="true" fork="yes">
+        <java classname="org.mwc.debrief.lite.TestFrame" failonerror="true" fork="yes">
             <classpath refid="run.TestFrame.classpath"/>
         </java>
         
@@ -101,7 +101,7 @@
          basedir = "target/classes" >
     	
     	<manifest>
-    	         <attribute name = "Main-Class" value = "org.mwc.debrief.lite.core.TestFrame"/>
+    	         <attribute name = "Main-Class" value = "org.mwc.debrief.lite.TestFrame"/>
     	</manifest>
     	
     	</jar>
