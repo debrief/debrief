@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>debrief-lite</groupId>
-    <artifactId>debrief-lite</artifactId>
+    <groupId>org.mwc.debrief.lite</groupId>
+    <artifactId>org.mwc.debrief.lite</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
