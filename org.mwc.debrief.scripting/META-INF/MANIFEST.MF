@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Scripting
 Bundle-SymbolicName: org.mwc.debrief.scripting;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 1.0.1
 Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.core.resources,
  org.eclipse.jface,
@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ui.workbench,
  org.eclipse.e4.core.services
 Automatic-Module-Name: org.mwc.debrief.scripting
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.ui.plugin,
  org.mwc.cmap.core.DataTypes.Temporal,
  org.mwc.cmap.core.ui_support,
