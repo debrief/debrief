@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ease.modules">
+      <module
+            category="org.mwc.debrief.scripting.Debrief_Category"
+            class="org.mwc.debrief.scripting.wrappers.Core"
+            icon="icons/debrief_icon.png"
+            id="org.mwc.debrief.scripting.module"
+            name="Core"
+            visible="true">
+      </module>
+      <module
+            category="org.mwc.debrief.scripting.Debrief_Category"
+            class="org.mwc.debrief.scripting.wrappers.Shapes"
+            icon="icons/debrief_icon.png"
+            id="org.mwc.debrief.scripting.module"
+            name="Shapes"
+            visible="true">
+      </module>
+      <module
+            category="org.mwc.debrief.scripting.Debrief_Category"
+            class="org.mwc.debrief.scripting.wrappers.Spatial"
+            icon="icons/debrief_icon.png"
+            id="org.mwc.debrief.scripting.module"
+            name="Spatial"
+            visible="true">
+      </module>
+      <module
+            category="org.mwc.debrief.scripting.Debrief_Category"
+            class="org.mwc.debrief.scripting.wrappers.Tactical"
+            icon="icons/debrief_icon.png"
+            id="org.mwc.debrief.scripting.module"
+            name="Tactical"
+            visible="true">
+      </module>
+      <category
+            id="org.mwc.debrief.scripting.Debrief_Category"
+            name="Debrief">
+      </category>
+   </extension>
+
+</plugin>
