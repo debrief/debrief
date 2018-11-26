@@ -16,24 +16,17 @@ package Debrief.GUI.Lite.custom;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Field;
-import java.net.URL;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
-import javax.swing.plaf.basic.BasicSplitPaneDivider;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -49,17 +42,7 @@ public class JPanelWithTitleBar extends JPanel
   private static final long serialVersionUID = 1L;
   
   private JLabel _titleLabel;
-  private JLabel _minimizeLabel;
-  static final ImageIcon minimizeIcon;
-  static final ImageIcon maximizeIcon;
-  private static boolean minimize=false;
-  static {
-    final URL iconURL = JPanelWithTitleBar.class.getClassLoader().getResource("images/16/minimize.png");
-    minimizeIcon = new ImageIcon(iconURL);
-    final URL iconURL2 = JPanelWithTitleBar.class.getClassLoader().getResource("images/16/maximize.png");
-    maximizeIcon = new ImageIcon(iconURL2);
-  }
-  
+  private boolean minimize=false;
   public JPanelWithTitleBar(final String title)
   {
     setLayout(new BorderLayout());  
@@ -70,20 +53,14 @@ public class JPanelWithTitleBar extends JPanel
     _titleLabel.setForeground(Color.WHITE);
     _titleLabel.setOpaque(true);
     add(_titleLabel,BorderLayout.WEST);
-    JPanel iconPanel = new JPanel();
-    iconPanel.setBackground(titleColor);
-    iconPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    _minimizeLabel = new JLabel();
-    _minimizeLabel.setIcon(minimizeIcon);  
-    iconPanel.add(_minimizeLabel);
-    add(iconPanel,BorderLayout.EAST);
+    
     setBackground(titleColor);
     
     
   }
   
-  public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {
-    _minimizeLabel.addMouseListener(new MouseAdapter()
+ /* public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {
+    addMouseListener(new MouseAdapter()
     {
       
       @Override
@@ -91,33 +68,77 @@ public class JPanelWithTitleBar extends JPanel
       {
         
         minimize=!minimize;
-        if(minimize) {
-          _minimizeLabel.setIcon(maximizeIcon);
-        }
-        else {
-          _minimizeLabel.setIcon(minimizeIcon);
-        }
         toggle(splitPane,minimize?!maximize:maximize);
       }
     });
   }
+ 
   
-  public void toggle(JSplitPane splitPane,boolean collapse) {
-    try {
-      BasicSplitPaneDivider bspd = ((BasicSplitPaneUI) splitPane.getUI()).getDivider();
-      Field buttonField = BasicSplitPaneDivider.class.
-              getDeclaredField(collapse ? "rightButton" : "leftButton");
-      buttonField.setAccessible(true);
-      JButton button = (JButton) buttonField.get(((BasicSplitPaneUI) splitPane.getUI()).getDivider());
-      button.getActionListeners()[0].actionPerformed(new ActionEvent(bspd, MouseEvent.MOUSE_CLICKED,
-              ""));
-  } catch (Exception e) {
-      e.printStackTrace();
+  public void toggle(JSplitPane pane,boolean collapse) {
+    if(collapse) {
+    pane.getRightComponent().setMinimumSize(new Dimension());
+    pane.setDividerLocation(0.75d);
+    }
+    else {
+    // Hide right or bottom
+    pane.getRightComponent().setMinimumSize(new Dimension());
+    pane.setDividerLocation(0.03d);
+    }
   }
-  }
+  */
   
   public void setTitle(String title) {
     _titleLabel.setText(title);
+  }
+
+  public void addMaxListenerFor(JSplitPane pane, JSplitPane pane2)
+  {
+    
+    addMouseListener(new MouseAdapter()
+    {
+      
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+        minimize = !minimize;
+        if(minimize) {
+          pane.getLeftComponent().setMinimumSize(new Dimension());
+          pane.setDividerLocation(0.03d);
+          pane2.getRightComponent().setMinimumSize(new Dimension());
+          pane2.setDividerLocation(0.97d);
+        }
+        else {
+          pane.getLeftComponent().setMinimumSize(new Dimension());
+          pane.setDividerLocation(0.3d);
+          pane2.getRightComponent().setMinimumSize(new Dimension());
+          pane2.setDividerLocation(0.7d);
+        }
+      }
+    });
+    
+  }
+  
+  public void addMinListenerFor(JSplitPane pane2)
+  {
+    
+    addMouseListener(new MouseAdapter()
+    {
+      
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+        minimize = !minimize;
+        if(minimize) {
+          pane2.getRightComponent().setMinimumSize(new Dimension());
+          pane2.setDividerLocation(0.97d);
+        }
+        else {
+          pane2.getRightComponent().setMinimumSize(new Dimension());
+          pane2.setDividerLocation(0.7d);
+        }
+      }
+    });
+    
   }
   
 

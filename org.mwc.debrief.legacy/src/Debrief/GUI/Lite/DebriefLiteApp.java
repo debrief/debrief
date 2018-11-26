@@ -15,15 +15,17 @@
 package Debrief.GUI.Lite;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
+import java.net.URL;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -42,13 +44,16 @@ public class DebriefLiteApp
 {
 
   public static final String appName="Debrief Lite";
+  public static final String NOTES_ICON="images/16/note.png";
   private JFrame theFrame;
   Toolbar _theToolbar;
   private JMenuBar theMenuBar;
-  private JMenu theMenu;
+  //private JMenu theMenu;
   private static JLabel statusBar;
   
   private JPanelWithTitleBar _timeControllerPanel,_outlinePanel,_graphPanel,_editorPanel;
+  private JLabel _notesIconLabel;
+  private boolean notesPaneExpanded = false;
   public DebriefLiteApp()
   {
     try {
@@ -89,10 +94,11 @@ public class DebriefLiteApp
     final JScrollPane outlinePane = createScrollPane(_outlinePanel);
     final JScrollPane editorPane = createScrollPane(_editorPanel);
     final JScrollPane graphPane = createScrollPane(_graphPanel);
+    final JScrollPane notesPane = createNotesPane();
     final JSplitPane splitPane1 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,timeControllerPane,outlinePane);
     final JSplitPane splitPane2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,editorPane,graphPane);
     final JSplitPane splitPane3 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane1,splitPane2);
-    final JSplitPane splitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane3,new JPanel());
+    final JSplitPane splitPane4 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,splitPane3,notesPane);
     splitPane4.setOneTouchExpandable(true);
     
     splitPane1.setOneTouchExpandable(true);
@@ -103,16 +109,45 @@ public class DebriefLiteApp
     splitPane3.setDividerLocation(width/3);
     splitPane4.setResizeWeight(0.9);
     splitPane2.setResizeWeight(0.5);
-    _timeControllerPanel.addMinMaxListenerFor(splitPane1,true);
-    _outlinePanel.addMinMaxListenerFor(splitPane1,false);
-    _editorPanel.addMinMaxListenerFor(splitPane2,true);
-    _graphPanel.addMinMaxListenerFor(splitPane2,false);
+    //_timeControllerPanel.addMinMaxListenerFor(splitPane1,true);
+    //_outlinePanel.addMinMaxListenerFor(splitPane1,false);
+    _editorPanel.addMaxListenerFor(splitPane3,splitPane2);
+    _graphPanel.addMinListenerFor(splitPane2);
     splitPane3.setOneTouchExpandable(true);
+    _notesIconLabel.addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+        
+        splitPane4.getRightComponent().setMinimumSize(new Dimension());
+        if(notesPaneExpanded) {
+          splitPane4.setDividerLocation(0.97d);
+        }
+        else {
+          splitPane4.setDividerLocation(0.7d);
+        }
+        //toggle the state
+        notesPaneExpanded = !notesPaneExpanded;
+      }
+    });
     theFrame.add(splitPane4,BorderLayout.CENTER);
     addStatusBar();
   }
   
   
+  private JScrollPane createNotesPane()
+  {
+    JPanel _notesPanel = new JPanel();
+    _notesPanel.setLayout(new FlowLayout());
+    JScrollPane notesPane = new JScrollPane(_notesPanel);
+    URL url1 = getClass().getClassLoader().getResource(NOTES_ICON);
+    _notesIconLabel = new JLabel();
+    _notesIconLabel.setIcon(new ImageIcon(url1));
+    _notesPanel.add(_notesIconLabel);
+    return notesPane;
+  }
+
   public static void setStatus(String message) {
     statusBar.setText(message);
   }
@@ -197,5 +232,6 @@ public class DebriefLiteApp
     _theToolbar = theBar;
 
   }
+  
   
 }
