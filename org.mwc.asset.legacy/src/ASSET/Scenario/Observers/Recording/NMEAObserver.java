@@ -15,8 +15,10 @@
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import ASSET.NetworkParticipant;
@@ -172,9 +174,15 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     writeToFile(res);
   }
   
+  final static SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+  final static SimpleDateFormat time = new SimpleDateFormat("HHmmss.SSS");
+  
+  
   private static String writeDTG(final long newTime)
   {
-    return null;
+    String res = "$POSL,DZA," + date.format(new Date(newTime)) + "," + time
+        .format(new Date(newTime)) + ",a,b,c,d";
+    return res;
   }
 
   /**
