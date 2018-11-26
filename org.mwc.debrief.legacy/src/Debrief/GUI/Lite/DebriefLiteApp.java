@@ -22,7 +22,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.net.URL;
-import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -39,7 +38,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import Debrief.GUI.Lite.custom.JPanelWithTitleBar;
 import MWC.GUI.Toolbar;
-import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.Swing.SwingToolbar;
 
 /**
@@ -56,7 +54,7 @@ public class DebriefLiteApp
   private JMenuBar theMenuBar;
   private JMenu theMenu;
   private static JLabel statusBar;
-  private JPanelWithTitleBar _timeControllerPanel,_outlinePanel,_graphPanel,_editorPanel;
+  //private JPanelWithTitleBar _timeControllerPanel,_outlinePanel,_graphPanel,_editorPanel;
   private JLabel _notesIconLabel;
   private boolean notesPaneExpanded = false;
   public DebriefLiteApp()
@@ -91,6 +89,7 @@ public class DebriefLiteApp
     final Dimension frameSize = theFrame.getSize();
     final int width = (int)frameSize.getWidth();
     final int height = (int)frameSize.getHeight();
+    JPanelWithTitleBar _timeControllerPanel,_outlinePanel,_graphPanel,_editorPanel;
     _timeControllerPanel = new JPanelWithTitleBar("Time Controller");
     _outlinePanel = new JPanelWithTitleBar("Outline");
     _editorPanel = new JPanelWithTitleBar("Plot Editor");
@@ -190,7 +189,7 @@ public class DebriefLiteApp
     });
 
     // try to give the application an icon
-    final java.net.URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
+    final URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
     if (iconURL != null)
     {
       final ImageIcon myIcon = new ImageIcon(iconURL);
