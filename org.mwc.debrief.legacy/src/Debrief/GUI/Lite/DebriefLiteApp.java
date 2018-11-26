@@ -22,11 +22,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -35,6 +39,8 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import Debrief.GUI.Lite.custom.JPanelWithTitleBar;
 import MWC.GUI.Toolbar;
+import MWC.GUI.Tools.MenuItemInfo;
+import MWC.GUI.Tools.Swing.SwingToolbar;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -48,9 +54,8 @@ public class DebriefLiteApp
   private JFrame theFrame;
   Toolbar _theToolbar;
   private JMenuBar theMenuBar;
-  //private JMenu theMenu;
+  private JMenu theMenu;
   private static JLabel statusBar;
-  
   private JPanelWithTitleBar _timeControllerPanel,_outlinePanel,_graphPanel,_editorPanel;
   private JLabel _notesIconLabel;
   private boolean notesPaneExpanded = false;
@@ -133,6 +138,8 @@ public class DebriefLiteApp
     });
     theFrame.add(splitPane4,BorderLayout.CENTER);
     addStatusBar();
+    //dummy placeholder
+    addMenus();
   }
   
   
@@ -192,8 +199,9 @@ public class DebriefLiteApp
     }
     // create the components
     final MWC.GUI.Tools.Swing.SwingToolbar theToolbar =
-      new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL, "Application", null);
-
+      new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL, "Application", null);  
+    addTools(theToolbar);
+    
     // pass the toolbar back to the parent
     setToolbar(theToolbar);
 
@@ -220,6 +228,22 @@ public class DebriefLiteApp
     // do any final re-arranging
     theFrame.doLayout();
 
+  }
+  
+  private void addTools(SwingToolbar theToolbar) {
+    URL iconURL = getClass().getClassLoader().getResource("images/16/new.png");
+    JButton newFile = new JButton("New");
+    newFile.setIcon(new ImageIcon(iconURL));
+    theToolbar.add(newFile);
+    
+  }
+  
+  private void addMenus() {
+    theMenu = new JMenu("File");
+    theMenu.add(new JMenuItem("New"));
+    theMenu.add(new JMenuItem("Open"));
+    theMenu.add(new JMenuItem("Save"));
+    theMenuBar.add(theMenu);
   }
 
   /**
