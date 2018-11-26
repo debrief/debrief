@@ -21,7 +21,7 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="elapsed time" Active="true">
-			<Duration Value="10" Units="minutes" />
+			<Duration Value="800" Units="minutes" ></Duration>
 		</TimeObserver>
 		<DebriefReplayObserver Name="DebriefPlot"
 			record_detections="true" record_positions="true" Active="true"
