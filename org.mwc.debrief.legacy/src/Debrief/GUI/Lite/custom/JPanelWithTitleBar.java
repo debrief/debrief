@@ -87,11 +87,11 @@ public class JPanelWithTitleBar extends JPanel
   }
   */
   
-  public void setTitle(String title) {
+  public void setTitle(final String title) {
     _titleLabel.setText(title);
   }
 
-  public void addMaxListenerFor(JSplitPane pane, JSplitPane pane2)
+  public void addMaxListenerFor(final JSplitPane pane, final JSplitPane pane2)
   {
     
     addMouseListener(new MouseAdapter()
@@ -118,7 +118,7 @@ public class JPanelWithTitleBar extends JPanel
     
   }
   
-  public void addMinListenerFor(JSplitPane pane2)
+  public void addMinListenerFor(final JSplitPane pane2)
   {
     
     addMouseListener(new MouseAdapter()
