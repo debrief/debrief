@@ -50,7 +50,7 @@ public class DebriefLiteApp
   public static final String appName="Debrief Lite";
   public static final String NOTES_ICON="images/16/note.png";
   private JFrame theFrame;
-  Toolbar _theToolbar;
+  //private Toolbar _theToolbar;
   private JMenuBar theMenuBar;
   private JMenu theMenu;
   private static JLabel statusBar;
@@ -202,7 +202,7 @@ public class DebriefLiteApp
     addTools(theToolbar);
     
     // pass the toolbar back to the parent
-    setToolbar(theToolbar);
+//    setToolbar(theToolbar);
 
     // and the panel
     final JPanel topSection = new JPanel();
@@ -248,13 +248,13 @@ public class DebriefLiteApp
   /**
    * @param theBar
    *          autofilled
-   */
+   *//*
   protected final void setToolbar(final Toolbar theBar)
   {
     // store this locally
     _theToolbar = theBar;
 
-  }
+  }*/
   
   
 }
