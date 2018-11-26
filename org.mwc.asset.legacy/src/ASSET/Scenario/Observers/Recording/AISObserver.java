@@ -63,11 +63,11 @@ public class AISObserver extends RecordStatusToFileObserverType
    */
   public AISObserver(final String directoryName,
       final String fileName, final boolean recordDetections,
-      final boolean recordDecisions, final boolean recordPositions,
+      final boolean recordPositions,
       final TargetType subjectToTrack, final String observerName,
       boolean isActive)
   {
-    super(directoryName, fileName, recordDetections, recordDecisions,
+    super(directoryName, fileName, recordDetections, false,
         recordPositions, subjectToTrack, observerName, isActive);
   }
 

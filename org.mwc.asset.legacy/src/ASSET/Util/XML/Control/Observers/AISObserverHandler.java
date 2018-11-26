@@ -35,13 +35,11 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
 
   private boolean _recordDetections = false;
   private boolean _recordPositions = false;
-  private boolean _recordDecisions = false;
   private TargetType _targetType = null;
   final private List<String> _formatHelpers = new ArrayList<String>();
   private String _subjectSensor = null;
 
   private static final String RECORD_DETECTIONS = "record_detections";
-  private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
   private static final String TARGET_TYPE = "SubjectToTrack";
   private static final String SUBJECT_SENSOR = "SubjectSensor";
@@ -62,13 +60,6 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
       public void setValue(String name, final String val)
       {
         _subjectSensor = val;
-      }
-    });
-    addAttributeHandler(new HandleBooleanAttribute(RECORD_DECISIONS)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _recordDecisions = val;
       }
     });
     addAttributeHandler(new HandleBooleanAttribute(RECORD_POSITIONS)
@@ -105,7 +96,7 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
   {
     // create ourselves
     final AISObserver debriefObserver =
-        getObserver(_name, _isActive, _recordDetections, _recordDecisions,
+        getObserver(_name, _isActive, _recordDetections,
             _recordPositions, _targetType, _formatHelpers);
     
     if(_subjectSensor != null)
@@ -120,7 +111,6 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
 
     // and clear the data
     _recordDetections = false;
-    _recordDecisions = false;
     _recordPositions = true;
     _targetType = null;
     _subjectSensor = null;
@@ -130,11 +120,11 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
   }
 
   protected AISObserver getObserver(String name, boolean isActive,
-      boolean recordDetections, boolean recordDecisions,
-      boolean recordPositions, TargetType subject, List<String> formatHelpers)
+      boolean recordDetections, boolean recordPositions, TargetType subject,
+      List<String> formatHelpers)
   {
     return new AISObserver(_directory, _fileName, recordDetections,
-        recordDecisions, recordPositions, subject, name, isActive);
+        recordPositions, subject, name, isActive);
   }
 
   abstract public void setObserver(ScenarioObserver obs);
@@ -154,7 +144,6 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
     // output it's attributes
     thisPart.setAttribute(RECORD_DETECTIONS,
         writeThis(bb.getRecordDetections()));
-    thisPart.setAttribute(RECORD_DECISIONS, writeThis(bb.getRecordDecisions()));
     thisPart.setAttribute(RECORD_POSITIONS, writeThis(bb.getRecordPositions()));
     if (bb.getSubjectToTrack() != null)
     {
