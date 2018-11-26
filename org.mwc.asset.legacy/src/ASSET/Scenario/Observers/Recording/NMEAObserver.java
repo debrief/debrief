@@ -15,6 +15,7 @@
 package ASSET.Scenario.Observers.Recording;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,9 +37,24 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
+import junit.framework.TestCase;
+import sun.rmi.runtime.Log;
 
 public class NMEAObserver extends RecordStatusToFileObserverType
 {
+  
+  public static class TestConvert extends TestCase
+  {
+    public static void testPack()
+    {
+      assertEquals("valid string", "0000.0000", pack(0 , true));
+      assertEquals("valid string", "00000.0000", pack(0, false));
+
+      assertEquals("valid string", "4530.0000", pack(45.5 , true));
+      assertEquals("valid string", "04530.0000", pack(45.5, false));
+}
+  }
 
   protected boolean _haveOutputPositions = false;
 
@@ -81,50 +97,29 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    * @param newTime
    * @return
    */
-  static public String writeDetailsToBuffer(
+  static public String writeStatus(
       final MWC.GenericData.WorldLocation loc,
       final ASSET.Participants.Status stat, final NetworkParticipant pt,
       long newTime)
   {
-
-    StringBuffer buff = new StringBuffer();
-
-    final String locStr =
-        MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(loc);
-
-    long theTime = stat.getTime();
-
-    if (theTime == TimePeriod.INVALID_TIME)
-      theTime = newTime;
-
-    final String dateStr =
-        MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(theTime);
-
-    // which force is it?
-    final String force = pt.getCategory().getForce();
-
-    // get the symbol type
-    String col = colorFor(force);
-
-    // wrap the vessel name if we have to
-    String theName = wrapName(pt.getName());
-
-    buff.append(dateStr);
-    buff.append(" ");
-    buff.append(theName);
-    buff.append(" ");
-    buff.append(col);
-    buff.append(" ");
-    buff.append(locStr);
-    buff.append(" ");
-    buff.append(df.format(stat.getCourse()));
-    buff.append(" ");
-    buff.append(df.format(stat.getSpeed().getValueIn(WorldSpeed.Kts)));
-    buff.append(" ");
-    buff.append(df.format(loc.getDepth()));
-    buff.append(System.getProperty("line.separator"));
-
-    return buff.toString();
+    final double dLat = loc.getLat();
+    final double dLong = loc.getLong();
+    String res = "$POSL,POS,GPS," + pack(dLat, true)  + "," + pack(dLong, false) + ",a,b,c,d" + LB;
+    return res;
+  }
+  
+  final static String pack(double val, boolean isLat)
+  {
+    final int intPart = (int) Math.floor(val);
+    final double floatPart = (val - intPart) * 60d;
+    DecimalFormat p1 = new DecimalFormat("00");
+    DecimalFormat p2 = new DecimalFormat("000");
+    DecimalFormat p3 = new DecimalFormat("00.0000");
+    
+    String degs = isLat ? p1.format(intPart) : p2.format(intPart);
+    String other = p3.format(floatPart);
+    
+    return degs + other;
   }
 
   public String getSubjectSensor()
@@ -169,21 +164,53 @@ public class NMEAObserver extends RecordStatusToFileObserverType
 
     // ok, we output DTG for all entries
     writeToFile(writeDTG(newTime));
-    
-    String res = writeDetailsToBuffer(loc, stat, pt, newTime);
-    writeToFile(res);
+
+    // course
+    if(Math.random() <= 0.6)
+    {
+      String res = writeCourse(stat.getCourse());
+      writeToFile(res);
+    }
+
+    // speed
+    if(Math.random() <= 0.5)
+    {
+      String res = writeSpeed(stat.getSpeed().getValueIn(WorldSpeed.M_sec));
+      writeToFile(res);
+    }
+
+    // position
+    if(Math.random()  <= 0.3)
+    {
+      String res = writeStatus(loc, stat, pt, newTime);
+      writeToFile(res);
+    }
   }
   
   final static SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
   final static SimpleDateFormat time = new SimpleDateFormat("HHmmss.SSS");
+  final static String LB = System.getProperty("line.separator");
   
   
   private static String writeDTG(final long newTime)
   {
     String res = "$POSL,DZA," + date.format(new Date(newTime)) + "," + time
-        .format(new Date(newTime)) + ",a,b,c,d";
+        .format(new Date(newTime)) + ",a,b,c,d" + LB;
     return res;
   }
+  
+  private static String writeCourse(final double courseDegs)
+  {
+    String res = "$POSL,HDG," + courseDegs + ",a,b,c,d" + LB;
+    return res;
+  }
+
+  private static String writeSpeed(final double speedMs)
+  {
+    String res = "$POSL,VEL,SPL,a,b,c," + speedMs + ",a,b,c,d" + LB;
+    return res;
+  }
+
 
   /**
    * write this text to our stream
@@ -247,29 +274,21 @@ public class NMEAObserver extends RecordStatusToFileObserverType
         }
           
 
-        // hmm, do we have freq?
-        if (de.getFreq() != null || de.isAmbiguous())
-        {
-          Float ambig = null;
-          if (de.isAmbiguous())
-          {
-            ambig = (float) de.getAmbiguousBearing();
-          }
+        final double brg = de.getBearing();
+        final double rng = de.getRange().getValueIn(WorldDistance.DEGS);
+        WorldVector offset = new WorldVector(brg, rng, 0d);
+        WorldLocation loc = de.getSensorLocation().add(offset);
+        writeToFile(writeTargetLocation(loc, de.getTarget()));
+        
 
-          outputThisDetection2(de.getSensorLocation(),
-              de.getTime(), pt.getName(), pt.getCategory(), de
-              .getBearing(), ambig, de.getRange(), safeSensorName, de.toString(),
-              de.getFreq());
-
-        }
-        else
-        {
-          outputThisDetection(de.getSensorLocation(), de.getTime(), pt
-              .getName(), pt.getCategory(), de.getBearing(), de.getRange(),
-              safeSensorName, de.toString());
-        }
       }
     }
+  }
+
+  private static String writeTargetLocation(WorldLocation loc, int target)
+  {    
+    String res = "$POSL,AIS,SPL,a,b,c," + loc + ",a,b,c,d" + LB;
+    return res;
   }
 
   /**
