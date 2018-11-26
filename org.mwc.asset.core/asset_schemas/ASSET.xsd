@@ -199,7 +199,7 @@
 			<xs:element name="PlotInvestigationSubjectObserver" type="PlotInvestigationSubjectObserverType" />
 			<xs:element name="CloudObserver" type="CloudObserverType" />
 			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType" />
-			<xs:element name="AISObserver" type="AISObserverType" />
+			<xs:element name="NMEAObserver" type="NMEAObserverType" />
 			<xs:element name="CSVStatusObserver" type="CSVStatusObserverType" />
 			<xs:element name="CSVDetectionObserver" type="CSVDetectionObserverType" />
 			<xs:element name="DebriefDeployableSensorLocationObserver"
@@ -4150,7 +4150,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:complexType name="AISObserverType">
+	<xs:complexType name="NMEAObserverType">
 		<xs:annotation>
 			<xs:documentation>Produce a AIS data-file of the indicated
 				target(s)

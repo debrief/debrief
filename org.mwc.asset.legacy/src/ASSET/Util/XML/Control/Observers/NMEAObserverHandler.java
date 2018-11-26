@@ -21,17 +21,17 @@ import org.w3c.dom.Element;
 
 import ASSET.Models.Decision.TargetType;
 import ASSET.Scenario.Observers.ScenarioObserver;
-import ASSET.Scenario.Observers.Recording.AISObserver;
+import ASSET.Scenario.Observers.Recording.NMEAObserver;
 import ASSET.Scenario.Observers.Recording.DebriefFormatHelperHandler;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
 /**
  * read in a debrief replay observer from file
  */
-abstract class AISObserverHandler extends CoreFileObserverHandler
+abstract class NMEAObserverHandler extends CoreFileObserverHandler
 {
 
-  private final static String type = "AISObserver";
+  private final static String type = "NMEAObserver";
 
   private boolean _recordDetections = false;
   private boolean _recordPositions = false;
@@ -44,7 +44,7 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
   private static final String TARGET_TYPE = "SubjectToTrack";
   private static final String SUBJECT_SENSOR = "SubjectSensor";
 
-  public AISObserverHandler(String type)
+  public NMEAObserverHandler(String type)
   {
     super(type);
 
@@ -87,7 +87,7 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
     });
   }
 
-  public AISObserverHandler()
+  public NMEAObserverHandler()
   {
     this(type);
   }
@@ -95,7 +95,7 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
   public void elementClosed()
   {
     // create ourselves
-    final AISObserver debriefObserver =
+    final NMEAObserver debriefObserver =
         getObserver(_name, _isActive, _recordDetections,
             _recordPositions, _targetType, _formatHelpers);
     
@@ -119,11 +119,11 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
     _formatHelpers.clear();
   }
 
-  protected AISObserver getObserver(String name, boolean isActive,
+  protected NMEAObserver getObserver(String name, boolean isActive,
       boolean recordDetections, boolean recordPositions, TargetType subject,
       List<String> formatHelpers)
   {
-    return new AISObserver(_directory, _fileName, recordDetections,
+    return new NMEAObserver(_directory, _fileName, recordDetections,
         recordPositions, subject, name, isActive);
   }
 
@@ -136,7 +136,7 @@ abstract class AISObserverHandler extends CoreFileObserverHandler
     final Element thisPart = doc.createElement(type);
 
     // get data item
-    final AISObserver bb = (AISObserver) toExport;
+    final NMEAObserver bb = (NMEAObserver) toExport;
 
     // output the parent ttributes
     CoreFileObserverHandler.exportThis(bb, thisPart);

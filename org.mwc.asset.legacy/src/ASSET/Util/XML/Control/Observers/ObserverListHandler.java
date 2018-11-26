@@ -90,7 +90,7 @@ import ASSET.Scenario.Observers.TrackPlotObserver;
 import ASSET.Scenario.Observers.Plotting.PlotDetectionStatusObserver;
 import ASSET.Scenario.Observers.Plotting.PlotInvestigationSubjectObserver;
 import ASSET.Scenario.Observers.Plotting.PlotSensorObserver;
-import ASSET.Scenario.Observers.Recording.AISObserver;
+import ASSET.Scenario.Observers.Recording.NMEAObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportDetectionsObserver;
 import ASSET.Scenario.Observers.Recording.CSVExportStatusObserver;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
@@ -151,7 +151,7 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       }
     });
 
-    addHandler(new AISObserverHandler()
+    addHandler(new NMEAObserverHandler()
     {
       public void setObserver(final ScenarioObserver obs)
       {
@@ -360,9 +360,9 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       {
         DebriefReplayObserverHandler.exportThis(observer, sens, doc);
       }
-      else if (observer instanceof AISObserver)
+      else if (observer instanceof NMEAObserver)
       {
-        AISObserverHandler.exportThis(observer, sens, doc);
+        NMEAObserverHandler.exportThis(observer, sens, doc);
       }
       else if (observer instanceof TrackPlotObserver)
       {

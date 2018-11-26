@@ -35,7 +35,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
 
-public class AISObserver extends RecordStatusToFileObserverType
+public class NMEAObserver extends RecordStatusToFileObserverType
 {
 
   protected boolean _haveOutputPositions = false;
@@ -61,7 +61,7 @@ public class AISObserver extends RecordStatusToFileObserverType
    *          whether to record detections
    * @param formatHelpers
    */
-  public AISObserver(final String directoryName,
+  public NMEAObserver(final String directoryName,
       final String fileName, final boolean recordDetections,
       final boolean recordPositions,
       final TargetType subjectToTrack, final String observerName,
@@ -165,8 +165,16 @@ public class AISObserver extends RecordStatusToFileObserverType
     // (and are now happy to output sensor data)
     _haveOutputPositions = true;
 
+    // ok, we output DTG for all entries
+    writeToFile(writeDTG(newTime));
+    
     String res = writeDetailsToBuffer(loc, stat, pt, newTime);
     writeToFile(res);
+  }
+  
+  private static String writeDTG(final long newTime)
+  {
+    return null;
   }
 
   /**
@@ -286,7 +294,7 @@ public class AISObserver extends RecordStatusToFileObserverType
    */
   protected Editable.EditorType createEditor()
   {
-    return new AISObserver.DebriefReplayInfo(this);
+    return new NMEAObserver.DebriefReplayInfo(this);
   }
 
   protected String newName(final String name)
@@ -641,7 +649,7 @@ public class AISObserver extends RecordStatusToFileObserverType
      * @param data
      *          the Layers themselves
      */
-    public DebriefReplayInfo(final AISObserver data)
+    public DebriefReplayInfo(final NMEAObserver data)
     {
       super(data, data.getName(), "Edit");
     }
