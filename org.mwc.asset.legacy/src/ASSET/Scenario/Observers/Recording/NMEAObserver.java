@@ -227,7 +227,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
   protected void writeFileHeaderDetails(final String title,
       final long currentDTG) throws IOException
   {
-    _os.write("$POSL" + LB);
+    _os.write("$POSL,DUMMY,DUMMY DATAFILE TO TEST NMEA IMPORT" + LB);
   }
 
   private String writeSpeed(final double speedMs)
@@ -278,9 +278,9 @@ public class NMEAObserver extends RecordStatusToFileObserverType
 
       // do we have a sensor name specified?
       if ((_subjectSensor == null || _subjectSensor.equals(sensorName)) && Math
-          .random() <= 0.2)
+          .random() <= 0.1)
       {
-        final double brg = de.getBearing();
+        final double brg = MWC.Algorithms.Conversions.Degs2Rads(de.getBearing());
         final double rng = de.getRange().getValueIn(WorldDistance.DEGS);
         final WorldVector offset = new WorldVector(brg, rng, 0d);
         final WorldLocation loc = de.getSensorLocation().add(offset);
