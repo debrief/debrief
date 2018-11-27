@@ -97,16 +97,11 @@ abstract class NMEAObserverHandler extends CoreFileObserverHandler
     // create ourselves
     final NMEAObserver debriefObserver =
         getObserver(_name, _isActive, _recordDetections,
-            _recordPositions, _targetType, _formatHelpers);
-    
-    if(_subjectSensor != null)
-    {
-      debriefObserver.setSubjectSensor(_subjectSensor);
-    }
+            _recordPositions, _targetType, _formatHelpers, _subjectSensor);
     
     setObserver(debriefObserver);
 
-    // close the parenet
+    // close the parent
     super.elementClosed();
 
     // and clear the data
@@ -121,10 +116,10 @@ abstract class NMEAObserverHandler extends CoreFileObserverHandler
 
   protected NMEAObserver getObserver(String name, boolean isActive,
       boolean recordDetections, boolean recordPositions, TargetType subject,
-      List<String> formatHelpers)
+      List<String> formatHelpers, final String subjectSensor)
   {
     return new NMEAObserver(_directory, _fileName, recordDetections,
-        recordPositions, subject, name, isActive);
+        recordPositions, subject, name, isActive, subjectSensor);
   }
 
   abstract public void setObserver(ScenarioObserver obs);

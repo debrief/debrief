@@ -14,11 +14,11 @@
  */
 package ASSET.Scenario.Observers.Recording;
 
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -29,11 +29,10 @@ import ASSET.Models.SensorType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.Participants.Status;
 import MWC.GUI.Editable;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import junit.framework.TestCase;
@@ -67,7 +66,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    * the (optional) type of sensor we listen to
    * 
    */
-  private String _subjectSensor;
+  private final String _subjectSensor;
 
   /***************************************************************
    * constructor
@@ -80,15 +79,17 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    *          the directory to output the plots to
    * @param recordDetections
    *          whether to record detections
+   * @param subjectSensor 
    * @param formatHelpers
    */
   public NMEAObserver(final String directoryName, final String fileName,
       final boolean recordDetections, final boolean recordPositions,
       final TargetType subjectToTrack, final String observerName,
-      boolean isActive)
+      final boolean isActive, final String subjectSensor)
   {
     super(directoryName, fileName, recordDetections, false, recordPositions,
         subjectToTrack, observerName, isActive);
+    _subjectSensor = subjectSensor;
   }
    /**
    * 
@@ -98,8 +99,8 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    * @param newTime
    * @return
    */
-  static public String writeStatus(final MWC.GenericData.WorldLocation loc,
-      final ASSET.Participants.Status stat, final NetworkParticipant pt,
+  private String writeStatus(final WorldLocation loc,
+      final Status stat, final NetworkParticipant pt,
       long newTime)
   {
     final double dLat = loc.getLat();
@@ -109,7 +110,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     return res;
   }
 
-  final static String pack(double val, boolean isLat)
+  private final static String pack(double val, boolean isLat)
   {
     boolean isPos = val >= 0;
     double aVal = Math.abs(val);
@@ -136,16 +137,6 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     return degs + other + "," + hemi;
   }
 
-  public String getSubjectSensor()
-  {
-    return _subjectSensor;
-  }
-
-  public void setSubjectSensor(final String subjectSensor)
-  {
-    this._subjectSensor = subjectSensor;
-  }
-
   @Override
   public void restart(ScenarioType scenario)
   {
@@ -155,20 +146,8 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     _recordedDetections.clear();
   }
 
-  /**
-   * method to replace spaces in the vessel name with underscores
-   * 
-   * @param name
-   * @return
-   */
-  private static String wrapName(String name)
-  {
-    String res = name.replace(' ', '_');
-    return res;
-  }
-
-  public void writeThesePositionDetails(final MWC.GenericData.WorldLocation loc,
-      final ASSET.Participants.Status stat, final ASSET.ParticipantType pt,
+  public void writeThesePositionDetails(final WorldLocation loc,
+      final Status stat, final ParticipantType pt,
       long newTime)
   {
     // make a note that we've output some track positions now
@@ -200,24 +179,24 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     }
   }
 
-  final static SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
-  final static SimpleDateFormat time = new SimpleDateFormat("HHmmss.SSS");
-  final static String LB = System.getProperty("line.separator");
+  final private SimpleDateFormat date = new SimpleDateFormat("yyyyMMdd");
+  final private SimpleDateFormat time = new SimpleDateFormat("HHmmss.SSS");
+  final private String LB = System.getProperty("line.separator");
 
-  private static String writeDTG(final long newTime)
+  private String writeDTG(final long newTime)
   {
     String res = "$POSL,DZA," + date.format(new Date(newTime)) + "," + time
         .format(new Date(newTime)) + ",a,b,c,d" + LB;
     return res;
   }
 
-  private static String writeCourse(final double courseDegs)
+  private String writeCourse(final double courseDegs)
   {
     String res = "$POSL,HDG," + courseDegs + ",a,b,c,d" + LB;
     return res;
   }
 
-  private static String writeSpeed(final double speedMs)
+  private String writeSpeed(final double speedMs)
   {
     String res = "$POSL,VEL,SPL,a,b,c," + speedMs + ",a,b,c,d" + LB;
     return res;
@@ -271,51 +250,24 @@ public class NMEAObserver extends RecordStatusToFileObserverType
       final String sensorName = sensor.getName();
 
       // do we have a sensor name specified?
-      if (_subjectSensor == null || _subjectSensor.equals(sensorName))
+      if ((_subjectSensor == null || _subjectSensor.equals(sensorName)) && Math
+          .random() <= 0.2)
       {
-
-        // position
-        if (Math.random() <= 0.2)
-        {
-
-          final double brg = de.getBearing();
-          final double rng = de.getRange().getValueIn(WorldDistance.DEGS);
-          WorldVector offset = new WorldVector(brg, rng, 0d);
-          WorldLocation loc = de.getSensorLocation().add(offset);
-          writeToFile(writeAISContact(loc, de.getTarget()));
-        }
+        final double brg = de.getBearing();
+        final double rng = de.getRange().getValueIn(WorldDistance.DEGS);
+        WorldVector offset = new WorldVector(brg, rng, 0d);
+        WorldLocation loc = de.getSensorLocation().add(offset);
+        writeToFile(writeAISContact(loc, de.getTarget()));
       }
     }
   }
 
-  private static String writeAISContact(WorldLocation loc, int target)
+  private String writeAISContact(WorldLocation loc, int target)
   {
     int MMSI = 100000 + target;
     String res = "$POSL,AIS," + MMSI + "," + pack(loc.getLat(), true) + ","
         + pack(loc.getLong(), false) + ",a,b,c,a,b,AIS1,c,d" + LB;
     return res;
-  }
-
-  /**
-   * write the current decision description to file
-   * 
-   * @param pt
-   *          the participant we're looking at
-   * @param activity
-   *          a description of the current activity
-   * @param dtg
-   *          the dtg at which the description was recorded
-   */
-  protected void writeThisDecisionDetail(NetworkParticipant pt, String activity,
-      long dtg)
-  {
-    // To change body of implemented methods use File | Settings | File
-    // Templates.
-    String msg = ";NARRATIVE2: "
-        + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg) + " "
-        + wrapName(pt.getName()) + " DECISION " + activity + System.getProperty(
-            "line.separator");
-    writeToFile(msg);
   }
 
   /**
@@ -325,13 +277,13 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    */
   protected Editable.EditorType createEditor()
   {
-    return new NMEAObserver.DebriefReplayInfo(this);
+    return new NMEAObserver.NMEAObserverInfo(this);
   }
 
   protected String newName(final String name)
   {
     return name + "_" + MWC.Utilities.TextFormatting.DebriefFormatDateTime
-        .toString(System.currentTimeMillis()) + ".rep";
+        .toString(System.currentTimeMillis()) + ".log";
   }
 
   /**
@@ -361,68 +313,11 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    */
   protected void writeBuildDate(String theBuildDate) throws IOException
   {
+    // ok, skip.
   }
 
-  /**
-   * output this series of locations
-   * 
-   * @param thePath
-   */
-  public void outputTheseLocations(WorldPath thePath)
-  {
-    Collection<WorldLocation> pts = thePath.getPoints();
-    int counter = 0;
-    for (Iterator<WorldLocation> iterator = pts.iterator(); iterator.hasNext();)
-    {
-      WorldLocation location = (WorldLocation) iterator.next();
-      outputThisLocation(location, _os, "p:" + ++counter);
-    }
-  }
 
-  private static void outputThisLocation(WorldLocation loc,
-      java.io.OutputStreamWriter os, String message)
-  {
-    String locStr = MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(
-        loc);
-    String msg = ";TEXT: AA " + locStr + " " + message + System.getProperty(
-        "line.separator");
-    try
-    {
-      os.write(msg);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace(); // To change body of catch statement use Options |
-                           // File Templates.
-    }
-  }
-
-  public void outputThisArea(WorldArea area)
-  {
-    String topLeft = MWC.Utilities.TextFormatting.DebriefFormatLocation
-        .toString(area.getTopLeft());
-    String botRight = MWC.Utilities.TextFormatting.DebriefFormatLocation
-        .toString(area.getBottomRight());
-    // String msg = ";TEXT: AA " + locStr + " " + message +
-    // System.getProperty("line.separator");
-    String msg = ";RECT: @@ " + topLeft + " " + botRight + " some area "
-        + System.getProperty("line.separator");
-    try
-    {
-      // check our output file is created
-      if (_os == null)
-        super.createOutputFile();
-
-      super._os.write(msg);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace(); // To change body of catch statement use Options |
-                           // File Templates.
-    }
-  }
-
-  static public class DebriefReplayInfo extends MWC.GUI.Editable.EditorType
+  static public class NMEAObserverInfo extends Editable.EditorType
   {
 
     /**
@@ -431,7 +326,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
      * @param data
      *          the Layers themselves
      */
-    public DebriefReplayInfo(final NMEAObserver data)
+    public NMEAObserverInfo(final NMEAObserver data)
     {
       super(data, data.getName(), "Edit");
     }
@@ -445,7 +340,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     {
       try
       {
-        final java.beans.PropertyDescriptor[] res =
+        final PropertyDescriptor[] res =
         {prop("Directory", "The directory to place Debrief data-files"), prop(
             "Active", "Whether this observer is active"),};
 
@@ -457,5 +352,13 @@ public class NMEAObserver extends RecordStatusToFileObserverType
       }
     }
 
+  }
+
+
+  @Override
+  protected void writeThisDecisionDetail(NetworkParticipant pt, String activity,
+      long dtg)
+  {
+    throw new IllegalArgumentException("Not implemented for NMEA export");
   }
 }
