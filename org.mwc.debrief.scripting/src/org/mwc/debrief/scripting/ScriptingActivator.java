@@ -10,7 +10,7 @@ public class ScriptingActivator extends AbstractUIPlugin implements
 
   private static BundleContext context;
 
-  static BundleContext getContext()
+  static protected BundleContext getContext()
   {
     return context;
   }
