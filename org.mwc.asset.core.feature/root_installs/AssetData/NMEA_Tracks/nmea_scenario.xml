@@ -2,7 +2,7 @@
 <Scenario Name="NMEA_Data_Generator" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="false" ShowName="false"
 	StartTime="2016-11-05T15:00:00">
-	<StepTime Units="seconds" Value="15" />
+	<StepTime Units="seconds" Value="2" />
 	<Participants>
 		<Surface Name="GreenFV1">
 			<Category Type="FISHING_VESSEL" Force="GREEN"
