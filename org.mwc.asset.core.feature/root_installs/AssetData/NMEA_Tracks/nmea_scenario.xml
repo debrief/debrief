@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="RB_mini_scenario" xmlns="http://www.mwc.org/asset"
+<Scenario Name="NMEA_Data_Generator" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="false" ShowName="false"
 	StartTime="2016-11-05T15:00:00">
-	<StepTime Units="seconds" Value="5" />
+	<StepTime Units="seconds" Value="15" />
 	<Participants>
 		<Surface Name="GreenFV1">
 			<Category Type="FISHING_VESSEL" Force="GREEN"
@@ -45,7 +45,7 @@
 					</DetectionRange>
 				</PlainCookieSensor>
 			</SensorFit>
-			<Status Course="99" Fuel="100">
+			<Status Course="200" Fuel="100">
 				<Location>
 					<shortLocation Lat="10.5" Long="10.5"></shortLocation>
 				</Location>
