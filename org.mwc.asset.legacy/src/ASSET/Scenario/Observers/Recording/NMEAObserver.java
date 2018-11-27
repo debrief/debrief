@@ -14,6 +14,7 @@
  */
 package ASSET.Scenario.Observers.Recording;
 
+import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -99,9 +100,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
    * @param newTime
    * @return
    */
-  private String writeStatus(final WorldLocation loc,
-      final Status stat, final NetworkParticipant pt,
-      long newTime)
+  private String writeStatus(final WorldLocation loc)
   {
     final double dLat = loc.getLat();
     final double dLong = loc.getLong();
@@ -174,7 +173,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
     // position
     if (Math.random() <= 0.3)
     {
-      String res = writeStatus(loc, stat, pt, newTime);
+      String res = writeStatus(loc);
       writeToFile(res);
     }
   }
@@ -317,7 +316,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
   }
 
 
-  static public class NMEAObserverInfo extends Editable.EditorType
+  static public class NMEAObserverInfo extends EditorType
   {
 
     /**
@@ -336,7 +335,7 @@ public class NMEAObserver extends RecordStatusToFileObserverType
      * 
      * @return property descriptions
      */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
+    public PropertyDescriptor[] getPropertyDescriptors()
     {
       try
       {
@@ -346,12 +345,11 @@ public class NMEAObserver extends RecordStatusToFileObserverType
 
         return res;
       }
-      catch (java.beans.IntrospectionException e)
+      catch (IntrospectionException e)
       {
         return super.getPropertyDescriptors();
       }
     }
-
   }
 
 
