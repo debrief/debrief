@@ -1,14 +1,14 @@
 #!/bin/bash
 #Path to the folder with wixl executables
-WIXLDIR=/root/msitools-0.98/
+WIXLDIR=/usr/bin/
 #Path to the folder with the compiled Debrief sources
-DEBRIEFDIR=/root/x64/DebriefNG/
+DEBRIEFDIR=org.mwc.debrief.product/target/products/DebriefNG/win32/win32/x86_64/DebriefNG/
 #Path to the main wixl harvest folder
-SOURCEDIR=/usr/local/wixl/DebriefNG/
+SOURCEDIR=msi/src/
 #Path to the wixl resouces folder
-RESOURCESDIR=/usr/local/wixl/Resources/
+RESOURCESDIR=msi/resources/
 #Path to the wixl working folder
-WORKDIR=/usr/local/wixl/
+WORKDIR=msi/
 
 echo "Clearing the sources folder."
 rm -rf ${SOURCEDIR}
@@ -32,5 +32,7 @@ echo "Done."
 
 echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -a x64 -v ${WORKDIR}Debrief64.wxs ${WORKDIR}harvest.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
+
+mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
 echo "Done."
-echo "Script has completed successfully."
+echo "MSI 64 bits has been created successfully."

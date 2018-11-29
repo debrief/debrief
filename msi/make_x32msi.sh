@@ -35,4 +35,4 @@ ${WIXLDIR}wixl -v ${WORKDIR}harvest.wxs ${WORKDIR}Debrief32.wxs -D SourceDir=${S
 
 mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
 echo "Done."
-echo "MSI has been created successfully."
+echo "MSI 32 bits has been created successfully."
