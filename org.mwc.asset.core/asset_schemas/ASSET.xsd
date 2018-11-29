@@ -199,6 +199,7 @@
 			<xs:element name="PlotInvestigationSubjectObserver" type="PlotInvestigationSubjectObserverType" />
 			<xs:element name="CloudObserver" type="CloudObserverType" />
 			<xs:element name="DebriefReplayObserver" type="DebriefReplayObserverType" />
+			<xs:element name="NMEAObserver" type="NMEAObserverType" />
 			<xs:element name="CSVStatusObserver" type="CSVStatusObserverType" />
 			<xs:element name="CSVDetectionObserver" type="CSVDetectionObserverType" />
 			<xs:element name="DebriefDeployableSensorLocationObserver"
@@ -4143,6 +4144,60 @@
 					use="optional">
 					<xs:annotation>
 						<xs:documentation>Whether to put tracks into a target folder
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="NMEAObserverType">
+		<xs:annotation>
+			<xs:documentation>Produce a AIS data-file of the indicated
+				target(s)
+			</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited,
+				SubjectToTrack.
+				Editable: inherited
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreFileObserverType">
+				<xs:sequence>
+					<xs:element name="SubjectToTrack" type="TargetTypeType"
+						minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>The type of target we want to record a
+								narrative full
+								(or omit to record all)
+							</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="record_detections" type="xs:boolean"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to record detections to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="PlotSensorLocation" type="xs:boolean"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Whether to include sensor location (or just use "NULL")
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="record_positions" type="xs:boolean"
+					use="required">
+					<xs:annotation>
+						<xs:documentation>Whether to record positions to file
+						</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
+				<xs:attribute name="SubjectSensor" type="xs:string"
+					use="optional">
+					<xs:annotation>
+						<xs:documentation>Which specific sensor to listen to
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
