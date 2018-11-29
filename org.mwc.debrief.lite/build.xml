@@ -7,8 +7,8 @@
     <property environment="env"/>
     <property name="ECLIPSE_HOME" value="../../../eclipse/"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.5"/>
-    <property name="source" value="1.5"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
     <path id="Maven Dependencies.libraryclasspath"/>
     
     <path id="debrief-lite.classpath">
@@ -82,12 +82,12 @@
         </unzip>
     </target>
    
-     <!--         	
+              	
     <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
         <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
         
     </target>
-     -->
+     
               	
     <target name="TestFrame" depends = "build-project">
     	
