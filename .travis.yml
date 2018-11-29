@@ -25,7 +25,7 @@ before_script:
 script: mvn clean verify -U -B -fae
 after_success:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
-- ./build-msi.sh
+- ./msi/make_x32msi.sh
 deploy:
   provider: releases
   skip_cleanup: true
