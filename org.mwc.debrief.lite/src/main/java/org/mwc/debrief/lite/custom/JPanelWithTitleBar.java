@@ -36,78 +36,64 @@ public class JPanelWithTitleBar extends JPanel
 {
 
   /**
-   * 
+   *
    */
-  private static final Color titleColor = new Color(0,0,180);
+  private static final Color titleColor = new Color(0, 0, 180);
   private static final long serialVersionUID = 1L;
-  
-  private JLabel _titleLabel;
-  private boolean minimize=false;
+
+  private final JLabel _titleLabel;
+  private boolean minimize = false;
+
   public JPanelWithTitleBar(final String title)
   {
-    setLayout(new BorderLayout());  
-    setBorder(new CompoundBorder(new EmptyBorder(0,0,0,0), new MatteBorder(1, 1, 1, 1, Color.BLACK)));
+    setLayout(new BorderLayout());
+    setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new MatteBorder(1,
+        1, 1, 1, Color.BLACK)));
     _titleLabel = new JLabel(title);
     _titleLabel.setFont(_titleLabel.getFont().deriveFont(Font.BOLD));
     _titleLabel.setBackground(titleColor);
     _titleLabel.setForeground(Color.WHITE);
     _titleLabel.setOpaque(true);
-    add(_titleLabel,BorderLayout.WEST);
-    
+    add(_titleLabel, BorderLayout.WEST);
+
     setBackground(titleColor);
-    
-    
+
   }
-  
- /* public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {
-    addMouseListener(new MouseAdapter()
-    {
-      
-      @Override
-      public void mouseClicked(MouseEvent e)
-      {
-        
-        minimize=!minimize;
-        toggle(splitPane,minimize?!maximize:maximize);
-      }
-    });
-  }
- 
-  
-  public void toggle(JSplitPane pane,boolean collapse) {
-    if(collapse) {
-    pane.getRightComponent().setMinimumSize(new Dimension());
-    pane.setDividerLocation(0.75d);
-    }
-    else {
-    // Hide right or bottom
-    pane.getRightComponent().setMinimumSize(new Dimension());
-    pane.setDividerLocation(0.03d);
-    }
-  }
-  */
-  
-  public void setTitle(final String title) {
-    _titleLabel.setText(title);
-  }
+
+  /*
+   * public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {
+   * addMouseListener(new MouseAdapter() {
+   * 
+   * @Override public void mouseClicked(MouseEvent e) {
+   * 
+   * minimize=!minimize; toggle(splitPane,minimize?!maximize:maximize); } }); }
+   * 
+   * 
+   * public void toggle(JSplitPane pane,boolean collapse) { if(collapse) {
+   * pane.getRightComponent().setMinimumSize(new Dimension()); pane.setDividerLocation(0.75d); }
+   * else { // Hide right or bottom pane.getRightComponent().setMinimumSize(new Dimension());
+   * pane.setDividerLocation(0.03d); } }
+   */
 
   public void addMaxListenerFor(final JSplitPane pane, final JSplitPane pane2)
   {
-    
+
     addMouseListener(new MouseAdapter()
     {
-      
+
       @Override
-      public void mouseClicked(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
         minimize = !minimize;
-        if(minimize) {
+        if (minimize)
+        {
           pane.getLeftComponent().setMinimumSize(new Dimension());
           pane.setDividerLocation(0.03d);
           pane2.getRightComponent().setMinimumSize(new Dimension());
           pane2.setDividerLocation(0.97d);
         }
-        else {
+        else
+        {
           pane.getLeftComponent().setMinimumSize(new Dimension());
           pane.setDividerLocation(0.3d);
           pane2.getRightComponent().setMinimumSize(new Dimension());
@@ -115,31 +101,37 @@ public class JPanelWithTitleBar extends JPanel
         }
       }
     });
-    
+
   }
-  
+
   public void addMinListenerFor(final JSplitPane pane2)
   {
-    
+
     addMouseListener(new MouseAdapter()
     {
-      
+
       @Override
-      public void mouseClicked(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
         minimize = !minimize;
-        if(minimize) {
+        if (minimize)
+        {
           pane2.getRightComponent().setMinimumSize(new Dimension());
           pane2.setDividerLocation(0.97d);
         }
-        else {
+        else
+        {
           pane2.getRightComponent().setMinimumSize(new Dimension());
           pane2.setDividerLocation(0.7d);
         }
       }
     });
-    
+
   }
-  
+
+  public void setTitle(final String title)
+  {
+    _titleLabel.setText(title);
+  }
 
 }
