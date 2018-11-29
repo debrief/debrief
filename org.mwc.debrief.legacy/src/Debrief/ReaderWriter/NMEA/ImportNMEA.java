@@ -21,6 +21,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -35,6 +36,8 @@ import junit.framework.TestCase;
 
 public class ImportNMEA
 {
+
+  private static final String DR_NAME = "-DR";
 
   /** prefix we use for ownship track that's extractd
    * from NMEA data
@@ -125,30 +128,56 @@ public class ImportNMEA
       assertEquals("got it", 36.2395, degsFor("3614.3708,N"), 0.001);
     }
 
-    public void testFullImport() throws Exception
+    public void testFullImportAllValues() throws Exception
     {
-      testImport("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/20160720.log");
-    }
-
-    public void testImport(final String testFile) throws Exception
-    {
+      final String testFile = "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
       final File testI = new File(testFile);
 
       // only run the test if we have the log-file available
-      if (testI.exists())
-      {
-        assertTrue(testI.exists());
+      assertTrue(testI.exists());
 
-        final InputStream is = new FileInputStream(testI);
+      InputStream is = new FileInputStream(testI);
 
-        final Layers tLayers = new Layers();
+      final Layers tLayers = new Layers();
 
-        final ImportNMEA importer = new ImportNMEA(tLayers);
-        importer.importThis(testFile, is, 0l, 0l);
+      final ImportNMEA importer = new ImportNMEA(tLayers);
+      importer.importThis(testFile, is, 0l, 0l);
 
-        assertEquals("got tracks", 416, tLayers.size());
-      }
+      assertEquals("got new layers", 3, tLayers.size());
+
+      TrackWrapper tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 12823, tOne.numFixes());
+
+      TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 21746, tTwo.numFixes());
+
+      Layer contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
+      LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
+      assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
+      
+      // try another import frequency
+      tLayers.clear();
+      
+      assertEquals("layers empty", 0, tLayers.size());
+      
+      is = new FileInputStream(testI);
+      importer.importThis(testFile, is, 15000l, 15000l);
+
+      assertEquals("got new layers", 3, tLayers.size());
+
+      tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 4166, tOne.numFixes());
+
+      tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+
+      contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts.toString());
+      aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
+      assertEquals("loaded lwt track", 744, aisTrack.numFixes());
     }
+
     
     public void testMultiGPSImport() throws Exception
     {
@@ -682,6 +711,7 @@ public class ImportNMEA
     // reset our list of tracks
     tracks.clear();
     colors.clear();
+    contacts.clear();
 
     // remember the first ownship location, for the DR track
     WorldLocation origin = null;
@@ -874,7 +904,7 @@ public class ImportNMEA
 
       // SPECIAL HANDLING - we filter DR tracks at this stage
       Long lastTime = null;
-      final boolean resample = trackName.endsWith("-DR");
+      final boolean resample = trackName.endsWith(DR_NAME);
 
       for (final FixWrapper fix : track)
       {
@@ -935,7 +965,7 @@ public class ImportNMEA
       final double myCourseDegs, final double mySpeedKts, final Date date,
       final String myName, final double myDepth, final Color color)
   {
-    final String trackName = myName + "-DR";
+    final String trackName = myName + DR_NAME;
 
     // find the track
     ArrayList<FixWrapper> track = tracks.get(trackName);
