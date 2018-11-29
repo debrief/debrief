@@ -33,6 +33,6 @@ echo "Done."
 echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -a x64 -v ${WORKDIR}Debrief64.wxs ${WORKDIR}harvest.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
 
-mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
+mv msi/Debrief64.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
 echo "Done."
 echo "MSI 64 bits has been created successfully."
