@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="svg_symbols"/>
+	<classpathentry kind="src" path="src/"/>
 	<classpathentry exported="true" kind="lib" path="libs/openmap.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jmf.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/vrml97.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/flanagan.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-asl-1.9.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-mapper-asl-1.9.4.jar"/>
-	<classpathentry kind="lib" path="libs/joda-time-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/joda-time-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/javalite-common-1.2-20120312.200900-220.jar" sourcepath="/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:file:/Volumes/Sys_Slow/NoBackup/Downloads/javalite-common-1.2-20120312.200900-220-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/commons-math3-3.3.jar" sourcepath="/contribs/commons-math3-3.3-src.zip"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry exported="true" kind="lib" path="svg_symbols" sourcepath="svg_symbols"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

@@ -1,16 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="AbstractMiniSSEditor.java|MiniSSResourceEditor.java" kind="src" path="src"/>
-	<classpathentry kind="src" path="tests"/>
-	<classpathentry kind="lib" path="libs/jdom-1.0.jar"/>
-	<classpathentry kind="lib" path="libs/eclipselink.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="intro"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseLink 2.3.2 - Indigo">
-		<attributes>
-			<attribute name="owner.project.facets" value="jpt.jaxb"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="src" path="src/"/>
+	<classpathentry kind="src" path="intro/"/>
+	<classpathentry exported="true" kind="lib" path="libs/jdom-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/eclipselink.jar"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>
