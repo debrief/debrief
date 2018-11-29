@@ -51,23 +51,41 @@ import MWC.GUI.Tools.Swing.SwingToolbar;
 public class DebriefLiteApp
 {
 
-  public static final String appName="Debrief Lite";
-  public static final String NOTES_ICON="images/16/note.png";
+  public static final String appName = "Debrief Lite";
+  public static final String NOTES_ICON = "images/16/note.png";
+  private static MapContent mapComponent;
+
+  private static JScrollPane createScrollPane(
+      final JPanelWithTitleBar jTitleBar)
+  {
+    final JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+    panel.add(jTitleBar, BorderLayout.NORTH);
+    final JScrollPane scrPane1 = new JScrollPane(panel);
+    return scrPane1;
+  }
+
+  public static void main(final String[] args)
+  {
+    new DebriefLiteApp();
+  }
+
   private final JFrame theFrame;
   private JMenuBar theMenuBar;
   private JMenu theMenu;
   private JLabel statusBar;
   private JLabel _notesIconLabel;
   private boolean notesPaneExpanded = false;
-  private static MapContent mapComponent;
+
   private MWC.GUI.Tools.Swing.SwingToolbar theToolbar;
-  private GeoToolMapRenderer geoMapRenderer;
-  
+
+  private final GeoToolMapRenderer geoMapRenderer;
+
   public DebriefLiteApp()
   {
-		geoMapRenderer = new GeoToolMapRenderer();
-		geoMapRenderer.loadMapContent();
-		mapComponent = geoMapRenderer.getMapComponent();
+    geoMapRenderer = new GeoToolMapRenderer();
+    geoMapRenderer.loadMapContent();
+    mapComponent = geoMapRenderer.getMapComponent();
 
     try
     {
@@ -78,103 +96,130 @@ public class DebriefLiteApp
     {
       e.printStackTrace();
     }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
+    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+        + ")");
     initForm();
     createAppPanels();
-    
+
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
-    
+
   }
 
-  public static void main(String[] args) {
-    new DebriefLiteApp();
+  private void addMenus()
+  {
+    theMenu = new JMenu("File");
+    theMenu.add(new JMenuItem("New"));
+    theMenu.add(new JMenuItem("Open"));
+    theMenu.add(new JMenuItem("Save"));
+    theMenuBar.add(theMenu);
   }
-  
+
+  private void addStatusBar()
+  {
+    statusBar = new JLabel("Status bar for displaying statuses");
+    theFrame.add(statusBar, BorderLayout.SOUTH);
+  }
+
+  private void addTools(final SwingToolbar theToolbar)
+  {
+    final URL iconURL = getClass().getClassLoader().getResource(
+        "images/16/new.png");
+    final JButton newFile = new JButton("New");
+    newFile.setIcon(new ImageIcon(iconURL));
+    theToolbar.add(newFile);
+  }
+
   private void createAppPanels()
   {
     final Dimension frameSize = theFrame.getSize();
-    final int width = (int)frameSize.getWidth();
-    final int height = (int)frameSize.getHeight();
-    JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar("Time Controller");
-    JPanelWithTitleBar outlinePanel = new JPanelWithTitleBar("Outline");
-    JPanelWithTitleBar editorPanel = new JPanelWithTitleBar("Plot Editor");
-    JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-    final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
+    final int width = (int) frameSize.getWidth();
+    final int height = (int) frameSize.getHeight();
+    final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar(
+        "Time Controller");
+    final JPanelWithTitleBar outlinePanel = new JPanelWithTitleBar("Outline");
+    final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar(
+        "Plot Editor");
+    final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
+    final JScrollPane timeControllerPane = createScrollPane(
+        timeControllerPanel);
     final JScrollPane outlinePane = createScrollPane(outlinePanel);
-    final JScrollPane editorPane = createMapPane(mapComponent);//createScrollPane(editorPanel);
+    final JScrollPane editorPane = createMapPane(mapComponent);// createScrollPane(editorPanel);
     geoMapRenderer.addMapTool(theToolbar);
     final JScrollPane graphPane = createScrollPane(graphPanel);
     final JScrollPane notesPane = createNotesPane();
-    final JSplitPane controlPanelSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,timeControllerPane,outlinePane);
-    final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,true,editorPane,graphPane);
-    final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,controlPanelSplit,graphSplit);
-    final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftSplit,notesPane);
+    final JSplitPane controlPanelSplit = new JSplitPane(
+        JSplitPane.VERTICAL_SPLIT, true, timeControllerPane, outlinePane);
+    final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+        true, editorPane, graphPane);
+    final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        controlPanelSplit, graphSplit);
+    final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
+        leftSplit, notesPane);
     rightSplit.setOneTouchExpandable(true);
-    
+
     controlPanelSplit.setOneTouchExpandable(true);
     graphSplit.setOneTouchExpandable(true);
-    rightSplit.setDividerLocation(width-50);
-    graphSplit.setDividerLocation(height/2+height/5);
-    controlPanelSplit.setDividerLocation(height/2);
-    leftSplit.setDividerLocation(width/3);
+    rightSplit.setDividerLocation(width - 50);
+    graphSplit.setDividerLocation(height / 2 + height / 5);
+    controlPanelSplit.setDividerLocation(height / 2);
+    leftSplit.setDividerLocation(width / 3);
     rightSplit.setResizeWeight(0.9);
     graphSplit.setResizeWeight(0.5);
-    editorPanel.addMaxListenerFor(leftSplit,graphSplit);
+    editorPanel.addMaxListenerFor(leftSplit, graphSplit);
     graphPanel.addMinListenerFor(graphSplit);
     leftSplit.setOneTouchExpandable(true);
     _notesIconLabel.addMouseListener(new MouseAdapter()
     {
       @Override
-      public void mouseClicked(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
-        
+
         rightSplit.getRightComponent().setMinimumSize(new Dimension());
-        if(notesPaneExpanded) {
+        if (notesPaneExpanded)
+        {
           rightSplit.setDividerLocation(0.97d);
         }
-        else {
+        else
+        {
           rightSplit.setDividerLocation(0.7d);
         }
-        //toggle the state
+        // toggle the state
         notesPaneExpanded = !notesPaneExpanded;
       }
     });
-    theFrame.add(rightSplit,BorderLayout.CENTER);
+    theFrame.add(rightSplit, BorderLayout.CENTER);
     addStatusBar();
-    //dummy placeholder
+    // dummy placeholder
     addMenus();
   }
-  
-  
+
+  /**
+   * creates a scroll pane with map
+   *
+   * @param mapContent
+   * @return
+   */
+  private JScrollPane createMapPane(final MapContent mapContent)
+  {
+    geoMapRenderer.createMapLayout();
+    final MapBuilder builder = new MapBuilder();
+    return builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
+        .setToolbar(theToolbar).build();
+  }
+
   private JScrollPane createNotesPane()
   {
-    JPanel notesPanel = new JPanel();
+    final JPanel notesPanel = new JPanel();
     notesPanel.setLayout(new FlowLayout());
-    JScrollPane notesPane = new JScrollPane(notesPanel);
-    URL url = getClass().getClassLoader().getResource(NOTES_ICON);
+    final JScrollPane notesPane = new JScrollPane(notesPanel);
+    final URL url = getClass().getClassLoader().getResource(NOTES_ICON);
     _notesIconLabel = new JLabel();
     _notesIconLabel.setIcon(new ImageIcon(url));
     notesPanel.add(_notesIconLabel);
     return notesPane;
   }
 
-  public void setStatus(String message) {
-    statusBar.setText(message);
-  }
-  
-  private void addStatusBar() {
-    statusBar = new JLabel("Status bar for displaying statuses");
-    theFrame.add(statusBar, BorderLayout.SOUTH);    
-  }
-  private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
-    JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.add(jTitleBar,BorderLayout.NORTH);
-    JScrollPane scrPane1 = new JScrollPane(panel);
-    return scrPane1;
-  }
-  
   /**
    * fill in the UI details
    */
@@ -182,6 +227,7 @@ public class DebriefLiteApp
   {
     theFrame.addWindowListener(new WindowAdapter()
     {
+      @Override
       public void windowClosing(final java.awt.event.WindowEvent e)
       {
         System.exit(0);
@@ -189,7 +235,8 @@ public class DebriefLiteApp
     });
 
     // try to give the application an icon
-    final URL iconURL = getClass().getClassLoader().getResource("images/icon.png");
+    final URL iconURL = getClass().getClassLoader().getResource(
+        "images/icon.png");
     if (iconURL != null)
     {
       final ImageIcon myIcon = new ImageIcon(iconURL);
@@ -197,8 +244,8 @@ public class DebriefLiteApp
         theFrame.setIconImage(myIcon.getImage());
     }
     // create the components
-    theToolbar =
-      new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL, "Application", null);  
+    theToolbar = new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL,
+        "Application", null);
     addTools(theToolbar);
 
     // and the panel
@@ -212,41 +259,17 @@ public class DebriefLiteApp
 
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-    theFrame.setSize((int) (dim.width * 0.6),
-                     (int) (dim.height * 0.6));
+    theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
     final Dimension sz = theFrame.getSize();
-    theFrame.setLocation((dim.width - sz.width) / 2,
-                         (dim.height - sz.height) / 2);
+    theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
+        / 2);
 
-   
     // do any final re-arranging
     theFrame.doLayout();
   }
-  
-  private void addTools(SwingToolbar theToolbar) {
-    URL iconURL = getClass().getClassLoader().getResource("images/16/new.png");
-    JButton newFile = new JButton("New");
-    newFile.setIcon(new ImageIcon(iconURL));
-    theToolbar.add(newFile);
-  }
-  
-  private void addMenus() {
-    theMenu = new JMenu("File");
-    theMenu.add(new JMenuItem("New"));
-    theMenu.add(new JMenuItem("Open"));
-    theMenu.add(new JMenuItem("Save"));
-    theMenuBar.add(theMenu);
-  }
-  
-  /**
-   * creates a scroll pane with map
-   * 
-   * @param mapContent
-   * @return
-   */
-  private  JScrollPane createMapPane(MapContent mapContent) {
-	    geoMapRenderer.createMapLayout();
-	    MapBuilder builder = new MapBuilder();
-	    return builder.setMapRenderer(geoMapRenderer).enableToolbar(true).setToolbar(theToolbar).build();
+
+  public void setStatus(final String message)
+  {
+    statusBar.setText(message);
   }
 }
