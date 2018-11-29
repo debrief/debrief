@@ -4,11 +4,11 @@ WIXLDIR=/usr/bin/
 #Path to the folder with the compiled Debrief sources
 DEBRIEFDIR=org.mwc.debrief.product/target/products/DebriefNG/win32/win32/x86/DebriefNG/
 #Path to the main wixl harvest folder
-SOURCEDIR=msi/src/
+SOURCEDIR=contribs/msi/src/
 #Path to the wixl resouces folder
-RESOURCESDIR=msi/resources/
+RESOURCESDIR=contribs/msi/resources/
 #Path to the wixl working folder
-WORKDIR=msi/
+WORKDIR=contribs/msi/
 
 echo "Clearing the sources folder."
 rm -rf ${SOURCEDIR}
@@ -38,6 +38,6 @@ echo "Done."
 echo "Creating the x86 Debrief MSI file."
 ${WIXLDIR}wixl -v ${WORKDIR}harvest.wxs ${WORKDIR}Debrief32.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief32.msi
 
-mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
+mv contribs/msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
 echo "Done."
 echo "MSI 32 bits has been created successfully."
