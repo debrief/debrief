@@ -22,50 +22,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.nebula.cwt"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.nebula.jface.cdatetime"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.eclipse.nebula.widgets.cdatetime"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.geotools"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.help"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.NetAsset2"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.NetCore"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.ScenarioController2"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.ScenarioPlotter"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.SensorMonitor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.asset.VesselMonitor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.grideditor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.gt2Plot"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.jfreechart"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.LiveDataMonitor"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.media"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NarrativeViewer"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NaturalEarth"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.openmap"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.overview"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.plotViewer"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.TimeController"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.tote"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.xyplot"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.data_feed_dummy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.dis"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.editable.test"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.help"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.limpet_integration"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.multipath2"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.satc.core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.satc.integration"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.SensorFusion"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.test2"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.TimeBar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.track_shift"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.gnd.demonstrator"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.qinetiq.data_feed"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
