@@ -17,7 +17,7 @@ echo "Done."
 
 echo "Updating version"
 version=$(grep "product.*version"  org.mwc.debrief.product/debriefng.product  | sed 's/^.*version="\([^"]*\)".*$/\1/')
-sed "s/versionReplacement/$version/g" ${WORKDIR}Debrief32.wxs
+sed -i "s/versionReplacement/$version/g" ${WORKDIR}Debrief32.wxs
 echo "Done."
 
 echo "Copying Debrief sources to the wixl harvest folder."
@@ -38,6 +38,6 @@ echo "Done."
 echo "Creating the x86 Debrief MSI file."
 ${WIXLDIR}wixl -v ${WORKDIR}harvest.wxs ${WORKDIR}Debrief32.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief32.msi
 
-mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
+mv msi/Debrief32.msi org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
 echo "Done."
 echo "MSI 32 bits has been created successfully."
