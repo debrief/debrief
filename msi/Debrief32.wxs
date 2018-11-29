@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='windows-1252'?>
 <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
   <Product Name='Debrief' Id='EBD310AE-DC77-4FCA-88EB-45FFDB48ED9C' UpgradeCode='CACC9A82-3A03-4678-9D83-7DC7AF0DED84'
-    Language='1033' Codepage='1251' Version='3.0.459' Manufacturer='Ian Mayo'>
+    Language='1033' Codepage='1251' Version='versionReplacement' Manufacturer='Ian Mayo'>
 
     <Package Id='*' Keywords='Installer' Description="DebriefNG Installer" Manufacturer='Oleh Pohorielov'
       InstallerVersion='300' Languages='1033' Compressed='yes' SummaryCodepage='1252'/>

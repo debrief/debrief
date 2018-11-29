@@ -15,6 +15,11 @@ rm -rf ${SOURCEDIR}
 mkdir ${SOURCEDIR}
 echo "Done."
 
+echo "Updating version"
+version=$(grep "product.*version"  org.mwc.debrief.product/debriefng.product  | sed 's/^.*version="\([^"]*\)".*$/\1/')
+sed "s/versionReplacement/$version/g" ${WORKDIR}Debrief64.wxs
+echo "Done."
+
 echo "Copying Debrief sources to the wixl harvest folder."
 cp -r ${DEBRIEFDIR}* ${SOURCEDIR}
 echo "Done."
