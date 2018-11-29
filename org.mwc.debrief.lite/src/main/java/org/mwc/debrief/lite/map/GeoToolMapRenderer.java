@@ -85,7 +85,7 @@ public class GeoToolMapRenderer extends MapRenderer {
   	      JButton btn;
 	      ButtonGroup cursorToolGrp = new ButtonGroup();
 	   
-	      System.out.println("tool bar " + theToolbar);
+	      
 	   //   mapPane.addMouseListener(new ScrollWheelTool(mapPane));
 
 	      ///// no action
