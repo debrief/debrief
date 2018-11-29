@@ -106,7 +106,7 @@ public abstract class PlainImporterBase implements PlainImporter
    * the block of text we're collating
    * 
    */
-  private StringBuffer _beingExported;
+  private static StringBuffer _beingExported;
 
   /**
    * collect any layers that we load
@@ -282,6 +282,11 @@ public abstract class PlainImporterBase implements PlainImporter
   public void startExport(final Plottable item)
   {
     // clear the output buffer
+ //  _beingExported = null;
+  }
+  
+  public static void clearBuffer()
+  {
     _beingExported = null;
   }
 
