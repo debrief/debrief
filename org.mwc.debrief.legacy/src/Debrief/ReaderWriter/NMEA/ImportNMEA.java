@@ -161,7 +161,7 @@ public class ImportNMEA
       assertEquals("layers empty", 0, tLayers.size());
 
       is = new FileInputStream(testI);
-      importer.importThis(testFile, is, 15000l, 15000l);
+      importer.importThis(testFile, is, 15000L, 15000L);
 
       assertEquals("got new layers", 3, tLayers.size());
 
