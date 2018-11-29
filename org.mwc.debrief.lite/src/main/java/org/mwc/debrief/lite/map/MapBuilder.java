@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.map;
 
 
@@ -13,9 +27,11 @@ public class MapBuilder {
 	private MapRenderer mapRenderer;
 	
 	/** enable map tool bar **/
-	private boolean enable = true;
+	@SuppressWarnings("unused")
+  private boolean enable = true;
 	
-	private SwingToolbar theToolbar;
+	@SuppressWarnings("unused")
+  private SwingToolbar theToolbar;
 	
 	/**
 	 * sets a map renderer object based on the map API
@@ -44,7 +60,7 @@ public class MapBuilder {
 	 * 
 	 * @param theoolbar
 	 */
-	public MapBuilder setToolbar(SwingToolbar theoolbar) {
+	public MapBuilder setToolbar(SwingToolbar theToolbar) {
 		this.theToolbar = theToolbar;
 		return this;
 	}
