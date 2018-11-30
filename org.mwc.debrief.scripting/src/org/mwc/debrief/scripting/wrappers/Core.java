@@ -377,12 +377,6 @@ public class Core
     listenToMyParts();
   }
 
-  public LabelWrapper createLabel(final WorldLocation location,
-      final Color color)
-  {
-    return new LabelWrapper("Name", location, color);
-  }
-
   protected void fireNewTime(final HiResDate date)
   {
     // get broker service
