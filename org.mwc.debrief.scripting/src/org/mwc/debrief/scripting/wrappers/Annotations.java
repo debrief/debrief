@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -24,14 +24,41 @@ import MWC.GenericData.WorldLocation;
 
 public class Annotations
 {
-  
+
   @WrapToScript
-  public static PlainSymbol createSymbol(final String symbolType)
+  /**
+   * Creates a label given its name, location and color
+   *
+   * @param label
+   *          Text to display
+   * @param location
+   *          Location of the label
+   * @param theColor
+   *          Color of the label
+   * @return
+   */
+  public static LabelWrapper createLabel(final String name,
+      final WorldLocation location, final java.awt.Color theColor)
   {
-    return SymbolFactory.createSymbol(symbolType);
+    return new LabelWrapper(name, location, theColor);
   }
 
   @WrapToScript
+  /**
+   * Creates a label given its name, location and color
+   *
+   * @param label
+   *          the text to display
+   * @param location
+   *          the location to centre the label on
+   * @param theColor
+   *          the colour to plot the text
+   * @param startDTG
+   *          the start (or centre) time of the label
+   * @param endDTG
+   *          the end time, or null if single date value
+   * @return
+   */
   public static LabelWrapper createLabel(final String label,
       final WorldLocation location, final java.awt.Color theColor,
       final HiResDate startDTG, final HiResDate endDTG)
@@ -40,11 +67,16 @@ public class Annotations
   }
 
   @WrapToScript
-  public static LabelWrapper createLabel(final String label,
-      final WorldLocation location, final java.awt.Color theColor)
+  /**
+   * Given an ID of a Symbol, returns a PlainSymbol.
+   *
+   * @param symbolType
+   *          Symbol ID.
+   * @return PlainSymbol based on the symbol id given.
+   */
+  public static PlainSymbol createSymbol(final String symbolType)
   {
-    return new LabelWrapper(label, location, theColor);
+    return SymbolFactory.createSymbol(symbolType);
   }
-  
-  
+
 }
