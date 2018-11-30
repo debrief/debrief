@@ -3587,91 +3587,101 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           public void eventTriggered(final String type, final Object part,
               final IWorkbenchPart parentPart)
           {
-            // cool, remember about it.
-            final TrackDataProvider dataP = (TrackDataProvider) part;
-
-            // is this the one we're already listening to?
-            if (_myTrackDataProvider != dataP)
+            // run it in a thread, we were getting UI thread locks when
+            // switching to a new plot
+            Display.getCurrent().asyncExec(new Runnable()
             {
-              // ok - let's start off with a clean plot
-              TimeSeriesCollection errorData = (TimeSeriesCollection) _dotPlot
-                  .getDataset();
-              errorData.removeAllSeries();
-
-              // nope, better stop listening then
-              if (_myTrackDataProvider != null)
+              @Override
+              public void run()
               {
-                _myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
-                _myTrackDataProvider.removeTrackDataListener(
-                    _myTrackDataListener);
+                // cool, remember about it.
+                final TrackDataProvider dataP = (TrackDataProvider) part;
 
-                // remove ourselves as a location listener from the sec track, if there is one
-                final WatchableList[] secs = _myTrackDataProvider
-                    .getSecondaryTracks();
-                if (secs != null && secs.length == 1)
+                // is this the one we're already listening to?
+                if (_myTrackDataProvider != dataP)
                 {
-                  final WatchableList firstSec = secs[0];
-                  if (firstSec instanceof TrackWrapper)
+                  // ok - let's start off with a clean plot
+                  TimeSeriesCollection errorData =
+                      (TimeSeriesCollection) _dotPlot.getDataset();
+                  errorData.removeAllSeries();
+
+                  // nope, better stop listening then
+                  if (_myTrackDataProvider != null)
                   {
-                    final TrackWrapper secT = (TrackWrapper) firstSec;
-                    secT.removePropertyChangeListener(
-                        PlainWrapper.LOCATION_CHANGED, _infillListener);
+                    _myTrackDataProvider.removeTrackShiftListener(
+                        _myShiftListener);
+                    _myTrackDataProvider.removeTrackDataListener(
+                        _myTrackDataListener);
+
+                    // remove ourselves as a location listener from the sec track, if there is one
+                    final WatchableList[] secs = _myTrackDataProvider
+                        .getSecondaryTracks();
+                    if (secs != null && secs.length == 1)
+                    {
+                      final WatchableList firstSec = secs[0];
+                      if (firstSec instanceof TrackWrapper)
+                      {
+                        final TrackWrapper secT = (TrackWrapper) firstSec;
+                        secT.removePropertyChangeListener(
+                            PlainWrapper.LOCATION_CHANGED, _infillListener);
+                      }
+                    }
+                  }
+
+                  // ok, start listening to it anyway
+                  _myTrackDataProvider = dataP;
+                  _myTrackDataProvider.addTrackShiftListener(_myShiftListener);
+                  _myTrackDataProvider.addTrackDataListener(
+                      _myTrackDataListener);
+
+                  // special case = we have to register to listen to infills changing
+                  // since they aren't triggered by the UI (mouse drag) events.
+
+                  final WatchableList[] secs = _myTrackDataProvider
+                      .getSecondaryTracks();
+                  if (secs != null && secs.length == 1)
+                  {
+                    final WatchableList firstSec = secs[0];
+                    if (firstSec instanceof TrackWrapper)
+                    {
+                      final TrackWrapper secT = (TrackWrapper) firstSec;
+                      secT.addPropertyChangeListener(
+                          PlainWrapper.LOCATION_CHANGED, _infillListener);
+                    }
+                  }
+
+                  // hey, new plot. clear the zone charts
+                  clearZoneCharts(true, true, true);
+
+                  // set the title, so there's something useful in
+                  // there
+                  _myChart.setTitle("");
+
+                  // ok - fire off the event for the new tracks
+                  if (_holder == null || _holder.isDisposed())
+                  {
+                    return;
+                  }
+                  else
+                  {
+                    _myHelper.initialise(_switchableTrackDataProvider, false,
+                        _onlyVisible.isChecked(), logger, getType(), _needBrg,
+                        _needFreq);
+                  }
+
+                  // hey - fire a dot update
+                  updateStackedDots(true);
+
+                  // and the zones
+                  // initialise the zones
+                  final List<Zone> zones = getTargetZones();
+                  if (targetZoneChart != null)
+                  {
+                    targetZoneChart.setZones(zones);
                   }
                 }
               }
-
-              // ok, start listening to it anyway
-              _myTrackDataProvider = dataP;
-              _myTrackDataProvider.addTrackShiftListener(_myShiftListener);
-              _myTrackDataProvider.addTrackDataListener(_myTrackDataListener);
-
-              // special case = we have to register to listen to infills changing
-              // since they aren't triggered by the UI (mouse drag) events.
-
-              final WatchableList[] secs = _myTrackDataProvider
-                  .getSecondaryTracks();
-              if (secs != null && secs.length == 1)
-              {
-                final WatchableList firstSec = secs[0];
-                if (firstSec instanceof TrackWrapper)
-                {
-                  final TrackWrapper secT = (TrackWrapper) firstSec;
-                  secT.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-                      _infillListener);
-                }
-              }
-
-              // hey, new plot. clear the zone charts
-              clearZoneCharts(true, true, true);
-
-              // set the title, so there's something useful in
-              // there
-              _myChart.setTitle("");
-
-              // ok - fire off the event for the new tracks
-              if (_holder == null || _holder.isDisposed())
-              {
-                return;
-              }
-              else
-              {
-                _myHelper.initialise(_switchableTrackDataProvider, false,
-                    _onlyVisible.isChecked(), logger, getType(), _needBrg,
-                    _needFreq);
-              }
-
-              // hey - fire a dot update
-              updateStackedDots(true);
-
-              // and the zones
-              // initialise the zones
-              final List<Zone> zones = getTargetZones();
-              if (targetZoneChart != null)
-              {
-                targetZoneChart.setZones(zones);
-              }
-
-            }
+            });
           }
         });
 
