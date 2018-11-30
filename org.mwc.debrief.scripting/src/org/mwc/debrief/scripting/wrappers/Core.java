@@ -1,6 +1,7 @@
 package org.mwc.debrief.scripting.wrappers;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -302,6 +303,25 @@ public class Core
     return new HiResDate(date);
   }
 
+  public static Font createFont(final String fontName, final int style,
+      final int size)
+  {
+    return new Font(fontName, style, size);
+  }
+
+  /**
+   * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
+   * 255). The actual color used in rendering depends on finding the best match given the color
+   * space available for a given output device. Alpha is defaulted to 255.
+   * 
+   * @param red
+   *          the red component
+   * @param green
+   *          the green component
+   * @param blue
+   *          the blue component
+   * @return
+   */
   public static Color getColor(final int red, final int green, final int blue)
   {
     return new Color(red, green, blue);
