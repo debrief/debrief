@@ -2,6 +2,7 @@ package org.mwc.debrief.scripting.wrappers;
 
 import org.eclipse.ease.modules.WrapToScript;
 
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -38,6 +39,19 @@ public class Spatial
     return new WorldLocation(dLat, dLong, depth);
   }
 
+  @WrapToScript
+  /** produce an area object using the two corners
+   * 
+   * @param tl top-left corner
+   * @param br bottom-right corner
+   * @return MWC.GenericData.WorldArea
+   */
+  public static WorldArea createArea(final WorldLocation tl, 
+      final WorldLocation br)
+  {
+    return new WorldArea(tl, br);
+  }
+  
   @WrapToScript
   public static WorldVector createVector(final double distM,
       final double bearingDegs)
