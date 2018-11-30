@@ -21,7 +21,6 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
