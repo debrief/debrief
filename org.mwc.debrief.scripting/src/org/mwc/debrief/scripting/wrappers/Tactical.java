@@ -7,6 +7,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class Tactical
 {
@@ -17,7 +18,7 @@ public class Tactical
     final Fix fix = new Fix(time, location, courseRads, speedYps);
     return new FixWrapper(fix);
   }
-
+  
   public static SensorWrapper createSensor(final String name)
   {
     final SensorWrapper sensor = new SensorWrapper(name);
@@ -36,5 +37,17 @@ public class Tactical
     final TrackWrapper res = new TrackWrapper();
     res.setName(name);
     return res;
+  }
+
+  /**
+   * Creates a Narrative Wrapper
+   * 
+   * @param title
+   *          Title of the narrative.
+   * @return Narrative Wrapper Object.
+   */
+  public static NarrativeWrapper createNarrative(final String title)
+  {
+    return new NarrativeWrapper(title);
   }
 }
