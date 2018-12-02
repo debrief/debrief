@@ -59,7 +59,7 @@ public class Annotations
    *          the end time, or null if single date value
    * @return
    */
-  public static LabelWrapper createLabel(final String label,
+  public static LabelWrapper createLabelDate(final String label,
       final WorldLocation location, final java.awt.Color theColor,
       final HiResDate startDTG, final HiResDate endDTG)
   {

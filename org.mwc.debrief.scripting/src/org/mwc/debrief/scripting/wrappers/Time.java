@@ -21,66 +21,66 @@ public class Time
   @WrapToScript
   public static long getTime()
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long getStart()
   {
-
+    return 0;
   }
 
   @WrapToScript
-  public static long FinishTime()
+  public static long finishTime()
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long getSmall()
   {
-
+    return 0;
   }
 
   @WrapToScript
-  public static long LargeStep()
+  public static long largeStep()
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long setTime(long _time)
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long setSmall()
   {
-
+    return 0;
   }
 
   @WrapToScript
-  public static long LargeStep(long _step)
+  public static long largeStep(long _step)
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long doStep()
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long play()
   {
-
+    return 0;
   }
 
   @WrapToScript
   public static long stop()
   {
-
+    return 0;
   }
 }
