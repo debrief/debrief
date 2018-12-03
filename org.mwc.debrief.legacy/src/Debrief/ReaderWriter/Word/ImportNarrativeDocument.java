@@ -1133,8 +1133,6 @@ public class ImportNarrativeDocument
 
       // hmmm, how many tracks
       assertEquals("got new tracks", 3, tLayers.size());
-      // hmmm, how many tracks
-      assertEquals("got new tracks", 3, tLayers.size());
 
       final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
           LayerHandler.NARRATIVE_LAYER);
@@ -1469,7 +1467,7 @@ public class ImportNarrativeDocument
    * track name to use if we're missing the hidden metadata
    *
    */
-  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";;
+  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";
 
   /**
    * marker for end of narrative
@@ -2017,8 +2015,8 @@ public class ImportNarrativeDocument
           addEntry(thisN);
 
           // log the fact we did this
-          logError(ToolParent.WARNING,
-              "Import terminated at phrase:" + thisN.text, null);
+          Application.logError3(ToolParent.WARNING,
+              "Import terminated at phrase:" + thisN.text, null, false);
 
           // and drop out of the loop
           break;
@@ -2063,44 +2061,49 @@ public class ImportNarrativeDocument
           appendedToPreviousCtr = 0;
         }
 
-        switch (thisN.type)
+        // did we process anything?
+        if (thisN.type != null)
         {
-          case "FCS":
+          // ok, process the entry
+          switch (thisN.type)
           {
-            // add a narrative entry
-            addEntry(thisN);
-
-            // create track for this
-            try
+            case "FCS":
             {
-              addFCS(thisN);
+              // add a narrative entry
+              addEntry(thisN);
+
+              // create track for this
+              try
+              {
+                addFCS(thisN);
+              }
+              catch (final StringIndexOutOfBoundsException e)
+              {
+                // don't worry about panicking, it may not be an FCS after all
+              }
+              catch (final NumberFormatException e)
+              {
+                // don't worry about panicking, it may not be an FCS after all
+              }
+
+              // ok, take note that we've added something
+              dataAdded = true;
+
+              break;
             }
-            catch (final StringIndexOutOfBoundsException e)
+            default:
             {
-              // don't worry about panicking, it may not be an FCS after all
+              // ok, just add a narrative entry for anything not recognised
+
+              // add a narrative entry
+              addEntry(thisN);
+
+              // ok, take note that we've added something
+              dataAdded = true;
+
+              break;
+
             }
-            catch (final NumberFormatException e)
-            {
-              // don't worry about panicking, it may not be an FCS after all
-            }
-
-            // ok, take note that we've added something
-            dataAdded = true;
-
-            break;
-          }
-          default:
-          {
-            // ok, just add a narrative entry for anything not recognised
-
-            // add a narrative entry
-            addEntry(thisN);
-
-            // ok, take note that we've added something
-            dataAdded = true;
-
-            break;
-
           }
         }
       }
