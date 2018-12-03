@@ -329,6 +329,35 @@ public class ImportNarrativeDocument
 
   }
 
+  public static enum ImportNarrativeEnum
+  {
+    TRIMMED_DATA(TRIMMED_DATA_STR), ALL_DATA(ALL_DATA_STR), CANCEL(CANCEL_STR);
+    public static ImportNarrativeEnum getByName(final String name)
+    {
+      switch (name)
+      {
+        case TRIMMED_DATA_STR:
+          return TRIMMED_DATA;
+        case ALL_DATA_STR:
+          return ALL_DATA;
+        default:
+          return CANCEL;
+      }
+    }
+
+    private String name;
+
+    ImportNarrativeEnum(final String string)
+    {
+      this.name = string;
+    }
+
+    public String getName()
+    {
+      return this.name;
+    }
+  }
+
   private static class NarrEntry
   {
     /**
@@ -712,60 +741,6 @@ public class ImportNarrativeDocument
     boolean askYes(String title, String message);
   }
 
-  public static interface TrimNarrativeHelper
-  {
-    ImportNarrativeEnum findWhatToImport();
-  }
-
-  /**
-   * string constants to use for the enum names
-   * 
-   */
-  private final static String TRIMMED_DATA_STR = "trimmed-data";
-  private final static String ALL_DATA_STR = "all-data";
-  private final static String CANCEL_STR = "cancel";
-
-  /**
-   * track name to use if we're missing the hidden metadata
-   * 
-   */
-  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";
-
-  /**
-   * marker for end of narrative
-   * 
-   */
-  private static final String END_OF_NARRATIVE = "End records for";
-
-  public static enum ImportNarrativeEnum
-  {
-    TRIMMED_DATA(TRIMMED_DATA_STR), ALL_DATA(ALL_DATA_STR), CANCEL(CANCEL_STR);
-    private String name;
-
-    ImportNarrativeEnum(String string)
-    {
-      this.name = string;
-    }
-
-    public String getName()
-    {
-      return this.name;
-    }
-
-    public static ImportNarrativeEnum getByName(String name)
-    {
-      switch (name)
-      {
-        case TRIMMED_DATA_STR:
-          return TRIMMED_DATA;
-        case ALL_DATA_STR:
-          return ALL_DATA;
-        default:
-          return CANCEL;
-      }
-    }
-  };
-
   public static class TestImportWord extends TestCase
   {
     private final static String dummy_doc_path =
@@ -865,7 +840,7 @@ public class ImportNarrativeDocument
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
 
-      BaseLayer fcsLayer = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      final BaseLayer fcsLayer = (BaseLayer) tLayers.findLayer(NARR_LAYER);
 
       final Object[] solutions = fcsLayer.getData().toArray();
 
@@ -893,106 +868,9 @@ public class ImportNarrativeDocument
 
       // hey, let's have a look tthem
 
-      BaseLayer fcsNarr = (BaseLayer) tLayers.findLayer(NARR_LAYER);
-      Object[] data = fcsNarr.getData().toArray();
+      final BaseLayer fcsNarr = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      final Object[] data = fcsNarr.getData().toArray();
 
-      tw = (LightweightTrackWrapper) data[3];
-      assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 3, tw.numFixes());
-
-    }
-
-    public void testSingleTrack()
-    {
-      Layers layers = new Layers();
-      assertFalse("no tracks", singleTrackIn(layers));
-
-      BaseLayer theLayer = new BaseLayer();
-      theLayer.setName("a");
-      layers.addThisLayer(theLayer);
-      assertFalse("no tracks", singleTrackIn(layers));
-
-      TrackWrapper theTrack = new TrackWrapper();
-      theTrack.setName("t1");
-      layers.addThisLayer(theTrack);
-      assertTrue("one track", singleTrackIn(layers));
-
-      BaseLayer theLayer2 = new BaseLayer();
-      theLayer2.setName("b");
-      layers.addThisLayer(theLayer2);
-      assertTrue("one track", singleTrackIn(layers));
-
-      TrackWrapper theTrack2 = new TrackWrapper();
-      theTrack2.setName("t2");
-      layers.addThisLayer(theTrack2);
-      assertFalse("two track", singleTrackIn(layers));
-    }
-
-    public void testNoMetadata() throws InterruptedException, IOException
-    {
-      final Layers tLayers = new Layers();
-
-      // start off with the ownship track
-      final File boatFile = new File(ownship_track);
-      assertTrue(boatFile.exists());
-      final InputStream bs = new FileInputStream(boatFile);
-
-      final ImportReplay trackImporter = new ImportReplay();
-      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
-          ImportReplay.IMPORT_AS_OTG, 0L));
-      trackImporter.importThis(ownship_track, bs, tLayers);
-
-      assertEquals("read in track", 1, tLayers.size());
-
-      final String testFile = no_metadata_path;
-      final File testI = new File(testFile);
-      assertTrue(testI.exists());
-
-      final InputStream is = new FileInputStream(testI);
-
-      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
-          tLayers);
-      final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
-      importer.processThese(strings);
-
-      // hmmm, how many tracks
-      assertEquals("got new tracks", 3, tLayers.size());
-      // hmmm, how many tracks
-      assertEquals("got new tracks", 3, tLayers.size());
-
-      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
-          LayerHandler.NARRATIVE_LAYER);
-
-      // correct final count
-      assertEquals("Got num lines", 351, narrLayer.size());
-
-      BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
-      Object[] data = sols.getData().toArray();
-
-      // hey, let's have a look them
-      LightweightTrackWrapper tw = (LightweightTrackWrapper) data[5];
-      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
-      assertEquals("got fixes", 3, tw.numFixes());
-
-      // hey, let's have a look them
-      tw = (LightweightTrackWrapper) data[2];
-      assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
-      assertEquals("got fixes", 5, tw.numFixes());
-
-      // we need to introduce a 500ms delay, so we don't use
-      // the cahced visible period
-      Thread.sleep(550);
-
-      final TimePeriod bounds = tw.getVisiblePeriod();
-      // in our sample data we have several FCSs at the same time,
-      // so we have to increment the DTG (seconds) on successive points.
-      // so,the dataset should end at 08:11:01 - since the last point
-      // had a second added.
-      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
-          bounds.toString());
-
-      // hey, let's have a look tthem
       tw = (LightweightTrackWrapper) data[3];
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
@@ -1036,8 +914,8 @@ public class ImportNarrativeDocument
       // correct final count
       assertEquals("Got num lines", 364, narrLayer.size());
 
-      BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
-      Object[] data = sols.getData().toArray();
+      final BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      final Object[] data = sols.getData().toArray();
 
       // hey, let's have a look them
       LightweightTrackWrapper tw = (LightweightTrackWrapper) data[5];
@@ -1122,16 +1000,17 @@ public class ImportNarrativeDocument
 
       // check t2 is narratives
       assertEquals("correct name", NARR_LAYER, t2.getName());
-      BaseLayer layer = (BaseLayer) t2;
-      Editable sol1 = layer.first();
+      final BaseLayer layer = (BaseLayer) t2;
+      final Editable sol1 = layer.first();
       assertEquals("correct name", "023_SOURCE_A FCS", sol1.getName());
-      Editable sol2 = layer.last();
+      final Editable sol2 = layer.last();
       assertEquals("correct name", "023_SOURCE_A FCS", sol1.getName());
       assertEquals("correct name", "023_SOURCE_B FCS (AAAA)", sol2.getName());
 
       // check zero depth in target track
-      LightweightTrackWrapper light = (LightweightTrackWrapper) sol2;
-      FixWrapper first = (FixWrapper) light.getPositionIterator().nextElement();
+      final LightweightTrackWrapper light = (LightweightTrackWrapper) sol2;
+      final FixWrapper first = (FixWrapper) light.getPositionIterator()
+          .nextElement();
       assertEquals("fix has zero depth", 0d, first.getDepth(), 0.0001);
     }
 
@@ -1221,6 +1100,77 @@ public class ImportNarrativeDocument
 
       // check we've created new entries
       assertEquals("name matches", 4, iw.nameMatches.size());
+
+    }
+
+    public void testNoMetadata() throws InterruptedException, IOException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(ownship_track);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(ownship_track, bs, tLayers);
+
+      assertEquals("read in track", 1, tLayers.size());
+
+      final String testFile = no_metadata_path;
+      final File testI = new File(testFile);
+      assertTrue(testI.exists());
+
+      final InputStream is = new FileInputStream(testI);
+
+      final ImportNarrativeDocument importer = new ImportNarrativeDocument(
+          tLayers);
+      final HWPFDocument doc = new HWPFDocument(is);
+      final ArrayList<String> strings = importer.importFromWord(doc);
+      importer.processThese(strings);
+
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 3, tLayers.size());
+      // hmmm, how many tracks
+      assertEquals("got new tracks", 3, tLayers.size());
+
+      final NarrativeWrapper narrLayer = (NarrativeWrapper) tLayers.findLayer(
+          LayerHandler.NARRATIVE_LAYER);
+
+      // correct final count
+      assertEquals("Got num lines", 351, narrLayer.size());
+
+      final BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
+      final Object[] data = sols.getData().toArray();
+
+      // hey, let's have a look them
+      LightweightTrackWrapper tw = (LightweightTrackWrapper) data[5];
+      assertEquals("correct name", "M01_AAAA AAAA AAA (BBBB)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
+
+      // hey, let's have a look them
+      tw = (LightweightTrackWrapper) data[2];
+      assertEquals("correct name", "025_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 5, tw.numFixes());
+
+      // we need to introduce a 500ms delay, so we don't use
+      // the cahced visible period
+      Thread.sleep(550);
+
+      final TimePeriod bounds = tw.getVisiblePeriod();
+      // in our sample data we have several FCSs at the same time,
+      // so we have to increment the DTG (seconds) on successive points.
+      // so,the dataset should end at 08:11:01 - since the last point
+      // had a second added.
+      assertEquals("correct bounds:", "Period:951212 080800 to 951212 081400",
+          bounds.toString());
+
+      // hey, let's have a look tthem
+      tw = (LightweightTrackWrapper) data[3];
+      assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
+      assertEquals("got fixes", 3, tw.numFixes());
 
     }
 
@@ -1401,7 +1351,7 @@ public class ImportNarrativeDocument
       // check we have two tracks
       assertEquals("all tracks", 3, target.size());
 
-      BaseLayer narrs = (BaseLayer) target.findLayer(NARR_LAYER);
+      final BaseLayer narrs = (BaseLayer) target.findLayer(NARR_LAYER);
 
       // check the size
       final LightweightTrackWrapper t1 = (LightweightTrackWrapper) narrs
@@ -1430,6 +1380,32 @@ public class ImportNarrativeDocument
       assertEquals("right id", "M00", FCSEntry.parseTrack(str2a));
       assertEquals("right id", "M00", FCSEntry.parseTrack(str5));
       assertNull("right id", FCSEntry.parseTrack(str3));
+    }
+
+    public void testSingleTrack()
+    {
+      final Layers layers = new Layers();
+      assertFalse("no tracks", singleTrackIn(layers));
+
+      final BaseLayer theLayer = new BaseLayer();
+      theLayer.setName("a");
+      layers.addThisLayer(theLayer);
+      assertFalse("no tracks", singleTrackIn(layers));
+
+      final TrackWrapper theTrack = new TrackWrapper();
+      theTrack.setName("t1");
+      layers.addThisLayer(theTrack);
+      assertTrue("one track", singleTrackIn(layers));
+
+      final BaseLayer theLayer2 = new BaseLayer();
+      theLayer2.setName("b");
+      layers.addThisLayer(theLayer2);
+      assertTrue("one track", singleTrackIn(layers));
+
+      final TrackWrapper theTrack2 = new TrackWrapper();
+      theTrack2.setName("t2");
+      layers.addThisLayer(theTrack2);
+      assertFalse("two track", singleTrackIn(layers));
     }
 
     public void testSpanningYear() throws InterruptedException, IOException
@@ -1473,6 +1449,33 @@ public class ImportNarrativeDocument
       assertEquals("Got num lines", 371, narr.size());
     }
   }
+
+  public static interface TrimNarrativeHelper
+  {
+    ImportNarrativeEnum findWhatToImport();
+  }
+
+  /**
+   * string constants to use for the enum names
+   *
+   */
+  private final static String TRIMMED_DATA_STR = "trimmed-data";
+
+  private final static String ALL_DATA_STR = "all-data";
+
+  private final static String CANCEL_STR = "cancel";
+
+  /**
+   * track name to use if we're missing the hidden metadata
+   *
+   */
+  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";;
+
+  /**
+   * marker for end of narrative
+   *
+   */
+  private static final String END_OF_NARRATIVE = "End records for";
 
   /**
    * helper class that can ask the user a question populated via Dependency Injection
@@ -1563,14 +1566,40 @@ public class ImportNarrativeDocument
     return res;
   }
 
+  public static void setNarrativeHelper(final TrimNarrativeHelper helper)
+  {
+    trimNarrativeHelper = helper;
+  }
+
   public static void setQuestionHelper(final QuestionHelper helper)
   {
     questionHelper = helper;
   }
 
-  public static void setNarrativeHelper(final TrimNarrativeHelper helper)
+  /**
+   * check if the layers contains a single track object
+   *
+   * @param layers
+   * @return
+   */
+  private static boolean singleTrackIn(final Layers layers)
   {
-    trimNarrativeHelper = helper;
+    int ctr = 0;
+    final int len = layers.size();
+    for (int i = 0; i < len; i++)
+    {
+      final Layer next = layers.elementAt(i);
+      if (next instanceof TrackWrapper)
+      {
+        ctr++;
+
+        if (ctr > 1)
+        {
+          break;
+        }
+      }
+    }
+    return ctr == 1;
   }
 
   /**
@@ -1880,6 +1909,35 @@ public class ImportNarrativeDocument
     logThisError(status, msg, e);
   }
 
+  private TimePeriod outerPeriodFor(final Layers theLayers)
+  {
+    TimePeriod outerPeriod = null;
+    final Enumeration<Editable> layers = theLayers.elements();
+    while (layers.hasMoreElements())
+    {
+      final Layer thisL = (Layer) layers.nextElement();
+      if (thisL instanceof WatchableList)
+      {
+        final WatchableList wl = (WatchableList) thisL;
+        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
+        {
+          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl
+              .getStartDTG(), wl.getEndDTG());
+          if (outerPeriod == null)
+          {
+            outerPeriod = thisP;
+          }
+          else
+          {
+            outerPeriod.extend(wl.getStartDTG());
+            outerPeriod.extend(wl.getEndDTG());
+          }
+        }
+      }
+    }
+    return outerPeriod;
+  }
+
   /**
    * parse a list of strings
    *
@@ -1959,7 +2017,7 @@ public class ImportNarrativeDocument
           addEntry(thisN);
 
           // log the fact we did this
-          Application.logError2(Application.WARNING,
+          logError(ToolParent.WARNING,
               "Import terminated at phrase:" + thisN.text, null);
 
           // and drop out of the loop
@@ -2054,35 +2112,6 @@ public class ImportNarrativeDocument
     }
   }
 
-  private TimePeriod outerPeriodFor(Layers theLayers)
-  {
-    TimePeriod outerPeriod = null;
-    final Enumeration<Editable> layers = theLayers.elements();
-    while (layers.hasMoreElements())
-    {
-      final Layer thisL = (Layer) layers.nextElement();
-      if (thisL instanceof WatchableList)
-      {
-        final WatchableList wl = (WatchableList) thisL;
-        if (wl.getStartDTG() != null && wl.getEndDTG() != null)
-        {
-          final TimePeriod thisP = new TimePeriod.BaseTimePeriod(wl
-              .getStartDTG(), wl.getEndDTG());
-          if (outerPeriod == null)
-          {
-            outerPeriod = thisP;
-          }
-          else
-          {
-            outerPeriod.extend(wl.getStartDTG());
-            outerPeriod.extend(wl.getEndDTG());
-          }
-        }
-      }
-    }
-    return outerPeriod;
-  }
-
   /**
    * is there a single visible track present?
    *
@@ -2151,32 +2180,6 @@ public class ImportNarrativeDocument
     }
 
     return res;
-  }
-
-  /**
-   * check if the layers contains a single track object
-   * 
-   * @param layers
-   * @return
-   */
-  private static boolean singleTrackIn(final Layers layers)
-  {
-    int ctr = 0;
-    final int len = layers.size();
-    for (int i = 0; i < len; i++)
-    {
-      final Layer next = layers.elementAt(i);
-      if (next instanceof TrackWrapper)
-      {
-        ctr++;
-
-        if (ctr > 1)
-        {
-          break;
-        }
-      }
-    }
-    return ctr == 1;
   }
 
   private String trackFor(final String originalName)
