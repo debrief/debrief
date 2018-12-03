@@ -1467,7 +1467,7 @@ public class ImportNarrativeDocument
    * track name to use if we're missing the hidden metadata
    *
    */
-  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";;
+  private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";
 
   /**
    * marker for end of narrative
