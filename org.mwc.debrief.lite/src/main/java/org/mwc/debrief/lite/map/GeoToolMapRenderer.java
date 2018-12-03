@@ -14,7 +14,9 @@
  */
 package org.mwc.debrief.lite.map;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
 
@@ -28,6 +30,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
@@ -41,6 +44,9 @@ import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
 //import org.geotools.swing.tool.ScrollWheelTool;
+import org.opengis.referencing.FactoryException;
+
+import com.bbn.openmap.proj.coords.CoordinateReferenceSystem;
 
 import MWC.GUI.Tools.Swing.SwingToolbar;
 
@@ -55,6 +61,8 @@ public class GeoToolMapRenderer extends MapRenderer
   private JMapPane mapPane;
   private MapContent mapComponent;
 
+  private Graphics graphics;
+  
   @Override
   public void addMapTool(final SwingToolbar theToolbar)
   {
@@ -100,10 +108,24 @@ public class GeoToolMapRenderer extends MapRenderer
   @Override
   public void createMapLayout()
   {
-    mapPane = new JMapPane();
+    mapPane = new JMapPane() {
+    	
+    	@Override
+    	protected void paintComponent(Graphics arg0) {
+    		// TODO Auto-generated method stub
+    		super.paintComponent(arg0);
+    		
+    		if(graphics == null) {
+    			graphics = arg0;
+    		}
+    		
+    	}
+    };
+    
     mapPane.setRenderer(new StreamingRenderer());
     mapPane.setMapContent(mapComponent);
 
+    
     final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
     mapLayerTable.setVisible(false);
     mapLayerTable.setPreferredSize(new Dimension(200, 400));
@@ -150,6 +172,18 @@ public class GeoToolMapRenderer extends MapRenderer
     final Layer layer = new FeatureLayer(featureSource, style);
     mapComponent.addLayer(layer);
 
+    
+    
   }
 
+  
+  /**
+   * returns java.awt.Graphics object
+   * 
+   * @return
+   */
+  public Graphics getGraphicsContext() {
+	  return graphics;
+  }
+  
 }
