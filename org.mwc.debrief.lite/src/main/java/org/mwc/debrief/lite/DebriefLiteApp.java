@@ -96,7 +96,7 @@ public class DebriefLiteApp
     {
       e.printStackTrace();
     }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+    theFrame = new JFrame(appName + " (" + "1.1"
         + ")");
     initForm();
     createAppPanels();
