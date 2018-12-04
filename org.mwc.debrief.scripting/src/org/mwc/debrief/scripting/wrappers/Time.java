@@ -18,69 +18,86 @@ import org.eclipse.ease.modules.WrapToScript;
 
 public class Time
 {
-  @WrapToScript
-  public static long getTime()
+  public static class DTime
   {
-    return 0;
-  }
+    /**
+     * the automatic timer we are using
+     */
+    //private final MWC.Utilities.Timer.Timer _myTimer;
+    
+    
 
-  @WrapToScript
-  public static long getStart()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long getTime()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long finishTime()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long getStart()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long getSmall()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long finishTime()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long largeStep()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long getSmall()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long setTime(long _time)
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long largeStep()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long setSmall()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long setTime(final long _time)
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long largeStep(long _step)
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long setSmall()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long doStep()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long largeStep(final long _step)
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long play()
-  {
-    return 0;
-  }
+    @WrapToScript
+    public static long doStep()
+    {
+      return 0;
+    }
 
-  @WrapToScript
-  public static long stop()
-  {
-    return 0;
+    @WrapToScript
+    public static long play()
+    {
+      // ok - make sure the time has the right time
+      //getTimer().setDelay(delayToUse);
+
+      //getTimer().start();
+      return 0;
+    }
+
+    @WrapToScript
+    public static long stop()
+    {
+      return 0;
+    }
+    
+    
   }
+  
 }

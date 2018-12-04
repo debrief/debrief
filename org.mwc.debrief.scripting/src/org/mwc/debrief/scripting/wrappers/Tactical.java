@@ -18,7 +18,7 @@ public class Tactical
     final Fix fix = new Fix(time, location, courseRads, speedYps);
     return new FixWrapper(fix);
   }
-  
+
   public static SensorWrapper createSensor(final String name)
   {
     final SensorWrapper sensor = new SensorWrapper(name);

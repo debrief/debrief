@@ -254,6 +254,10 @@ public class Core
       return _layers.size();
     }
 
+    public void clear()
+    {
+      _layers.clear();
+    }
   }
 
   public static class TestCore extends TestCase
