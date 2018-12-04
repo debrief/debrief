@@ -72,14 +72,14 @@ import MWC.TacticalData.NarrativeWrapper;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class DebriefLiteApp  
+public class DebriefLiteApp
 {
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
   private static MapContent mapComponent;
   private Graphics graphics;
-  
+
   private static JScrollPane createScrollPane(
       final JPanelWithTitleBar jTitleBar)
   {
@@ -108,11 +108,11 @@ public class DebriefLiteApp
 
   public DebriefLiteApp()
   {
-	  
-	geoMapRenderer = new GeoToolMapRenderer();
+
+    geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     mapComponent = geoMapRenderer.getMapComponent();
-    
+
     try
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -122,8 +122,9 @@ public class DebriefLiteApp
     {
       e.printStackTrace();
     }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
-    
+    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+        + ")");
+
     initForm();
     createAppPanels();
 
@@ -221,7 +222,7 @@ public class DebriefLiteApp
     addStatusBar();
     // dummy placeholder
     addMenus();
-    
+
   }
 
   /**
@@ -303,113 +304,128 @@ public class DebriefLiteApp
     statusBar.setText(message);
   }
 
+  private void startDebriefLiteApplication()
+  {
+    DebriefLiteApplication application = new DebriefLiteApplication();
+    Clipboard theClipboard = new Clipboard("Debrief");
+    DebriefLiteSession session = new DebriefLiteSession(theClipboard);
 
-private void startDebriefLiteApplication() {
-	DebriefLiteApplication application = new DebriefLiteApplication();
-	Clipboard theClipboard = new Clipboard("Debrief");
-	DebriefLiteSession session = new DebriefLiteSession(theClipboard);
-	
-	application.openFile(new java.io.File("C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep"));
-	
-	File testFile                   = new File("C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep");
-	final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
-    final File[] _theFiles          = new File[]{testFile};
+    application.openFile(new java.io.File(
+        "C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep"));
 
-    
-    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+    File testFile = new File(
+        "C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep");
+    final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+    final File[] _theFiles = new File[]
+    {testFile};
+
+    ImportReplay.initialise(new DebriefLiteToolParent(
+        ImportReplay.IMPORT_AS_OTG, 0L));
 
     MWC.Utilities.ReaderWriter.ImportManager.addImporter(
-            new Debrief.ReaderWriter.Replay.ImportReplay());
+        new Debrief.ReaderWriter.Replay.ImportReplay());
 
-        // get our thread to import this
-        final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
-            new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
-                _theFiles, _theLayers)
-            {
-              // handle completion of the full import process
-              @Override
-              public void allFilesFinished(final File[] fNames,
-                  final Layers newData)
-              {
-                //allFilesFinished = true;
-            	  System.out.println("1...all files finished reading....");
-              }
-
-              // handle the completion of each file
-              @Override
-              public void fileFinished(final File fName, final Layers newData)
-              {
-            	  System.out.println("2...files finished reading...." + newData.size());
-              }
-            };
-
-        // and start it running
-        reader.start();
-
-        // wait for the results
-        while (reader.isAlive())
+    // get our thread to import this
+    final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader =
+        new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(_theFiles,
+            _theLayers)
         {
-          try
+          // handle completion of the full import process
+          @Override
+          public void allFilesFinished(final File[] fNames,
+              final Layers newData)
           {
-            Thread.sleep(100);
+            // allFilesFinished = true;
+            System.out.println("1...all files finished reading....");
           }
-          catch (final java.lang.InterruptedException e)
+
+          // handle the completion of each file
+          @Override
+          public void fileFinished(final File fName, final Layers newData)
           {
+            System.out.println("2...files finished reading...." + newData
+                .size());
           }
-        }
+        };
+
+    // and start it running
+    reader.start();
+
+    // wait for the results
+    while (reader.isAlive())
+    {
+      try
+      {
+        Thread.sleep(100);
+      }
+      catch (final java.lang.InterruptedException e)
+      {
+      }
+    }
+
+    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
+    Enumeration<Editable> enumerations = track.getPositionIterator();
+
+    System.out.println(" random location " + track.getBounds()
+        .getRandomLocation());
+
+    int count = 0;
+    // while(enumerations.hasMoreElements()) {
+    // System.out.println(enumerations.nextElement().getName());
+    // count++;
+    // }
+    //
+    // System.out.println("total track read " + count);
+    //
+    //// stopping the reader for the time being
+    ////////////////////// going to read again using a different method
+    // readReplayFile();
+
+    final MapContent map = geoMapRenderer.getMapComponent();
     
-        TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-        Enumeration<Editable>enumerations = track.getPositionIterator();
-        
-        System.out.println(" random location " + track.getBounds().getRandomLocation());
-        
-        int count = 0;
-//        while(enumerations.hasMoreElements()) {
-//        	System.out.println(enumerations.nextElement().getName());
-//        	count++;
-//        }
-//        
-//        System.out.println("total track read " +  count);
-//        
-        //// stopping the reader for the time being
-        ////////////////////// going to read again using a different method
-        //readReplayFile();
-        
-  	//// now start plotting the tracks
-    System.out.println(geoMapRenderer.getMapComponent().getViewport().getWorldToScreen());
-    
-  	final int len = _theLayers.size();
-  	CanvasType dest = new SwingCanvas();
-  	GeoToolMapProjection projection = new GeoToolMapProjection("test");
-  	
-   	Graphics g = geoMapRenderer.getGraphicsContext();
-   	CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
-  	
-   	dest.setProjection(projection);
+    //// now start plotting the tracks
+    System.out.println(geoMapRenderer.getMapComponent().getViewport()
+        .getWorldToScreen());
+
+    final int len = _theLayers.size();
+    CanvasType dest = new SwingCanvas();
+    GeoToolMapProjection projection = new GeoToolMapProjection(map);
+
+    Graphics g = geoMapRenderer.getGraphicsContext();
+    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
+
+    dest.setProjection(projection);
     dest.startDraw(g);
-  	for (int i = 0; i < len; i++)
+    for (int i = 0; i < len; i++)
     {
       final Layer thisLayer = _theLayers.elementAt(i);
       thisLayer.paint(adaptor);
     }
-  	////
-}
+    ////
+  }
 
-  private void readReplayFile() {
-	    final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
-	    File testFile = new File("C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep");
-	    final ImportReplay trackImporter = new ImportReplay();
-	    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
-	    InputStream bs = null;
-		try {
-			bs = new FileInputStream(testFile);
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		}
-	    trackImporter.importThis("C:\\\\Users\\\\Binu\\\\workspace\\\\GeoToolsTest\\\\src\\\\org\\\\test\\\\boat1.rep", bs,_theLayers); 	
-	    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-	    System.out.println(_theLayers.size());	
-  }	
+  private void readReplayFile()
+  {
+    final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+    File testFile = new File(
+        "C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep");
+    final ImportReplay trackImporter = new ImportReplay();
+    ImportReplay.initialise(new DebriefLiteToolParent(
+        ImportReplay.IMPORT_AS_OTG, 0L));
+    InputStream bs = null;
+    try
+    {
+      bs = new FileInputStream(testFile);
+    }
+    catch (FileNotFoundException e1)
+    {
+      e1.printStackTrace();
+    }
+    trackImporter.importThis(
+        "C:\\\\Users\\\\Binu\\\\workspace\\\\GeoToolsTest\\\\src\\\\org\\\\test\\\\boat1.rep",
+        bs, _theLayers);
+    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
+    System.out.println(_theLayers.size());
+  }
 
-  
 }
