@@ -159,6 +159,14 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       }
     });
 
+    addHandler(new BMRObserverHandler()
+    {
+      public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
+
     addHandler(new CSVExportDetectionObserverHandler()
     {
       public void setObserver(final ScenarioObserver obs)
