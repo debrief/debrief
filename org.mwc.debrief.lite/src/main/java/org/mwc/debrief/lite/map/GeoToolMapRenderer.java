@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.lite.map;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
@@ -30,7 +29,6 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
-import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
@@ -43,10 +41,6 @@ import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
-//import org.geotools.swing.tool.ScrollWheelTool;
-import org.opengis.referencing.FactoryException;
-
-import com.bbn.openmap.proj.coords.CoordinateReferenceSystem;
 
 import MWC.GUI.Tools.Swing.SwingToolbar;
 
