@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario Name="BMR_Data_Generator" xmlns="http://www.mwc.org/asset"
 	ShowSymbol="false" ShowActivity="false" ShowName="false"
-	StartTime="2016-11-05T15:00:00">
+	StartTime="2016-11-25T15:00:00">
 	<StepTime Units="minutes" Value="11" />
 	<Participants>
 		<Surface Name="GreenFV1">
