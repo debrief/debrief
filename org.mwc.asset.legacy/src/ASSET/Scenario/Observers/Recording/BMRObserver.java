@@ -2,7 +2,7 @@
  *    Debrief - the Open Source Maritime Analysis Application
  *    http://debrief.info
  *
- *    (C) 2000-2014, PlanetMayo Ltd
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the Eclipse Public License v1.0
@@ -33,7 +33,6 @@ import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
-import junit.framework.TestCase;
 
 public class BMRObserver extends RecordStatusToFileObserverType
 {
@@ -75,51 +74,6 @@ public class BMRObserver extends RecordStatusToFileObserverType
     }
   }
 
-  public static class TestConvert extends TestCase
-  {
-    public static void testPack()
-    {
-      assertEquals("valid string", "0000.0000,N", pack(0, true));
-      assertEquals("valid string", "00000.0000,E", pack(0, false));
-
-      assertEquals("valid string", "4530.0000,N", pack(45.5, true));
-      assertEquals("valid string", "04530.0000,E", pack(45.5, false));
-
-      assertEquals("valid string", "0000.6000,S", pack(-0.01, true));
-      assertEquals("valid string", "00000.6000,W", pack(-0.01, false));
-
-      assertEquals("valid string", "4530.0000,S", pack(-45.5, true));
-      assertEquals("valid string", "04530.0000,W", pack(-45.5, false));
-    }
-  }
-
-  private final static String pack(final double val, final boolean isLat)
-  {
-    final boolean isPos = val >= 0;
-    final double aVal = Math.abs(val);
-
-    final int intPart = (int) Math.floor(aVal);
-    final double floatPart = (aVal - intPart) * 60d;
-    final DecimalFormat p1 = new DecimalFormat("00");
-    final DecimalFormat p2 = new DecimalFormat("000");
-    final DecimalFormat p3 = new DecimalFormat("00.0000");
-
-    final String degs = isLat ? p1.format(intPart) : p2.format(intPart);
-    final String other = p3.format(floatPart);
-
-    final String hemi;
-    if (isLat)
-    {
-      hemi = isPos ? "N" : "S";
-    }
-    else
-    {
-      hemi = isPos ? "E" : "W";
-    }
-
-    return degs + other + "," + hemi;
-  }
-
   /***************************************************************
    * constructor
    ***************************************************************/
@@ -138,6 +92,10 @@ public class BMRObserver extends RecordStatusToFileObserverType
   final private DecimalFormat ONE_DP = new DecimalFormat("0.0");
 
   final private String LB = System.getProperty("line.separator");
+
+  String lastActivity;
+
+  Date lastDay = null;
 
   /**
    * create a new monitor
@@ -167,6 +125,42 @@ public class BMRObserver extends RecordStatusToFileObserverType
   protected Editable.EditorType createEditor()
   {
     return new BMRObserver.BMRObserverInfo(this);
+  }
+
+  /**
+   * write this text to our stream
+   *
+   * @param msg
+   *          the string to write
+   */
+  private void doWriteToFile(final Long dtg, final String msg)
+  {
+    if (msg != null)
+    {
+
+      final String dateMsg;
+      if (dtg != null)
+      {
+        dateMsg = TIME_MARKER.format(new Date(dtg)) + "\t" + msg + LB;
+      }
+      else
+      {
+        dateMsg = msg;
+      }
+
+      try
+      {
+        if (_os == null)
+          super.createOutputFile();
+
+        _os.write(dateMsg);
+        _os.flush();
+      }
+      catch (final IOException e)
+      {
+        e.printStackTrace();
+      }
+    }
   }
 
   /**
@@ -252,7 +246,7 @@ public class BMRObserver extends RecordStatusToFileObserverType
   protected void writeThesePositionDetails(final WorldLocation loc,
       final Status stat, final ParticipantType pt, final long newTime)
   {
-    double thisNum = Math.random();
+    final double thisNum = Math.random();
 
     if (thisNum > 0.8)
     {
@@ -267,8 +261,6 @@ public class BMRObserver extends RecordStatusToFileObserverType
 
   }
 
-  String lastActivity;
-
   @Override
   protected void writeThisDecisionDetail(final NetworkParticipant pt,
       final String activity, final long dtg)
@@ -281,23 +273,22 @@ public class BMRObserver extends RecordStatusToFileObserverType
     lastActivity = activity;
   }
 
-  Date lastDay = null;
-
   /**
    * write this text to our stream
    *
    * @param msg
    *          the string to write
    */
+  @SuppressWarnings("deprecation")
   private void writeToFile(final long dtg, final String msg)
   {
     // have we changed day?
-    Date thisDay = new Date(dtg);
+    final Date thisDay = new Date(dtg);
     thisDay.setHours(0);
     thisDay.setMinutes(0);
     thisDay.setSeconds(0);
-    
-    if(lastDay == null)
+
+    if (lastDay == null)
     {
       // ok, write the header
       doWriteToFile(null, "START OF RECORDS FOR TRIAL");
@@ -311,41 +302,5 @@ public class BMRObserver extends RecordStatusToFileObserverType
     }
 
     doWriteToFile(dtg, msg);
-  }
-
-  /**
-   * write this text to our stream
-   *
-   * @param msg
-   *          the string to write
-   */
-  private void doWriteToFile(final Long dtg, final String msg)
-  {
-    if (msg != null)
-    {
-
-      final String dateMsg;
-      if (dtg != null)
-      {
-        dateMsg = TIME_MARKER.format(new Date(dtg)) + "\t" + msg + LB;
-      }
-      else
-      {
-        dateMsg = msg;
-      }
-
-      try
-      {
-        if (_os == null)
-          super.createOutputFile();
-
-        _os.write(dateMsg);
-        _os.flush();
-      }
-      catch (final IOException e)
-      {
-        e.printStackTrace();
-      }
-    }
   }
 }
