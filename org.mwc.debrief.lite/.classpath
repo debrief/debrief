@@ -23,11 +23,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.geotools"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.jfreechart"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.NaturalEarth"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.openmap"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.gt2Plot"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
