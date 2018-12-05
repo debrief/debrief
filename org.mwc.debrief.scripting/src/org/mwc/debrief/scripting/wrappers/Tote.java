@@ -14,7 +14,41 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+
+import MWC.GenericData.WatchableList;
+
 public class Tote
 {
-  // TODO
+  private final TrackManager trackManager;
+
+  public Tote(final TrackManager _trackManager)
+  {
+    trackManager = _trackManager;
+  }
+
+  public WatchableList getPrimaryTrack()
+  {
+    return trackManager.getPrimaryTrack();
+  }
+
+  public WatchableList[] getSecondaryTracks()
+  {
+    return trackManager.getSecondaryTracks();
+  }
+
+  public void setPrimaryTrack(final WatchableList primary)
+  {
+    trackManager.setPrimary(primary);
+  }
+
+  public void setSecondary(final WatchableList secondary)
+  {
+    trackManager.setSecondary(secondary);
+  }
+  
+  public void addSecondary(final WatchableList secondary)
+  {
+    trackManager.addSecondary(secondary);
+  }
 }

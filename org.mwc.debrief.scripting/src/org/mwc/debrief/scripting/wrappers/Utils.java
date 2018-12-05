@@ -14,33 +14,44 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
+
 import org.eclipse.ease.modules.WrapToScript;
 
 public class Utils
 {
   @WrapToScript
-  public static String getClipboard()
+  public static String getClipboard() throws HeadlessException,
+      UnsupportedFlavorException, IOException
   {
-    return null;
+    return (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(
+        DataFlavor.stringFlavor);
   }
 
   @WrapToScript
   public static void setClipboard(String _clipboardData)
   {
-
+    StringSelection selection = new StringSelection(_clipboardData);
+    java.awt.datatransfer.Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clipboard.setContents(selection, selection);
   }
-  
+
   @WrapToScript
   public static void copyPlotToClipboard()
   {
-    
+
   }
-  
+
   @WrapToScript
   public static void writeError(String error)
   {
-    
+
   }
-  
+
   // TODO
 }

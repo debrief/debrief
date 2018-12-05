@@ -84,6 +84,14 @@
             name="Chart"
             visible="true">
       </module>
+      <module
+            category="org.mwc.debrief.scripting.Debrief_Category"
+            class="org.mwc.debrief.scripting.wrappers.Layers"
+            icon="icons/debrief_icon.png"
+            id="org.mwc.debrief.scripting.module"
+            name="Layers"
+            visible="true">
+      </module>
       <category
             id="org.mwc.debrief.scripting.Debrief_Category"
             name="Debrief">

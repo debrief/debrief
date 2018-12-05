@@ -17,6 +17,7 @@ Automatic-Module-Name: org.mwc.debrief.scripting
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: org.eclipse.ui.plugin,
  org.mwc.cmap.core.DataTypes.Temporal,
+ org.mwc.cmap.core.DataTypes.TrackData,
  org.mwc.cmap.core.ui_support,
  org.mwc.debrief.core.editors
 Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator

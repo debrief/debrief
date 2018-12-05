@@ -14,12 +14,17 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.scripting.wrappers.Layers.DLayers;
 
 import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -70,7 +75,8 @@ public class Core
     {
       if (_editor != null)
       {
-        final MWC.GUI.Layers layers = (MWC.GUI.Layers) _editor.getAdapter(MWC.GUI.Layers.class);
+        final MWC.GUI.Layers layers = (MWC.GUI.Layers) _editor.getAdapter(
+            MWC.GUI.Layers.class);
         if (layers != null)
         {
           return new DLayers(layers);
@@ -87,6 +93,48 @@ public class Core
       return time.getTime();
     }
 
+    public TimeControlPreferences getTimeControlPreferences()
+    {
+      if (_editor != null)
+      {
+        TimeControlPreferences timeControlPreferences =
+            (TimeControlPreferences) _editor.getAdapter(
+                TimeControlPreferences.class);
+        if (timeControlPreferences != null)
+        {
+          return timeControlPreferences;
+        }
+      }
+      return null;
+    }
+
+    public TimeManager getTimeManager()
+    {
+      if (_editor != null)
+      {
+        TimeManager timeManager = (TimeManager) _editor.getAdapter(
+            ControllableTime.class);
+        if (timeManager != null)
+        {
+          return timeManager;
+        }
+      }
+      return null;
+    }
+
+    public Tote getTote()
+    {
+      if (_editor != null)
+      {
+        TrackManager trackManager = (TrackManager) _editor.getAdapter(
+            TrackManager.class);
+        if ( trackManager != null )
+        {
+          return new Tote(trackManager);
+        }
+      }
+      return null;
+    }
   }
 
   /*
@@ -101,6 +149,11 @@ public class Core
       final int size)
   {
     return new Font(fontName, style, size);
+  }
+
+  public static Duration createDuration(final int value, final int units)
+  {
+    return new Duration(value, units);
   }
 
   /**
