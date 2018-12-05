@@ -17,8 +17,8 @@ package ASSET.Scenario.Observers.Recording;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 
@@ -29,10 +29,12 @@ import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Participants.Status;
+import Debrief.ReaderWriter.Replay.ImportNarrative2.LoremIpsum;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class BMRObserver extends RecordStatusToFileObserverType
 {
@@ -77,17 +79,15 @@ public class BMRObserver extends RecordStatusToFileObserverType
   /***************************************************************
    * constructor
    ***************************************************************/
-
-  protected boolean _haveOutputPositions = false;
   /**
    * the (optional) type of sensor we listen to
    *
    */
   private final String _subjectSensor;
 
-  final private SimpleDateFormat DAY_MARKER = new SimpleDateFormat("dd MMM yy");
+  final private DateFormat DAY_MARKER = new GMTDateFormat("dd MMM yy");
 
-  final private SimpleDateFormat TIME_MARKER = new SimpleDateFormat("ddHHmm");
+  final private DateFormat TIME_MARKER = new GMTDateFormat("ddHHmm");
 
   final private DecimalFormat ONE_DP = new DecimalFormat("0.0");
 
@@ -200,6 +200,44 @@ public class BMRObserver extends RecordStatusToFileObserverType
   protected void writeFileHeaderDetails(final String title,
       final long currentDTG) throws IOException
   {
+    // inject some lorem ipsum, with +typical+ problems in there
+    final LoremIpsum lorem = new LoremIpsum();
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "12344321 is the contact number" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "123443Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "121243Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "previous content, 62344321 is the contact number" + LB);
+    doWriteToFile(null, "previous content, 121243Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "62344321 is the contact number" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+  }
+
+  
+  
+  @Override
+  protected void writeTheFooter()
+  {
+    // ok, end of text
+    final LoremIpsum lorem = new LoremIpsum();
+    doWriteToFile(null, "END RECORDS FOR SOME EXERCISE NAME" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "223443Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, "previous content, 223443Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "321243Z is the DTG we're seeing" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    doWriteToFile(null, "72344321 is the contact number" + LB);
+    doWriteToFile(null, "previous content, 72344321 is the contact number" + LB);
+    doWriteToFile(null, lorem.sentences(2) + LB);
+    
+    super.writeTheFooter();
   }
 
   /**
@@ -229,12 +267,11 @@ public class BMRObserver extends RecordStatusToFileObserverType
       if ((_subjectSensor == null || _subjectSensor.equals(sensorName)) && Math
           .random() <= 0.1)
       {
-        final double brg = MWC.Algorithms.Conversions.Degs2Rads(de
-            .getBearing());
+        final double brg = Math.abs(de.getBearing());
         final String tgtId = "" + de.getTarget();
         final String trimmedTgt = tgtId.substring(3);
         final double rng = de.getRange().getValueIn(WorldDistance.KM);
-        final String FCS = "SR" + trimmedTgt + " AAAA 1936 BBB (Lost)  B-"
+        final String FCS = "SR" + trimmedTgt + " AAAA 1936 BBB (Lost) B-"
             + (int) brg + " R-" + ONE_DP.format(rng)
             + "kyds C-321 S-6kts  Classified AAAAAA BBBBBB AAAAAA";
         writeToFile(dtg, FCS);
@@ -291,7 +328,7 @@ public class BMRObserver extends RecordStatusToFileObserverType
     if (lastDay == null)
     {
       // ok, write the header
-      doWriteToFile(null, "START OF RECORDS FOR TRIAL");
+      doWriteToFile(null, "START RECORDS FOR TRIAL" + LB);
     }
 
     if (lastDay == null || !thisDay.equals(lastDay))
