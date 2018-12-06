@@ -224,7 +224,7 @@ public final class ImportData2 extends PlainTool {
 
     // get the filename of the file to import
     final File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep,*.dsf,*.dtf",
-                                                              "Replay Files (*.rep)",
+                                                              "Replay Files (*.rep,*.dsf,*.dtf)",
                                                               _lastDirectory);
 
     res = new ImportAction(tmpSession, fList, _theApplication);

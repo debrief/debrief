@@ -114,8 +114,14 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		// allow multiple selections
 		jf.setMultiSelectionEnabled(true);
 
-		if(filter != null)
-			jf.setFileFilter(new TextFilter(description, filter));
+    if (filter != null)
+    {
+      jf.resetChoosableFileFilters();
+      jf.setFileFilter(new TextFilter(description, filter));
+      // don't allow file filter to be used, since the importer falls over.
+      // we expect
+      jf.setAcceptAllFileFilterUsed(false);
+    }
 
     // check that we know of an existing last directory, and that it isn't zero length
 		if(lastDirectory != null)

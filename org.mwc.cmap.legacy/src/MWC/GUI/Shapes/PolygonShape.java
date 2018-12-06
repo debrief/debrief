@@ -160,10 +160,7 @@ public class PolygonShape extends PlainShape implements Editable,
      */
     public void close()
     {
-      _myName = null;
-      _myLocation = null;
       _myEditor = null;
-      _myParent = null;
     }
 
     @Override
