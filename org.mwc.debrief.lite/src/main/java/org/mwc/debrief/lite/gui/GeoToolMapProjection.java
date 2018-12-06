@@ -36,6 +36,12 @@ public class GeoToolMapProjection extends PlainProjection
   private DirectPosition2D _workScreen;
   private final Layers _layers;
 
+  @Override
+  public WorldArea getVisibleDataArea()
+  {
+    return _layers.getBounds();
+  }
+
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
     super("GeoTools Map");
