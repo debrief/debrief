@@ -279,7 +279,7 @@ public class DebriefLiteApp {
 
 		DebriefLiteApplication application = new DebriefLiteApplication();
     final String boat_file =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
 		application.openFile(new java.io.File(boat_file));
 		File testFile = new File(boat_file);
 		final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
@@ -315,6 +315,8 @@ public class DebriefLiteApp {
 			} catch (final java.lang.InterruptedException e) {
 			}
 		}
+		
+		System.out.println("num layers:" + _theLayers.size());
 
 		TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
 		if(track != null)
@@ -322,16 +324,13 @@ public class DebriefLiteApp {
 	    Enumeration<Editable> enumerations = track.getPositionIterator();
 	    int cnt = 0;
 	    while (enumerations.hasMoreElements()) {
-	      final FixWrapper fix = (FixWrapper) enumerations.nextElement();
-	      WorldLocation loc = fix.getFixLocation();
-	      System.out.println(" lat and lon in rep file " + loc.getLat() + " , " + loc.getLong());
+	      @SuppressWarnings("unused")
+        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
 	      cnt++;
 	    }
 
 	    JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
 		}
-
-//		System.out.println(" random location " + track.getBounds().getRandomLocation());
 
 		final MapContent map = geoMapRenderer.getMapComponent();
 
