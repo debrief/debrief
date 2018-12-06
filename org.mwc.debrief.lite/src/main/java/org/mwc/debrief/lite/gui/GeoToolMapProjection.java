@@ -66,7 +66,6 @@ public class GeoToolMapProjection extends PlainProjection
     }
     catch (FactoryException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
@@ -89,7 +88,6 @@ public class GeoToolMapProjection extends PlainProjection
     }
     catch (MismatchedDimensionException | TransformException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return res;

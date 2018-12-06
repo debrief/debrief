@@ -313,6 +313,7 @@ public class DebriefLiteApp {
 			try {
 				Thread.sleep(100);
 			} catch (final java.lang.InterruptedException e) {
+			  // ignore it.
 			}
 		}
 		

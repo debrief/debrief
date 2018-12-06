@@ -124,7 +124,6 @@ public class GeoToolMapRenderer extends MapRenderer {
 
       @Override
 			protected void paintComponent(Graphics arg0) {
-				// TODO Auto-generated method stub
 				super.paintComponent(arg0);
 
 				if (graphics == null) {
