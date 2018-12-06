@@ -76,8 +76,6 @@ public class DebriefLiteApplication extends Application {
 	      session = new DebriefLiteSession(this, getClipboard(), super.getNewSessionName());
 	    }
 
-	    DebriefLiteSession dls = (DebriefLiteSession) session;
-
 	    // pass the session to the parent
 	    super.newSession(session);
 

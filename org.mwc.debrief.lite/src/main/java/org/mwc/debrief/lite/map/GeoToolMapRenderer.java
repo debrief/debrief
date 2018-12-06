@@ -117,7 +117,12 @@ public class GeoToolMapRenderer extends MapRenderer {
 	public void createMapLayout() {
 		mapPane = new JMapPane() {
 
-			@Override
+			/**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      @Override
 			protected void paintComponent(Graphics arg0) {
 				// TODO Auto-generated method stub
 				super.paintComponent(arg0);
@@ -154,7 +159,13 @@ public class GeoToolMapRenderer extends MapRenderer {
 
 	@Override
 	public void loadMapContent() {
-		final File file = JFileDataStoreChooser.showOpenFile("shp", null);
+	  final String shape_path =
+        "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+	  File file = new File(shape_path);
+	  if(!file.exists())
+	  {
+	    file = JFileDataStoreChooser.showOpenFile("shp", null);
+	  }
 		if (file == null) {
 			return;
 		}

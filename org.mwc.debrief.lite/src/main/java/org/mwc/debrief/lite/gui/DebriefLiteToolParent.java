@@ -4,7 +4,6 @@ import java.util.Map;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector;
-import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 

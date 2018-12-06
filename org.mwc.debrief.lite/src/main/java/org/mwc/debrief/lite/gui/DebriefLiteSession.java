@@ -14,10 +14,9 @@ public final class DebriefLiteSession extends Session {
 	private static final long serialVersionUID = 3661691617306670541L;
 
 	/** an instance of DebriefLiteImportData **/
-	private transient ToolParent theParent;
+	@SuppressWarnings("unused")
+  private transient ToolParent theParent;
 
-	private JScrollPane scrollPane;
-	
 	public DebriefLiteSession(Clipboard theClipboard) {
 		super(theClipboard);
 	}
@@ -59,7 +58,6 @@ public final class DebriefLiteSession extends Session {
 	 * @param pane
 	 */
 	public void resolveViewDependency(final JScrollPane pane) {
-		this.scrollPane = pane;
 	}
 	
 }

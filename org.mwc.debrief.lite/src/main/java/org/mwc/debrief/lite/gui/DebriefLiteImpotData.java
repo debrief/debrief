@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.gui;
 
 import java.io.File;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 import Debrief.Tools.Operations.ImportData2.ImportAction;
@@ -10,7 +11,8 @@ import MWC.GUI.Tools.PlainTool;
 
 public class DebriefLiteImpotData extends PlainTool {
 
-	private ToolParent theParent;
+	@SuppressWarnings("unused")
+  private ToolParent theParent;
 	
 	private Application theApplication;
 	
@@ -21,7 +23,7 @@ public class DebriefLiteImpotData extends PlainTool {
 		
 		this.theParent = theParent;
 		this.theApplication = theApplication;
-		this.session = session;
+		this.session = theSessionVal;
 	}
 	
 	@Override
