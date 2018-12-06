@@ -174,17 +174,17 @@ public class DebriefLiteApp {
 		final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
 		rightSplit.setOneTouchExpandable(true);
 
-		controlPanelSplit.setOneTouchExpandable(true);
-		graphSplit.setOneTouchExpandable(true);
-		rightSplit.setDividerLocation(width - 50);
-		graphSplit.setDividerLocation(height / 2 + height / 5);
-		controlPanelSplit.setDividerLocation(height / 2);
-		leftSplit.setDividerLocation(width / 3);
-		rightSplit.setResizeWeight(0.9);
-		graphSplit.setResizeWeight(0.5);
-		editorPanel.addMaxListenerFor(leftSplit, graphSplit);
-		graphPanel.addMinListenerFor(graphSplit);
-		leftSplit.setOneTouchExpandable(true);
+    //controlPanelSplit.setOneTouchExpandable(true);
+    //graphSplit.setOneTouchExpandable(true);
+    rightSplit.setDividerLocation(width - 50);
+    graphSplit.setDividerLocation(height / 2 + height / 5);
+    controlPanelSplit.setDividerLocation(height / 2);
+    leftSplit.setDividerLocation(width / 3);
+    rightSplit.setResizeWeight(0.9);
+    graphSplit.setResizeWeight(0.5);
+    editorPanel.addMaxListenerFor(leftSplit, graphSplit);
+    graphPanel.addMinListenerFor(graphSplit);
+    //leftSplit.setOneTouchExpandable(true);
 		_notesIconLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(final MouseEvent e) {
@@ -276,11 +276,11 @@ public class DebriefLiteApp {
 	}
 
 	private void startDebriefLiteApplication() {
-
-		DebriefLiteApplication application = new DebriefLiteApplication();
     final String boat_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
-		application.openFile(new java.io.File(boat_file));
+
+//		DebriefLiteApplication application = new DebriefLiteApplication();
+//		application.openFile(new java.io.File(boat_file));
 		File testFile = new File(boat_file);
 		final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
 		final File[] _theFiles = new File[] { testFile };
