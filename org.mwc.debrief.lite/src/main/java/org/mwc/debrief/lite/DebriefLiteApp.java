@@ -278,8 +278,10 @@ public class DebriefLiteApp {
 	private void startDebriefLiteApplication() {
 
 		DebriefLiteApplication application = new DebriefLiteApplication();
-		application.openFile(new java.io.File("C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep"));
-		File testFile = new File("C:\\Users\\Binu\\workspace\\GeoToolsTest\\src\\org\\test\\boat1.rep");
+    final String boat_file =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
+		application.openFile(new java.io.File(boat_file));
+		File testFile = new File(boat_file);
 		final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
 		final File[] _theFiles = new File[] { testFile };
 
@@ -315,17 +317,20 @@ public class DebriefLiteApp {
 		}
 
 		TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-		Enumeration<Editable> enumerations = track.getPositionIterator();
+		if(track != null)
+		{
+	    Enumeration<Editable> enumerations = track.getPositionIterator();
+	    int cnt = 0;
+	    while (enumerations.hasMoreElements()) {
+	      final FixWrapper fix = (FixWrapper) enumerations.nextElement();
+	      WorldLocation loc = fix.getFixLocation();
+	      System.out.println(" lat and lon in rep file " + loc.getLat() + " , " + loc.getLong());
+	      cnt++;
+	    }
 
-		int cnt = 0;
-		while (enumerations.hasMoreElements()) {
-			final FixWrapper fix = (FixWrapper) enumerations.nextElement();
-			WorldLocation loc = fix.getFixLocation();
-			System.out.println(" lat and lon in rep file " + loc.getLat() + " , " + loc.getLong());
-			cnt++;
+	    JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
 		}
 
-		JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
 //		System.out.println(" random location " + track.getBounds().getRandomLocation());
 
 		final MapContent map = geoMapRenderer.getMapComponent();
@@ -334,7 +339,7 @@ public class DebriefLiteApp {
 
 		final int len = _theLayers.size();
 		CanvasType dest = new SwingCanvas();
-		GeoToolMapProjection projection = new GeoToolMapProjection(map);
+		GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
 		Graphics g = geoMapRenderer.getGraphicsContext();
 		CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
 		dest.setProjection(projection);
@@ -345,7 +350,7 @@ public class DebriefLiteApp {
 		}
       
 		// first approach
-		//paintTest(g, projection);
+		paintTest(g, projection);
 
 		// second approach
 		drawLine1();
@@ -354,11 +359,14 @@ public class DebriefLiteApp {
 	private void paintTest(Graphics g, GeoToolMapProjection projection) {
 
 		// 60N 30W to 10N 10W
-		WorldLocation loc1 = new WorldLocation(Double.parseDouble("60"), Double.parseDouble("30"), 0);
-		WorldLocation loc2 = new WorldLocation(Double.parseDouble("10"), Double.parseDouble("10"), 0);
+		WorldLocation loc1 = new WorldLocation(50d, 40d, 0);
+		WorldLocation loc2 = new WorldLocation(10d, 10d, 0);
 
 		Point p1 = projection.toScreen(loc1);
 		Point p2 = projection.toScreen(loc2);
+		
+		
+		System.out.println(projection.toWorld(p1));
 
 		geoMapRenderer.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
 		theFrame.repaint();
