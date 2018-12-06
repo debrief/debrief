@@ -52,7 +52,6 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
-import org.mwc.debrief.lite.gui.DebriefLiteApplication;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -289,5 +288,133 @@ public class DebriefLiteApp {
   public void setStatus(final String message)
   {
     statusBar.setText(message);
+  }
+  
+  private void startDebriefLiteApplication() {
+    final String boat_file =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
+
+//    DebriefLiteApplication application = new DebriefLiteApplication();
+//    application.openFile(new java.io.File(boat_file));
+    File testFile = new File(boat_file);
+    final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+    final File[] _theFiles = new File[] { testFile };
+
+    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+
+    MWC.Utilities.ReaderWriter.ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+
+    // get our thread to import this
+    final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+        _theFiles, _theLayers) {
+      // handle completion of the full import process
+      @Override
+      public void allFilesFinished(final File[] fNames, final Layers newData) {
+        System.out.println("1...all files finished reading....");
+      }
+
+      // handle the completion of each file
+      @Override
+      public void fileFinished(final File fName, final Layers newData) {
+        System.out.println("2...files finished reading...." + newData.size());
+      }
+    };
+
+    // and start it running
+    reader.start();
+
+    // wait for the results
+    while (reader.isAlive()) {
+      try {
+        Thread.sleep(100);
+      } catch (final java.lang.InterruptedException e) {
+        // ignore it.
+      }
+    }
+    
+    System.out.println("num layers:" + _theLayers.size());
+
+    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
+    if(track != null)
+    {
+      Enumeration<Editable> enumerations = track.getPositionIterator();
+      int cnt = 0;
+      while (enumerations.hasMoreElements()) {
+        @SuppressWarnings("unused")
+        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
+        cnt++;
+      }
+
+      JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
+    }
+
+    final MapContent map = geoMapRenderer.getMapComponent();
+
+    //// now start plotting the tracks
+
+    final int len = _theLayers.size();
+    CanvasType dest = new SwingCanvas();
+    GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
+    Graphics g = geoMapRenderer.getGraphicsContext();
+    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
+    dest.setProjection(projection);
+    dest.startDraw(g);
+    for (int i = 0; i < len; i++) {
+      final Layer thisLayer = _theLayers.elementAt(i);
+      thisLayer.paint(adaptor);
+    }
+      
+    // first approach
+    paintTest(g, projection);
+
+    // second approach
+    drawLine1();
+  }
+  
+  private void paintTest(Graphics g, GeoToolMapProjection projection) {
+
+    // 60N 30W to 10N 10W
+    WorldLocation loc1 = new WorldLocation(50d, 40d, 0);
+    WorldLocation loc2 = new WorldLocation(10d, 10d, 0);
+
+    Point p1 = projection.toScreen(loc1);
+    Point p2 = projection.toScreen(loc2);
+    
+    
+    System.out.println(projection.toWorld(p1));
+
+    geoMapRenderer.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
+    theFrame.repaint();
+  }
+
+  public void drawLine1() {
+
+    SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
+    b.setName("myFeatureType");
+    b.setCRS(DefaultGeographicCRS.WGS84);
+    b.add("location", com.vividsolutions.jts.geom.LineString.class);
+
+    final SimpleFeatureType type = b.buildFeatureType();
+    SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
+    com.vividsolutions.jts.geom.GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+
+    Coordinate[] coords = new Coordinate[2];
+    coords[0] = new Coordinate(60, 30);
+    coords[1] = new Coordinate(10, 10);
+
+    com.vividsolutions.jts.geom.LineString lineString = geometryFactory.createLineString(coords);
+    featureBuilder.add(lineString);
+
+    SimpleFeature feature = featureBuilder.buildFeature("feature1");
+    /////////// create feature collection
+    DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", type);
+    featureCollection.add(feature);
+
+    float lineWidth = 2.0f;
+    Style lineStyle = SLD.createLineStyle(Color.red, lineWidth);
+    org.geotools.map.Layer layer = new FeatureLayer(featureCollection, lineStyle);
+
+    mapComponent.addLayer(layer);
+    theFrame.repaint();
   }
 }
