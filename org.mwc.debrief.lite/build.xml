@@ -1,109 +1,138 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- WARNING: Eclipse auto-generated file.
-              Any modifications will be overwritten.
-              To include a user specific buildfile here, simply create one in the same
-              directory with the processing instruction <?eclipse.ant.import?>
-              as the first entry and export the buildfile again. --><project basedir="." default="build" name="debrief-lite">
-    <property environment="env"/>
-    <property name="ECLIPSE_HOME" value="../../../eclipse/"/>
-    <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.7"/>
-    <property name="source" value="1.7"/>
-    <path id="Maven Dependencies.libraryclasspath"/>
-    
-    <path id="debrief-lite.classpath">
-        <pathelement location="target/classes"/>
-        <pathelement location="target/test-classes"/>
-        <path refid="Maven Dependencies.libraryclasspath"/>
-    </path>
-              	
-    <path id="run.TestFrame.classpath">
-        <path refid="debrief-lite.classpath"/>
-        <path refid="Maven Dependencies.libraryclasspath"/>
-    </path>
-              	
-    <target name="init" depends="clean">
-        <mkdir dir="target/classes"/>
-        <mkdir dir="target/test-classes"/>
-        <copy includeemptydirs="false" todir="target/classes">
-            <fileset dir="src/main/java">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    
-    	<copy includeemptydirs="false" todir="target/classes">
-            <fileset dir="src/main/resources">
-                <exclude name="**/*.java"/>
-            	 <include name="**/*.class"/>
-            	<exclude name="**"/>
-            </fileset>
-        </copy>
-        
-    	<copy includeemptydirs="false" todir="target/test-classes">
-            <fileset dir="src/test/java">
-                <exclude name="**/*.java"/>
-            </fileset>
-        </copy>
-    	
-    </target>
-              	
-    <target name="clean">
-        <delete dir="target/classes"/>
-        <delete dir="target/test-classes"/>
-    </target>
-              	
-    <target depends="clean" name="cleanall"/>
-    <target depends="build-subprojects,build-project" name="build"/>
-    <target name="build-subprojects"/>
-    
-    <target depends="init" name="build-project">
-        <echo message="${ant.project.name}: ${ant.file}"/>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target/classes" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src/main/java"/>
-            <src path="src/main/resources"/>
-            
-            <classpath refid="debrief-lite.classpath"/>
-         </javac>
-        <javac debug="true" debuglevel="${debuglevel}" destdir="target/test-classes" includeantruntime="false" source="${source}" target="${target}">
-            <src path="src/test/java"/>
-            <classpath refid="debrief-lite.classpath"/>
-        </javac>
-    </target>
-              	
-    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
-    
-     <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
-        <copy todir="${ant.library.dir}">
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </copy>
-        <unzip dest="${ant.library.dir}">
-            <patternset includes="jdtCompilerAdapter.jar"/>
-            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
-        </unzip>
-    </target>
-   
-              	
-    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
-        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
-        
-    </target>
-     
-              	
-    <target name="TestFrame" depends = "build-project">
-    	
-        <java classname="org.mwc.debrief.lite.TestFrame" failonerror="true" fork="yes">
-            <classpath refid="run.TestFrame.classpath"/>
-        </java>
-        
-    </target>
-              	
-    <jar destfile = "${target}/lib/debrief-lite.jar"
-         basedir = "target/classes" >
-    	
-    	<manifest>
-    	         <attribute name = "Main-Class" value = "org.mwc.debrief.lite.TestFrame"/>
-    	</manifest>
-    	
-    	</jar>
-              	
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.debrief.lite" default="build.jars" basedir=".">
+
+	<!-- Compiler settings. -->
+	<property name="javacSource" value="1.7"/>
+	<property name="javacTarget" value="1.7"/>
+	<property name="build.compiler" value="extJavac"/>
+	<condition property="dir_bootclasspath" value="${java.home}/../Classes">
+		<and>
+			<os family="mac"/>
+			<available file="${java.home}/../Classes" type="dir"/>
+		</and>
+	</condition>
+	<property name="dir_bootclasspath" value="${java.home}/lib"/>
+	<path id="path_bootclasspath">
+		<fileset dir="${dir_bootclasspath}">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+	<property name="bootclasspath" refid="path_bootclasspath"/>
+	<condition property="bundleBootClasspath" value="${JavaSE-1.7}"	>
+		<isset property="JavaSE-1.7"/>
+	</condition>
+	<property name="bundleBootClasspath" value="${bootclasspath}"/>
+	<xmlproperty file="pom.xml"/>
+		
+	<target name="init">
+		<condition property="pluginTemp" value="${buildTempFolder}/plugins"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="pluginTemp" value="${basedir}"/>
+		<condition property="build.result.folder" value="${pluginTemp}/org.mwc.debrief.lite_1.0.377"		>
+			<isset property="buildTempFolder"/>
+		</condition>
+		<property name="build.result.folder" value="${basedir}"/>
+		<property name="temp.folder" value="${basedir}/temp.folder"/>
+		<property name="dist.dir" value="dist"/>
+		<property name="dist.lib.dir" value="dist/lib"/>
+		<property name="product.version" value="${project.version}"/>
+	</target>
+
+	<target name="debrief_lite.jar" depends="init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
+		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
+		<mkdir dir="${temp.folder}/debrief_lite.jar.bin"/>
+		<path id="debrief_lite.jar.classpath">
+			<pathelement location="cmap_legacy.jar"/>
+			<pathelement location="debrief_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.geotools/libs" includes="*.jar"></fileset>
+			<!--fileset dir="libs" includes="*.jar"></fileset-->
+		</path>
+		<!-- compile the source code -->
+		<javac destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true">
+			<classpath refid="debrief_lite.jar.classpath" />
+			<src path="src/"			/>
+		</javac>
+		<!-- Copy necessary resources -->
+		<copy todir="${temp.folder}/debrief_lite.jar.bin" failonerror="true" overwrite="false">
+			<fileset dir="src/main/java">
+				<exclude name="**/*.java"/>
+				<exclude name="**/package.htm*"/>
+			</fileset>
+			<fileset dir="src/main/java">
+				<include name="images"/>
+		 	</fileset>
+		</copy>
+		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
+		</jar>
+		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
+	</target>
+
+
+	<target name="build.jars" depends="init" description="Compile classes and build nested jars for the plug-in: org.mwc.debrief.lite.">
+		<delete file="${compilation.problem.marker}" quiet="true"/>
+		<available property="debrief_lite.jar" file="${build.result.folder}/debrief_lite.jar"/>
+		<antcall target="debrief_lite.jar"/>
+	</target>
+
+	<target name="build.sources" depends="init">
+		<available property="debrief_litesrc.zip" file="${build.result.folder}/debrief_litesrc.zip"/>
+		<antcall target="debrief_litesrc.zip"/>
+	</target>
+
+	<target name="generate" depends="init,build.jars">
+		<mkdir dir="${dist.dir}"/>
+		<property name="debrief-lite-dist.dir" value="${dist.dir}/debrief-lite-jar"/>
+		<property name="debrief-lite-lib.dir" value="${debrief-lite-dist.dir}/lib"/>
+		<mkdir dir="${debrief-lite-dist.dir}"/>
+		<mkdir dir="${debrief-lite-dist.dir}/lib"/>
+		<copy todir="${debrief-lite-dist.dir}" failonerror="true" overwrite="false">
+			<fileset dir="${temp.folder}">
+				<include name="debrief_lite.jar"/>
+			</fileset>
+		</copy>
+		<copy todir="${debrief-lite-lib.dir}" failonerror="true" overwrite="true">
+			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
+			<fileset dir="../org.geotools/libs" includes="*.jar"/>
+			<fileset dir="" includes="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
+		</copy>
+		<zip destfile="${dist.dir}/debrief-lite-1.0.377.zip">
+			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
+		</zip>
+	</target>
+
+	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
+		<delete file="${build.result.folder}/debrief_lite.jar"/>
+		<delete file="debrief_lite.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_1.0.377.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_1.0.377.zip"/>
+		<delete dir="${temp.folder}"/>
+		<delete dir="${dist.dir}"/>
+	</target>
+	<target name="makeonejar" depends="generate">
+			<move file="${temp.folder}/debrief_lite.jar" tofile="${dist.dir}/main.jar"/>
+			<taskdef name="one-jar"
+				         classname="com.simontuffs.onejar.ant.OneJarTask"
+				         classpath="../org.mwc.debrief.legacy/conf/one-jar-ant-task-0.97.jar"
+				         onerror="report"/>
+			<one-jar destfile="${dist.dir}/DebriefLite-${product.version}.jar">
+				<main jar="${dist.dir}/main.jar">
+				</main>
+				<lib>
+					<fileset dir="${dist.dir}/lib/" includes="**/*.jar" />
+				</lib>
+			</one-jar>
+			<delete file="${dist.dir}/main.jar"/>
+			<delete dir="${dist.dir}/lib"/>
+		</target>
+	<target name="dist" depends="clean">
+		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar"/>
+		<antcall target="generate"/>
+	</target>
 </project>

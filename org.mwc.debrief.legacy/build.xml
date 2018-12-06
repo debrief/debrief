@@ -40,6 +40,7 @@
 	</target>
 
 	<target name="debrief_legacy.jar" depends="init" unless="debrief_legacy.jar" description="Create jar: org.mwc.debrief.legacy debrief_legacy.jar.">
+		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar"/>
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_legacy.jar.bin"/>
 		<path id="debrief_legacy.jar.classpath">
@@ -68,6 +69,11 @@
 				<attribute name="Implementation-Vendor" value="DeepBlue C Ltd"/>
 			</manifest>
 		</jar>
+		<copy todir="${basedir}">
+			<fileset dir="${temp.folder}">
+				<include name="debrief_legacy.jar"/>
+			</fileset>
+		</copy>
 		<delete dir="${temp.folder}/debrief_legacy.jar.bin"/>
 	</target>
 
@@ -124,7 +130,6 @@
 			<delete dir="${dist.dir}/lib"/>
 		</target>
 	<target name="dist" depends="clean">
-		<ant antfile="build.xml" dir="../org.mwc.cmap.legacy" target="cmap_legacy_jar"/>
 		<antcall target="makeonejar"/>
 	</target>
 </project>

@@ -15,18 +15,14 @@
 package org.mwc.debrief.lite.custom;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -38,7 +34,7 @@ public class JPanelWithTitleBar extends JPanel
   /**
    *
    */
-  private static final Color titleColor = new Color(0, 0, 180);
+ // private static final Color titleColor = Color.LIGHT_GRAY;
   private static final long serialVersionUID = 1L;
 
   private final JLabel _titleLabel;
@@ -47,18 +43,23 @@ public class JPanelWithTitleBar extends JPanel
   public JPanelWithTitleBar(final String title)
   {
     setLayout(new BorderLayout());
-    setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new MatteBorder(1,
-        1, 1, 1, Color.BLACK)));
+    /*setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new MatteBorder(1,
+        1, 1, 1, Color.BLACK)));*/
+    setBorder(new EmptyBorder(7,7,7,7));
     _titleLabel = new JLabel(title);
-    _titleLabel.setFont(_titleLabel.getFont().deriveFont(Font.BOLD));
-    _titleLabel.setBackground(titleColor);
-    _titleLabel.setForeground(Color.WHITE);
+   
+    //_titleLabel.setFont(_titleLabel.getFont().deriveFont(Font.BOLD));
+    //_titleLabel.setBackground(titleColor);
+    //_titleLabel.setForeground(Color.BLACK);
     _titleLabel.setOpaque(true);
     add(_titleLabel, BorderLayout.WEST);
 
-    setBackground(titleColor);
+    //setBackground(titleColor);
 
   }
+  
+  
+  
 
   /*
    * public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {

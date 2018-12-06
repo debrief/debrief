@@ -96,7 +96,7 @@ public class DebriefLiteApp
     {
       e.printStackTrace();
     }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+    theFrame = new JFrame(appName + " (" + "1.1"
         + ")");
     initForm();
     createAppPanels();
@@ -158,8 +158,8 @@ public class DebriefLiteApp
         leftSplit, notesPane);
     rightSplit.setOneTouchExpandable(true);
 
-    controlPanelSplit.setOneTouchExpandable(true);
-    graphSplit.setOneTouchExpandable(true);
+    //controlPanelSplit.setOneTouchExpandable(true);
+    //graphSplit.setOneTouchExpandable(true);
     rightSplit.setDividerLocation(width - 50);
     graphSplit.setDividerLocation(height / 2 + height / 5);
     controlPanelSplit.setDividerLocation(height / 2);
@@ -168,7 +168,7 @@ public class DebriefLiteApp
     graphSplit.setResizeWeight(0.5);
     editorPanel.addMaxListenerFor(leftSplit, graphSplit);
     graphPanel.addMinListenerFor(graphSplit);
-    leftSplit.setOneTouchExpandable(true);
+    //leftSplit.setOneTouchExpandable(true);
     _notesIconLabel.addMouseListener(new MouseAdapter()
     {
       @Override

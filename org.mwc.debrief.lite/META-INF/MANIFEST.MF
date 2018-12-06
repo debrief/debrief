@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Debrief Lite
+Bundle-SymbolicName: org.mwc.debrief.lite;singleton:=true
+Bundle-Version: 1.0.388
+Export-Package: org.mwc.debrief.lite,
+ org.mwc.debrief.lite.custom,
+ org.mwc.debrief.lite.map
+Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.263",
+ org.mwc.debrief.legacy;bundle-version="1.0.388",
+ org.geotools;bundle-version="1.0.7"
+Bundle-Vendor: Deep Blue C Ltd
