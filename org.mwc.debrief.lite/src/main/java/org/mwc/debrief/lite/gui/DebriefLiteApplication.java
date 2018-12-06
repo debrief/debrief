@@ -20,7 +20,6 @@ public class DebriefLiteApplication extends Application {
 	
 	@Override
 	public void logStack(int status, String text) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -35,37 +34,30 @@ public class DebriefLiteApplication extends Application {
 
 	@Override
 	protected void setTitleName(String theStr) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void addMenuItem(String theMenu, String theLabel, Tool theTool, MenuShortcut theShortCut) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void addMenuSeparator(String theMenu) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void showSession(Session theSession) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	protected void closeSessionGUI(Session theSession) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void setCursor(int theCursor) {
-		// TODO Auto-generated method stub
 	}
 
 	@Override
 	public void restoreCursor() {
-		// TODO Auto-generated method stub
 	}
 
 	public final void newSession(final Session theSession){
