@@ -15,10 +15,12 @@
 package Debrief.ReaderWriter.Word;
 
 import java.awt.Color;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -774,9 +776,6 @@ public class ImportNarrativeDocument
     @Override
     public void setUp()
     {
-
-      System.out.println("setting up message provider ");
-
       // clear the message string
       messageStr = null;
 
@@ -944,6 +943,125 @@ public class ImportNarrativeDocument
       assertEquals("correct name", "027_AAAA AAAA AAA (AAAA)", tw.getName());
       assertEquals("got fixes", 3, tw.numFixes());
 
+    }
+    
+    private static String[] getTrackStrings()
+    {
+      ArrayList<String> res = new ArrayList<String>();
+      res.add(
+          "951212 050000.000 NELSON  @C 22 11 10.63 N 21 41 52.37 W 269.7 2.0 0\n");
+      res.add(
+          "951212 050100.000 NELSON  @C 22 11 10.58 N 21 42  2.98 W 269.7 2.0 0\n");
+      res.add(
+          "951212 050200.000 NELSON  @C 22 11 10.51 N 21 42 14.81 W 269.9 2.0 0\n");
+      res.add(
+          "951212 050300.000 NELSON  @C 22 11 10.51 N 21 42 27.27 W 268.7 2.0 0\n");
+      res.add(
+          "951212 050400.000 NELSON  @C 22 11 10.28 N 21 42 40.33 W 270.6 2.0 0\n");
+      res.add(
+          "951212 053500.000 NELSON  @C 22 11 10.39 N 21 42 53.47 W 269.4 2.0 0 \n");
+      res.add(
+          "951212 053600.000 NELSON  @C 22 11 10.26 N 21 43  6.79 W 269.0 2.0 0 \n");
+      res.add(
+          "951212 053700.000 NELSON  @C 22 11 10.08 N 21 43 20.34 W 270.5 2.0 0 \n");
+      res.add(
+          "951212 054800.000 NELSON  @C 22 11 10.18 N 21 43 33.68 W 269.9 2.0 0 \n");
+      res.add(
+          "951212 055900.000 NELSON  @C 22 11 10.19 N 21 43 47.26 W 268.6 2.0 0\n");
+  
+      return res.toArray(new String[]
+      {});
+    }
+    
+    private static ArrayList<String> getNarrativeStringsNoMetadata()
+    {
+      ArrayList<String> res = new ArrayList<String>();
+
+      // start with some track data
+      res.add("irrelevant preamble 1");
+      res.add("irrelevant preamble 2");
+      res.add("12 Dec 1995");
+      res.add("120504 SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
+      res.add("irrelevant preamble 3");
+      res.add("irrelevant preamble 4");
+      res.add("12 Dec 1995");
+      res.add("120505 SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
+      res.add("120506 irrelevant content 1");
+      res.add("120507 SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
+      res.add("120508 irrelevant content 2");
+      res.add("120509 SR023 SOURCE_B FCS (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.");
+      res.add("irrelevant postamble 3");
+      res.add("irrelevant postamble 4");
+  
+      return res;
+    }
+    
+    public static void testStartOfPresent() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+      
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the start of records line
+      narr.set(5, START_OF_RECORDS + " FOR SOME EXERCISE");
+      
+      int index = indexOfStart(narr);
+      assertEquals("found start", 5, index);
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      nd.processThese(narr);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 5, narrLayer.size());
+      
+    }
+    
+    public static void testStartOfNotPresent() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+      
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the start of records line
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      nd.processThese(narr);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 6, narrLayer.size());
+      
+    }
+
+    private static StringBuilder strArrayToStream(String[] track)
+    {
+      StringBuilder sb = new StringBuilder();
+      for(String s : track){
+          sb.append(s);           
+      }
+      return sb;
     }
 
     public void testAdvancedParseBulkFCS() throws ParseException
@@ -1459,6 +1577,12 @@ public class ImportNarrativeDocument
    */
   private final static String TRIMMED_DATA_STR = "trimmed-data";
 
+  /** marker for start of narrative entries, in larger document
+   * 
+   */
+  private static final String START_OF_RECORDS = "START OF RECORDS";
+
+
   private final static String ALL_DATA_STR = "all-data";
 
   private final static String CANCEL_STR = "cancel";
@@ -1766,8 +1890,8 @@ public class ImportNarrativeDocument
         {
           // ok, have a look at it.
           final Watchable nearestW = hisNearest[0];
-          System.out.println("nearest:" + nearestW);
-          System.out.println("newF:" + newF);
+//          System.out.println("nearest:" + nearestW);
+  //        System.out.println("newF:" + newF);
           while (nearestW.getTime().equals(newF.getTime()))
           {
             newF.setTime(new HiResDate(newF.getTime().getDate().getTime()
@@ -1982,6 +2106,9 @@ public class ImportNarrativeDocument
     {
       outerPeriod = outerPeriodFor(_layers);
     }
+    
+    // see if we have an index for start of records
+    final int START_INDEX = indexOfStart(strings);
 
     // ok, now we can loop through the strings
     if (proceed)
@@ -1989,7 +2116,14 @@ public class ImportNarrativeDocument
       int ctr = 0;
       for (final String raw_text : strings)
       {
+        // increment counter, for num lines processed
         ctr++;
+
+        // do we have an index for the start of records?
+        if(ctr < START_INDEX + 1)
+        {
+          continue;
+        }
 
         if (raw_text.trim().length() == 0)
         {
@@ -2036,7 +2170,7 @@ public class ImportNarrativeDocument
           }
         }
 
-        // is it just text, that we will appned
+        // is it just text, that we will append
         if (thisN.appendedToPrevious && appendedToPreviousCtr < MAX_APPENDED)
         {
           // hmm, just check if this is an FCS
@@ -2113,6 +2247,27 @@ public class ImportNarrativeDocument
         _layers.fireModified(getNarrativeLayer());
       }
     }
+  }
+  
+
+  /** see if this list contains a "Start of records" entry
+   * 
+   * @param strings
+   * @return starting index, or zero
+   */
+  private static int indexOfStart(ArrayList<String> strings)
+  {
+    int ctr = 0;
+    for(String s: strings)
+    {
+      final String trimmed = s.trim();
+      if(trimmed.startsWith(START_OF_RECORDS))
+      {
+        return ctr;
+      }
+      ctr++;
+    }
+    return 0;
   }
 
   /**
