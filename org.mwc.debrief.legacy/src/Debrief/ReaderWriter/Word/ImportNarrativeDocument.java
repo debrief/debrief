@@ -1013,6 +1013,38 @@ public class ImportNarrativeDocument
       }
     };
     
+    public static void testStartOfAndEndOfPresent() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+    
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the start of records line
+      narr.set(5, START_OF_RECORDS + " FOR SOME EXERCISE");
+      narr.set(9, END_OF_RECORDS + " FOR SOME EXERCISE");
+      
+      int index = indexOfStart(narr);
+      assertEquals("found start", 5, index);
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(allow_all);
+      nd.processThese(narr);
+      setNarrativeHelper(null);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 2, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+    }
     
     public static void testStartOfPresent() throws UnsupportedEncodingException
     {
@@ -1599,6 +1631,11 @@ public class ImportNarrativeDocument
    */
   private static final String START_OF_RECORDS = "START OF RECORDS";
 
+  /** marker for end of narrative entries, in larger document
+   * 
+   */
+  private static final String END_OF_RECORDS = "END RECORDS FOR";
+
 
   private final static String ALL_DATA_STR = "all-data";
 
@@ -1609,12 +1646,6 @@ public class ImportNarrativeDocument
    *
    */
   private static final String NAME_NOT_PRESENT = "NAME_NOT_PRESENT";
-
-  /**
-   * marker for end of narrative
-   *
-   */
-  private static final String END_OF_NARRATIVE = "End records for";
 
   /**
    * helper class that can ask the user a question populated via Dependency Injection
@@ -2160,10 +2191,9 @@ public class ImportNarrativeDocument
         }
 
         // see if it's the special end of records marker
-        if (thisN.text.startsWith(END_OF_NARRATIVE))
+        if (thisN.text.startsWith(END_OF_RECORDS))
         {
-          // ok. we're done. Store it
-          addEntry(thisN);
+          // ok. we're done. We don't need to store it.
 
           // log the fact we did this
           Application.logError3(ToolParent.WARNING,
