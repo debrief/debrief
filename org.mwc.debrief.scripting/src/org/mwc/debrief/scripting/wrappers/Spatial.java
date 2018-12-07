@@ -5,6 +5,7 @@ import org.eclipse.ease.modules.WrapToScript;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
 public class Spatial
@@ -31,6 +32,18 @@ public class Spatial
   static public final int KYDS = 6;
   @WrapToScript
   static public final int FT = 7;
+  
+  /**
+   * Units for world speed.
+   */
+  @WrapToScript
+  static public final int M_SEC = 0;
+  @WrapToScript
+  static public final int KTS = 1;
+  @WrapToScript
+  static public final int FT_SEC = 2;
+  @WrapToScript
+  static public final int FT_MIN = 3;
 
   @WrapToScript
   public static WorldLocation createLocation(final double dLat,
@@ -74,4 +87,9 @@ public class Spatial
     return new WorldDistance(value, units);
   }
 
+  @WrapToScript
+  public WorldSpeed createWorldSpeed(final double value, final int units)
+  {
+    return new WorldSpeed(value, units);
+  }
 }
