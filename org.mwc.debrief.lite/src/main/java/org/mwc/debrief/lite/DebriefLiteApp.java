@@ -73,6 +73,7 @@ import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
 import MWC.GUI.Tools.Swing.SwingToolbar;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.ImportManager;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -297,15 +298,15 @@ public class DebriefLiteApp {
 //    DebriefLiteApplication application = new DebriefLiteApplication();
 //    application.openFile(new java.io.File(boat_file));
     File testFile = new File(boat_file);
-    final MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
+    final Layers _theLayers = new Layers();
     final File[] _theFiles = new File[] { testFile };
 
     ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
 
-    MWC.Utilities.ReaderWriter.ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+    ImportManager.addImporter(new ImportReplay());
 
     // get our thread to import this
-    final MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller reader = new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+    final ImportManager.BaseImportCaller reader = new ImportManager.BaseImportCaller(
         _theFiles, _theLayers) {
       // handle completion of the full import process
       @Override

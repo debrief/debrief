@@ -27,8 +27,6 @@ public class GeoToolMapProjection extends PlainProjection
    * 
    */
   private static final long serialVersionUID = 3398817999418475368L;
-  private final MapContent _map;
-  private CoordinateReferenceSystem _worldCoords;
   private MathTransform _degs2metres;
   private final MapViewport _view;
   private DirectPosition2D _workDegs;
@@ -45,8 +43,7 @@ public class GeoToolMapProjection extends PlainProjection
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
     super("GeoTools Map");
-    _map = map;
-    _view = _map.getViewport();
+    _view = map.getViewport();
     _layers = data;
 
     // initialise our working data stores
@@ -58,11 +55,12 @@ public class GeoToolMapProjection extends PlainProjection
     // so that the chart will be displayed undistorted
     try
     {
-      _worldCoords = CRS.decode(WORLD_PROJECTION);
+      CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
+      
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      _degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
+      _degs2metres = CRS.findMathTransform(worldDegs, worldCoords);
     }
     catch (FactoryException e)
     {
