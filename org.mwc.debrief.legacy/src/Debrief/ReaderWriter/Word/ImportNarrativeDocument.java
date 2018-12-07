@@ -27,12 +27,14 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -465,12 +467,6 @@ public class ImportNarrativeDocument
       // System.out.println("here");
       // }
 
-      // sort out our date formats
-      final DateFormat fourBlock = new GMTDateFormat("HHmm");
-
-      // final DateFormat sixBlock = new SimpleDateFormat("ddHHmm");
-      // sixBlock.setTimeZone(TimeZone.getTimeZone("UTC"));
-
       final boolean correctLength = parts.length > 5;
       final boolean sixFigDTG = correctLength && parts[0].length() == 6
           && parts[0].matches(DATE_MATCH_SIX);
@@ -577,13 +573,14 @@ public class ImportNarrativeDocument
           year = Integer.parseInt(yrStr);
         }
 
-        final Date datePart = new Date(year - 1900, Integer.parseInt(monStr)
-            - 1, Integer.parseInt(dayStr));
+        final int hours = Integer.parseInt(dtgStr.substring(0,2));
+        final int mins = Integer.parseInt(dtgStr.substring(2,4));
 
-        final Date timePart = fourBlock.parse(dtgStr);
-
-        dtg = new HiResDate(new Date(datePart.getTime() + timePart.getTime()));
-
+        final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+        cal.set(year, Integer.parseInt(monStr)- 1, Integer.parseInt(dayStr), hours,  mins, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        dtg = new HiResDate(cal.getTime());
+        
         // ok, and the message part
         final int ind = entry.indexOf(type);
 
@@ -645,26 +642,19 @@ public class ImportNarrativeDocument
             }
 
             // first try to parse it
-            final Date timePart = fourBlock.parse(parseStr);
+            final int hours = Integer.parseInt(parseStr.substring(0,2));
+            final int mins = Integer.parseInt(parseStr.substring(2,4));
 
-            // ok, we can go for it
-            final Date newDate = new Date(lastDtg.getYear(), lastDtg.getMonth(),
-                lastDtg.getDate());
-
-            // ok, we're ready for the DTG
-            dtg = new HiResDate(newDate.getTime() + timePart.getTime());
+            final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            cal.set(1900 + lastDtg.getYear(), lastDtg.getMonth(), lastDtg.getDate(), hours,  mins, 0);
+            cal.set(Calendar.MILLISECOND, 0);
+            dtg = new HiResDate(cal.getTime());
 
             // stash the platform
             platform = lastPlatform;
 
             // and catch the rest of the text
             text = trimmed.substring(dateStr.length()).trim();
-
-            // see if we can recognise the first word as a track number
-            // if (text.length() == 0)
-            // {
-            // System.out.println("here");
-            // }
 
             final String startOfLine = text.substring(0, Math.min(20, text
                 .length() - 1));
@@ -682,7 +672,9 @@ public class ImportNarrativeDocument
             // try to replace soft returns with hard returns
             text = text.replace("\r", "\n");
 
-            // remember this one
+            // remember what's happening, so we can refer back to previous entries
+            lastDtg = new Date(dtg.getDate().getTime());
+            lastPlatform = platform;
             lastEntry = this;
           }
         }
@@ -714,11 +706,7 @@ public class ImportNarrativeDocument
             // it's ok, we can silently fail
           }
 
-          if (hasDate)
-          {
-            // ok. skip it. it's just a date
-          }
-          else
+          if (!hasDate)
           {
             // ooh, do we have a previous one?
             if (lastEntry != null)
@@ -959,7 +947,7 @@ public class ImportNarrativeDocument
       assertNotNull(ne.dtg);
       assertNotNull(ne.text);
       String dateStr = ne.dtg.getDate().toString();
-      assertEquals("correct date", "Mon Nov 12 05:06:00 GMT 2018", ne.dtg.getDate());
+      assertEquals("correct date", "Mon Nov 12 05:06:00 GMT 2018", dateStr);
       
     }
     
@@ -1014,12 +1002,24 @@ public class ImportNarrativeDocument
       return res;
     }
     
+    
+    private final static TrimNarrativeHelper allow_all = new TrimNarrativeHelper()
+    {
+      
+      @Override
+      public ImportNarrativeEnum findWhatToImport()
+      {
+        return ImportNarrativeEnum.ALL_DATA;
+      }
+    };
+    
+    
     public static void testStartOfPresent() throws UnsupportedEncodingException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
       String[] track = getTrackStrings();
-      
+    
       StringBuilder sb = strArrayToStream(track);
 
       ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
@@ -1037,7 +1037,9 @@ public class ImportNarrativeDocument
       assertEquals("found start", 5, index);
       
       ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(allow_all);
       nd.processThese(narr);
+      setNarrativeHelper(null);
       
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
@@ -1061,7 +1063,9 @@ public class ImportNarrativeDocument
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
       
       ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(allow_all);
       nd.processThese(narr);
+      setNarrativeHelper(null);
       
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
@@ -1319,7 +1323,7 @@ public class ImportNarrativeDocument
       assertEquals("year", 116, thisN1.dtg.getDate().getYear());
       assertEquals("month", 8, thisN1.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN1.dtg.getDate().getDate());
-      assertEquals("hour", 9, thisN1.dtg.getDate().getHours());
+      assertEquals("hour", 10, thisN1.dtg.getDate().getHours()); // not 9, since we're BST
       assertEquals("min", 9, thisN1.dtg.getDate().getMinutes());
       assertEquals("sec", 0, thisN1.dtg.getDate().getSeconds());
       assertEquals("platform", "HMS NONSUCH", thisN1.platform);
@@ -1332,7 +1336,7 @@ public class ImportNarrativeDocument
       assertEquals("year", 116, thisN2.dtg.getDate().getYear());
       assertEquals("month", 8, thisN2.dtg.getDate().getMonth());
       assertEquals("day", 16, thisN2.dtg.getDate().getDate());
-      assertEquals("hour", 10, thisN2.dtg.getDate().getHours());
+      assertEquals("hour", 11, thisN2.dtg.getDate().getHours()); // not 10, we're BST
       assertEquals("min", 6, thisN2.dtg.getDate().getMinutes());
       assertEquals("sec", 0, thisN2.dtg.getDate().getSeconds());
       assertEquals("platform", "HMS NONSUCH", thisN2.platform);
@@ -2175,8 +2179,8 @@ public class ImportNarrativeDocument
           // check it's in the currently loaded time period
           if (!outerPeriod.contains(thisN.dtg))
           {
-            // System.out.println(thisN.dtg.getDate() + " is not between " +
-            // outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
+//             System.out.println(thisN.dtg.getDate() + " is not between " +
+//             outerPeriod.getStartDTG().getDate() + " and " + outerPeriod.getEndDTG().getDate());
 
             // ok, it's not in our period
             continue;
