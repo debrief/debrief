@@ -945,29 +945,47 @@ public class ImportNarrativeDocument
 
     }
     
+    public static void testParseDateFCS() throws ParseException
+    {
+      final String date = "12 Nov 2018";
+      NarrEntry dateLine = new NarrEntry(date);
+      assertNotNull(dateLine);
+      assertNull(dateLine.dtg);
+      assertNull(dateLine.text);
+      final String line = "120506 irrelevant content 1";
+      NarrEntry ne = new NarrEntry(line);
+      System.out.println(ne.dtg.getDate());
+      assertNotNull(ne);
+      assertNotNull(ne.dtg);
+      assertNotNull(ne.text);
+      String dateStr = ne.dtg.getDate().toString();
+      assertEquals("correct date", "Mon Nov 12 05:06:00 GMT 2018", ne.dtg.getDate());
+      
+    }
+    
     private static String[] getTrackStrings()
     {
       ArrayList<String> res = new ArrayList<String>();
       res.add(
-          "951212 050000.000 NELSON  @C 22 11 10.63 N 21 41 52.37 W 269.7 2.0 0\n");
+          "951012 050000.000 NELSON  @C 22 11 10.63 N 21 41 52.37 W 269.7 2.0 0\n");
       res.add(
-          "951212 050100.000 NELSON  @C 22 11 10.58 N 21 42  2.98 W 269.7 2.0 0\n");
+          "951012 050100.000 NELSON  @C 22 11 10.58 N 21 42  2.98 W 269.7 2.0 0\n");
       res.add(
-          "951212 050200.000 NELSON  @C 22 11 10.51 N 21 42 14.81 W 269.9 2.0 0\n");
+          "951012 050200.000 NELSON  @C 22 11 10.51 N 21 42 14.81 W 269.9 2.0 0\n");
       res.add(
-          "951212 050300.000 NELSON  @C 22 11 10.51 N 21 42 27.27 W 268.7 2.0 0\n");
+          "951012 050300.000 NELSON  @C 22 11 10.51 N 21 42 27.27 W 268.7 2.0 0\n");
       res.add(
-          "951212 050400.000 NELSON  @C 22 11 10.28 N 21 42 40.33 W 270.6 2.0 0\n");
+          "951012 050400.000 NELSON  @C 22 11 10.28 N 21 42 40.33 W 270.6 2.0 0\n");
       res.add(
-          "951212 053500.000 NELSON  @C 22 11 10.39 N 21 42 53.47 W 269.4 2.0 0 \n");
+          "951012 053500.000 NELSON  @C 22 11 10.39 N 21 42 53.47 W 269.4 2.0 0 \n");
       res.add(
-          "951212 053600.000 NELSON  @C 22 11 10.26 N 21 43  6.79 W 269.0 2.0 0 \n");
+          "951012 053600.000 NELSON  @C 22 11 10.26 N 21 43  6.79 W 269.0 2.0 0 \n");
       res.add(
-          "951212 053700.000 NELSON  @C 22 11 10.08 N 21 43 20.34 W 270.5 2.0 0 \n");
+          "951012 053700.000 NELSON  @C 22 11 10.08 N 21 43 20.34 W 270.5 2.0 0 \n");
       res.add(
-          "951212 054800.000 NELSON  @C 22 11 10.18 N 21 43 33.68 W 269.9 2.0 0 \n");
+          "951012 054800.000 NELSON  @C 22 11 10.18 N 21 43 33.68 W 269.9 2.0 0 \n");
       res.add(
-          "951212 055900.000 NELSON  @C 22 11 10.19 N 21 43 47.26 W 268.6 2.0 0\n");
+          "951012 055900.000 NELSON  @C 22 11 10.19 N 21 43 47.26 W 268.6 2.0 0\n");
   
       return res.toArray(new String[]
       {});
@@ -980,11 +998,11 @@ public class ImportNarrativeDocument
       // start with some track data
       res.add("irrelevant preamble 1");
       res.add("irrelevant preamble 2");
-      res.add("12 Dec 1995");
-      res.add("120504 SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
+      res.add("11 Oct 1995");
+      res.add("110504 SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
       res.add("irrelevant preamble 3");
       res.add("irrelevant preamble 4");
-      res.add("12 Dec 1995");
+      res.add("12 Oct 1995");
       res.add("120505 SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
       res.add("120506 irrelevant content 1");
       res.add("120507 SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
@@ -1024,7 +1042,6 @@ public class ImportNarrativeDocument
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
       assertEquals("have items", 5, narrLayer.size());
-      
     }
     
     public static void testStartOfNotPresent() throws UnsupportedEncodingException
@@ -1041,10 +1058,7 @@ public class ImportNarrativeDocument
       
       assertEquals("have data", 1, layers.size());
       
-      
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
-      
-      // inject the start of records line
       
       ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
       nd.processThese(narr);
@@ -1052,7 +1066,6 @@ public class ImportNarrativeDocument
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
       assertEquals("have items", 6, narrLayer.size());
-      
     }
 
     private static StringBuilder strArrayToStream(String[] track)
