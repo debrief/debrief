@@ -621,9 +621,11 @@ public class ImportNarrativeDocument
           if (lastDtg != null && lastPlatform != null)
           {
             final String parseStr;
+            Integer theseDays = null;
             if (dateStr.length() == 6)
             {
               // reduce to four charts
+              theseDays = Integer.parseInt(dateStr.substring(0,2));
               parseStr = dateStr.substring(2, 6);
             }
             else
@@ -634,9 +636,37 @@ public class ImportNarrativeDocument
             // first try to parse it
             final int hours = Integer.parseInt(parseStr.substring(0,2));
             final int mins = Integer.parseInt(parseStr.substring(2,4));
+            
+            // do some date fiddling
+            int daysToUse = lastDtg.getDate();
+            int monthToUse = lastDtg.getMonth();
+            int yearToUse = lastDtg.getYear();
+            if(theseDays != null)
+            {
+              // ok, see if the day has changed
+              if(theseDays < daysToUse)
+              {
+                // day moved backwards, we must be in a different month
+                
+                if(monthToUse == 11)
+                {
+                  // hey, happy new year!
+                  yearToUse++;
+                  monthToUse = 0;
+                }
+                else
+                {
+                  monthToUse ++;
+                }
+                
+              }
+              
+              // ok use the new value of days
+              daysToUse = theseDays;
+            }
 
             final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
-            cal.set(1900 + lastDtg.getYear(), lastDtg.getMonth(), lastDtg.getDate(), hours,  mins, 0);
+            cal.set(1900 + yearToUse, monthToUse, daysToUse, hours,  mins, 0);
             cal.set(Calendar.MILLISECOND, 0);
             dtg = new HiResDate(cal.getTime());
 
@@ -995,6 +1025,15 @@ public class ImportNarrativeDocument
       return res;
     }
     
+    private final static TrimNarrativeHelper only_in_period = new TrimNarrativeHelper()
+    {
+      
+      @Override
+      public ImportNarrativeEnum findWhatToImport()
+      {
+        return ImportNarrativeEnum.TRIMMED_DATA;
+      }
+    };
     
     private final static TrimNarrativeHelper allow_all = new TrimNarrativeHelper()
     {
@@ -1062,13 +1101,46 @@ public class ImportNarrativeDocument
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
       
       // inject the DTG (with Z) number
-      narr.set(2, "121321Z Some pre-able text");
+      narr.set(2, "121321Z Some pre-amble text");
       
       int index = indexOfStart(narr);
       assertEquals("not found start", 0, index);
       
       ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
       setNarrativeHelper(allow_all);
+      nd.processThese(narr);
+      setNarrativeHelper(null);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+    }
+    
+    
+    public static void testMissingDateMarkerInNoMetadata() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+    
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the DTG (with Z) number
+      narr.remove(6);
+      
+      int index = indexOfStart(narr);
+      assertEquals("not found start", 0, index);
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(only_in_period);
       nd.processThese(narr);
       setNarrativeHelper(null);
       
@@ -1141,6 +1213,8 @@ public class ImportNarrativeDocument
       assertNotNull(narrLayer);
       assertEquals("have items", 5, narrLayer.size());
     }
+    
+    
     
     public static void testStartOfNotPresent() throws UnsupportedEncodingException
     {
