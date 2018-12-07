@@ -14,6 +14,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
@@ -128,9 +129,23 @@ public class Core
       {
         TrackManager trackManager = (TrackManager) _editor.getAdapter(
             TrackManager.class);
-        if ( trackManager != null )
+        if (trackManager != null)
         {
           return new Tote(trackManager);
+        }
+      }
+      return null;
+    }
+
+    public Outline getOutline()
+    {
+      if (_editor != null)
+      {
+        IContentOutlinePage outline = (IContentOutlinePage) _editor.getAdapter(
+            IContentOutlinePage.class);
+        if (outline != null)
+        {
+          return new Outline(outline);
         }
       }
       return null;
