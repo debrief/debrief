@@ -589,16 +589,11 @@ public class ImportNarrativeDocument
       else
       {
 
-        final int firstTab = trimmed.indexOf("\t");
-        int blockToUse = 6;
-        if (firstTab != -1 && firstTab <= 7)
-        {
-          blockToUse = firstTab;
-        }
-
+        final int firstTab = firstWhiteSpace(trimmed);
+       
         // see if the first few characters are date
         final String dateStr = trimmed.substring(0, Math.min(trimmed.length(),
-            blockToUse));
+            firstTab));
 
         // is this all numeric
         boolean probIsDate = false;
@@ -1029,7 +1024,7 @@ public class ImportNarrativeDocument
       
       // inject the MMSI numbers
       narr.set(2, "12632144 Some pre-able text");
-      narr.set(7, "12632144 Some pre-able text");
+      narr.set(9, "12632144 Some pre-able text");
       
       int index = indexOfStart(narr);
       assertEquals("not found start", 0, index);
@@ -1041,7 +1036,13 @@ public class ImportNarrativeDocument
       
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
-      assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+      assertEquals("have items", 4, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+    }
+    
+    public static void testFirstWhiteSpace()
+    {
+      assertEquals(4, firstWhiteSpace("1234 sdf"));
+      assertEquals(4, firstWhiteSpace("1234\tsdf"));
     }
     
     public static void testDTGZ_in_preamble() throws UnsupportedEncodingException
@@ -2554,6 +2555,21 @@ public class ImportNarrativeDocument
     }
 
     return match;
+  }
+
+  
+  private static int firstWhiteSpace(final String input)
+  {
+    for (int index = 0; index < input.length(); index++)
+    {
+      {
+        if (Character.isWhitespace(input.charAt(index)))
+        {
+          return index;
+        }
+      }
+    }
+    return -1;
   }
 
 }
