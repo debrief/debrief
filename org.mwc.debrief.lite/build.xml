@@ -43,8 +43,8 @@
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_lite.jar.bin"/>
 		<path id="debrief_lite.jar.classpath">
-			<pathelement location="cmap_legacy.jar"/>
-			<pathelement location="debrief_legacy.jar"/>
+			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
+			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
