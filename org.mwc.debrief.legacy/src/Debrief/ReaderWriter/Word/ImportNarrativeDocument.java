@@ -390,11 +390,6 @@ public class ImportNarrativeDocument
      */
     private static String lastMonth;
 
-    // ///////////////////
-    // static variables to help handle corrupt/incomplete data.
-    // NOTE: any new ones should be included in the "reset() processing
-    // ///////////////////
-
     /**
      * don#t assume a decreasing day is wrong if the year has incremented
      */
@@ -766,6 +761,9 @@ public class ImportNarrativeDocument
     {
       // clear the message string
       messageStr = null;
+      
+      // clear the static variables in NarrativeEntry
+      NarrEntry.reset();
 
       // initialise the message provider
       MessageProvider.Base.setProvider(new MessageProvider()
@@ -1013,6 +1011,71 @@ public class ImportNarrativeDocument
       }
     };
     
+    public static void testMMSI_in_preamble() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+    
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the MMSI numbers
+      narr.set(2, "12632144 Some pre-able text");
+      narr.set(7, "12632144 Some pre-able text");
+      
+      int index = indexOfStart(narr);
+      assertEquals("not found start", 0, index);
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(allow_all);
+      nd.processThese(narr);
+      setNarrativeHelper(null);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+    }
+    
+    public static void testDTGZ_in_preamble() throws UnsupportedEncodingException
+    {
+      Layers layers = new Layers();
+      ImportReplay importer = new ImportReplay();
+      String[] track = getTrackStrings();
+    
+      StringBuilder sb = strArrayToStream(track);
+
+      ByteArrayInputStream stream = new ByteArrayInputStream( sb.toString().getBytes("UTF-8") );
+      
+      importer.importThis(null, stream, layers);
+      
+      assertEquals("have data", 1, layers.size());
+      
+      ArrayList<String> narr = getNarrativeStringsNoMetadata();
+      
+      // inject the DTG (with Z) number
+      narr.set(2, "121321Z Some pre-able text");
+      
+      int index = indexOfStart(narr);
+      assertEquals("not found start", 0, index);
+      
+      ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
+      setNarrativeHelper(allow_all);
+      nd.processThese(narr);
+      setNarrativeHelper(null);
+      
+      NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
+      assertNotNull(narrLayer);
+      assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+    }
+    
     public static void testStartOfAndEndOfPresent() throws UnsupportedEncodingException
     {
       Layers layers = new Layers();
@@ -1031,7 +1094,7 @@ public class ImportNarrativeDocument
       
       // inject the start of records line
       narr.set(5, START_OF_RECORDS + " FOR SOME EXERCISE");
-      narr.set(9, END_OF_RECORDS + " FOR SOME EXERCISE");
+      narr.set(9, END_OF_RECORDS_2 + " FOR SOME EXERCISE");
       
       int index = indexOfStart(narr);
       assertEquals("found start", 5, index);
@@ -1305,7 +1368,7 @@ public class ImportNarrativeDocument
           LayerHandler.NARRATIVE_LAYER);
 
       // correct final count
-      assertEquals("Got num lines", 351, narrLayer.size());
+      assertEquals("Got num lines", 350, narrLayer.size());
 
       final BaseLayer sols = (BaseLayer) tLayers.findLayer(NARR_LAYER);
       final Object[] data = sols.getData().toArray();
@@ -1634,7 +1697,12 @@ public class ImportNarrativeDocument
   /** marker for end of narrative entries, in larger document
    * 
    */
-  private static final String END_OF_RECORDS = "END RECORDS FOR";
+  private static final String END_OF_RECORDS_1 = "END RECORDS FOR";
+
+  /** marker for end of narrative entries, in larger document
+   * 
+   */
+  private static final String END_OF_RECORDS_2 = "END OF RECORDS FOR";
 
 
   private final static String ALL_DATA_STR = "all-data";
@@ -2191,7 +2259,7 @@ public class ImportNarrativeDocument
         }
 
         // see if it's the special end of records marker
-        if (thisN.text.startsWith(END_OF_RECORDS))
+        if (thisN.text.startsWith(END_OF_RECORDS_1) || thisN.text.startsWith(END_OF_RECORDS_2))
         {
           // ok. we're done. We don't need to store it.
 
