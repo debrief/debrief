@@ -150,6 +150,20 @@ public class Core
       }
       return null;
     }
+
+    public PlainProjection getMap()
+    {
+      if (_editor != null)
+      {
+        PlainProjection map = (PlainProjection) _editor.getAdapter(
+            PlainProjection.class);
+        if (map != null)
+        {
+          return map;
+        }
+      }
+      return null;
+    }
   }
 
   /*
