@@ -21,7 +21,9 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ease.modules.WrapToScript;
+import org.mwc.debrief.core.DebriefPlugin;
 
 public class Utils
 {
@@ -50,8 +52,18 @@ public class Utils
   @WrapToScript
   public static void writeError(String error)
   {
-
+    DebriefPlugin.logError(Status.ERROR, error, null);
   }
 
-  // TODO
+  @WrapToScript
+  public static void writeWarning(String warning)
+  {
+    DebriefPlugin.logError(Status.WARNING, warning, null);
+  }
+  
+  @WrapToScript
+  public static void writeInfo(String info)
+  {
+    DebriefPlugin.logError(Status.INFO, info, null);
+  }
 }

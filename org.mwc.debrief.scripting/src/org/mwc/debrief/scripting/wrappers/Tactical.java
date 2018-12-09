@@ -7,6 +7,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 
 public class Tactical
@@ -49,5 +50,11 @@ public class Tactical
   public static NarrativeWrapper createNarrative(final String title)
   {
     return new NarrativeWrapper(title);
+  }
+
+  public static NarrativeEntry createNarrativeEntry(final String track,
+      final String type, final HiResDate DTG, final String entry)
+  {
+    return new NarrativeEntry(track, type, DTG, entry);
   }
 }

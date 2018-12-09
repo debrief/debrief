@@ -61,7 +61,4 @@ public class Chart
   {
     return new Coastline(inputStream);
   }
-  
-  /*@WrapToScript
-  public*/ 
 }
