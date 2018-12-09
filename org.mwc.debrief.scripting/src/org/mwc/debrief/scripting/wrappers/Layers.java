@@ -195,7 +195,7 @@ public class Layers
     }
   }
   
-  public static class TestCore extends TestCase
+  public static class TestLayers extends TestCase
   {
     public void testFindItem()
     {

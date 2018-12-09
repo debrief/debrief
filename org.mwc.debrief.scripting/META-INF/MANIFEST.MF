@@ -23,3 +23,4 @@ Import-Package: org.eclipse.ui.plugin,
  org.mwc.debrief.core,
  org.mwc.debrief.core.editors
 Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
+Export-Package: org.mwc.debrief.scripting.wrappers

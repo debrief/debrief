@@ -21,6 +21,7 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import junit.framework.TestCase;
 
 public class Annotations
 {
@@ -77,6 +78,35 @@ public class Annotations
   public static PlainSymbol createSymbol(final String symbolType)
   {
     return SymbolFactory.createSymbol(symbolType);
+  }
+  
+  public static class TestAnnotations extends TestCase
+  {
+    static final String labelName = "Label Name";
+    static final java.awt.Color labelColor = Core.createColor(0,255,255);
+    static final WorldLocation labelLocation = new WorldLocation(12.3, 12.4, 12.5);
+    static final HiResDate startLabel = new HiResDate(2000000);
+    static final HiResDate endLabel = new HiResDate(3000000);
+    
+    public void testCreateLabel()
+    {
+      LabelWrapper label = createLabel(labelName, labelLocation, labelColor);
+
+      assertEquals("Same name of label", labelName, label.getName());
+      assertEquals("Same location of label", labelLocation, label.getLocation());
+      assertEquals("Same color of label", labelColor, label.getColor());
+    }
+    
+    public void testCreateLabelDate()
+    {
+      LabelWrapper label = createLabelDate(labelName, labelLocation, labelColor, startLabel, endLabel);
+
+      assertEquals("Same name of label", labelName, label.getName());
+      assertEquals("Same location of label", labelLocation, label.getLocation());
+      assertEquals("Same color of label", labelColor, label.getColor());
+      assertEquals("Same start of label", startLabel, label.getStartDTG());
+      assertEquals("Same end of label", endLabel, label.getEndDTG());
+    }
   }
 
 }

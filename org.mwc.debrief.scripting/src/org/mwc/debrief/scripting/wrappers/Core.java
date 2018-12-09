@@ -20,6 +20,7 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import junit.framework.TestCase;
 
 public class Core
 {
@@ -56,11 +57,57 @@ public class Core
    *          the blue component
    * @return
    */
-  public static Color createColor(final int red, final int green, final int blue)
+  public static Color createColor(final int red, final int green,
+      final int blue)
   {
     return new Color(red, green, blue);
   }
-  
+
+  public static class TestCore extends TestCase
+  {
+    static final int testRed = 200;
+    static final int testGreen = 210;
+    static final int testBlue = 220;
+
+    static final int testFontSize = 10;
+    static final int testFontStyle = Font.PLAIN;
+    static final String testFontName = "Serif.plain";
+
+    static final int durationValue = 12;
+    static final int durationUnits = Duration.HOURS;
+
+    static final long timeLong = 2000000L;
+    
+    public void testCreateColor()
+    {
+      Color color = createColor(testRed, testGreen, testBlue);
+      assertEquals("Testing Red Color", testRed, color.getRed());
+      assertEquals("Testing Green Color", testGreen, color.getGreen());
+      assertEquals("Testing Blue Color", testBlue, color.getBlue());
+    }
+
+    public void testCreateFont()
+    {
+      Font font = createFont(testFontName, testFontStyle, testFontSize);
+      assertEquals("Testing Font Name", testFontName, font.getFontName());
+      assertEquals("Testing Font Style", testFontStyle, font.getStyle());
+      assertEquals("Testing Font Size", testFontSize, font.getSize());
+    }
+
+    public void testCreateDuration()
+    {
+      Duration duration = createDuration(durationValue, durationUnits);
+      assertEquals("Testing Duration Value with the given units", (double)durationValue,
+          duration.getValueIn(durationUnits), 1e-5);
+    }
+    
+    public void testCreateDate()
+    {
+      HiResDate date = createDate(timeLong);
+      assertEquals("Testing Date", timeLong, date.getDate().getTime());
+    }
+  }
+
   public static Plot getActivePlot()
   {
     return getPlot(null);

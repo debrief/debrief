@@ -18,6 +18,7 @@ import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import junit.framework.TestCase;
 
 public class Shapes
 {
@@ -204,5 +205,76 @@ public class Shapes
   {
     return new ShapeWrapper(name, new WheelShape(theCenter, theInnerRadius,
         theOuterRadius), color, null);
+  }
+
+  public static class TestShapes extends TestCase
+  {
+    static final WorldLocation shapeCenterLocation = new WorldLocation(12.3,
+        12.4, 12.5);
+    static final WorldLocation shapeBottomRightLocation = new WorldLocation(14,
+        14, 12.5);
+    static final WorldLocation shapeTopLeftLocation = new WorldLocation(10, 10,
+        12.5);
+    static final java.awt.Color shapeColor = Core.createColor(255, 0, 255);
+    static final double innerRadius = 3.0;
+    static final double outerRadius = 5.0;
+    static final String shapeName = "ShapeName";
+    static final int numOfRings = 1;
+    static final WorldDistance ringsDistance = new WorldDistance(12,
+        WorldDistance.METRES);
+
+    public void testCreateWheelShape()
+    {
+      ShapeWrapper wheelShape = createWheelShape(shapeCenterLocation,
+          innerRadius, outerRadius, shapeName, shapeColor);
+
+      assertEquals("Same location for WheelShape", shapeCenterLocation,
+          ((WheelShape) wheelShape.getShape()).getCentre());
+      assertEquals("Same inner radius for WheelShape", innerRadius,
+          ((WheelShape) wheelShape.getShape()).getRadiusInner().getValueIn(
+              WorldDistance.YARDS));
+      assertEquals("Same outer radius for WheelShape", outerRadius,
+          ((WheelShape) wheelShape.getShape()).getRadiusOuter().getValueIn(
+              WorldDistance.YARDS));
+      assertEquals("Same name for WheelShape", shapeName, wheelShape.getName());
+      assertEquals("Same color for WheelShape", shapeColor, wheelShape
+          .getColor());
+    }
+
+    public void testCreateRectangleShape()
+    {
+      ShapeWrapper rectangle = createRectangleShape(shapeTopLeftLocation,
+          shapeBottomRightLocation, shapeName, shapeColor);
+
+      assertEquals("Same location for (Top Left) Rectangle",
+          shapeTopLeftLocation, ((RectangleShape) rectangle.getShape())
+              .getCorner_TopLeft());
+      assertEquals("Same location for (Bottom Right) Rectangle",
+          shapeBottomRightLocation, ((RectangleShape) rectangle.getShape())
+              .getCornerBottomRight());
+
+      assertEquals("Same name for Rectangle", shapeName, rectangle.getName());
+      assertEquals("Same color for Rectangle", shapeColor, rectangle
+          .getColor());
+    }
+
+    public void testCreateRangeRingShape()
+    {
+      ShapeWrapper rangeRing = createRangeRingShape(shapeCenterLocation,
+          numOfRings, ringsDistance, shapeName, shapeColor);
+      
+      assertEquals("Same location (Center) for RangeRing",
+          shapeCenterLocation, ((RangeRingShape) rangeRing.getShape())
+              .getCentre());
+      assertEquals("Same location (Number of Rings) for RangeRing",
+          numOfRings, ((RangeRingShape) rangeRing.getShape())
+              .getNumRings());
+      assertEquals("Same location (Rings Distance) for RangeRing",
+          ringsDistance, ((RangeRingShape) rangeRing.getShape())
+              .getRingWidth());
+      assertEquals("Same name for RangeRing", shapeName, rangeRing.getName());
+      assertEquals("Same color for RangeRing", shapeColor, rangeRing
+          .getColor());
+    }
   }
 }
