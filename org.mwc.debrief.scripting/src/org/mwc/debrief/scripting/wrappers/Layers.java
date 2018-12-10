@@ -49,6 +49,10 @@ public class Layers
   {
     private final MWC.GUI.Layers _layers;
 
+    /**
+     * Constructor of the Layer Wrapper.
+     * @param layers Initial Layers to be added.
+     */
     public DLayers(final MWC.GUI.Layers layers)
     {
       _layers = layers;

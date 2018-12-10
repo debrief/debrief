@@ -28,21 +28,42 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
+/**
+ * Plot class that exposes method related with the Plot/Editor.
+ * 
+ * @author Ian Mayo
+ *
+ */
 public class Plot
 {
   private final PlotEditor _plot;
 
+  /**
+   * Constructor that receives the plot editor
+   * 
+   * @see org.mwc.debrief.core.editors.PlotEditor
+   * 
+   * @param plot Plot reference
+   */
   public Plot(final PlotEditor plot)
   {
     _plot = plot;
   }
 
+  /**
+   * Method that selects a zoom that shows all visible data
+   */
   public void fitToWindow()
   {
     _plot.getChart().rescale();
     getLayers().fireModified();
   }
 
+  /**
+   * Method that returns the currently selected data area
+   * @see MWC.GenericData.WorldArea
+   * @return Currently selected data area.
+   */
   public WorldArea getArea()
   {
     if (_plot != null)
@@ -54,6 +75,11 @@ public class Plot
     return null;
   }
 
+  /**
+   * Function to determine the center of the area
+   * @see MWC.GenericData.WorldLocation
+   * @return Center of the area.
+   */
   public WorldLocation getCentre()
   {
     final WorldArea area = getArea();
@@ -67,6 +93,11 @@ public class Plot
     }
   }
 
+  /**
+   * Method that returns the layers of the current plot
+   * @see org.mwc.debrief.scripting.wrappers.Layers.DLayers
+   * @return Layers of the current plot.
+   */
   public DLayers getLayers()
   {
     if (_plot != null)
@@ -82,6 +113,11 @@ public class Plot
 
   }
 
+  /**
+   * Method that returns the plain projection of the current plot
+   * @see MWC.Algorithms.PlainProjection
+   * @return Plain projection of the current plot.
+   */
   public PlainProjection getMap()
   {
     if (_plot != null)
@@ -96,6 +132,11 @@ public class Plot
     return null;
   }
 
+  /**
+   * Method that returns the outline of the current plot.
+   * @see org.mwc.debrief.scripting.wrappers.Outline
+   * @return Outline of the current plot.
+   */
   public Outline getOutline()
   {
     if (_plot != null)
@@ -110,13 +151,19 @@ public class Plot
     return null;
   }
 
+  /**
+   * Method that returns the raw plot editor.
+   * @see org.mwc.debrief.core.editors.PlotEditor
+   * @return Plot Editor.
+   */
   public PlotEditor getPlot()
   {
     return _plot;
   }
-  
+
   /**
    * Retrieves the title of the current plot.
+   * 
    * @return Title of the plot
    */
   public String getTitle()
@@ -124,6 +171,11 @@ public class Plot
     return _plot.getTitle();
   }
 
+  /**
+   * Method that returns the current time of the plot.
+   * @see MWC.GenericData.HiResDate
+   * @return Current time of the plot.
+   */
   public HiResDate getTime()
   {
     final TimeProvider time = (TimeProvider) _plot.getAdapter(
@@ -131,6 +183,13 @@ public class Plot
     return time.getTime();
   }
 
+  /**
+   * Method that returns the Time Control Preferences. This object can change
+   * the step intervals, small steps, etc.
+   * 
+   * @see org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
+   * @return Time Control Preferences.
+   */
   public TimeControlPreferences getTimeControlPreferences()
   {
     if (_plot != null)
@@ -146,6 +205,12 @@ public class Plot
     return null;
   }
 
+  /**
+   * Method that returns the Time Manager of the current plot.
+   * 
+   * @see org.mwc.cmap.core.DataTypes.Temporal.TimeManager
+   * @return Time Manager of the current plot.
+   */
   public TimeManager getTimeManager()
   {
     if (_plot != null)
@@ -160,6 +225,11 @@ public class Plot
     return null;
   }
 
+  /**
+   * 
+   * @see org.mwc.debrief.scripting.wrappers.Tote
+   * @return
+   */
   public Tote getTote()
   {
     if (_plot != null)
