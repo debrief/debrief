@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -21,12 +21,18 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ease.modules.WrapToScript;
 import org.mwc.debrief.core.DebriefPlugin;
 
 public class Utils
 {
+  @WrapToScript
+  public static void copyPlotToClipboard()
+  {
+
+  }
+
   @WrapToScript
   public static String getClipboard() throws HeadlessException,
       UnsupportedFlavorException, IOException
@@ -36,34 +42,29 @@ public class Utils
   }
 
   @WrapToScript
-  public static void setClipboard(String _clipboardData)
+  public static void setClipboard(final String _clipboardData)
   {
-    StringSelection selection = new StringSelection(_clipboardData);
-    java.awt.datatransfer.Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    final StringSelection selection = new StringSelection(_clipboardData);
+    final java.awt.datatransfer.Clipboard clipboard = Toolkit
+        .getDefaultToolkit().getSystemClipboard();
     clipboard.setContents(selection, selection);
   }
 
   @WrapToScript
-  public static void copyPlotToClipboard()
+  public static void writeError(final String error)
   {
-
+    DebriefPlugin.logError(IStatus.ERROR, error, null);
   }
 
   @WrapToScript
-  public static void writeError(String error)
+  public static void writeInfo(final String info)
   {
-    DebriefPlugin.logError(Status.ERROR, error, null);
+    DebriefPlugin.logError(IStatus.INFO, info, null);
   }
 
   @WrapToScript
-  public static void writeWarning(String warning)
+  public static void writeWarning(final String warning)
   {
-    DebriefPlugin.logError(Status.WARNING, warning, null);
-  }
-  
-  @WrapToScript
-  public static void writeInfo(String info)
-  {
-    DebriefPlugin.logError(Status.INFO, info, null);
+    DebriefPlugin.logError(IStatus.WARNING, warning, null);
   }
 }

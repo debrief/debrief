@@ -25,23 +25,49 @@ import junit.framework.TestCase;
 public class Core
 {
 
-  /*
-   * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
-   */
-  public static HiResDate createDate(final long date)
+  public static class TestCore extends TestCase
   {
-    return new HiResDate(date);
-  }
+    static final int testRed = 200;
+    static final int testGreen = 210;
+    static final int testBlue = 220;
 
-  public static Duration createDuration(final int value, final int units)
-  {
-    return new Duration(value, units);
-  }
+    static final int testFontSize = 10;
+    static final int testFontStyle = Font.PLAIN;
+    static final String testFontName = "Serif.plain";
 
-  public static Font createFont(final String fontName, final int style,
-      final int size)
-  {
-    return new Font(fontName, style, size);
+    static final int durationValue = 12;
+    static final int durationUnits = Duration.HOURS;
+
+    static final long timeLong = 2000000L;
+
+    public void testCreateColor()
+    {
+      final Color color = createColor(testRed, testGreen, testBlue);
+      assertEquals("Testing Red Color", testRed, color.getRed());
+      assertEquals("Testing Green Color", testGreen, color.getGreen());
+      assertEquals("Testing Blue Color", testBlue, color.getBlue());
+    }
+
+    public void testCreateDate()
+    {
+      final HiResDate date = createDate(timeLong);
+      assertEquals("Testing Date", timeLong, date.getDate().getTime());
+    }
+
+    public void testCreateDuration()
+    {
+      final Duration duration = createDuration(durationValue, durationUnits);
+      assertEquals("Testing Duration Value with the given units", durationValue,
+          duration.getValueIn(durationUnits), 1e-5);
+    }
+
+    public void testCreateFont()
+    {
+      final Font font = createFont(testFontName, testFontStyle, testFontSize);
+      assertEquals("Testing Font Name", testFontName, font.getFontName());
+      assertEquals("Testing Font Style", testFontStyle, font.getStyle());
+      assertEquals("Testing Font Size", testFontSize, font.getSize());
+    }
   }
 
   /**
@@ -63,49 +89,23 @@ public class Core
     return new Color(red, green, blue);
   }
 
-  public static class TestCore extends TestCase
+  /*
+   * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
+   */
+  public static HiResDate createDate(final long date)
   {
-    static final int testRed = 200;
-    static final int testGreen = 210;
-    static final int testBlue = 220;
+    return new HiResDate(date);
+  }
 
-    static final int testFontSize = 10;
-    static final int testFontStyle = Font.PLAIN;
-    static final String testFontName = "Serif.plain";
+  public static Duration createDuration(final int value, final int units)
+  {
+    return new Duration(value, units);
+  }
 
-    static final int durationValue = 12;
-    static final int durationUnits = Duration.HOURS;
-
-    static final long timeLong = 2000000L;
-    
-    public void testCreateColor()
-    {
-      Color color = createColor(testRed, testGreen, testBlue);
-      assertEquals("Testing Red Color", testRed, color.getRed());
-      assertEquals("Testing Green Color", testGreen, color.getGreen());
-      assertEquals("Testing Blue Color", testBlue, color.getBlue());
-    }
-
-    public void testCreateFont()
-    {
-      Font font = createFont(testFontName, testFontStyle, testFontSize);
-      assertEquals("Testing Font Name", testFontName, font.getFontName());
-      assertEquals("Testing Font Style", testFontStyle, font.getStyle());
-      assertEquals("Testing Font Size", testFontSize, font.getSize());
-    }
-
-    public void testCreateDuration()
-    {
-      Duration duration = createDuration(durationValue, durationUnits);
-      assertEquals("Testing Duration Value with the given units", (double)durationValue,
-          duration.getValueIn(durationUnits), 1e-5);
-    }
-    
-    public void testCreateDate()
-    {
-      HiResDate date = createDate(timeLong);
-      assertEquals("Testing Date", timeLong, date.getDate().getTime());
-    }
+  public static Font createFont(final String fontName, final int style,
+      final int size)
+  {
+    return new Font(fontName, style, size);
   }
 
   public static Plot getActivePlot()

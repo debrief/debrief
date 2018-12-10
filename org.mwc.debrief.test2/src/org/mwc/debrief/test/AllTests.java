@@ -148,6 +148,8 @@ import org.junit.runners.Suite;
     org.mwc.debrief.scripting.wrappers.Annotations.TestAnnotations.class,
     org.mwc.debrief.scripting.wrappers.Core.TestCore.class,
     org.mwc.debrief.scripting.wrappers.Shapes.TestShapes.class,
+    org.mwc.debrief.scripting.wrappers.Spatial.TestSpatial.class,
+    org.mwc.debrief.scripting.wrappers.Tactical.TaticalTest.class,
     })
 @RunWith(Suite.class)
 public class AllTests

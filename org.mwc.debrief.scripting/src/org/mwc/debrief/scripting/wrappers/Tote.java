@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -25,6 +25,11 @@ public class Tote
   public Tote(final TrackManager _trackManager)
   {
     trackManager = _trackManager;
+  }
+
+  public void addSecondary(final WatchableList secondary)
+  {
+    trackManager.addSecondary(secondary);
   }
 
   public WatchableList getPrimaryTrack()
@@ -45,10 +50,5 @@ public class Tote
   public void setSecondary(final WatchableList secondary)
   {
     trackManager.setSecondary(secondary);
-  }
-  
-  public void addSecondary(final WatchableList secondary)
-  {
-    trackManager.addSecondary(secondary);
   }
 }

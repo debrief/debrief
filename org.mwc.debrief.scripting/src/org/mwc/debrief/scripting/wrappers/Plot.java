@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -37,11 +37,6 @@ public class Plot
     _plot = plot;
   }
 
-  public PlotEditor getPlot()
-  {
-    return _plot;
-  }
-  
   public void fitToWindow()
   {
     _plot.getChart().rescale();
@@ -87,6 +82,39 @@ public class Plot
 
   }
 
+  public PlainProjection getMap()
+  {
+    if (_plot != null)
+    {
+      final PlainProjection map = (PlainProjection) _plot.getAdapter(
+          PlainProjection.class);
+      if (map != null)
+      {
+        return map;
+      }
+    }
+    return null;
+  }
+
+  public Outline getOutline()
+  {
+    if (_plot != null)
+    {
+      final IContentOutlinePage outline = (IContentOutlinePage) _plot
+          .getAdapter(IContentOutlinePage.class);
+      if (outline != null)
+      {
+        return new Outline(outline);
+      }
+    }
+    return null;
+  }
+
+  public PlotEditor getPlot()
+  {
+    return _plot;
+  }
+
   public HiResDate getTime()
   {
     final TimeProvider time = (TimeProvider) _plot.getAdapter(
@@ -98,7 +126,7 @@ public class Plot
   {
     if (_plot != null)
     {
-      TimeControlPreferences timeControlPreferences =
+      final TimeControlPreferences timeControlPreferences =
           (TimeControlPreferences) _plot.getAdapter(
               TimeControlPreferences.class);
       if (timeControlPreferences != null)
@@ -113,7 +141,7 @@ public class Plot
   {
     if (_plot != null)
     {
-      TimeManager timeManager = (TimeManager) _plot.getAdapter(
+      final TimeManager timeManager = (TimeManager) _plot.getAdapter(
           ControllableTime.class);
       if (timeManager != null)
       {
@@ -127,39 +155,11 @@ public class Plot
   {
     if (_plot != null)
     {
-      TrackManager trackManager = (TrackManager) _plot.getAdapter(
+      final TrackManager trackManager = (TrackManager) _plot.getAdapter(
           TrackManager.class);
       if (trackManager != null)
       {
         return new Tote(trackManager);
-      }
-    }
-    return null;
-  }
-
-  public Outline getOutline()
-  {
-    if (_plot != null)
-    {
-      IContentOutlinePage outline = (IContentOutlinePage) _plot.getAdapter(
-          IContentOutlinePage.class);
-      if (outline != null)
-      {
-        return new Outline(outline);
-      }
-    }
-    return null;
-  }
-
-  public PlainProjection getMap()
-  {
-    if (_plot != null)
-    {
-      PlainProjection map = (PlainProjection) _plot.getAdapter(
-          PlainProjection.class);
-      if (map != null)
-      {
-        return map;
       }
     }
     return null;

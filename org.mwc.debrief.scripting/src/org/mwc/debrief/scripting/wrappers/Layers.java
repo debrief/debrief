@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -52,6 +52,11 @@ public class Layers
       _layers.addThisLayer(layer);
     }
 
+    public void clear()
+    {
+      _layers.clear();
+    }
+
     public Layer createLayer(final String name)
     {
       // do we already have it?
@@ -72,7 +77,7 @@ public class Layers
 
     /**
      * descend the tree looking for an item with the specified name
-     * 
+     *
      * @param name
      *          what we're looking for
      * @return the matching item (or null)
@@ -188,13 +193,8 @@ public class Layers
     {
       return _layers.size();
     }
-
-    public void clear()
-    {
-      _layers.clear();
-    }
   }
-  
+
   public static class TestLayers extends TestCase
   {
     public void testFindItem()

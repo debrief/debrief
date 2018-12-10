@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -29,33 +29,9 @@ public class Outline
 {
   private final IContentOutlinePage outline;
 
-  public Outline(IContentOutlinePage _outline)
+  public Outline(final IContentOutlinePage _outline)
   {
     this.outline = _outline;
-  }
-
-  public Editable[] getSelection()
-  {
-    final ISelection iSelection = getISelection();
-
-    ArrayList<Editable> editables = new ArrayList<>();
-
-    if (iSelection != null && !iSelection.isEmpty()
-        && iSelection instanceof IStructuredSelection)
-    {
-      IStructuredSelection structuredSelection = (IStructuredSelection) iSelection;
-      final Iterator<?> i = structuredSelection.iterator();
-      while (i.hasNext())
-      {
-        Object currentItem = i.next();
-        if ( currentItem instanceof Editable )
-        {
-          editables.add((Editable)currentItem);
-        }
-      }
-    }
-
-    return editables.toArray(new Editable[0]);
   }
 
   private ISelection getISelection()
@@ -63,6 +39,7 @@ public class Outline
     final ISelection[] answer = new ISelection[1];
     Display.getDefault().syncExec(new Runnable()
     {
+      @Override
       public void run()
       {
         answer[0] = outline.getSelection();
@@ -70,20 +47,46 @@ public class Outline
     });
     return answer[0];
   }
-  
-  public void setSelection(Editable[] toSelect)
+
+  public Editable[] getSelection()
   {
-    setISelection(new StructuredSelection(toSelect));
+    final ISelection iSelection = getISelection();
+
+    final ArrayList<Editable> editables = new ArrayList<>();
+
+    if (iSelection != null && !iSelection.isEmpty()
+        && iSelection instanceof IStructuredSelection)
+    {
+      final IStructuredSelection structuredSelection =
+          (IStructuredSelection) iSelection;
+      final Iterator<?> i = structuredSelection.iterator();
+      while (i.hasNext())
+      {
+        final Object currentItem = i.next();
+        if (currentItem instanceof Editable)
+        {
+          editables.add((Editable) currentItem);
+        }
+      }
+    }
+
+    return editables.toArray(new Editable[0]);
   }
 
-  private void setISelection(StructuredSelection structuredSelection)
+  private void setISelection(final StructuredSelection structuredSelection)
   {
     Display.getDefault().syncExec(new Runnable()
     {
+      @Override
       public void run()
       {
         outline.setSelection(structuredSelection);
       }
     });
+  }
+
+  public void setSelection(final Editable[] toSelect)
+  {
+    setISelection(new StructuredSelection(toSelect));
   }
 }

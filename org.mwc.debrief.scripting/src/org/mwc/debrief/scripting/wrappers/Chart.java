@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.scripting.wrappers;
 
@@ -31,18 +31,6 @@ public class Chart
 {
 
   @WrapToScript
-  public static ScalePainter createScale()
-  {
-    return new ScalePainter();
-  }
-
-  @WrapToScript
-  public static GridPainter createGrid()
-  {
-    return new GridPainter();
-  }
-
-  @WrapToScript
   public static CoastPainter createCoastPainter()
   {
     return new CoastPainter();
@@ -53,6 +41,18 @@ public class Chart
       final Layers parentLayers)
   {
     return new ETOPOPainter(pathName, parentLayers);
+  }
+
+  @WrapToScript
+  public static GridPainter createGrid()
+  {
+    return new GridPainter();
+  }
+
+  @WrapToScript
+  public static ScalePainter createScale()
+  {
+    return new ScalePainter();
   }
 
   @WrapToScript
