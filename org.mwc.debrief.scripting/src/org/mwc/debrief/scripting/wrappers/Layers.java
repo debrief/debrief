@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 
 /**
  * Layer Class that exposes operations related with Layers
+ * 
  * @see MWC.GUI.Layers
  * @author Ian Mayo
  *
@@ -53,16 +54,29 @@ public class Layers
       _layers = layers;
     }
 
+    /**
+     * Add the layer given to the list of layers.
+     * @param layer Layer to be added.
+     */
     public void add(final Layer layer)
     {
       _layers.addThisLayer(layer);
     }
 
+    /**
+     * Removes all the layers.
+     */
     public void clear()
     {
       _layers.clear();
     }
 
+    /**
+     * Method that creates a new layer with the specified name
+     * @see MWC.GUI.Layer
+     * @param name Name of the new layer.
+     * @return Layer with the specified name
+     */
     public Layer createLayer(final String name)
     {
       // do we already have it?
@@ -76,6 +90,12 @@ public class Layers
       return newLayer;
     }
 
+    /**
+     * Method that returns the layer with the specified name.
+     * @see MWC.GUI.Layer
+     * @param name Name of the layer to find.
+     * @return Layer with the specified name.
+     */
     public Layer findLayer(final String name)
     {
       return _layers.findLayer(name, true);
@@ -137,8 +157,10 @@ public class Layers
 
     /**
      * Method that returns a LightweightTrackWrapper given its name.
+     * 
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
-     * @param name Name to be found.
+     * @param name
+     *          Name to be found.
      * @return LightweightTrackWrapper that contains the track of the name given.
      */
     public LightweightTrackWrapper findTrack(@ScriptParameter(
@@ -181,8 +203,9 @@ public class Layers
 
     /**
      * Method that returns the track in the layers
+     * 
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
-     * @return 
+     * @return Array containing the tracks in the layer as LightweightTrackWrapper
      */
     public LightweightTrackWrapper[] getTracks()
     {
@@ -206,7 +229,9 @@ public class Layers
 
     /**
      * Remove the given layer of the current instance.
-     * @param layer Layer to be removed.
+     * 
+     * @param layer
+     *          Layer to be removed.
      */
     public void remove(final Layer layer)
     {
@@ -215,7 +240,8 @@ public class Layers
 
     /**
      * Amount of layers in the current instance.
-     * @return Amount of layers  in the current instance.
+     * 
+     * @return Amount of layers in the current instance.
      */
     public int size()
     {

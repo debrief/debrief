@@ -25,6 +25,11 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 
 import MWC.GUI.Editable;
 
+/**
+ * 
+ * @author Ian Mayo
+ *
+ */
 public class Outline
 {
   private final IContentOutlinePage outline;

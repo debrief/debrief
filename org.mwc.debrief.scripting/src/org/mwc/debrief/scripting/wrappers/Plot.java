@@ -114,6 +114,15 @@ public class Plot
   {
     return _plot;
   }
+  
+  /**
+   * Retrieves the title of the current plot.
+   * @return Title of the plot
+   */
+  public String getTitle()
+  {
+    return _plot.getTitle();
+  }
 
   public HiResDate getTime()
   {
