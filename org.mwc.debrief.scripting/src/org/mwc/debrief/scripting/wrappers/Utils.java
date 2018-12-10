@@ -34,6 +34,14 @@ public class Utils
   }
 
   @WrapToScript
+  /**
+   * Returns the content of the clipboard.
+   * 
+   * @return content of the clipboard as String.
+   * @throws HeadlessException
+   * @throws UnsupportedFlavorException
+   * @throws IOException
+   */
   public static String getClipboard() throws HeadlessException,
       UnsupportedFlavorException, IOException
   {
@@ -42,6 +50,12 @@ public class Utils
   }
 
   @WrapToScript
+  /**
+   * Set the specified string to the clipboard.
+   * 
+   * @param _clipboardData
+   *          String text to be added to the clipboard.
+   */
   public static void setClipboard(final String _clipboardData)
   {
     final StringSelection selection = new StringSelection(_clipboardData);
@@ -51,18 +65,36 @@ public class Utils
   }
 
   @WrapToScript
+  /**
+   * Write the error message in the log.
+   * 
+   * @param error
+   *          Error message to be written in the log.
+   */
   public static void writeError(final String error)
   {
     DebriefPlugin.logError(IStatus.ERROR, error, null);
   }
 
   @WrapToScript
+  /**
+   * Write the information message in the log
+   * 
+   * @param info
+   *          Information message to be written in the log.
+   */
   public static void writeInfo(final String info)
   {
     DebriefPlugin.logError(IStatus.INFO, info, null);
   }
 
   @WrapToScript
+  /**
+   * Write the warning message in the log
+   * 
+   * @param warning
+   *          Warning message to be written in the log.
+   */
   public static void writeWarning(final String warning)
   {
     DebriefPlugin.logError(IStatus.WARNING, warning, null);

@@ -81,6 +81,14 @@ public class Tactical
     }
   }
 
+  /**
+   * Create a fix given the time, location, course in radians and speed in yards per seconds.
+   * @param time Time of the new fix
+   * @param location Location of the new fix
+   * @param courseRads Course in radians of the new fix
+   * @param speedYps Speed in yards per second.
+   * @return New fix object.
+   */
   public static FixWrapper createFix(final HiResDate time,
       final WorldLocation location, final double courseRads,
       final double speedYps)
@@ -101,18 +109,38 @@ public class Tactical
     return new NarrativeWrapper(title);
   }
 
+  /**
+   * 
+   * @param track
+   * @param type
+   * @param DTG
+   * @param entry
+   * @return
+   */
   public static NarrativeEntry createNarrativeEntry(final String track,
       final String type, final HiResDate DTG, final String entry)
   {
     return new NarrativeEntry(track, type, DTG, entry);
   }
 
+  /**
+   * Create a new sensor with the given name.
+   * @param name Name of the new Sensor
+   * @return New sensor object with the name given.
+   */
   public static SensorWrapper createSensor(final String name)
   {
     final SensorWrapper sensor = new SensorWrapper(name);
     return sensor;
   }
 
+  /**
+   * Creates a new sensor with the date given as DTG.
+   * 
+   * @see Debrief.Wrappers.SensorContactWrapper.SensorContactWrapper()
+   * @param date Date of the new sensor to be created.
+   * @return New sensor object.
+   */
   public static SensorContactWrapper createSensorContact(final HiResDate date)
   {
     final SensorContactWrapper res = new SensorContactWrapper();
@@ -120,6 +148,14 @@ public class Tactical
     return res;
   }
 
+  /**
+   * Creates a track with the given name.
+   * 
+   * @see Debrief.Wrappers.TrackWrapper
+   * @param name
+   *          Name of the new track created.
+   * @return New Track created.
+   */
   public static TrackWrapper createTrack(final String name)
   {
     final TrackWrapper res = new TrackWrapper();
