@@ -31,12 +31,28 @@ public class Chart
 {
 
   @WrapToScript
+  /**
+   * Function that creates a coast Painter object instance
+   * 
+   * @see MWC.GUI.Chart.Painters.CoastPainter
+   * @return CoastPainter object created.
+   */
   public static CoastPainter createCoastPainter()
   {
     return new CoastPainter();
   }
 
   @WrapToScript
+  /**
+   * Function that creates a ETOPOPainter object instance.
+   * 
+   * @see MWC.GUI.Chart.Painters.ETOPOPainter
+   * @param pathName
+   *          path of the ETOPOPainter object.
+   * @param parentLayers
+   *          Parent Layers of the ETOPOPainter.
+   * @return ETOPOPainter object created.
+   */
   public static ETOPOPainter createETOPOPainter(final String pathName,
       final Layers parentLayers)
   {
@@ -44,18 +60,42 @@ public class Chart
   }
 
   @WrapToScript
+  /**
+   * Function that creates a GridPainter object instance
+   * 
+   * @see MWC.GUI.Chart.Painters.GridPainter
+   * @return GridPainter object created.
+   */
   public static GridPainter createGrid()
   {
     return new GridPainter();
   }
 
   @WrapToScript
+  /**
+   * Function that creates a ScalePainter object instance
+   * 
+   * @see MWC.GUI.Chart.Painters.ScalePainter
+   * @return ScalePainter object created.
+   */
   public static ScalePainter createScale()
   {
     return new ScalePainter();
   }
 
   @WrapToScript
+  /**
+   * Function that creates a Coastline from an inputStream
+   * 
+   * @param inputStream
+   *          Stream to read the information from
+   * @see MWC.GUI.Coast.Coastline
+   * @return Coastline object created.
+   * @throws IOException
+   *           Exception in case the stream is not available or corrupted.
+   * @throws ParseException
+   *           Exception in case the data has a wrong format.
+   */
   public static Coastline loadCoastline(final InputStream inputStream)
       throws IOException, ParseException
   {

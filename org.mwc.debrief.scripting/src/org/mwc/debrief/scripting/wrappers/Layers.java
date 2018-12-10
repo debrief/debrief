@@ -35,6 +35,12 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
+/**
+ * Layer Class that exposes operations related with Layers
+ * @see MWC.GUI.Layers
+ * @author Ian Mayo
+ *
+ */
 public class Layers
 {
 
@@ -129,6 +135,12 @@ public class Layers
       return res;
     }
 
+    /**
+     * Method that returns a LightweightTrackWrapper given its name.
+     * @see Debrief.Wrappers.Track.LightweightTrackWrapper
+     * @param name Name to be found.
+     * @return LightweightTrackWrapper that contains the track of the name given.
+     */
     public LightweightTrackWrapper findTrack(@ScriptParameter(
         defaultValue = "unset") final String name)
     {
@@ -159,11 +171,19 @@ public class Layers
       return res;
     }
 
+    /**
+     * Method needed to update the plot.
+     */
     public void fireModified()
     {
       _layers.fireExtended();
     }
 
+    /**
+     * Method that returns the track in the layers
+     * @see Debrief.Wrappers.Track.LightweightTrackWrapper
+     * @return 
+     */
     public LightweightTrackWrapper[] getTracks()
     {
       final ArrayList<LightweightTrackWrapper> items =
@@ -184,11 +204,19 @@ public class Layers
       {null});
     }
 
+    /**
+     * Remove the given layer of the current instance.
+     * @param layer Layer to be removed.
+     */
     public void remove(final Layer layer)
     {
       _layers.removeThisLayer(layer);
     }
 
+    /**
+     * Amount of layers in the current instance.
+     * @return Amount of layers  in the current instance.
+     */
     public int size()
     {
       return _layers.size();

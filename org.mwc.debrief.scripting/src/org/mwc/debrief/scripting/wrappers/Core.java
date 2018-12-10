@@ -22,6 +22,12 @@ import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import junit.framework.TestCase;
 
+/**
+ * Core class that exposes methods related with the plot and basic creators
+ * 
+ * @author Ian Mayo
+ *
+ */
 public class Core
 {
 
@@ -97,22 +103,59 @@ public class Core
     return new HiResDate(date);
   }
 
+  /**
+   * Function that creates a duration given a value and the unit
+   * 
+   * @see MWC.GenericData.Duration
+   * @param value
+   *          Value of the duration.
+   * @param units
+   *          Unit of the duration as an integer. Options available: MICROSECONDS = 0, MILLISECONDS
+   *          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5
+   * @return Duration object created.
+   */
   public static Duration createDuration(final int value, final int units)
   {
     return new Duration(value, units);
   }
 
+  /**
+   * Function that creates a font object given a font name as string, an style and size.
+   * 
+   * @see java.awt.Font#Font(String, int, int)
+   * @param fontName
+   *          Font name as String. For example: "Serif.plain"
+   * @param style
+   *          Style of the font. For example: java.awt.Font.PLAIN
+   * @param size
+   *          Size of the font created.
+   * @return Font object created.
+   */
   public static Font createFont(final String fontName, final int style,
       final int size)
   {
     return new Font(fontName, style, size);
   }
 
+  /**
+   * Function that returns the active plot (Editor).
+   * 
+   * @see org.mwc.debrief.scripting.wrappers.Plot
+   * @return Plot instance currently active.
+   */
   public static Plot getActivePlot()
   {
     return getPlot(null);
   }
 
+  /**
+   * Method that returns a plot given its name.
+   * 
+   * @see org.mwc.debrief.scripting.wrappers.Plot
+   * @param filename
+   *          Name of the plot editor.
+   * @return Plot instance.
+   */
   public static Plot getPlot(@ScriptParameter(
       defaultValue = "unset") final String filename)
   {
@@ -157,6 +200,9 @@ public class Core
 
   private TimeProvider _timeProvider;
 
+  /**
+   * Dummy constructor.
+   */
   public Core()
   {
     System.out.println("About to start listening");
