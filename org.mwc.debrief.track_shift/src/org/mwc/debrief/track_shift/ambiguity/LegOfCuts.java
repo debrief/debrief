@@ -4,14 +4,13 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoint;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GenericData.HiResDate;
+import junit.framework.TestCase;
 
 public class LegOfCuts extends ArrayList<SensorContactWrapper>
 {
@@ -19,7 +18,7 @@ public class LegOfCuts extends ArrayList<SensorContactWrapper>
   public static class TestLegs extends TestCase
   {
 
-    public void testProcessCuts() throws FileNotFoundException
+    public static void testProcessCuts() throws FileNotFoundException
     {
       List<WeightedObservedPoint> obs = new ArrayList<WeightedObservedPoint>();
       obs.add(new WeightedObservedPoint(1, 80d, 260d));
