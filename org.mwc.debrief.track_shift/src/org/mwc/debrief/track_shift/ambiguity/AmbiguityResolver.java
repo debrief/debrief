@@ -247,7 +247,7 @@ public class AmbiguityResolver
     }
 
   }
-  
+
   static public final class TestResolveAmbig extends junit.framework.TestCase
   {
 
@@ -295,8 +295,8 @@ public class AmbiguityResolver
       };
     }
 
-    private static TrackWrapper getData(final String name, final String trackName)
-        throws FileNotFoundException
+    private static TrackWrapper getData(final String name,
+        final String trackName) throws FileNotFoundException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -320,100 +320,16 @@ public class AmbiguityResolver
       return track;
     }
 
-    private void getPerms(final List<ArrayList<WhichBearing>> results,
-        final int ctr, final List<WhichBearing> thisList,
-        final WhichBearing newPerm)
-    {
-      final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
-
-      if (thisList != null)
-      {
-        newList.addAll(thisList);
-      }
-
-      if (newPerm != null)
-      {
-        newList.add(newPerm);
-      }
-
-      if (ctr > 0)
-      {
-        // ok, add the two new perms
-        final int thisCtr = ctr - 1;
-        getPerms(results, thisCtr, newList, WhichBearing.CORE);
-        getPerms(results, thisCtr, newList, WhichBearing.AMBIGUOUS);
-      }
-      else
-      {
-        // ok, finished. store the results
-        results.add(newList);
-      }
-    }
-
     public static void testChunkFor()
     {
-      for (int i = 21; i < 50; i++)
+      final int minRemainder = 9;
+      for (int i = minRemainder; i < 50; i++)
       {
-        assertTrue(i % chunkFor(i) > 5);
+        System.out.println(i + " " + chunkFor(i, 9) + " - " + (i % chunkFor(i,
+            9)));
+        assertTrue(i % chunkFor(i, 9) > minRemainder || i % chunkFor(i,
+            9) == 0);
       }
-    }
-
-    public void testGenPerms()
-    {
-      final List<ArrayList<WhichBearing>> results =
-          new ArrayList<ArrayList<WhichBearing>>();
-      final int ctr = 6;
-      final List<WhichBearing> thisList = null;
-      final WhichBearing newPerm = null;
-
-      getPerms(results, ctr, thisList, newPerm);
-      System.out.println(results.size());
-      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
-
-      results.clear();
-
-      final ArrayList<WhichBearing> starter = new ArrayList<WhichBearing>();
-      starter.add(WhichBearing.CORE);
-      starter.add(WhichBearing.AMBIGUOUS);
-
-      results.add(starter);
-
-      // try another way
-      for (int i = 0; i < ctr; i++)
-      {
-        final ArrayList<ArrayList<WhichBearing>> newList =
-            new ArrayList<ArrayList<WhichBearing>>();
-        for (final ArrayList<WhichBearing> list : results)
-        {
-          final ArrayList<WhichBearing> permA = new ArrayList<WhichBearing>();
-          permA.addAll(list);
-          final ArrayList<WhichBearing> permB = new ArrayList<WhichBearing>();
-          permB.addAll(list);
-          permA.add(WhichBearing.CORE);
-          permB.add(WhichBearing.AMBIGUOUS);
-
-          newList.add(permA);
-          newList.add(permB);
-        }
-
-        results.clear();
-        results.addAll(newList);
-      }
-
-      System.out.println(results.size());
-      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
-
-      final Iterator<Boolean[]> iter = bool(ctr);
-      int numGenerated = 0;
-      while (iter.hasNext())
-      {
-        @SuppressWarnings("unused")
-        final Boolean[] perm = iter.next();
-        numGenerated++;
-      }
-
-      assertEquals("enough perms", (int) Math.pow(2, ctr), numGenerated);
-
     }
 
     public static void testGetCurve() throws FileNotFoundException
@@ -555,9 +471,10 @@ public class AmbiguityResolver
 
       final Logger logger = Logger.getLogger("Logger");
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
-          0.2, 0.2, 240, logger, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+      final LegsAndZigs res = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -589,9 +506,10 @@ public class AmbiguityResolver
 
       final Logger logger = Logger.getLogger("Logger");
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
-          0.2, 0.2, 240, logger, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, 4);
+      final LegsAndZigs res = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              4);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -656,9 +574,10 @@ public class AmbiguityResolver
 
       final Logger logger = Logger.getLogger("Logger");
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
-          0.2, 0.2, 240, logger, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+      final LegsAndZigs res = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -700,9 +619,10 @@ public class AmbiguityResolver
       }
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
-          0.2, 0.2, 240, null, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+      final LegsAndZigs res = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, null, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -737,9 +657,10 @@ public class AmbiguityResolver
 
       final Logger logger = null;// Logger.getLogger("Logger");
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
-          0.2, 0.2, 240, logger, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+      final LegsAndZigs res = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              null);
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
@@ -905,9 +826,10 @@ public class AmbiguityResolver
         }
       });
 
-      final LegsAndZigs sliced = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(host,
-          2.2, 0.2, 22, logger, null, OS_TURN_MIN_COURSE_CHANGE,
-          OS_TURN_MIN_TIME_INTERVAL, timePeriod, null);
+      final LegsAndZigs sliced = AmbiguityResolver
+          .sliceTrackIntoLegsUsingAmbiguity(host, 2.2, 0.2, 22, logger, null,
+              OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL, timePeriod,
+              null);
 
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 4, sliced.legs.size());
@@ -984,6 +906,94 @@ public class AmbiguityResolver
           bearing1, bearing2, null, null, Color.RED, "label", 0, sensor
               .getName());
     }
+
+    private void getPerms(final List<ArrayList<WhichBearing>> results,
+        final int ctr, final List<WhichBearing> thisList,
+        final WhichBearing newPerm)
+    {
+      final ArrayList<WhichBearing> newList = new ArrayList<WhichBearing>();
+
+      if (thisList != null)
+      {
+        newList.addAll(thisList);
+      }
+
+      if (newPerm != null)
+      {
+        newList.add(newPerm);
+      }
+
+      if (ctr > 0)
+      {
+        // ok, add the two new perms
+        final int thisCtr = ctr - 1;
+        getPerms(results, thisCtr, newList, WhichBearing.CORE);
+        getPerms(results, thisCtr, newList, WhichBearing.AMBIGUOUS);
+      }
+      else
+      {
+        // ok, finished. store the results
+        results.add(newList);
+      }
+    }
+
+    public void testGenPerms()
+    {
+      final List<ArrayList<WhichBearing>> results =
+          new ArrayList<ArrayList<WhichBearing>>();
+      final int ctr = 6;
+      final List<WhichBearing> thisList = null;
+      final WhichBearing newPerm = null;
+
+      getPerms(results, ctr, thisList, newPerm);
+      System.out.println(results.size());
+      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
+
+      results.clear();
+
+      final ArrayList<WhichBearing> starter = new ArrayList<WhichBearing>();
+      starter.add(WhichBearing.CORE);
+      starter.add(WhichBearing.AMBIGUOUS);
+
+      results.add(starter);
+
+      // try another way
+      for (int i = 0; i < ctr; i++)
+      {
+        final ArrayList<ArrayList<WhichBearing>> newList =
+            new ArrayList<ArrayList<WhichBearing>>();
+        for (final ArrayList<WhichBearing> list : results)
+        {
+          final ArrayList<WhichBearing> permA = new ArrayList<WhichBearing>();
+          permA.addAll(list);
+          final ArrayList<WhichBearing> permB = new ArrayList<WhichBearing>();
+          permB.addAll(list);
+          permA.add(WhichBearing.CORE);
+          permB.add(WhichBearing.AMBIGUOUS);
+
+          newList.add(permA);
+          newList.add(permB);
+        }
+
+        results.clear();
+        results.addAll(newList);
+      }
+
+      System.out.println(results.size());
+      assertEquals("enough perms", (int) Math.pow(2, ctr), results.size());
+
+      final Iterator<Boolean[]> iter = bool(ctr);
+      int numGenerated = 0;
+      while (iter.hasNext())
+      {
+        @SuppressWarnings("unused")
+        final Boolean[] perm = iter.next();
+        numGenerated++;
+      }
+
+      assertEquals("enough perms", (int) Math.pow(2, ctr), numGenerated);
+
+    }
   }
 
   private static final long OS_TURN_MIN_TIME_INTERVAL = 180l;
@@ -996,26 +1006,26 @@ public class AmbiguityResolver
    * @param len
    * @return
    */
-  private static int chunkFor(final int len)
+  private static int chunkFor(final int len, final int minChunk)
   {
+    // improve this - so they're always at least 10, but less than 20
+
     final int MAX_CHUNK_SIZE = 20;
 
-    final int res;
+    final int res = -1;
     if (len < MAX_CHUNK_SIZE)
     {
-      res = len;
-    }
-    else if (len % 12 > 5)
-    {
-      res = 12;
-    }
-    else if (len % 15 > 5)
-    {
-      res = 15;
+      return len;
     }
     else
     {
-      res = 17;
+      for (int i = MAX_CHUNK_SIZE; i >= minChunk; i--)
+      {
+        if ((len % i == 0) || (len % i > minChunk))
+        {
+          return i;
+        }
+      }
     }
     return res;
   }
@@ -1091,180 +1101,8 @@ public class AmbiguityResolver
     };
   }
 
-  private static long midTimeFor(final LegOfCuts lastLeg, final LegOfCuts leg)
-  {
-    final long startTime = lastLeg.get(lastLeg.size() - 1).getDTG().getDate()
-        .getTime();
-    final long endTime = leg.get(0).getDTG().getDate().getTime();
-
-    // and the mid-way value
-    return startTime + (endTime - startTime) / 2;
-  }
-
-  private static boolean nearNorth(final double bearing)
-  {
-    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
-  }
-
-  private static double shortAngle(final double brg1, final double brg2)
-  {
-    double res = brg1 - brg2;
-    if (res > 180)
-    {
-      res -= 360;
-    }
-    if (res < -180)
-    {
-      res += 360;
-    }
-
-    return res;
-  }
-
-  /**
-   * we've received another steady cut. Do we have enough cuts to treat it as a leg?
-   *
-   * @param possLeg
-   *          the cuts we've cached so far
-   * @param thisTime
-   *          the time of the new cut
-   * @param minLength
-   *          the min period required to treat it as a leg
-   * @return yes/no
-   */
-  private static boolean stillCacheing(final LegOfCuts possLeg,
-      final long thisTime, final long minLength)
-  {
-    final boolean res;
-    if (possLeg.isEmpty())
-    {
-      res = true;
-    }
-    else
-    {
-      final long legStart = possLeg.get(0).getDTG().getDate().getTime();
-      final long elapsed = (thisTime - legStart) / 1000L;
-      res = elapsed < minLength;
-    }
-
-    return res;
-  }
-
-  /**
-   * trim the supplied value to the 0..360 domain
-   *
-   * @param val
-   *          value to trim
-   * @param target
-   *          value we're comparing against - so we keep the subject value fairly clsoe to this one
-   *
-   * @return
-   */
-  private static double trim(final double val, final Double target)
-  {
-    double res = val;
-
-    // ok, get trimming
-    if ((target == null || target > -270) && (res < -360d))
-    {
-      res += 360d;
-    }
-    if ((target == null || target < 270) && (res >= 360d))
-    {
-      res -= 360d;
-    }
-
-    // ok, special cases. We're looking for a value near 360, but we've only got
-    // the value near 050
-    if ((target != null && target > 270) && (res <= 270d))
-    {
-      res += 360d;
-    }
-    if ((target != null && target < -270) && (res >= -270d))
-    {
-      res -= 360d;
-    }
-    return res;
-  }
-
-  private static double valueAt(final long time, final double[] slope)
-  {
-    return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
-  }
-
-  private static void walkScores(final List<LegPermutation> legs,
-      final int curLeg, final ScoreList thisPermSoFar,
-      final PermScore lastScore, final List<ScoreList> finishedPerms)
-  {
-    // take a deep copy of the clones, since we want independent copies
-    final ScoreList newScores = new ScoreList();
-    if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
-    {
-      newScores.addAll(thisPermSoFar);
-    }
-
-    // and add a new score, if there is one
-    if (lastScore != null)
-    {
-      newScores.add(lastScore);
-    }
-
-    // have we reached the end?
-    if (curLeg < legs.size())
-    {
-      // ok, we can add some scores
-      final LegPermutation lastPerm = legs.get(curLeg - 1);
-      final LegPermutation thisPerm = legs.get(curLeg);
-
-      // ok, increment the counter
-      final int thisCount = curLeg + 1;
-
-      // ok, what was the last leg?
-      final WhichBearing lastBearing = lastScore == null ? null
-          : lastScore.thisB;
-
-      // ok, sort out the four permutations
-
-      // if we had a previous leg, was if resolved as CORE?
-      if (lastBearing == null || lastBearing == WhichBearing.CORE)
-      {
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm,
-            WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
-
-        // do we have ambig data?
-        if (thisPerm.ambigSlopeEarly != null)
-        {
-          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-              thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
-              finishedPerms);
-        }
-      }
-
-      // if we had a previous leg, was if resolved as AMBIGUOUS?
-      if ((lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
-          && (lastPerm.ambigSlopeLate != null))
-      {
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm,
-            WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
-        if (thisPerm.ambigSlopeEarly != null)
-        {
-          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
-              finishedPerms);
-        }
-      }
-    }
-    else
-    {
-      // no more to be added, let the list sort out it's total
-      newScores.finalise();
-
-      // ok, we've reached the end. Store the score.
-      finishedPerms.add(newScores);
-    }
-  }
-
-  private static List<LegPermutation> getPermutations(final List<LegOfCuts> legs)
+  private static List<LegPermutation> getPermutations(
+      final List<LegOfCuts> legs)
   {
     final List<LegPermutation> listOfPermutations =
         new ArrayList<LegPermutation>();
@@ -1321,6 +1159,21 @@ public class AmbiguityResolver
     return listOfPermutations;
   }
 
+  private static long midTimeFor(final LegOfCuts lastLeg, final LegOfCuts leg)
+  {
+    final long startTime = lastLeg.get(lastLeg.size() - 1).getDTG().getDate()
+        .getTime();
+    final long endTime = leg.get(0).getDTG().getDate().getTime();
+
+    // and the mid-way value
+    return startTime + (endTime - startTime) / 2;
+  }
+
+  private static boolean nearNorth(final double bearing)
+  {
+    return Math.abs(bearing) < 20 || Math.abs(bearing) > 340;
+  }
+
   /**
    * walk through the list of legs, a chunk at a time
    *
@@ -1333,7 +1186,7 @@ public class AmbiguityResolver
 
     final int totalLen = legs.size();
 
-    final int chunk = chunkFor(totalLen);
+    final int chunk = chunkFor(totalLen, 9);
 
     // prepare the results
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
@@ -1406,6 +1259,21 @@ public class AmbiguityResolver
 
       // remember the leg
       res.add(new ResolvedLeg(zig.thisLeg, zig.thisB));
+    }
+
+    return res;
+  }
+
+  private static double shortAngle(final double brg1, final double brg2)
+  {
+    double res = brg1 - brg2;
+    if (res > 180)
+    {
+      res -= 360;
+    }
+    if (res < -180)
+    {
+      res += 360;
     }
 
     return res;
@@ -1751,9 +1619,9 @@ public class AmbiguityResolver
     return new LegsAndZigs(legs, zigs);
   }
 
-  public static LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(final TrackWrapper track,
-      final double minZig, final double minBoth, final double minLegLength,
-      final Logger logger, final TimeSeries scores,
+  public static LegsAndZigs sliceTrackIntoLegsUsingAmbiguity(
+      final TrackWrapper track, final double minZig, final double minBoth,
+      final double minLegLength, final Logger logger, final TimeSeries scores,
       final Double osTurnMinCourseChange, final Long osTurnMinTimeInterval,
       final TimePeriod visiblePeriod, final Integer maxLegs)
   {
@@ -1786,6 +1654,149 @@ public class AmbiguityResolver
       }
     }
     return res;
+  }
+
+  /**
+   * we've received another steady cut. Do we have enough cuts to treat it as a leg?
+   *
+   * @param possLeg
+   *          the cuts we've cached so far
+   * @param thisTime
+   *          the time of the new cut
+   * @param minLength
+   *          the min period required to treat it as a leg
+   * @return yes/no
+   */
+  private static boolean stillCacheing(final LegOfCuts possLeg,
+      final long thisTime, final long minLength)
+  {
+    final boolean res;
+    if (possLeg.isEmpty())
+    {
+      res = true;
+    }
+    else
+    {
+      final long legStart = possLeg.get(0).getDTG().getDate().getTime();
+      final long elapsed = (thisTime - legStart) / 1000L;
+      res = elapsed < minLength;
+    }
+
+    return res;
+  }
+
+  /**
+   * trim the supplied value to the 0..360 domain
+   *
+   * @param val
+   *          value to trim
+   * @param target
+   *          value we're comparing against - so we keep the subject value fairly clsoe to this one
+   *
+   * @return
+   */
+  private static double trim(final double val, final Double target)
+  {
+    double res = val;
+
+    // ok, get trimming
+    if ((target == null || target > -270) && (res < -360d))
+    {
+      res += 360d;
+    }
+    if ((target == null || target < 270) && (res >= 360d))
+    {
+      res -= 360d;
+    }
+
+    // ok, special cases. We're looking for a value near 360, but we've only got
+    // the value near 050
+    if ((target != null && target > 270) && (res <= 270d))
+    {
+      res += 360d;
+    }
+    if ((target != null && target < -270) && (res >= -270d))
+    {
+      res -= 360d;
+    }
+    return res;
+  }
+
+  private static double valueAt(final long time, final double[] slope)
+  {
+    return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
+  }
+
+  private static void walkScores(final List<LegPermutation> legs,
+      final int curLeg, final ScoreList thisPermSoFar,
+      final PermScore lastScore, final List<ScoreList> finishedPerms)
+  {
+    // take a deep copy of the clones, since we want independent copies
+    final ScoreList newScores = new ScoreList();
+    if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
+    {
+      newScores.addAll(thisPermSoFar);
+    }
+
+    // and add a new score, if there is one
+    if (lastScore != null)
+    {
+      newScores.add(lastScore);
+    }
+
+    // have we reached the end?
+    if (curLeg < legs.size())
+    {
+      // ok, we can add some scores
+      final LegPermutation lastPerm = legs.get(curLeg - 1);
+      final LegPermutation thisPerm = legs.get(curLeg);
+
+      // ok, increment the counter
+      final int thisCount = curLeg + 1;
+
+      // ok, what was the last leg?
+      final WhichBearing lastBearing = lastScore == null ? null
+          : lastScore.thisB;
+
+      // ok, sort out the four permutations
+
+      // if we had a previous leg, was if resolved as CORE?
+      if (lastBearing == null || lastBearing == WhichBearing.CORE)
+      {
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm,
+            WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
+
+        // do we have ambig data?
+        if (thisPerm.ambigSlopeEarly != null)
+        {
+          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+              thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
+              finishedPerms);
+        }
+      }
+
+      // if we had a previous leg, was if resolved as AMBIGUOUS?
+      if ((lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
+          && (lastPerm.ambigSlopeLate != null))
+      {
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm, thisPerm,
+            WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
+        if (thisPerm.ambigSlopeEarly != null)
+        {
+          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
+              finishedPerms);
+        }
+      }
+    }
+    else
+    {
+      // no more to be added, let the list sort out it's total
+      newScores.finalise();
+
+      // ok, we've reached the end. Store the score.
+      finishedPerms.add(newScores);
+    }
   }
 
 }
