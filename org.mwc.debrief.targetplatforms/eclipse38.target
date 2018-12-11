@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eclipse45" sequenceNumber="48">
+<?pde version="3.8"?><target name="eclipse45" sequenceNumber="49">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.2.v201211061806-7H7GFeJDxumUrsn5qkiQgOEhsz0p60HAmPyU6VX"/>
@@ -8,12 +8,6 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.emf.sdk.feature.group" version="2.11.2.v20160208-0841"/>
 <repository location="http://www.eclipse.org/modeling/amalgam/downloads/package/modeling/mars/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.ease.feature.feature.group" version="0.3.0.I201602290929"/>
-<unit id="org.eclipse.ease.javascript.feature.feature.group" version="0.3.0.I201602290929"/>
-<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.3.0.I201605121005"/>
-<repository location="https://github.com/theanuradha/eclipse-ease/raw/master/v0.3.0"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
@@ -27,6 +21,12 @@
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.wst.jsdt.feature.feature.group" version="1.6.201.v201512010225"/>
 <repository location="http://download.eclipse.org/webtools/repository/mars/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.ease.feature.feature.group" version="0.5.0.I201709080940"/>
+<unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.5.0.I201708100449"/>
+<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.5.0.I201709292011"/>
+<repository location="https://github.com/theanuradha/eclipse-ease/raw/master/v0.5.0"/>
 </location>
 </locations>
 </target>
