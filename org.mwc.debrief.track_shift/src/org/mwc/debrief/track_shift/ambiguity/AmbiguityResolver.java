@@ -150,7 +150,6 @@ public class AmbiguityResolver
     {
       return "( " + lastB + "-" + thisB + " :" + (int) thisScore + ")";
     }
-
   }
 
   public static class ResolvedLeg
@@ -297,7 +296,7 @@ public class AmbiguityResolver
       };
     }
 
-    private TrackWrapper getData(final String name)
+    private TrackWrapper getData(final String name, final String trackName)
         throws FileNotFoundException
     {
       // get our sample data-file
@@ -315,7 +314,7 @@ public class AmbiguityResolver
       importer.storePendingSensors();
 
       // get the sensor track
-      final TrackWrapper track = (TrackWrapper) theLayers.findLayer("T23");
+      final TrackWrapper track = (TrackWrapper) theLayers.findLayer(trackName);
 
       assertNotNull("found sensor track", track);
 
@@ -525,7 +524,7 @@ public class AmbiguityResolver
 
     public void testHandleWiggle() throws FileNotFoundException
     {
-      final TrackWrapper track = getData("Ambig_tracks_hover_north.rep");
+      final TrackWrapper track = getData("Ambig_tracks_hover_north.rep", "SENSOR");
       assertNotNull("found track", track);
 
       // has sensors
@@ -566,7 +565,7 @@ public class AmbiguityResolver
 
     public void testMaxLegs() throws FileNotFoundException
     {
-      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
 
       // has sensors
@@ -638,7 +637,7 @@ public class AmbiguityResolver
 
     public void testMaxLegsUnspecified() throws FileNotFoundException
     {
-      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
 
       // has sensors
@@ -678,7 +677,7 @@ public class AmbiguityResolver
 
     public void testOver20Legs() throws FileNotFoundException
     {
-      final TrackWrapper track = getData("legs_20.rep");
+      final TrackWrapper track = getData("legs_20.rep", "T23");
       assertNotNull("found track", track);
 
       // has sensors
@@ -711,6 +710,9 @@ public class AmbiguityResolver
       final List<LegOfCuts> legs = res.legs;
       final LegOfCuts zigs = res.zigCuts;
 
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 6, zigs.size());
+
       assertNotNull("found zones", legs);
       assertEquals("found correct number of zones", 25, legs.size());
       
@@ -719,13 +721,19 @@ public class AmbiguityResolver
       List<ResolvedLeg> resolved = resolver.resolve(legs);
       assertEquals("resolved", 25, resolved.size());
 
-      assertNotNull("found zigs", zigs);
-      assertEquals("found correct number of zig cuts", 6, zigs.size());
+      // check they're all resolved
+      for(ResolvedLeg leg: resolved)
+      {
+        for(SensorContactWrapper cut: leg.leg)
+        {
+          assertFalse("ambig cut silenced", cut.getHasAmbiguousBearing());
+        }
+      }
     }
     
     public void testOnlyDitchVisible() throws FileNotFoundException
     {
-      final TrackWrapper track = getData("Ambig_tracks2.rep");
+      final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
 
       // has sensors
@@ -927,6 +935,14 @@ public class AmbiguityResolver
       assertNotNull("produced slices", sliced);
       assertEquals("correct legs", 4, sliced.legs.size());
       assertEquals("correct turning cuts", 13, sliced.zigCuts.size());
+    }
+    
+    public void testChunkFor()
+    {
+      for(int i=21;i<50;i++)
+      {
+        assertTrue(i % chunkFor(i) > 5);
+      }
     }
 
     public void testTrim()
@@ -1178,78 +1194,6 @@ public class AmbiguityResolver
     return slope[0] + slope[1] * time + slope[2] * Math.pow(time, 2);
   }
 
-  private static void walkScores(final List<LegPermutation> legs,
-      final int curLeg, final ScoreList thisPermSoFar,
-      final PermScore lastScore, final List<ScoreList> finishedPerms)
-  {
-    // take a deep copy of the clones, since we want independent copies
-    final ScoreList newScores = new ScoreList();
-    if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
-    {
-      newScores.addAll(thisPermSoFar);
-    }
-
-    // and add a new score, if there is one
-    if (lastScore != null)
-    {
-      newScores.add(lastScore);
-    }
-
-    // have we reached the end?
-    if (curLeg < legs.size())
-    {
-      // ok, we can add some scores
-      final LegPermutation lastPerm = legs.get(curLeg - 1);
-      final LegPermutation thisPerm = legs.get(curLeg);
-
-      // ok, increment the counter
-      final int thisCount = curLeg + 1;
-
-      // ok, what was the last leg?
-      final WhichBearing lastBearing =
-          lastScore == null ? null : lastScore.thisB;
-
-      // ok, sort out the four permutations
-
-      // if we had a previous leg, was if resolved as CORE?
-      if (lastBearing == null || lastBearing == WhichBearing.CORE)
-      {
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-            thisPerm, WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
-
-        // do we have ambig data?
-        if (thisPerm.ambigSlopeEarly != null)
-        {
-          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-              thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
-              finishedPerms);
-        }
-      }
-
-      // if we had a previous leg, was if resolved as AMBIGUOUS?
-      if ((lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
-          && (lastPerm.ambigSlopeLate != null))
-      {
-        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
-        if (thisPerm.ambigSlopeEarly != null)
-        {
-          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
-              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
-              finishedPerms);
-        }
-      }
-    }
-    else
-    {
-      // no more to be added, let the list sort out it's total
-      newScores.finalise();
-
-      // ok, we've reached the end. Store the score.
-      finishedPerms.add(newScores);
-    }
-  }
-
   private List<LegPermutation> getPermutations(final List<LegOfCuts> legs)
   {
     final List<LegPermutation> listOfPermutations =
@@ -1307,8 +1251,65 @@ public class AmbiguityResolver
     }
     return listOfPermutations;
   }
+  
+  /** come up with a chunk size that doesn't leave to few iterations at the end
+   * 
+   * @param len
+   * @return
+   */
+  private static int chunkFor(final int len)
+  {
+    final int MAX_CHUNK_SIZE = 20;
+    
+    final int res;
+    if(len < MAX_CHUNK_SIZE)
+    {
+       res = len;
+    }
+    else if(len % 12 > 5)
+    {
+      res = 12;
+    }
+    else if(len % 15 > 5)
+    {
+      res = 15;
+    }
+    else
+    {
+      res = 17;
+    }
+    return res;
+  }
 
+  /** walk through the list of legs, a chunk at a time
+   * 
+   * @param legs bearing data, sliced into legs
+   * @return list of resolved legs of data
+   */
   public List<ResolvedLeg> resolve(final List<LegOfCuts> legs)
+  {
+    
+    final int totalLen = legs.size();
+    
+    final int chunk = chunkFor(totalLen);
+    
+    // prepare the results
+    final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
+    
+    // now work through in chunk
+    int thisStart = 0;
+    while (thisStart < totalLen)
+    {
+      final int lastIndex = Math.min(totalLen, thisStart + chunk);
+      final List<LegOfCuts> thisChunk = legs.subList(thisStart, lastIndex);
+      final List<ResolvedLeg> resolved = resolveLegacy(thisChunk);
+      res.addAll(resolved);
+      thisStart += chunk;
+    }
+    return res;
+  }
+
+  public List<ResolvedLeg> resolveLegacy(final List<LegOfCuts> legs)
   {
     final List<ResolvedLeg> res = new ArrayList<ResolvedLeg>();
 
@@ -1750,6 +1751,78 @@ public class AmbiguityResolver
       }
     }
     return res;
+  }
+
+  private static void walkScores(final List<LegPermutation> legs,
+      final int curLeg, final ScoreList thisPermSoFar,
+      final PermScore lastScore, final List<ScoreList> finishedPerms)
+  {
+    // take a deep copy of the clones, since we want independent copies
+    final ScoreList newScores = new ScoreList();
+    if (thisPermSoFar != null && !thisPermSoFar.isEmpty())
+    {
+      newScores.addAll(thisPermSoFar);
+    }
+  
+    // and add a new score, if there is one
+    if (lastScore != null)
+    {
+      newScores.add(lastScore);
+    }
+  
+    // have we reached the end?
+    if (curLeg < legs.size())
+    {
+      // ok, we can add some scores
+      final LegPermutation lastPerm = legs.get(curLeg - 1);
+      final LegPermutation thisPerm = legs.get(curLeg);
+  
+      // ok, increment the counter
+      final int thisCount = curLeg + 1;
+  
+      // ok, what was the last leg?
+      final WhichBearing lastBearing =
+          lastScore == null ? null : lastScore.thisB;
+  
+      // ok, sort out the four permutations
+  
+      // if we had a previous leg, was if resolved as CORE?
+      if (lastBearing == null || lastBearing == WhichBearing.CORE)
+      {
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.CORE, WhichBearing.CORE), finishedPerms);
+  
+        // do we have ambig data?
+        if (thisPerm.ambigSlopeEarly != null)
+        {
+          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+              thisPerm, WhichBearing.CORE, WhichBearing.AMBIGUOUS),
+              finishedPerms);
+        }
+      }
+  
+      // if we had a previous leg, was if resolved as AMBIGUOUS?
+      if ((lastBearing == null || lastBearing == WhichBearing.AMBIGUOUS)
+          && (lastPerm.ambigSlopeLate != null))
+      {
+        walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+            thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.CORE), finishedPerms);
+        if (thisPerm.ambigSlopeEarly != null)
+        {
+          walkScores(legs, thisCount, newScores, new PermScore(lastPerm,
+              thisPerm, WhichBearing.AMBIGUOUS, WhichBearing.AMBIGUOUS),
+              finishedPerms);
+        }
+      }
+    }
+    else
+    {
+      // no more to be added, let the list sort out it's total
+      newScores.finalise();
+  
+      // ok, we've reached the end. Store the score.
+      finishedPerms.add(newScores);
+    }
   }
 
 }
