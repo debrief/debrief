@@ -541,13 +541,6 @@ Library.
          unpack="false"/>
 
    <plugin
-         id="org.eclipse.ease.lang.javascript.nashorn"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.eclipse.ease.lang.javascript.rhino"
          download-size="0"
          install-size="0"
@@ -716,6 +709,20 @@ Library.
 
    <plugin
          id="com.google.protobuf"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jdt"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.jdt.debug.ui"
          download-size="0"
          install-size="0"
          version="0.0.0"
