@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="NMEA_Tracks/Output"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="GreenFV1" number="20"
+				RandomCourse="true">
+				<ParticipantLocation inRandomLocations="false">
+					<WorldArea>
+						<TopLeft>
+							<shortLocation Lat="11" Long="10"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="10" Long="11"></shortLocation>
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="elapsed time" Active="true">
+			<Duration Value="12" Units="days" ></Duration>
+		</TimeObserver>
+		<DebriefReplayObserver Name="DebriefPlot"
+			record_detections="false" record_positions="true" Active="true"
+			record_decisions="false" file_name="BLUE_TRACK">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</DebriefReplayObserver>
+		<BMRObserver Name="BMR_output" Active="true"
+			file_name="BMR_out">
+			<SubjectToTrack>
+				<Type Name="BLUE" />
+			</SubjectToTrack>
+		</BMRObserver>
+	</ObserverList>
+</ScenarioController>
+
