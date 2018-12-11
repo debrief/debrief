@@ -1165,7 +1165,7 @@ public class ImportNarrativeDocument
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
       
       // inject the start of records line
-      narr.set(5, START_OF_RECORDS + " FOR SOME EXERCISE");
+      narr.set(5, START_OF_RECORDS_1 + " FOR SOME EXERCISE");
       narr.set(9, END_OF_RECORDS_2 + " FOR SOME EXERCISE");
       
       int index = indexOfStart(narr);
@@ -1198,7 +1198,7 @@ public class ImportNarrativeDocument
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
       
       // inject the start of records line
-      narr.set(5, START_OF_RECORDS + " FOR SOME EXERCISE");
+      narr.set(5, START_OF_RECORDS_2 + " FOR SOME EXERCISE");
       
       int index = indexOfStart(narr);
       assertEquals("found start", 5, index);
@@ -1770,7 +1770,12 @@ public class ImportNarrativeDocument
   /** marker for start of narrative entries, in larger document
    * 
    */
-  private static final String START_OF_RECORDS = "START OF RECORDS";
+  private static final String START_OF_RECORDS_1 = "START OF RECORDS";
+
+  /** marker for start of narrative entries, in larger document
+   * 
+   */
+  private static final String START_OF_RECORDS_2 = "START RECORDS";
 
   /** marker for end of narrative entries, in larger document
    * 
@@ -2454,7 +2459,8 @@ public class ImportNarrativeDocument
     for(String s: strings)
     {
       final String trimmed = s.trim();
-      if(trimmed.startsWith(START_OF_RECORDS))
+      if (trimmed.startsWith(START_OF_RECORDS_1) || trimmed.startsWith(
+          START_OF_RECORDS_2))
       {
         return ctr;
       }
