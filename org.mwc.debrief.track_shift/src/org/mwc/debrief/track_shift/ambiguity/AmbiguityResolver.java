@@ -315,7 +315,7 @@ public class AmbiguityResolver
       importer.storePendingSensors();
 
       // get the sensor track
-      final TrackWrapper track = (TrackWrapper) theLayers.findLayer("SENSOR");
+      final TrackWrapper track = (TrackWrapper) theLayers.findLayer("T23");
 
       assertNotNull("found sensor track", track);
 
@@ -675,6 +675,54 @@ public class AmbiguityResolver
       assertEquals("found correct number of zig cuts", 22, zigs.size());
     }
 
+
+    public void testOver20Legs() throws FileNotFoundException
+    {
+      final TrackWrapper track = getData("legs_20.rep");
+      assertNotNull("found track", track);
+
+      // has sensors
+      assertEquals("has sensors", 2, track.getSensors().size());
+
+      final Enumeration<Editable> sensorList = track.getSensors().elements();
+
+      // skip the first sensor
+      sensorList.nextElement();
+
+      // make the sensor visible
+      final SensorWrapper sensor = (SensorWrapper) sensorList.nextElement();
+      sensor.setVisible(true);
+      final TimePeriod timePeriod =
+          new TimePeriod.BaseTimePeriod(sensor.getStartDTG(), sensor
+              .getEndDTG());
+
+      // check we have the correct sensor
+      assertEquals("correct name", "TA", sensor.getName());
+
+      // ok, get resolving
+      final AmbiguityResolver solver = new AmbiguityResolver();
+
+      final Logger logger = null ;// Logger.getLogger("Logger");
+      // try to get zones using ambiguity delta
+      final LegsAndZigs res =
+          solver.sliceTrackIntoLegsUsingAmbiguity(track, 0.2, 0.2, 240, logger,
+              null, OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
+              timePeriod, null);
+      final List<LegOfCuts> legs = res.legs;
+      final LegOfCuts zigs = res.zigCuts;
+
+      assertNotNull("found zones", legs);
+      assertEquals("found correct number of zones", 25, legs.size());
+      
+      // ok, now try to resolve them
+      AmbiguityResolver resolver = new AmbiguityResolver();
+      List<ResolvedLeg> resolved = resolver.resolve(legs);
+      assertEquals("resolved", 25, resolved.size());
+
+      assertNotNull("found zigs", zigs);
+      assertEquals("found correct number of zig cuts", 6, zigs.size());
+    }
+    
     public void testOnlyDitchVisible() throws FileNotFoundException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep");
