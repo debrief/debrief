@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FreeHEP 2.4
 Bundle-SymbolicName: org.freehep
-Bundle-Version: 1.0.8
+Bundle-Version: 1.0.8.qualifier
 Require-Bundle: org.eclipse.core.runtime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
