@@ -18,6 +18,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
+import MWC.GUI.TabPanel.OS;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import junit.framework.TestCase;
@@ -40,6 +41,7 @@ public class Core
     static final int testFontSize = 10;
     static final int testFontStyle = Font.PLAIN;
     static final String testFontName = "Serif.plain";
+    static final String MACOS_testFontName = "Dialog";
 
     static final int durationValue = 12;
     static final int durationUnits = Duration.HOURS;
@@ -70,7 +72,16 @@ public class Core
     public void testCreateFont()
     {
       final Font font = createFont(testFontName, testFontStyle, testFontSize);
-      assertEquals("Testing Font Name", testFontName, font.getFontName());
+      if(OS.isMacintosh())
+      {
+        // note: the mac mangles the font, since the one we're
+        // asking for isn't available, so it uses a similar one
+        assertEquals("Testing Font Name", MACOS_testFontName, font.getFontName());
+      }
+      else
+      {
+        assertEquals("Testing Font Name", testFontName, font.getFontName());
+      }
       assertEquals("Testing Font Style", testFontStyle, font.getStyle());
       assertEquals("Testing Font Size", testFontSize, font.getSize());
     }

@@ -128,7 +128,7 @@ public class Shapes
       final String nodeName1 = "NodeName1";
       final String nodeName2 = "NodeName2";
 
-      final ShapeWrapper polygonShape = createPolygon(new Vector<>(), shapeName,
+      final ShapeWrapper polygonShape = createPolygon(new Vector<PolygonShape.PolygonNode>(), shapeName,
           shapeColor);
       final PolygonShape polygonShapeCasted = (PolygonShape) polygonShape
           .getShape();
