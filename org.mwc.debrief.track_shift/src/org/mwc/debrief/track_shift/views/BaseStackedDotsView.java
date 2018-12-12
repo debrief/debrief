@@ -1307,6 +1307,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
+  @SuppressWarnings("static-method")
   protected Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
@@ -1581,12 +1582,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
             else
             {
-              System.err.println("Couldn't find:" + targetSeries);
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find series:" + targetSeries, null);
               nearest = null;
             }
 
             // did we find one?
-            if (nearest != null)
+            if (nearest == null)
+            {
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find match in series:" + targetSeries + " at time:"
+                      + newDate, null);
+            }
+            else
             {
               // ok, get the editor
               final IWorkbench wb = PlatformUI.getWorkbench();
@@ -2289,6 +2297,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
+  @SuppressWarnings("static-method")
   protected Runnable getDeleteCutsOperation()
   {
     return null;
@@ -2320,6 +2329,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
+  @SuppressWarnings("static-method")
   protected Runnable getResolveAmbiguityOperation()
   {
     return null;
@@ -2560,7 +2570,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     operationHistory.setLimit(undoContext, 100);
   }
 
-  protected List<Zone> legsFromZigs(final long startTime, final long endTime,
+  protected static List<Zone> legsFromZigs(final long startTime, final long endTime,
       final List<Zone> zigs, final ColorProvider randomProv)
   {
     final List<Zone> legs = new ArrayList<Zone>();
