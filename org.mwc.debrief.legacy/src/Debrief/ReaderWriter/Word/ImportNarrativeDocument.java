@@ -590,7 +590,7 @@ public class ImportNarrativeDocument
       {
 
         final int firstTab = firstWhiteSpace(trimmed);
-       
+
         // see if the first few characters are date
         final String dateStr = trimmed.substring(0, Math.min(trimmed.length(),
             firstTab));
@@ -1018,6 +1018,7 @@ public class ImportNarrativeDocument
       res.add("010507 SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
       res.add("010508 irrelevant content 2");
       res.add("010509 SR023 SOURCE_B FCS (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.");
+      res.add("010608");
       res.add("irrelevant postamble 3");
       res.add("irrelevant postamble 4");
   
@@ -2331,6 +2332,10 @@ public class ImportNarrativeDocument
 
         // also remove any other control chars that may throw MS Word
         final String text = removeBadChars(raw_text);
+        
+        // wrap import process in try/catch, so we can report errors
+        try
+        {
 
         // ok, get the narrative type
         final NarrEntry thisN = NarrEntry.create(text, ctr);
@@ -2437,6 +2442,12 @@ public class ImportNarrativeDocument
 
             }
           }
+        }
+        }catch(Exception e)
+        {
+          logThisError(ToolParent.WARNING,
+              "Failed whilst parsingline:" + text, e);
+
         }
       }
 
