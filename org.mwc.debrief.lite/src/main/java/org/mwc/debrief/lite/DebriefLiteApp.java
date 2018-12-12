@@ -16,17 +16,20 @@ package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -71,20 +74,26 @@ import MWC.GUI.Layers;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
+import MWC.GUI.DragDrop.FileDropSupport;
+import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Tools.Swing.SwingToolbar;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
+import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  * @author Unni Mana <unnivm@gmail.com>
  */
 
-public class DebriefLiteApp {
+public class DebriefLiteApp implements FileDropListener{
 
 	public static final String appName = "Debrief Lite";
 	public static final String NOTES_ICON = "images/16/note.png";
 	private static MapContent mapComponent;
+	protected final FileDropSupport _dropSupport = new FileDropSupport();
+	private final Clipboard _theClipboard;
 
 	private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
 		final JPanel panel = new JPanel();
@@ -125,14 +134,25 @@ public class DebriefLiteApp {
 
 		initForm();
 		createAppPanels();
-
+		_theClipboard = new Clipboard("Debrief");
+		_dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF");
+		
 		theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		theFrame.setVisible(true);
-
 		/// start application
 		startDebriefLiteApplication();
 
 	}
+	
+	 public final void setCursor(final int theCursor)
+	  {
+	    theFrame.getContentPane().setCursor(new Cursor(theCursor));
+	  }
+
+	  public final void restoreCursor()
+	  {
+	    theFrame.getContentPane().setCursor(null);
+	  }
 
 	private void addMenus() {
 		theMenu = new JMenu("File");
@@ -222,8 +242,10 @@ public class DebriefLiteApp {
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    return builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
+    JScrollPane mapPane = builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
         .setToolbar(theToolbar).build();
+    _dropSupport.addComponent(mapPane);
+    return mapPane;
   }
 
   private JScrollPane createNotesPane()
@@ -248,7 +270,7 @@ public class DebriefLiteApp {
       @Override
       public void windowClosing(final java.awt.event.WindowEvent e)
       {
-        System.exit(0);
+        exit();
       }
     });
 
@@ -286,90 +308,23 @@ public class DebriefLiteApp {
     theFrame.doLayout();
   }
 
+  protected void exit()
+  {
+    _dropSupport.removeFileDropListener(this);
+    System.exit(0);
+    
+  }
+
   public void setStatus(final String message)
   {
     statusBar.setText(message);
   }
   
   private void startDebriefLiteApplication() {
-    final String boat_file =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
-
-//    DebriefLiteApplication application = new DebriefLiteApplication();
-//    application.openFile(new java.io.File(boat_file));
-    File testFile = new File(boat_file);
-    final Layers _theLayers = new Layers();
-    final File[] _theFiles = new File[] { testFile };
-
-    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
-
-    ImportManager.addImporter(new ImportReplay());
-
-    // get our thread to import this
-    final ImportManager.BaseImportCaller reader = new ImportManager.BaseImportCaller(
-        _theFiles, _theLayers) {
-      // handle completion of the full import process
-      @Override
-      public void allFilesFinished(final File[] fNames, final Layers newData) {
-        System.out.println("1...all files finished reading....");
-      }
-
-      // handle the completion of each file
-      @Override
-      public void fileFinished(final File fName, final Layers newData) {
-        System.out.println("2...files finished reading...." + newData.size());
-      }
-    };
-
-    // and start it running
-    reader.start();
-
-    // wait for the results
-    while (reader.isAlive()) {
-      try {
-        Thread.sleep(100);
-      } catch (final java.lang.InterruptedException e) {
-        // ignore it.
-      }
-    }
+        
     
-    System.out.println("num layers:" + _theLayers.size());
-
-    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-    if(track != null)
-    {
-      Enumeration<Editable> enumerations = track.getPositionIterator();
-      int cnt = 0;
-      while (enumerations.hasMoreElements()) {
-        @SuppressWarnings("unused")
-        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
-        cnt++;
-      }
-
-      JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
-    }
-
-    final MapContent map = geoMapRenderer.getMapComponent();
-
-    //// now start plotting the tracks
-
-    final int len = _theLayers.size();
-    CanvasType dest = new SwingCanvas();
-    GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
-    Graphics g = geoMapRenderer.getGraphicsContext();
-    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
-    dest.setProjection(projection);
-    dest.startDraw(g);
-    for (int i = 0; i < len; i++) {
-      final Layer thisLayer = _theLayers.elementAt(i);
-      thisLayer.paint(adaptor);
-    }
-      
-    // first approach
-    paintTest(g, projection);
-
     // second approach
-    drawLine1();
+    //drawLine1();
   }
   
   private void paintTest(Graphics g, GeoToolMapProjection projection) {
@@ -417,5 +372,186 @@ public class DebriefLiteApp {
 
     mapComponent.addLayer(layer);
     theFrame.repaint();
+  }
+
+  @Override
+  public void FilesReceived(Vector<File> files)
+  {
+    setCursor(Cursor.WAIT_CURSOR);
+    try
+    {
+      final Enumeration<File> iter = files.elements();
+      while (iter.hasMoreElements())
+      {
+        final java.io.File file = (java.io.File) iter.nextElement();
+        openFile(file);
+      }
+
+    }
+    catch (final Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e);
+    }
+
+    restoreCursor();
+    
+  }
+  
+  /**
+   * @param theFile
+   *          the file to open
+   */
+  public final void openFile(final File theFile)
+  {
+    try
+    {
+
+      // indicate that we are busy
+      this.setCursor(Cursor.WAIT_CURSOR);
+
+      Layers _theLayers = null;
+
+      ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+
+      ImportManager.addImporter(new ImportReplay());
+
+      // wrap the single file into a list
+      final File[] fList = new File[]
+      {theFile};
+
+      final String suff = suffixOf(theFile.getName());
+      if (suff.equalsIgnoreCase(".DPL"))
+      {
+        MWC.GUI.Dialogs.DialogFactory.showMessage("Open File",
+            "Sorry DPL file format no longer supported");
+      }
+      else
+      {
+        if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+            || (suff.equalsIgnoreCase(".DTF")))
+        {
+          _theLayers = new Layers();
+
+          BaseImportCaller caller =
+              new BaseImportCaller(
+                  fList, _theLayers)
+              {
+                // handle the completion of each file
+                public void fileFinished(final File fName, final Layers newData)
+                {
+                  System.out.println("Finished reading file"+fName);
+                }
+
+                // handle completion of the full import process
+                public void allFilesFinished(final File[] fNames,
+                    final Layers newData)
+                {
+                  System.out.println("Finished reading all files");
+                  restoreCursor();
+
+                }
+              };
+
+          caller.start();
+          while(caller.isAlive()) {
+            try {
+              Thread.sleep(200);
+            }catch(InterruptedException ie) {}
+          }
+          System.out.println("num layers:" + _theLayers.size());
+
+          TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
+          if(track != null)
+          {
+            Enumeration<Editable> enumerations = track.getPositionIterator();
+            int cnt = 0;
+            while (enumerations.hasMoreElements()) {
+              @SuppressWarnings("unused")
+              final FixWrapper fix = (FixWrapper) enumerations.nextElement();
+              cnt++;
+            }
+
+            JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from "+ theFile.getName() +" file " + cnt);
+          }
+
+          final MapContent map = geoMapRenderer.getMapComponent();
+
+          //// now start plotting the tracks
+
+          final int len = _theLayers.size();
+          CanvasType dest = new SwingCanvas();
+          GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
+          Graphics g = geoMapRenderer.getGraphicsContext();
+          CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
+          dest.setProjection(projection);
+          dest.startDraw(g);
+          for (int i = 0; i < len; i++) {
+            final Layer thisLayer = _theLayers.elementAt(i);
+            thisLayer.paint(adaptor);
+          }
+            
+          // first approach
+          paintTest(g, projection);
+
+          caller = null;
+
+          // forget the reference
+          _theLayers = null;
+
+        }
+        else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF"))
+        {
+
+          MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller caller =
+              new MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller(
+                  fList, null)
+              {
+              public void fileFinished(final File fName, final Layers newData)
+              {
+                System.out.println("Finished reading file"+fName);
+                //addToMru(fName.getPath());
+              }
+  
+              // handle completion of the full import process
+              public void allFilesFinished(final File[] fNames,
+                  final Layers newData)
+              {
+                System.out.println("Finished reading all files");
+                restoreCursor();
+  
+              }
+              };
+
+          caller.start();
+          while(caller.isAlive()) {
+            try {
+              Thread.sleep(200);
+            }catch(InterruptedException ie) {}
+          }
+          caller = null;
+          
+
+        }
+        else
+        {
+          Trace.trace("This file type not handled:"
+              + suff);
+        }
+      }
+    }
+    finally
+    {
+    }
+  }
+  /**
+   * @param filename
+   *          autofilled
+   */
+  private static String suffixOf(final String filename)
+  {
+    String theSuffix = null;
+    final int pos = filename.lastIndexOf(".");
+    theSuffix = filename.substring(pos, filename.length());
+    return theSuffix.toUpperCase();
   }
 }
