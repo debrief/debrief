@@ -1307,7 +1307,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  protected static Runnable getDeleteAmbiguousCutsOperation()
+  @SuppressWarnings("static-method")
+  protected Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
     return null;
@@ -2296,7 +2297,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  protected static Runnable getDeleteCutsOperation()
+  @SuppressWarnings("static-method")
+  protected Runnable getDeleteCutsOperation()
   {
     return null;
   }
@@ -2327,7 +2329,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  protected static Runnable getResolveAmbiguityOperation()
+  @SuppressWarnings("static-method")
+  protected Runnable getResolveAmbiguityOperation()
   {
     return null;
   }
