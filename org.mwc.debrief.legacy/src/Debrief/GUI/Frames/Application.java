@@ -1083,6 +1083,10 @@ public abstract class Application implements ToolParent, ActionListener,
     else
     {
       System.err.println(getStatusFor(status) + ":  " + text);
+      if(e != null)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -1097,6 +1101,10 @@ public abstract class Application implements ToolParent, ActionListener,
     else
     {
       System.err.println(getStatusFor(status) + ":  " + text);
+      if(e != null)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -1110,6 +1118,10 @@ public abstract class Application implements ToolParent, ActionListener,
     else
     {
       System.err.println(getStatusFor(status) + ":  " + text);
+      if(e != null)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -1128,6 +1140,10 @@ public abstract class Application implements ToolParent, ActionListener,
     else
     {
       System.err.println("Error:" + text);
+      if(e != null)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
