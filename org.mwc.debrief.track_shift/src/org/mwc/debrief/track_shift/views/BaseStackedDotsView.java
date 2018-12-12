@@ -1581,12 +1581,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
             else
             {
-              System.err.println("Couldn't find:" + targetSeries);
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find series:" + targetSeries, null);
               nearest = null;
             }
 
             // did we find one?
-            if (nearest != null)
+            if (nearest == null)
+            {
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find match in series:" + targetSeries + " at time:"
+                      + newDate, null);
+            }
+            else
             {
               // ok, get the editor
               final IWorkbench wb = PlatformUI.getWorkbench();
