@@ -1307,7 +1307,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
-  protected Runnable getDeleteAmbiguousCutsOperation()
+  protected static Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
     return null;
@@ -2296,7 +2296,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  protected Runnable getDeleteCutsOperation()
+  protected static Runnable getDeleteCutsOperation()
   {
     return null;
   }
@@ -2327,7 +2327,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
-  protected Runnable getResolveAmbiguityOperation()
+  protected static Runnable getResolveAmbiguityOperation()
   {
     return null;
   }
@@ -2567,7 +2567,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     operationHistory.setLimit(undoContext, 100);
   }
 
-  protected List<Zone> legsFromZigs(final long startTime, final long endTime,
+  protected static List<Zone> legsFromZigs(final long startTime, final long endTime,
       final List<Zone> zigs, final ColorProvider randomProv)
   {
     final List<Zone> legs = new ArrayList<Zone>();
