@@ -28,7 +28,8 @@ public class PdfLoader extends CoreLoader
       public void run(final IProgressMonitor pm)
       {
         ImportNarrativeDocument iw = new ImportNarrativeDocument(layers);
-        ArrayList<String> strings = iw.importFromPdf(fileName, inputStream);
+        ArrayList<String> strings = ImportNarrativeDocument.importFromPdf(
+            fileName, inputStream);
         iw.processThese(strings);
       }
     };
