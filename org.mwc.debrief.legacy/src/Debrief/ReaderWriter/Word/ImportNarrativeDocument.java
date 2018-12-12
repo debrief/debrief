@@ -590,10 +590,10 @@ public class ImportNarrativeDocument
       {
 
         final int firstTab = firstWhiteSpace(trimmed);
-       
+
         // see if the first few characters are date
-        final String dateStr = trimmed.substring(0, Math.min(trimmed.length(),
-            firstTab));
+        final String dateStr = firstTab > 0 ? trimmed.substring(0, Math.min(trimmed.length(),
+            firstTab)) : trimmed;
 
         // is this all numeric
         boolean probIsDate = false;
@@ -806,7 +806,7 @@ public class ImportNarrativeDocument
       setNarrativeHelper(null);
     }
 
-    public void testAddFCSToHiddenTrack() throws InterruptedException,
+    public static void testAddFCSToHiddenTrack() throws InterruptedException,
         IOException
     {
       final Layers tLayers = new Layers();
@@ -841,7 +841,7 @@ public class ImportNarrativeDocument
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
+      final ArrayList<String> strings = importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -889,7 +889,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testAddFCSToTrack() throws InterruptedException, IOException
+    public static void testAddFCSToTrack() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -914,7 +914,7 @@ public class ImportNarrativeDocument
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
+      final ArrayList<String> strings = importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -1018,6 +1018,7 @@ public class ImportNarrativeDocument
       res.add("010507 SR023 SOURCE_B FCS (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.");
       res.add("010508 irrelevant content 2");
       res.add("010509 SR023 SOURCE_B FCS (AAAA) B-123 R-800yds C-321 S-6kts AAAAAAA. Classified AAAAAA \r BBBBBB AAAAAA.");
+      res.add("010608");
       res.add("irrelevant postamble 3");
       res.add("irrelevant postamble 4");
   
@@ -1250,7 +1251,7 @@ public class ImportNarrativeDocument
       return sb;
     }
 
-    public void testAdvancedParseBulkFCS() throws ParseException
+    public static void testAdvancedParseBulkFCS() throws ParseException
     {
       final String str1 =
           "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
@@ -1318,7 +1319,7 @@ public class ImportNarrativeDocument
       assertEquals("fix has zero depth", 0d, first.getDepth(), 0.0001);
     }
 
-    public void testAdvancedParseFCS() throws ParseException
+    public static void testAdvancedParseFCS() throws ParseException
     {
 
       final String str1 =
@@ -1340,7 +1341,7 @@ public class ImportNarrativeDocument
       assertEquals("got source", "AAAA AAAA AAA (AAAA)", match3);
     }
 
-    public void testImportEmptyLayers() throws IOException
+    public static void testImportEmptyLayers() throws IOException
     {
       final String testFile = dummy_doc_path;
       final File testI = new File(testFile);
@@ -1353,7 +1354,7 @@ public class ImportNarrativeDocument
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
+      final ArrayList<String> strings = importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -1376,7 +1377,7 @@ public class ImportNarrativeDocument
       assertEquals("Got num lines", 13, narrLayer.size());
     }
 
-    public void testNameHandler()
+    public static void testNameHandler()
     {
       final Layers layers = new Layers();
       final TrackWrapper track = new TrackWrapper();
@@ -1407,7 +1408,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testNoMetadata() throws InterruptedException, IOException
+    public static void testNoMetadata() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -1432,7 +1433,7 @@ public class ImportNarrativeDocument
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
+      final ArrayList<String> strings = importFromWord(doc);
       importer.processThese(strings);
 
       // hmmm, how many tracks
@@ -1477,7 +1478,7 @@ public class ImportNarrativeDocument
     }
 
     @SuppressWarnings("deprecation")
-    public void testParseDate()
+    public static void testParseDate()
     {
 
       final String goodDate = "000000";
@@ -1529,7 +1530,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testParseFCS() throws ParseException
+    public static void testParseFCS() throws ParseException
     {
       final String str1 =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
@@ -1583,7 +1584,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public void testParseFCSRange() throws ParseException
+    public static void testParseFCSRange() throws ParseException
     {
       final String str1 =
           "160504,16,08,2016,NONSUCH,FCS,   SR023 AAAA AAAA AAA (AAAA) B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
@@ -1608,7 +1609,7 @@ public class ImportNarrativeDocument
           WorldDistance.KYDS), 0.1);
     }
 
-    public void testParseFCSWithSameTime() throws ParseException
+    public static void testParseFCSWithSameTime() throws ParseException
     {
       final String str1 =
           "160504,16,08,2016,NONSUCH,FCS,  SR023 SOURCE_A FCS B-123 R-5.1kyds C-321 S-6kts AAAAAAA. Classified AAAAAA BBBBBB AAAAAA.";
@@ -1671,7 +1672,7 @@ public class ImportNarrativeDocument
       assertEquals("correct length", 3, t2.numFixes());
     }
 
-    public void testParseTrackNumber()
+    public static void testParseTrackNumber()
     {
       final String str1 = "asdfads S000 adf ag a";
       final String str1a = "asdfads S000 adf ag a";
@@ -1688,7 +1689,7 @@ public class ImportNarrativeDocument
       assertNull("right id", FCSEntry.parseTrack(str3));
     }
 
-    public void testSingleTrack()
+    public static void testSingleTrack()
     {
       final Layers layers = new Layers();
       assertFalse("no tracks", singleTrackIn(layers));
@@ -1714,7 +1715,7 @@ public class ImportNarrativeDocument
       assertFalse("two track", singleTrackIn(layers));
     }
 
-    public void testSpanningYear() throws InterruptedException, IOException
+    public static void testSpanningYear() throws InterruptedException, IOException
     {
       final Layers tLayers = new Layers();
 
@@ -1747,7 +1748,7 @@ public class ImportNarrativeDocument
       final ImportNarrativeDocument importer = new ImportNarrativeDocument(
           tLayers);
       final HWPFDocument doc = new HWPFDocument(is);
-      final ArrayList<String> strings = importer.importFromWord(doc);
+      final ArrayList<String> strings = importFromWord(doc);
       importer.processThese(strings);
 
       final NarrativeWrapper narr = (NarrativeWrapper) tLayers.findLayer(
@@ -2116,7 +2117,7 @@ public class ImportNarrativeDocument
    * @param trackId
    * @return
    */
-  private Color colorFor(final String trackId)
+  private static Color colorFor(final String trackId)
   {
     final Color res;
 
@@ -2148,7 +2149,7 @@ public class ImportNarrativeDocument
     return nw;
   }
 
-  public ArrayList<String> importFromPdf(final String fileName,
+  public static ArrayList<String> importFromPdf(final String fileName,
       final InputStream inputStream)
   {
     final ArrayList<String> strings = new ArrayList<String>();
@@ -2180,7 +2181,7 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWord(final HWPFDocument doc)
+  public static ArrayList<String> importFromWord(final HWPFDocument doc)
   {
     final ArrayList<String> strings = new ArrayList<String>();
 
@@ -2199,7 +2200,7 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public ArrayList<String> importFromWordX(final XWPFDocument doc)
+  public static ArrayList<String> importFromWordX(final XWPFDocument doc)
   {
     final ArrayList<String> strings = new ArrayList<String>();
 
@@ -2225,12 +2226,12 @@ public class ImportNarrativeDocument
     return strings;
   }
 
-  public void logError(final int status, final String msg, final Exception e)
+  public static void logError(final int status, final String msg, final Exception e)
   {
     logThisError(status, msg, e);
   }
 
-  private TimePeriod outerPeriodFor(final Layers theLayers)
+  private static TimePeriod outerPeriodFor(final Layers theLayers)
   {
     TimePeriod outerPeriod = null;
     final Enumeration<Editable> layers = theLayers.elements();
@@ -2331,6 +2332,10 @@ public class ImportNarrativeDocument
 
         // also remove any other control chars that may throw MS Word
         final String text = removeBadChars(raw_text);
+        
+        // wrap import process in try/catch, so we can report errors
+        try
+        {
 
         // ok, get the narrative type
         final NarrEntry thisN = NarrEntry.create(text, ctr);
@@ -2437,6 +2442,12 @@ public class ImportNarrativeDocument
 
             }
           }
+        }
+        }catch(Exception e)
+        {
+          logThisError(ToolParent.WARNING,
+              "Failed whilst parsing line:" + text, e);
+
         }
       }
 
