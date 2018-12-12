@@ -592,8 +592,8 @@ public class ImportNarrativeDocument
         final int firstTab = firstWhiteSpace(trimmed);
 
         // see if the first few characters are date
-        final String dateStr = trimmed.substring(0, Math.min(trimmed.length(),
-            firstTab));
+        final String dateStr = firstTab > 0 ? trimmed.substring(0, Math.min(trimmed.length(),
+            firstTab)) : trimmed;
 
         // is this all numeric
         boolean probIsDate = false;
@@ -2446,7 +2446,7 @@ public class ImportNarrativeDocument
         }catch(Exception e)
         {
           logThisError(ToolParent.WARNING,
-              "Failed whilst parsingline:" + text, e);
+              "Failed whilst parsing line:" + text, e);
 
         }
       }
