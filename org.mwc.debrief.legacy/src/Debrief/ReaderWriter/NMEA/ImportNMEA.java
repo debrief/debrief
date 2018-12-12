@@ -21,6 +21,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
@@ -35,11 +36,6 @@ import junit.framework.TestCase;
 
 public class ImportNMEA
 {
-
-  /** prefix we use for ownship track that's extractd
-   * from NMEA data
-   */
-  public static final String WECDIS_OWNSHIP_PREFIX = "WECDIS_OWNSHIP";
 
   private enum MsgType
   {
@@ -70,7 +66,17 @@ public class ImportNMEA
       return res;
     }
 
+    private static WorldLocation locationFor(final String tLat,
+        final String tLong)
+    {
+      final double dLat = degsFor(tLat);
+      final double dLong = degsFor(tLong);
+      final WorldLocation loc = new WorldLocation(dLat, dLong, 0);
+      return loc;
+    }
+
     public final Date date;
+
     public final String name;
 
     public final WorldLocation location;
@@ -88,14 +94,6 @@ public class ImportNMEA
       }
       this.name = name;
       location = locationFor(tLat, tLong);
-    }
-
-    private static WorldLocation locationFor(final String tLat, final String tLong)
-    {
-      final double dLat = degsFor(tLat);
-      final double dLong = degsFor(tLong);
-      final WorldLocation loc = new WorldLocation(dLat, dLong, 0);
-      return loc;
     }
   }
 
@@ -125,127 +123,59 @@ public class ImportNMEA
       assertEquals("got it", 36.2395, degsFor("3614.3708,N"), 0.001);
     }
 
-    public void testFullImport() throws Exception
+    public void testFullImportAllValues() throws Exception
     {
-      testImport("../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/20160720.log");
-    }
-
-    public void testImport(final String testFile) throws Exception
-    {
+      final String testFile =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/NMEA_TRIAL.log";
       final File testI = new File(testFile);
 
       // only run the test if we have the log-file available
-      if (testI.exists())
-      {
-        assertTrue(testI.exists());
+      assertTrue(testI.exists());
 
-        final InputStream is = new FileInputStream(testI);
+      InputStream is = new FileInputStream(testI);
 
-        final Layers tLayers = new Layers();
+      final Layers tLayers = new Layers();
 
-        final ImportNMEA importer = new ImportNMEA(tLayers);
-        importer.importThis(testFile, is, 0l, 0l);
+      final ImportNMEA importer = new ImportNMEA(tLayers);
+      importer.importThis(testFile, is, 0l, 0l);
 
-        assertEquals("got tracks", 416, tLayers.size());
-      }
-    }
-    
-    public void testMultiGPSImport() throws Exception
-    {
-      String test1 =
-          "$POSL,CONTACT,OC,DR,CHARLIE NAME,CHARLIE NAME,13.0,254.6,T,20160720,082807.345,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,3409.5794,N,01537.3128,W,0,,,*5D\r\n";
-      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
-      test1 += 
-          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-      test1 += "$POSL,DZA,20160720,000000.859,0007328229*42\r\n";
-      test1 += 
-          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,013059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-      test1 += 
-          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-      test1 += 
-          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-      test1 += "$POSL,PDS,9.2,M*03\r\n";
-      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-      test1 += 
-          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,010259.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
-      test1 += 
-          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-      test1 += "$POSL,DZA,20160720,000001.859,0007328229*42\r\n";
-      test1 += 
-          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,110049.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-      test1 += 
-          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-      test1 += 
-          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-      test1 += "$POSL,PDS,9.2,M*03\r\n";
-      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-      test1 += 
-          "$POSL,AIS,564166022,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
-      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
-      test1 += 
-          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-      test1 += "$POSL,DZA,20160720,000002.859,0007328229*42\r\n";
-      test1 += 
-          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,020059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-      test1 += 
-          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-      test1 += 
-          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-      test1 += "$POSL,PDS,9.2,M*03\r\n";
-      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
-      test1 += 
-          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
-      test1 += "$POSL,DZA,20160720,000003.859,0007328229*42\r\n";
-      test1 += 
-          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,011059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
-      test1 += 
-          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
-      test1 += 
-          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
-      test1 += "$POSL,PDS,9.2,M*03\r\n";
-      test1 +=  "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
-      test1 +=  "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
-      test1 +=  "$POSL,HDG,111.2,-04.1*7F\r\n";
-      
-      InputStream is =new ByteArrayInputStream(test1.getBytes(StandardCharsets.UTF_8));
-      Layers layers = new Layers();
-      
-      assertEquals("empty", 0, layers.size());
-      
-      ImportNMEA importer = new ImportNMEA(layers);
-      importer.importThis("file.log", is, 0, 0);
-      
-      assertEquals("not empty", 4, layers.size());
-      LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers.elementAt(0);
-      LightweightTrackWrapper t2 = (LightweightTrackWrapper) layers.elementAt(1);
-      LightweightTrackWrapper t3 = (LightweightTrackWrapper) layers.elementAt(2);
-      BaseLayer t4 = (BaseLayer) layers.elementAt(3);
-      
-      assertEquals("correct name", "HMS NONSUCH_POS_GPS", t1.getName());
-      assertEquals("correct name", "HMS NONSUCH_POS2_GPS", t2.getName());
-      assertEquals("correct name", "HMS NONSUCH-DR", t3.getName());
-      assertEquals("correct name", "WECDIS Contacts", t4.getName());
+      assertEquals("got new layers", 3, tLayers.size());
 
-      assertEquals("correct size", 3, t1.numFixes());
-      assertEquals("correct size", 4, t2.numFixes());
-      assertEquals("correct size", 3, t3.numFixes());
-      assertEquals("correct size", 2, t4.size());
-      
-      LightweightTrackWrapper a1 = (LightweightTrackWrapper) t4.first();
-      LightweightTrackWrapper a2 = (LightweightTrackWrapper) t4.last();
+      TrackWrapper tOne = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 12823, tOne.numFixes());
 
-      assertEquals("correct name", "564166000", a1.getName());
-      assertEquals("correct name", "564166022", a2.getName());
+      TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 21746, tTwo.numFixes());
 
-      assertEquals("correct size", 4, a1.numFixes());
-      assertEquals("correct size", 1, a2.numFixes());
-      
+      Layer contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      LightweightTrackWrapper aisTrack = (LightweightTrackWrapper) contacts
+          .elements().nextElement();
+      assertEquals("loaded lwt track", 1250, aisTrack.numFixes());
+
+      // try another import frequency
+      tLayers.clear();
+
+      assertEquals("layers empty", 0, tLayers.size());
+
+      is = new FileInputStream(testI);
+      importer.importThis(testFile, is, 15000L, 15000L);
+
+      assertEquals("got new layers", 3, tLayers.size());
+
+      tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
+      assertEquals("found GPS cuts", 4166, tOne.numFixes());
+
+      tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
+      assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+
+      contacts = tLayers.findLayer("WECDIS Contacts");
+      assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
+          .toString());
+      aisTrack = (LightweightTrackWrapper) contacts.elements().nextElement();
+      assertEquals("loaded lwt track", 744, aisTrack.numFixes());
     }
 
     @SuppressWarnings(
@@ -324,81 +254,191 @@ public class ImportNMEA
 
       assertEquals("got depth", 9.2d, parseMyDepth(test8), 0.001);
 
-      assertEquals("got course", 276.3d, parseMyCourse(coursePatternGPS, test9), 0.001);
-      assertEquals("got speed", 4.6d, parseMySpeed(speedPatternGPS, test9), 0.001);
+      assertEquals("got course", 276.3d, parseMyCourse(coursePatternGPS, test9),
+          0.001);
+      assertEquals("got speed", 4.6d, parseMySpeed(speedPatternGPS, test9),
+          0.001);
 
       // and the DR equivalents
-      assertEquals("got speed", 4.1d, parseMySpeed(speedPatternLOG, test10_drSpd), 0.001);
-      assertEquals("got course", 111.2d, parseMyCourse(coursePatternHDG, test11_drCrse), 0.001);
+      assertEquals("got speed", 4.1d, parseMySpeed(speedPatternLOG,
+          test10_drSpd), 0.001);
+      assertEquals("got course", 111.2d, parseMyCourse(coursePatternHDG,
+          test11_drCrse), 0.001);
 
-      
+    }
+
+    public void testMultiGPSImport() throws Exception
+    {
+      String test1 =
+          "$POSL,CONTACT,OC,DR,CHARLIE NAME,CHARLIE NAME,13.0,254.6,T,20160720,082807.345,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,3409.5794,N,01537.3128,W,0,,,*5D\r\n";
+      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
+      test1 +=
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000000.859,0007328229*42\r\n";
+      test1 +=
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,013059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 +=
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 +=
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 +=
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,010259.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 +=
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000001.859,0007328229*42\r\n";
+      test1 +=
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,110049.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 +=
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 +=
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 +=
+          "$POSL,AIS,564166022,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 += "$POSL,VNM,HMS NONSUCH*03\r\n";
+      test1 +=
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000002.859,0007328229*42\r\n";
+      test1 +=
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,020059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 +=
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 +=
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
+      test1 +=
+          "$POSL,POS,GPS,1122.2222,N,00712.6666,W,0.00,,Center of Rotation,N,,,,,*41\r\n";
+      test1 += "$POSL,DZA,20160720,000003.859,0007328229*42\r\n";
+      test1 +=
+          "$POSL,CONTACT,OC,DELETE,AIS 5,AIS 5,1.0,125.3,T,20160720,011059.897,FS,SFSP------^2a^2a^2a^2a^2a,0.0,M,1212.1234,N,12312.1234,W,0,,,*6E\r\n";
+      test1 +=
+          "$POSL,POS2,GPS,4422.1122,N,00812.1111,W,0.00,,GPS Antenna,N,,,,,*5C\r\n";
+      test1 +=
+          "$POSL,AIS,564166000,3606.3667,N,00522.3698,W,0,7.8,327.9,0,330.0,AIS1,0,0*06\r\n";
+      test1 += "$POSL,PDS,9.2,M*03\r\n";
+      test1 += "$POSL,VEL,GPS,276.3,4.6,,,*35\r\n";
+      test1 += "$POSL,VEL,SPL,,,4.1,0.0,4.0*12\r\n";
+      test1 += "$POSL,HDG,111.2,-04.1*7F\r\n";
+
+      final InputStream is = new ByteArrayInputStream(test1.getBytes(
+          StandardCharsets.UTF_8));
+      final Layers layers = new Layers();
+
+      assertEquals("empty", 0, layers.size());
+
+      final ImportNMEA importer = new ImportNMEA(layers);
+      importer.importThis("file.log", is, 0, 0);
+
+      assertEquals("not empty", 4, layers.size());
+      final LightweightTrackWrapper t1 = (LightweightTrackWrapper) layers
+          .elementAt(0);
+      final LightweightTrackWrapper t2 = (LightweightTrackWrapper) layers
+          .elementAt(1);
+      final LightweightTrackWrapper t3 = (LightweightTrackWrapper) layers
+          .elementAt(2);
+      final BaseLayer t4 = (BaseLayer) layers.elementAt(3);
+
+      assertEquals("correct name", "HMS NONSUCH_POS_GPS", t1.getName());
+      assertEquals("correct name", "HMS NONSUCH_POS2_GPS", t2.getName());
+      assertEquals("correct name", "HMS NONSUCH-DR", t3.getName());
+      assertEquals("correct name", "WECDIS Contacts", t4.getName());
+
+      assertEquals("correct size", 3, t1.numFixes());
+      assertEquals("correct size", 4, t2.numFixes());
+      assertEquals("correct size", 3, t3.numFixes());
+      assertEquals("correct size", 2, t4.size());
+
+      final LightweightTrackWrapper a1 = (LightweightTrackWrapper) t4.first();
+      final LightweightTrackWrapper a2 = (LightweightTrackWrapper) t4.last();
+
+      assertEquals("correct name", "564166000", a1.getName());
+      assertEquals("correct name", "564166022", a2.getName());
+
+      assertEquals("correct size", 4, a1.numFixes());
+      assertEquals("correct size", 1, a2.numFixes());
+
     }
   }
+
+  private static final String DR_NAME = "-DR";
+
+  /**
+   * prefix we use for ownship track that's extractd from NMEA data
+   */
+  public static final String WECDIS_OWNSHIP_PREFIX = "WECDIS_OWNSHIP";
 
   /**
    * $POSL,AIS,564166000,1212.1234,N,12312.1234,W,0,7.8,327.9,0,330.0,AIS1,0,0*06
    */
-  final private static Pattern aisPattern =
-      Pattern
-          .compile("\\$POSL,AIS,(?<MMSI>\\d+?),"
-              + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*,AIS1,.*");
+  final private static Pattern aisPattern = Pattern.compile(
+      "\\$POSL,AIS,(?<MMSI>\\d+?),"
+          + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*,AIS1,.*");
 
   /**
    * $POSL,CONTACT,OC,DELETE,AIS 5,AIS
    * 5,1.0,125.3,T,20160720,010059.897,FS,SFSP------^2a^2a^2a^2a^2a
    * ,0.0,M,1212.1313,N,12312.1234,W,0,,,*6E"
    */
-  final private static Pattern contactPattern = Pattern
-      .compile("\\$POSL,CONTACT,OC,\\w*,(?<NAME>.*?),.*"
+  final private static Pattern contactPattern = Pattern.compile(
+      "\\$POSL,CONTACT,OC,\\w*,(?<NAME>.*?),.*"
           + ",(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*,"
           + "(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*");
   /**
    * $POSL,VEL,GPS,276.3,4.6,,,*35
    */
-  final private static Pattern coursePatternGPS = Pattern
-      .compile("\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
+  final private static Pattern coursePatternGPS = Pattern.compile(
+      "\\$POSL,VEL,GPS,(?<COURSE>\\d+.\\d+),.*");
 
   /**
    * $POSL,HDG,111.0,-04.1*7F
    */
-  final private static Pattern coursePatternHDG = Pattern
-      .compile("\\$POSL,HDG,(?<COURSE>\\d+.\\d+),.*");
+  final private static Pattern coursePatternHDG = Pattern.compile(
+      "\\$POSL,HDG,(?<COURSE>\\d+.\\d+),.*");
 
   /**
    * $POSL,DZA,20160720,000000.859,0007328229*42
    */
-  final private static Pattern datePattern = Pattern
-      .compile("\\$POSL,DZA,(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*");
+  final private static Pattern datePattern = Pattern.compile(
+      "\\$POSL,DZA,(?<DATE>\\d{8}),(?<TIME>\\d{6}.\\d{3}),.*");
 
   /**
    * $POSL,PDS,9.2,M*0
    */
-  final private static Pattern depthPattern = Pattern
-      .compile("\\$POSL,PDS,(?<DEPTH>\\d+.\\d+),.*");
+  final private static Pattern depthPattern = Pattern.compile(
+      "\\$POSL,PDS,(?<DEPTH>\\d+.\\d+),.*");
   /**
    * "$POSL,VNM,HMS NONSUCH*03";
    */
-  final private static Pattern namePattern = Pattern
-      .compile("\\$POSL,VNM,(?<NAME>.*)\\*\\d\\d");
+  final private static Pattern namePattern = Pattern.compile(
+      "\\$POSL,VNM,(?<NAME>.*)\\*\\d\\d");
   /**
    * $POSL,VEL,GPS,276.3,4.6,,,*35
    */
-  final private static Pattern speedPatternGPS = Pattern
-      .compile("\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
+  final private static Pattern speedPatternGPS = Pattern.compile(
+      "\\$POSL,VEL,GPS,.*,(?<SPEED>\\d+.\\d+),.*");
   /**
    * $POSL,VEL,SPL,,,4.0,0.0,4.0*12
    */
-  final private static Pattern speedPatternLOG = Pattern
-      .compile("\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
+  final private static Pattern speedPatternLOG = Pattern.compile(
+      "\\$POSL,VEL,SPL,,,(?<SPEED>\\d+.\\d+),.*");
   /**
    * "$POSL,POS,GPS,1122.2222,N,12312.1234,W,0.00,,Center of Rotation,N,,,,,*41";
    */
-  final private static Pattern osPattern =
-      Pattern
-          .compile("\\$POSL,(?<SOURCE>\\w?POS\\d?,.*),(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*");
+  final private static Pattern osPattern = Pattern.compile(
+      "\\$POSL,(?<SOURCE>\\w?POS\\d?,.*),(?<LAT>\\d{4}.\\d{4},(N|S)),(?<LONG>\\d{5}.\\d{4},(E|W)),.*");
 
-  final private static Pattern typePattern = Pattern
-      .compile("\\$POSL,(?<TYPE1>\\w*),(?<TYPE2>\\w*),*.*");
+  final private static Pattern typePattern = Pattern.compile(
+      "\\$POSL,(?<TYPE1>\\w*),(?<TYPE2>\\w*),*.*");
 
   private static double degsFor(final String text)
   {
@@ -436,11 +476,10 @@ public class ImportNMEA
       // first the course
       fw.getFix().setCourse(diff.getBearing());
 
-      final double m_travelled =
-          new WorldDistance(diff.getRange(), WorldDistance.DEGS)
-              .getValueIn(WorldDistance.METRES);
-      final double timeDiffMillis =
-          (date.getTime() - lastFix.getDTG().getDate().getTime());
+      final double m_travelled = new WorldDistance(diff.getRange(),
+          WorldDistance.DEGS).getValueIn(WorldDistance.METRES);
+      final double timeDiffMillis = (date.getTime() - lastFix.getDTG().getDate()
+          .getTime());
       final double speed_m_s = m_travelled / (timeDiffMillis / 1000d);
       final WorldSpeed theSpeed = new WorldSpeed(speed_m_s, WorldSpeed.M_sec);
 
@@ -636,367 +675,6 @@ public class ImportNMEA
     return res;
   }
 
-  /**
-   * where we write our data
-   * 
-   */
-  private final Layers _layers;
-
-  /**
-   * the set of tracks we build up, to reduce screen updates
-   * 
-   */
-  private HashMap<String, ArrayList<FixWrapper>> tracks =
-      new HashMap<String, ArrayList<FixWrapper>>();
-
-  /**
-   * the set of tracks we build up, to reduce screen updates
-   * 
-   */
-  private HashMap<String, ArrayList<FixWrapper>> contacts =
-      new HashMap<String, ArrayList<FixWrapper>>();
-
-  /**
-   * the set of tracks we build up, to reduce screen updates
-   * 
-   */
-  HashMap<String, Color> colors = new HashMap<String, Color>();
-
-  public ImportNMEA(final Layers target)
-  {
-    super();
-    _layers = target;
-  }
-
-  public void importThis(final String fName, final InputStream is,
-      final long osFreq, final long aisFreq) throws Exception
-  {
-    String myName = null;
-    double myDepth = 0d;
-    Date date = null;
-
-    final boolean importOS = !(osFreq == Long.MAX_VALUE);
-    final boolean importAIS = !(aisFreq == Long.MAX_VALUE);
-    final boolean importContacts = false;
-
-    // reset our list of tracks
-    tracks.clear();
-    colors.clear();
-
-    // remember the first ownship location, for the DR track
-    WorldLocation origin = null;
-
-    // ok, loop through the lines
-    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-    String nmea_sentence;
-    
-    // flag for if we wish to obtain DR data from GPS message, or from organic sensors
-    final boolean DRfromGPS = false;
-    
-    // remember the last DR course read in, since we capture course and speed
-    // from different messages
-    Double drCourse = null;
-
-    int ctr = 0;
-
-    // loop through the lines
-    while ((nmea_sentence = br.readLine()) != null)
-    {
-
-      final MsgType msg = parseType(nmea_sentence);
-
-      ctr++;
-
-      if (ctr % 10000 == 0)
-      {
-        System.out.print(".");
-      }
-      if (ctr % 50000 == 0)
-      {
-        System.out.println("");
-        System.out.print(ctr);
-      }
-
-      switch (msg)
-      {
-      case TIMESTAMP:
-        // ok, extract the rest of the body
-        date = parseMyDate(nmea_sentence);
-
-        // and remember the name
-        break;
-      case VESSEL_NAME:
-        // ok, extract the rest of the body
-        myName = parseMyName(nmea_sentence);
-        break;
-      case OS_DEPTH:
-        if (importOS)
-        {
-          // ok, extract the rest of the body
-          myDepth = parseMyDepth(nmea_sentence);
-        }
-        break;
-      case OS_COURSE:
-        if (importOS)
-        {
-          // ok, extract the rest of the body
-          drCourse = parseMyCourse(coursePatternHDG, nmea_sentence);
-        }
-        break;
-      case OS_SPEED:
-        if (importOS)
-        {
-          // ok, extract the rest of the body
-          double drSpeedDegs = parseMySpeed(speedPatternLOG, nmea_sentence);
-          
-          // are we taking DR from GPS?
-          if(DRfromGPS)
-          {
-            // ok, skip creating the DR - do it in the other message
-          }
-          else
-          {
-            // do we know our origin?
-            if (origin != null && drCourse != null)
-            {
-              // ok, grow the DR track
-              storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
-                  DebriefColors.BLUE);
-            }
-          }          
-        }
-        break;
-      case OS_COURSE_SPEED:
-        if (importOS)
-        {
-          // ok, extract the rest of the body
-          final double myCourseDegs = parseMyCourse(coursePatternGPS, nmea_sentence);
-          final double mySpeedKts = parseMySpeed(speedPatternGPS, nmea_sentence);
-
-            // are we taking DR from GPS?
-            if (DRfromGPS)
-            {
-              // do we know our origin?
-              if (origin != null)
-              {
-                // ok, grow the DR track
-                storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName,
-                    myDepth, DebriefColors.BLUE);
-              }
-            }
-            else
-            {
-              // ok, skip creating the DR using GPS deltas - do it from the organic sensors
-            }
-        }
-        break;
-      case OS_POS:
-        if (importOS)
-        {
-          // note: if we don't know ownship name yet,
-          // let's make one up
-          if (myName == null)
-          {
-            myName = WECDIS_OWNSHIP_PREFIX;
-          }
-
-          // extract the location
-          final State state = parseOwnship(nmea_sentence, myName);
-
-          // do we need an origin?
-          if (origin == null)
-          {
-            origin = new WorldLocation(state.location);
-          }
-
-          // do we know our name yet?
-          if (state != null && date != null)
-          {
-            // now store the ownship location
-            storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth, tracks, colors);
-          }
-        }
-
-        break;
-      case CONTACT:
-        if (importContacts)
-        {
-          // extract the location
-          final State hisState = parseContact(nmea_sentence);
-
-          if (hisState == null)
-          {
-            System.out.println("INVALID CONTACT");
-          }
-          else
-          {
-            // now store the ownship location
-            storeLocation(hisState.date, hisState, aisFreq,
-                DebriefColors.GREEN, null, contacts, colors);
-          }
-        }
-        break;
-      case AIS:
-        if (importAIS)
-        {
-          // extract the location
-          final State hisState = parseAIS(nmea_sentence);
-
-          if (hisState == null)
-          {
-            // ok, it was prob the "other" AIS receiver
-          }
-          else
-          {
-            if (date != null)
-            {
-              // now store the ownship location
-              storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW, null, contacts, colors);
-            }
-          }
-        }
-        break;
-      case UNKNOWN:
-        break;
-      }
-    }
-
-    for (final String trackName : tracks.keySet())
-    {
-      final ArrayList<FixWrapper> track = tracks.get(trackName);
-      // ok, build the track
-      final TrackWrapper tr = new TrackWrapper();
-      tr.setName(trackName);
-      tr.setColor(colors.get(trackName));
-
-      System.out.println("storing " + track.size() + " for " + trackName);
-
-      // SPECIAL HANDLING - we filter DR tracks at this stage
-      Long lastTime = null;
-      final boolean resample = trackName.endsWith("-DR");
-
-      for (final FixWrapper fix : track)
-      {
-        // ok, also do the label
-        fix.resetName();
-
-        final long thisTime = fix.getDateTimeGroup().getDate().getTime();
-
-        long delta = Long.MAX_VALUE;
-
-        if (resample && lastTime != null)
-        {
-          delta = thisTime - lastTime;
-        }
-
-        if ((!resample) || lastTime == null || delta >= osFreq)
-        {
-          tr.add(fix);
-          lastTime = thisTime;
-        }
-      }
-
-      _layers.addThisLayer(tr);
-    }
-
-    BaseLayer contactHolder = null;
-    for (final String trackName : contacts.keySet())
-    {
-      final ArrayList<FixWrapper> track = contacts.get(trackName);
-      
-      System.out.println("storing " + track.size() + " for " + trackName);
-
-      if(contactHolder == null)
-      {
-        contactHolder = new BaseLayer();
-        contactHolder.setName("WECDIS Contacts");
-        _layers.addThisLayer(contactHolder);
-      }
-      
-      // ok, build the track
-      final LightweightTrackWrapper tr = new LightweightTrackWrapper();
-      tr.setName(trackName);
-      tr.setColor(colors.get(trackName));
-
-      for (final FixWrapper fix : track)
-      {
-        // ok, also do the label
-        fix.resetName();
-        tr.add(fix);
-      }
-
-      contactHolder.add(tr);
-    }
-
-  }
-
-  private void storeDRFix(final WorldLocation origin,
-      final double myCourseDegs, final double mySpeedKts, final Date date,
-      final String myName, final double myDepth, final Color color)
-  {
-    final String trackName = myName + "-DR";
-
-    // find the track
-    ArrayList<FixWrapper> track = tracks.get(trackName);
-
-    final FixWrapper newFix;
-
-    // do we have any?
-    if (track == null)
-    {
-      track = new ArrayList<FixWrapper>();
-      tracks.put(trackName, track);
-      colors.put(trackName, color);
-
-      // nope, create the origin
-      final Fix fix =
-          new Fix(new HiResDate(date.getTime()), origin, Math
-              .toRadians(myCourseDegs), MWC.Algorithms.Conversions
-              .Kts2Yps(mySpeedKts));
-      newFix = new FixWrapper(fix);
-    }
-    else
-    {
-      // ok, get the last point
-      final FixWrapper lastFix = track.get(track.size() - 1);
-
-      // now calculate the new point
-      final long timeDelta =
-          date.getTime() - lastFix.getDateTimeGroup().getDate().getTime();
-
-      // calculate the distance travelled
-      final double m_s =
-          new WorldSpeed(mySpeedKts, WorldSpeed.Kts)
-              .getValueIn(WorldSpeed.M_sec);
-      final double distanceM = m_s * timeDelta / 1000d;
-
-      final double distanceDegs =
-          new WorldDistance(distanceM, WorldDistance.METRES)
-              .getValueIn(WorldDistance.DEGS);
-      final WorldVector offset =
-          new WorldVector(Math.toRadians(myCourseDegs), distanceDegs, 0);
-
-      final WorldLocation newLoc = lastFix.getLocation().add(offset);
-      
-      // store the depth
-      newLoc.setDepth(myDepth);
-
-      final Fix fix =
-          new Fix(new HiResDate(date.getTime()), newLoc, Math
-              .toRadians(myCourseDegs), MWC.Algorithms.Conversions
-              .Kts2Yps(mySpeedKts));
-      newFix = new FixWrapper(fix);
-      
-      // no, don't set the color, we want the fix to take
-      // the color of the parent track
-      // newFix.setColor(color);
-    }
-
-    track.add(newFix);
-
-  }
-
   private static void storeLocation(final Date date, final State state,
       final long freq, final Color color, final Double myDepth,
       final HashMap<String, ArrayList<FixWrapper>> destination,
@@ -1045,5 +723,368 @@ public class ImportNMEA
       // and store it
       track.add(theF);
     }
+  }
+
+  /**
+   * where we write our data
+   *
+   */
+  private final Layers _layers;
+
+  /**
+   * the set of tracks we build up, to reduce screen updates
+   *
+   */
+  private final HashMap<String, ArrayList<FixWrapper>> tracks =
+      new HashMap<String, ArrayList<FixWrapper>>();
+
+  /**
+   * the set of tracks we build up, to reduce screen updates
+   *
+   */
+  private final HashMap<String, ArrayList<FixWrapper>> contacts =
+      new HashMap<String, ArrayList<FixWrapper>>();
+
+  /**
+   * the set of tracks we build up, to reduce screen updates
+   *
+   */
+  HashMap<String, Color> colors = new HashMap<String, Color>();
+
+  public ImportNMEA(final Layers target)
+  {
+    super();
+    _layers = target;
+  }
+
+  public void importThis(final String fName, final InputStream is,
+      final long osFreq, final long aisFreq) throws Exception
+  {
+    String myName = null;
+    double myDepth = 0d;
+    Date date = null;
+
+    final boolean importOS = !(osFreq == Long.MAX_VALUE);
+    final boolean importAIS = !(aisFreq == Long.MAX_VALUE);
+    final boolean importContacts = false;
+
+    // reset our list of tracks
+    tracks.clear();
+    colors.clear();
+    contacts.clear();
+
+    // remember the first ownship location, for the DR track
+    WorldLocation origin = null;
+
+    // ok, loop through the lines
+    final BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+    String nmea_sentence;
+
+    // flag for if we wish to obtain DR data from GPS message, or from organic sensors
+    final boolean DRfromGPS = false;
+
+    // remember the last DR course read in, since we capture course and speed
+    // from different messages
+    Double drCourse = null;
+
+    int ctr = 0;
+
+    // loop through the lines
+    while ((nmea_sentence = br.readLine()) != null)
+    {
+
+      final MsgType msg = parseType(nmea_sentence);
+
+      ctr++;
+
+      if (ctr % 10000 == 0)
+      {
+        System.out.print(".");
+      }
+      if (ctr % 50000 == 0)
+      {
+        System.out.println("");
+        System.out.print(ctr);
+      }
+
+      switch (msg)
+      {
+        case TIMESTAMP:
+          // ok, extract the rest of the body
+          date = parseMyDate(nmea_sentence);
+
+          // and remember the name
+          break;
+        case VESSEL_NAME:
+          // ok, extract the rest of the body
+          myName = parseMyName(nmea_sentence);
+          break;
+        case OS_DEPTH:
+          if (importOS)
+          {
+            // ok, extract the rest of the body
+            myDepth = parseMyDepth(nmea_sentence);
+          }
+          break;
+        case OS_COURSE:
+          if (importOS)
+          {
+            // ok, extract the rest of the body
+            drCourse = parseMyCourse(coursePatternHDG, nmea_sentence);
+          }
+          break;
+        case OS_SPEED:
+          if (importOS)
+          {
+            // ok, extract the rest of the body
+            final double drSpeedDegs = parseMySpeed(speedPatternLOG,
+                nmea_sentence);
+
+            // are we taking DR from GPS?
+            if (DRfromGPS)
+            {
+              // ok, skip creating the DR - do it in the other message
+            }
+            else
+            {
+              // do we know our origin?
+              if (origin != null && drCourse != null)
+              {
+                // ok, grow the DR track
+                storeDRFix(origin, drCourse, drSpeedDegs, date, myName, myDepth,
+                    DebriefColors.BLUE);
+              }
+            }
+          }
+          break;
+        case OS_COURSE_SPEED:
+          if (importOS)
+          {
+            // ok, extract the rest of the body
+            final double myCourseDegs = parseMyCourse(coursePatternGPS,
+                nmea_sentence);
+            final double mySpeedKts = parseMySpeed(speedPatternGPS,
+                nmea_sentence);
+
+            // are we taking DR from GPS?
+            if (DRfromGPS)
+            {
+              // do we know our origin?
+              if (origin != null)
+              {
+                // ok, grow the DR track
+                storeDRFix(origin, myCourseDegs, mySpeedKts, date, myName,
+                    myDepth, DebriefColors.BLUE);
+              }
+            }
+            else
+            {
+              // ok, skip creating the DR using GPS deltas - do it from the organic sensors
+            }
+          }
+          break;
+        case OS_POS:
+          if (importOS)
+          {
+            // note: if we don't know ownship name yet,
+            // let's make one up
+            if (myName == null)
+            {
+              myName = WECDIS_OWNSHIP_PREFIX;
+            }
+
+            // extract the location
+            final State state = parseOwnship(nmea_sentence, myName);
+
+            // do we need an origin?
+            if (origin == null)
+            {
+              origin = new WorldLocation(state.location);
+            }
+
+            // do we know our name yet?
+            if (state != null && date != null)
+            {
+              // now store the ownship location
+              storeLocation(date, state, osFreq, DebriefColors.PURPLE, myDepth,
+                  tracks, colors);
+            }
+          }
+
+          break;
+        case CONTACT:
+          if (importContacts)
+          {
+            // extract the location
+            final State hisState = parseContact(nmea_sentence);
+
+            if (hisState == null)
+            {
+              System.out.println("INVALID CONTACT");
+            }
+            else
+            {
+              // now store the ownship location
+              storeLocation(hisState.date, hisState, aisFreq,
+                  DebriefColors.GREEN, null, contacts, colors);
+            }
+          }
+          break;
+        case AIS:
+          if (importAIS)
+          {
+            // extract the location
+            final State hisState = parseAIS(nmea_sentence);
+
+            if (hisState == null)
+            {
+              // ok, it was prob the "other" AIS receiver
+            }
+            else
+            {
+              if (date != null)
+              {
+                // now store the ownship location
+                storeLocation(date, hisState, aisFreq, DebriefColors.YELLOW,
+                    null, contacts, colors);
+              }
+            }
+          }
+          break;
+        case UNKNOWN:
+          break;
+      }
+    }
+
+    for (final String trackName : tracks.keySet())
+    {
+      final ArrayList<FixWrapper> track = tracks.get(trackName);
+      // ok, build the track
+      final TrackWrapper tr = new TrackWrapper();
+      tr.setName(trackName);
+      tr.setColor(colors.get(trackName));
+
+      System.out.println("storing " + track.size() + " for " + trackName);
+
+      // SPECIAL HANDLING - we filter DR tracks at this stage
+      Long lastTime = null;
+      final boolean resample = trackName.endsWith(DR_NAME);
+
+      for (final FixWrapper fix : track)
+      {
+        // ok, also do the label
+        fix.resetName();
+
+        final long thisTime = fix.getDateTimeGroup().getDate().getTime();
+
+        long delta = Long.MAX_VALUE;
+
+        if (resample && lastTime != null)
+        {
+          delta = thisTime - lastTime;
+        }
+
+        if ((!resample) || lastTime == null || delta >= osFreq)
+        {
+          tr.add(fix);
+          lastTime = thisTime;
+        }
+      }
+
+      _layers.addThisLayer(tr);
+    }
+
+    BaseLayer contactHolder = null;
+    for (final String trackName : contacts.keySet())
+    {
+      final ArrayList<FixWrapper> track = contacts.get(trackName);
+
+      System.out.println("storing " + track.size() + " for " + trackName);
+
+      if (contactHolder == null)
+      {
+        contactHolder = new BaseLayer();
+        contactHolder.setName("WECDIS Contacts");
+        _layers.addThisLayer(contactHolder);
+      }
+
+      // ok, build the track
+      final LightweightTrackWrapper tr = new LightweightTrackWrapper();
+      tr.setName(trackName);
+      tr.setColor(colors.get(trackName));
+
+      for (final FixWrapper fix : track)
+      {
+        // ok, also do the label
+        fix.resetName();
+        tr.add(fix);
+      }
+
+      contactHolder.add(tr);
+    }
+
+  }
+
+  private void storeDRFix(final WorldLocation origin, final double myCourseDegs,
+      final double mySpeedKts, final Date date, final String myName,
+      final double myDepth, final Color color)
+  {
+    final String trackName = myName + DR_NAME;
+
+    // find the track
+    ArrayList<FixWrapper> track = tracks.get(trackName);
+
+    final FixWrapper newFix;
+
+    // do we have any?
+    if (track == null)
+    {
+      track = new ArrayList<FixWrapper>();
+      tracks.put(trackName, track);
+      colors.put(trackName, color);
+
+      // nope, create the origin
+      final Fix fix = new Fix(new HiResDate(date.getTime()), origin, Math
+          .toRadians(myCourseDegs), MWC.Algorithms.Conversions.Kts2Yps(
+              mySpeedKts));
+      newFix = new FixWrapper(fix);
+    }
+    else
+    {
+      // ok, get the last point
+      final FixWrapper lastFix = track.get(track.size() - 1);
+
+      // now calculate the new point
+      final long timeDelta = date.getTime() - lastFix.getDateTimeGroup()
+          .getDate().getTime();
+
+      // calculate the distance travelled
+      final double m_s = new WorldSpeed(mySpeedKts, WorldSpeed.Kts).getValueIn(
+          WorldSpeed.M_sec);
+      final double distanceM = m_s * timeDelta / 1000d;
+
+      final double distanceDegs = new WorldDistance(distanceM,
+          WorldDistance.METRES).getValueIn(WorldDistance.DEGS);
+      final WorldVector offset = new WorldVector(Math.toRadians(myCourseDegs),
+          distanceDegs, 0);
+
+      final WorldLocation newLoc = lastFix.getLocation().add(offset);
+
+      // store the depth
+      newLoc.setDepth(myDepth);
+
+      final Fix fix = new Fix(new HiResDate(date.getTime()), newLoc, Math
+          .toRadians(myCourseDegs), MWC.Algorithms.Conversions.Kts2Yps(
+              mySpeedKts));
+      newFix = new FixWrapper(fix);
+
+      // no, don't set the color, we want the fix to take
+      // the color of the parent track
+      // newFix.setColor(color);
+    }
+
+    track.add(newFix);
+
   }
 }

@@ -106,7 +106,7 @@ public abstract class PlainImporterBase implements PlainImporter
    * the block of text we're collating
    * 
    */
-  private StringBuffer _beingExported;
+  private static StringBuffer _beingExported;
 
   /**
    * collect any layers that we load
@@ -229,25 +229,28 @@ public abstract class PlainImporterBase implements PlainImporter
   public int countLinesFor(final String fName)
   {
     int counter = 0;
-    try
+    if (fName != null)
     {
+      try
+      {
 
-      // see if we can find the required file
-      final File findIt = new File(fName);
-      if (findIt.exists())
-      {
-        final java.io.InputStream is = new java.io.FileInputStream(fName);
-        counter = countLinesInStream(is);
-        is.close();
+        // see if we can find the required file
+        final File findIt = new File(fName);
+        if (findIt.exists())
+        {
+          final java.io.InputStream is = new java.io.FileInputStream(fName);
+          counter = countLinesInStream(is);
+          is.close();
+        }
+        else
+        {
+          System.err.println("Can't find input file:" + fName);
+        }
       }
-      else
+      catch (final Exception e)
       {
-        System.err.println("Can't find input file:" + fName);
+        e.printStackTrace();
       }
-    }
-    catch (final Exception e)
-    {
-      e.printStackTrace();
     }
     return counter;
   }
@@ -282,6 +285,11 @@ public abstract class PlainImporterBase implements PlainImporter
   public void startExport(final Plottable item)
   {
     // clear the output buffer
+ //  _beingExported = null;
+  }
+  
+  public static void clearBuffer()
+  {
     _beingExported = null;
   }
 

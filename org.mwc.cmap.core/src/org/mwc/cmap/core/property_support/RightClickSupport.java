@@ -72,6 +72,7 @@ import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
 
 public class RightClickSupport
 {
@@ -289,6 +290,14 @@ public class RightClickSupport
     @Override
     public void run()
     {
+      // SPECIAL HANDLING. If this is the exportThis() method
+      // call, we should clear the output buffer first
+      if("exportThis".equals(_method.getName()) || 
+          "exportShape".equals(_method.getName()))
+      {
+        PlainImporterBase.clearBuffer();
+      }
+      
       final int len = _subjects.length;
 
       for (int cnt = 0; cnt < len; cnt++)
@@ -297,7 +306,6 @@ public class RightClickSupport
         try
         {
           _method.invoke(thisSubject, new Object[0]);
-
         }
         catch (final IllegalArgumentException e)
         {
