@@ -1,10 +1,9 @@
 package org.mwc.debrief.scripting.wrappers;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
@@ -19,279 +18,92 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import MWC.Algorithms.PlainProjection;
-import MWC.GUI.BaseLayer;
-import MWC.GUI.Editable;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Layers.OperateFunction;
-import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.TabPanel.OS;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-import MWC.TacticalData.Fix;
 import junit.framework.TestCase;
 
+/**
+ * Core class that exposes methods related with the plot and basic creators
+ * 
+ * @author Ian Mayo
+ *
+ */
 public class Core
 {
 
-  public static class DEditor
-  {
-    private final PlotEditor _editor;
-
-    public DEditor(final PlotEditor editor)
-    {
-      _editor = editor;
-    }
-
-    public void fitToWindow()
-    {
-      _editor.getChart().rescale();
-      getLayers().fireModified();
-    }
-
-    public WorldArea getArea()
-    {
-      if (_editor != null)
-      {
-        final PlainProjection proj = (PlainProjection) _editor.getAdapter(
-            PlainProjection.class);
-        return proj.getDataArea();
-      }
-      return null;
-    }
-
-    public WorldLocation getCentre()
-    {
-      final WorldArea area = getArea();
-      if (area != null)
-      {
-        return area.getCentre();
-      }
-      else
-      {
-        return null;
-      }
-    }
-
-    public DLayers getLayers()
-    {
-      if (_editor != null)
-      {
-        final Layers layers = (Layers) _editor.getAdapter(Layers.class);
-        if (layers != null)
-        {
-          return new DLayers(layers);
-        }
-      }
-      return null;
-
-    }
-
-    public HiResDate getTime()
-    {
-      final TimeProvider time = (TimeProvider) _editor.getAdapter(
-          TimeProvider.class);
-      return time.getTime();
-    }
-
-  }
-
-  public static class DLayers
-  {
-    private final Layers _layers;
-
-    public DLayers(final Layers layers)
-    {
-      _layers = layers;
-    }
-
-    public void add(final Layer layer)
-    {
-      _layers.addThisLayer(layer);
-    }
-
-    public Layer createLayer(final String name)
-    {
-      // do we already have it?
-      Layer newLayer = _layers.findLayer(name);
-      if (newLayer == null)
-      {
-        newLayer = new BaseLayer();
-        newLayer.setName(name);
-        _layers.addThisLayer(newLayer);
-      }
-      return newLayer;
-    }
-
-    public Layer findLayer(final String name)
-    {
-      return _layers.findLayer(name, true);
-    }
-
-    /**
-     * descend the tree looking for an item with the specified name
-     * 
-     * @param name
-     *          what we're looking for
-     * @return the matching item (or null)
-     */
-    public Editable findThis(final String name)
-    {
-      Editable res = null;
-      if (name != null)
-      {
-        final Enumeration<Editable> ele = _layers.elements();
-        while (ele.hasMoreElements() && res == null)
-        {
-          final Layer next = (Layer) ele.nextElement();
-          if (name.equals(next.getName()))
-          {
-            res = next;
-            break;
-          }
-          else
-          {
-            final Enumeration<Editable> items = next.elements();
-            while (items.hasMoreElements() && res == null)
-            {
-              final Editable item = items.nextElement();
-              if (name.equals(item.getName()))
-              {
-                res = item;
-                break;
-              }
-              else if (item instanceof Layer)
-              {
-                final Layer subLayer = (Layer) item;
-                final Enumeration<Editable> subItems = subLayer.elements();
-                while (subItems.hasMoreElements())
-                {
-                  final Editable subItem = subItems.nextElement();
-                  if (name.equals(subItem.getName()))
-                  {
-                    res = subItem;
-                    break;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-
-      return res;
-    }
-
-    public LightweightTrackWrapper findTrack(@ScriptParameter(
-        defaultValue = "unset") final String name)
-    {
-      // special handling. if a track isn't provided, return the first
-      // one
-      LightweightTrackWrapper res = null;
-      if ("unset".equals(name) || name == null)
-      {
-        // ok, just return the first one
-        final Enumeration<Editable> ele = _layers.elements();
-        while (ele.hasMoreElements() && res == null)
-        {
-          final Editable nextE = ele.nextElement();
-          if (nextE instanceof LightweightTrackWrapper)
-          {
-            res = (LightweightTrackWrapper) nextE;
-          }
-        }
-      }
-      else
-      {
-        final Layer match = _layers.findLayer(name);
-        if (match instanceof LightweightTrackWrapper)
-        {
-          res = (LightweightTrackWrapper) match;
-        }
-      }
-      return res;
-    }
-
-    public void fireModified()
-    {
-      _layers.fireExtended();
-    }
-
-    public LightweightTrackWrapper[] getTracks()
-    {
-      final ArrayList<LightweightTrackWrapper> items =
-          new ArrayList<LightweightTrackWrapper>();
-
-      final OperateFunction function = new OperateFunction()
-      {
-
-        @Override
-        public void operateOn(final Editable item)
-        {
-          items.add((LightweightTrackWrapper) item);
-        }
-      };
-      _layers.walkVisibleItems(LightweightTrackWrapper.class, function);
-
-      return items.toArray(new LightweightTrackWrapper[]
-      {null});
-    }
-
-    public void remove(final Layer layer)
-    {
-      _layers.removeThisLayer(layer);
-    }
-
-    public int size()
-    {
-      return _layers.size();
-    }
-
-  }
-
   public static class TestCore extends TestCase
   {
-    public void testFindItem()
+    static final int testRed = 200;
+    static final int testGreen = 210;
+    static final int testBlue = 220;
+
+    static final int testFontSize = 10;
+    static final int testFontStyle = Font.PLAIN;
+    static final String testFontName = "Serif.plain";
+    static final String MACOS_testFontName = "Dialog";
+
+    static final int durationValue = 12;
+    static final int durationUnits = Duration.HOURS;
+
+    static final long timeLong = 2000000L;
+
+    public void testCreateColor()
     {
-      final Layers layers = new Layers();
-      final BaseLayer shapes = new BaseLayer();
-      shapes.setName("shapes");
-      layers.addThisLayer(shapes);
-
-      final WorldLocation loc1 = new WorldLocation(1d, 2d, 3d);
-      final WorldLocation loc2 = new WorldLocation(1d, 2d, 3d);
-
-      final ShapeWrapper lineShape = new ShapeWrapper("line", new LineShape(
-          loc1, loc2), Color.red, null);
-      final ShapeWrapper rectShape = new ShapeWrapper("rectangle",
-          new RectangleShape(loc1, loc2), Color.red, null);
-      shapes.add(lineShape);
-      shapes.add(rectShape);
-
-      final TrackWrapper track = new TrackWrapper();
-      track.setName("track");
-      layers.addThisLayer(track);
-
-      final FixWrapper newFix = new FixWrapper(new Fix(new HiResDate(100000),
-          loc1, 0d, 0d));
-      track.addFix(newFix);
-      newFix.setName("fix");
-
-      final DLayers dl = new DLayers(layers);
-      assertEquals("found it", lineShape, dl.findThis("line"));
-      assertEquals("found it", shapes, dl.findThis("shapes"));
-      assertEquals("found it", track, dl.findThis("track"));
-      assertEquals("found it", newFix, dl.findThis("fix"));
-      assertEquals("found it", null, dl.findThis("fezzig"));
-
+      final Color color = createColor(testRed, testGreen, testBlue);
+      assertEquals("Testing Red Color", testRed, color.getRed());
+      assertEquals("Testing Green Color", testGreen, color.getGreen());
+      assertEquals("Testing Blue Color", testBlue, color.getBlue());
     }
+
+    public void testCreateDate()
+    {
+      final HiResDate date = createDate(timeLong);
+      assertEquals("Testing Date", timeLong, date.getDate().getTime());
+    }
+
+    public void testCreateDuration()
+    {
+      final Duration duration = createDuration(durationValue, durationUnits);
+      assertEquals("Testing Duration Value with the given units", durationValue,
+          duration.getValueIn(durationUnits), 1e-5);
+    }
+
+    public void testCreateFont()
+    {
+      final Font font = createFont(testFontName, testFontStyle, testFontSize);
+      if(OS.isMacintosh())
+      {
+        // note: the mac mangles the font, since the one we're
+        // asking for isn't available, so it uses a similar one
+        assertEquals("Testing Font Name", MACOS_testFontName, font.getFontName());
+      }
+      else
+      {
+        assertEquals("Testing Font Name", testFontName, font.getFontName());
+      }
+      assertEquals("Testing Font Style", testFontStyle, font.getStyle());
+      assertEquals("Testing Font Size", testFontSize, font.getSize());
+    }
+  }
+
+  /**
+   * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
+   * 255). The actual color used in rendering depends on finding the best match given the color
+   * space available for a given output device. Alpha is defaulted to 255.
+   *
+   * @param red
+   *          the red component
+   * @param green
+   *          the green component
+   * @param blue
+   *          the blue component
+   * @return
+   */
+  public static Color createColor(final int red, final int green,
+      final int blue)
+  {
+    return new Color(red, green, blue);
   }
 
   /*
@@ -302,12 +114,60 @@ public class Core
     return new HiResDate(date);
   }
 
-  public static Color getColor(final int red, final int green, final int blue)
+  /**
+   * Function that creates a duration given a value and the unit
+   * 
+   * @see MWC.GenericData.Duration
+   * @param value
+   *          Value of the duration.
+   * @param units
+   *          Unit of the duration as an integer. Options available: MICROSECONDS = 0, MILLISECONDS
+   *          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5
+   * @return Duration object created.
+   */
+  public static Duration createDuration(final int value, final int units)
   {
-    return new Color(red, green, blue);
+    return new Duration(value, units);
   }
 
-  public static DEditor getEditor(@ScriptParameter(
+  /**
+   * Function that creates a font object given a font name as string, an style and size.
+   * 
+   * @see java.awt.Font#Font(String, int, int)
+   * @param fontName
+   *          Font name as String. For example: "Serif.plain"
+   * @param style
+   *          Style of the font. For example: java.awt.Font.PLAIN
+   * @param size
+   *          Size of the font created.
+   * @return Font object created.
+   */
+  public static Font createFont(final String fontName, final int style,
+      final int size)
+  {
+    return new Font(fontName, style, size);
+  }
+
+  /**
+   * Function that returns the active plot (Editor).
+   * 
+   * @see org.mwc.debrief.scripting.wrappers.Plot
+   * @return Plot instance currently active.
+   */
+  public static Plot getActivePlot()
+  {
+    return getPlot(null);
+  }
+
+  /**
+   * Method that returns a plot given its name.
+   * 
+   * @see org.mwc.debrief.scripting.wrappers.Plot
+   * @param filename
+   *          Name of the plot editor.
+   * @return Plot instance.
+   */
+  public static Plot getPlot(@ScriptParameter(
       defaultValue = "unset") final String filename)
   {
     final IWorkbench workbench = PlatformUI.getWorkbench();
@@ -333,7 +193,7 @@ public class Core
                 final IEditorPart instance = editor.getEditor(false);
                 if (instance != null)
                 {
-                  return new DEditor((PlotEditor) instance);
+                  return new Plot((PlotEditor) instance);
                 }
               }
             }
@@ -351,16 +211,13 @@ public class Core
 
   private TimeProvider _timeProvider;
 
+  /**
+   * Dummy constructor.
+   */
   public Core()
   {
     System.out.println("About to start listening");
     listenToMyParts();
-  }
-
-  public LabelWrapper createLabel(final WorldLocation location,
-      final Color color)
-  {
-    return new LabelWrapper("Name", location, color);
   }
 
   protected void fireNewTime(final HiResDate date)
@@ -390,14 +247,14 @@ public class Core
       return;
     }
 
-    final DEditor dEditor = getEditor(null);
+    final Plot dEditor = getPlot(null);
     if (dEditor == null)
     {
       System.err.println("Couldn't get editor");
       return;
     }
 
-    final PlotEditor editor = dEditor._editor;
+    final PlotEditor editor = dEditor.getPlot();
     final IWorkbenchWindow window = editor.getSite().getPage()
         .getWorkbenchWindow();
 
