@@ -16,6 +16,7 @@ package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -27,6 +28,7 @@ import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -71,109 +73,124 @@ import MWC.GUI.Layers;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
+import MWC.GUI.DragDrop.FileDropSupport;
+import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Tools.Swing.SwingToolbar;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
+import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  * @author Unni Mana <unnivm@gmail.com>
  */
 
-public class DebriefLiteApp {
+public class DebriefLiteApp implements FileDropListener{
 
-	public static final String appName = "Debrief Lite";
-	public static final String NOTES_ICON = "images/16/note.png";
-	private static MapContent mapComponent;
+  public static final String appName = "Debrief Lite";
+  public static final String NOTES_ICON = "images/16/note.png";
+  private static MapContent mapComponent;
+  protected final FileDropSupport _dropSupport = new FileDropSupport();
 
-	private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
-		final JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(jTitleBar, BorderLayout.NORTH);
-		final JScrollPane scrPane1 = new JScrollPane(panel);
-		return scrPane1;
-	}
+  private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
+    final JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+    panel.add(jTitleBar, BorderLayout.NORTH);
+    final JScrollPane scrPane1 = new JScrollPane(panel);
+    return scrPane1;
+  }
 
-	public static void main(final String[] args) {
-		new DebriefLiteApp();
-	}
+  public static void main(final String[] args) {
+    new DebriefLiteApp();
+  }
 
-	private final JFrame theFrame;
-	private JMenuBar theMenuBar;
-	private JMenu theMenu;
-	private JLabel statusBar;
-	private JLabel _notesIconLabel;
-	private boolean notesPaneExpanded = false;
+  private final JFrame theFrame;
+  private JMenuBar theMenuBar;
+  private JMenu theMenu;
+  private JLabel statusBar;
+  private JLabel _notesIconLabel;
+  private boolean notesPaneExpanded = false;
 
-	private MWC.GUI.Tools.Swing.SwingToolbar theToolbar;
+  private SwingToolbar theToolbar;
 
-	private final GeoToolMapRenderer geoMapRenderer;
+  private final GeoToolMapRenderer geoMapRenderer;
 
-	public DebriefLiteApp() {
+  public DebriefLiteApp() {
 
-		geoMapRenderer = new GeoToolMapRenderer();
-		geoMapRenderer.loadMapContent();
-		mapComponent = geoMapRenderer.getMapComponent();
+    geoMapRenderer = new GeoToolMapRenderer();
+    geoMapRenderer.loadMapContent();
+    mapComponent = geoMapRenderer.getMapComponent();
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-				| UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-		theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
+    try {
+      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+        | UnsupportedLookAndFeelException e) {
+      e.printStackTrace();
+    }
+    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")");
 
-		initForm();
-		createAppPanels();
+    initForm();
+    createAppPanels();
+    _dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF");
 
-		theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		theFrame.setVisible(true);
+    theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    theFrame.setVisible(true);
+    /// start application
+    startDebriefLiteApplication();
 
-		/// start application
-		startDebriefLiteApplication();
+  }
 
-	}
+  public final void setCursor(final int theCursor)
+  {
+    theFrame.getContentPane().setCursor(new Cursor(theCursor));
+  }
 
-	private void addMenus() {
-		theMenu = new JMenu("File");
-		theMenu.add(new JMenuItem("New"));
-		theMenu.add(new JMenuItem("Open"));
-		theMenu.add(new JMenuItem("Save"));
-		theMenuBar.add(theMenu);
-	}
+  public final void restoreCursor()
+  {
+    theFrame.getContentPane().setCursor(null);
+  }
 
-	private void addStatusBar() {
-		statusBar = new JLabel("Status bar for displaying statuses");
-		theFrame.add(statusBar, BorderLayout.SOUTH);
-	}
+  private void addMenus() {
+    theMenu = new JMenu("File");
+    theMenu.add(new JMenuItem("New"));
+    theMenu.add(new JMenuItem("Open"));
+    theMenu.add(new JMenuItem("Save"));
+    theMenuBar.add(theMenu);
+  }
 
-	private void addTools(final SwingToolbar theToolbar) {
-		final URL iconURL = getClass().getClassLoader().getResource("images/16/new.png");
-		final JButton newFile = new JButton("New");
-		newFile.setIcon(new ImageIcon(iconURL));
-		theToolbar.add(newFile);
-	}
+  private void addStatusBar() {
+    statusBar = new JLabel("Status bar for displaying statuses");
+    theFrame.add(statusBar, BorderLayout.SOUTH);
+  }
 
-	private void createAppPanels() {
-		final Dimension frameSize = theFrame.getSize();
-		final int width = (int) frameSize.getWidth();
-		final int height = (int) frameSize.getHeight();
-		final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar("Time Controller");
-		final JPanelWithTitleBar outlinePanel = new JPanelWithTitleBar("Outline");
-		final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar("Plot Editor");
-		final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-		final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
-		final JScrollPane outlinePane = createScrollPane(outlinePanel);
-		final JScrollPane editorPane = createMapPane(mapComponent);// createScrollPane(editorPanel);
-		geoMapRenderer.addMapTool(theToolbar);
-		final JScrollPane graphPane = createScrollPane(graphPanel);
-		final JScrollPane notesPane = createNotesPane();
-		final JSplitPane controlPanelSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, timeControllerPane,
-				outlinePane);
-		final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, editorPane, graphPane);
-		final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controlPanelSplit, graphSplit);
-		final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
-		rightSplit.setOneTouchExpandable(true);
+  private void addTools(final SwingToolbar theToolbar) {
+    final URL iconURL = getClass().getClassLoader().getResource("images/16/new.png");
+    final JButton newFile = new JButton("New");
+    newFile.setIcon(new ImageIcon(iconURL));
+    theToolbar.add(newFile);
+  }
+
+  private void createAppPanels() {
+    final Dimension frameSize = theFrame.getSize();
+    final int width = (int) frameSize.getWidth();
+    final int height = (int) frameSize.getHeight();
+    final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar("Time Controller");
+    final JPanelWithTitleBar outlinePanel = new JPanelWithTitleBar("Outline");
+    final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar("Plot Editor");
+    final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
+    final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
+    final JScrollPane outlinePane = createScrollPane(outlinePanel);
+    final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
+    geoMapRenderer.addMapTool(theToolbar);
+    final JScrollPane graphPane = createScrollPane(graphPanel);
+    final JScrollPane notesPane = createNotesPane();
+    final JSplitPane controlPanelSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, timeControllerPane,
+        outlinePane);
+    final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, editorPane, graphPane);
+    final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controlPanelSplit, graphSplit);
+    final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
+    rightSplit.setOneTouchExpandable(true);
 
     //controlPanelSplit.setOneTouchExpandable(true);
     //graphSplit.setOneTouchExpandable(true);
@@ -215,15 +232,16 @@ public class DebriefLiteApp {
   /**
    * creates a scroll pane with map
    *
-   * @param mapContent
    * @return
    */
-  private JScrollPane createMapPane(final MapContent mapContent)
+  private JScrollPane createMapPane()
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    return builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
+    JScrollPane mapPane = builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
         .setToolbar(theToolbar).build();
+    _dropSupport.addComponent(mapPane);
+    return mapPane;
   }
 
   private JScrollPane createNotesPane()
@@ -248,7 +266,7 @@ public class DebriefLiteApp {
       @Override
       public void windowClosing(final java.awt.event.WindowEvent e)
       {
-        System.exit(0);
+        exit();
       }
     });
 
@@ -262,7 +280,7 @@ public class DebriefLiteApp {
         theFrame.setIconImage(myIcon.getImage());
     }
     // create the components
-    theToolbar = new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL,
+    theToolbar = new SwingToolbar(Toolbar.HORIZONTAL,
         "Application", null);
     addTools(theToolbar);
 
@@ -286,93 +304,26 @@ public class DebriefLiteApp {
     theFrame.doLayout();
   }
 
+  protected void exit()
+  {
+    _dropSupport.removeFileDropListener(this);
+    System.exit(0);
+
+  }
+
   public void setStatus(final String message)
   {
     statusBar.setText(message);
   }
-  
+
   private void startDebriefLiteApplication() {
-    final String boat_file =
-        "../org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep";
 
-//    DebriefLiteApplication application = new DebriefLiteApplication();
-//    application.openFile(new java.io.File(boat_file));
-    File testFile = new File(boat_file);
-    final Layers _theLayers = new Layers();
-    final File[] _theFiles = new File[] { testFile };
-
-    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
-
-    ImportManager.addImporter(new ImportReplay());
-
-    // get our thread to import this
-    final ImportManager.BaseImportCaller reader = new ImportManager.BaseImportCaller(
-        _theFiles, _theLayers) {
-      // handle completion of the full import process
-      @Override
-      public void allFilesFinished(final File[] fNames, final Layers newData) {
-        System.out.println("1...all files finished reading....");
-      }
-
-      // handle the completion of each file
-      @Override
-      public void fileFinished(final File fName, final Layers newData) {
-        System.out.println("2...files finished reading...." + newData.size());
-      }
-    };
-
-    // and start it running
-    reader.start();
-
-    // wait for the results
-    while (reader.isAlive()) {
-      try {
-        Thread.sleep(100);
-      } catch (final java.lang.InterruptedException e) {
-        // ignore it.
-      }
-    }
-    
-    System.out.println("num layers:" + _theLayers.size());
-
-    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-    if(track != null)
-    {
-      Enumeration<Editable> enumerations = track.getPositionIterator();
-      int cnt = 0;
-      while (enumerations.hasMoreElements()) {
-        @SuppressWarnings("unused")
-        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
-        cnt++;
-      }
-
-      JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from Replay file " + cnt);
-    }
-
-    final MapContent map = geoMapRenderer.getMapComponent();
-
-    //// now start plotting the tracks
-
-    final int len = _theLayers.size();
-    CanvasType dest = new SwingCanvas();
-    GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
-    Graphics g = geoMapRenderer.getGraphicsContext();
-    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
-    dest.setProjection(projection);
-    dest.startDraw(g);
-    for (int i = 0; i < len; i++) {
-      final Layer thisLayer = _theLayers.elementAt(i);
-      thisLayer.paint(adaptor);
-    }
-      
-    // first approach
-    paintTest(g, projection);
 
     // second approach
-    drawLine1();
+    //drawLine1();
   }
-  
-  private void paintTest(Graphics g, GeoToolMapProjection projection) {
+
+  private void paintTest(final GeoToolMapProjection projection) {
 
     // 60N 30W to 10N 10W
     WorldLocation loc1 = new WorldLocation(50d, 40d, 0);
@@ -380,8 +331,8 @@ public class DebriefLiteApp {
 
     Point p1 = projection.toScreen(loc1);
     Point p2 = projection.toScreen(loc2);
-    
-    
+
+
     System.out.println(projection.toWorld(p1));
 
     geoMapRenderer.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
@@ -417,5 +368,154 @@ public class DebriefLiteApp {
 
     mapComponent.addLayer(layer);
     theFrame.repaint();
+  }
+
+  @Override
+  public void FilesReceived(Vector<File> files)
+  {
+    setCursor(Cursor.WAIT_CURSOR);
+    try
+    {
+      final Enumeration<File> iter = files.elements();
+      while (iter.hasMoreElements())
+      {
+        final File file = (File) iter.nextElement();
+        openFile(file);
+      }
+
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+
+    restoreCursor();
+
+  }
+
+  /**
+   * @param theFile
+   *          the file to open
+   */
+  public final void openFile(final File theFile)
+  {
+    // indicate that we are busy
+    this.setCursor(Cursor.WAIT_CURSOR);
+
+    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+
+    ImportManager.addImporter(new ImportReplay());
+
+    // wrap the single file into a list
+    final File[] fList = new File[]
+        {theFile};
+
+    final String suff = suffixOf(theFile.getName());
+    if (suff.equalsIgnoreCase(".DPL"))
+    {
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open File",
+          "Sorry DPL file format no longer supported");
+    }
+    else
+    {
+      if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+          || (suff.equalsIgnoreCase(".DTF")))
+      {
+        
+
+        handleImport(fList);
+
+      }
+      else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF"))
+      {
+
+        handleImport(fList);
+      }
+      else
+      {
+        Trace.trace("This file type not handled:"
+            + suff);
+      }
+    }
+
+  }
+  private void handleImport(final File[] fList) {
+    Layers _theLayers = new Layers();
+    BaseImportCaller caller =
+        new BaseImportCaller(
+            fList, _theLayers)
+    {
+      // handle the completion of each file
+      public void fileFinished(final File fName, final Layers newData)
+      {
+        System.out.println("Finished reading file"+fName);
+      }
+
+      // handle completion of the full import process
+      public void allFilesFinished(final File[] fNames,
+          final Layers newData)
+      {
+        System.out.println("Finished reading all files");
+        restoreCursor();
+
+      }
+    };
+
+    caller.start();
+    //wait for a few secs and test the loaded file.
+    try {
+      Thread.sleep(400);
+    }catch(InterruptedException ie) {}
+    System.out.println("num layers:" + _theLayers.size());
+    tesTLoadedFile(_theLayers,fList[0].getName());
+    caller = null;
+
+    // forget the reference
+    _theLayers = null;
+  }
+  
+  //this will be removed when we have the plotting working
+  private void tesTLoadedFile(final Layers _theLayers,String fileName) {
+    TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
+    if(track != null)
+    {
+      Enumeration<Editable> enumerations = track.getPositionIterator();
+      int cnt = 0;
+      while (enumerations.hasMoreElements()) {
+        @SuppressWarnings("unused")
+        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
+        cnt++;
+      }
+
+      JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from "+ fileName +" file " + cnt);
+    }
+
+    //// now start plotting the tracks
+
+    final int len = _theLayers.size();
+    CanvasType dest = new SwingCanvas();
+    GeoToolMapProjection projection = new GeoToolMapProjection(mapComponent, _theLayers);
+    Graphics g = geoMapRenderer.getGraphicsContext();
+    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
+    dest.setProjection(projection);
+    dest.startDraw(g);
+    for (int i = 0; i < len; i++) {
+      final Layer thisLayer = _theLayers.elementAt(i);
+      thisLayer.paint(adaptor);
+    }
+
+    // first approach
+    paintTest(projection);
+  }
+  /**
+   * @param filename
+   *          autofilled
+   */
+  private static String suffixOf(final String filename)
+  {
+    String theSuffix = null;
+    final int pos = filename.lastIndexOf(".");
+    theSuffix = filename.substring(pos, filename.length());
+    return theSuffix.toUpperCase();
   }
 }
