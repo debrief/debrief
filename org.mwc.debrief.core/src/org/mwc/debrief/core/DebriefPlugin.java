@@ -342,9 +342,17 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
       @Override 
       public void run() 
       { 
-        final IEditorRegistry editorRegistry =  
-            PlatformUI.getWorkbench().getEditorRegistry();  
-        editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor"); 
+        // don't let it fall over if the workbench isnt' ready
+        try
+        {
+          final IEditorRegistry editorRegistry =  
+              PlatformUI.getWorkbench().getEditorRegistry();  
+          editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
+        }
+        catch (Exception e)
+        {
+          e.printStackTrace();
+        } 
       } 
     });
 
