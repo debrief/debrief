@@ -285,38 +285,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
       }
     });
   }
-  
-  
-  /** flag for if we've assigned the default
-   * XML editor
-   */
-  boolean editorPending = true;
-  
-  @Override
-  public IWorkbench getWorkbench()
-  {
-    final IWorkbench res = super.getWorkbench();
-
-    if(editorPending && res != null)
-    {
-      // clear flag
-      editorPending = false;
-      // make Debrief the default editor for XML files
-      Display.getDefault().asyncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          final IEditorRegistry editorRegistry = res.getEditorRegistry();
-          editorRegistry.setDefaultEditor("*.xml",
-              "org.mwc.debrief.PlotEditor");
-        }
-      });
-    }
-    
-    return res;
-  }
 
   /**
    * This method is called upon plug-in activation
@@ -365,7 +333,20 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
     // tell ImportReplay that we can provide more importers
     List<ExtensibleLineImporter> importers = getRepImporterExtensions();
-    ImportReplay.addExtraImporters(importers);   
+    ImportReplay.addExtraImporters(importers);  
+    
+    // make Debrief the default editor for XML files  
+    Display.getDefault().asyncExec(new Runnable() 
+    { 
+        
+      @Override 
+      public void run() 
+      { 
+        final IEditorRegistry editorRegistry =  
+            PlatformUI.getWorkbench().getEditorRegistry();  
+        editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor"); 
+      } 
+    });
 
     // tell the message provider where it can fire messages to
     MessageProvider.Base.setProvider(this);
