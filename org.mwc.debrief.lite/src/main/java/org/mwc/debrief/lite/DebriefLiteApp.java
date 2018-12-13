@@ -181,7 +181,7 @@ public class DebriefLiteApp implements FileDropListener{
     final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
     final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
     final JScrollPane outlinePane = createScrollPane(outlinePanel);
-    final JScrollPane editorPane = createMapPane(mapComponent);// createScrollPane(editorPanel);
+    final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
     geoMapRenderer.addMapTool(theToolbar);
     final JScrollPane graphPane = createScrollPane(graphPanel);
     final JScrollPane notesPane = createNotesPane();
@@ -232,10 +232,9 @@ public class DebriefLiteApp implements FileDropListener{
   /**
    * creates a scroll pane with map
    *
-   * @param mapContent
    * @return
    */
-  private JScrollPane createMapPane(final MapContent mapContent)
+  private JScrollPane createMapPane()
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
@@ -491,13 +490,11 @@ public class DebriefLiteApp implements FileDropListener{
       JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from "+ fileName +" file " + cnt);
     }
 
-    final MapContent map = geoMapRenderer.getMapComponent();
-
     //// now start plotting the tracks
 
     final int len = _theLayers.size();
     CanvasType dest = new SwingCanvas();
-    GeoToolMapProjection projection = new GeoToolMapProjection(map, _theLayers);
+    GeoToolMapProjection projection = new GeoToolMapProjection(mapComponent, _theLayers);
     Graphics g = geoMapRenderer.getGraphicsContext();
     CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
     dest.setProjection(projection);
