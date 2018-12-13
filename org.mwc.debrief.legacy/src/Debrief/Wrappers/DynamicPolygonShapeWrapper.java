@@ -21,7 +21,7 @@ import MWC.GUI.Shapes.PolygonShape;
 import MWC.GenericData.HiResDate;
 
 /**
- * @author Ayesha <ayesha.ma@gmail.com>
+ * @author Ayesha ayesha.ma@gmail.com
  *
  */
 public class DynamicPolygonShapeWrapper extends PolygonWrapper implements IDynamicShapeWrapper

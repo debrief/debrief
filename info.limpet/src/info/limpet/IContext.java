@@ -42,7 +42,7 @@ public interface IContext
 
 	/** indicate this warning
 	 * 
-	 * @param string
+	 * @param status
 	 * @param message
 	 * @param e
 	 */

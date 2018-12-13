@@ -39,8 +39,6 @@ public interface AbstractAnnotation extends EObject
    * @return the value of the '<em>Name</em>' attribute.
    * @see #setName(String)
    * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAbstractAnnotation_Name()
-   * @model
-   * @generated
    */
   String getName();
 
@@ -67,7 +65,6 @@ public interface AbstractAnnotation extends EObject
    * @see #setColor(Color)
    * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAbstractAnnotation_Color()
    * @model dataType="info.limpet.stackedcharts.model.Color"
-   * @generated
    */
   Color getColor();
 

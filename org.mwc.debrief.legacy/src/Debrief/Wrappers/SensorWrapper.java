@@ -206,8 +206,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 {
 
   /**
-	 * 
-	 */
+   * 
+   */
   private static final long serialVersionUID = 1L;
 
   /**
@@ -392,9 +392,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
       // maintain our time period
       if (_timePeriod == null)
-        _timePeriod =
-            new MWC.GenericData.TimePeriod.BaseTimePeriod(scw.getDTG(), scw
-                .getDTG());
+        _timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(scw
+            .getDTG(), scw.getDTG());
       else
         _timePeriod.extend(scw.getDTG());
 
@@ -422,8 +421,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       for (final Iterator<Editable> iterator = otherC.iterator(); iterator
           .hasNext();)
       {
-        final SensorContactWrapper thisC =
-            (SensorContactWrapper) iterator.next();
+        final SensorContactWrapper thisC = (SensorContactWrapper) iterator
+            .next();
         this.add(thisC);
       }
 
@@ -449,7 +448,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
   }
 
   /**
-   * method to allow the setting of data sampling frequencies for the track & sensor data
+   * method to allow the setting of data sampling frequencies for the track and sensor data
    * 
    * @return frequency to use
    */
@@ -459,7 +458,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
   }
 
   /**
-   * set the data frequency (in seconds) for the track & sensor data
+   * set the data frequency (in seconds) for the track and sensor data
    * 
    * @param theVal
    *          frequency to use
@@ -479,17 +478,17 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
 
     final long currentStart = this.getStartDTG().getMicros();
-    
+
     // determine when the resampling should start
     final long startTime;
-    if(interval > 0)
+    if (interval > 0)
     {
       long tmpStartTime = (currentStart / interval) * interval;
 
       // just check we're in the range
       if (tmpStartTime < currentStart)
         tmpStartTime += interval;
-      
+
       startTime = tmpStartTime;
     }
     else
@@ -556,13 +555,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
     {
       // see if this DTG is inside our data range
       // in which case we will just return null
-      final SensorContactWrapper theFirst =
-          (SensorContactWrapper) _myContacts.first();
-      final SensorContactWrapper theLast =
-          (SensorContactWrapper) _myContacts.last();
+      final SensorContactWrapper theFirst = (SensorContactWrapper) _myContacts
+          .first();
+      final SensorContactWrapper theLast = (SensorContactWrapper) _myContacts
+          .last();
 
-      if ((DTG.greaterThanOrEqualTo(theFirst.getDTG()))
-          && (DTG.lessThanOrEqualTo(theLast.getDTG())))
+      if ((DTG.greaterThanOrEqualTo(theFirst.getDTG())) && (DTG
+          .lessThanOrEqualTo(theLast.getDTG())))
       {
         // yes it's inside our data range, find the first fix
         // after the indicated point
@@ -570,9 +569,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
         // see if we have to create our local temporary fix
         if (nearestContact == null)
         {
-          nearestContact =
-              new SensorContactWrapper(null, DTG, null, null, null, null, null,
-                  0, getName());
+          nearestContact = new SensorContactWrapper(null, DTG, null, null, null,
+              null, null, 0, getName());
         }
         else
           nearestContact.setDTG(DTG);
@@ -672,7 +670,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * 
    * @return yes/no for whether to use worm in hole
    * @deprecated we no long use this boolean mode. We now allow custom array modes - so please use
-   *             {@link #setArrayCentreMode(String)}
+   *             {@link #setArrayCentreMode(ArrayCentreMode)}
    */
   public Boolean getWormInHole()
   {
@@ -685,14 +683,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * @param wormInHole
    *          boolean yes/no
    * @deprecated we no long use this boolean mode. We now allow custom array modes - so please use
-   *             {@link #setArrayCentreMode(String)}.
+   *             {@link #setArrayCentreMode(ArrayCentreMode)}.
    */
   @Deprecated
   public void setWormInHole(final Boolean wormInHole)
   {
     // sort out the new mode
-    final ArrayCentreMode mode =
-        wormInHole ? LegacyArrayOffsetModes.WORM : LegacyArrayOffsetModes.PLAIN;
+    final ArrayCentreMode mode = wormInHole ? LegacyArrayOffsetModes.WORM
+        : LegacyArrayOffsetModes.PLAIN;
 
     setArrayCentreMode(mode);
   }
@@ -708,9 +706,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
     // ok, see if we're using a deferred mode. If we are, we should correct it
     if (_arrayCentreMode instanceof DeferredDatasetArrayMode)
     {
-      _arrayCentreMode =
-          ArrayOffsetHelper.sortOutDeferredMode(
-              (DeferredDatasetArrayMode) _arrayCentreMode, this);
+      _arrayCentreMode = ArrayOffsetHelper.sortOutDeferredMode(
+          (DeferredDatasetArrayMode) _arrayCentreMode, this);
     }
 
     return _arrayCentreMode;
@@ -720,8 +717,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
    * get the current array centre mode. Note: this now includes the ability to name a measured data
    * source as the origin for the sensor
    * 
-   * @param one
-   *          of {@link #ArrayCentreMode} or the name of a specific dataset
+   * @param mode
+   *          one of {@link #ArrayCentreMode} or the name of a specific dataset
    */
   public void setArrayCentreMode(final ArrayCentreMode mode)
   {
@@ -734,7 +731,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       clearChildOffsets();
 
       // ok, fire the property change - to tell folks we've moved
-      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null, _arrayCentreMode);
+      firePropertyChange(SensorWrapper.LOCATION_CHANGED, null,
+          _arrayCentreMode);
     }
   }
 
@@ -831,29 +829,27 @@ public class SensorWrapper extends TacticalDataWrapper implements
       try
       {
         PropertyDescriptor[] res =
-            {
-                prop("Name", "the name for this sensor"),
-                prop("Visible", "whether this sensor data is visible"),
-                displayProp("LineThickness", "Line tickness",
-                    "the thickness to draw these sensor lines"),
-                displayProp("DefaultColor", "Default color",
-                    "the default colour to plot this set of sensor data"),
-                displayReadOnlyProp("Coverage", "Start/Finish DTG",
-                    "the time coverage for this sensor"),
-                displayLongProp("VisibleFrequency", "Visible frequency",
+        {prop("Name", "the name for this sensor"), prop("Visible",
+            "whether this sensor data is visible"), displayProp("LineThickness",
+                "Line tickness", "the thickness to draw these sensor lines"),
+            displayProp("DefaultColor", "Default color",
+                "the default colour to plot this set of sensor data"),
+            displayReadOnlyProp("Coverage", "Start/Finish DTG",
+                "the time coverage for this sensor"), displayLongProp(
+                    "VisibleFrequency", "Visible frequency",
                     "How frequently to display sensor cuts",
                     MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertProp("BaseFrequency", "Base frequency",
-                    "The base frequency of the source for this sound", OPTIONAL),
-                displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the sensor cut sample rate", TEMPORAL,
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-                displayExpertLongProp("ArrayCentreMode", "Array Centre Mode",
-                    "the method used to calculate the array centre", SPATIAL,
-                    ArrayCentreModePropertyEditor.class)};
+            displayExpertProp("BaseFrequency", "Base frequency",
+                "The base frequency of the source for this sound", OPTIONAL),
+            displayExpertLongProp("ResampleDataAt", "Resample data at",
+                "the sensor cut sample rate", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+            displayExpertLongProp("ArrayCentreMode", "Array Centre Mode",
+                "the method used to calculate the array centre", SPATIAL,
+                ArrayCentreModePropertyEditor.class)};
 
-        res[2]
-            .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+        res[2].setPropertyEditorClass(
+            MWC.GUI.Properties.LineWidthPropertyEditor.class);
 
         // the array centre editor needs to know about our data. Inject the suitable
         // array centre options
@@ -869,9 +865,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
           tmpList.addAll(Arrays.asList(res));
 
           // ok, add the sensor offset distance
-          tmpList
-              .add(displayProp("SensorOffset", "Sensor offset",
-                  "the forward/backward offset (m) of this sensor from the attack datum"));
+          tmpList.add(displayProp("SensorOffset", "Sensor offset",
+              "the forward/backward offset (m) of this sensor from the attack datum"));
 
           res = tmpList.toArray(res);
 
@@ -908,7 +903,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
       MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
       ed = null;
     }
-    
+
     public void testMeasuredData() throws ParseException
     {
       TrackWrapper tw = new TrackWrapper();
@@ -921,18 +916,18 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // get some data
       TA_COG_ABS_DataHandler reader = new TA_COG_ABS_DataHandler();
       reader.setLayers(layers);
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120200 SENSOR TA_ARRAY 4.0 5.0 19.02");
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120300 SENSOR TA_ARRAY 5.0 6.0 19.02");
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120400 SENSOR TA_ARRAY 6.0 7.0 19.02");
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120500 SENSOR TA_ARRAY 7.0 8.0 19.02");
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120600 SENSOR TA_ARRAY 8.0 9.0 19.02");
-      reader
-          .readThisLine(";TA_COG_ABS: 100112 120700 SENSOR TA_ARRAY 9.0 10.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120200 SENSOR TA_ARRAY 4.0 5.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120300 SENSOR TA_ARRAY 5.0 6.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120400 SENSOR TA_ARRAY 6.0 7.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120500 SENSOR TA_ARRAY 7.0 8.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120600 SENSOR TA_ARRAY 8.0 9.0 19.02");
+      reader.readThisLine(
+          ";TA_COG_ABS: 100112 120700 SENSOR TA_ARRAY 9.0 10.0 19.02");
       final String dateToken = "100112";
 
       // create the datasets
@@ -1005,8 +1000,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // ok, create the test object
       final SensorWrapper sensor = new SensorWrapper("tester");
 
-      final java.util.Calendar cal =
-          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+      final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10,
+          4, 4, 4, 0);
 
       // and create the list of sensor contact data items
       cal.set(2001, 10, 4, 4, 4, 0);
@@ -1056,19 +1051,19 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // //////////////////////////////////////////////////////////////////////
       // finding the nearest entry
       cal.set(2001, 10, 4, 4, 4, 05);
-      MWC.GenericData.Watchable[] list =
-          sensor.getNearestTo(new HiResDate(cal.getTime().getTime()));
+      MWC.GenericData.Watchable[] list = sensor.getNearestTo(new HiResDate(cal
+          .getTime().getTime()));
       SensorContactWrapper nearest = (SensorContactWrapper) list[0];
-      assertEquals("Nearest matching fix",
-          nearest.getDTG().getDate().getTime(), cal.getTime().getTime());
+      assertEquals("Nearest matching fix", nearest.getDTG().getDate().getTime(),
+          cal.getTime().getTime());
 
-      final java.util.Calendar cal_other =
-          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+      final java.util.Calendar cal_other = new java.util.GregorianCalendar(2001,
+          10, 4, 4, 4, 0);
       cal_other.set(2001, 10, 4, 4, 4, 03);
       list = sensor.getNearestTo(new HiResDate(cal_other.getTime().getTime()));
       nearest = (SensorContactWrapper) list[0];
-      assertTrue("Nearest or greater than fix",
-          (nearest.getDTG().getMicros() / 1000 == cal.getTime().getTime()));
+      assertTrue("Nearest or greater than fix", (nearest.getDTG().getMicros()
+          / 1000 == cal.getTime().getTime()));
 
       // ///////////////////////////////////////////////////////////////////
       // filter the list
@@ -1077,16 +1072,16 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
       // ////////////////////////////////////////////////////////////////////////
       // do the filter
-      sensor.filterListTo(new HiResDate(cal.getTime().getTime()),
-          new HiResDate(cal_other.getTime().getTime()));
+      sensor.filterListTo(new HiResDate(cal.getTime().getTime()), new HiResDate(
+          cal_other.getTime().getTime()));
 
       // see how many remain visible
       java.util.Enumeration<Editable> iter = sensor.elements();
       int counter = 0;
       while (iter.hasMoreElements())
       {
-        final SensorContactWrapper contact =
-            (SensorContactWrapper) iter.nextElement();
+        final SensorContactWrapper contact = (SensorContactWrapper) iter
+            .nextElement();
         if (contact.getVisible())
           counter++;
       }
@@ -1100,8 +1095,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       counter = 0;
       while (iter.hasMoreElements())
       {
-        final SensorContactWrapper contact =
-            (SensorContactWrapper) iter.nextElement();
+        final SensorContactWrapper contact = (SensorContactWrapper) iter
+            .nextElement();
         if (contact.getVisible())
           counter++;
       }
@@ -1110,18 +1105,17 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
       // //////////////////////////////////////////////////////
       // get items between
-      java.util.Collection<Editable> res =
-          sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
-              new HiResDate(cal_other.getTime().getTime()));
+      java.util.Collection<Editable> res = sensor.getItemsBetween(new HiResDate(
+          cal.getTime().getTime()), new HiResDate(cal_other.getTime()
+              .getTime()));
       assertTrue("get items between", (res.size() == 2));
 
       // do recheck, since this time we will be resetting the working
       // variables, rather and creating them
       cal.set(2001, 10, 4, 4, 4, 5);
       cal_other.set(2001, 10, 4, 4, 4, 27);
-      res =
-          sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
-              new HiResDate(cal_other.getTime().getTime()));
+      res = sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
+          new HiResDate(cal_other.getTime().getTime()));
       assertEquals("recheck get items between:" + res.size(), 4, res.size());
 
       // and show all of the data
@@ -1136,37 +1130,37 @@ public class SensorWrapper extends TacticalDataWrapper implements
       cal.set(2001, 10, 4, 4, 4, 0);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
           .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.0,
-          0.0), 12, 12)));
+              0.0), 12, 12)));
 
       cal.set(2001, 10, 4, 4, 4, 01);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0,
-          2.25, 0.0), 12, 12)));
+          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.25,
+              0.0), 12, 12)));
 
       cal.set(2001, 10, 4, 4, 4, 02);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
           .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.5,
-          0.0), 12, 12)));
+              0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 05);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0,
-          2.75, 0.0), 12, 12)));
+          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.75,
+              0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 23);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.25,
-          2.0, 0.0), 12, 12)));
+          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.25, 2.0,
+              0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 25);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
           .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.5, 2.0,
-          0.0), 12, 12)));
+              0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 28);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
-          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.75,
-          2.0, 0.0), 12, 12)));
+          .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.75, 2.0,
+              0.0), 12, 12)));
       cal.set(2001, 10, 4, 4, 4, 55);
       track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
           .getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.25,
-          2.25, 0.0), 12, 12)));
+              2.25, 0.0), 12, 12)));
 
       // ok, put the sensor data into the track
       track.add(sensor);
@@ -1178,8 +1172,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
       nearest = (SensorContactWrapper) list[0];
       WorldLocation nearestPoint = nearest.getCalculatedOrigin(track);
-      WorldLocation tgtLoc =
-          new MWC.GenericData.WorldLocation(2.66666, 2.0, 0.0);
+      WorldLocation tgtLoc = new MWC.GenericData.WorldLocation(2.66666, 2.0,
+          0.0);
       assertEquals("first test", 0, tgtLoc.rangeFrom(nearestPoint), 0.001);
 
       // ah-ha! what about a contact between two fixes
@@ -1196,8 +1190,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       nearest = (SensorContactWrapper) list[0];
       nearestPoint = nearest.getCalculatedOrigin(track);
       tgtLoc = new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0);
-      assertEquals("test nearer first point", 0,
-          tgtLoc.rangeFrom(nearestPoint), 0.001);
+      assertEquals("test nearer first point", 0, tgtLoc.rangeFrom(nearestPoint),
+          0.001);
 
       // start point?
       cal.set(2001, 10, 4, 4, 4, 0);
@@ -1232,8 +1226,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
       // ok, create the test object
       final SensorWrapper sensor = new SensorWrapper("tester");
 
-      final java.util.Calendar cal =
-          new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
+      final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10,
+          4, 4, 4, 0);
 
       // and create the list of sensor contact data items
       cal.set(2001, 10, 4, 4, 4, 0);
@@ -1274,8 +1268,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
       // check the correct number get returned
       cal.set(2001, 10, 4, 4, 4, 25);
-      final MWC.GenericData.Watchable[] list =
-          sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+      final MWC.GenericData.Watchable[] list = sensor.getNearestTo(
+          new HiResDate(cal.getTime().getTime(), 0));
       assertEquals("after end of data", 2, list.length);
 
     }
@@ -1283,18 +1277,18 @@ public class SensorWrapper extends TacticalDataWrapper implements
     public void testMultipleContacts()
     {
       final SensorWrapper sw = new SensorWrapper("bbb");
-      final SensorContactWrapper sc1 =
-          new SensorContactWrapper("bbb", new HiResDate(0, 9), null, null,
-              null, null, "first", 0, sw.getName());
-      final SensorContactWrapper sc2 =
-          new SensorContactWrapper("bbb", new HiResDate(0, 12), null, null,
-              null, null, "first", 0, sw.getName());
-      final SensorContactWrapper sc3 =
-          new SensorContactWrapper("bbb", new HiResDate(0, 7), null, null,
-              null, null, "first", 0, sw.getName());
-      final SensorContactWrapper sc4 =
-          new SensorContactWrapper("bbb", new HiResDate(0, 13), null, null,
-              null, null, "first", 0, sw.getName());
+      final SensorContactWrapper sc1 = new SensorContactWrapper("bbb",
+          new HiResDate(0, 9), null, null, null, null, "first", 0, sw
+              .getName());
+      final SensorContactWrapper sc2 = new SensorContactWrapper("bbb",
+          new HiResDate(0, 12), null, null, null, null, "first", 0, sw
+              .getName());
+      final SensorContactWrapper sc3 = new SensorContactWrapper("bbb",
+          new HiResDate(0, 7), null, null, null, null, "first", 0, sw
+              .getName());
+      final SensorContactWrapper sc4 = new SensorContactWrapper("bbb",
+          new HiResDate(0, 13), null, null, null, null, "first", 0, sw
+              .getName());
 
       sw.add(sc1);
       sw.add(sc2);
@@ -1372,11 +1366,11 @@ public class SensorWrapper extends TacticalDataWrapper implements
     final double brg = interp.interp(_last.getBearing(), _next.getBearing());
     double ambig = 0;
     // note - don't bother checking for has ambig, just do the interpolation
-    ambig =
-        interp.interp(_last.getAmbiguousBearing(), _next.getAmbiguousBearing());
+    ambig = interp.interp(_last.getAmbiguousBearing(), _next
+        .getAmbiguousBearing());
 
-    final double freq =
-        interp.interp(_last.getFrequency(), _next.getFrequency());
+    final double freq = interp.interp(_last.getFrequency(), _next
+        .getFrequency());
     // do we have range?
     WorldDistance theRng = null;
     if ((_last.getRange() != null) && (_next.getRange() != null))
@@ -1386,17 +1380,16 @@ public class SensorWrapper extends TacticalDataWrapper implements
       {
         // they're in the same units, stick with it.
         final int theUnits = _last.getRange().getUnits();
-        final double theVal =
-            interp.interp(_last.getRange().getValue(), _next.getRange()
-                .getValue());
+        final double theVal = interp.interp(_last.getRange().getValue(), _next
+            .getRange().getValue());
         theRng = new WorldDistance(theVal, theUnits);
       }
       else
       {
         // they're in different units, do it all in degrees
-        final double rngDegs =
-            interp.interp(_last.getRange().getValueIn(WorldDistance.DEGS),
-                _next.getRange().getValueIn(WorldDistance.DEGS));
+        final double rngDegs = interp.interp(_last.getRange().getValueIn(
+            WorldDistance.DEGS), _next.getRange().getValueIn(
+                WorldDistance.DEGS));
         theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
       }
     }
@@ -1404,20 +1397,18 @@ public class SensorWrapper extends TacticalDataWrapper implements
     WorldLocation origin = null;
     if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
     {
-      final double orLat =
-          interp.interp(_last.getOrigin().getLat(), _next.getOrigin().getLat());
-      final double orLong =
-          interp.interp(_last.getOrigin().getLong(), _next.getOrigin()
-              .getLong());
+      final double orLat = interp.interp(_last.getOrigin().getLat(), _next
+          .getOrigin().getLat());
+      final double orLong = interp.interp(_last.getOrigin().getLong(), _next
+          .getOrigin().getLong());
       origin = new WorldLocation(orLat, orLong, 0);
     }
 
     // now, go create the new data item
-    final SensorContactWrapper newS =
-        new SensorContactWrapper(_last.getTrackName(), new HiResDate(0, tNow),
-            theRng, brg, ambig, freq, origin, _last.getActualColor(), _last
-                .getName(), _last.getLineStyle().intValue(), _last
-                .getSensorName());
+    final SensorContactWrapper newS = new SensorContactWrapper(_last
+        .getTrackName(), new HiResDate(0, tNow), theRng, brg, ambig, freq,
+        origin, _last.getActualColor(), _last.getName(), _last.getLineStyle()
+            .intValue(), _last.getSensorName());
 
     // sort out the ambiguous data
     newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
@@ -1428,7 +1419,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
   /**
    * perform a merge of the supplied tracks.
    * 
-   * @param target
+   * @param targetE
    *          the final recipient of the other items
    * @param theLayers
    * @param parent
@@ -1437,8 +1428,8 @@ public class SensorWrapper extends TacticalDataWrapper implements
    *          the actual selected items
    * @return sufficient information to undo the merge
    */
-  public static int mergeSensors(final Editable targetE,
-      final Layers theLayers, final Layer parent, final Editable[] subjects)
+  public static int mergeSensors(final Editable targetE, final Layers theLayers,
+      final Layer parent, final Editable[] subjects)
   {
     final SensorWrapper target = (SensorWrapper) targetE;
 
@@ -1482,14 +1473,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
     else
     {
-      final SensorContactWrapper first =
-          (SensorContactWrapper) _myContacts.first();
-      final SensorContactWrapper last =
-          (SensorContactWrapper) _myContacts.last();
-      res =
-          FullFormatDateTime.toString(first.getDTG().getDate().getTime())
-              + " - "
-              + FullFormatDateTime.toString(last.getDTG().getDate().getTime());
+      final SensorContactWrapper first = (SensorContactWrapper) _myContacts
+          .first();
+      final SensorContactWrapper last = (SensorContactWrapper) _myContacts
+          .last();
+      res = FullFormatDateTime.toString(first.getDTG().getDate().getTime())
+          + " - " + FullFormatDateTime.toString(last.getDTG().getDate()
+              .getTime());
     }
 
     return res;
@@ -1505,9 +1495,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
   /**
    * use the specified measured dataset to produce a sensor origin
    * 
-   * @param dataset
+   * @param measuredMode
    * @param time
-   * @param nearestTrackFix
+   * @param hostLocation
    * @return
    */
   public WorldLocation getMeasuredLocationAt(
@@ -1556,12 +1546,12 @@ public class SensorWrapper extends TacticalDataWrapper implements
             long beforeTime = dataset.getTimes().get(index - 1);
 
             // ok, get the location
-            WorldLocation beforeLoc =
-                getValueAt(hostLocation, units, before1, before2);
+            WorldLocation beforeLoc = getValueAt(hostLocation, units, before1,
+                before2);
 
             // put the locations into fixes, so we can do fix interpolation (with time)
-            Fix beforeFix =
-                new Fix(new HiResDate(beforeTime), beforeLoc, 0d, 0d);
+            Fix beforeFix = new Fix(new HiResDate(beforeTime), beforeLoc, 0d,
+                0d);
             FixWrapper before = new FixWrapper(beforeFix);
 
             Fix afterFix = new Fix(new HiResDate(afterTime), afterLoc, 0d, 0d);
@@ -1599,11 +1589,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
       double rangeM = Math.sqrt(Math.pow(val1, 2) + Math.pow(val2, 2));
       double angleRads = Math.atan2(val1, val2);
 
-      res =
-          hostLocation
-              .add(new WorldVector(angleRads, new WorldDistance(rangeM,
-                  WorldDistance.METRES), new WorldDistance(0,
-                  WorldDistance.METRES)));
+      res = hostLocation.add(new WorldVector(angleRads, new WorldDistance(
+          rangeM, WorldDistance.METRES), new WorldDistance(0,
+              WorldDistance.METRES)));
 
     }
     else

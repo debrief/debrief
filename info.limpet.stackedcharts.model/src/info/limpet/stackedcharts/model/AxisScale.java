@@ -15,7 +15,7 @@ import org.eclipse.emf.common.util.Enumerator;
  * 
  * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAxisScale()
  * @model
- * @generated
+ * 
  */
 public enum AxisScale implements Enumerator
 {
@@ -23,7 +23,7 @@ public enum AxisScale implements Enumerator
    * The '<em><b>Linear</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #LINEAR_VALUE
-   * @generated
+   * 
    * @ordered
    */
   LINEAR(0, "Linear", "Linear"),
@@ -32,7 +32,7 @@ public enum AxisScale implements Enumerator
    * The '<em><b>Log</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #LOG_VALUE
-   * @generated
+   * 
    * @ordered
    */
   LOG(0, "Log", "Log");
@@ -47,7 +47,7 @@ public enum AxisScale implements Enumerator
    * 
    * @see #LINEAR
    * @model name="Linear"
-   * @generated
+   * 
    * @ordered
    */
   public static final int LINEAR_VALUE = 0;
@@ -62,7 +62,7 @@ public enum AxisScale implements Enumerator
    * 
    * @see #LOG
    * @model name="Log"
-   * @generated
+   * 
    * @ordered
    */
   public static final int LOG_VALUE = 0;
@@ -71,7 +71,7 @@ public enum AxisScale implements Enumerator
    * An array of all the '<em><b>Axis Scale</b></em>' enumerators. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    * 
-   * @generated
+   * 
    */
   private static final AxisScale[] VALUES_ARRAY = new AxisScale[]
   {LINEAR, LOG,};
@@ -80,7 +80,7 @@ public enum AxisScale implements Enumerator
    * A public read-only list of all the '<em><b>Axis Scale</b></em>' enumerators. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   public static final List<AxisScale> VALUES = Collections.unmodifiableList(
       Arrays.asList(VALUES_ARRAY));
@@ -92,7 +92,7 @@ public enum AxisScale implements Enumerator
    * @param literal
    *          the literal.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
+   * 
    */
   public static AxisScale get(String literal)
   {
@@ -114,7 +114,7 @@ public enum AxisScale implements Enumerator
    * @param name
    *          the name.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
+   * 
    */
   public static AxisScale getByName(String name)
   {
@@ -136,14 +136,14 @@ public enum AxisScale implements Enumerator
    * @param value
    *          the integer value.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
+   * 
    */
   public static AxisScale get(int value)
   {
     switch (value)
     {
-    case LINEAR_VALUE:
-      return LINEAR;
+      case LINEAR_VALUE:
+        return LINEAR;
     }
     return null;
   }
@@ -151,28 +151,28 @@ public enum AxisScale implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   private final int value;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   private final String name;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   private final String literal;
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   private AxisScale(int value, String name, String literal)
   {
@@ -184,7 +184,7 @@ public enum AxisScale implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   public int getValue()
   {
@@ -194,7 +194,7 @@ public enum AxisScale implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   public String getName()
   {
@@ -204,7 +204,7 @@ public enum AxisScale implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   public String getLiteral()
   {
@@ -215,7 +215,7 @@ public enum AxisScale implements Enumerator
    * Returns the literal value of the enumerator, which is its string representation. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
+   * 
    */
   @Override
   public String toString()

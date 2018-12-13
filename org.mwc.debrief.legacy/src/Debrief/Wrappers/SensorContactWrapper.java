@@ -746,7 +746,7 @@ public final class SensorContactWrapper extends
    *
    * @param trackName
    * @param dtg
-   * @param rangeYds
+   * @param range
    * @param bearingDegs
    * @param origin
    * @param color
@@ -1061,7 +1061,7 @@ public final class SensorContactWrapper extends
   /**
    * return the coordinates of the end of hte line
    *
-   * @param dest
+   * @param outerEnvelope
    */
   final public WorldLocation getFarEnd(final WorldArea outerEnvelope)
   {

@@ -499,7 +499,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     /**
      * create an instance of this operation
      * 
-     * @param keepPort
+     * @param splitBefore
      *          whether to keep the port removal
      * @param title
      *          what to call ourselves

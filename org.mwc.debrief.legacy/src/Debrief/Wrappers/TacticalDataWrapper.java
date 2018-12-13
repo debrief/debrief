@@ -69,10 +69,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     private final java.util.Iterator<Editable> _val;
 
     /**
-     * <init>
+     * IteratorWrapper
      * 
      * @param iterator
-     *          parameter for <init>
+     *          parameter for IteratorWrapper
      */
     public IteratorWrapper(final java.util.Iterator<Editable> iterator)
     {
@@ -501,7 +501,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
    * 
    * @param theVal
    *          the step interval to use
-   * @param theStartTime
+   * @param startTime
    *          the start time (micros), to control where the resamples fall ('on the minute')
    */
   public void decimate(final HiResDate theVal, final long startTime)

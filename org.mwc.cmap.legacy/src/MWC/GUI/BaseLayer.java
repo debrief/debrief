@@ -546,7 +546,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 
   /** find the named object in this layer
    * 
-   * @param theTrackName
+   * @param subject
    * @return
    */
   public Editable find(final String subject)

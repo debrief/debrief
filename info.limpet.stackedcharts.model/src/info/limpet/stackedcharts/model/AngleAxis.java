@@ -68,7 +68,6 @@ public interface AngleAxis extends NumberAxis
    * @see #setMaxVal(double)
    * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAngleAxis_MaxVal()
    * @model default="0.0" dataType="org.eclipse.emf.ecore.xml.type.Double"
-   * @generated
    */
   double getMaxVal();
 
@@ -79,7 +78,6 @@ public interface AngleAxis extends NumberAxis
    * @param value
    *          the new value of the '<em>Max Val</em>' attribute.
    * @see #getMaxVal()
-   * @generated
    */
   void setMaxVal(double value);
 
@@ -92,7 +90,6 @@ public interface AngleAxis extends NumberAxis
    * @see #setMidOrigin(boolean)
    * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAngleAxis_MidOrigin()
    * @model dataType="org.eclipse.emf.ecore.xml.type.Boolean"
-   * @generated
    */
   boolean isMidOrigin();
 
@@ -103,7 +100,6 @@ public interface AngleAxis extends NumberAxis
    * @param value
    *          the new value of the '<em>Mid Origin</em>' attribute.
    * @see #isMidOrigin()
-   * @generated
    */
   void setMidOrigin(boolean value);
 

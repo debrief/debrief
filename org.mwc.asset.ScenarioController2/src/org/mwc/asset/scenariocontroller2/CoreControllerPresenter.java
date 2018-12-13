@@ -40,52 +40,6 @@ public abstract class CoreControllerPresenter
 	{
 		void filesDropped(String[] files);
 	}
-	
-	public static interface ScenarioDisplay
-	{
-		/**
-		 * make this view the selected view. We've just loaded some data, so tell
-		 * everybody we're alive
-		 */
-		void activate();
-
-		/**
-		 * specify handler for drop events
-		 * 
-		 * @param listener
-		 */
-		void addFileDropListener(FilesDroppedListener listener);
-
-		/**
-		 * this is a relative path, produce an absolute path to a relative location
-		 * in the project directory
-		 * 
-		 * @param tgtDir
-		 *          relative path
-		 * @return absolute path
-		 */
-		File getProjectPathFor(File tgtDir);
-
-		/**
-		 * the project folder may have been updated, refresh what's shown
-		 * 
-		 */
-		void refreshWorkspace();
-
-		/**
-		 * display the control file name
-		 * 
-		 * @param name
-		 */
-		void setControlName(String name);
-
-		/**
-		 * display the scenario name
-		 * 
-		 * @param name
-		 */
-		void setScenarioName(String name);
-	}
 
 	protected String getFirstNodeName(final String SourceXMLFilePath) throws Exception
 	{

@@ -24,7 +24,6 @@ public enum AxisDirection implements Enumerator
    * The '<em><b>Ascending</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #ASCENDING_VALUE
-   * @generated
    * @ordered
    */
   ASCENDING(0, "Ascending", "Ascending"),
@@ -33,7 +32,6 @@ public enum AxisDirection implements Enumerator
    * The '<em><b>Descending</b></em>' literal object. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
    * @see #DESCENDING_VALUE
-   * @generated
    * @ordered
    */
   DESCENDING(0, "Descending", "Descending");
@@ -48,7 +46,6 @@ public enum AxisDirection implements Enumerator
    * 
    * @see #ASCENDING
    * @model name="Ascending"
-   * @generated
    * @ordered
    */
   public static final int ASCENDING_VALUE = 0;
@@ -62,8 +59,6 @@ public enum AxisDirection implements Enumerator
    * <!-- end-user-doc -->
    * 
    * @see #DESCENDING
-   * @model name="Descending"
-   * @generated
    * @ordered
    */
   public static final int DESCENDING_VALUE = 0;
@@ -72,7 +67,6 @@ public enum AxisDirection implements Enumerator
    * An array of all the '<em><b>Axis Direction</b></em>' enumerators. <!-- begin-user-doc --> <!--
    * end-user-doc -->
    * 
-   * @generated
    */
   private static final AxisDirection[] VALUES_ARRAY = new AxisDirection[]
   {ASCENDING, DESCENDING,};
@@ -81,7 +75,6 @@ public enum AxisDirection implements Enumerator
    * A public read-only list of all the '<em><b>Axis Direction</b></em>' enumerators. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   public static final List<AxisDirection> VALUES = Collections.unmodifiableList(
       Arrays.asList(VALUES_ARRAY));
@@ -93,7 +86,6 @@ public enum AxisDirection implements Enumerator
    * @param literal
    *          the literal.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
    */
   public static AxisDirection get(String literal)
   {
@@ -115,7 +107,6 @@ public enum AxisDirection implements Enumerator
    * @param name
    *          the name.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
    */
   public static AxisDirection getByName(String name)
   {
@@ -137,7 +128,6 @@ public enum AxisDirection implements Enumerator
    * @param value
    *          the integer value.
    * @return the matching enumerator or <code>null</code>.
-   * @generated
    */
   public static AxisDirection get(int value)
   {
@@ -152,28 +142,24 @@ public enum AxisDirection implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   private final int value;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   private final String name;
 
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   private final String literal;
 
   /**
    * Only this class can construct instances. <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   private AxisDirection(int value, String name, String literal)
   {
@@ -185,7 +171,6 @@ public enum AxisDirection implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   public int getValue()
   {
@@ -195,7 +180,6 @@ public enum AxisDirection implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   public String getName()
   {
@@ -205,7 +189,6 @@ public enum AxisDirection implements Enumerator
   /**
    * <!-- begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   public String getLiteral()
   {
@@ -216,7 +199,6 @@ public enum AxisDirection implements Enumerator
    * Returns the literal value of the enumerator, which is its string representation. <!--
    * begin-user-doc --> <!-- end-user-doc -->
    * 
-   * @generated
    */
   @Override
   public String toString()

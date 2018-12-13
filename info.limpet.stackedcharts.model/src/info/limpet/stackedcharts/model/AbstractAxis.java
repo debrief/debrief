@@ -166,7 +166,6 @@ public interface AbstractAxis extends EObject
    * @param value
    *          the new value of the '<em>Font</em>' attribute.
    * @see #getFont()
-   * @generated
    */
   void setFont(String value);
 
@@ -193,7 +192,6 @@ public interface AbstractAxis extends EObject
    * @param value
    *          the new value of the '<em>Color</em>' attribute.
    * @see #getColor()
-   * @generated
    */
   void setColor(Color value);
 
@@ -209,8 +207,6 @@ public interface AbstractAxis extends EObject
    * @return the value of the '<em>Axis Type</em>' containment reference.
    * @see #setAxisType(AxisType)
    * @see info.limpet.stackedcharts.model.StackedchartsPackage#getAbstractAxis_AxisType()
-   * @model containment="true"
-   * @generated
    */
   AxisType getAxisType();
 
@@ -221,7 +217,6 @@ public interface AbstractAxis extends EObject
    * @param value
    *          the new value of the '<em>Axis Type</em>' containment reference.
    * @see #getAxisType()
-   * @generated
    */
   void setAxisType(AxisType value);
 

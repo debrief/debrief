@@ -18,7 +18,7 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 
 /**
- * @author Ayesha <ayesha.ma@gmail.com>
+ * @author Ayesha ayesha.ma@gmail.com
  *
  */
 public interface IDynamicShapeWrapper extends Plottable
