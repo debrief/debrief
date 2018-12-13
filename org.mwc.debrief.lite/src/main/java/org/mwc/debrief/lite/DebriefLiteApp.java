@@ -281,7 +281,7 @@ public class DebriefLiteApp implements FileDropListener{
         theFrame.setIconImage(myIcon.getImage());
     }
     // create the components
-    theToolbar = new MWC.GUI.Tools.Swing.SwingToolbar(Toolbar.HORIZONTAL,
+    theToolbar = new SwingToolbar(Toolbar.HORIZONTAL,
         "Application", null);
     addTools(theToolbar);
 
@@ -324,7 +324,7 @@ public class DebriefLiteApp implements FileDropListener{
     //drawLine1();
   }
 
-  private void paintTest(Graphics g, GeoToolMapProjection projection) {
+  private void paintTest(final GeoToolMapProjection projection) {
 
     // 60N 30W to 10N 10W
     WorldLocation loc1 = new WorldLocation(50d, 40d, 0);
@@ -508,7 +508,7 @@ public class DebriefLiteApp implements FileDropListener{
     }
 
     // first approach
-    paintTest(g, projection);
+    paintTest(projection);
   }
   /**
    * @param filename
