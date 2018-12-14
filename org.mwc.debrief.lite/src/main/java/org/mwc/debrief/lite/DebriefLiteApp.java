@@ -19,11 +19,15 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.MenuShortcut;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -49,10 +53,15 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 
+import Debrief.GUI.Frames.Application;
+import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Tool;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
@@ -120,6 +129,121 @@ public class DebriefLiteApp implements FileDropListener
 
   private final GeoToolMapProjection projection;
 
+  private final Clipboard _theClipboard = new Clipboard("Debrief");
+  private LiteSession session;
+  private LiteApplication app;
+
+  private static class LiteSession extends Session
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public LiteSession(Clipboard clipboard, Layers layers)
+    {
+      super(clipboard, layers);
+    }
+
+    @Override
+    protected boolean wantsToClose()
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public void closeGUI()
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public void repaint()
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public void initialiseForm(ToolParent theParent)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+  }
+
+  private static class LiteApplication extends Application
+  {
+
+    private Session _session;
+
+    public LiteApplication(final Session session)
+    {
+      _session = session;
+    }
+
+    @Override
+    public void logStack(int status, String text)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public Session createSession()
+    {
+      return _session;
+    }
+
+    @Override
+    public Session getCurrentSession()
+    {
+      return _session;
+    }
+
+    @Override
+    protected void setTitleName(String theStr)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    protected void addMenuItem(String theMenu, String theLabel, Tool theTool,
+        MenuShortcut theShortCut)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    protected void addMenuSeparator(String theMenu)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    protected void showSession(Session theSession)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    protected void closeSessionGUI(Session theSession)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public void setCursor(int theCursor)
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+    @Override
+    public void restoreCursor()
+    {
+      throw new IllegalArgumentException("Not implemented");
+    }
+
+  }
+
   public DebriefLiteApp()
   {
 
@@ -143,10 +267,14 @@ public class DebriefLiteApp implements FileDropListener
     ImportReplay.initialise(new DebriefLiteToolParent(
         ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
-    // add the XML importer
-    // ImportManager.addImporter(
-    // new DebriefXMLReaderWriter(this));
-    DataListener dListener = new DataListener() {
+    session = new LiteSession(_theClipboard, _theLayers);
+    app = new LiteApplication(session);
+
+    ImportManager.addImporter(new DebriefXMLReaderWriter(app));
+    
+    
+    DataListener dListener = new DataListener()
+    {
 
       @Override
       public void dataExtended(Layers theData)
@@ -164,11 +292,12 @@ public class DebriefLiteApp implements FileDropListener
       public void dataReformatted(Layers theData, Layer changedLayer)
       {
         repaint();
-      }};
+      }
+    };
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-    
+
     try
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -183,7 +312,7 @@ public class DebriefLiteApp implements FileDropListener
 
     initForm();
     createAppPanels();
-    _dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF");
+    _dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -337,7 +466,31 @@ public class DebriefLiteApp implements FileDropListener
       while (iter.hasMoreElements())
       {
         final File file = iter.nextElement();
-        openFile(file);
+        
+        final String suff = suffixOf(file.getName());
+        if (suff.equalsIgnoreCase(".DPL"))
+        {
+          MWC.GUI.Dialogs.DialogFactory.showMessage("Open File",
+              "Sorry DPL file format no longer supported");
+        }
+        else
+        {
+          if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+              || (suff.equalsIgnoreCase(".DTF")))
+          {
+            // fake wrap it
+            File[] fList = new File[] {file};
+            handleImportRep(fList);
+          }
+          else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF"))
+          {
+            handleImportDPF(file);
+          }
+          else
+          {
+            Trace.trace("This file type not handled:" + suff);
+          }
+        }
       }
 
     }
@@ -349,8 +502,8 @@ public class DebriefLiteApp implements FileDropListener
     restoreCursor();
 
   }
-
-  private void handleImport(final File[] fList)
+  
+  private void handleImportRep(final File[] fList)
   {
     BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
@@ -381,6 +534,21 @@ public class DebriefLiteApp implements FileDropListener
     }
     System.out.println("num layers:" + _theLayers.size());
     caller = null;
+  }
+
+  private void handleImportDPF(final File file)
+  {
+      DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
+      try
+      {
+        reader.importThis(file.getName(), new FileInputStream(file), session);
+      }
+      catch (FileNotFoundException e)
+      {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    _theLayers.fireModified(null);
   }
 
   /**
@@ -428,44 +596,6 @@ public class DebriefLiteApp implements FileDropListener
 
     // do any final re-arranging
     theFrame.doLayout();
-  }
-
-  /**
-   * @param theFile
-   *          the file to open
-   */
-  public final void openFile(final File theFile)
-  {
-    // indicate that we are busy
-    this.setCursor(Cursor.WAIT_CURSOR);
-
-    // wrap the single file into a list
-    final File[] fList = new File[]
-    {theFile};
-
-    final String suff = suffixOf(theFile.getName());
-    if (suff.equalsIgnoreCase(".DPL"))
-    {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open File",
-          "Sorry DPL file format no longer supported");
-    }
-    else
-    {
-      if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
-          || (suff.equalsIgnoreCase(".DTF")))
-      {
-        handleImport(fList);
-      }
-      else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF"))
-      {
-        handleImport(fList);
-      }
-      else
-      {
-        Trace.trace("This file type not handled:" + suff);
-      }
-    }
-
   }
 
   public final void restoreCursor()
