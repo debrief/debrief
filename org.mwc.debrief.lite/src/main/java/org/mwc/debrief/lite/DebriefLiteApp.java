@@ -137,10 +137,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void paint(final Graphics gc)
       {
-        final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
-        dest.startDraw(gc);
-        _theLayers.paint(dest);
-        dest.endDraw(gc);
+        doPaint(gc);
       }
     });
 
@@ -173,6 +170,15 @@ public class DebriefLiteApp implements FileDropListener
     /// start application
     startDebriefLiteApplication();
 
+  }
+
+  protected void doPaint(Graphics gc)
+  {
+    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
+    dest.setLineWidth(2f);
+    dest.startDraw(gc);
+    _theLayers.paint(dest);
+    dest.endDraw(gc);
   }
 
   private void addMenus()
