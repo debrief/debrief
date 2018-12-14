@@ -121,19 +121,12 @@ public class DebriefLiteApp implements FileDropListener{
       @Override
       public void paint(final Graphics gc)
       {
-        gc.setColor(Color.red);
-        gc.drawLine(20,  40,  120, (int) (Math.random() * 150));
-        
-     //   Graphics g = geoMapRenderer.getGraphicsContext();
         CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
         dest.startDraw(gc);
         _theLayers.paint(dest);
-
         dest.endDraw(gc);
       }
     });
-    
-    
     
     // provide some file helpers
     ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
