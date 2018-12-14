@@ -14,11 +14,12 @@
  */
 package org.mwc.debrief.lite.map;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -56,7 +57,14 @@ import MWC.GUI.Tools.Swing.SwingToolbar;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer extends MapRenderer {
+public class GeoToolMapRenderer implements BaseMap {
+
+  protected JSplitPane splitPane;
+  
+  protected JSplitPane getPane() {
+    return splitPane;
+  }
+  
 
 	private JMapPane mapPane;
 	private MapContent mapComponent;
@@ -65,13 +73,9 @@ public class GeoToolMapRenderer extends MapRenderer {
 
 	private SimpleFeatureSource featureSource;
 
-	private boolean goingToDraw;
+  private List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-	private int x1;
-	private int y1;
-	private int x2;
-	private int y2;
-
+  
 	@Override
 	public void addMapTool(final SwingToolbar theToolbar) {
 
@@ -113,6 +117,24 @@ public class GeoToolMapRenderer extends MapRenderer {
 		theToolbar.add(btn);
 	}
 
+	public static interface MapRenderer
+	{
+	  public void paint(final Graphics gc);
+	}
+	
+	public void addRenderer(MapRenderer renderer)
+	{
+	  _myRenderers.add(renderer);
+	}
+	
+	private void paintEvent(Graphics arg0)
+	{
+	  for(MapRenderer r: _myRenderers)
+	  {
+	    r.paint(arg0);
+	  }
+	}
+
 	@Override
 	public void createMapLayout() {
 		mapPane = new JMapPane() {
@@ -125,20 +147,13 @@ public class GeoToolMapRenderer extends MapRenderer {
       @Override
 			protected void paintComponent(Graphics arg0) {
 				super.paintComponent(arg0);
-
-				if (graphics == null) {
-					graphics = arg0;
-				}
-
-				if (goingToDraw) {
-					arg0.setColor(Color.BLUE);
-					arg0.drawLine(x1, y1, x2, y2);
-				}
-
+				
+				paintEvent(arg0);
 			}
 		};
 
-		mapPane.setRenderer(new StreamingRenderer());
+		StreamingRenderer streamer = new StreamingRenderer();
+		mapPane.setRenderer(streamer);
 		mapPane.setMapContent(mapComponent);
 
 		final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
@@ -214,14 +229,4 @@ public class GeoToolMapRenderer extends MapRenderer {
 		}
 		return transform;
 	}
-
-	public void drawLine(int x1, int y1, int x2, int y2) {
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
-
-		goingToDraw = true;
-	}
-
 }

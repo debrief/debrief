@@ -1,6 +1,8 @@
 package org.mwc.debrief.lite.gui;
 
+import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 import org.geotools.geometry.DirectPosition2D;
@@ -40,12 +42,19 @@ public class GeoToolMapProjection extends PlainProjection
     return _layers.getBounds();
   }
 
+  @Override
+  public Dimension getScreenArea()
+  {
+    Rectangle rect = _view.getScreenArea();
+    return new Dimension((int)rect.getWidth(), (int)rect.getHeight());
+  }
+  
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
     super("GeoTools Map");
     _view = map.getViewport();
     _layers = data;
-
+    
     // initialise our working data stores
     _workDegs = new DirectPosition2D();
     _workMetres = new DirectPosition2D();

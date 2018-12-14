@@ -24,7 +24,7 @@ import MWC.GUI.Tools.Swing.SwingToolbar;
 
 public class MapBuilder {
 
-	private MapRenderer mapRenderer;
+	private GeoToolMapRenderer mapRenderer;
 	
 	/** enable map tool bar **/
 	@SuppressWarnings("unused")
@@ -39,7 +39,7 @@ public class MapBuilder {
 	 * @param renderer
 	 * @return
 	 */
-	public MapBuilder setMapRenderer(MapRenderer mapRenderer) {
+	public MapBuilder setMapRenderer(GeoToolMapRenderer mapRenderer) {
 		this.mapRenderer = mapRenderer;
 		
 		return this;

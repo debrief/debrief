@@ -20,7 +20,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -44,39 +43,24 @@ import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.geotools.feature.DefaultFeatureCollection;
-import org.geotools.feature.simple.SimpleFeatureBuilder;
-import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
-import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.geotools.map.FeatureLayer;
 import org.geotools.map.MapContent;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
-import org.geotools.styling.SLD;
-import org.geotools.styling.Style;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
-import org.opengis.feature.simple.SimpleFeature;
-import org.opengis.feature.simple.SimpleFeatureType;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GUI.Canvas.Swing.SwingCanvas;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Tools.Swing.SwingToolbar;
-import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
@@ -90,7 +74,7 @@ public class DebriefLiteApp implements FileDropListener{
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
-  private static MapContent mapComponent;
+  private MapContent mapComponent;
   protected final FileDropSupport _dropSupport = new FileDropSupport();
 
   private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
@@ -118,16 +102,45 @@ public class DebriefLiteApp implements FileDropListener{
   private SwingToolbar theToolbar;
 
   private final GeoToolMapRenderer geoMapRenderer;
+  private JScrollPane mapPane;
 
+  private GeoToolMapProjection projection;
+  
   public DebriefLiteApp() {
 
     geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     mapComponent = geoMapRenderer.getMapComponent();
+    
+    projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
+    
+    geoMapRenderer.addRenderer(new MapRenderer()
+    {
+      
+      @Override
+      public void paint(final Graphics gc)
+      {
+        gc.setColor(Color.red);
+        gc.drawLine(20,  40,  120, (int) (Math.random() * 150));
+        
+     //   Graphics g = geoMapRenderer.getGraphicsContext();
+        CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
+        dest.startDraw(gc);
+        _theLayers.paint(dest);
+
+        dest.endDraw(gc);
+      }
+    });
+    
+    
+    
     // provide some file helpers
     ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
+    // add the XML importer
+ //   ImportManager.addImporter(
+   //     new DebriefXMLReaderWriter(this));
 
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -245,9 +258,10 @@ public class DebriefLiteApp implements FileDropListener{
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    JScrollPane mapPane = builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
+    mapPane = builder.setMapRenderer(geoMapRenderer).enableToolbar(true)
         .setToolbar(theToolbar).build();
     _dropSupport.addComponent(mapPane);
+    
     return mapPane;
   }
 
@@ -324,57 +338,6 @@ public class DebriefLiteApp implements FileDropListener{
   }
 
   private void startDebriefLiteApplication() {
-
-
-    // second approach
-    //drawLine1();
-  }
-
-  private void paintTest(final GeoToolMapProjection projection) {
-
-    // 60N 30W to 10N 10W
-    WorldLocation loc1 = new WorldLocation(50d, 40d, 0);
-    WorldLocation loc2 = new WorldLocation(10d, 10d, 0);
-
-    Point p1 = projection.toScreen(loc1);
-    Point p2 = projection.toScreen(loc2);
-
-
-    System.out.println(projection.toWorld(p1));
-
-    geoMapRenderer.drawLine((int) p1.getX(), (int) p1.getY(), (int) p2.getX(), (int) p2.getY());
-    theFrame.repaint();
-  }
-
-  public void drawLine1() {
-
-    SimpleFeatureTypeBuilder b = new SimpleFeatureTypeBuilder();
-    b.setName("myFeatureType");
-    b.setCRS(DefaultGeographicCRS.WGS84);
-    b.add("location", com.vividsolutions.jts.geom.LineString.class);
-
-    final SimpleFeatureType type = b.buildFeatureType();
-    SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(type);
-    com.vividsolutions.jts.geom.GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-
-    Coordinate[] coords = new Coordinate[2];
-    coords[0] = new Coordinate(60, 30);
-    coords[1] = new Coordinate(10, 10);
-
-    com.vividsolutions.jts.geom.LineString lineString = geometryFactory.createLineString(coords);
-    featureBuilder.add(lineString);
-
-    SimpleFeature feature = featureBuilder.buildFeature("feature1");
-    /////////// create feature collection
-    DefaultFeatureCollection featureCollection = new DefaultFeatureCollection("internal", type);
-    featureCollection.add(feature);
-
-    float lineWidth = 2.0f;
-    Style lineStyle = SLD.createLineStyle(Color.red, lineWidth);
-    org.geotools.map.Layer layer = new FeatureLayer(featureCollection, lineStyle);
-
-    mapComponent.addLayer(layer);
-    theFrame.repaint();
   }
 
   @Override
@@ -484,22 +447,6 @@ public class DebriefLiteApp implements FileDropListener{
       JOptionPane.showMessageDialog(theFrame, "Total Number of records Read from "+ fileName +" file " + cnt);
     }
 
-    //// now start plotting the tracks
-
-    final int len = _theLayers.size();
-    CanvasType dest = new SwingCanvas();
-    GeoToolMapProjection projection = new GeoToolMapProjection(mapComponent, _theLayers);
-    Graphics g = geoMapRenderer.getGraphicsContext();
-    CanvasAdaptor adaptor = new CanvasAdaptor(projection, g);
-    dest.setProjection(projection);
-    dest.startDraw(g);
-    for (int i = 0; i < len; i++) {
-      final Layer thisLayer = _theLayers.elementAt(i);
-      thisLayer.paint(adaptor);
-    }
-
-    // first approach
-    paintTest(projection);
   }
   /**
    * @param filename
