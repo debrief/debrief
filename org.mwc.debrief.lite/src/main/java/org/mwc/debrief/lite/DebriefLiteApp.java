@@ -35,7 +35,6 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -51,10 +50,9 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
@@ -148,7 +146,29 @@ public class DebriefLiteApp implements FileDropListener
     // add the XML importer
     // ImportManager.addImporter(
     // new DebriefXMLReaderWriter(this));
+    DataListener dListener = new DataListener() {
 
+      @Override
+      public void dataExtended(Layers theData)
+      {
+        repaint();
+      }
+
+      @Override
+      public void dataModified(Layers theData, Layer changedLayer)
+      {
+        repaint();
+      }
+
+      @Override
+      public void dataReformatted(Layers theData, Layer changedLayer)
+      {
+        repaint();
+      }};
+    _theLayers.addDataReformattedListener(dListener);
+    _theLayers.addDataExtendedListener(dListener);
+    _theLayers.addDataModifiedListener(dListener);
+    
     try
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -167,9 +187,11 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
-    /// start application
-    startDebriefLiteApplication();
+  }
 
+  protected void repaint()
+  {
+    mapPane.repaint();
   }
 
   protected void doPaint(Graphics gc)
@@ -358,7 +380,6 @@ public class DebriefLiteApp implements FileDropListener
     {
     }
     System.out.println("num layers:" + _theLayers.size());
-    tesTLoadedFile(_theLayers, fList[0].getName());
     caller = null;
   }
 
@@ -462,28 +483,4 @@ public class DebriefLiteApp implements FileDropListener
     statusBar.setText(message);
   }
 
-  private void startDebriefLiteApplication()
-  {
-  }
-
-  // this will be removed when we have the plotting working
-  private void tesTLoadedFile(final Layers _theLayers, final String fileName)
-  {
-    final TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
-    if (track != null)
-    {
-      final Enumeration<Editable> enumerations = track.getPositionIterator();
-      int cnt = 0;
-      while (enumerations.hasMoreElements())
-      {
-        @SuppressWarnings("unused")
-        final FixWrapper fix = (FixWrapper) enumerations.nextElement();
-        cnt++;
-      }
-
-      JOptionPane.showMessageDialog(theFrame,
-          "Total Number of records Read from " + fileName + " file " + cnt);
-    }
-
-  }
 }
