@@ -111,6 +111,9 @@ public class DebriefLiteApp implements FileDropListener{
   private JLabel statusBar;
   private JLabel _notesIconLabel;
   private boolean notesPaneExpanded = false;
+  
+  final private Layers _theLayers = new Layers();
+
 
   private SwingToolbar theToolbar;
 
@@ -121,6 +124,10 @@ public class DebriefLiteApp implements FileDropListener{
     geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     mapComponent = geoMapRenderer.getMapComponent();
+
+    // provide some file helpers
+    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+    ImportManager.addImporter(new ImportReplay());
 
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -402,10 +409,6 @@ public class DebriefLiteApp implements FileDropListener{
     // indicate that we are busy
     this.setCursor(Cursor.WAIT_CURSOR);
 
-    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
-
-    ImportManager.addImporter(new ImportReplay());
-
     // wrap the single file into a list
     final File[] fList = new File[]
         {theFile};
@@ -421,14 +424,10 @@ public class DebriefLiteApp implements FileDropListener{
       if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
           || (suff.equalsIgnoreCase(".DTF")))
       {
-        
-
         handleImport(fList);
-
       }
       else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(".DPF"))
       {
-
         handleImport(fList);
       }
       else
@@ -440,7 +439,6 @@ public class DebriefLiteApp implements FileDropListener{
 
   }
   private void handleImport(final File[] fList) {
-    Layers _theLayers = new Layers();
     BaseImportCaller caller =
         new BaseImportCaller(
             fList, _theLayers)
@@ -457,7 +455,6 @@ public class DebriefLiteApp implements FileDropListener{
       {
         System.out.println("Finished reading all files");
         restoreCursor();
-
       }
     };
 
@@ -469,9 +466,6 @@ public class DebriefLiteApp implements FileDropListener{
     System.out.println("num layers:" + _theLayers.size());
     tesTLoadedFile(_theLayers,fList[0].getName());
     caller = null;
-
-    // forget the reference
-    _theLayers = null;
   }
   
   //this will be removed when we have the plotting working

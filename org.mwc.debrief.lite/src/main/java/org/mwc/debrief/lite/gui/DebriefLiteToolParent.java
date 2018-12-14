@@ -11,12 +11,10 @@ public class DebriefLiteToolParent implements ToolParent, ProvidesModeSelector
 {
 
   private final ImportSettings settings;
-  private final Long freq;
 
-  public DebriefLiteToolParent(final String mode, final Long freq)
+  public DebriefLiteToolParent(final String mode, final long freq)
   {
     settings = new ImportSettings(mode, freq);
-    this.freq = freq;
   }
 
   @Override
