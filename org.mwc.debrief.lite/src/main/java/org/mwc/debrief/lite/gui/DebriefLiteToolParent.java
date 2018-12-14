@@ -18,52 +18,18 @@ public class DebriefLiteToolParent implements ToolParent, ProvidesModeSelector
   }
 
   @Override
-  public void logError(int status, String text, Exception e)
+  public void addActionToBuffer(final Action theAction)
   {
-
   }
 
   @Override
-  public void logError(int status, String text, Exception e, boolean revealLog)
-  {
-
-  }
-
-  @Override
-  public void logStack(int status, String text)
-  {
-
-  }
-
-  @Override
-  public Long getSelectedImportFrequency(String trackName)
+  public Map<String, String> getPropertiesLike(final String pattern)
   {
     return null;
   }
 
   @Override
-  public ImportSettings getSelectedImportMode(String trackName)
-  {
-    return settings;
-  }
-
-  @Override
-  public void setCursor(int theCursor)
-  {
-  }
-
-  @Override
-  public void restoreCursor()
-  {
-  }
-
-  @Override
-  public void addActionToBuffer(Action theAction)
-  {
-  }
-
-  @Override
-  public String getProperty(String name)
+  public String getProperty(final String name)
   {
     if (name.equals(ImportReplay.TRACK_IMPORT_MODE))
     {
@@ -80,13 +46,48 @@ public class DebriefLiteToolParent implements ToolParent, ProvidesModeSelector
   }
 
   @Override
-  public Map<String, String> getPropertiesLike(String pattern)
+  public Long getSelectedImportFrequency(final String trackName)
   {
     return null;
   }
 
   @Override
-  public void setProperty(String name, String value)
+  public ImportSettings getSelectedImportMode(final String trackName)
+  {
+    return settings;
+  }
+
+  @Override
+  public void logError(final int status, final String text, final Exception e)
+  {
+
+  }
+
+  @Override
+  public void logError(final int status, final String text, final Exception e,
+      final boolean revealLog)
+  {
+
+  }
+
+  @Override
+  public void logStack(final int status, final String text)
+  {
+
+  }
+
+  @Override
+  public void restoreCursor()
+  {
+  }
+
+  @Override
+  public void setCursor(final int theCursor)
+  {
+  }
+
+  @Override
+  public void setProperty(final String name, final String value)
   {
 
   }

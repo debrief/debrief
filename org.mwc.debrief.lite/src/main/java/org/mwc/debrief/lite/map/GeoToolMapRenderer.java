@@ -57,176 +57,194 @@ import MWC.GUI.Tools.Swing.SwingToolbar;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer implements BaseMap {
+public class GeoToolMapRenderer implements BaseMap
+{
+
+  public static interface MapRenderer
+  {
+    public void paint(final Graphics gc);
+  }
 
   protected JSplitPane splitPane;
-  
-  protected JSplitPane getPane() {
-    return splitPane;
+
+  private JMapPane mapPane;
+  private MapContent mapComponent;
+
+  private Graphics graphics;
+
+  private SimpleFeatureSource featureSource;
+
+  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+
+  @Override
+  public void addMapTool(final SwingToolbar theToolbar)
+  {
+
+    JButton btn;
+    final ButtonGroup cursorToolGrp = new ButtonGroup();
+
+    // mapPane.addMouseListener(new ScrollWheelTool(mapPane));
+
+    ///// no action
+    btn = new JButton(new NoToolAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
+
+    ////// zoom in
+    btn = new JButton(new ZoomInAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
+
+    ////// zoom out
+    btn = new JButton(new ZoomOutAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
+
+    theToolbar.addSeparator();
+
+    //// pan action
+    btn = new JButton(new PanAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
+
+    //// info action
+    btn = new JButton(new InfoAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
+
+    //// reset action
+    btn = new JButton(new ResetAction(mapPane));
+    cursorToolGrp.add(btn);
+    theToolbar.add(btn);
   }
-  
 
-	private JMapPane mapPane;
-	private MapContent mapComponent;
+  public void addRenderer(final MapRenderer renderer)
+  {
+    _myRenderers.add(renderer);
+  }
 
-	private Graphics graphics;
+  @Override
+  public void createMapLayout()
+  {
+    mapPane = new JMapPane()
+    {
 
-	private SimpleFeatureSource featureSource;
-
-  private List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
-
-  
-	@Override
-	public void addMapTool(final SwingToolbar theToolbar) {
-
-		JButton btn;
-		final ButtonGroup cursorToolGrp = new ButtonGroup();
-
-		// mapPane.addMouseListener(new ScrollWheelTool(mapPane));
-
-		///// no action
-		btn = new JButton(new NoToolAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		////// zoom in
-		btn = new JButton(new ZoomInAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		////// zoom out
-		btn = new JButton(new ZoomOutAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		theToolbar.addSeparator();
-
-		//// pan action
-		btn = new JButton(new PanAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		//// info action
-		btn = new JButton(new InfoAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		//// reset action
-		btn = new JButton(new ResetAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-	}
-
-	public static interface MapRenderer
-	{
-	  public void paint(final Graphics gc);
-	}
-	
-	public void addRenderer(MapRenderer renderer)
-	{
-	  _myRenderers.add(renderer);
-	}
-	
-	private void paintEvent(Graphics arg0)
-	{
-	  for(MapRenderer r: _myRenderers)
-	  {
-	    r.paint(arg0);
-	  }
-	}
-
-	@Override
-	public void createMapLayout() {
-		mapPane = new JMapPane() {
-
-			/**
-       * 
+      /**
+       *
        */
       private static final long serialVersionUID = 1L;
 
       @Override
-			protected void paintComponent(Graphics arg0) {
-				super.paintComponent(arg0);
-				
-				paintEvent(arg0);
-			}
-		};
+      protected void paintComponent(final Graphics arg0)
+      {
+        super.paintComponent(arg0);
 
-		StreamingRenderer streamer = new StreamingRenderer();
-		mapPane.setRenderer(streamer);
-		mapPane.setMapContent(mapComponent);
+        paintEvent(arg0);
+      }
+    };
 
-		final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
-		mapLayerTable.setVisible(false);
-		mapLayerTable.setPreferredSize(new Dimension(200, 400));
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, mapLayerTable, mapPane);
-	}
+    final StreamingRenderer streamer = new StreamingRenderer();
+    mapPane.setRenderer(streamer);
+    mapPane.setMapContent(mapComponent);
 
-	/**
-	 * return map component
-	 * 
-	 * @return
-	 */
-	public MapContent getMapComponent() {
-		return mapComponent;
-	}
+    final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
+    mapLayerTable.setVisible(false);
+    mapLayerTable.setPreferredSize(new Dimension(200, 400));
+    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false,
+        mapLayerTable, mapPane);
+  }
 
-	@Override
-	public void loadMapContent() {
-	  final String shape_path =
+  /**
+   * returns java.awt.Graphics object
+   * 
+   * @return
+   */
+  public Graphics getGraphicsContext()
+  {
+    return graphics;
+  }
+
+  /**
+   * return map component
+   * 
+   * @return
+   */
+  public MapContent getMapComponent()
+  {
+    return mapComponent;
+  }
+
+  protected JSplitPane getPane()
+  {
+    return splitPane;
+  }
+
+  /**
+   * gets a MathTransform object
+   * 
+   * @return MathTransform
+   */
+  public MathTransform getTransformObject()
+  {
+    final SimpleFeatureType schema = featureSource.getSchema();
+    final CoordinateReferenceSystem dataCRS = schema
+        .getCoordinateReferenceSystem();
+    final CoordinateReferenceSystem worldCRS = mapComponent
+        .getCoordinateReferenceSystem();
+    MathTransform transform = null;
+    try
+    {
+      transform = CRS.findMathTransform(dataCRS, worldCRS);
+    }
+    catch (final FactoryException e)
+    {
+      e.printStackTrace();
+    }
+    return transform;
+  }
+
+  @Override
+  public void loadMapContent()
+  {
+    final String shape_path =
         "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
-	  File file = new File(shape_path);
-	  if(!file.exists())
-	  {
-	    file = JFileDataStoreChooser.showOpenFile("shp", null);
-	  }
-		if (file == null) {
-			return;
-		}
+    File file = new File(shape_path);
+    if (!file.exists())
+    {
+      file = JFileDataStoreChooser.showOpenFile("shp", null);
+    }
+    if (file == null)
+    {
+      return;
+    }
 
-		FileDataStore store;
-		featureSource = null;
-		try {
-			store = FileDataStoreFinder.getDataStore(file);
-			featureSource = store.getFeatureSource();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+    FileDataStore store;
+    featureSource = null;
+    try
+    {
+      store = FileDataStoreFinder.getDataStore(file);
+      featureSource = store.getFeatureSource();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
 
-		// Create a map content and add our shape file to it
-		mapComponent = new MapContent();
-		mapComponent.setTitle("Debrief Lite");
+    // Create a map content and add our shape file to it
+    mapComponent = new MapContent();
+    mapComponent.setTitle("Debrief Lite");
 
-		final Style style = SLD.createSimpleStyle(featureSource.getSchema());
-		final Layer layer = new FeatureLayer(featureSource, style);
-		mapComponent.addLayer(layer);
+    final Style style = SLD.createSimpleStyle(featureSource.getSchema());
+    final Layer layer = new FeatureLayer(featureSource, style);
+    mapComponent.addLayer(layer);
 
-	}
+  }
 
-	/**
-	 * returns java.awt.Graphics object
-	 * 
-	 * @return
-	 */
-	public Graphics getGraphicsContext() {
-		return graphics;
-	}
-
-	/**
-	 * gets a MathTransform object
-	 * 
-	 * @return MathTransform
-	 */
-	public MathTransform getTransformObject() {
-		SimpleFeatureType schema = featureSource.getSchema();
-		CoordinateReferenceSystem dataCRS = (CoordinateReferenceSystem) schema.getCoordinateReferenceSystem();
-		CoordinateReferenceSystem worldCRS = (CoordinateReferenceSystem) mapComponent.getCoordinateReferenceSystem();
-		MathTransform transform = null;
-		try {
-			transform = CRS.findMathTransform(dataCRS, worldCRS);
-		} catch (FactoryException e) {
-			e.printStackTrace();
-		}
-		return transform;
-	}
+  private void paintEvent(final Graphics arg0)
+  {
+    for (final MapRenderer r : _myRenderers)
+    {
+      r.paint(arg0);
+    }
+  }
 }

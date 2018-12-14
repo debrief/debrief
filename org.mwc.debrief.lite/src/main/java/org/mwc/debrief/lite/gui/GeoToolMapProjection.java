@@ -18,6 +18,7 @@ import org.opengis.referencing.operation.TransformException;
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -26,35 +27,22 @@ public class GeoToolMapProjection extends PlainProjection
   private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj
   private static final String DATA_PROJECTION = "EPSG:4326";
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 3398817999418475368L;
   private MathTransform _degs2metres;
   private final MapViewport _view;
-  private DirectPosition2D _workDegs;
-  private DirectPosition2D _workMetres;
-  private DirectPosition2D _workScreen;
+  private final DirectPosition2D _workDegs;
+  private final DirectPosition2D _workMetres;
+  private final DirectPosition2D _workScreen;
   private final Layers _layers;
 
-  @Override
-  public WorldArea getVisibleDataArea()
-  {
-    return _layers.getBounds();
-  }
-
-  @Override
-  public Dimension getScreenArea()
-  {
-    Rectangle rect = _view.getScreenArea();
-    return new Dimension((int)rect.getWidth(), (int)rect.getHeight());
-  }
-  
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
     super("GeoTools Map");
     _view = map.getViewport();
     _layers = data;
-    
+
     // initialise our working data stores
     _workDegs = new DirectPosition2D();
     _workMetres = new DirectPosition2D();
@@ -64,21 +52,41 @@ public class GeoToolMapProjection extends PlainProjection
     // so that the chart will be displayed undistorted
     try
     {
-      CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
-      
+      final CoordinateReferenceSystem worldCoords = CRS.decode(
+          WORLD_PROJECTION);
+
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
       _degs2metres = CRS.findMathTransform(worldDegs, worldCoords);
     }
-    catch (FactoryException e)
+    catch (final FactoryException e)
     {
       e.printStackTrace();
     }
   }
 
   @Override
-  public Point toScreen(WorldLocation val)
+  public WorldArea getDataArea()
+  {
+    return _layers.getBounds();
+  }
+
+  @Override
+  public Dimension getScreenArea()
+  {
+    final Rectangle rect = _view.getScreenArea();
+    return new Dimension((int) rect.getWidth(), (int) rect.getHeight());
+  }
+
+  @Override
+  public WorldArea getVisibleDataArea()
+  {
+    return _layers.getBounds();
+  }
+
+  @Override
+  public Point toScreen(final WorldLocation val)
   {
     Point res = null;
     // and now for the actual projection bit
@@ -99,16 +107,9 @@ public class GeoToolMapProjection extends PlainProjection
     }
     return res;
   }
-  
 
   @Override
-  public WorldArea getDataArea()
-  {
-    return _layers.getBounds();
-  }
-
-  @Override
-  public WorldLocation toWorld(Point val)
+  public WorldLocation toWorld(final Point val)
   {
     WorldLocation res = null;
     _workScreen.setLocation(val.x, val.y);
@@ -131,25 +132,25 @@ public class GeoToolMapProjection extends PlainProjection
     }
     catch (final MismatchedDimensionException e)
     {
-      Application.logError2(Application.ERROR,
+      Application.logError2(ToolParent.ERROR,
           "Whilst trying to set convert to world coords", e);
     }
     catch (final org.opengis.referencing.operation.NoninvertibleTransformException e)
     {
-      Application.logError2(Application.ERROR,
+      Application.logError2(ToolParent.ERROR,
           "Unexpected non-invertable problem whilst performing screen to world",
           e);
     }
     catch (final TransformException e)
     {
-      Application.logError2(Application.ERROR,
+      Application.logError2(ToolParent.ERROR,
           "Unexpected transform problem whilst performing screen to world", e);
     }
     return res;
   }
 
   @Override
-  public void zoom(double value)
+  public void zoom(final double value)
   {
   }
 }
