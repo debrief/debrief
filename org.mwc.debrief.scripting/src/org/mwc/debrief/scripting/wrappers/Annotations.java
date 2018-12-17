@@ -17,8 +17,6 @@ package org.mwc.debrief.scripting.wrappers;
 import org.eclipse.ease.modules.WrapToScript;
 
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
