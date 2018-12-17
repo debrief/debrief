@@ -93,15 +93,13 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   protected PropertiesPanel _thePanel;
   protected MWC.GUI.ToolParent _theToolParent;
 
-  protected java.beans.PropertyChangeSupport _pSupport;
+  protected final java.beans.PropertyChangeSupport _pSupport;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
+  public SwingCustomEditor()
+  {
+    _pSupport = new java.beans.PropertyChangeSupport(this);
+  }
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
   final public void setObject(final Object data,
                         final PlainChart theChart,
                         final ToolParent theParent,
@@ -110,8 +108,6 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
     _theChart = theChart;
     _thePanel = thePanel;
     _theToolParent = theParent;
-
-    _pSupport = new java.beans.PropertyChangeSupport(this);
 
     setObject(data);
   }
@@ -159,8 +155,7 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
    */
   final public void removePropertyChangeListener(final PropertyChangeListener listener)
   {
-    if(_pSupport != null)
-      _pSupport.removePropertyChangeListener(listener);
+    _pSupport.removePropertyChangeListener(listener);
   }
 
   /** fire the indicated event
@@ -179,7 +174,11 @@ abstract public class SwingCustomEditor extends JPanel implements Customizer
   public void doClose()
   {
 		// remove the listeners
-    _pSupport = null;
+    PropertyChangeListener[] listeners = _pSupport.getPropertyChangeListeners();
+    for(PropertyChangeListener l: listeners)
+    {
+      _pSupport.removePropertyChangeListener(l);
+    }
   }
 
 }
