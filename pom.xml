@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.23.1</tycho.version>
-    <tycho-extras.version>0.23.1</tycho-extras.version>
+    <tycho.version>0.21.0</tycho.version>
+    <tycho-extras.version>0.21.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -27,14 +27,6 @@
   </properties>
 
   <modules>
-
-
-    <module>org.freehep</module>
-    <module>info.limpet</module>
-    <module>info.limpet.libs</module>
-    <module>info.limpet.stackedcharts.model</module>
-    <module>info.limpet.stackedcharts.ui</module>
-
     <module>org.mwc.asset.NetAsset2</module>
     <module>org.mwc.asset.NetCore</module>
     <module>org.mwc.asset.ScenarioController2</module>
@@ -82,11 +74,11 @@
     <module>org.mwc.debrief.data_feed_dummy</module>
     <module>org.mwc.debrief.legacy</module>
     <module>org.mwc.debrief.lite</module>
-    <module>org.mwc.debrief.multipath2</module>
-    <module>org.mwc.debrief.scripting</module>
+	<module>org.mwc.debrief.multipath2</module>
     <module>org.mwc.debrief.track_shift</module>
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
+    
     <module>org.mwc.debrief.test2</module>
     <module>org.mwc.debrief.editable.test</module>
     <module>org.mwc.debrief.targetplatforms</module>

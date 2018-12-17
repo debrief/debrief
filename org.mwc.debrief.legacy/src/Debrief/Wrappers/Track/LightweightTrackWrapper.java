@@ -57,11 +57,6 @@ import MWC.TacticalData.Fix;
 import MWC.Utilities.Errors.Trace;
 import junit.framework.TestCase;
 
-/**
- * 
- * @author Ian Mayo
- *
- */
 public class LightweightTrackWrapper extends PlainWrapper implements
     WatchableList, Plottable, Layer, IsTransientForChildren
 {

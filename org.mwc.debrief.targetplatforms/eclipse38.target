@@ -1,32 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eclipse45" sequenceNumber="49">
+<?pde version="3.8"?>
+
+<target name="eclipse38" sequenceNumber="15">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.emf.sdk.feature.group" version="2.8.3.v20130125-0826"/>
 <unit id="org.eclipse.wst.xml_ui.feature.feature.group" version="3.4.2.v201211061806-7H7GFeJDxumUrsn5qkiQgOEhsz0p60HAmPyU6VX"/>
 <repository location="http://download.eclipse.org/releases/juno/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.emf.sdk.feature.group" version="2.11.2.v20160208-0841"/>
-<repository location="http://www.eclipse.org/modeling/amalgam/downloads/package/modeling/mars/"/>
+<unit id="org.eclipse.sdk.ide" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.platform.sdk" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.pde.junit.runtime.addon.feature.group" version="1.0.100.v20121207-183635-7C7IEpAkHgAKgQl57GGDCAB701A1"/>
+<unit id="org.eclipse.equinox.sdk.feature.group" version="3.8.0.v20121212-203907-7M7fA78g4_y-edvtH0ZcEC5NOFTB"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="3.8.2.v20130118-180157-96BuGOZFxwOAeG8Ofmqicz0tPK"/>
+<unit id="org.eclipse.rcp.feature.group" version="3.8.2.v20130118-180157-96BuGOZFxwOAeG8Ofmqicz0tPK"/>
+<unit id="org.eclipse.platform.ide" version="3.8.2.M20130131-0800"/>
+<unit id="org.eclipse.rcp.sdk.id" version="3.8.2.M20130131-0800"/>
+<repository location="http://download.eclipse.org/eclipse/updates/3.8"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.equinox.sdk.feature.group" version="3.11.2.v20160202-2102"/>
-<unit id="org.eclipse.platform.ide" version="4.5.2.M20160212-1500"/>
-<unit id="org.eclipse.platform.sdk" version="4.5.2.M20160212-1500"/>
-<unit id="org.eclipse.rcp.feature.group" version="4.5.2.v20160212-1500"/>
-<unit id="org.eclipse.sdk.ide" version="4.5.2.M20160212-1500"/>
-<unit id="org.eclipse.test.feature.group" version="3.7.0.v20150428-2048"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.5"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.wst.jsdt.feature.feature.group" version="1.6.201.v201512010225"/>
-<repository location="http://download.eclipse.org/webtools/repository/mars/"/>
-</location>
-<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.ease.feature.feature.group" version="0.5.0.I201709080940"/>
-<unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.5.0.I201708100449"/>
-<unit id="org.eclipse.ease.ui.feature.feature.group" version="0.5.0.I201709292011"/>
-<repository location="https://github.com/theanuradha/eclipse-ease/raw/master/v0.5.0"/>
+<unit id="org.geotools.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.rcp.feature.feature.group" version="0.0.0"/>
+<unit id="info.limpet.ui.feature.feature.group" version="0.0.0"/>
+<repository location="http://debrief.github.io/limpet-update/1.0"/>
 </location>
 </locations>
 </target>
