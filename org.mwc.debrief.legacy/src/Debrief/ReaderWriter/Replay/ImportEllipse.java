@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: ImportEllipse.java,v $
 // @author $Author: Ian.Mayo $
@@ -92,16 +92,12 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.StringTokenizer;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
-import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
@@ -110,7 +106,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * class to parse a label from a line of text
@@ -118,215 +113,220 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 final class ImportEllipse extends AbstractPlainLineImporter
 {
 
-  
-  
-  
-	// ////////////////////////////////////////////////
+  // ////////////////////////////////////////////////
   // testing code...
   // ////////////////////////////////////////////////
   static public class testImport extends junit.framework.TestCase
   {
-  	static public final String TEST_ALL_TEST_TYPE = "CONV";
-  
-  	public testImport(final String val)
-  	{
-  		super(val);
-  	}
-  
-  	public void testValues() throws ParseException
-  	{
-  		String iLine = ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
-  		final AbstractPlainLineImporter iff = new ImportEllipse();
-  		ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
-  
-  		// and check the result
-  		assertNotNull("read it in", res);
-  		assertEquals("right track", "test ellipse", res.getLabel());
-      assertEquals("right", new java.awt.Color(255, 150, 0) , res.getColor());
+    static public final String TEST_ALL_TEST_TYPE = "CONV";
+
+    public testImport(final String val)
+    {
+      super(val);
+    }
+
+    public void testValues() throws ParseException
+    {
+      final String iLine =
+          ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
+      final AbstractPlainLineImporter iff = new ImportEllipse();
+      final ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
+
+      // and check the result
+      assertNotNull("read it in", res);
+      assertEquals("right track", "test ellipse", res.getLabel());
+      assertEquals("right", new java.awt.Color(255, 150, 0), res.getColor());
       assertEquals("right", "test ellipse", res.getName());
-      EllipseShape ell = (EllipseShape) res.getShape();
+      final EllipseShape ell = (EllipseShape) res.getShape();
       assertEquals("right", 45.0, ell.getOrientation());
-      assertEquals("right", 5000 , ell.getMaxima().getValueIn(WorldDistance.YARDS), 0.001);
-      assertEquals("right", 3000, ell.getMinima().getValueIn(WorldDistance.YARDS), 0.001);
-  	}
+      assertEquals("right", 5000, ell.getMaxima().getValueIn(
+          WorldDistance.YARDS), 0.001);
+      assertEquals("right", 3000, ell.getMinima().getValueIn(
+          WorldDistance.YARDS), 0.001);
+    }
   }
 
   /**
-	 * the type for this string
-	 */
-	private final String _myType = ";ELLIPSE:";
+   * the type for this string
+   */
+  private final String _myType = ";ELLIPSE:";
 
-	/**
-	 * read in this string and return a Label
-	 * @throws ParseException 
-	 */
-	public final Object readThisLine(final String theLine) throws ParseException
-	{
+  /**
+   * indicate if you can export this type of object
+   * 
+   * @param val
+   *          the object to test
+   * @return boolean saying whether you can do it
+   */
+  @Override
+  public final boolean canExportThis(final Object val)
+  {
+    boolean res = false;
 
-		// get a stream from the string
-		final StringTokenizer st = new StringTokenizer(theLine);
+    if (val instanceof ShapeWrapper)
+    {
+      final ShapeWrapper sw = (ShapeWrapper) val;
+      final PlainShape ps = sw.getShape();
+      res = (ps instanceof EllipseShape);
+    }
 
-		// declare local variables
-		WorldLocation theLoc;
-		double latDeg, longDeg, latMin, longMin;
-		char latHem, longHem;
-		double latSec, longSec;
-		double maxima, minima, orient;
-		String theText;
-		HiResDate theDate = null;
+    return res;
 
-		// skip the comment identifier
-		st.nextToken();
+  }
 
-		// start with the symbology
-		symbology = st.nextToken();
+  /**
+   * export the specified shape as a string
+   * 
+   * @return the shape in String form
+   * @param theWrapper
+   *          the Shape we are exporting
+   */
+  @Override
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
+    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
 
-		// now the date
-		String dateStr = null;
+    final EllipseShape ellipse = (EllipseShape) theShape.getShape();
 
-		// get date
-		dateStr = st.nextToken();
+    // result value
+    String line;
 
-		// now get the time, and add it to the date
-		dateStr = dateStr + " " + st.nextToken();
+    line = ";ELLIPSE: BD ";
 
-		// produce a date from this data
-		theDate = DebriefFormatDateTime.parseThis(dateStr);
+    HiResDate tmpDate = theShape.getStartDTG();
 
-		try
-		{
-			// now the location
-			latDeg = MWCXMLReader.readThisDouble(st.nextToken());
-			latMin = MWCXMLReader.readThisDouble(st.nextToken());
-			latSec = MWCXMLReader.readThisDouble(st.nextToken());
+    if (tmpDate == null)
+    {
+      tmpDate = new HiResDate(new Date());
+    }
 
-			/**
-			 * now, we may have trouble here, since there may not be a space between the
-			 * hemisphere character and a 3-digit latitude value - so BE CAREFUL
-			 */
-			final String vDiff = st.nextToken();
-			if (vDiff.length() > 3)
-			{
-				// hmm, they are combined
-				latHem = vDiff.charAt(0);
-				final String secondPart = vDiff.substring(1, vDiff.length());
-				longDeg = MWCXMLReader.readThisDouble(secondPart);
-			}
-			else
-			{
-				// they are separate, so only the hem is in this one
-				latHem = vDiff.charAt(0);
-				longDeg = MWCXMLReader.readThisDouble(st.nextToken());
-			}
-			longMin = MWCXMLReader.readThisDouble(st.nextToken());
-			longSec = MWCXMLReader.readThisDouble(st.nextToken());
-			longHem = st.nextToken().charAt(0);
+    line = line + " " + ImportReplay.formatThis(tmpDate);
 
-			// now the radius of the circle
-			orient = MWCXMLReader.readThisDouble(st.nextToken());
-			maxima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st.nextToken()));
-			minima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st.nextToken()));
+    line = line + " " + MWC.Utilities.TextFormatting.DebriefFormatLocation
+        .toString(ellipse.getCentre());
 
-			// and now read in the message
-			theText = st.nextToken("\r").trim();
-	
-			// create the tactical data
-			theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-					longMin, longSec, longHem, 0);
-	
-			// create the circle object
-			final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(maxima,
-					WorldDistance.DEGS), new WorldDistance(minima, WorldDistance.DEGS));
-			Color c = ImportReplay.replayColorFor(symbology);
-			sp.setColor(c);
-	
-			// and put it into a shape
-			final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, theDate);
-	
-			return sw;
-		}
-		catch (final ParseException pe) 
-		{
-			MWC.Utilities.Errors.Trace.trace(pe,
-					"Whilst import Ellipse");
-			return null;
-		}
-	}
+    line = line + " " + ellipse.getOrientation();
 
-	/**
-	 * determine the identifier returning this type of annotation
-	 */
-	public final String getYourType()
-	{
-		return _myType;
-	}
+    line = line + " " + (long) (ellipse.getMaxima().getValueIn(
+        WorldDistance.YARDS));
 
-	/**
-	 * export the specified shape as a string
-	 * 
-	 * @return the shape in String form
-	 * @param theWrapper
-	 *          the Shape we are exporting
-	 */
-	public final String exportThis(final MWC.GUI.Plottable theWrapper)
-	{
-		final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+    line = line + " " + (long) (ellipse.getMinima().getValueIn(
+        WorldDistance.YARDS));
 
-		final EllipseShape ellipse = (EllipseShape) theShape.getShape();
+    line = line + " " + theShape.getLabel();
 
-		// result value
-		String line;
+    return line;
 
-		line = ";ELLIPSE: BD ";
+  }
 
-		HiResDate tmpDate = theShape.getStartDTG();
+  /**
+   * determine the identifier returning this type of annotation
+   */
+  @Override
+  public final String getYourType()
+  {
+    return _myType;
+  }
 
-		if (tmpDate == null)
-		{
-			tmpDate = new HiResDate(new Date());
-		}
+  /**
+   * read in this string and return a Label
+   * 
+   * @throws ParseException
+   */
+  @Override
+  public final Object readThisLine(final String theLine) throws ParseException
+  {
 
-		line = line + " " + ImportReplay.formatThis(tmpDate);
+    // get a stream from the string
+    final StringTokenizer st = new StringTokenizer(theLine);
 
-		line = line
-				+ " "
-				+ MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(ellipse
-						.getCentre());
+    // declare local variables
+    WorldLocation theLoc;
+    double latDeg, longDeg, latMin, longMin;
+    char latHem, longHem;
+    double latSec, longSec;
+    double maxima, minima, orient;
+    String theText;
+    HiResDate theDate = null;
 
-		line = line + " " + ellipse.getOrientation();
+    // skip the comment identifier
+    st.nextToken();
 
-		line = line + " "
-				+ (long) (ellipse.getMaxima().getValueIn(WorldDistance.YARDS));
+    // start with the symbology
+    symbology = st.nextToken();
 
-		line = line + " "
-				+ (long) (ellipse.getMinima().getValueIn(WorldDistance.YARDS));
+    // now the date
+    String dateStr = null;
 
-		line = line + " " + theShape.getLabel();
+    // get date
+    dateStr = st.nextToken();
 
-		return line;
+    // now get the time, and add it to the date
+    dateStr = dateStr + " " + st.nextToken();
 
-	}
+    // produce a date from this data
+    theDate = DebriefFormatDateTime.parseThis(dateStr);
 
-	/**
-	 * indicate if you can export this type of object
-	 * 
-	 * @param val
-	 *          the object to test
-	 * @return boolean saying whether you can do it
-	 */
-	public final boolean canExportThis(final Object val)
-	{
-		boolean res = false;
+    try
+    {
+      // now the location
+      latDeg = MWCXMLReader.readThisDouble(st.nextToken());
+      latMin = MWCXMLReader.readThisDouble(st.nextToken());
+      latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
-		if (val instanceof ShapeWrapper)
-		{
-			final ShapeWrapper sw = (ShapeWrapper) val;
-			final PlainShape ps = sw.getShape();
-			res = (ps instanceof EllipseShape);
-		}
+      /**
+       * now, we may have trouble here, since there may not be a space between the hemisphere
+       * character and a 3-digit latitude value - so BE CAREFUL
+       */
+      final String vDiff = st.nextToken();
+      if (vDiff.length() > 3)
+      {
+        // hmm, they are combined
+        latHem = vDiff.charAt(0);
+        final String secondPart = vDiff.substring(1, vDiff.length());
+        longDeg = MWCXMLReader.readThisDouble(secondPart);
+      }
+      else
+      {
+        // they are separate, so only the hem is in this one
+        latHem = vDiff.charAt(0);
+        longDeg = MWCXMLReader.readThisDouble(st.nextToken());
+      }
+      longMin = MWCXMLReader.readThisDouble(st.nextToken());
+      longSec = MWCXMLReader.readThisDouble(st.nextToken());
+      longHem = st.nextToken().charAt(0);
 
-		return res;
+      // now the radius of the circle
+      orient = MWCXMLReader.readThisDouble(st.nextToken());
+      maxima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st
+          .nextToken()));
+      minima = Conversions.Yds2Degs(MWCXMLReader.readThisDouble(st
+          .nextToken()));
 
-	}
+      // and now read in the message
+      theText = st.nextToken("\r").trim();
+
+      // create the tactical data
+      theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
+          longMin, longSec, longHem, 0);
+
+      // create the circle object
+      final PlainShape sp = new EllipseShape(theLoc, orient, new WorldDistance(
+          maxima, WorldDistance.DEGS), new WorldDistance(minima,
+              WorldDistance.DEGS));
+      final Color c = ImportReplay.replayColorFor(symbology);
+      sp.setColor(c);
+
+      // and put it into a shape
+      final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, theDate);
+
+      return sw;
+    }
+    catch (final ParseException pe)
+    {
+      MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Ellipse");
+      return null;
+    }
+  }
 
 }
