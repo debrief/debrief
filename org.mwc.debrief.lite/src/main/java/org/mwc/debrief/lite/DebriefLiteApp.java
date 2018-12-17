@@ -70,6 +70,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
@@ -110,12 +111,15 @@ public class DebriefLiteApp implements FileDropListener{
   private SwingToolbar theToolbar;
 
   private final GeoToolMapRenderer geoMapRenderer;
+  private final DebriefLiteToolParent _toolParent;
 
   public DebriefLiteApp() {
 
     geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     mapComponent = geoMapRenderer.getMapComponent();
+
+    _toolParent = new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L);
 
     try {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -154,11 +158,12 @@ public class DebriefLiteApp implements FileDropListener{
     return scrPane1;
   }
   
-  private static void addOutlineView(final JPanelWithTitleBar jTitleBar) {
+  private static void addOutlineView(final JPanelWithTitleBar jTitleBar, ToolParent toolParent) {
     outlinePanel = new JPanel();
     outlinePanel.setLayout(new BorderLayout());
     outlinePanel.add(jTitleBar, BorderLayout.NORTH);
     layerManager = new SwingLayerManager();
+    layerManager.setParent(toolParent);
     outlinePanel.add(layerManager,BorderLayout.CENTER);
   }
 
@@ -191,7 +196,7 @@ public class DebriefLiteApp implements FileDropListener{
     final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar("Plot Editor");
     final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
     final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
-    addOutlineView(outlineTitlePanel);
+    addOutlineView(outlineTitlePanel, _toolParent);
     final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
     geoMapRenderer.addMapTool(theToolbar);
     final JScrollPane graphPane = createScrollPane(graphPanel);
@@ -414,7 +419,7 @@ public class DebriefLiteApp implements FileDropListener{
     // indicate that we are busy
     this.setCursor(Cursor.WAIT_CURSOR);
 
-    ImportReplay.initialise(new DebriefLiteToolParent(ImportReplay.IMPORT_AS_OTG, 0L));
+    ImportReplay.initialise(_toolParent);
 
     ImportManager.addImporter(new ImportReplay());
 
