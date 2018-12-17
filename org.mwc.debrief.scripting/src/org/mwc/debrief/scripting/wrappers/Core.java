@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
@@ -50,7 +52,7 @@ public class Core
 
     public void testCreateColor()
     {
-      final Color color = createColor(testRed, testGreen, testBlue);
+      final Color color = createColorRGB(testRed, testGreen, testBlue);
       assertEquals("Testing Red Color", testRed, color.getRed());
       assertEquals("Testing Green Color", testGreen, color.getGreen());
       assertEquals("Testing Blue Color", testBlue, color.getBlue());
@@ -72,11 +74,12 @@ public class Core
     public void testCreateFont()
     {
       final Font font = createFont(testFontName, testFontStyle, testFontSize);
-      if(OS.isMacintosh())
+      if (OS.isMacintosh())
       {
         // note: the mac mangles the font, since the one we're
         // asking for isn't available, so it uses a similar one
-        assertEquals("Testing Font Name", MACOS_testFontName, font.getFontName());
+        assertEquals("Testing Font Name", MACOS_testFontName, font
+            .getFontName());
       }
       else
       {
@@ -100,7 +103,7 @@ public class Core
    *          the blue component
    * @return
    */
-  public static Color createColor(final int red, final int green,
+  public static Color createColorRGB(final int red, final int green,
       final int blue)
   {
     return new Color(red, green, blue);
@@ -112,6 +115,12 @@ public class Core
   public static HiResDate createDate(final long date)
   {
     return new HiResDate(date);
+  }
+
+  public static HiResDate createDateFromString(final String date,
+      final SimpleDateFormat formatter) throws ParseException
+  {
+    return new HiResDate(formatter.parse(date));
   }
 
   /**

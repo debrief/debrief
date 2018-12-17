@@ -32,7 +32,7 @@ public class Shapes
         1.1, 12);
     static final WorldLocation shapeTopLeftLocation = new WorldLocation(12.1,
         12.3, 12);
-    static final java.awt.Color shapeColor = Core.createColor(255, 0, 255);
+    static final java.awt.Color shapeColor = Core.createColorRGB(255, 0, 255);
     static final double innerRadius = 3.0;
     static final double outerRadius = 5.0;
     static final String shapeName = "ShapeName";
@@ -128,8 +128,7 @@ public class Shapes
       final String nodeName1 = "NodeName1";
       final String nodeName2 = "NodeName2";
 
-      final ShapeWrapper polygonShape = createPolygon(new Vector<PolygonShape.PolygonNode>(), shapeName,
-          shapeColor);
+      final ShapeWrapper polygonShape = createPolygon(shapeName, shapeColor);
       final PolygonShape polygonShapeCasted = (PolygonShape) polygonShape
           .getShape();
       final PolygonNode node1 = addPolygonNode(nodeName1, shapeCenterLocation,
@@ -318,10 +317,10 @@ public class Shapes
    *          Color of the Shape
    * @return Polygon Shape.
    */
-  public static ShapeWrapper createPolygon(final Vector<PolygonNode> vector,
-      final String name, final Color color)
+  public static ShapeWrapper createPolygon(final String name, final Color color)
   {
-    return new ShapeWrapper(name, new PolygonShape(vector), color, null);
+    return new ShapeWrapper(name, new PolygonShape(new Vector<PolygonNode>()),
+        color, null);
   }
 
   @WrapToScript

@@ -29,7 +29,7 @@ public class Annotations
   public static class TestAnnotations extends TestCase
   {
     static final String labelName = "Label Name";
-    static final java.awt.Color labelColor = Core.createColor(0, 255, 255);
+    static final java.awt.Color labelColor = Core.createColorRGB(0, 255, 255);
     static final WorldLocation labelLocation = new WorldLocation(12.3, 12.4,
         12.5);
     static final HiResDate startLabel = new HiResDate(2000000);
