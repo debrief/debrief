@@ -92,12 +92,16 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.StringTokenizer;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
@@ -106,6 +110,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /**
  * class to parse a label from a line of text
@@ -113,7 +118,40 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 final class ImportEllipse extends AbstractPlainLineImporter
 {
 
-	/**
+  
+  
+  
+	// ////////////////////////////////////////////////
+  // testing code...
+  // ////////////////////////////////////////////////
+  static public class testImport extends junit.framework.TestCase
+  {
+  	static public final String TEST_ALL_TEST_TYPE = "CONV";
+  
+  	public testImport(final String val)
+  	{
+  		super(val);
+  	}
+  
+  	public void testValues() throws ParseException
+  	{
+  		String iLine = ";ELLIPSE: @F 951212 060200 21.8 0 0 N 21.5 0 0 W 45.0 5000 3000 test ellipse";
+  		final AbstractPlainLineImporter iff = new ImportEllipse();
+  		ShapeWrapper res = (ShapeWrapper) iff.readThisLine(iLine);
+  
+  		// and check the result
+  		assertNotNull("read it in", res);
+  		assertEquals("right track", "test ellipse", res.getLabel());
+      assertEquals("right", new java.awt.Color(255, 150, 0) , res.getColor());
+      assertEquals("right", "test ellipse", res.getName());
+      EllipseShape ell = (EllipseShape) res.getShape();
+      assertEquals("right", 45.0, ell.getOrientation());
+      assertEquals("right", 5000 , ell.getMaxima().getValueIn(WorldDistance.YARDS), 0.001);
+      assertEquals("right", 3000, ell.getMinima().getValueIn(WorldDistance.YARDS), 0.001);
+  	}
+  }
+
+  /**
 	 * the type for this string
 	 */
 	private final String _myType = ";ELLIPSE:";
