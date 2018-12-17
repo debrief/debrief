@@ -30,5 +30,4 @@ Require-Bundle: org.junit;bundle-version="4.0.0",
  org.eclipse.equinox.console,
  org.apache.felix.gogo.command,
  org.apache.felix.gogo.runtime,
- org.apache.felix.gogo.shell,
- org.mwc.debrief.scripting;bundle-version="1.0.1"
+ org.apache.felix.gogo.shell

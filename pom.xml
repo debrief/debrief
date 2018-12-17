@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.23.1</tycho.version>
-    <tycho-extras.version>0.23.1</tycho-extras.version>
+    <tycho.version>0.21.0</tycho.version>
+    <tycho-extras.version>0.21.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -83,7 +83,6 @@
     <module>org.mwc.debrief.legacy</module>
     <module>org.mwc.debrief.lite</module>
     <module>org.mwc.debrief.multipath2</module>
-    <module>org.mwc.debrief.scripting</module>
     <module>org.mwc.debrief.track_shift</module>
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>

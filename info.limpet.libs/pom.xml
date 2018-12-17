@@ -6,10 +6,9 @@
     <groupId>org.mwc.debrief</groupId>
     <artifactId>parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../</relativePath>
   </parent>
-  <groupId>info.limpet</groupId>
+  <groupId>org.mwc.debrief</groupId>
   <artifactId>info.limpet.libs</artifactId>
   <packaging>eclipse-plugin</packaging>
-  <version>1.0.7-SNAPSHOT</version>
+  <version>1.0.7</version>
 </project>
