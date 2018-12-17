@@ -7229,6 +7229,10 @@ outer radius (yards), label
 ;; symb, date, time, lat, long, orientation, maxima (yards), 
 minima (yards), label 
 
+;ELLIPSE2: BD YYMMDD HHMMSS DD MM SS.SS H DD MM SS.SS H CCC XXXX YYYY xx.xx 
+;; symb, start-date, start-time, end-date, end-time, lat, long, orientation, maxima (yards), 
+minima (yards), label 
+
 ;BRG: BD YYMMDD HHMMSS DD MM SS.SS H DD MM SS.SS H CCC XXXX xx.xx 
 ;; symb, date, time, lat, long, orientation, length (yards), label (one word) 
 
