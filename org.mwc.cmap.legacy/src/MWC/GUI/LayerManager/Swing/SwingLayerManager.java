@@ -238,6 +238,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 	protected Hashtable<?, ?> _myNodes = new Hashtable<String, String>();
 
+  private JPanel btnHolder;
+
 	/**
 	 * the name we give to the root layer
 	 */
@@ -351,13 +353,18 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			}
 		});
 
-		final JPanel btnHolder = new JPanel();
+		btnHolder = new JPanel();
 		btnHolder.setLayout(new java.awt.GridLayout(1, 0));
 		btnHolder.add(addBtn);
 		btnHolder.add(refreshBtn);
 		add(btnHolder, java.awt.BorderLayout.NORTH);
 
 	}
+	
+	public void showButtonPanel(boolean show) {
+	 btnHolder.setVisible(show);
+	}
+	
 
 	/**
 	 * get the top-level layer which contains this node

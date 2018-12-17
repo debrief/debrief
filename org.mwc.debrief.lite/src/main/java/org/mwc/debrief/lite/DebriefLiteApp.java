@@ -75,6 +75,7 @@ import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.Swing.SwingCanvas;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
+import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.Swing.SwingToolbar;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
@@ -91,15 +92,9 @@ public class DebriefLiteApp implements FileDropListener{
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
   private static MapContent mapComponent;
+  private static SwingLayerManager layerManager;
   protected final FileDropSupport _dropSupport = new FileDropSupport();
-
-  private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
-    final JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.add(jTitleBar, BorderLayout.NORTH);
-    final JScrollPane scrPane1 = new JScrollPane(panel);
-    return scrPane1;
-  }
+  private static JPanel outlinePanel;
 
   public static void main(final String[] args) {
     new DebriefLiteApp();
@@ -151,6 +146,22 @@ public class DebriefLiteApp implements FileDropListener{
     theFrame.getContentPane().setCursor(null);
   }
 
+  private static JScrollPane createScrollPane(final JPanelWithTitleBar jTitleBar) {
+    final JPanel panel = new JPanel();
+    panel.setLayout(new BorderLayout());
+    panel.add(jTitleBar, BorderLayout.NORTH);
+    final JScrollPane scrPane1 = new JScrollPane(panel);
+    return scrPane1;
+  }
+  
+  private static void addOutlineView(final JPanelWithTitleBar jTitleBar) {
+    outlinePanel = new JPanel();
+    outlinePanel.setLayout(new BorderLayout());
+    outlinePanel.add(jTitleBar, BorderLayout.NORTH);
+    layerManager = new SwingLayerManager();
+    outlinePanel.add(layerManager,BorderLayout.CENTER);
+  }
+
   private void addMenus() {
     theMenu = new JMenu("File");
     theMenu.add(new JMenuItem("New"));
@@ -176,17 +187,17 @@ public class DebriefLiteApp implements FileDropListener{
     final int width = (int) frameSize.getWidth();
     final int height = (int) frameSize.getHeight();
     final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar("Time Controller");
-    final JPanelWithTitleBar outlinePanel = new JPanelWithTitleBar("Outline");
+    final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar("Outline");
     final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar("Plot Editor");
     final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
     final JScrollPane timeControllerPane = createScrollPane(timeControllerPanel);
-    final JScrollPane outlinePane = createScrollPane(outlinePanel);
+    addOutlineView(outlineTitlePanel);
     final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
     geoMapRenderer.addMapTool(theToolbar);
     final JScrollPane graphPane = createScrollPane(graphPanel);
     final JScrollPane notesPane = createNotesPane();
     final JSplitPane controlPanelSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, timeControllerPane,
-        outlinePane);
+        outlinePanel);
     final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT, true, editorPane, graphPane);
     final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, controlPanelSplit, graphSplit);
     final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
@@ -227,6 +238,7 @@ public class DebriefLiteApp implements FileDropListener{
     addStatusBar();
     // dummy placeholder
     addMenus();
+    
   }
 
   /**
@@ -476,6 +488,9 @@ public class DebriefLiteApp implements FileDropListener{
   
   //this will be removed when we have the plotting working
   private void tesTLoadedFile(final Layers _theLayers,String fileName) {
+    layerManager.setObject(_theLayers);
+    layerManager.showButtonPanel(false);
+    outlinePanel.validate();
     TrackWrapper track = (TrackWrapper) _theLayers.findLayer("NELSON");
     if(track != null)
     {
