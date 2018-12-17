@@ -11,6 +11,7 @@ public class DebriefLiteToolParent implements ToolParent, ProvidesModeSelector
 {
 
   private final ImportSettings settings;
+  @SuppressWarnings("unused")
   private final Long freq;
 
   public DebriefLiteToolParent(final String mode, final Long freq)
