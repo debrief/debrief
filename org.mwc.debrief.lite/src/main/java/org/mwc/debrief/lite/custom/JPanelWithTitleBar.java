@@ -34,7 +34,7 @@ public class JPanelWithTitleBar extends JPanel
   /**
    *
    */
- // private static final Color titleColor = Color.LIGHT_GRAY;
+  // private static final Color titleColor = Color.LIGHT_GRAY;
   private static final long serialVersionUID = 1L;
 
   private final JLabel _titleLabel;
@@ -43,33 +43,32 @@ public class JPanelWithTitleBar extends JPanel
   public JPanelWithTitleBar(final String title)
   {
     setLayout(new BorderLayout());
-    /*setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new MatteBorder(1,
-        1, 1, 1, Color.BLACK)));*/
-    setBorder(new EmptyBorder(7,7,7,7));
+    /*
+     * setBorder(new CompoundBorder(new EmptyBorder(0, 0, 0, 0), new MatteBorder(1, 1, 1, 1,
+     * Color.BLACK)));
+     */
+    setBorder(new EmptyBorder(7, 7, 7, 7));
     _titleLabel = new JLabel(title);
-   
-    //_titleLabel.setFont(_titleLabel.getFont().deriveFont(Font.BOLD));
-    //_titleLabel.setBackground(titleColor);
-    //_titleLabel.setForeground(Color.BLACK);
+
+    // _titleLabel.setFont(_titleLabel.getFont().deriveFont(Font.BOLD));
+    // _titleLabel.setBackground(titleColor);
+    // _titleLabel.setForeground(Color.BLACK);
     _titleLabel.setOpaque(true);
     add(_titleLabel, BorderLayout.WEST);
 
-    //setBackground(titleColor);
+    // setBackground(titleColor);
 
   }
-  
-  
-  
 
   /*
    * public void addMinMaxListenerFor(final JSplitPane splitPane,final boolean maximize) {
    * addMouseListener(new MouseAdapter() {
-   * 
+   *
    * @Override public void mouseClicked(MouseEvent e) {
-   * 
+   *
    * minimize=!minimize; toggle(splitPane,minimize?!maximize:maximize); } }); }
-   * 
-   * 
+   *
+   *
    * public void toggle(JSplitPane pane,boolean collapse) { if(collapse) {
    * pane.getRightComponent().setMinimumSize(new Dimension()); pane.setDividerLocation(0.75d); }
    * else { // Hide right or bottom pane.getRightComponent().setMinimumSize(new Dimension());

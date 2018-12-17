@@ -35,7 +35,7 @@ public interface BaseMap
 
   /**
    * creates a JSplitPane from the given map content.
-   * 
+   *
    * @return
    */
   public void createMapLayout();
