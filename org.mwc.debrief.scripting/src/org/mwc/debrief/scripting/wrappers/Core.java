@@ -6,6 +6,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
@@ -89,8 +90,21 @@ public class Core
       assertEquals("Testing Font Style", testFontStyle, font.getStyle());
       assertEquals("Testing Font Size", testFontSize, font.getSize());
     }
+
+    public void testCreateDateCalendarFormat()
+    {
+      final Calendar now = Calendar.getInstance();
+      final HiResDate created = createDateCalendarFormat(now.get(Calendar.YEAR),
+          now.get(Calendar.MONTH), now.get(Calendar.DAY_OF_MONTH), now.get(
+              Calendar.HOUR_OF_DAY), now.get(Calendar.MINUTE), now.get(
+                  Calendar.SECOND));
+
+      final Calendar calendarCreated = Calendar.getInstance();
+      calendarCreated.setTime(created.getDate());
+      assertEquals("Correct date for testCreateDateCalendarFormat", now, calendarCreated);
+    }
   }
-  
+
   @WrapToScript
   /**
    * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
@@ -128,8 +142,41 @@ public class Core
   }
 
   @WrapToScript
+  /**
+   * Returns a High Resolution date from values given in the calendar format
+   * 
+   * @param year
+   *          the value used to set the YEAR calendar field.
+   * @param month
+   *          the value used to set the MONTH calendar field. Month value is 0-based. e.g., 0 for
+   *          January.
+   * @param date
+   *          Field number to indicate the day of the month. This is a synonym for DATE. The first
+   *          day of the month has value 1.
+   * @param hourOfDay
+   *          Field number to indicate the hour of the morning or afternoon. HOUR is used for the
+   *          12-hour clock (0 - 11). Noon and midnight are represented by 0, not by 12. E.g., at
+   *          10:04:15.250 PM the HOUR is 10.
+   * @param minute
+   *          Field number for get and set indicating the minute within the hour. E.g., at
+   *          10:04:15.250 PM the MINUTE is 4
+   * @param second
+   *          Field number for get and set indicating the second within the minute. E.g., at
+   *          10:04:15.250 PM the SECOND is 15.
+   * @return High Resolution date from values given in the calendar format
+   */
+  public static HiResDate createDateCalendarFormat(final int year,
+      final int month, final int date, final int hourOfDay, final int minute,
+      final int second)
+  {
+    Calendar calendar = Calendar.getInstance();
+    calendar.set(year, month, date, hourOfDay, minute, second);
+    return new HiResDate(calendar.getTime());
+  }
+
+  @WrapToScript
   static public final int DUR_MICROSECONDS = 0;
-  
+
   @WrapToScript
   static public final int DUR_MILLISECONDS = 1;
 
@@ -138,13 +185,13 @@ public class Core
 
   @WrapToScript
   static public final int DUR_MINUTES = 3;
-  
+
   @WrapToScript
   static public final int DUR_HOURS = 4;
-  
+
   @WrapToScript
   static public final int DUR_DAYS = 5;
-  
+
   @WrapToScript
   /**
    * Function that creates a duration given a value and the unit
