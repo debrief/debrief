@@ -100,18 +100,4 @@ public class Annotations
   {
     return new LabelWrapper(label, location, theColor, startDTG, endDTG);
   }
-
-  @WrapToScript
-  /**
-   * Given an ID of a Symbol, returns a PlainSymbol.
-   *
-   * @param symbolType
-   *          Symbol ID.
-   * @return PlainSymbol based on the symbol id given.
-   */
-  public static PlainSymbol createSymbol(final String symbolType)
-  {
-    return SymbolFactory.createSymbol(symbolType);
-  }
-
 }
