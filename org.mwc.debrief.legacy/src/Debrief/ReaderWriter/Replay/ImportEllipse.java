@@ -110,7 +110,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 /**
  * class to parse a label from a line of text
  */
-final class ImportEllipse extends AbstractPlainLineImporter
+class ImportEllipse extends AbstractPlainLineImporter
 {
 
   // ////////////////////////////////////////////////
@@ -135,21 +135,25 @@ final class ImportEllipse extends AbstractPlainLineImporter
       // and check the result
       assertNotNull("read it in", res);
       assertEquals("right track", "test ellipse", res.getLabel());
-      assertEquals("right", new java.awt.Color(255, 150, 0), res.getColor());
-      assertEquals("right", "test ellipse", res.getName());
+      assertEquals("right color", new java.awt.Color(255, 150, 0), res.getColor());
+      assertEquals("right name", "test ellipse", res.getName());
+      assertNotNull("right name",  res.getStartDTG());
+      assertNull("right name", res.getEndDTG());
       final EllipseShape ell = (EllipseShape) res.getShape();
-      assertEquals("right", 45.0, ell.getOrientation());
-      assertEquals("right", 5000, ell.getMaxima().getValueIn(
+      assertEquals("right orient", 45.0, ell.getOrientation());
+      assertEquals("right maxima", 5000, ell.getMaxima().getValueIn(
           WorldDistance.YARDS), 0.001);
-      assertEquals("right", 3000, ell.getMinima().getValueIn(
+      assertEquals("right minima", 3000, ell.getMinima().getValueIn(
           WorldDistance.YARDS), 0.001);
     }
   }
 
+  private final static String TYPE_STR = ";ELLIPSE:";
+  
   /**
-   * the type for this string
-   */
-  private final String _myType = ";ELLIPSE:";
+   * the type for this importer
+   */  
+  private final String _type;
 
   /**
    * indicate if you can export this type of object
@@ -225,8 +229,19 @@ final class ImportEllipse extends AbstractPlainLineImporter
   @Override
   public final String getYourType()
   {
-    return _myType;
+    return _type;
   }
+  
+  public ImportEllipse()
+  {
+    this(TYPE_STR);
+  }
+
+  public ImportEllipse(String type)
+  {
+    _type = type;
+  }
+
 
   /**
    * read in this string and return a Label
@@ -234,7 +249,7 @@ final class ImportEllipse extends AbstractPlainLineImporter
    * @throws ParseException
    */
   @Override
-  public final Object readThisLine(final String theLine) throws ParseException
+  public Object readThisLine(final String theLine) throws ParseException
   {
 
     // get a stream from the string
@@ -247,7 +262,6 @@ final class ImportEllipse extends AbstractPlainLineImporter
     double latSec, longSec;
     double maxima, minima, orient;
     String theText;
-    HiResDate theDate = null;
 
     // skip the comment identifier
     st.nextToken();
@@ -265,8 +279,10 @@ final class ImportEllipse extends AbstractPlainLineImporter
     dateStr = dateStr + " " + st.nextToken();
 
     // produce a date from this data
-    theDate = DebriefFormatDateTime.parseThis(dateStr);
-
+    final HiResDate startDate = DebriefFormatDateTime.parseThis(dateStr);
+    
+    final HiResDate endDate = endDateFor(st);
+    
     try
     {
       // now the location
@@ -318,7 +334,15 @@ final class ImportEllipse extends AbstractPlainLineImporter
       sp.setColor(c);
 
       // and put it into a shape
-      final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, theDate);
+      final ShapeWrapper sw = new ShapeWrapper(theText, sp, c, startDate);
+      
+      // do we have end date?
+      if(endDate !=  null)
+      {
+        sw.setEndDTG(endDate);
+      }
+      
+      
 
       return sw;
     }
@@ -327,6 +351,11 @@ final class ImportEllipse extends AbstractPlainLineImporter
       MWC.Utilities.Errors.Trace.trace(pe, "Whilst import Ellipse");
       return null;
     }
+  }
+
+  protected HiResDate endDateFor(StringTokenizer st) throws ParseException
+  {
+    return null;
   }
 
 }
