@@ -25,6 +25,7 @@
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
 	<property name="output-dir" value="${webhelpOutput}" />
+	<property name="lib-dir" value="lib" />
 
 
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
@@ -35,7 +36,7 @@
 
 	<target name="docbook_to_eclipse" description="Generate html from docbook">
 		<!-- clear the output directories -->
-		<antcall target="clear_output"/>
+		<antcall target="clear_output" />
 
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
@@ -142,18 +143,13 @@
 		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
 		     folder in the help project.  Tell Ant all about it using Ant/Runtime
 			     preferences page -->
-	    <!-- note 2 we had to switch passive mode on, after server
+		<!-- note 2 we had to switch passive mode on, after server
 	    replied with 502 PORT COMMAND NOT SUPPORTED -->
-		<ftp password="${ftpPassword}" verbose="no" port="21" depends="yes"
-			server="debrief.info" passive="true" userid="${ftpUsername}" remotedir="${destination}">
+		<ftp password="${ftpPassword}" verbose="no" port="21" depends="yes" server="debrief.info" passive="true" userid="${ftpUsername}" remotedir="${destination}">
 			<fileset dir="html/legacy" />
 		</ftp>
-	
-		<ftp
-			description="overwrite the default index page, so it redirects to the site's home page"
-			password="${ftpPassword}" passive="true"  server="debrief.info"
-			userid="${ftpUsername}"
-			remotedir="${destination}">
+
+		<ftp description="overwrite the default index page, so it redirects to the site's home page" password="${ftpPassword}" passive="true" server="debrief.info" userid="${ftpUsername}" remotedir="${destination}">
 			<fileset file="lib/index.html" />
 		</ftp>
 
@@ -300,6 +296,17 @@
 					deploy/cvs/statcvs.xml 
 				    ${rootDir}" />
 		</java>
+	</target>
+
+	<target name="javadoc">
+		<mkdir dir="javadoc" />
+		<javadoc destdir="javadoc" sourcepath="../org.mwc.debrief.scripting/src" additionalparam="-Xdoclint:none" >
+			
+			
+			<doclet name="org.eclipse.ease.helpgenerator.ModuleDoclet" path="${lib-dir}/easedoclet.jar">
+				<param name="-root" value="../org.mwc.debrief.scripting" />
+			</doclet>
+		</javadoc>
 	</target>
 
 </project>
