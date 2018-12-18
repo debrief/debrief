@@ -1,0 +1,269 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Core Module">
+		<h1>Core Module</h1>
+		<p class="description">Core class that exposes methods related with the plot and basic creators</p>
+
+	</div>
+
+	<h2>Constants</h2>
+	<table class="constants">
+		<tr>
+			<th>Constant</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a id="DUR_DAYS">DUR_DAYS</a></td>
+			<td class="description" data-field="DUR_DAYS"></td>
+		</tr>
+		<tr>
+			<td><a id="DUR_HOURS">DUR_HOURS</a></td>
+			<td class="description" data-field="DUR_HOURS"></td>
+		</tr>
+		<tr>
+			<td><a id="DUR_MICROSECONDS">DUR_MICROSECONDS</a></td>
+			<td class="description" data-field="DUR_MICROSECONDS"></td>
+		</tr>
+		<tr>
+			<td><a id="DUR_MILLISECONDS">DUR_MILLISECONDS</a></td>
+			<td class="description" data-field="DUR_MILLISECONDS"></td>
+		</tr>
+		<tr>
+			<td><a id="DUR_MINUTES">DUR_MINUTES</a></td>
+			<td class="description" data-field="DUR_MINUTES"></td>
+		</tr>
+		<tr>
+			<td><a id="DUR_SECONDS">DUR_SECONDS</a></td>
+			<td class="description" data-field="DUR_SECONDS"></td>
+		</tr>
+	</table>
+
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#createColorRGB">createColorRGB</a>()</td>
+			<td>Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
+ 255).</td>
+		</tr>
+		<tr>
+			<td><a href="#createDate">createDate</a>()</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><a href="#createDateCalendarFormat">createDateCalendarFormat</a>()</td>
+			<td>Returns a High Resolution date from values given in the calendar format</td>
+		</tr>
+		<tr>
+			<td><a href="#createDateFromString">createDateFromString</a>()</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><a href="#createDuration">createDuration</a>()</td>
+			<td>Function that creates a duration given a value and the unit</td>
+		</tr>
+		<tr>
+			<td><a href="#createFont">createFont</a>()</td>
+			<td>Function that creates a font object given a font name as string, an style and size.</td>
+		</tr>
+		<tr>
+			<td><a href="#fireNewTime">fireNewTime</a>()</td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><a href="#getActivePlot">getActivePlot</a>()</td>
+			<td>Function that returns the active plot (Editor).</td>
+		</tr>
+		<tr>
+			<td><a href="#getPlot">getPlot</a>()</td>
+			<td>Method that returns a plot given its name.</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="createColorRGB">
+		<h3><a id="createColorRGB">createColorRGB</a></h3>
+		<p class="synopsis">java.awt.Color createColorRGB(int red, int green, int blue)</p>
+
+		<p class="description">Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
+ 255). The actual color used in rendering depends on finding the best match given the color
+ space available for a given output device. Alpha is defaulted to 255.</p>
+
+		<dl class="parameters">
+			<dt>red</dt>
+			<dd class="description" data-parameter="red">the red component</dd>
+			<dt>green</dt>
+			<dd class="description" data-parameter="green">the green component</dd>
+			<dt>blue</dt>
+			<dd class="description" data-parameter="blue">the blue component</dd>
+		</dl>
+
+		<p class="return"></p>
+
+
+
+	</div>
+	<div class="command" data-method="createDate">
+		<h3><a id="createDate">createDate</a></h3>
+		<p class="synopsis">MWC.GenericData.HiResDate createDate(long date)</p>
+
+		<p class="description"></p>
+
+		<dl class="parameters">
+			<dt>date</dt>
+			<dd class="description" data-parameter="date"></dd>
+		</dl>
+
+		<p class="return"></p>
+
+
+
+	</div>
+	<div class="command" data-method="createDateCalendarFormat">
+		<h3><a id="createDateCalendarFormat">createDateCalendarFormat</a></h3>
+		<p class="synopsis">MWC.GenericData.HiResDate createDateCalendarFormat(int year, int month, int date, int hourOfDay, int minute, int second)</p>
+
+		<p class="description">Returns a High Resolution date from values given in the calendar format</p>
+
+		<dl class="parameters">
+			<dt>year</dt>
+			<dd class="description" data-parameter="year">the value used to set the YEAR calendar field.</dd>
+			<dt>month</dt>
+			<dd class="description" data-parameter="month">the value used to set the MONTH calendar field. Month value is 0-based. e.g., 0 for
+          January.</dd>
+			<dt>date</dt>
+			<dd class="description" data-parameter="date">Field number to indicate the day of the month. This is a synonym for DATE. The first
+          day of the month has value 1.</dd>
+			<dt>hourOfDay</dt>
+			<dd class="description" data-parameter="hourOfDay">Field number to indicate the hour of the morning or afternoon. HOUR is used for the
+          12-hour clock (0 - 11). Noon and midnight are represented by 0, not by 12. E.g., at
+          10:04:15.250 PM the HOUR is 10.</dd>
+			<dt>minute</dt>
+			<dd class="description" data-parameter="minute">Field number for get and set indicating the minute within the hour. E.g., at
+          10:04:15.250 PM the MINUTE is 4</dd>
+			<dt>second</dt>
+			<dd class="description" data-parameter="second">Field number for get and set indicating the second within the minute. E.g., at
+          10:04:15.250 PM the SECOND is 15.</dd>
+		</dl>
+
+		<p class="return">High Resolution date from values given in the calendar format</p>
+
+
+
+	</div>
+	<div class="command" data-method="createDateFromString">
+		<h3><a id="createDateFromString">createDateFromString</a></h3>
+		<p class="synopsis">MWC.GenericData.HiResDate createDateFromString(java.lang.String date, java.text.SimpleDateFormat formatter)</p>
+
+		<p class="description"></p>
+
+		<dl class="parameters">
+			<dt>date</dt>
+			<dd class="description" data-parameter="date"></dd>
+			<dt>formatter</dt>
+			<dd class="description" data-parameter="formatter"></dd>
+		</dl>
+
+		<p class="return"></p>
+
+		<dl class="exceptions">
+			<dt>ParseException</dt>
+			<dd class="description" data-exception="ParseException"></dd>
+		</dl>
+
+
+	</div>
+	<div class="command" data-method="createDuration">
+		<h3><a id="createDuration">createDuration</a></h3>
+		<p class="synopsis">MWC.GenericData.Duration createDuration(int value, int units)</p>
+
+		<p class="description">Function that creates a duration given a value and the unit</p>
+
+		<dl class="parameters">
+			<dt>value</dt>
+			<dd class="description" data-parameter="value">Value of the duration.</dd>
+			<dt>units</dt>
+			<dd class="description" data-parameter="units">Unit of the duration as an integer. Options available: MICROSECONDS = 0, MILLISECONDS
+          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5</dd>
+		</dl>
+
+		<p class="return">Duration object created.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createFont">
+		<h3><a id="createFont">createFont</a></h3>
+		<p class="synopsis">java.awt.Font createFont(java.lang.String fontName, int style, int size)</p>
+
+		<p class="description">Function that creates a font object given a font name as string, an style and size.</p>
+
+		<dl class="parameters">
+			<dt>fontName</dt>
+			<dd class="description" data-parameter="fontName">Font name as String. For example: "Serif.plain"</dd>
+			<dt>style</dt>
+			<dd class="description" data-parameter="style">Style of the font. For example: java.awt.Font.PLAIN</dd>
+			<dt>size</dt>
+			<dd class="description" data-parameter="size">Size of the font created.</dd>
+		</dl>
+
+		<p class="return">Font object created.</p>
+
+
+
+	</div>
+	<div class="command" data-method="fireNewTime">
+		<h3><a id="fireNewTime">fireNewTime</a></h3>
+		<p class="synopsis">void fireNewTime(MWC.GenericData.HiResDate date)</p>
+
+		<p class="description"></p>
+
+		<dl class="parameters">
+			<dt>date</dt>
+			<dd class="description" data-parameter="date"></dd>
+		</dl>
+
+
+
+
+	</div>
+	<div class="command" data-method="getActivePlot">
+		<h3><a id="getActivePlot">getActivePlot</a></h3>
+		<p class="synopsis">org.mwc.debrief.scripting.wrappers.Plot getActivePlot()</p>
+
+		<p class="description">Function that returns the active plot (Editor).</p>
+
+
+		<p class="return">Plot instance currently active.</p>
+
+
+
+	</div>
+	<div class="command" data-method="getPlot">
+		<h3><a id="getPlot">getPlot</a></h3>
+		<p class="synopsis">org.mwc.debrief.scripting.wrappers.Plot getPlot([java.lang.String filename])</p>
+
+		<p class="description">Method that returns a plot given its name.</p>
+
+		<dl class="parameters">
+			<dt>filename</dt>
+			<dd class="description" data-parameter="filename">Name of the plot editor.<span class="optional"><b>Optional:</b> defaults to &lt;<i></i>&gt;.</span></dd>
+		</dl>
+
+		<p class="return">Plot instance.</p>
+
+
+
+	</div>
+
+</body>
+</html>

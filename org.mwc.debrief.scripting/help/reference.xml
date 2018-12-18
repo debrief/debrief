@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toc label="Debrief" link_to="../org.eclipse.ease.help/help/reference.xml#modules_anchor">
+<topic label="Debrief" sort="true">
+<anchor id="modules_anchor"/>
+</topic>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Shapes"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Annotations"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Tactical"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Chart"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Core"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Utils"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Spatial"/>
+<topic href="help/module_org.mwc.debrief.scripting.module.html" label="Tote"/>
+</toc>
