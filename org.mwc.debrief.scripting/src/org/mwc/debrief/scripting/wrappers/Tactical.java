@@ -31,17 +31,19 @@ public class Tactical
     static final String sensorName = "sensorName";
     static final HiResDate time = new HiResDate(2500000);
     static final WorldLocation location = new WorldLocation(10, 23.5, 1.5);
-    static final double speedYps = 3.6;
-    static final double courseRads = 1.3;
+    static final double speedMs = 3.6;
+    static final double speedYps = new WorldSpeed(speedMs,
+        WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) /3 ;
+    static final double courseDegs = 1.3;
 
     public void testCreateFix()
     {
-      final FixWrapper fix = createFix(time, location, courseRads, speedYps);
+      final FixWrapper fix = createFix(time, location, courseDegs, speedMs);
       assertEquals("Same time for Fix", time, fix.getTime());
       assertEquals("Same location for Fix", location, fix.getLocation());
-      assertEquals("Same speedYps for Fix", speedYps, fix.getFix().getSpeed(),
+      assertEquals("Same course for Fix", courseDegs, fix.getCourseDegs(),
           1e-5);
-      assertEquals("Same courseRads for Fix", courseRads, fix.getCourse(),
+      assertEquals("Same speedYps for Fix", speedYps, fix.getFix().getSpeed(),
           1e-5);
     }
 
