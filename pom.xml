@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.21.0</tycho.version>
-    <tycho-extras.version>0.21.0</tycho-extras.version>
+    <tycho.version>1.2.0</tycho.version>
+    <tycho-extras.version>1.2.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -124,7 +124,7 @@
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse38</artifactId>
+             <artifactId>eclipse48</artifactId>
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>
