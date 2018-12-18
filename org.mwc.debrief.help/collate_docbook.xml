@@ -299,13 +299,12 @@
 	</target>
 
 	<target name="javadoc">
+		<delete dir="javadoc" failonerror="false"/>
 		<mkdir dir="javadoc" />
-		<javadoc destdir="javadoc" sourcepath="../org.mwc.debrief.scripting/src" additionalparam="-Xdoclint:none" >
-			
-			
-			<doclet name="org.eclipse.ease.helpgenerator.ModuleDoclet" path="${lib-dir}/easedoclet.jar">
-				<param name="-root" value="../org.mwc.debrief.scripting" />
-			</doclet>
+		<javadoc destdir="javadoc"  sourcepath="../org.mwc.debrief.scripting/src:../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" additionalparam="-Xdoclint:none" >
+			<!-- doclet name="org.eclipse.ease.helpgenerator.ModuleDoclet" path="${lib-dir}/easedoclet.jar">
+				
+			</doclet -->
 		</javadoc>
 	</target>
 
