@@ -29,11 +29,19 @@ public class Tote
   private TrackManager trackManager;
 
   
+  /** set the track manager
+   * 
+   * @return the track manager object org.mwc.cmap.core.DataTypes.TrackData.TrackManager
+   */
   public TrackManager getTrackManager()
   {
     return trackManager;
   }
 
+  /**  get the track manager
+   * 
+   * @param trackManager the new manager object
+   */
   public void setTrackManager(TrackManager trackManager)
   {
     this.trackManager = trackManager;

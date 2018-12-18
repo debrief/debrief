@@ -11,6 +11,11 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
 
+/** entities related to measured vessel data
+ * 
+ * @author ian
+ *
+ */
 public class Tactical
 {
   public static class TaticalTest extends TestCase
@@ -109,13 +114,13 @@ public class Tactical
     return new NarrativeWrapper(title);
   }
 
-  /**
+  /** Create a new narrative entry.
    * 
-   * @param track
-   * @param type
-   * @param DTG
-   * @param entry
-   * @return
+   * @param track the track this is a child of
+   * @param type the type of entry
+   * @param DTG when this was recorded
+   * @param entry the textual entry
+   * @return a new narrative entry
    */
   public static NarrativeEntry createNarrativeEntry(final String track,
       final String type, final HiResDate DTG, final String entry)
