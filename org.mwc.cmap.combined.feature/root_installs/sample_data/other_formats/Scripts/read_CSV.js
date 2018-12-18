@@ -32,9 +32,18 @@ while ((nextLine = readLine(file)) != null)
 	ctr++;
 	if (ctr > 2)
 	{
+		/**
+		 * Note: format looks like this: Two header lines, then rows of CSV entries. 
+		 * # UK TRACK EXCHANGE FORMAT, V1.0 #
+		 * Lat,Long,DTG,UnitName,CaseNumber,Type,Flag,Sensor,MajorAxis,SemiMajorAxis,SemiMinorAxis,Course,Speed,Depth,Likelihood,Confidence,SuppliedBy,Provenance,InfoCutoffDate,Purpose,Classification,DistributionStatement
+		 * 22.1862861,-21.6978806,19951212T050000Z,NELSON,D-112/12,OILER,UK,S2002,1.0,0.5,0.5,269.7000,2.0000,0.0,Remote,Low,UNIT_ALPHA,NELSON,19951212,For
+		 * planning,PUBLIC,"Quite a content."
+		 */
+
 		var partsOfStr = nextLine.split(',');
 		if (track == null)
 		{
+			// track not created yet. Go for it.
 			track = createTrack(partsOfStr[3])
 		}
 
@@ -42,7 +51,7 @@ while ((nextLine = readLine(file)) != null)
 		let dLat = parseFloat(partsOfStr[0]);
 		let dLong = parseFloat(partsOfStr[1]);
 		let location = createLocation(dLat, dLong, 0);
-		// dtg
+		// dtg components
 		let dtgStr = partsOfStr[2];
 		let yrs = dtgStr.substring(0, 4);
 		let mons = dtgStr.substring(4, 6) - 1;
@@ -50,11 +59,14 @@ while ((nextLine = readLine(file)) != null)
 		let hrs = dtgStr.substring(9, 11);
 		let mins = dtgStr.substring(11, 13);
 		let secs = dtgStr.substring(13, 15);
+		// date object
 		let dtg = createDateCalendarFormat(yrs, mons, days, hrs, mins, secs);
-
+		// course and speed
 		let course = partsOfStr[11];
 		let speed = partsOfStr[12];
+		// create the fix
 		let fix = createFix(dtg, location, course, speed);
+		// store the fix
 		track.addFix(fix);
 	}
 }
