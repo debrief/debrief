@@ -51,7 +51,9 @@ public class Layers
 
     /**
      * Constructor of the Layer Wrapper.
-     * @param layers Initial Layers to be added.
+     * 
+     * @param layers
+     *          Initial Layers to be added.
      */
     public DLayers(final MWC.GUI.Layers layers)
     {
@@ -60,7 +62,9 @@ public class Layers
 
     /**
      * Add the layer given to the list of layers.
-     * @param layer Layer to be added.
+     * 
+     * @param layer
+     *          Layer to be added.
      */
     public void add(final Layer layer)
     {
@@ -77,8 +81,10 @@ public class Layers
 
     /**
      * Method that creates a new layer with the specified name
+     * 
      * @see MWC.GUI.Layer
-     * @param name Name of the new layer.
+     * @param name
+     *          Name of the new layer.
      * @return Layer with the specified name
      */
     public Layer createLayer(final String name)
@@ -96,8 +102,10 @@ public class Layers
 
     /**
      * Method that returns the layer with the specified name.
+     * 
      * @see MWC.GUI.Layer
-     * @param name Name of the layer to find.
+     * @param name
+     *          Name of the layer to find.
      * @return Layer with the specified name.
      */
     public Layer findLayer(final String name)

@@ -198,7 +198,17 @@ public class Shapes
     }
   }
 
-  
+  /**
+   * Method that adds a PolygoneNode to a PolygonShape
+   * 
+   * @param name
+   *          Name of the new node
+   * @param location
+   *          Location of the new Node
+   * @param parent
+   *          PolygonShape to add the new Node
+   * @return Reference to the added node.
+   */
   public static PolygonNode addPolygonNode(final String name,
       final WorldLocation location, final PolygonShape parent)
   {
@@ -207,7 +217,6 @@ public class Shapes
     return newNode;
   }
 
-  
   /**
    * Creates a circle given the center, radius and name
    *
@@ -228,7 +237,6 @@ public class Shapes
         null);
   }
 
-  
   /**
    * Creates an EllipseShape
    *
@@ -244,7 +252,7 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return New Eclipse as a ShapeWrapper
    */
   public static ShapeWrapper createEllipse(final WorldLocation theCenter,
       final double theOrient, final WorldDistance theMaxima,
@@ -254,7 +262,6 @@ public class Shapes
         theMaxima, theMinima), color, null);
   }
 
-  
   /**
    * Creates a FurthestOnCircleShape
    *
@@ -274,7 +281,7 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return FurthestOnCircle Shape as a ShapeWrapper.
    */
   public static ShapeWrapper createFurthestOnCircleShape(
       final WorldLocation theCenter, final int numRings, final WorldSpeed speed,
@@ -305,7 +312,6 @@ public class Shapes
         null);
   }
 
-  
   /**
    * Creates a polygon given a vector of PolygonNode
    *
@@ -323,7 +329,6 @@ public class Shapes
         color, null);
   }
 
-  
   /**
    * Create a RangeRingShape.
    *
@@ -337,7 +342,7 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return New RangeRingShape created as a ShapeWrapper
    */
   public static ShapeWrapper createRangeRingShape(final WorldLocation theCenter,
       final int numRings, final WorldDistance ringWidth, final String name,
@@ -347,7 +352,6 @@ public class Shapes
         ringWidth), color, null);
   }
 
-  
   /**
    * Creates a Rectangle Shape
    *
@@ -359,15 +363,13 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return New RectangleShape created as a ShapeWrapper
    */
   public static ShapeWrapper createRectangleShape(final WorldLocation TL,
       final WorldLocation BR, final String name, final Color color)
   {
     return new ShapeWrapper(name, new RectangleShape(TL, BR), color, null);
   }
-
-  
 
   /**
    *
@@ -381,7 +383,7 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return New WheelShape created as a ShapeWrapper
    */
   public static ShapeWrapper createWheelShape(final WorldLocation theCenter,
       final double theInnerRadius, final double theOuterRadius,

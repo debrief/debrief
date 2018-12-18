@@ -126,8 +126,10 @@ public class Core
   }
 
   
-  /*
-   * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
+  /**
+   * Creates a HiResDate given a long with a regular 
+   * @param date
+   * @return
    */
   public static HiResDate createDate(final long date)
   {
@@ -135,6 +137,13 @@ public class Core
   }
 
   
+  /**
+   * Given a formatter, it parses the string given and converts it to a HiResDate.
+   * @param date
+   * @param formatter
+   * @return
+   * @throws ParseException
+   */
   public static HiResDate createDateFromString(final String date,
       final SimpleDateFormat formatter) throws ParseException
   {

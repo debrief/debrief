@@ -43,7 +43,8 @@ public class Plot
    * 
    * @see org.mwc.debrief.core.editors.PlotEditor
    * 
-   * @param plot Plot reference
+   * @param plot
+   *          Plot reference
    */
   public Plot(final PlotEditor plot)
   {
@@ -61,6 +62,7 @@ public class Plot
 
   /**
    * Method that returns the currently selected data area
+   * 
    * @see MWC.GenericData.WorldArea
    * @return Currently selected data area.
    */
@@ -77,6 +79,7 @@ public class Plot
 
   /**
    * Function to determine the center of the area
+   * 
    * @see MWC.GenericData.WorldLocation
    * @return Center of the area.
    */
@@ -95,6 +98,7 @@ public class Plot
 
   /**
    * Method that returns the layers of the current plot
+   * 
    * @see org.mwc.debrief.scripting.wrappers.Layers.DLayers
    * @return Layers of the current plot.
    */
@@ -115,6 +119,7 @@ public class Plot
 
   /**
    * Method that returns the plain projection of the current plot
+   * 
    * @see MWC.Algorithms.PlainProjection
    * @return Plain projection of the current plot.
    */
@@ -134,6 +139,7 @@ public class Plot
 
   /**
    * Method that returns the outline of the current plot.
+   * 
    * @see org.mwc.debrief.scripting.wrappers.Outline
    * @return Outline of the current plot.
    */
@@ -153,6 +159,7 @@ public class Plot
 
   /**
    * Method that returns the raw plot editor.
+   * 
    * @see org.mwc.debrief.core.editors.PlotEditor
    * @return Plot Editor.
    */
@@ -173,6 +180,7 @@ public class Plot
 
   /**
    * Method that returns the current time of the plot.
+   * 
    * @see MWC.GenericData.HiResDate
    * @return Current time of the plot.
    */
@@ -184,8 +192,8 @@ public class Plot
   }
 
   /**
-   * Method that returns the Time Control Preferences. This object can change
-   * the step intervals, small steps, etc.
+   * Method that returns the Time Control Preferences. This object can change the step intervals,
+   * small steps, etc.
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
    * @return Time Control Preferences.
@@ -226,9 +234,10 @@ public class Plot
   }
 
   /**
+   * Method that returns a reference to the Tote of the plot given
    * 
    * @see org.mwc.debrief.scripting.wrappers.Tote
-   * @return
+   * @return Reference to the Tote of the plot given
    */
   public Tote getTote()
   {
