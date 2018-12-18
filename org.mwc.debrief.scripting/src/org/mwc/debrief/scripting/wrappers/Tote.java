@@ -26,19 +26,17 @@ import MWC.GenericData.WatchableList;
  */
 public class Tote
 {
-  private final TrackManager trackManager;
+  private TrackManager trackManager;
 
-  /**
-   * Constructor that receives the TrackManager of the current plot.
-   * 
-   * @see org.mwc.cmap.core.DataTypes.TrackData.TrackManager
-   * 
-   * @param _trackManager
-   *          Reference to the TrackManager object of the current plot.
-   */
-  public Tote(final TrackManager _trackManager)
+  
+  public TrackManager getTrackManager()
   {
-    trackManager = _trackManager;
+    return trackManager;
+  }
+
+  public void setTrackManager(TrackManager trackManager)
+  {
+    this.trackManager = trackManager;
   }
 
   /**

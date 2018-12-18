@@ -238,7 +238,9 @@ public class Plot
           TrackManager.class);
       if (trackManager != null)
       {
-        return new Tote(trackManager);
+        Tote answer = new Tote();
+        answer.setTrackManager(trackManager);
+        return answer;
       }
     }
     return null;
