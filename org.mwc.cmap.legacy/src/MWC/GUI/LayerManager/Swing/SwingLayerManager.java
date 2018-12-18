@@ -257,6 +257,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	{
 		return _myData;
 	}
+	
+	protected void setCellRenderer(TreeCellRenderer cellRenderer) {
+	  _myTree.setCellRenderer(cellRenderer);
+	}
 
 	/**
 	 * construct the form

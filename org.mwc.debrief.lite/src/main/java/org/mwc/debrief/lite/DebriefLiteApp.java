@@ -51,6 +51,7 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
+import org.mwc.debrief.lite.outline.OutlinePanelView;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -90,7 +91,7 @@ public class DebriefLiteApp implements FileDropListener
     outlinePanel = new JPanel();
     outlinePanel.setLayout(new BorderLayout());
     outlinePanel.add(jTitleBar, BorderLayout.NORTH);
-    layerManager = new SwingLayerManager();
+    layerManager = new OutlinePanelView();
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
   }
@@ -451,6 +452,8 @@ public class DebriefLiteApp implements FileDropListener
     catch (final InterruptedException ie)
     {
     }
+    layerManager.setObject(_theLayers);
+    outlinePanel.validate();
     System.out.println("num layers:" + _theLayers.size());
     caller = null;
   }
