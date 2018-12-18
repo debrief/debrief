@@ -22,12 +22,19 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.ease.modules.WrapToScript;
 import org.mwc.debrief.core.DebriefPlugin;
 
+/** Utility methods, copying data to/from the system
+ * 
+ * @author ian
+ *
+ */
 public class Utils
 {
   
+  /** copy the current plot onto the clipboard
+   * 
+   */
   public static void copyPlotToClipboard()
   {
 
@@ -38,9 +45,9 @@ public class Utils
    * Returns the content of the clipboard.
    * 
    * @return content of the clipboard as String.
-   * @throws HeadlessException
-   * @throws UnsupportedFlavorException
-   * @throws IOException
+   * @throws HeadlessException if the application is running headless
+   * @throws UnsupportedFlavorException if the system can't handle this type of data
+   * @throws IOException other input/output exception
    */
   public static String getClipboard() throws HeadlessException,
       UnsupportedFlavorException, IOException

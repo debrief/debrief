@@ -10,7 +10,6 @@ import java.util.Calendar;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
-import org.eclipse.ease.modules.WrapToScript;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
@@ -117,7 +116,7 @@ public class Core
    *          the green component
    * @param blue
    *          the blue component
-   * @return
+   * @return a color object
    */
   public static Color createColorRGB(final int red, final int green,
       final int blue)
@@ -126,10 +125,11 @@ public class Core
   }
 
   
-  /**
-   * Creates a HiResDate given a long with a regular 
-   * @param date
-   * @return
+
+  /** create a new date, using indicated millis since epoch
+   * 
+   * @param date elapsed millis
+   * @return new date object
    */
   public static HiResDate createDate(final long date)
   {
@@ -137,12 +137,12 @@ public class Core
   }
 
   
-  /**
-   * Given a formatter, it parses the string given and converts it to a HiResDate.
-   * @param date
-   * @param formatter
-   * @return
-   * @throws ParseException
+  /** create a date from this String value
+   * 
+   * @param date the string to process
+   * @param formatter the format for the string
+   * @return a new date object
+   * @throws ParseException if the parsing fails
    */
   public static HiResDate createDateFromString(final String date,
       final SimpleDateFormat formatter) throws ParseException
@@ -184,21 +184,37 @@ public class Core
   }
 
   
+  /** microsecond units
+   * 
+   */  
   static public final int DUR_MICROSECONDS = 0;
 
-  
+  /** millis units
+   * 
+   */  
   static public final int DUR_MILLISECONDS = 1;
 
   
+  /** seconds units
+   * 
+   */
   static public final int DUR_SECONDS = 2;
 
   
+  /** minute units
+   * 
+   */
   static public final int DUR_MINUTES = 3;
 
   
+  /** hour units
+   * 
+   */
   static public final int DUR_HOURS = 4;
 
-  
+  /** day units
+   * 
+   */
   static public final int DUR_DAYS = 5;
 
   
@@ -311,6 +327,10 @@ public class Core
     listenToMyParts();
   }
 
+  /** set a new time
+   * 
+   * @param date the new time to jump to
+   */
   protected void fireNewTime(final HiResDate date)
   {
     // get broker service
