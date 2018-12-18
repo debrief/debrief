@@ -430,7 +430,7 @@ public class ImportReplay extends PlainImporterBase
           ImportReplay.IMPORT_AS_OTG, 0L));
       trackImporter.importThis(shape_file, bs, tLayers);
       
-       assertEquals("read in track", 14, tLayers.size());
+       assertEquals("read in track", 15, tLayers.size());
       
        TrackWrapper track = (TrackWrapper) tLayers.findLayer("NEL STYLE");
        assertNotNull("found track", track);
