@@ -8,6 +8,7 @@ import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
@@ -92,15 +93,18 @@ public class Tactical
    * Create a fix given the time, location, course in radians and speed in yards per seconds.
    * @param time Time of the new fix
    * @param location Location of the new fix
-   * @param courseRads Course in radians of the new fix
-   * @param speedYps Speed in yards per second.
+   * @param courseDegs Course in degrees of the new fix
+   * @param speedMs Speed in metres per second.
    * @return New fix object.
    */
   @WrapToScript
   public static FixWrapper createFix(final HiResDate time,
-      final WorldLocation location, final double courseRads,
-      final double speedYps)
+      final WorldLocation location, final double courseDegs,
+      final double speedMs)
   {
+    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+    final double speedYps = new WorldSpeed(speedMs, WorldSpeed.M_sec)
+        .getValueIn(WorldSpeed.ft_sec) / 3d;
     final Fix fix = new Fix(time, location, courseRads, speedYps);
     return new FixWrapper(fix);
   }
