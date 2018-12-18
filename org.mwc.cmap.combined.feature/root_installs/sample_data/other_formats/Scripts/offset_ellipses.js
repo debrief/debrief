@@ -4,7 +4,9 @@ var plot = getActivePlot();
 if (plot != null)
 {
 	var layers = plot.getLayers();
-	let anns = layers.findLayer("TUAs");
+	var lNames = layers.getLayerNames();
+	var choice = showSelectionDialog(lNames, "Which layer", "Choose ellipse layer");
+	let anns = layers.findLayer(choice);
 	// did we find it the annotations layer?
 	if (anns != null)
 	{
