@@ -30,7 +30,7 @@ import MWC.GUI.Coast.Coastline;
 public class Chart
 {
 
-  @WrapToScript
+  
   /**
    * Function that creates a coast Painter object instance
    * 
@@ -42,7 +42,7 @@ public class Chart
     return new CoastPainter();
   }
 
-  @WrapToScript
+  
   /**
    * Function that creates a ETOPOPainter object instance.
    * 
@@ -59,7 +59,7 @@ public class Chart
     return new ETOPOPainter(pathName, parentLayers);
   }
 
-  @WrapToScript
+  
   /**
    * Function that creates a GridPainter object instance
    * 
@@ -71,7 +71,7 @@ public class Chart
     return new GridPainter();
   }
 
-  @WrapToScript
+  
   /**
    * Function that creates a ScalePainter object instance
    * 
@@ -83,7 +83,7 @@ public class Chart
     return new ScalePainter();
   }
 
-  @WrapToScript
+  
   /**
    * Function that creates a Coastline from an inputStream
    * 

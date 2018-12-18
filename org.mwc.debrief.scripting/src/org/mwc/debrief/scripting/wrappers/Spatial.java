@@ -68,38 +68,38 @@ public class Spatial
   }
 
   /**
-   * the units for distances. Note to provide these to ease, we have to add a @WrapToScript
+   * the units for distances. Note to provide these to ease, we have to add a 
    * annotation. Once we've added this annotation to one public field/method, we have to apply it
    * for all methods
    */
-  @WrapToScript
+  
   static public final int METRES = 0;
-  @WrapToScript
+  
   static public final int YARDS = 1;
-  @WrapToScript
+  
   static public final int KM = 2;
-  @WrapToScript
+  
   static public final int NM = 3;
-  @WrapToScript
+  
   static public final int MINUTES = 4;
-  @WrapToScript
+  
   static public final int DEGS = 5;
-  @WrapToScript
+  
   static public final int KYDS = 6;
 
-  @WrapToScript
+  
   static public final int FT = 7;
   /**
    * Units for world speed.
    */
-  @WrapToScript
+  
   static public final int M_SEC = 0;
-  @WrapToScript
+  
   static public final int KTS = 1;
-  @WrapToScript
+  
   static public final int FT_SEC = 2;
 
-  @WrapToScript
+  
   static public final int FT_MIN = 3;
 
   static final double testDouble = 4.5;
@@ -115,7 +115,7 @@ public class Spatial
   static final WorldLocation w2 = new WorldLocation(10, 10, 100);
   static final WorldArea wa1 = new WorldArea(w1, w2);
 
-  @WrapToScript
+  
   /**
    * produce an area object using the two corners
    *
@@ -131,21 +131,21 @@ public class Spatial
     return new WorldArea(tl, br);
   }
 
-  @WrapToScript
+  
   public static WorldDistance createDistance(final double value,
       final int units)
   {
     return new WorldDistance(value, units);
   }
 
-  @WrapToScript
+  
   public static WorldLocation createLocation(final double dLat,
       final double dLong, final double depth)
   {
     return new WorldLocation(dLat, dLong, depth);
   }
 
-  @WrapToScript
+  
   public static WorldVector createVector(final double distM,
       final double bearingDegs)
   {
@@ -153,7 +153,7 @@ public class Spatial
         new WorldDistance(distM, WorldDistance.METRES), null);
   }
 
-  @WrapToScript
+  
   public static WorldVector createVectorKm(final double distKm,
       final double bearingDegs)
   {
@@ -161,7 +161,7 @@ public class Spatial
         new WorldDistance(distKm, WorldDistance.KM), null);
   }
 
-  @WrapToScript
+  
   public static WorldSpeed createWorldSpeed(final double value, final int units)
   {
     return new WorldSpeed(value, units);

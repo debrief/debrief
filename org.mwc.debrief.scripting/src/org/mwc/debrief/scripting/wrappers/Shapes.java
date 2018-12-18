@@ -198,7 +198,7 @@ public class Shapes
     }
   }
 
-  @WrapToScript
+  
   public static PolygonNode addPolygonNode(final String name,
       final WorldLocation location, final PolygonShape parent)
   {
@@ -207,7 +207,7 @@ public class Shapes
     return newNode;
   }
 
-  @WrapToScript
+  
   /**
    * Creates a circle given the center, radius and name
    *
@@ -228,7 +228,7 @@ public class Shapes
         null);
   }
 
-  @WrapToScript
+  
   /**
    * Creates an EllipseShape
    *
@@ -254,7 +254,7 @@ public class Shapes
         theMaxima, theMinima), color, null);
   }
 
-  @WrapToScript
+  
   /**
    * Creates a FurthestOnCircleShape
    *
@@ -305,7 +305,7 @@ public class Shapes
         null);
   }
 
-  @WrapToScript
+  
   /**
    * Creates a polygon given a vector of PolygonNode
    *
@@ -323,7 +323,7 @@ public class Shapes
         color, null);
   }
 
-  @WrapToScript
+  
   /**
    * Create a RangeRingShape.
    *
@@ -347,7 +347,7 @@ public class Shapes
         ringWidth), color, null);
   }
 
-  @WrapToScript
+  
   /**
    * Creates a Rectangle Shape
    *
@@ -367,7 +367,7 @@ public class Shapes
     return new ShapeWrapper(name, new RectangleShape(TL, BR), color, null);
   }
 
-  @WrapToScript
+  
 
   /**
    *

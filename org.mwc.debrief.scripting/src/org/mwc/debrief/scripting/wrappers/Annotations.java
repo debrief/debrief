@@ -63,7 +63,8 @@ public class Annotations
     }
   }
 
-  /** Creates a label given its name, location and color
+  /**
+   * Creates a label given its name, location and color
    *
    * @param name
    *          Text to display

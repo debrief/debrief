@@ -105,7 +105,7 @@ public class Core
     }
   }
 
-  @WrapToScript
+  
   /**
    * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
    * 255). The actual color used in rendering depends on finding the best match given the color
@@ -125,7 +125,7 @@ public class Core
     return new Color(red, green, blue);
   }
 
-  @WrapToScript
+  
   /*
    * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
    */
@@ -134,14 +134,14 @@ public class Core
     return new HiResDate(date);
   }
 
-  @WrapToScript
+  
   public static HiResDate createDateFromString(final String date,
       final SimpleDateFormat formatter) throws ParseException
   {
     return new HiResDate(formatter.parse(date));
   }
 
-  @WrapToScript
+  
   /**
    * Returns a High Resolution date from values given in the calendar format
    * 
@@ -174,25 +174,25 @@ public class Core
     return new HiResDate(calendar.getTime());
   }
 
-  @WrapToScript
+  
   static public final int DUR_MICROSECONDS = 0;
 
-  @WrapToScript
+  
   static public final int DUR_MILLISECONDS = 1;
 
-  @WrapToScript
+  
   static public final int DUR_SECONDS = 2;
 
-  @WrapToScript
+  
   static public final int DUR_MINUTES = 3;
 
-  @WrapToScript
+  
   static public final int DUR_HOURS = 4;
 
-  @WrapToScript
+  
   static public final int DUR_DAYS = 5;
 
-  @WrapToScript
+  
   /**
    * Function that creates a duration given a value and the unit
    * 
@@ -209,7 +209,7 @@ public class Core
     return new Duration(value, units);
   }
 
-  @WrapToScript
+  
   /**
    * Function that creates a font object given a font name as string, an style and size.
    * 
@@ -228,7 +228,7 @@ public class Core
     return new Font(fontName, style, size);
   }
 
-  @WrapToScript
+  
   /**
    * Function that returns the active plot (Editor).
    * 
@@ -240,7 +240,7 @@ public class Core
     return getPlot(null);
   }
 
-  @WrapToScript
+  
   /**
    * Method that returns a plot given its name.
    * 

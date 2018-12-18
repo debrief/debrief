@@ -27,13 +27,13 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 public class Utils
 {
-  @WrapToScript
+  
   public static void copyPlotToClipboard()
   {
 
   }
 
-  @WrapToScript
+  
   /**
    * Returns the content of the clipboard.
    * 
@@ -49,7 +49,7 @@ public class Utils
         DataFlavor.stringFlavor);
   }
 
-  @WrapToScript
+  
   /**
    * Set the specified string to the clipboard.
    * 
@@ -64,7 +64,7 @@ public class Utils
     clipboard.setContents(selection, selection);
   }
 
-  @WrapToScript
+  
   /**
    * Write the error message in the log.
    * 
@@ -76,7 +76,7 @@ public class Utils
     DebriefPlugin.logError(IStatus.ERROR, error, null);
   }
 
-  @WrapToScript
+  
   /**
    * Write the information message in the log
    * 
@@ -88,7 +88,7 @@ public class Utils
     DebriefPlugin.logError(IStatus.INFO, info, null);
   }
 
-  @WrapToScript
+  
   /**
    * Write the warning message in the log
    * 
