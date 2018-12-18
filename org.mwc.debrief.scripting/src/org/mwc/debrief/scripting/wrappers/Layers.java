@@ -81,6 +81,40 @@ public class Layers
     {
       _layers.clear();
     }
+    
+    /**  get the names of the loaded top level tracks
+     * 
+     * @return an array of track names
+     */
+    public String[] getTrackNames()
+    {
+      final LightweightTrackWrapper[] tracks = getTracks();
+      final String[] res = new String[tracks.length];
+      int ctr = 0;
+      for(LightweightTrackWrapper t: tracks)
+      {
+        res[ctr++] = t.getName();
+      }      
+      return res;
+    }
+    
+    /** get the names of the loaded layers
+     * 
+     * @return an array of layer names
+     */
+    public String[] getLayerNames()
+    {
+      final String[] res = new String[size()];
+      int ctr = 0;
+      final Enumeration<Editable> ele = _layers.elements();
+      while(ele.hasMoreElements())
+      {
+        final Editable l = ele.nextElement();
+        res[ctr++] = l.getName();
+      }
+      return res;
+    }
+
 
     /**
      * Method that creates a new layer with the specified name
