@@ -501,7 +501,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			final java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor()
 					.getExtraPlottableEditors(getPanel());
 			thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
-					getChart().getCanvas(), parentLayer, _thePanel, _myData, extras,
+					parentLayer, _thePanel, _myData, extras,
 					topLayer);
 
 		}
@@ -513,7 +513,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 			thePopup = new JPopupMenu();
 
-			pr.createMenu(thePopup, null, thePoint, getChart().getCanvas(),
+			pr.createMenu(thePopup, null, thePoint,
 					_thePanel, null, _myData, null);
 
 		}
@@ -791,7 +791,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+		@SuppressWarnings("unused")
+    private static final long serialVersionUID = 1L;
 		protected JCheckBox checkBox = new JCheckBox("");
 		private final Component strut = Box.createHorizontalStrut(5);
 		private final JPanel panel = new JPanel();
@@ -989,7 +990,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+		@SuppressWarnings("unused")
+    private static final long serialVersionUID = 1L;
 
 		public Component getTreeCellRendererComponent(final JTree tree, final Object value,
 				final boolean selected1, final boolean expanded, final boolean leaf, final int row,

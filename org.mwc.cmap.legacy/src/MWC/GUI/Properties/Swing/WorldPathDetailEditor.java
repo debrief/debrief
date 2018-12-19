@@ -30,6 +30,7 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -76,7 +77,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * the button which switches on dragging of data points
    */
-  private DragButton _dragger;
+  private JToggleButton _dragger;
 
   /**
    * safe copy of the data object we are editing
@@ -104,11 +105,6 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   SwingWorldLocationPropertyEditor _editor = new SwingWorldLocationPropertyEditor();
 
   /**
-   * the tool parent
-   */
-  private ToolParent _theParent;
-
-  /**
    * the type of object we will be editing
    */
   private final String _myType;
@@ -119,14 +115,12 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    * constructor
    * *************************************************************
    */
-  public WorldPathDetailEditor(final WorldPath _myPath, final PlainChart theChart, final PropertiesPanel thePanel, final ToolParent theParent,
-                               final String myType)
+  public WorldPathDetailEditor(final WorldPath _myPath,
+      final Layers theLayers, final PropertiesPanel thePanel,
+      final ToolParent theParent, final String myType)
   {
     _myType = myType;
-    setObject(_myPath, theChart, null, thePanel);
-    this._theParent = theParent;
-
-    _editor.setChart(theChart);
+    setObject(_myPath, theParent, theLayers, thePanel);
   }
 
   /**
@@ -159,7 +153,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     updateData();
 
     // redraw the plot
-    getChart().getLayers().fireExtended();
+    _theLayers.fireExtended();
 
   }
 
@@ -265,7 +259,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     // show the list
     final JPanel listHolder = new JPanel();
     listHolder.setLayout(new BorderLayout());
-    _dragger = new DragButton(getChart(), _theParent);
+    _dragger =  new JToggleButton("Not Implemented");
     listHolder.add("North", _dragger);
     listHolder.add("Center", _myList);
 
@@ -293,7 +287,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
           getPath().getLocationAt(index).copy(curLoc);
 
           // update the plot
-          getChart().getLayers().fireReformatted(null);
+          _theLayers.fireReformatted(null);
 
         }
       }
@@ -398,7 +392,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
       _myList.setSelectedValue(curLoc, true);
 
       // and redraw the plot
-      getChart().getLayers().fireReformatted(null);
+      _theLayers.fireReformatted(null);
     }
   }
 
@@ -407,7 +401,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   void addNew()
   {
-    final WorldLocation center = getChart().getDataArea().getCentre();
+    final WorldLocation center = _theLayers.getBounds().getCentreAtSurface();
     getPath().addPoint(center);
 
     // and update the data
@@ -417,7 +411,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     _myList.setSelectedValue(center, true);
 
     // redraw the plot
-    getChart().getLayers().fireExtended();
+    _theLayers.fireExtended();
 
     // inform any listeners
     fireModified("New Point", getPath(), getPath());
@@ -441,7 +435,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
       updateData();
 
       // redraw the plot
-      getChart().getLayers().fireExtended();
+      _theLayers.fireExtended();
 
       // inform any listeners
       fireModified("Point removed", getPath(), getPath());
@@ -467,7 +461,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     fireModified("Points reset", getPath(), getPath());
 
     // redraw the plot
-    getChart().getLayers().fireReformatted(null);
+    _theLayers.fireReformatted(null);
   }
 
   /**
@@ -499,13 +493,12 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   private void showPath()
   {
-    final Layers theLayers = getChart().getLayers();
-    Layer bl = theLayers.findLayer(editorName);
+    Layer bl = _theLayers.findLayer(editorName);
     if (bl == null)
     {
       bl = new BaseLayer();
       bl.setName(editorName);
-      theLayers.addThisLayer(bl);
+      _theLayers.addThisLayer(bl);
     }
 
     // now add ourselves to the editor layer
@@ -558,22 +551,22 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     getPanel().remove(this);
 
     // remove the layer painter
-    final BaseLayer editorLayer = (BaseLayer) getChart().getLayers().findLayer(editorName);
+    final BaseLayer editorLayer = (BaseLayer) _theLayers.findLayer(editorName);
     editorLayer.removeElement(_myPlotter);
 
     // are there any items remaining in the editors layer?
     if (editorLayer.size() == 0)
     {
       // yes, delete the editors layer
-      getChart().getLayers().removeThisLayer(editorLayer);
+      _theLayers.removeThisLayer(editorLayer);
     }
 
     // trigger a redraw of the plot
-    getChart().getLayers().fireExtended();
+    _theLayers.fireExtended();
 
     // get rid of the drag button processing
     _dragger.setSelected(false);
-    _dragger.doClose();
+//    _dragger.doClose();
 
     // ditch our local data
     _myPath = null;
@@ -582,7 +575,6 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     _myList = null;
     _editor = null;
     _subPanel = null;
-    _theParent = null;
 
     // and close the parent
     super.doClose();
@@ -796,6 +788,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    * toggle button which let's us drag moveable items on the plot
    * *************************************************************
    */
+  @SuppressWarnings("unused")
   private class DragButton extends javax.swing.JToggleButton implements ActionListener
   {
     /**

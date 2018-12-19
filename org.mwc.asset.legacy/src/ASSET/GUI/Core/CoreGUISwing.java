@@ -152,7 +152,7 @@ abstract public class CoreGUISwing extends CoreGUI implements
 		_toolbarHolder.setName("Tools");
 
 		// the properties panel
-		_theProperties = new SwingPropertiesPanel(_theChart, getUndoBuffer(), super
+		_theProperties = new SwingPropertiesPanel(_theData, getUndoBuffer(), super
 				.getParent(), this);
 
 		// create the general status bar (used for rng/brg measurements)

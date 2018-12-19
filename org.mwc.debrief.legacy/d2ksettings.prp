@@ -1,9 +1,10 @@
 #d2ksettings.prp
 #Debrief 2003 Properties File
-#Sun Mar 26 13:48:23 IST 2017
+#Wed Dec 19 16:23:10 GMT 2018
 RNG_UNITS=m
 RESAMPLE_FREQUENCY=0
-MRU.2=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep
-MRU.1=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep
-MRU.0=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/narrative.rep
+MRU.3=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep
+MRU.2=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/boat2.rep
+MRU.1=/home/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/narrative.rep
+MRU.0=/Users/ian/git/debrief/org.mwc.cmap.combined.feature/root_installs/sample_data/shapes.rep
 TRACK_IMPORT_MODE=OTG_IMPORT

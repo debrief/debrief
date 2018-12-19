@@ -20,7 +20,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -76,7 +75,6 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   public void createMenu(final javax.swing.JPopupMenu menu,
                          final Editable data,
                          final java.awt.Point thePoint,
-                         final CanvasType theCanvas,
                          final MWC.GUI.Properties.PropertiesPanel thePanel,
                          final Layer theParent,
                          final Layers theLayers,
@@ -100,7 +98,6 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
         cutter = new CutLayer(data,
                               _clipboard,
                               theParent,
-                              theCanvas,
                               theLayers,
                               updateLayer);
       }
@@ -110,7 +107,6 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
         cutter = new CutLayer(data,
                               _clipboard,
                               (Layer) data,
-                              theCanvas,
                               theLayers,
                               updateLayer);
       }
@@ -121,14 +117,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
         cutter = new CutItem(data,
                              _clipboard,
                              theParent,
-                             theCanvas,
                              theLayers,
                              updateLayer);
         // create the Actions
         copier = new CopyItem(data,
                               _clipboard,
                               theParent,
-                              theCanvas,
                               theLayers,
                               updateLayer);
 
@@ -162,14 +156,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
     protected Clipboard _myClipboard;
     protected Layer _theParent;
     protected Transferable _oldData;
-    protected CanvasType _theCanvas;
     protected Layers _theLayers;
     protected Layer _updateLayer;
 
     public CutItem(final Editable data,
                    final Clipboard clipboard,
                    final Layer theParent,
-                   final CanvasType theCanvas,
                    final Layers theLayers,
                    final Layer updateLayer)
     {
@@ -177,7 +169,6 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       _data = data;
       _myClipboard = clipboard;
       _theParent = theParent;
-      _theCanvas = theCanvas;
       _theLayers = theLayers;
       _updateLayer = updateLayer;
 
@@ -299,11 +290,10 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
 		public CopyItem(final Editable data,
                     final Clipboard clipboard,
                     final Layer theParent,
-                    final CanvasType theCanvas,
                     final Layers theLayers,
                     final Layer updateLayer)
     {
-      super(data, clipboard, theParent, theCanvas, theLayers, updateLayer);
+      super(data, clipboard, theParent, theLayers, updateLayer);
 
       super.setText("Copy " + data.getName());
     }
@@ -352,11 +342,10 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
 		public CutLayer(final Editable data,
                     final Clipboard clipboard,
                     final Layer theParent,
-                    final CanvasType theCanvas,
                     final Layers theLayers,
                     final Layer updateLayer)
     {
-      super(data, clipboard, theParent, theCanvas, theLayers, updateLayer);
+      super(data, clipboard, theParent, theLayers, updateLayer);
     }
 
     public String toString()
@@ -388,7 +377,7 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
       _theLayers.removeThisLayer(_theParent);
 
       // and update the chart
-      _theCanvas.updateMe();
+      _theLayers.fireModified(null);
     }
 
   }

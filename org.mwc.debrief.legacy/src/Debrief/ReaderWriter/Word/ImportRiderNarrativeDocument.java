@@ -1266,7 +1266,7 @@ public class ImportRiderNarrativeDocument
       else
       {
         final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-        final ArrayList<String> strings = iw.importFromWord(doc);
+        final ArrayList<String> strings = ImportNarrativeDocument.importFromWord(doc);
         iw.processThese(strings);
       }
     }
@@ -1300,7 +1300,7 @@ public class ImportRiderNarrativeDocument
     else
     {
       final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-      final ArrayList<String> strings = iw.importFromWordX(doc);
+      final ArrayList<String> strings = ImportNarrativeDocument.importFromWordX(doc);
       iw.processThese(strings);
     }
   }

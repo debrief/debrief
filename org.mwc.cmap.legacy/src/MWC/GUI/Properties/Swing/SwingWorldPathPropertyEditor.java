@@ -72,7 +72,7 @@ public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPr
 
   protected void openEditor()
   {
-    final WorldPathDetailEditor wpd  = new WorldPathDetailEditor(super._myPath, super._myChart, super._thePanel, super._theParent, getMyType());
+    final WorldPathDetailEditor wpd  = new WorldPathDetailEditor(super._myPath, _theLayers, super._thePanel, super._theParent, getMyType());
     wpd.addPropertyChangeListener(this);
     super._thePanel.add(wpd);
   }

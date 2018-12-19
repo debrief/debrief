@@ -134,7 +134,7 @@ public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator i
 			  menu.add(mi);
 
         // finally add the other editors
-        super.createAdditionalItems(menu, theCanvas, thePanel, (Editable)et.getData(), theData);
+        super.createAdditionalItems(menu, thePanel, (Editable)et.getData(), theData);
 
 			}
 		}
