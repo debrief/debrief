@@ -117,7 +117,7 @@ public class Layers
 
 
     /**
-     * Method that creates a new layer with the specified name
+     * Create (and store) a new layer with the specified name
      * 
      * @see MWC.GUI.Layer
      * @param name
