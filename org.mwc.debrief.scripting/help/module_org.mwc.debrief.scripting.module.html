@@ -18,27 +18,27 @@
 		</tr>
 		<tr>
 			<td><a id="DUR_DAYS">DUR_DAYS</a></td>
-			<td class="description" data-field="DUR_DAYS"></td>
+			<td class="description" data-field="DUR_DAYS">day units</td>
 		</tr>
 		<tr>
 			<td><a id="DUR_HOURS">DUR_HOURS</a></td>
-			<td class="description" data-field="DUR_HOURS"></td>
+			<td class="description" data-field="DUR_HOURS">hour units</td>
 		</tr>
 		<tr>
 			<td><a id="DUR_MICROSECONDS">DUR_MICROSECONDS</a></td>
-			<td class="description" data-field="DUR_MICROSECONDS"></td>
+			<td class="description" data-field="DUR_MICROSECONDS">microsecond units</td>
 		</tr>
 		<tr>
 			<td><a id="DUR_MILLISECONDS">DUR_MILLISECONDS</a></td>
-			<td class="description" data-field="DUR_MILLISECONDS"></td>
+			<td class="description" data-field="DUR_MILLISECONDS">millis units</td>
 		</tr>
 		<tr>
 			<td><a id="DUR_MINUTES">DUR_MINUTES</a></td>
-			<td class="description" data-field="DUR_MINUTES"></td>
+			<td class="description" data-field="DUR_MINUTES">minute units</td>
 		</tr>
 		<tr>
 			<td><a id="DUR_SECONDS">DUR_SECONDS</a></td>
-			<td class="description" data-field="DUR_SECONDS"></td>
+			<td class="description" data-field="DUR_SECONDS">seconds units</td>
 		</tr>
 	</table>
 
@@ -56,7 +56,7 @@
 		</tr>
 		<tr>
 			<td><a href="#createDate">createDate</a>()</td>
-			<td></td>
+			<td>create a new date, using indicated millis since epoch</td>
 		</tr>
 		<tr>
 			<td><a href="#createDateCalendarFormat">createDateCalendarFormat</a>()</td>
@@ -64,7 +64,7 @@
 		</tr>
 		<tr>
 			<td><a href="#createDateFromString">createDateFromString</a>()</td>
-			<td></td>
+			<td>create a date from this String value</td>
 		</tr>
 		<tr>
 			<td><a href="#createDuration">createDuration</a>()</td>
@@ -73,10 +73,6 @@
 		<tr>
 			<td><a href="#createFont">createFont</a>()</td>
 			<td>Function that creates a font object given a font name as string, an style and size.</td>
-		</tr>
-		<tr>
-			<td><a href="#fireNewTime">fireNewTime</a>()</td>
-			<td></td>
 		</tr>
 		<tr>
 			<td><a href="#getActivePlot">getActivePlot</a>()</td>
@@ -107,7 +103,7 @@
 			<dd class="description" data-parameter="blue">the blue component</dd>
 		</dl>
 
-		<p class="return"></p>
+		<p class="return">a color object</p>
 
 
 
@@ -116,14 +112,14 @@
 		<h3><a id="createDate">createDate</a></h3>
 		<p class="synopsis">MWC.GenericData.HiResDate createDate(long date)</p>
 
-		<p class="description"></p>
+		<p class="description">create a new date, using indicated millis since epoch</p>
 
 		<dl class="parameters">
 			<dt>date</dt>
-			<dd class="description" data-parameter="date"></dd>
+			<dd class="description" data-parameter="date">elapsed millis</dd>
 		</dl>
 
-		<p class="return"></p>
+		<p class="return">new date object</p>
 
 
 
@@ -164,20 +160,20 @@
 		<h3><a id="createDateFromString">createDateFromString</a></h3>
 		<p class="synopsis">MWC.GenericData.HiResDate createDateFromString(java.lang.String date, java.text.SimpleDateFormat formatter)</p>
 
-		<p class="description"></p>
+		<p class="description">create a date from this String value</p>
 
 		<dl class="parameters">
 			<dt>date</dt>
-			<dd class="description" data-parameter="date"></dd>
+			<dd class="description" data-parameter="date">the string to process</dd>
 			<dt>formatter</dt>
-			<dd class="description" data-parameter="formatter"></dd>
+			<dd class="description" data-parameter="formatter">the format for the string</dd>
 		</dl>
 
-		<p class="return"></p>
+		<p class="return">a new date object</p>
 
 		<dl class="exceptions">
 			<dt>ParseException</dt>
-			<dd class="description" data-exception="ParseException"></dd>
+			<dd class="description" data-exception="ParseException">if the parsing fails</dd>
 		</dl>
 
 
@@ -217,21 +213,6 @@
 		</dl>
 
 		<p class="return">Font object created.</p>
-
-
-
-	</div>
-	<div class="command" data-method="fireNewTime">
-		<h3><a id="fireNewTime">fireNewTime</a></h3>
-		<p class="synopsis">void fireNewTime(MWC.GenericData.HiResDate date)</p>
-
-		<p class="description"></p>
-
-		<dl class="parameters">
-			<dt>date</dt>
-			<dd class="description" data-parameter="date"></dd>
-		</dl>
-
 
 
 
