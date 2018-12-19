@@ -241,6 +241,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * the name we give to the root layer
 	 */
 	static private final String ROOT_OBJECT = new String("Data");
+	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -249,6 +250,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
+	
+	public SwingLayerManager() {
+	  super();
+	}
 
 	/**
 	 * return the updated data object - not really used.
@@ -260,6 +265,10 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	
 	protected void setCellRenderer(TreeCellRenderer cellRenderer) {
 	  _myTree.setCellRenderer(cellRenderer);
+	}
+	
+	protected void setCellEditor(TreeCellEditor cellEditor) {
+	  _myTree.setCellEditor(cellEditor);
 	}
 
 	/**
@@ -602,7 +611,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * @param isVisible
 	 *          whether it is now visible or not
 	 */
-	void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
+	protected void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
 	{
 		pl.setVisible(isVisible);
 
@@ -819,12 +828,13 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			super();
 			panel.setBackground(UIManager.getColor("Tree.textBackground"));
 			proxy.setOpaque(false);
-			checkBox.setOpaque(false);
+			
 			panel.setOpaque(false);
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			panel.add(proxy);
 			
 			panel.add(strut);
+			checkBox.setOpaque(false);
 			panel.add(checkBox);
 			
 
@@ -844,10 +854,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 					final Plottable pl = (Plottable) tn.getUserObject();
 					proxy.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
 							row, hasFocus1);
-
-					
-					
-					checkBox.setSelected(pl.getVisible());
+				  checkBox.setSelected(pl.getVisible());
 				}
 			}
 			
@@ -868,7 +875,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	//
 	// ////////////////////////////////////////////////
 
-	class ImmediateEditor extends DefaultTreeCellEditor
+	protected class ImmediateEditor extends DefaultTreeCellEditor
 	{
 		private final PlottableRenderer renderer;
 
@@ -1008,13 +1015,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * class which combines an item and it's layer into a MutableNode thingy
 	 */
-	private class PlottableNode extends javax.swing.tree.DefaultMutableTreeNode
+	protected class PlottableNode extends javax.swing.tree.DefaultMutableTreeNode
 	{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		private Layer _theParentLayer = null;
+		
+		private boolean _selected;
 
 		/**
 		 * Creates a tree node with no parent, no children, but which allows
@@ -1033,12 +1042,20 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		{
 			return _theParentLayer;
 		}
+		public void setSelected(boolean selected)
+    {
+      this._selected = selected;
+    }
+		public boolean isSelected()
+    {
+      return _selected;
+    }
 	}
 
 	/**
 	 * class which handles the action of show/hide an item
 	 */
-	private class ChangeVis implements MWC.GUI.Tools.Action
+	protected class ChangeVis implements MWC.GUI.Tools.Action
 	{
 		// ////////////////////////////////////////////////
 		// member objects
@@ -1101,5 +1118,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			_myPlottable.setVisible(!_isVis);
 		}
 	}
+	
 
 }
