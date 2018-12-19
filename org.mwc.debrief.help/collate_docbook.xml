@@ -305,7 +305,7 @@
 			<doclet name="org.eclipse.ease.helpgenerator.ModuleDoclet" path="${lib-dir}/easedoclet.jar">
 				<param name="-root" value="../org.mwc.debrief.scripting" />
 				<param name="-failOnMissingDocs" value="false"/>
-				<param name="failOnHTMLError" value="false"/>
+				<param name="-failOnHTMLError" value="false"/>
 			</doclet>
 		</javadoc>
 	</target>
