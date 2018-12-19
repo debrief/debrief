@@ -9,10 +9,8 @@ loadModule('/Debrief/Core'); // for plot, duration, date
  * function to return the unique entries in the provided list from here:
  * https://coderwall.com/p/nilaba/simple-pure-javascript-array-unique-method-with-5-lines-of-code
  */
-Array.prototype.unique = function()
-{
-	return this.filter(function(value, index, self)
-	{
+Array.prototype.unique = function() {
+	return this.filter(function(value, index, self) {
 		return self.indexOf(value) === index;
 	});
 }
@@ -24,9 +22,16 @@ if (plot != null) // did we find a Debrief plot?
 	let tracks = layers.getTracks();
 
 	// collate a list of symbols
-	var symbols =
-	[];
+	var symbols = [];
 	let len = tracks.length; // find number of tracks
+	
+	// do we hj
+	if(len== 0)
+	{
+		showInfoDialog("No tracks found", "Filter symbols");
+		exit(0);
+	}
+	
 	for (var i = 0; i < len; i++) // loop through tracks
 	{
 		let track = tracks[i]; // get this track
@@ -47,13 +52,12 @@ if (plot != null) // did we find a Debrief plot?
 	}
 
 	// now loop through, and hide any that don't match
-	for (var i = 0; i < len; i++)
-	{
+	for (var i = 0; i < len; i++) {
 		let track = tracks[i]; // get the next track
 		let symbol = track.getSymbolType(); // get its symbol
 
 		let isVis = symbol == chosenSym; // does this match the chosen one?
-		track.setVisible(isVis);  // set visibility accordingly
+		track.setVisible(isVis); // set visibility accordingly
 	}
 
 	layers.fireModified();
