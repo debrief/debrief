@@ -21,6 +21,11 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import junit.framework.TestCase;
 
+/** creating shape objects
+ * 
+ * @author ian
+ *
+ */
 public class Shapes
 {
 
@@ -379,7 +384,7 @@ public class Shapes
     return new ShapeWrapper(name, new RectangleShape(TL, BR), color, null);
   }
 
-  /**
+  /** Create a wheel shape
    *
    * @param theCenter
    *          the center of the wheel

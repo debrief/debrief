@@ -27,6 +27,11 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.Coast.Coastline;
 
+/** capabilities related to managing the chart
+ * 
+ * @author ian
+ *
+ */
 public class Chart
 {
 
