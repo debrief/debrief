@@ -279,7 +279,7 @@ public class Layers
       _layers.walkVisibleItems(LightweightTrackWrapper.class, function);
 
       return items.toArray(new LightweightTrackWrapper[]
-      {null});
+          {});
     }
 
     /**
