@@ -14,6 +14,7 @@ import org.eclipse.ease.modules.WrapToScript;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -294,16 +295,97 @@ public class Core
       defaultValue = "unset") final String filename)
   {
     final Plot answer[] = new Plot[1];
-    Display.getDefault().syncExec(() -> {
-      IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-          .getActivePage().getActiveEditor();
-      if (editor instanceof PlotEditor)
+    Display.getDefault().syncExec(new Runnable()
+    {
+      @Override
+      public void run()
       {
-        answer[0] = new Plot((PlotEditor) editor);
+
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+
+        // special case: if no filename is provided, and active editor is valid,
+        // then we'll return it
+        if ("unset".equals(filename) || filename == null)
+        {
+          final IWorkbenchWindow window = PlatformUI.getWorkbench()
+              .getActiveWorkbenchWindow();
+          final IWorkbenchPage page = window.getActivePage();
+          final IEditorPart editor = page.getActiveEditor();
+          final IEditorSite editorSite = editor.getEditorSite();
+          final String id =  editorSite.getId();
+          if (validDescriptor(id))
+          {
+            answer[0] = new Plot((PlotEditor) editor);
+            return;
+          }
+        }
+
+        // ok, loop through, and find the first editor that either
+        // matches the filenma,e
+        final IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
+        for (final IWorkbenchWindow window : windows)
+        {
+          if (window != null)
+          {
+            final IWorkbenchPage[] pages = window.getPages();
+            for (final IWorkbenchPage page : pages)
+            {
+              final IEditorReference[] editors = page.getEditorReferences();
+              
+              // first check for matching filename
+              if (filename != null)
+              {
+                for (final IEditorReference editor : editors)
+                {
+                  final String descriptor = editor.getId();
+                  if (filename.equals(editor.getName()))
+                  {
+                    // ok, we either didn't have an editor name, or this matches
+                    if (validDescriptor(descriptor))
+                    {
+                      final IEditorPart instance = editor.getEditor(false);
+                      if (instance != null)
+                      {
+                        answer[0] = new Plot((PlotEditor) instance);
+                        return;
+                      }
+                    }
+                  }
+                }
+              }
+              
+              // still here? this time check for suitable editor type
+              for (final IEditorReference editor : editors)
+              {
+                final String descriptor = editor.getId();
+                if (filename == null || "unset".equals(filename) )
+                {
+                  // ok, we either didn't have an editor name, or this matches
+                  if (validDescriptor(descriptor))
+                  {
+                    final IEditorPart instance = editor.getEditor(false);
+                    if (instance != null)
+                    {
+                      answer[0] = new Plot((PlotEditor) instance);
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     });
     return answer[0];
   }
+  
+  private static boolean validDescriptor(final String descriptor)
+  {
+    return "org.mwc.debrief.PlotEditor".equals(descriptor)
+        || "org.mwc.debrief.TrackEditor".equals(descriptor);
+  }
+  
 
   /**
    * helper application to help track activation/closing of new plots
