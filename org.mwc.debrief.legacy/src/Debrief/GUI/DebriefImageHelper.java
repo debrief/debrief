@@ -45,7 +45,6 @@ public class DebriefImageHelper
   public String getImageFor(Editable editable)
   {
     String res = null;
-    
     if (editable instanceof SensorWrapper)
       res = "icons/16/sensor.png";
     else if (editable instanceof ChartFolio)
@@ -100,7 +99,11 @@ public class DebriefImageHelper
     else if (editable instanceof LightweightTrackWrapper)
     {
       res = "icons/16/light_track.png";      
-    }    
+    }
+    if(res == null) {
+      String imageKey = CoreImageHelper.getImageKeyFor(editable);
+      res = "icons/16/"+imageKey;
+    }
     return res;
   }
 }
