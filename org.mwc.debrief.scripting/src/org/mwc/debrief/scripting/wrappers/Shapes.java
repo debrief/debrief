@@ -307,7 +307,7 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return
+   * @return New line created with the parameters given
    */
   @WrapToScript
   public static ShapeWrapper createLine(final WorldLocation startPt,
