@@ -100,10 +100,6 @@ public class DebriefImageHelper
     {
       res = "icons/16/light_track.png";      
     }
-    if(res == null) {
-      String imageKey = CoreImageHelper.getImageKeyFor(editable);
-      res = "icons/16/"+imageKey;
-    }
     return res;
   }
 }

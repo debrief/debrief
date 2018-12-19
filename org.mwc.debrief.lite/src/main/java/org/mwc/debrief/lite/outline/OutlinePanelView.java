@@ -34,7 +34,9 @@ import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeNode;
 
+import Debrief.GUI.CoreImageHelper;
 import Debrief.GUI.DebriefImageHelper;
 import MWC.GUI.Plottable;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
@@ -110,6 +112,10 @@ public class OutlinePanelView extends SwingLayerManager
           final Plottable pl = (Plottable) tn.getUserObject();
           DebriefImageHelper helper = new DebriefImageHelper();
           String icon = helper.getImageFor(pl);
+          if(icon==null) {
+              String imageKey = CoreImageHelper.getImageKeyFor(pl);
+              icon = "icons/16/"+imageKey;
+          }
           if(icon!=null) {
             URL iconURL = DebriefImageHelper.class.getClassLoader().getResource(icon);
             setIcon(new ImageIcon(iconURL));
@@ -199,6 +205,11 @@ public class OutlinePanelView extends SwingLayerManager
       return lastEditedNode.getUserObject();
     }
 
+  }
+  
+  protected void editThis(final TreeNode node)
+  {
+    System.out.println("Editing...");
   }
   
 }
