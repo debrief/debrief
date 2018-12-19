@@ -300,6 +300,24 @@ public class ImportRiderNarrativeDocument
         throw new IllegalArgumentException("Not implemented");
       }
 
+      @Override
+      public void addSecondary(WatchableList secondary)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void setPrimary(WatchableList primary)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
+      @Override
+      public void setSecondary(WatchableList secondary)
+      {
+        throw new IllegalArgumentException("Not implemented");
+      }
+
     }
 
     private final static String valid_doc_path =
