@@ -171,7 +171,7 @@ public class OutlinePanelView extends SwingLayerManager
 
       visibilityLabel.addMouseListener(new MouseAdapter()
       {
-        public void mouseClicked(final MouseEvent e)
+        public void mousePressed(final MouseEvent e)
         {
           final Plottable pl = (Plottable) lastEditedNode.getUserObject();
           final PlottableNode pln = (PlottableNode) lastEditedNode;
