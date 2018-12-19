@@ -439,8 +439,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 					SwingWorldSpeedPropertyEditor.class);
 			PropertyEditorManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
 					SwingWorldAccelerationPropertyEditor.class);
-			PropertyEditorManager.registerEditor(MWC.GenericData.WorldPath.class,
-					MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor.class);
 			// we were adding the Color editor in this method - but instead
 			// we've added it in the Swing application initialisation classes
 			// so that it is also available to the right-click editing algorithms,
