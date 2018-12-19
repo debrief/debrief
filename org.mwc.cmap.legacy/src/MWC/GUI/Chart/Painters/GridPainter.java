@@ -213,7 +213,7 @@ public class GridPainter implements Plottable, Serializable, ClassWithProperty
 
   /**
    * property change support for this shape, this allows us to store a list of objects which are
-   * interested in modification to this
+   * intererested in modification to this
    */
   private final PropertyChangeSupport _pSupport;
 

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Stackedcharts Editor
 Bundle-SymbolicName: info.limpet.stackedcharts.ui;singleton:=true
-Bundle-Version: 1.0.3.qualifier
+Bundle-Version: 1.0.3
 Bundle-Activator: info.limpet.stackedcharts.ui.editor.Activator
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Require-Bundle: org.eclipse.ui,
