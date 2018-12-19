@@ -250,11 +250,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
-	
-	public SwingLayerManager() {
-	  super();
-	}
-
 	/**
 	 * return the updated data object - not really used.
 	 */
@@ -1015,7 +1010,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * class which combines an item and it's layer into a MutableNode thingy
 	 */
-	protected class PlottableNode extends javax.swing.tree.DefaultMutableTreeNode
+	protected class PlottableNode extends DefaultMutableTreeNode
 	{
 		/**
 		 * 

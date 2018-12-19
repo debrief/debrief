@@ -51,10 +51,6 @@ public class OutlinePanelView extends SwingLayerManager
    */
   private static final long serialVersionUID = 1L;
   
-  public OutlinePanelView() {
-    super();
-  }
-
   @Override
   protected void initForm()
   {
@@ -109,7 +105,7 @@ public class OutlinePanelView extends SwingLayerManager
       {
         final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
         final Object data = tn.getUserObject();
-        if (data instanceof MWC.GUI.Plottable)
+        if (data instanceof Plottable)
         {
           final Plottable pl = (Plottable) tn.getUserObject();
           DebriefImageHelper helper = new DebriefImageHelper();
@@ -165,8 +161,8 @@ public class OutlinePanelView extends SwingLayerManager
      */
     private static final long serialVersionUID = 1L;
     private JLabel visibilityLabel;
-    OutlineRenderer renderer;
-    DefaultMutableTreeNode lastEditedNode;
+    private OutlineRenderer renderer;
+    private DefaultMutableTreeNode lastEditedNode;
     
     public OutlineCellEditor()
     {
