@@ -57,7 +57,6 @@ public final class OS
         else if (s.equals("Macintosh") ||
 				 s.equals("macos") ||		//Applet Viewer
 				 s.equals("Mac OS") ||		//Netscape
-         s.equals("Mac OS X") ||    //Netscape
 				 s.equals("MacOS"))			//Internet Exploader
         {
             isMacintosh = true;

@@ -1173,11 +1173,6 @@ public abstract class CorePlotEditor extends EditorPart implements
   {
     return _myChart;
   }
-  
-  public Layers getLayers()
-  {
-    return _myLayers;
-  }
 
   /*
    * (non-Javadoc)

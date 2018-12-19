@@ -6,10 +6,9 @@
     <groupId>org.mwc.debrief</groupId>
     <artifactId>parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <relativePath>../</relativePath>
   </parent>
-  <groupId>info.limpet</groupId>
+  <groupId>org.mwc.debrief</groupId>
   <artifactId>info.limpet.stackedcharts.model</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.2</version>
   <packaging>eclipse-plugin</packaging>
 </project>
