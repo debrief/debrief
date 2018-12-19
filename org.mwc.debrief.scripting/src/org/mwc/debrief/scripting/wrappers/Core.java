@@ -11,6 +11,7 @@ import java.util.Calendar;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
 import org.eclipse.ease.modules.WrapToScript;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
@@ -101,11 +102,11 @@ public class Core
 
       final Calendar calendarCreated = Calendar.getInstance();
       calendarCreated.setTime(created.getDate());
-      assertEquals("Correct date for testCreateDateCalendarFormat", now, calendarCreated);
+      assertEquals("Correct date for testCreateDateCalendarFormat", now,
+          calendarCreated);
     }
   }
 
-  
   /**
    * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
    * 255). The actual color used in rendering depends on finding the best match given the color
@@ -126,11 +127,11 @@ public class Core
     return new Color(red, green, blue);
   }
 
-  
-
-  /** create a new date, using indicated millis since epoch
+  /**
+   * create a new date, using indicated millis since epoch
    * 
-   * @param date elapsed millis
+   * @param date
+   *          elapsed millis
    * @return new date object
    */
   @WrapToScript
@@ -139,13 +140,16 @@ public class Core
     return new HiResDate(date);
   }
 
-  
-  /** create a date from this String value
+  /**
+   * create a date from this String value
    * 
-   * @param date the string to process
-   * @param formatter the format for the string
+   * @param date
+   *          the string to process
+   * @param formatter
+   *          the format for the string
    * @return a new date object
-   * @throws ParseException if the parsing fails
+   * @throws ParseException
+   *           if the parsing fails
    */
   @WrapToScript
   public static HiResDate createDateFromString(final String date,
@@ -154,7 +158,6 @@ public class Core
     return new HiResDate(formatter.parse(date));
   }
 
-  
   /**
    * Returns a High Resolution date from values given in the calendar format
    * 
@@ -188,47 +191,48 @@ public class Core
     return new HiResDate(calendar.getTime());
   }
 
-  
-  /** microsecond units
+  /**
+   * microsecond units
    * 
-   */  
+   */
   @WrapToScript
   static public final int DUR_MICROSECONDS = 0;
 
-  /** millis units
+  /**
+   * millis units
    * 
    */
   @WrapToScript
   static public final int DUR_MILLISECONDS = 1;
 
-  
-  /** seconds units
+  /**
+   * seconds units
    * 
    */
   @WrapToScript
   static public final int DUR_SECONDS = 2;
 
-  
-  /** minute units
+  /**
+   * minute units
    * 
    */
   @WrapToScript
   static public final int DUR_MINUTES = 3;
 
-  
-  /** hour units
+  /**
+   * hour units
    * 
    */
   @WrapToScript
   static public final int DUR_HOURS = 4;
 
-  /** day units
+  /**
+   * day units
    * 
    */
   @WrapToScript
   static public final int DUR_DAYS = 5;
 
-  
   /**
    * Function that creates a duration given a value and the unit
    * 
@@ -246,7 +250,6 @@ public class Core
     return new Duration(value, units);
   }
 
-  
   /**
    * Function that creates a font object given a font name as string, an style and size.
    * 
@@ -266,7 +269,6 @@ public class Core
     return new Font(fontName, style, size);
   }
 
-  
   /**
    * Function that returns the active plot (Editor).
    * 
@@ -279,7 +281,6 @@ public class Core
     return getPlot(null);
   }
 
-  
   /**
    * Method that returns a plot given its name.
    * 
@@ -292,38 +293,16 @@ public class Core
   public static Plot getPlot(@ScriptParameter(
       defaultValue = "unset") final String filename)
   {
-    final IWorkbench workbench = PlatformUI.getWorkbench();
-    final IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
-    for (final IWorkbenchWindow window : windows)
-    {
-      if (window != null)
+    final Plot answer[] = new Plot[1];
+    Display.getDefault().syncExec(() -> {
+      IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+          .getActivePage().getActiveEditor();
+      if (editor instanceof PlotEditor)
       {
-        final IWorkbenchPage[] pages = window.getPages();
-        for (final IWorkbenchPage page : pages)
-        {
-          final IEditorReference[] editors = page.getEditorReferences();
-          for (final IEditorReference editor : editors)
-          {
-            final String descriptor = editor.getId();
-            if (filename == null || "unset".equals(filename) || filename.equals(
-                editor.getName()))
-            {
-              // ok, we either didn't have an editor name, or this matches
-              if ("org.mwc.debrief.PlotEditor".equals(descriptor)
-                  || "org.mwc.debrief.TrackEditor".equals(descriptor))
-              {
-                final IEditorPart instance = editor.getEditor(false);
-                if (instance != null)
-                {
-                  return new Plot((PlotEditor) instance);
-                }
-              }
-            }
-          }
-        }
+        answer[0] = new Plot((PlotEditor) editor);
       }
-    }
-    return null;
+    });
+    return answer[0];
   }
 
   /**
@@ -342,9 +321,11 @@ public class Core
     listenToMyParts();
   }
 
-  /** set a new time
+  /**
+   * set a new time
    * 
-   * @param date the new time to jump to
+   * @param date
+   *          the new time to jump to
    */
   protected void fireNewTime(final HiResDate date)
   {
