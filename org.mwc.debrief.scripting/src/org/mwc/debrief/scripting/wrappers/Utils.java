@@ -49,6 +49,7 @@ public class Utils
    * @throws UnsupportedFlavorException if the system can't handle this type of data
    * @throws IOException other input/output exception
    */
+  @WrapToScript
   public static String getClipboard() throws HeadlessException,
       UnsupportedFlavorException, IOException
   {
@@ -63,6 +64,7 @@ public class Utils
    * @param _clipboardData
    *          String text to be added to the clipboard.
    */
+  @WrapToScript
   public static void setClipboard(final String _clipboardData)
   {
     final StringSelection selection = new StringSelection(_clipboardData);
@@ -78,6 +80,7 @@ public class Utils
    * @param error
    *          Error message to be written in the log.
    */
+  @WrapToScript
   public static void writeError(final String error)
   {
     DebriefPlugin.logError(IStatus.ERROR, error, null);
@@ -90,6 +93,7 @@ public class Utils
    * @param info
    *          Information message to be written in the log.
    */
+  @WrapToScript
   public static void writeInfo(final String info)
   {
     DebriefPlugin.logError(IStatus.INFO, info, null);
@@ -102,6 +106,7 @@ public class Utils
    * @param warning
    *          Warning message to be written in the log.
    */
+  @WrapToScript
   public static void writeWarning(final String warning)
   {
     DebriefPlugin.logError(IStatus.WARNING, warning, null);

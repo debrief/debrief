@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import org.eclipse.ease.modules.ScriptParameter;
+import org.eclipse.ease.modules.WrapToScript;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -66,6 +67,7 @@ public class Layers
      * @param layer
      *          Layer to be added.
      */
+    @WrapToScript
     public void add(final Layer layer)
     {
       _layers.addThisLayer(layer);
@@ -74,6 +76,7 @@ public class Layers
     /**
      * Removes all the layers.
      */
+    @WrapToScript
     public void clear()
     {
       _layers.clear();
@@ -87,6 +90,7 @@ public class Layers
      *          Name of the new layer.
      * @return Layer with the specified name
      */
+    @WrapToScript
     public Layer createLayer(final String name)
     {
       // do we already have it?
@@ -108,6 +112,7 @@ public class Layers
      *          Name of the layer to find.
      * @return Layer with the specified name.
      */
+    @WrapToScript
     public Layer findLayer(final String name)
     {
       return _layers.findLayer(name, true);
@@ -120,6 +125,7 @@ public class Layers
      *          what we're looking for
      * @return the matching item (or null)
      */
+    @WrapToScript
     public Editable findThis(final String name)
     {
       Editable res = null;
@@ -175,6 +181,7 @@ public class Layers
      *          Name to be found.
      * @return LightweightTrackWrapper that contains the track of the name given.
      */
+    @WrapToScript
     public LightweightTrackWrapper findTrack(@ScriptParameter(
         defaultValue = "unset") final String name)
     {
@@ -208,6 +215,7 @@ public class Layers
     /**
      * Method needed to update the plot.
      */
+    @WrapToScript
     public void fireModified()
     {
       _layers.fireExtended();
@@ -219,6 +227,7 @@ public class Layers
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
      * @return Array containing the tracks in the layer as LightweightTrackWrapper
      */
+    @WrapToScript
     public LightweightTrackWrapper[] getTracks()
     {
       final ArrayList<LightweightTrackWrapper> items =
@@ -245,6 +254,7 @@ public class Layers
      * @param layer
      *          Layer to be removed.
      */
+    @WrapToScript
     public void remove(final Layer layer)
     {
       _layers.removeThisLayer(layer);
@@ -255,6 +265,7 @@ public class Layers
      * 
      * @return Amount of layers in the current instance.
      */
+    @WrapToScript
     public int size()
     {
       return _layers.size();

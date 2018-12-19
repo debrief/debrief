@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
+import org.eclipse.ease.modules.WrapToScript;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 
 import MWC.GenericData.WatchableList;
@@ -33,6 +34,7 @@ public class Tote
    * 
    * @return the track manager object org.mwc.cmap.core.DataTypes.TrackData.TrackManager
    */
+  @WrapToScript
   public TrackManager getTrackManager()
   {
     return trackManager;
@@ -42,6 +44,7 @@ public class Tote
    * 
    * @param trackManager the new manager object
    */
+  @WrapToScript
   public void setTrackManager(TrackManager trackManager)
   {
     this.trackManager = trackManager;
@@ -55,6 +58,7 @@ public class Tote
    * @param secondary
    *          List to be added.
    */
+  @WrapToScript
   public void addSecondary(final WatchableList secondary)
   {
     trackManager.addSecondary(secondary);
@@ -65,6 +69,7 @@ public class Tote
    * 
    * @return Primary track of the current plot.
    */
+  @WrapToScript
   public WatchableList getPrimaryTrack()
   {
     return trackManager.getPrimaryTrack();
@@ -75,6 +80,7 @@ public class Tote
    * 
    * @return Array of secondary list of the current plot.
    */
+  @WrapToScript
   public WatchableList[] getSecondaryTracks()
   {
     return trackManager.getSecondaryTracks();
@@ -86,6 +92,7 @@ public class Tote
    * @param primary
    *          New primary set
    */
+  @WrapToScript
   public void setPrimaryTrack(final WatchableList primary)
   {
     trackManager.setPrimary(primary);
@@ -97,6 +104,7 @@ public class Tote
    * @param secondary
    *          New secondary track.
    */
+  @WrapToScript
   public void setSecondary(final WatchableList secondary)
   {
     trackManager.setSecondary(secondary);

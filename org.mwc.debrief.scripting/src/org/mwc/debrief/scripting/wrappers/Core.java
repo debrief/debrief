@@ -118,6 +118,7 @@ public class Core
    *          the blue component
    * @return a color object
    */
+  @WrapToScript
   public static Color createColorRGB(final int red, final int green,
       final int blue)
   {
@@ -131,6 +132,7 @@ public class Core
    * @param date elapsed millis
    * @return new date object
    */
+  @WrapToScript
   public static HiResDate createDate(final long date)
   {
     return new HiResDate(date);
@@ -144,6 +146,7 @@ public class Core
    * @return a new date object
    * @throws ParseException if the parsing fails
    */
+  @WrapToScript
   public static HiResDate createDateFromString(final String date,
       final SimpleDateFormat formatter) throws ParseException
   {
@@ -174,6 +177,7 @@ public class Core
    *          10:04:15.250 PM the SECOND is 15.
    * @return High Resolution date from values given in the calendar format
    */
+  @WrapToScript
   public static HiResDate createDateCalendarFormat(final int year,
       final int month, final int date, final int hourOfDay, final int minute,
       final int second)
@@ -187,34 +191,40 @@ public class Core
   /** microsecond units
    * 
    */  
+  @WrapToScript
   static public final int DUR_MICROSECONDS = 0;
 
   /** millis units
    * 
-   */  
+   */
+  @WrapToScript
   static public final int DUR_MILLISECONDS = 1;
 
   
   /** seconds units
    * 
    */
+  @WrapToScript
   static public final int DUR_SECONDS = 2;
 
   
   /** minute units
    * 
    */
+  @WrapToScript
   static public final int DUR_MINUTES = 3;
 
   
   /** hour units
    * 
    */
+  @WrapToScript
   static public final int DUR_HOURS = 4;
 
   /** day units
    * 
    */
+  @WrapToScript
   static public final int DUR_DAYS = 5;
 
   
@@ -229,6 +239,7 @@ public class Core
    *          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5
    * @return Duration object created.
    */
+  @WrapToScript
   public static Duration createDuration(final int value, final int units)
   {
     return new Duration(value, units);
@@ -247,6 +258,7 @@ public class Core
    *          Size of the font created.
    * @return Font object created.
    */
+  @WrapToScript
   public static Font createFont(final String fontName, final int style,
       final int size)
   {
@@ -260,6 +272,7 @@ public class Core
    * @see org.mwc.debrief.scripting.wrappers.Plot
    * @return Plot instance currently active.
    */
+  @WrapToScript
   public static Plot getActivePlot()
   {
     return getPlot(null);
@@ -274,6 +287,7 @@ public class Core
    *          Name of the plot editor.
    * @return Plot instance.
    */
+  @WrapToScript
   public static Plot getPlot(@ScriptParameter(
       defaultValue = "unset") final String filename)
   {

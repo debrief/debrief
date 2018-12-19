@@ -1,5 +1,7 @@
 package org.mwc.debrief.scripting.wrappers;
 
+import org.eclipse.ease.modules.WrapToScript;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -94,6 +96,7 @@ public class Tactical
    * @param speedYps Speed in yards per second.
    * @return New fix object.
    */
+  @WrapToScript
   public static FixWrapper createFix(final HiResDate time,
       final WorldLocation location, final double courseRads,
       final double speedYps)
@@ -109,6 +112,7 @@ public class Tactical
    *          Title of the narrative.
    * @return Narrative Wrapper Object.
    */
+  @WrapToScript
   public static NarrativeWrapper createNarrative(final String title)
   {
     return new NarrativeWrapper(title);
@@ -122,6 +126,7 @@ public class Tactical
    * @param entry the textual entry
    * @return a new narrative entry
    */
+  @WrapToScript
   public static NarrativeEntry createNarrativeEntry(final String track,
       final String type, final HiResDate DTG, final String entry)
   {
@@ -133,6 +138,7 @@ public class Tactical
    * @param name Name of the new Sensor
    * @return New sensor object with the name given.
    */
+  @WrapToScript
   public static SensorWrapper createSensor(final String name)
   {
     final SensorWrapper sensor = new SensorWrapper(name);
@@ -146,6 +152,7 @@ public class Tactical
    * @param date Date of the new sensor to be created.
    * @return New sensor object.
    */
+  @WrapToScript
   public static SensorContactWrapper createSensorContact(final HiResDate date)
   {
     final SensorContactWrapper res = new SensorContactWrapper();
@@ -161,6 +168,7 @@ public class Tactical
    *          Name of the new track created.
    * @return New Track created.
    */
+  @WrapToScript
   public static TrackWrapper createTrack(final String name)
   {
     final TrackWrapper res = new TrackWrapper();

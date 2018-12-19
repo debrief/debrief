@@ -74,6 +74,7 @@ public class Annotations
    *          Color of the label
    * @return the new label
    */
+  @WrapToScript
   public static LabelWrapper createLabel(final String name,
       final WorldLocation location, final java.awt.Color theColor)
   {
@@ -95,6 +96,7 @@ public class Annotations
    *          the end time, or null if single date value
    * @return the new dated label
    */
+  @WrapToScript
   public static LabelWrapper createLabelDate(final String label,
       final WorldLocation location, final java.awt.Color theColor,
       final HiResDate startDTG, final HiResDate endDTG)

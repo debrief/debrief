@@ -209,6 +209,7 @@ public class Shapes
    *          PolygonShape to add the new Node
    * @return Reference to the added node.
    */
+  @WrapToScript
   public static PolygonNode addPolygonNode(final String name,
       final WorldLocation location, final PolygonShape parent)
   {
@@ -230,6 +231,7 @@ public class Shapes
    *          Color of the Shape
    * @return Circle Shape
    */
+  @WrapToScript
   public static ShapeWrapper createCircle(final WorldLocation center,
       final WorldDistance radius, final String name, final Color color)
   {
@@ -254,6 +256,7 @@ public class Shapes
    *          Color of the Shape
    * @return New Eclipse as a ShapeWrapper
    */
+  @WrapToScript
   public static ShapeWrapper createEllipse(final WorldLocation theCenter,
       final double theOrient, final WorldDistance theMaxima,
       final WorldDistance theMinima, final String name, final Color color)
@@ -283,6 +286,7 @@ public class Shapes
    *          Color of the Shape
    * @return FurthestOnCircle Shape as a ShapeWrapper.
    */
+  @WrapToScript
   public static ShapeWrapper createFurthestOnCircleShape(
       final WorldLocation theCenter, final int numRings, final WorldSpeed speed,
       final long interval, final int arcCenter, final int arcWidth,
@@ -305,6 +309,7 @@ public class Shapes
    *          Color of the Shape
    * @return
    */
+  @WrapToScript
   public static ShapeWrapper createLine(final WorldLocation startPt,
       final WorldLocation endPt, final String name, final Color color)
   {
@@ -323,6 +328,7 @@ public class Shapes
    *          Color of the Shape
    * @return Polygon Shape.
    */
+  @WrapToScript
   public static ShapeWrapper createPolygon(final String name, final Color color)
   {
     return new ShapeWrapper(name, new PolygonShape(new Vector<PolygonNode>()),
@@ -344,6 +350,7 @@ public class Shapes
    *          Color of the Shape
    * @return New RangeRingShape created as a ShapeWrapper
    */
+  @WrapToScript
   public static ShapeWrapper createRangeRingShape(final WorldLocation theCenter,
       final int numRings, final WorldDistance ringWidth, final String name,
       final Color color)
@@ -365,6 +372,7 @@ public class Shapes
    *          Color of the Shape
    * @return New RectangleShape created as a ShapeWrapper
    */
+  @WrapToScript
   public static ShapeWrapper createRectangleShape(final WorldLocation TL,
       final WorldLocation BR, final String name, final Color color)
   {
@@ -385,6 +393,7 @@ public class Shapes
    *          Color of the Shape
    * @return New WheelShape created as a ShapeWrapper
    */
+  @WrapToScript
   public static ShapeWrapper createWheelShape(final WorldLocation theCenter,
       final double theInnerRadius, final double theOuterRadius,
       final String name, final Color color)

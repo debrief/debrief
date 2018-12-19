@@ -37,6 +37,7 @@ public class Chart
    * @see MWC.GUI.Chart.Painters.CoastPainter
    * @return CoastPainter object created.
    */
+  @WrapToScript
   public static CoastPainter createCoastPainter()
   {
     return new CoastPainter();
@@ -53,6 +54,7 @@ public class Chart
    *          Parent Layers of the ETOPOPainter.
    * @return ETOPOPainter object created.
    */
+  @WrapToScript
   public static ETOPOPainter createETOPOPainter(final String pathName,
       final Layers parentLayers)
   {
@@ -66,6 +68,7 @@ public class Chart
    * @see MWC.GUI.Chart.Painters.GridPainter
    * @return GridPainter object created.
    */
+  @WrapToScript
   public static GridPainter createGrid()
   {
     return new GridPainter();
@@ -78,6 +81,7 @@ public class Chart
    * @see MWC.GUI.Chart.Painters.ScalePainter
    * @return ScalePainter object created.
    */
+  @WrapToScript
   public static ScalePainter createScale()
   {
     return new ScalePainter();
@@ -96,6 +100,7 @@ public class Chart
    * @throws ParseException
    *           Exception in case the data has a wrong format.
    */
+  @WrapToScript
   public static Coastline loadCoastline(final InputStream inputStream)
       throws IOException, ParseException
   {
