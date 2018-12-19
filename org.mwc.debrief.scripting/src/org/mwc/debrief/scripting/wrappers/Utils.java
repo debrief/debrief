@@ -22,6 +22,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.ease.modules.WrapToScript;
 import org.mwc.debrief.core.DebriefPlugin;
 
 /** Utility methods, copying data to/from the system
