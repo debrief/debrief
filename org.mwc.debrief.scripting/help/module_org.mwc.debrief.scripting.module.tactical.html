@@ -1,0 +1,157 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Tactical Module">
+		<h1>Tactical Module</h1>
+		<p class="description">entities related to measured vessel data</p>
+
+	</div>
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#createFix">createFix</a>()</td>
+			<td>Create a fix given the time, location, course in radians and speed in yards per seconds.</td>
+		</tr>
+		<tr>
+			<td><a href="#createNarrative">createNarrative</a>()</td>
+			<td>Creates a Narrative Wrapper</td>
+		</tr>
+		<tr>
+			<td><a href="#createNarrativeEntry">createNarrativeEntry</a>()</td>
+			<td>Create a new narrative entry.</td>
+		</tr>
+		<tr>
+			<td><a href="#createSensor">createSensor</a>()</td>
+			<td>Create a new sensor with the given name.</td>
+		</tr>
+		<tr>
+			<td><a href="#createSensorContact">createSensorContact</a>()</td>
+			<td>Creates a new sensor with the date given as DTG.</td>
+		</tr>
+		<tr>
+			<td><a href="#createTrack">createTrack</a>()</td>
+			<td>Creates a track with the given name.</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="createFix">
+		<h3><a id="createFix">createFix</a></h3>
+		<p class="synopsis">Debrief.Wrappers.FixWrapper createFix(MWC.GenericData.HiResDate time, MWC.GenericData.WorldLocation location, double courseDegs, double speedMs)</p>
+
+		<p class="description">Create a fix given the time, location, course in radians and speed in yards per seconds.</p>
+
+		<dl class="parameters">
+			<dt>time</dt>
+			<dd class="description" data-parameter="time">Time of the new fix</dd>
+			<dt>location</dt>
+			<dd class="description" data-parameter="location">Location of the new fix</dd>
+			<dt>courseDegs</dt>
+			<dd class="description" data-parameter="courseDegs">Course in degrees of the new fix</dd>
+			<dt>speedMs</dt>
+			<dd class="description" data-parameter="speedMs">Speed in metres per second.</dd>
+		</dl>
+
+		<p class="return">New fix object.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createNarrative">
+		<h3><a id="createNarrative">createNarrative</a></h3>
+		<p class="synopsis">MWC.TacticalData.NarrativeWrapper createNarrative(java.lang.String title)</p>
+
+		<p class="description">Creates a Narrative Wrapper</p>
+
+		<dl class="parameters">
+			<dt>title</dt>
+			<dd class="description" data-parameter="title">Title of the narrative.</dd>
+		</dl>
+
+		<p class="return">Narrative Wrapper Object.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createNarrativeEntry">
+		<h3><a id="createNarrativeEntry">createNarrativeEntry</a></h3>
+		<p class="synopsis">MWC.TacticalData.NarrativeEntry createNarrativeEntry(java.lang.String track, java.lang.String type, MWC.GenericData.HiResDate DTG, java.lang.String entry)</p>
+
+		<p class="description">Create a new narrative entry.</p>
+
+		<dl class="parameters">
+			<dt>track</dt>
+			<dd class="description" data-parameter="track">the track this is a child of</dd>
+			<dt>type</dt>
+			<dd class="description" data-parameter="type">the type of entry</dd>
+			<dt>DTG</dt>
+			<dd class="description" data-parameter="DTG">when this was recorded</dd>
+			<dt>entry</dt>
+			<dd class="description" data-parameter="entry">the textual entry</dd>
+		</dl>
+
+		<p class="return">a new narrative entry</p>
+
+
+
+	</div>
+	<div class="command" data-method="createSensor">
+		<h3><a id="createSensor">createSensor</a></h3>
+		<p class="synopsis">Debrief.Wrappers.SensorWrapper createSensor(java.lang.String name)</p>
+
+		<p class="description">Create a new sensor with the given name.</p>
+
+		<dl class="parameters">
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the new Sensor</dd>
+		</dl>
+
+		<p class="return">New sensor object with the name given.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createSensorContact">
+		<h3><a id="createSensorContact">createSensorContact</a></h3>
+		<p class="synopsis">Debrief.Wrappers.SensorContactWrapper createSensorContact(MWC.GenericData.HiResDate date)</p>
+
+		<p class="description">Creates a new sensor with the date given as DTG.</p>
+
+		<dl class="parameters">
+			<dt>date</dt>
+			<dd class="description" data-parameter="date">Date of the new sensor to be created.</dd>
+		</dl>
+
+		<p class="return">New sensor object.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createTrack">
+		<h3><a id="createTrack">createTrack</a></h3>
+		<p class="synopsis">Debrief.Wrappers.TrackWrapper createTrack(java.lang.String name)</p>
+
+		<p class="description">Creates a track with the given name.</p>
+
+		<dl class="parameters">
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the new track created.</dd>
+		</dl>
+
+		<p class="return">New Track created.</p>
+
+
+
+	</div>
+
+</body>
+</html>

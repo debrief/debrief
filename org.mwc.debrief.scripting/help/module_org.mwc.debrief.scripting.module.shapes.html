@@ -1,0 +1,269 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Shapes Module">
+		<h1>Shapes Module</h1>
+		<p class="description">creating shape objects</p>
+
+	</div>
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#addPolygonNode">addPolygonNode</a>()</td>
+			<td>Method that adds a PolygoneNode to a PolygonShape</td>
+		</tr>
+		<tr>
+			<td><a href="#createCircle">createCircle</a>()</td>
+			<td>Creates a circle given the center, radius and name</td>
+		</tr>
+		<tr>
+			<td><a href="#createEllipse">createEllipse</a>()</td>
+			<td>Creates an EllipseShape</td>
+		</tr>
+		<tr>
+			<td><a href="#createFurthestOnCircleShape">createFurthestOnCircleShape</a>()</td>
+			<td>Creates a FurthestOnCircleShape</td>
+		</tr>
+		<tr>
+			<td><a href="#createLine">createLine</a>()</td>
+			<td>Creates a line.</td>
+		</tr>
+		<tr>
+			<td><a href="#createPolygon">createPolygon</a>()</td>
+			<td>Creates a polygon given a vector of PolygonNode</td>
+		</tr>
+		<tr>
+			<td><a href="#createRangeRingShape">createRangeRingShape</a>()</td>
+			<td>Create a RangeRingShape.</td>
+		</tr>
+		<tr>
+			<td><a href="#createRectangleShape">createRectangleShape</a>()</td>
+			<td>Creates a Rectangle Shape</td>
+		</tr>
+		<tr>
+			<td><a href="#createWheelShape">createWheelShape</a>()</td>
+			<td>Create a wheel shape</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="addPolygonNode">
+		<h3><a id="addPolygonNode">addPolygonNode</a></h3>
+		<p class="synopsis">MWC.GUI.Shapes.PolygonShape.PolygonNode addPolygonNode(java.lang.String name, MWC.GenericData.WorldLocation location, MWC.GUI.Shapes.PolygonShape parent)</p>
+
+		<p class="description">Method that adds a PolygoneNode to a PolygonShape</p>
+
+		<dl class="parameters">
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the new node</dd>
+			<dt>location</dt>
+			<dd class="description" data-parameter="location">Location of the new Node</dd>
+			<dt>parent</dt>
+			<dd class="description" data-parameter="parent">PolygonShape to add the new Node</dd>
+		</dl>
+
+		<p class="return">Reference to the added node.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createCircle">
+		<h3><a id="createCircle">createCircle</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createCircle(MWC.GenericData.WorldLocation center, MWC.GenericData.WorldDistance radius, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates a circle given the center, radius and name</p>
+
+		<dl class="parameters">
+			<dt>center</dt>
+			<dd class="description" data-parameter="center">Center of the circle.</dd>
+			<dt>radius</dt>
+			<dd class="description" data-parameter="radius">Radius of the circle.</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">Circle Shape</p>
+
+
+
+	</div>
+	<div class="command" data-method="createEllipse">
+		<h3><a id="createEllipse">createEllipse</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createEllipse(MWC.GenericData.WorldLocation theCenter, double theOrient, MWC.GenericData.WorldDistance theMaxima, MWC.GenericData.WorldDistance theMinima, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates an EllipseShape</p>
+
+		<dl class="parameters">
+			<dt>theCenter</dt>
+			<dd class="description" data-parameter="theCenter">WorldLocation marking the center of the Ellipse</dd>
+			<dt>theOrient</dt>
+			<dd class="description" data-parameter="theOrient">Length of the maximal (in degs)</dd>
+			<dt>theMaxima</dt>
+			<dd class="description" data-parameter="theMaxima">Length of the minimal of the ellipse (in degs)</dd>
+			<dt>theMinima</dt>
+			<dd class="description" data-parameter="theMinima">Orientation of the ellipse (in degs)</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">New Eclipse as a ShapeWrapper</p>
+
+
+
+	</div>
+	<div class="command" data-method="createFurthestOnCircleShape">
+		<h3><a id="createFurthestOnCircleShape">createFurthestOnCircleShape</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createFurthestOnCircleShape(MWC.GenericData.WorldLocation theCenter, int numRings, MWC.GenericData.WorldSpeed speed, long interval, int arcCenter, int arcWidth, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates a FurthestOnCircleShape</p>
+
+		<dl class="parameters">
+			<dt>theCenter</dt>
+			<dd class="description" data-parameter="theCenter">Center of the FurthestOnCircleShape</dd>
+			<dt>numRings</dt>
+			<dd class="description" data-parameter="numRings">Number of rings</dd>
+			<dt>speed</dt>
+			<dd class="description" data-parameter="speed">Speed of the FurthestOnCircleShape</dd>
+			<dt>interval</dt>
+			<dd class="description" data-parameter="interval">Interval of the FurthestOnCircleShape</dd>
+			<dt>arcCenter</dt>
+			<dd class="description" data-parameter="arcCenter">Arc Center of the FurthestOnCircleShape</dd>
+			<dt>arcWidth</dt>
+			<dd class="description" data-parameter="arcWidth">Arc Width of the FurthestOnCircleShape</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">FurthestOnCircle Shape as a ShapeWrapper.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createLine">
+		<h3><a id="createLine">createLine</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createLine(MWC.GenericData.WorldLocation startPt, MWC.GenericData.WorldLocation endPt, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates a line.</p>
+
+		<dl class="parameters">
+			<dt>startPt</dt>
+			<dd class="description" data-parameter="startPt">Start point of the line</dd>
+			<dt>endPt</dt>
+			<dd class="description" data-parameter="endPt">End point of the line</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">New line created with the parameters given</p>
+
+
+
+	</div>
+	<div class="command" data-method="createPolygon">
+		<h3><a id="createPolygon">createPolygon</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createPolygon(java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates a polygon given a vector of PolygonNode</p>
+
+		<dl class="parameters">
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">Polygon Shape.</p>
+
+
+
+	</div>
+	<div class="command" data-method="createRangeRingShape">
+		<h3><a id="createRangeRingShape">createRangeRingShape</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createRangeRingShape(MWC.GenericData.WorldLocation theCenter, int numRings, MWC.GenericData.WorldDistance ringWidth, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Create a RangeRingShape.</p>
+
+		<dl class="parameters">
+			<dt>theCenter</dt>
+			<dd class="description" data-parameter="theCenter">Center of the RangeRingShape</dd>
+			<dt>numRings</dt>
+			<dd class="description" data-parameter="numRings">Number of Rings of the RangeRingShape</dd>
+			<dt>ringWidth</dt>
+			<dd class="description" data-parameter="ringWidth">Width of the ring of the RangeRingShape</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">New RangeRingShape created as a ShapeWrapper</p>
+
+
+
+	</div>
+	<div class="command" data-method="createRectangleShape">
+		<h3><a id="createRectangleShape">createRectangleShape</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createRectangleShape(MWC.GenericData.WorldLocation TL, MWC.GenericData.WorldLocation BR, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Creates a Rectangle Shape</p>
+
+		<dl class="parameters">
+			<dt>TL</dt>
+			<dd class="description" data-parameter="TL">Top left of the Rectangle</dd>
+			<dt>BR</dt>
+			<dd class="description" data-parameter="BR">Bottom Right of the Rectangle</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">New RectangleShape created as a ShapeWrapper</p>
+
+
+
+	</div>
+	<div class="command" data-method="createWheelShape">
+		<h3><a id="createWheelShape">createWheelShape</a></h3>
+		<p class="synopsis">Debrief.Wrappers.ShapeWrapper createWheelShape(MWC.GenericData.WorldLocation theCenter, double theInnerRadius, double theOuterRadius, java.lang.String name, java.awt.Color color)</p>
+
+		<p class="description">Create a wheel shape</p>
+
+		<dl class="parameters">
+			<dt>theCenter</dt>
+			<dd class="description" data-parameter="theCenter">the center of the wheel</dd>
+			<dt>theInnerRadius</dt>
+			<dd class="description" data-parameter="theInnerRadius">the inner radius of the wheel, in yds</dd>
+			<dt>theOuterRadius</dt>
+			<dd class="description" data-parameter="theOuterRadius">the outer radius of the wheel, in yds</dd>
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Name of the Shape</dd>
+			<dt>color</dt>
+			<dd class="description" data-parameter="color">Color of the Shape</dd>
+		</dl>
+
+		<p class="return">New WheelShape created as a ShapeWrapper</p>
+
+
+
+	</div>
+
+</body>
+</html>

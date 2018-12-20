@@ -1,0 +1,125 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Utils Module">
+		<h1>Utils Module</h1>
+		<p class="description">Utility methods, copying data to/from the system</p>
+
+	</div>
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#getClipboard">getClipboard</a>()</td>
+			<td>Returns the content of the clipboard.</td>
+		</tr>
+		<tr>
+			<td><a href="#setClipboard">setClipboard</a>()</td>
+			<td>Set the specified string to the clipboard.</td>
+		</tr>
+		<tr>
+			<td><a href="#writeError">writeError</a>()</td>
+			<td>Write the error message in the log.</td>
+		</tr>
+		<tr>
+			<td><a href="#writeInfo">writeInfo</a>()</td>
+			<td>Write the information message in the log</td>
+		</tr>
+		<tr>
+			<td><a href="#writeWarning">writeWarning</a>()</td>
+			<td>Write the warning message in the log</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="getClipboard">
+		<h3><a id="getClipboard">getClipboard</a></h3>
+		<p class="synopsis">java.lang.String getClipboard()</p>
+
+		<p class="description">Returns the content of the clipboard.</p>
+
+
+		<p class="return">content of the clipboard as String.</p>
+
+		<dl class="exceptions">
+			<dt>HeadlessException</dt>
+			<dd class="description" data-exception="HeadlessException">if the application is running headless</dd>
+			<dt>UnsupportedFlavorException</dt>
+			<dd class="description" data-exception="UnsupportedFlavorException">if the system can't handle this type of data</dd>
+			<dt>IOException</dt>
+			<dd class="description" data-exception="IOException">other input/output exception</dd>
+		</dl>
+
+
+	</div>
+	<div class="command" data-method="setClipboard">
+		<h3><a id="setClipboard">setClipboard</a></h3>
+		<p class="synopsis">void setClipboard(java.lang.String _clipboardData)</p>
+
+		<p class="description">Set the specified string to the clipboard.</p>
+
+		<dl class="parameters">
+			<dt>_clipboardData</dt>
+			<dd class="description" data-parameter="_clipboardData">String text to be added to the clipboard.</dd>
+		</dl>
+
+
+
+
+	</div>
+	<div class="command" data-method="writeError">
+		<h3><a id="writeError">writeError</a></h3>
+		<p class="synopsis">void writeError(java.lang.String error)</p>
+
+		<p class="description">Write the error message in the log.</p>
+
+		<dl class="parameters">
+			<dt>error</dt>
+			<dd class="description" data-parameter="error">Error message to be written in the log.</dd>
+		</dl>
+
+
+
+
+	</div>
+	<div class="command" data-method="writeInfo">
+		<h3><a id="writeInfo">writeInfo</a></h3>
+		<p class="synopsis">void writeInfo(java.lang.String info)</p>
+
+		<p class="description">Write the information message in the log</p>
+
+		<dl class="parameters">
+			<dt>info</dt>
+			<dd class="description" data-parameter="info">Information message to be written in the log.</dd>
+		</dl>
+
+
+
+
+	</div>
+	<div class="command" data-method="writeWarning">
+		<h3><a id="writeWarning">writeWarning</a></h3>
+		<p class="synopsis">void writeWarning(java.lang.String warning)</p>
+
+		<p class="description">Write the warning message in the log</p>
+
+		<dl class="parameters">
+			<dt>warning</dt>
+			<dd class="description" data-parameter="warning">Warning message to be written in the log.</dd>
+		</dl>
+
+
+
+
+	</div>
+
+</body>
+</html>

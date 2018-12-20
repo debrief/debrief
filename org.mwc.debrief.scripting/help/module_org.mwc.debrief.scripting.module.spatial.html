@@ -1,0 +1,216 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Spatial Module">
+		<h1>Spatial Module</h1>
+		<p class="description">generic position related elements</p>
+
+	</div>
+
+	<h2>Constants</h2>
+	<table class="constants">
+		<tr>
+			<th>Constant</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a id="DEGS">DEGS</a></td>
+			<td class="description" data-field="DEGS">Arc Degrees type</td>
+		</tr>
+		<tr>
+			<td><a id="FT">FT</a></td>
+			<td class="description" data-field="FT">Feet type</td>
+		</tr>
+		<tr>
+			<td><a id="FT_MIN">FT_MIN</a></td>
+			<td class="description" data-field="FT_MIN">Feet/Min for speed object.</td>
+		</tr>
+		<tr>
+			<td><a id="FT_SEC">FT_SEC</a></td>
+			<td class="description" data-field="FT_SEC">Feet/sec for speed object.</td>
+		</tr>
+		<tr>
+			<td><a id="KM">KM</a></td>
+			<td class="description" data-field="KM">Kilometres type</td>
+		</tr>
+		<tr>
+			<td><a id="KTS">KTS</a></td>
+			<td class="description" data-field="KTS">Knots for speed object.</td>
+		</tr>
+		<tr>
+			<td><a id="KYDS">KYDS</a></td>
+			<td class="description" data-field="KYDS">Kiloyards type</td>
+		</tr>
+		<tr>
+			<td><a id="METRES">METRES</a></td>
+			<td class="description" data-field="METRES">Metres type</td>
+		</tr>
+		<tr>
+			<td><a id="MINUTES">MINUTES</a></td>
+			<td class="description" data-field="MINUTES">Arc Minutes type</td>
+		</tr>
+		<tr>
+			<td><a id="M_SEC">M_SEC</a></td>
+			<td class="description" data-field="M_SEC">Metres/sec for speed object.</td>
+		</tr>
+		<tr>
+			<td><a id="NM">NM</a></td>
+			<td class="description" data-field="NM">Nautical Miles type</td>
+		</tr>
+		<tr>
+			<td><a id="YARDS">YARDS</a></td>
+			<td class="description" data-field="YARDS">Yards type</td>
+		</tr>
+	</table>
+
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#createArea">createArea</a>()</td>
+			<td>produce an area object using the two corners</td>
+		</tr>
+		<tr>
+			<td><a href="#createDistance">createDistance</a>()</td>
+			<td>create a distance object</td>
+		</tr>
+		<tr>
+			<td><a href="#createLocation">createLocation</a>()</td>
+			<td>create a location</td>
+		</tr>
+		<tr>
+			<td><a href="#createVector">createVector</a>()</td>
+			<td>create a measured vector</td>
+		</tr>
+		<tr>
+			<td><a href="#createVectorKm">createVectorKm</a>()</td>
+			<td>create a vector object using km</td>
+		</tr>
+		<tr>
+			<td><a href="#createWorldSpeed">createWorldSpeed</a>()</td>
+			<td>create a speed object</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="createArea">
+		<h3><a id="createArea">createArea</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldArea createArea(MWC.GenericData.WorldLocation tl, MWC.GenericData.WorldLocation br)</p>
+
+		<p class="description">produce an area object using the two corners</p>
+
+		<dl class="parameters">
+			<dt>tl</dt>
+			<dd class="description" data-parameter="tl">top-left corner</dd>
+			<dt>br</dt>
+			<dd class="description" data-parameter="br">bottom-right corner</dd>
+		</dl>
+
+		<p class="return">MWC.GenericData.WorldArea</p>
+
+
+
+	</div>
+	<div class="command" data-method="createDistance">
+		<h3><a id="createDistance">createDistance</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldDistance createDistance(double value, int units)</p>
+
+		<p class="description">create a distance object</p>
+
+		<dl class="parameters">
+			<dt>value</dt>
+			<dd class="description" data-parameter="value">how many units of distance</dd>
+			<dt>units</dt>
+			<dd class="description" data-parameter="units">the units for the measurement</dd>
+		</dl>
+
+		<p class="return">a distance object</p>
+
+
+
+	</div>
+	<div class="command" data-method="createLocation">
+		<h3><a id="createLocation">createLocation</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldLocation createLocation(double dLat, double dLong, double depth)</p>
+
+		<p class="description">create a location</p>
+
+		<dl class="parameters">
+			<dt>dLat</dt>
+			<dd class="description" data-parameter="dLat">degrees of latitude</dd>
+			<dt>dLong</dt>
+			<dd class="description" data-parameter="dLong">degrees of longitude</dd>
+			<dt>depth</dt>
+			<dd class="description" data-parameter="depth">depth in metres</dd>
+		</dl>
+
+		<p class="return">a location object</p>
+
+
+
+	</div>
+	<div class="command" data-method="createVector">
+		<h3><a id="createVector">createVector</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldVector createVector(double distM, double bearingDegs)</p>
+
+		<p class="description">create a measured vector</p>
+
+		<dl class="parameters">
+			<dt>distM</dt>
+			<dd class="description" data-parameter="distM">distance in metres</dd>
+			<dt>bearingDegs</dt>
+			<dd class="description" data-parameter="bearingDegs">bearing in degrees</dd>
+		</dl>
+
+		<p class="return">a vector object</p>
+
+
+
+	</div>
+	<div class="command" data-method="createVectorKm">
+		<h3><a id="createVectorKm">createVectorKm</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldVector createVectorKm(double distKm, double bearingDegs)</p>
+
+		<p class="description">create a vector object using km</p>
+
+		<dl class="parameters">
+			<dt>distKm</dt>
+			<dd class="description" data-parameter="distKm">distance in Km</dd>
+			<dt>bearingDegs</dt>
+			<dd class="description" data-parameter="bearingDegs">bearing in degrees</dd>
+		</dl>
+
+		<p class="return">a vector object</p>
+
+
+
+	</div>
+	<div class="command" data-method="createWorldSpeed">
+		<h3><a id="createWorldSpeed">createWorldSpeed</a></h3>
+		<p class="synopsis">MWC.GenericData.WorldSpeed createWorldSpeed(double value, int units)</p>
+
+		<p class="description">create a speed object</p>
+
+		<dl class="parameters">
+			<dt>value</dt>
+			<dd class="description" data-parameter="value">how many units of speed to use</dd>
+			<dt>units</dt>
+			<dd class="description" data-parameter="units">the units for this measurement</dd>
+		</dl>
+
+		<p class="return">a speed object</p>
+
+
+
+	</div>
+
+</body>
+</html>
