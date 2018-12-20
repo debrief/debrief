@@ -21,7 +21,8 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
-/** labels that can be added to a plot
+/**
+ * labels that can be added to a plot
  * 
  * @author ian
  *
@@ -72,7 +73,11 @@ public class Annotations
    *          Location of the label
    * @param theColor
    *          Color of the label
-   * @return the new label
+   * @return the new label.
+   *        <br />
+   *        For autocomplete, use the following type
+   *        <br />
+   *        Debrief.Wrappers.LabelWrapper
    */
   @WrapToScript
   public static LabelWrapper createLabel(final String name,
@@ -82,7 +87,7 @@ public class Annotations
   }
 
   /**
-   * Creates a label given its name, location and color
+   * Creates a label given its name, location and color, start and end time
    *
    * @param label
    *          the text to display
