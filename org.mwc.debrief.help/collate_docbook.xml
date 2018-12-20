@@ -297,23 +297,24 @@
 				    ${rootDir}" />
 		</java>
 	</target>
-	
+
 	<target name="javadoc" depends="ease_javadoc, debrief_javadoc" />
 
 	<target name="ease_javadoc">
 		<delete dir="../org.mwc.debrief.scripting/help" />
-		<javadoc destdir="javadoc"  sourcepath="../org.mwc.debrief.scripting/src:../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" >
+		<javadoc destdir="javadoc" sourcepath="../org.mwc.debrief.scripting/src:../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src">
 			<doclet name="org.eclipse.ease.helpgenerator.ModuleDoclet" path="${lib-dir}/easedoclet.jar">
 				<param name="-root" value="../org.mwc.debrief.scripting" />
-				<param name="-failOnMissingDocs" value="false"/>
-				<param name="-failOnHTMLError" value="false"/>
+				<param name="-failOnMissingDocs" value="false" />
+				<param name="-failOnHTMLError" value="false" />
 			</doclet>
 		</javadoc>
 	</target>
-	
+
 	<target name="debrief_javadoc">
-		<delete dir="javadoc"></delete>
+		<delete dir="javadoc"/>
 		<javadoc destdir="javadoc"  sourcepath="../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" >
+			<arg value="-notimestamp" />
 		</javadoc>
 	</target>
 
