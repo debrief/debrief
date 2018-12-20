@@ -226,11 +226,22 @@ public class RectangleShape extends PlainShape implements Editable,
 		int ctr = 0;
 		while (iter.hasNext())
 		{
-			final Point pt = dest.toScreen(iter.next());
-			// Rotate Rectangle around its center for degrees, specified in
-			// Orientation
-			xP[ctr] = pt.x;
-			yP[ctr++] = pt.y;
+      try
+      {
+        WorldLocation loc = iter.next();
+        final Point pt = dest.toScreen(loc);
+        // Rotate Rectangle around its center for degrees, specified in
+        // Orientation
+        if (pt != null)
+        {
+          xP[ctr] = pt.x;
+          yP[ctr++] = pt.y;
+        }
+      }
+      catch (Exception e)
+      {
+        e.printStackTrace();
+      }
 		}
 
 		// is it to be filled?

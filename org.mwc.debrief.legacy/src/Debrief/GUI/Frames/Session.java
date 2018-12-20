@@ -186,7 +186,12 @@ abstract public class Session implements Serializable, Observer
 
   public Session(final java.awt.datatransfer.Clipboard theClipboard)
   {
-    _theData = new Layers();
+    this(theClipboard, new Layers());
+  }
+  
+  public Session(final java.awt.datatransfer.Clipboard theClipboard, final Layers theLayers)
+  {
+    _theData = theLayers;
 
 
     // @@ IM HACK: ignore theClipboard parameter - we do not use unique clipboards,

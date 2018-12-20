@@ -123,7 +123,8 @@ public class EFileChooser extends JFileChooser
 		 */
 		private static final long serialVersionUID = 1L;
 
-		PreviewAndHistoryPanel()
+		@SuppressWarnings("unchecked")
+    PreviewAndHistoryPanel()
 		{
 			setPreferredSize(new Dimension(250, 250));
 			setBorder(BorderFactory.createEtchedBorder());
@@ -215,7 +216,8 @@ public class EFileChooser extends JFileChooser
 			 */
 			private static final long serialVersionUID = 1L;
 
-			public Component getListCellRendererComponent(final JList list, final Object value,
+			@SuppressWarnings("rawtypes")
+      public Component getListCellRendererComponent(final JList list, final Object value,
 					final int index, final boolean isSelected, final boolean cellHasFocus)
 			{
 				setFont(list.getFont());
@@ -545,7 +547,8 @@ public class EFileChooser extends JFileChooser
 	 * JComboBox has no public setUI() method, so we have to go this way using the
 	 * protected setUI() method of JComponent.
 	 */
-	class MyComboBox extends JComboBox
+	@SuppressWarnings("rawtypes")
+  class MyComboBox extends JComboBox
 	{
 
 		/**
@@ -553,7 +556,8 @@ public class EFileChooser extends JFileChooser
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public MyComboBox(final Vector<String> items)
+		@SuppressWarnings("unchecked")
+    public MyComboBox(final Vector<String> items)
 		{
 			super(items);
 			setUI(new MyComboBoxUI());
@@ -587,11 +591,14 @@ public class EFileChooser extends JFileChooser
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-			protected JList list_;
-			protected JComboBox comboBox_;
+			@SuppressWarnings("rawtypes")
+      protected JList list_;
+			@SuppressWarnings("rawtypes")
+      protected JComboBox comboBox_;
 			protected boolean hasEntered_;
 
-			MyComboPopup(final JComboBox combo)
+			@SuppressWarnings("rawtypes")
+      MyComboPopup(final JComboBox combo)
 			{
 				super(combo);
 				list_ = list;
@@ -1547,15 +1554,17 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		protected DefaultListModel model = null;
-		protected JList fileList = null;
+		@SuppressWarnings("rawtypes")
+    protected DefaultListModel model = null;
+		@SuppressWarnings("rawtypes")
+    protected JList fileList = null;
 
 		/**
 		 * Construct a search results pane with a scrollable list of files. When an
 		 * item is double-clicked the FindAccessory controller will be instructed to
 		 * select the file in the parent JFileChooser's item display.
 		 */
-		@SuppressWarnings({ })
+		@SuppressWarnings({"rawtypes", "unchecked" })
 		FindResults()
 		{
 			super();
@@ -1595,7 +1604,8 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		 * @param f
 		 *          file found
 		 */
-		public void append(final File f)
+		@SuppressWarnings("unchecked")
+    public void append(final File f)
 		{
 			if (f == null)
 				return;
@@ -1618,7 +1628,8 @@ class FindAccessory extends JPanel implements Runnable, PropertyChangeListener,
 		/**
 		 * Convenience class for rendering cells in the results list.
 		 */
-		class FindResultsCellRenderer extends JLabel implements ListCellRenderer
+		@SuppressWarnings("rawtypes")
+    class FindResultsCellRenderer extends JLabel implements ListCellRenderer
 		{
 
 			/**
@@ -1737,15 +1748,17 @@ class FindByDate extends JPanel implements FindFilterFactory
 	public static String FROM_DATE_LABEL = "between start of";
 	public static String TO_DATE_LABEL = "and end of";
 
-	protected JComboBox fromDateField = null;
-	protected JComboBox toDateField = null;
+	@SuppressWarnings("rawtypes")
+  protected JComboBox fromDateField = null;
+	@SuppressWarnings("rawtypes")
+  protected JComboBox toDateField = null;
 
 	protected String[] fromDateItems =
 	{ THE_BIG_BANG, YESTERDAY, TODAY };
 	protected String[] toDateItems =
 	{ THE_BIG_CRUNCH, TODAY, NOW, YESTERDAY };
 
-	@SuppressWarnings({ })
+	@SuppressWarnings({"unchecked", "rawtypes" })
 	FindByDate()
 	{
 		super();
@@ -1961,10 +1974,11 @@ class FindByName extends JPanel implements FindFilterFactory
 	{ NAME_CONTAINS, NAME_IS, NAME_STARTS_WITH, NAME_ENDS_WITH };
 
 	protected JTextField nameField = null;
-	protected JComboBox combo = null;
+	@SuppressWarnings("rawtypes")
+  protected JComboBox combo = null;
 	protected JCheckBox ignoreCaseCheck = null;
 
-	@SuppressWarnings({ })
+	@SuppressWarnings({"unchecked", "rawtypes" })
 	FindByName()
 	{
 		super();

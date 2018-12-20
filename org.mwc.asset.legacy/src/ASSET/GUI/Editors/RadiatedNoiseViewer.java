@@ -43,7 +43,6 @@ import java.util.Iterator;
 
 public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
   implements MWC.GUI.Properties.NoEditorButtons,
-  PlainPropertyEditor.EditorUsesChart,
   PlainPropertyEditor.EditorUsesPropertyPanel,
   PlainPropertyEditor.EditorUsesToolParent
 {
@@ -91,11 +90,6 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
   public RadiatedNoiseViewer()
   {
     initForm();
-  }
-
-  public void setChart(final PlainChart theChart)
-  {
-    _theChart = theChart;
   }
 
   public void setPanel(final PropertiesPanel thePanel)
@@ -173,7 +167,7 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
         this.repaint();
 
         // create the new editor
-        spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, _theChart, _theParent, null);
+        spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, null, _theParent, null);
 
         // put into the panel
         _editors.add(spe.getPanel());

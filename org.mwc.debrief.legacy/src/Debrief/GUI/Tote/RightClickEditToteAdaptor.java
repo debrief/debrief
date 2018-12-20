@@ -14,6 +14,10 @@
  */
 package Debrief.GUI.Tote;
 
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: RightClickEditToteAdaptor.java,v $
 // @author $Author: Ian.Mayo $
@@ -85,17 +89,12 @@ package Debrief.GUI.Tote;
 import Debrief.Wrappers.BuoyPatternWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GenericData.WatchableList;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public final class RightClickEditToteAdaptor implements RightClickEdit.PlottableMenuCreator
 {
@@ -119,7 +118,6 @@ public final class RightClickEditToteAdaptor implements RightClickEdit.Plottable
   public final void createMenu(final javax.swing.JPopupMenu menu,
                                final Editable data,
                                final Point thePoint,
-                               final CanvasType theCanvas,
                                final PropertiesPanel thePanel,
                                final Layer theParent,
                                final Layers theData, final Layer updateLayer)
