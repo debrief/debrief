@@ -444,7 +444,6 @@ public final class ImportNarrative2 extends AbstractPlainLineImporter
       return useStandard ? standard : sentences(random.nextInt(3) + 2);
     }
 
-    @SuppressWarnings("unused")
     public String paragraph()
     {
       return paragraph(false);
