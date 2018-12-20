@@ -65,6 +65,7 @@ import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.Swing.SwingToolbar;
+import MWC.GUI.Undo.UndoBuffer;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
@@ -84,14 +85,15 @@ public class DebriefLiteApp implements FileDropListener
   private static SwingLayerManager layerManager;
 
   private static JPanel outlinePanel;
+  
 
-  private static void addOutlineView(final JPanelWithTitleBar jTitleBar,
+  private void addOutlineView(final JPanelWithTitleBar jTitleBar,
       final ToolParent toolParent)
   {
     outlinePanel = new JPanel();
     outlinePanel.setLayout(new BorderLayout());
     outlinePanel.add(jTitleBar, BorderLayout.NORTH);
-    layerManager = new OutlinePanelView();
+    layerManager = new OutlinePanelView(undoBuffer);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
   }
@@ -148,6 +150,8 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteSession session;
 
   private final LiteApplication app;
+  
+  private final UndoBuffer undoBuffer;
 
   public DebriefLiteApp()
   {
@@ -175,6 +179,7 @@ public class DebriefLiteApp implements FileDropListener
         ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
     session = new LiteSession(_theClipboard, _theLayers);
+    undoBuffer = session.getUndoBuffer();
     app = new LiteApplication(session);
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));

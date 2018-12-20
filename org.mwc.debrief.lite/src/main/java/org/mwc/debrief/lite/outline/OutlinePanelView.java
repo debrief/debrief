@@ -36,10 +36,16 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeNode;
 
+import org.mwc.debrief.lite.properties.PropertiesDialog;
+
 import Debrief.GUI.CoreImageHelper;
 import Debrief.GUI.DebriefImageHelper;
+import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
+import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
+import MWC.GUI.Undo.UndoBuffer;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -52,6 +58,11 @@ public class OutlinePanelView extends SwingLayerManager
    * 
    */
   private static final long serialVersionUID = 1L;
+  
+  private UndoBuffer _undoBuffer;
+  public OutlinePanelView(UndoBuffer undoBuffer) {
+    this._undoBuffer = undoBuffer;
+  }
   
   @Override
   protected void initForm()
@@ -210,6 +221,42 @@ public class OutlinePanelView extends SwingLayerManager
   protected void editThis(final TreeNode node)
   {
     System.out.println("Editing...");
+    if (node instanceof DefaultMutableTreeNode)
+    {
+      final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+      final Object data = tn.getUserObject();
+      if (data instanceof MWC.GUI.Editable)
+      {
+        final Editable editable = (Editable) data;
+        if (editable.hasEditor())
+        {
+          // get the toolparent object
+          final ToolParent tp = getToolParent();
+
+          // did we get a valid toolparent?
+          if (tp != null)
+          {
+            // set it to busy
+            tp.setCursor(java.awt.Cursor.WAIT_CURSOR);
+          }
+          DefaultMutableTreeNode parent = (DefaultMutableTreeNode)tn.getParent();
+          final Object parentData = parent.getUserObject();
+          ToolbarOwner owner = null;
+          if(parentData instanceof ToolbarOwner) {
+            owner = (ToolbarOwner)parentData;
+          }
+          PropertiesDialog dialog = new PropertiesDialog(editable,_myData,_undoBuffer,tp,owner);
+          dialog.setSize(400,500);
+          dialog.setLocationRelativeTo(null);
+          dialog.setVisible(true);
+          if (tp != null)
+          {
+            tp.restoreCursor();
+          }
+        }
+      }
+    }
+    
   }
   
 }
