@@ -97,7 +97,7 @@ public class Tactical
    * @param location Location of the new fix
    * @param courseDegs Course in degrees of the new fix
    * @param speedMs Speed in metres per second.
-   * @return New fix object.
+   * @return // @type Debrief.Wrappers.FixWrapper
    */
   @WrapToScript
   public static FixWrapper createFix(final HiResDate time,
@@ -116,7 +116,7 @@ public class Tactical
    *
    * @param title
    *          Title of the narrative.
-   * @return Narrative Wrapper Object.
+   * @return // @type MWC.TacticalData.NarrativeWrapper
    */
   @WrapToScript
   public static NarrativeWrapper createNarrative(final String title)
@@ -130,7 +130,7 @@ public class Tactical
    * @param type the type of entry
    * @param DTG when this was recorded
    * @param entry the textual entry
-   * @return a new narrative entry
+   * @return // @type MWC.TacticalData.NarrativeEntry
    */
   @WrapToScript
   public static NarrativeEntry createNarrativeEntry(final String track,
@@ -142,7 +142,7 @@ public class Tactical
   /**
    * Create a new sensor with the given name.
    * @param name Name of the new Sensor
-   * @return New sensor object with the name given.
+   * @return // @type Debrief.Wrappers.SensorWrapper
    */
   @WrapToScript
   public static SensorWrapper createSensor(final String name)
@@ -156,7 +156,7 @@ public class Tactical
    * 
    * @see Debrief.Wrappers.SensorContactWrapper.SensorContactWrapper()
    * @param date Date of the new sensor to be created.
-   * @return New sensor object.
+   * @return // @type Debrief.Wrappers.SensorContactWrapper
    */
   @WrapToScript
   public static SensorContactWrapper createSensorContact(final HiResDate date)
@@ -172,7 +172,7 @@ public class Tactical
    * @see Debrief.Wrappers.TrackWrapper
    * @param name
    *          Name of the new track created.
-   * @return New Track created.
+   * @return // @type Debrief.Wrappers.TrackWrapper
    */
   @WrapToScript
   public static TrackWrapper createTrack(final String name)
