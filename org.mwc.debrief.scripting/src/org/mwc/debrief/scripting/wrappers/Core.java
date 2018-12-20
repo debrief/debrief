@@ -131,9 +131,9 @@ public class Core
   /**
    * create a new date, using indicated millis since epoch
    * 
-   * @param date
-   *          elapsed millis
-   * @return new date object
+   * @param date elapsed millis since epoch (1st Jan 1970)
+   * @return // @type MWC.GenericData.HiResDate
+   * 
    */
   @WrapToScript
   public static HiResDate createDate(final long date)
@@ -148,7 +148,7 @@ public class Core
    *          the string to process
    * @param formatter
    *          the format for the string
-   * @return a new date object
+   * @return // @type MWC.GenericData.HiResDate
    * @throws ParseException
    *           if the parsing fails
    */
@@ -180,7 +180,7 @@ public class Core
    * @param second
    *          Field number for get and set indicating the second within the minute. E.g., at
    *          10:04:15.250 PM the SECOND is 15.
-   * @return High Resolution date from values given in the calendar format
+   * @return // @type MWC.GenericData.HiResDate
    */
   @WrapToScript
   public static HiResDate createDateCalendarFormat(final int year,
@@ -243,7 +243,7 @@ public class Core
    * @param units
    *          Unit of the duration as an integer. Options available: MICROSECONDS = 0, MILLISECONDS
    *          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5
-   * @return Duration object created.
+   * @return // @type MWC.GenericData.Duration duration
    */
   @WrapToScript
   public static Duration createDuration(final int value, final int units)
@@ -261,7 +261,7 @@ public class Core
    *          Style of the font. For example: java.awt.Font.PLAIN
    * @param size
    *          Size of the font created.
-   * @return Font object created.
+   * @return // @type java.awt.Font
    */
   @WrapToScript
   public static Font createFont(final String fontName, final int style,
@@ -274,7 +274,7 @@ public class Core
    * Function that returns the active plot (Editor).
    * 
    * @see org.mwc.debrief.scripting.wrappers.Plot
-   * @return Plot instance currently active.
+   * @return // @type org.mwc.debrief.scripting.wrappers.Plot
    */
   @WrapToScript
   public static Plot getActivePlot()
@@ -288,7 +288,7 @@ public class Core
    * @see org.mwc.debrief.scripting.wrappers.Plot
    * @param filename
    *          Name of the plot editor.
-   * @return Plot instance.
+   * @return // @type org.mwc.debrief.scripting.wrappers.Plot
    */
   @WrapToScript
   public static Plot getPlot(@ScriptParameter(
