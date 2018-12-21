@@ -28,7 +28,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -37,7 +39,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -52,6 +53,13 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -110,7 +118,12 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void main(final String[] args)
   {
-    new DebriefLiteApp();
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        new DebriefLiteApp();
+      }
+  });
+    
   }
 
   /**
@@ -126,10 +139,10 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   protected final FileDropSupport _dropSupport = new FileDropSupport();
-  private final JFrame theFrame;
-  private JMenuBar theMenuBar;
+  private final JRibbonFrame theFrame;
+  //private JMenuBar theMenuBar;
 
-  private JMenu theMenu;
+//  private JMenu theMenu;
 
   private JLabel statusBar;
 
@@ -219,7 +232,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       e.printStackTrace();
     }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 
     initForm();
@@ -230,14 +243,48 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
 
-  private void addMenus()
-  {
-    theMenu = new JMenu("File");
-    theMenu.add(new JMenuItem("New"));
-    theMenu.add(new JMenuItem("Open"));
-    theMenu.add(new JMenuItem("Save"));
-    theMenuBar.add(theMenu);
+  private void addMenus() {
+    JRibbonBand fileMenu = new JRibbonBand("File", null);
+    JRibbonBand editMenu = new JRibbonBand("Edit", null);
+    JRibbonBand timeControllerMenu = new JRibbonBand("Time Controller", null);
+    timeControllerMenu.setResizePolicies((List) Arrays.asList(new IconRibbonBandResizePolicy(timeControllerMenu.getControlPanel())));
+    JCommandButton button1 = new JCommandButton("New", null);
+    JCommandButton button2 = new JCommandButton("Open Plot", null);
+    JCommandButton button3 = new JCommandButton("Save", null);
+    JCommandButton button4 = new JCommandButton("Exit", null);
+    fileMenu.addCommandButton(button1, RibbonElementPriority.TOP);
+    fileMenu.addCommandButton(button2, RibbonElementPriority.MEDIUM);
+    fileMenu.addCommandButton(button3, RibbonElementPriority.MEDIUM);
+    fileMenu.addCommandButton(button4, RibbonElementPriority.MEDIUM);
+    fileMenu.setResizePolicies((List) Arrays.asList(
+        new CoreRibbonResizePolicies.None(fileMenu.getControlPanel()),
+        new IconRibbonBandResizePolicy(fileMenu.getControlPanel())));
+    JCommandButton editButton1 = new JCommandButton("Undo", null);
+    JCommandButton editButton2 = new JCommandButton("Redo", null);
+    JCommandButton editButton3 = new JCommandButton("Cut", null);
+    JCommandButton editButton4 = new JCommandButton("Copy", null);
+    JCommandButton editButton5 = new JCommandButton("Paste", null);
+    editMenu.addCommandButton(editButton1, RibbonElementPriority.TOP);
+    editMenu.addCommandButton(editButton2, RibbonElementPriority.MEDIUM);
+    editMenu.addCommandButton(editButton3, RibbonElementPriority.MEDIUM);
+    editMenu.addCommandButton(editButton4, RibbonElementPriority.MEDIUM);
+    editMenu.addCommandButton(editButton5, RibbonElementPriority.MEDIUM);
+    editMenu.setResizePolicies((List) Arrays.asList(
+        new CoreRibbonResizePolicies.None(editMenu.getControlPanel()),
+        new IconRibbonBandResizePolicy(editMenu.getControlPanel())));
+    /*timeControllerMenu.setResizePolicies((List) Arrays.asList(
+        new CoreRibbonResizePolicies.None(timeControllerMenu.getControlPanel()),
+        new IconRibbonBandResizePolicy(timeControllerMenu.getControlPanel())));
+    */
+    RibbonTask fileTask = new RibbonTask("File", fileMenu);
+    RibbonTask editTask = new RibbonTask("Edit", editMenu);
+    RibbonTask timeControllerTask = new RibbonTask("Time Controller",timeControllerMenu);
+    theFrame.getRibbon().addTask(fileTask);
+    theFrame.getRibbon().addTask(editTask);
+    theFrame.getRibbon().addTask(timeControllerTask);
+    
   }
+  
 
   private void addStatusBar()
   {
@@ -493,12 +540,12 @@ public class DebriefLiteApp implements FileDropListener
     // and the panel
     final JPanel topSection = new JPanel();
     topSection.setLayout(new BorderLayout());
-    theMenuBar = new JMenuBar();
+   /* theMenuBar = new JMenuBar();
     theFrame.setJMenuBar(theMenuBar);
 
     // add them
     theFrame.getContentPane().add("North", theToolbar);
-
+*/
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
     theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
