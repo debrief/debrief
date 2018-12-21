@@ -68,6 +68,9 @@ public class Tote
    * Method that returns the primary track of the current plot.
    * 
    * @return Primary track of the current plot.
+   *         <br />
+   *         // @type MWC.GenericData.WatchableList
+   * 
    */
   @WrapToScript
   public WatchableList getPrimaryTrack()
@@ -79,6 +82,9 @@ public class Tote
    * Method that returns the secondary tracks of the current plot.
    * 
    * @return Array of secondary list of the current plot.
+   * 		<br />
+   *         // @type MWC.GenericData.WatchableList
+   * 
    */
   @WrapToScript
   public WatchableList[] getSecondaryTracks()

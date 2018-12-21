@@ -123,6 +123,9 @@ public class Layers
      * @param name
      *          Name of the new layer.
      * @return Layer with the specified name
+     * 			<br />
+     * 	 	    // @type MWC.GUI.Layer
+     * 
      */
     @WrapToScript
     public Layer createLayer(final String name)
@@ -145,6 +148,9 @@ public class Layers
      * @param name
      *          Name of the layer to find.
      * @return Layer with the specified name.
+     * 			<br />
+     * 	 	    // @type MWC.GUI.Layer
+     * 
      */
     @WrapToScript
     public Layer findLayer(final String name)
@@ -158,6 +164,9 @@ public class Layers
      * @param name
      *          what we're looking for
      * @return the matching item (or null)
+     * 			<br />
+     * 	 	    // @type MWC.GUI.Editable
+     * 
      */
     @WrapToScript
     public Editable findThis(final String name)
@@ -214,6 +223,9 @@ public class Layers
      * @param name
      *          Name to be found.
      * @return LightweightTrackWrapper that contains the track of the name given.
+     * 			<br />
+     * 	 	    // @type Debrief.Wrappers.Track.LightweightTrackWrapper
+     * 
      */
     @WrapToScript
     public LightweightTrackWrapper findTrack(@ScriptParameter(
@@ -260,6 +272,9 @@ public class Layers
      * 
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
      * @return Array containing the tracks in the layer as LightweightTrackWrapper
+     * 			<br />
+     * 	 	    // @type Debrief.Wrappers.Track.LightweightTrackWrapper
+     * 
      */
     @WrapToScript
     public LightweightTrackWrapper[] getTracks()

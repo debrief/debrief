@@ -67,6 +67,9 @@ public class Plot
    * 
    * @see MWC.GenericData.WorldArea
    * @return Currently selected data area.
+   * 		<br />
+   * 	 	// @type MWC.GenericData.WorldArea
+   * 
    */
   @WrapToScript
   public WorldArea getArea()
@@ -85,6 +88,9 @@ public class Plot
    * 
    * @see MWC.GenericData.WorldLocation
    * @return Center of the area.
+   * 		<br />
+   * 	 	// @type MWC.GenericData.WorldLocation
+   * 
    */
   @WrapToScript
   public WorldLocation getCentre()
@@ -105,6 +111,8 @@ public class Plot
    * 
    * @see org.mwc.debrief.scripting.wrappers.Layers.DLayers
    * @return Layers of the current plot.
+   * 		<br />
+   * 	 	// @type org.mwc.debrief.scripting.wrappers.Layers.DLayers
    */
   @WrapToScript
   public DLayers getLayers()
@@ -127,6 +135,9 @@ public class Plot
    * 
    * @see MWC.Algorithms.PlainProjection
    * @return Plain projection of the current plot.
+   * 		<br />
+   * 	 	// @type MWC.Algorithms.PlainProjection
+   * 
    */
   @WrapToScript
   public PlainProjection getMap()
@@ -148,6 +159,9 @@ public class Plot
    * 
    * @see org.mwc.debrief.scripting.wrappers.Outline
    * @return Outline of the current plot.
+   * 		<br />
+   * 	 	// @type org.mwc.debrief.scripting.wrappers.Outline
+   * 
    */
   @WrapToScript
   public Outline getOutline()
@@ -169,6 +183,9 @@ public class Plot
    * 
    * @see org.mwc.debrief.core.editors.PlotEditor
    * @return Plot Editor.
+   * 		<br />
+   * 	 	// @type org.mwc.debrief.core.editors.PlotEditor 
+   *               
    */
   @WrapToScript
   public PlotEditor getPlot()
@@ -192,6 +209,9 @@ public class Plot
    * 
    * @see MWC.GenericData.HiResDate
    * @return Current time of the plot.
+   * 		<br />
+   * 		// @type MWC.GenericData.HiResDate
+   * 
    */
   @WrapToScript
   public HiResDate getTime()
@@ -207,6 +227,9 @@ public class Plot
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
    * @return Time Control Preferences.
+   * 		 <br />
+   * 		 // @type org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
+   * 
    */
   @WrapToScript
   public TimeControlPreferences getTimeControlPreferences()
@@ -229,6 +252,9 @@ public class Plot
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeManager
    * @return Time Manager of the current plot.
+   * 		<br />
+   * 		// @type org.mwc.cmap.core.DataTypes.Temporal.TimeManager
+   * 
    */
   @WrapToScript
   public TimeManager getTimeManager()
@@ -250,6 +276,9 @@ public class Plot
    * 
    * @see org.mwc.debrief.scripting.wrappers.Tote
    * @return Reference to the Tote of the plot given
+   * 		<br />
+   * 		// @type org.mwc.debrief.scripting.wrappers.Tote
+   * 
    */
   @WrapToScript
   public Tote getTote()

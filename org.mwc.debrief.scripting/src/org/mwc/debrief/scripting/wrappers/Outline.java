@@ -71,6 +71,9 @@ public class Outline
    * 
    * @see MWC.GUI.Editable
    * @return Currently selected objects in the Outline
+   * 		<br />
+   * 	 	// @type MWC.GUI.Editable
+   *  
    */
   public Editable[] getSelection()
   {

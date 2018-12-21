@@ -120,6 +120,9 @@ public class Core
    * @param blue
    *          the blue component
    * @return a color object
+   * 		<br />
+   * 		// @type java.awt.Color
+   * 
    */
   @WrapToScript
   public static Color createColorRGB(final int red, final int green,

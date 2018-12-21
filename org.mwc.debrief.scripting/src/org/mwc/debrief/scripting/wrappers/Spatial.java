@@ -165,6 +165,9 @@ public class Spatial
    * @param br
    *          bottom-right corner
    * @return MWC.GenericData.WorldArea
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldArea
+   * 
    */
   @WrapToScript
   public static WorldArea createArea(final WorldLocation tl,
@@ -178,6 +181,9 @@ public class Spatial
    * @param value how many units of distance
    * @param units the units for the measurement
    * @return a distance object
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldDistance
+   * 
    */
   @WrapToScript
   public static WorldDistance createDistance(final double value,
@@ -192,6 +198,9 @@ public class Spatial
    * @param dLong degrees of longitude
    * @param depth depth in metres
    * @return a location object
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldLocation
+   * 
    */
   @WrapToScript
   public static WorldLocation createLocation(final double dLat,
@@ -205,6 +214,9 @@ public class Spatial
    * @param distM distance in metres
    * @param bearingDegs bearing in degrees
    * @return a vector object
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldVector
+   * 
    */
   @WrapToScript
   public static WorldVector createVector(final double distM,
@@ -219,6 +231,9 @@ public class Spatial
    * @param distKm distance in Km
    * @param bearingDegs bearing in degrees
    * @return a vector object
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldVector
+   * 
    */
   @WrapToScript
   public static WorldVector createVectorKm(final double distKm,
@@ -233,6 +248,9 @@ public class Spatial
    * @param value how many units of speed to use
    * @param units the units for this measurement
    * @return a speed object
+   * 		<br />
+   * 		// @type MWC.GenericData.WorldSpeed
+   * 
    */
   @WrapToScript
   public static WorldSpeed createWorldSpeed(final double value, final int units)

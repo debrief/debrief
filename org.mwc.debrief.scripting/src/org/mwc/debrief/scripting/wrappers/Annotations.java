@@ -100,6 +100,8 @@ public class Annotations
    * @param endDTG
    *          the end time, or null if single date value
    * @return the new dated label
+   * 		<br />
+   * 		// @type Debrief.Wrappers.LabelWrapper
    */
   @WrapToScript
   public static LabelWrapper createLabelDate(final String label,

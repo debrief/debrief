@@ -213,6 +213,9 @@ public class Shapes
    * @param parent
    *          PolygonShape to add the new Node
    * @return Reference to the added node.
+   * 		<br />
+   * 		// @type MWC.GUI.Shapes.PolygonShape.PolygonNode
+   * 
    */
   @WrapToScript
   public static PolygonNode addPolygonNode(final String name,
@@ -235,6 +238,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return Circle Shape
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createCircle(final WorldLocation center,
@@ -260,6 +266,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return New Eclipse as a ShapeWrapper
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createEllipse(final WorldLocation theCenter,
@@ -290,6 +299,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return FurthestOnCircle Shape as a ShapeWrapper.
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createFurthestOnCircleShape(
@@ -313,6 +325,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return New line created with the parameters given
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createLine(final WorldLocation startPt,
@@ -332,6 +347,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return Polygon Shape.
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createPolygon(final String name, final Color color)
@@ -354,6 +372,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return New RangeRingShape created as a ShapeWrapper
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createRangeRingShape(final WorldLocation theCenter,
@@ -376,6 +397,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return New RectangleShape created as a ShapeWrapper
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createRectangleShape(final WorldLocation TL,
@@ -397,6 +421,9 @@ public class Shapes
    * @param color
    *          Color of the Shape
    * @return New WheelShape created as a ShapeWrapper
+   * 		<br />
+   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * 
    */
   @WrapToScript
   public static ShapeWrapper createWheelShape(final WorldLocation theCenter,

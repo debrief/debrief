@@ -41,6 +41,9 @@ public class Chart
    * 
    * @see MWC.GUI.Chart.Painters.CoastPainter
    * @return CoastPainter object created.
+   * 		<br />
+   * 		// @type MWC.GUI.Chart.Painters.CoastPainter
+   * 
    */
   @WrapToScript
   public static CoastPainter createCoastPainter()
@@ -58,6 +61,9 @@ public class Chart
    * @param parentLayers
    *          Parent Layers of the ETOPOPainter.
    * @return ETOPOPainter object created.
+   * 		<br />
+   * 		// @type MWC.GUI.Chart.Painters.ETOPOPainter
+   * 
    */
   @WrapToScript
   public static ETOPOPainter createETOPOPainter(final String pathName,
@@ -72,6 +78,9 @@ public class Chart
    * 
    * @see MWC.GUI.Chart.Painters.GridPainter
    * @return GridPainter object created.
+   * 		<br />
+   * 		// @type MWC.GUI.Chart.Painters.GridPainter
+   * 
    */
   @WrapToScript
   public static GridPainter createGrid()
@@ -85,6 +94,9 @@ public class Chart
    * 
    * @see MWC.GUI.Chart.Painters.ScalePainter
    * @return ScalePainter object created.
+   * 		<br />
+   * 		// @type MWC.GUI.Chart.Painters.ScalePainter
+   * 
    */
   @WrapToScript
   public static ScalePainter createScale()
@@ -100,6 +112,9 @@ public class Chart
    *          Stream to read the information from
    * @see MWC.GUI.Coast.Coastline
    * @return Coastline object created.
+   * 		<br />
+   * 		// @type MWC.GUI.Coast.Coastline
+   * 
    * @throws IOException
    *           Exception in case the stream is not available or corrupted.
    * @throws ParseException
