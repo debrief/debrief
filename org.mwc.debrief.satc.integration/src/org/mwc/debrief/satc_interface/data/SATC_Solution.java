@@ -546,6 +546,33 @@ public class SATC_Solution extends BaseLayer implements
     super.add(editable);
   }
 
+
+  public void removeContribution(final BaseContribution cont)
+  {
+    // do we need to pass this to the parent?
+    if (_mySolver.getContributions().contains(cont))
+    {
+      _mySolver.getContributions().removeContribution(cont);
+    }
+    
+    // see if this is any of our conts
+    Enumeration<Editable> ele = this.elements();
+    while(ele.hasMoreElements())
+    {
+      Editable next = ele.nextElement();
+      if(next instanceof ContributionWrapper)
+      {
+        ContributionWrapper cw = (ContributionWrapper) next;
+        BaseContribution thisC = cw.getContribution();
+        if(thisC.equals(cont))
+        {
+          this.removeElement(cw);
+          return;
+        }
+      }
+    }
+  }
+
   public void addContribution(final BaseContribution cont)
   {
     // do we need to pass this to the parent?
