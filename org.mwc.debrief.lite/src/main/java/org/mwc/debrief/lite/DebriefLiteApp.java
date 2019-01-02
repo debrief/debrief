@@ -28,17 +28,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -53,13 +49,9 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -165,6 +157,10 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteApplication app;
   
   private final UndoBuffer undoBuffer;
+  private JRibbonBand fileMenu;
+  private JRibbonBand mapMenu;
+  private JRibbonBand editMenu;
+  private JRibbon ribbon;
 
   public DebriefLiteApp()
   {
@@ -244,45 +240,10 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   private void addMenus() {
-    JRibbonBand fileMenu = new JRibbonBand("File", null);
-    JRibbonBand editMenu = new JRibbonBand("Edit", null);
-    JRibbonBand timeControllerMenu = new JRibbonBand("Time Controller", null);
-    timeControllerMenu.setResizePolicies((List) Arrays.asList(new IconRibbonBandResizePolicy(timeControllerMenu.getControlPanel())));
-    JCommandButton button1 = new JCommandButton("New", null);
-    JCommandButton button2 = new JCommandButton("Open Plot", null);
-    JCommandButton button3 = new JCommandButton("Save", null);
-    JCommandButton button4 = new JCommandButton("Exit", null);
-    fileMenu.addCommandButton(button1, RibbonElementPriority.TOP);
-    fileMenu.addCommandButton(button2, RibbonElementPriority.MEDIUM);
-    fileMenu.addCommandButton(button3, RibbonElementPriority.MEDIUM);
-    fileMenu.addCommandButton(button4, RibbonElementPriority.MEDIUM);
-    fileMenu.setResizePolicies((List) Arrays.asList(
-        new CoreRibbonResizePolicies.None(fileMenu.getControlPanel()),
-        new IconRibbonBandResizePolicy(fileMenu.getControlPanel())));
-    JCommandButton editButton1 = new JCommandButton("Undo", null);
-    JCommandButton editButton2 = new JCommandButton("Redo", null);
-    JCommandButton editButton3 = new JCommandButton("Cut", null);
-    JCommandButton editButton4 = new JCommandButton("Copy", null);
-    JCommandButton editButton5 = new JCommandButton("Paste", null);
-    editMenu.addCommandButton(editButton1, RibbonElementPriority.TOP);
-    editMenu.addCommandButton(editButton2, RibbonElementPriority.MEDIUM);
-    editMenu.addCommandButton(editButton3, RibbonElementPriority.MEDIUM);
-    editMenu.addCommandButton(editButton4, RibbonElementPriority.MEDIUM);
-    editMenu.addCommandButton(editButton5, RibbonElementPriority.MEDIUM);
-    editMenu.setResizePolicies((List) Arrays.asList(
-        new CoreRibbonResizePolicies.None(editMenu.getControlPanel()),
-        new IconRibbonBandResizePolicy(editMenu.getControlPanel())));
-    /*timeControllerMenu.setResizePolicies((List) Arrays.asList(
-        new CoreRibbonResizePolicies.None(timeControllerMenu.getControlPanel()),
-        new IconRibbonBandResizePolicy(timeControllerMenu.getControlPanel())));
-    */
-    RibbonTask fileTask = new RibbonTask("File", fileMenu);
-    RibbonTask editTask = new RibbonTask("Edit", editMenu);
-    RibbonTask timeControllerTask = new RibbonTask("Time Controller",timeControllerMenu);
-    theFrame.getRibbon().addTask(fileTask);
-    theFrame.getRibbon().addTask(editTask);
-    theFrame.getRibbon().addTask(timeControllerTask);
-    
+    ribbon = theFrame.getRibbon();
+    //add menus here
+    mapMenu = new JRibbonBand("Map",null);
+    geoMapRenderer.addMapTool(mapMenu, ribbon);
   }
   
 
@@ -317,7 +278,7 @@ public class DebriefLiteApp implements FileDropListener
         timeControllerPanel);
     addOutlineView(outlineTitlePanel, _toolParent);
     final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
-    geoMapRenderer.addMapTool(theToolbar);
+
     final JScrollPane graphPane = createScrollPane(graphPanel);
     final JScrollPane notesPane = createNotesPane();
     final JSplitPane controlPanelSplit = new JSplitPane(

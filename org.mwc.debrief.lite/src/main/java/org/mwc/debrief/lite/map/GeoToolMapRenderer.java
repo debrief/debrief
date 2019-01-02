@@ -16,13 +16,15 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
 import javax.swing.JSplitPane;
 
 import org.geotools.data.FileDataStore;
@@ -49,8 +51,15 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-
-import MWC.GUI.Tools.Swing.SwingToolbar;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
 
 /**
  *
@@ -77,45 +86,64 @@ public class GeoToolMapRenderer implements BaseMap
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
   @Override
-  public void addMapTool(final SwingToolbar theToolbar)
+  public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
   {
 
-    JButton btn;
-    final ButtonGroup cursorToolGrp = new ButtonGroup();
+    JCommandButton btn;
 
     // mapPane.addMouseListener(new ScrollWheelTool(mapPane));
-
+    Action noToolAction = new NoToolAction(mapPane);
     ///// no action
-    btn = new JButton(new NoToolAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    Image zoominImage = createImage("images/16/zoomin.png");
+    ImageWrapperResizableIcon zoominIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
+    
+    Image zoomoutImage = createImage("images/16/zoomout.png");
+    ImageWrapperResizableIcon zoomoutIcon = ImageWrapperResizableIcon.getIcon(zoomoutImage, new Dimension(16,16));
+    
+    btn = new JCommandButton("Selector",null);
+    btn.addActionListener(noToolAction);
+    btn.setCommandButtonKind(CommandButtonKind.ACTION_ONLY);
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
 
     ////// zoom in
-    btn = new JButton(new ZoomInAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    btn = new JCommandButton("Zoom In",zoominIcon);
+    btn.addActionListener(new ZoomInAction(mapPane));
+    mapBand.addCommandButton(btn,RibbonElementPriority.MEDIUM);
 
     ////// zoom out
-    btn = new JButton(new ZoomOutAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
-
-    theToolbar.addSeparator();
+    btn = new JCommandButton("Zoom Out",zoomoutIcon);
+    btn.addActionListener(new ZoomOutAction(mapPane));
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
 
     //// pan action
-    btn = new JButton(new PanAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    btn = new JCommandButton("Pan",null);
+    btn.addActionListener(new PanAction(mapPane));
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
+    
 
     //// info action
-    btn = new JButton(new InfoAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
-
+    btn = new JCommandButton("Info",null);
+    btn.addActionListener(new InfoAction(mapPane));
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
+    
     //// reset action
-    btn = new JButton(new ResetAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    btn = new JCommandButton("Reset",null);
+    btn.addActionListener(new ResetAction(mapPane));
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
+    
+    mapBand.setResizePolicies((List) Arrays.asList(
+        new CoreRibbonResizePolicies.None(mapBand.getControlPanel()),
+        new IconRibbonBandResizePolicy(mapBand.getControlPanel())));
+    RibbonTask fileTask = new RibbonTask("Map", mapBand);
+    ribbon.addTask(fileTask);
+    
+    }
+
+  private Image createImage(String imageName)
+  {
+    ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imageName));
+    return icon.getImage();
+    
   }
 
   public void addRenderer(final MapRenderer renderer)
