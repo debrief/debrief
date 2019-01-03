@@ -14,10 +14,7 @@
  */
 package org.mwc.debrief.lite.map;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import java.awt.Component;
 
 import MWC.GUI.Tools.Swing.SwingToolbar;
 
@@ -36,15 +33,16 @@ public class MapBuilder
   /**
    * builds the map pane with map content in it.
    */
-  public JScrollPane build()
+  public Component build()
   {
-    final JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.add(mapRenderer.getPane(), BorderLayout.NORTH);
-    final JScrollPane scrPane = new JScrollPane(panel);
-
-    // mapRenderer.addMapTool(theToolbar);
-    return scrPane;
+    return mapRenderer.getMap();
+//    final JPanel panel = new JPanel();
+//    panel.setLayout(new BorderLayout());
+//    panel.add(mapRenderer.getMap(), BorderLayout.CENTER);
+//    final JScrollPane scrPane = new JScrollPane(panel);
+//
+//    // mapRenderer.addMapTool(theToolbar);
+//    return scrPane;
   }
 
   /**

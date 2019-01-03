@@ -15,14 +15,12 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -51,7 +49,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
-import org.pushingpixels.substance.api.skin.CeruleanSkin;
+import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -138,7 +136,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private JLabel statusBar;
 
-  private JLabel _notesIconLabel;
+//  private JLabel _notesIconLabel;
   private boolean notesPaneExpanded = false;
   final private Layers _theLayers = new Layers();
 
@@ -147,7 +145,7 @@ public class DebriefLiteApp implements FileDropListener
   private final GeoToolMapRenderer geoMapRenderer;
 
   private final DebriefLiteToolParent _toolParent;
-  private JScrollPane mapPane;
+  private Component mapPane;
   private final GeoToolMapProjection projection;
 
   private final Clipboard _theClipboard = new Clipboard("Debrief");
@@ -221,7 +219,7 @@ public class DebriefLiteApp implements FileDropListener
 
     //set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceCortex.GlobalScope.setSkin(new CeruleanSkin());
+    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     
     
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
@@ -241,7 +239,6 @@ public class DebriefLiteApp implements FileDropListener
     mapMenu = new JRibbonBand("Map",null);
     geoMapRenderer.addMapTool(mapMenu, ribbon);
   }
-  
 
   private void addStatusBar()
   {
@@ -263,61 +260,37 @@ public class DebriefLiteApp implements FileDropListener
     final Dimension frameSize = theFrame.getSize();
     final int width = (int) frameSize.getWidth();
     final int height = (int) frameSize.getHeight();
-    final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar(
-        "Time Controller");
     final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar(
         "Outline");
     final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar(
         "Plot Editor");
     final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-    final JScrollPane timeControllerPane = createScrollPane(
-        timeControllerPanel);
     addOutlineView(outlineTitlePanel, _toolParent);
-    final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
+    final Component editorPane = createMapPane();// createScrollPane(editorPanel);
 
     final JScrollPane graphPane = createScrollPane(graphPanel);
-    final JScrollPane notesPane = createNotesPane();
-    final JSplitPane controlPanelSplit = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT, true, timeControllerPane, outlinePanel);
+    final JPanelWithTitleBar notesPane = new JPanelWithTitleBar(
+        "Notes");
     final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         true, editorPane, graphPane);
     final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        controlPanelSplit, graphSplit);
+        outlineTitlePanel, graphSplit);
     final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
         leftSplit, notesPane);
     rightSplit.setOneTouchExpandable(true);
+    leftSplit.setOneTouchExpandable(true);
+    graphSplit.setOneTouchExpandable(true);
+    
+    graphSplit.setDividerSize(42);
 
-    // controlPanelSplit.setOneTouchExpandable(true);
-    // graphSplit.setOneTouchExpandable(true);
-    rightSplit.setDividerLocation(width - 50);
-    graphSplit.setDividerLocation(height / 2 + height / 5);
-    controlPanelSplit.setDividerLocation(height / 2);
+    rightSplit.setDividerLocation(3 * width / 4);
+    graphSplit.setDividerLocation(300);
     leftSplit.setDividerLocation(width / 3);
     rightSplit.setResizeWeight(0.9);
     graphSplit.setResizeWeight(0.5);
     editorPanel.addMaxListenerFor(leftSplit, graphSplit);
     graphPanel.addMinListenerFor(graphSplit);
-    // leftSplit.setOneTouchExpandable(true);
 
-    _notesIconLabel.addMouseListener(new MouseAdapter()
-    {
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-
-        rightSplit.getRightComponent().setMinimumSize(new Dimension());
-        if (notesPaneExpanded)
-        {
-          rightSplit.setDividerLocation(0.97d);
-        }
-        else
-        {
-          rightSplit.setDividerLocation(0.7d);
-        }
-        // toggle the state
-        notesPaneExpanded = !notesPaneExpanded;
-      }
-    });
     theFrame.add(rightSplit, BorderLayout.CENTER);
     addStatusBar();
     // dummy placeholder
@@ -330,7 +303,7 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @return
    */
-  private JScrollPane createMapPane()
+  private Component createMapPane()
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
@@ -339,18 +312,6 @@ public class DebriefLiteApp implements FileDropListener
     _dropSupport.addComponent(mapPane);
 
     return mapPane;
-  }
-
-  private JScrollPane createNotesPane()
-  {
-    final JPanel notesPanel = new JPanel();
-    notesPanel.setLayout(new FlowLayout());
-    final JScrollPane notesPane = new JScrollPane(notesPanel);
-    final URL url = getClass().getClassLoader().getResource(NOTES_ICON);
-    _notesIconLabel = new JLabel();
-    _notesIconLabel.setIcon(new ImageIcon(url));
-    notesPanel.add(_notesIconLabel);
-    return notesPane;
   }
 
   protected void doPaint(final Graphics gc)

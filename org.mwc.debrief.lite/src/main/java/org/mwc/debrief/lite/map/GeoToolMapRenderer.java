@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.map;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -25,7 +26,6 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JSplitPane;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -38,7 +38,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.MapLayerTable;
 import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.NoToolAction;
 import org.geotools.swing.action.PanAction;
@@ -73,8 +72,6 @@ public class GeoToolMapRenderer implements BaseMap
   {
     public void paint(final Graphics gc);
   }
-
-  protected JSplitPane splitPane;
 
   private JMapPane mapPane;
   private MapContent mapComponent;
@@ -157,12 +154,6 @@ public class GeoToolMapRenderer implements BaseMap
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapComponent);
-
-    final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
-    mapLayerTable.setVisible(false);
-    mapLayerTable.setPreferredSize(new Dimension(200, 400));
-    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false,
-        mapLayerTable, mapPane);
   }
 
   /**
@@ -185,10 +176,6 @@ public class GeoToolMapRenderer implements BaseMap
     return mapComponent;
   }
 
-  protected JSplitPane getPane()
-  {
-    return splitPane;
-  }
 
   /**
    * gets a MathTransform object
@@ -257,5 +244,10 @@ public class GeoToolMapRenderer implements BaseMap
     {
       r.paint(arg0);
     }
+  }
+
+  public Component getMap()
+  {
+    return mapPane;
   }
 }
