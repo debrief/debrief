@@ -10,7 +10,6 @@ Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.263",
  org.mwc.debrief.legacy;bundle-version="1.0.388",
  org.geotools;bundle-version="1.0.7"
 Bundle-Vendor: Deep Blue C Ltd
-Bundle-ClassPath: .,
- libs/flamingo-7.3.jar,
- libs/trident-7.3-swing.jar,
- libs/substance-6.1.jar
+Bundle-ClassPath: libs/flamingo-7.3.jar,
+ libs/substance-6.1.jar,
+ libs/trident-7.3-swing.jar

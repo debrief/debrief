@@ -38,8 +38,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import org.geotools.map.MapContent;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
@@ -52,6 +50,8 @@ import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.substance.api.SubstanceLookAndFeel;
+import org.pushingpixels.substance.api.skin.BusinessBlackSteelSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -112,6 +112,8 @@ public class DebriefLiteApp implements FileDropListener
   {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       public void run() {
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
         new DebriefLiteApp();
       }
   });
@@ -219,7 +221,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    try
+    /*try
     {
       UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     }
@@ -227,7 +229,7 @@ public class DebriefLiteApp implements FileDropListener
         | IllegalAccessException | UnsupportedLookAndFeelException e)
     {
       e.printStackTrace();
-    }
+    }*/
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 

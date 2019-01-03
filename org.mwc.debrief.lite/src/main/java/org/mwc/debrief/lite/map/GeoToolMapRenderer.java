@@ -19,6 +19,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -141,8 +142,14 @@ public class GeoToolMapRenderer implements BaseMap
 
   private Image createImage(String imageName)
   {
-    ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource(imageName));
-    return icon.getImage();
+    final URL iconURL = getClass().getClassLoader().
+                            getResource(imageName);
+    
+    if(iconURL != null) {
+      ImageIcon icon = new ImageIcon(iconURL);
+      return icon.getImage();
+    }
+    return null;
     
   }
 
