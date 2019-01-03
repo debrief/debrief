@@ -639,7 +639,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     }
 
     // and set the tick
-    da.setDateFormatOverride(target);
+    if(da!=null)
+      da.setDateFormatOverride(target);
 
     // also store it as a pref, for the next format
     _toolParent.setProperty(CHART_LABEL_FORMAT, format);
