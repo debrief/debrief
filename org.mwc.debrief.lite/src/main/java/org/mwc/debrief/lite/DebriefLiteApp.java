@@ -112,8 +112,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     javax.swing.SwingUtilities.invokeLater(new Runnable() {
       public void run() {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
         new DebriefLiteApp();
       }
   });
@@ -221,15 +219,11 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    /*try
-    {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    }
-    catch (ClassNotFoundException | InstantiationException
-        | IllegalAccessException | UnsupportedLookAndFeelException e)
-    {
-      e.printStackTrace();
-    }*/
+    //set the substance look and feel
+    JFrame.setDefaultLookAndFeelDecorated(true);
+    SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
+    
+    
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 

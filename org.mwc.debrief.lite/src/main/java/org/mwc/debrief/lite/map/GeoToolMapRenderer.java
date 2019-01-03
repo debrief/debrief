@@ -89,57 +89,30 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
   {
-
-    JCommandButton btn;
-
-    // mapPane.addMouseListener(new ScrollWheelTool(mapPane));
-    Action noToolAction = new NoToolAction(mapPane);
-    ///// no action
-    Image zoominImage = createImage("images/16/zoomin.png");
-    ImageWrapperResizableIcon zoominIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
-    
-    Image zoomoutImage = createImage("images/16/zoomout.png");
-    ImageWrapperResizableIcon zoomoutIcon = ImageWrapperResizableIcon.getIcon(zoomoutImage, new Dimension(16,16));
-    
-    btn = new JCommandButton("Selector",null);
-    btn.addActionListener(noToolAction);
-    btn.setCommandButtonKind(CommandButtonKind.ACTION_ONLY);
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
-
-    ////// zoom in
-    btn = new JCommandButton("Zoom In",zoominIcon);
-    btn.addActionListener(new ZoomInAction(mapPane));
-    mapBand.addCommandButton(btn,RibbonElementPriority.MEDIUM);
-
-    ////// zoom out
-    btn = new JCommandButton("Zoom Out",zoomoutIcon);
-    btn.addActionListener(new ZoomOutAction(mapPane));
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
-
-    //// pan action
-    btn = new JCommandButton("Pan",null);
-    btn.addActionListener(new PanAction(mapPane));
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
-    
-
-    //// info action
-    btn = new JCommandButton("Info",null);
-    btn.addActionListener(new InfoAction(mapPane));
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
-    
-    //// reset action
-    btn = new JCommandButton("Reset",null);
-    btn.addActionListener(new ResetAction(mapPane));
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
-    
+    addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand);
+    addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand);
+    addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand);
+    addCommandButton("Pan", null, new PanAction(mapPane), mapBand);
+    addCommandButton("Info", null, new InfoAction(mapPane), mapBand);
+    addCommandButton("Reset", null, new ResetAction(mapPane), mapBand);
     mapBand.setResizePolicies((List) Arrays.asList(
         new CoreRibbonResizePolicies.None(mapBand.getControlPanel()),
         new IconRibbonBandResizePolicy(mapBand.getControlPanel())));
     RibbonTask fileTask = new RibbonTask("Map", mapBand);
     ribbon.addTask(fileTask);
     
-    }
+  }
 
+  private void addCommandButton(final String commandName,final String imagePath, final Action actionToAdd,final JRibbonBand mapBand) {
+    ImageWrapperResizableIcon imageIcon = null;
+    if(imagePath!=null) {
+      Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
+    }
+    JCommandButton btn = new JCommandButton(commandName,imageIcon);
+    btn.addActionListener(actionToAdd);
+    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
+  }
   private Image createImage(String imageName)
   {
     final URL iconURL = getClass().getClassLoader().
