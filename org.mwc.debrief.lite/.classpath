@@ -28,5 +28,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="lib" path="libs/flamingo-7.3.jar"/>
 	<classpathentry kind="lib" path="libs/trident-7.3-swing.jar"/>
+	<classpathentry kind="lib" path="libs/substance-6.1.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
