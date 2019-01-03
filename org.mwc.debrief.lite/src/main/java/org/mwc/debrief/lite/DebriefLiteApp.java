@@ -52,7 +52,6 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.CeruleanSkin;
-import org.pushingpixels.substance.api.skin.ModerateSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;

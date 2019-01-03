@@ -25,7 +25,6 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.geotools.data.FileDataStore;
@@ -52,10 +51,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
-import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButtonPanel;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
