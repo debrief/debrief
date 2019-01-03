@@ -25,6 +25,7 @@ import java.util.List;
 
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.geotools.data.FileDataStore;
@@ -52,11 +53,13 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButtonPanel;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
@@ -97,24 +100,26 @@ public class GeoToolMapRenderer implements BaseMap
     addCommandButton("Reset", null, new ResetAction(mapPane), mapBand);
     List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
-    policies.add(new CoreRibbonResizePolicies.IconRibbonBandResizePolicy(mapBand));
+    policies.add(new CoreRibbonResizePolicies.Mid2Low(mapBand));
+    policies.add(new IconRibbonBandResizePolicy(mapBand));
     mapBand.setResizePolicies(policies);
     RibbonTask fileTask = new RibbonTask("Map", mapBand);
     ribbon.addTask(fileTask);
   }
-
+  
   private void addCommandButton(final String commandName,final String imagePath, final Action actionToAdd,final JRibbonBand mapBand) {
     ImageWrapperResizableIcon imageIcon = null;
     if(imagePath!=null) {
       Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
     }
-    JCommandButton btn = new JCommandButton(commandName,imageIcon);
-    btn.addActionListener(actionToAdd);
-    btn.setDisplayState(CommandButtonDisplayState.FIT_TO_ICON);
-    btn.setVGapScaleFactor(0.5);
-    mapBand.addRibbonComponent(new JRibbonComponent(btn));
+    mapBand.addRibbonCommand(new FlamingoCommandBuilder()
+    .setTitle(commandName)
+    .setIcon(imageIcon)
+    .setAction(actionToAdd)
+    .setTitleClickAction().build(),RibbonElementPriority.TOP);
   }
+
   private Image createImage(String imageName)
   {
     final URL iconURL = getClass().getClassLoader().
