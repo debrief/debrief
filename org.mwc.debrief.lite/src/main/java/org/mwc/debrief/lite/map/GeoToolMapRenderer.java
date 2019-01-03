@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.Action;
@@ -52,15 +51,16 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButton.CommandButtonKind;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
  *
@@ -95,12 +95,12 @@ public class GeoToolMapRenderer implements BaseMap
     addCommandButton("Pan", null, new PanAction(mapPane), mapBand);
     addCommandButton("Info", null, new InfoAction(mapPane), mapBand);
     addCommandButton("Reset", null, new ResetAction(mapPane), mapBand);
-    mapBand.setResizePolicies((List) Arrays.asList(
-        new CoreRibbonResizePolicies.None(mapBand.getControlPanel()),
-        new IconRibbonBandResizePolicy(mapBand.getControlPanel())));
+    List<RibbonBandResizePolicy> policies = new ArrayList<>();
+    policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
+    policies.add(new CoreRibbonResizePolicies.IconRibbonBandResizePolicy(mapBand));
+    mapBand.setResizePolicies(policies);
     RibbonTask fileTask = new RibbonTask("Map", mapBand);
     ribbon.addTask(fileTask);
-    
   }
 
   private void addCommandButton(final String commandName,final String imagePath, final Action actionToAdd,final JRibbonBand mapBand) {
@@ -111,7 +111,9 @@ public class GeoToolMapRenderer implements BaseMap
     }
     JCommandButton btn = new JCommandButton(commandName,imageIcon);
     btn.addActionListener(actionToAdd);
-    mapBand.addCommandButton(btn, RibbonElementPriority.MEDIUM);
+    btn.setDisplayState(CommandButtonDisplayState.FIT_TO_ICON);
+    btn.setVGapScaleFactor(0.5);
+    mapBand.addRibbonComponent(new JRibbonComponent(btn));
   }
   private Image createImage(String imageName)
   {

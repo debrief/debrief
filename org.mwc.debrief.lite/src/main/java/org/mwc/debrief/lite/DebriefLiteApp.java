@@ -50,8 +50,9 @@ import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.substance.api.SubstanceLookAndFeel;
-import org.pushingpixels.substance.api.skin.BusinessBlackSteelSkin;
+import org.pushingpixels.substance.api.SubstanceCortex;
+import org.pushingpixels.substance.api.skin.CeruleanSkin;
+import org.pushingpixels.substance.api.skin.ModerateSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -221,7 +222,7 @@ public class DebriefLiteApp implements FileDropListener
 
     //set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
+    SubstanceCortex.GlobalScope.setSkin(new CeruleanSkin());
     
     
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
