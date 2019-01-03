@@ -12,6 +12,11 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-neon-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-flamingo-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-substance-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-substance-extras-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-trident-1.0.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
@@ -26,8 +31,5 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="libs/flamingo-7.3.jar"/>
-	<classpathentry kind="lib" path="libs/substance-6.1.jar"/>
-	<classpathentry kind="lib" path="libs/trident-7.3-swing.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
