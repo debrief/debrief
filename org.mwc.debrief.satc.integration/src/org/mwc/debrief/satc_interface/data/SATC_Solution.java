@@ -673,6 +673,9 @@ public class SATC_Solution extends BaseLayer implements
             final AbsoluteTMASegment abs =
                 new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
                     endTime);
+            
+            // store the parent
+            abs.setWrapper(newT);
 
             // remember this leg
             lastLeg = abs;
@@ -706,6 +709,7 @@ public class SATC_Solution extends BaseLayer implements
               final DynamicInfillSegment infill =
                   new DynamicInfillSegment(pendingAlteration, abs);
               newT.add(infill);
+              infill.setWrapper(newT);
               pendingAlteration = null;
             }
 
@@ -1552,6 +1556,8 @@ public class SATC_Solution extends BaseLayer implements
           thisStamps[ctr++] = state.getTime().getTime();
         }
       }
+      
+      final boolean returnAlteringLegs = false;
 
       // loop through the legs
       final Iterator<CoreRoute> legs = thisR.getLegs().iterator();
@@ -1559,7 +1565,7 @@ public class SATC_Solution extends BaseLayer implements
       {
         final CoreRoute thisLeg = legs.next();
 
-        TrackSegment ts;
+        final TrackSegment ts;
 
         if (thisLeg instanceof StraightRoute)
         {
@@ -1576,36 +1582,14 @@ public class SATC_Solution extends BaseLayer implements
           final HiResDate endTime =
               new HiResDate(straight.getEndTime().getTime());
 
-          final AbsoluteTMASegment abs =
-              new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
+          ts = new AbsoluteTMASegment(courseDegs, speed, origin, startTime,
                   endTime, thisStamps);
 
-          // // quick check to see if we have some frequency data
-          // IContributions conts = _mySolver.getContributions();
-          // Iterator<BaseContribution> iter = conts.iterator();
-          // while (iter.hasNext())
-          // {
-          // BaseContribution cont = (BaseContribution) iter.next();
-          // if (cont instanceof Range1959ForecastContribution)
-          // {
-          // // ok, does it overlap this leg?
-          // if (cont.getStartDate().before(straight.getEndTime())
-          // && cont.getFinishDate().after(straight.getStartTime()))
-          // {
-          // // ok, retrieve the frequency
-          // Range1959ForecastContribution freqC = (Range1959ForecastContribution) cont;
-          // double freq = freqC.getfNought();
-          // abs.setBaseFrequency(freq);
-          // }
-          // }
-          // }
-
-          abs.setName(straight.getName());
-          ts = abs;
-
+          ts.setName(straight.getName());
         }
-        else
+        else if(returnAlteringLegs)
         {
+          
           // make the segment absolute, which SATC tracks are
           ts = new TrackSegment(TrackSegment.ABSOLUTE);
 
@@ -1647,7 +1631,15 @@ public class SATC_Solution extends BaseLayer implements
             ts.addFix(newFW);
           }
         }
-        res.add(ts);
+        else
+        {
+          ts = null;
+        }
+        
+        if(ts != null)
+        {
+          res.add(ts);
+        }
       }
     }
 
