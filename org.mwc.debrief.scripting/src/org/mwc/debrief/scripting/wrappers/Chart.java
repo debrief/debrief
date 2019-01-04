@@ -28,6 +28,8 @@ import org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute;
 import org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative;
 import org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers;
 
+import MWC.GUI.Plottable;
+
 /**
  * capabilities related to managing the chart
  *
@@ -39,56 +41,68 @@ public class Chart
 
   /**
    * Function that adds a Scale to the current plot
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.ScalePainter
    */
   @WrapToScript
-  public static void addScale()
+  public static Plottable addScale()
   {
-    new InsertScale().execute();
+    return new InsertScale().createAndStore();
   }
 
   /**
    * Function that adds the time display (Absolute) to the current plot.
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.TimeDisplayPainter
    */
   @WrapToScript
-  public static void addTimeDisplayAbsolute()
+  public static Plottable addTimeDisplayAbsolute()
   {
-    new InsertTimeDisplayAbsolute().execute();
+    return new InsertTimeDisplayAbsolute().createAndStore();
   }
 
   /**
    * Function that adds the time display (Relative) to the current plot.
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.TimeDisplayPainter
    */
   @WrapToScript
-  public static void addTimeDisplayRelative()
+  public static Plottable addTimeDisplayRelative()
   {
-    new InsertTimeDisplayRelative().execute();
+    return new InsertTimeDisplayRelative().createAndStore();
   }
 
   /**
    * Function that adds a 4WGrid to the current plot.
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.Grid4WPainter
    */
   @WrapToScript
-  public static void add4WGrid()
+  public static Plottable add4WGrid()
   {
-    new Insert4WGrid().execute();
+    return new Insert4WGrid().createAndStore();
   }
 
   /**
    * Function that adds a Grid to the current plot.
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.GridPainter
    */
   @WrapToScript
-  public static void addGrid()
+  public static Plottable addGrid()
   {
-    new InsertGrid().execute();
+    return new InsertGrid().createAndStore();
   }
 
   /**
    * Function that adds a Local Grid to the current plot.
+   * 
+   * @return // @type MWC.GUI.Chart.Painters.LocalGridPainter
    */
   @WrapToScript
-  public static void addLocalGrid()
+  public static Plottable addLocalGrid()
   {
-    new InsertLocalGrid().execute();
+    return new InsertLocalGrid().createAndStore();
   }
 
   /**
@@ -97,36 +111,45 @@ public class Chart
   @WrapToScript
   public static void loadCoastLine()
   {
-    new InsertCoastline().execute();
+    new InsertCoastline().createAndStore();
   }
 
   /**
    * Function that adds a ETOPO to the current plot.
+   * 
+   * @return // @type MWC.GUI.Layer
    */
   @WrapToScript
-  public static void addETOPO()
+  public static Plottable addETOPO()
   {
-    new InsertETOPO().execute();
+    return new InsertETOPO().createAndStore();
   }
 
   /**
-   * Function that adds the Chart Library defined in the maritime preferences to the current plot.
+   * Function that loads the Chart Library defined in the maritime preferences to the current plot.
    */
   @WrapToScript
-  public static void addChartLibrary()
+  public static void loadChartLibrary()
   {
     new InsertChartLibrary().execute();
   }
 
   /**
    * Function that adds the VPT Layers to the current plot.
+   * 
+   * @return // @type MWC.GUI.VPF.VPFDatabase
    */
   @WrapToScript
   public static void addVPTLayers()
   {
-    new InsertVPFLayers().execute();
+    new InsertVPFLayers().createAndStore();
   }
 
+  /**
+   * Method that load the natural earth from the path specified in the maritime preference section.
+   * 
+   * @throws ExecutionException In case the path given is invalid or corrupt.
+   */
   @WrapToScript
   public static void loadNaturalEarth() throws ExecutionException
   {
