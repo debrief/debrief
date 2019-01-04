@@ -13,8 +13,12 @@ Require-Bundle: org.eclipse.help;bundle-version="[3.5.0,4.0.0)",org.ec
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
-Import-Package: org.eclipse.ui.plugin,org.eclipse.ui.views.contentoutl
- ine,org.mwc.cmap.core.DataTypes.Temporal,org.mwc.cmap.core.DataTypes.
- TrackData,org.mwc.cmap.core.ui_support,org.mwc.debrief.core,org.mwc.d
- ebrief.core.editors
+Import-Package: org.eclipse.ui.plugin,
+ org.eclipse.ui.views.contentoutline,
+ org.mwc.cmap.core.DataTypes.Temporal,
+ org.mwc.cmap.core.DataTypes.TrackData,
+ org.mwc.cmap.core.ui_support,
+ org.mwc.debrief.core,
+ org.mwc.debrief.core.creators.chartFeatures,
+ org.mwc.debrief.core.editors
 

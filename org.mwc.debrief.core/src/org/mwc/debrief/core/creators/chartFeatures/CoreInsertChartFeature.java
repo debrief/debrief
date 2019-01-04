@@ -17,6 +17,7 @@ package org.mwc.debrief.core.creators.chartFeatures;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
@@ -97,7 +98,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	/**
 	 * and execute..
 	 */
-	protected void execute()
+	public void execute()
 	{
 		final PlainChart theChart = getChart();
 
@@ -200,39 +201,43 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 
 					public void execute()
 					{
-						// generate the object
-						super.execute();
+            // generate the object
+            super.execute();
+            
+            Display.getDefault().asyncExec(new Runnable() {
+              @Override
+              public void run() {
+    						// right, does the user want me to auto-select the newly created
+    						// item?
+    						final String autoSelectStr = CorePlugin.getToolParent().getProperty(
+    								PrefsPage.PreferenceConstants.AUTO_SELECT);
+    						final boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
+    						if (autoSelect)
+    						{
+		              // ok, now open the properties window
+		              try
+		              {
+		                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+		                    .getActivePage().showView(IPageLayout.ID_PROP_SHEET);
+		              }
+		              catch (final PartInitException e)
+		              {
+		                CorePlugin.logError(Status.WARNING,
+		                    "Failed to open properties view", e);
+		              }
+						    }
 
-						// right, does the user want me to auto-select the newly created
-						// item?
-						final String autoSelectStr = CorePlugin.getToolParent().getProperty(
-								PrefsPage.PreferenceConstants.AUTO_SELECT);
-						final boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
-						if (autoSelect)
-						{
-
-							// ok, now open the properties window
-							try
-							{
-								PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-										.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
-							}
-							catch (final PartInitException e)
-							{
-								CorePlugin.logError(Status.WARNING,
-										"Failed to open properties view", e);
-							}
-
-							// find the editor
-							final IChartBasedEditor editor = getEditor();
-
-							// highlight the editor
-							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-									.getActivePage().activate((IWorkbenchPart) editor);
-
-							// select the shape
-							editor.selectPlottable(_theShape, _theLayer);
-						}
+  							// find the editor
+  							final IChartBasedEditor editor = getEditor();
+  
+  							// highlight the editor
+  							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+  									.getActivePage().activate((IWorkbenchPart) editor);
+  
+  							// select the shape
+  							editor.selectPlottable(_theShape, _theLayer);
+              }
+            });
 					}
 				};
 			}
