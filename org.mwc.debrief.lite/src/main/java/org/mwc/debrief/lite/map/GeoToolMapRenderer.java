@@ -15,17 +15,14 @@
 package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.Action;
-import javax.swing.ImageIcon;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -45,13 +42,12 @@ import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.mwc.debrief.lite.menu.MenuUtils;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
-import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -85,46 +81,21 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
   {
-    addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand);
-    addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand);
-    addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand);
-    addCommandButton("Pan", null, new PanAction(mapPane), mapBand);
-    addCommandButton("Info", null, new InfoAction(mapPane), mapBand);
-    addCommandButton("Reset", null, new ResetAction(mapPane), mapBand);
+    MenuUtils.addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Pan", null, new PanAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Info", null, new InfoAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Reset", null, new ResetAction(mapPane), mapBand,null);
     List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
     policies.add(new CoreRibbonResizePolicies.Mid2Low(mapBand));
     policies.add(new IconRibbonBandResizePolicy(mapBand));
     mapBand.setResizePolicies(policies);
-    RibbonTask fileTask = new RibbonTask("Map", mapBand);
+    RibbonTask fileTask = new RibbonTask("View", mapBand);
     ribbon.addTask(fileTask);
   }
   
-  private void addCommandButton(final String commandName,final String imagePath, final Action actionToAdd,final JRibbonBand mapBand) {
-    ImageWrapperResizableIcon imageIcon = null;
-    if(imagePath!=null) {
-      Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
-    }
-    mapBand.addRibbonCommand(new FlamingoCommandBuilder()
-    .setTitle(commandName)
-    .setIcon(imageIcon)
-    .setAction(actionToAdd)
-    .setTitleClickAction().build(),RibbonElementPriority.TOP);
-  }
-
-  private Image createImage(String imageName)
-  {
-    final URL iconURL = getClass().getClassLoader().
-                            getResource(imageName);
-    
-    if(iconURL != null) {
-      ImageIcon icon = new ImageIcon(iconURL);
-      return icon.getImage();
-    }
-    return null;
-    
-  }
 
   public void addRenderer(final MapRenderer renderer)
   {
