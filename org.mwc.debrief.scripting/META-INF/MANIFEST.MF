@@ -18,6 +18,7 @@ Import-Package: org.eclipse.ui.plugin,
  org.mwc.cmap.core.DataTypes.Temporal,
  org.mwc.cmap.core.DataTypes.TrackData,
  org.mwc.cmap.core.ui_support,
+ org.mwc.cmap.naturalearth.ui,
  org.mwc.debrief.core,
  org.mwc.debrief.core.creators.chartFeatures,
  org.mwc.debrief.core.editors

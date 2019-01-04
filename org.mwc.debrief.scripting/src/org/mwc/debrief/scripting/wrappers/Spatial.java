@@ -9,7 +9,8 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import junit.framework.TestCase;
 
-/** generic position related elements
+/**
+ * generic position related elements
  * 
  * @author ian
  *
@@ -32,7 +33,7 @@ public class Spatial
 
     static final WorldLocation w2 = new WorldLocation(10, 10, 100);
     static final WorldArea wa1 = new WorldArea(w1, w2);
-    
+
     public void testCreateArea()
     {
       final WorldArea ww1 = new WorldArea(w1, w2);
@@ -91,43 +92,51 @@ public class Spatial
    * annotation. Once we've added this annotation to one public field/method, we have to apply it
    * for all methods
    */
-  /** Metres type
+  /**
+   * Metres type
    * 
    */
   @WrapToScript
   static public final int METRES = 0;
-  /** Yards type
+  /**
+   * Yards type
    * 
    */
   @WrapToScript
   static public final int YARDS = 1;
-  /** Kilometres type
+  /**
+   * Kilometres type
    * 
    */
   @WrapToScript
   static public final int KM = 2;
-  /** Nautical Miles type
+  /**
+   * Nautical Miles type
    * 
    */
   @WrapToScript
   static public final int NM = 3;
-  /** Arc Minutes type
+  /**
+   * Arc Minutes type
    * 
    */
   @WrapToScript
   static public final int MINUTES = 4;
-  /** Arc Degrees type
+  /**
+   * Arc Degrees type
    * 
    */
   @WrapToScript
   static public final int DEGS = 5;
-  /** Kiloyards type
+  /**
+   * Kiloyards type
    * 
    */
   @WrapToScript
   static public final int KYDS = 6;
 
-  /** Feet type
+  /**
+   * Feet type
    * 
    */
   @WrapToScript
@@ -164,9 +173,8 @@ public class Spatial
    *          top-left corner
    * @param br
    *          bottom-right corner
-   * @return MWC.GenericData.WorldArea
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldArea
+   * @return MWC.GenericData.WorldArea <br />
+   *         // @type MWC.GenericData.WorldArea
    * 
    */
   @WrapToScript
@@ -176,13 +184,15 @@ public class Spatial
     return new WorldArea(tl, br);
   }
 
-  /** create a distance object
+  /**
+   * create a distance object
    * 
-   * @param value how many units of distance
-   * @param units the units for the measurement
-   * @return a distance object
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldDistance
+   * @param value
+   *          how many units of distance
+   * @param units
+   *          the units for the measurement
+   * @return a distance object <br />
+   *         // @type MWC.GenericData.WorldDistance
    * 
    */
   @WrapToScript
@@ -192,14 +202,17 @@ public class Spatial
     return new WorldDistance(value, units);
   }
 
-  /** create a location
+  /**
+   * create a location
    * 
-   * @param dLat degrees of latitude
-   * @param dLong degrees of longitude
-   * @param depth depth in metres
-   * @return a location object
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldLocation
+   * @param dLat
+   *          degrees of latitude
+   * @param dLong
+   *          degrees of longitude
+   * @param depth
+   *          depth in metres
+   * @return a location object <br />
+   *         // @type MWC.GenericData.WorldLocation
    * 
    */
   @WrapToScript
@@ -209,13 +222,15 @@ public class Spatial
     return new WorldLocation(dLat, dLong, depth);
   }
 
-  /** create a measured vector
+  /**
+   * create a measured vector
    * 
-   * @param distM distance in metres
-   * @param bearingDegs bearing in degrees
-   * @return a vector object
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldVector
+   * @param distM
+   *          distance in metres
+   * @param bearingDegs
+   *          bearing in degrees
+   * @return a vector object <br />
+   *         // @type MWC.GenericData.WorldVector
    * 
    */
   @WrapToScript
@@ -226,13 +241,15 @@ public class Spatial
         new WorldDistance(distM, WorldDistance.METRES), null);
   }
 
-  /** create a vector object using km
+  /**
+   * create a vector object using km
    * 
-   * @param distKm distance in Km
-   * @param bearingDegs bearing in degrees
-   * @return a vector object
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldVector
+   * @param distKm
+   *          distance in Km
+   * @param bearingDegs
+   *          bearing in degrees
+   * @return a vector object <br />
+   *         // @type MWC.GenericData.WorldVector
    * 
    */
   @WrapToScript
@@ -243,13 +260,15 @@ public class Spatial
         new WorldDistance(distKm, WorldDistance.KM), null);
   }
 
-  /** create a speed object
+  /**
+   * create a speed object
    * 
-   * @param value how many units of speed to use
-   * @param units the units for this measurement
-   * @return a speed object
-   * 		<br />
-   * 		// @type MWC.GenericData.WorldSpeed
+   * @param value
+   *          how many units of speed to use
+   * @param units
+   *          the units for this measurement
+   * @return a speed object <br />
+   *         // @type MWC.GenericData.WorldSpeed
    * 
    */
   @WrapToScript

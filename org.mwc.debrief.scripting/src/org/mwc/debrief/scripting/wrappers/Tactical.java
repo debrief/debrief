@@ -14,7 +14,8 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
 
-/** entities related to measured vessel data
+/**
+ * entities related to measured vessel data
  * 
  * @author ian
  *
@@ -32,8 +33,8 @@ public class Tactical
     static final HiResDate time = new HiResDate(2500000);
     static final WorldLocation location = new WorldLocation(10, 23.5, 1.5);
     static final double speedMs = 3.6;
-    static final double speedYps = new WorldSpeed(speedMs,
-        WorldSpeed.M_sec).getValueIn(WorldSpeed.ft_sec) /3 ;
+    static final double speedYps = new WorldSpeed(speedMs, WorldSpeed.M_sec)
+        .getValueIn(WorldSpeed.ft_sec) / 3;
     static final double courseDegs = 1.3;
 
     public void testCreateFix()
@@ -93,10 +94,15 @@ public class Tactical
 
   /**
    * Create a fix given the time, location, course in radians and speed in yards per seconds.
-   * @param time Time of the new fix
-   * @param location Location of the new fix
-   * @param courseDegs Course in degrees of the new fix
-   * @param speedMs Speed in metres per second.
+   * 
+   * @param time
+   *          Time of the new fix
+   * @param location
+   *          Location of the new fix
+   * @param courseDegs
+   *          Course in degrees of the new fix
+   * @param speedMs
+   *          Speed in metres per second.
    * @return // @type Debrief.Wrappers.FixWrapper
    */
   @WrapToScript
@@ -124,12 +130,17 @@ public class Tactical
     return new NarrativeWrapper(title);
   }
 
-  /** Create a new narrative entry.
+  /**
+   * Create a new narrative entry.
    * 
-   * @param track the track this is a child of
-   * @param type the type of entry
-   * @param DTG when this was recorded
-   * @param entry the textual entry
+   * @param track
+   *          the track this is a child of
+   * @param type
+   *          the type of entry
+   * @param DTG
+   *          when this was recorded
+   * @param entry
+   *          the textual entry
    * @return // @type MWC.TacticalData.NarrativeEntry
    */
   @WrapToScript
@@ -141,7 +152,9 @@ public class Tactical
 
   /**
    * Create a new sensor with the given name.
-   * @param name Name of the new Sensor
+   * 
+   * @param name
+   *          Name of the new Sensor
    * @return // @type Debrief.Wrappers.SensorWrapper
    */
   @WrapToScript
@@ -155,7 +168,8 @@ public class Tactical
    * Creates a new sensor with the date given as DTG.
    * 
    * @see Debrief.Wrappers.SensorContactWrapper.SensorContactWrapper()
-   * @param date Date of the new sensor to be created.
+   * @param date
+   *          Date of the new sensor to be created.
    * @return // @type Debrief.Wrappers.SensorContactWrapper
    */
   @WrapToScript

@@ -29,10 +29,11 @@ public class Tote
 {
   private TrackManager trackManager;
 
-  
-  /** set the track manager
+  /**
+   * set the track manager
    * 
-   * @return the track manager object org.mwc.cmap.core.DataTypes.TrackData.TrackManager
+   * @return the track manager object <br />
+   *         // @type org.mwc.cmap.core.DataTypes.TrackData.TrackManager
    */
   @WrapToScript
   public TrackManager getTrackManager()
@@ -40,9 +41,11 @@ public class Tote
     return trackManager;
   }
 
-  /**  get the track manager
+  /**
+   * get the track manager
    * 
-   * @param trackManager the new manager object
+   * @param trackManager
+   *          the new manager object
    */
   @WrapToScript
   public void setTrackManager(TrackManager trackManager)
@@ -67,8 +70,7 @@ public class Tote
   /**
    * Method that returns the primary track of the current plot.
    * 
-   * @return Primary track of the current plot.
-   *         <br />
+   * @return Primary track of the current plot. <br />
    *         // @type MWC.GenericData.WatchableList
    * 
    */
@@ -81,8 +83,7 @@ public class Tote
   /**
    * Method that returns the secondary tracks of the current plot.
    * 
-   * @return Array of secondary list of the current plot.
-   * 		<br />
+   * @return Array of secondary list of the current plot. <br />
    *         // @type MWC.GenericData.WatchableList
    * 
    */

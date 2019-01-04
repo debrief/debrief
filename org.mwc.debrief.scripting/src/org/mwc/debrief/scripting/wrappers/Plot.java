@@ -66,9 +66,8 @@ public class Plot
    * Method that returns the currently selected data area
    * 
    * @see MWC.GenericData.WorldArea
-   * @return Currently selected data area.
-   * 		<br />
-   * 	 	// @type MWC.GenericData.WorldArea
+   * @return Currently selected data area. <br />
+   *         // @type MWC.GenericData.WorldArea
    * 
    */
   @WrapToScript
@@ -87,9 +86,8 @@ public class Plot
    * Function to determine the center of the area
    * 
    * @see MWC.GenericData.WorldLocation
-   * @return Center of the area.
-   * 		<br />
-   * 	 	// @type MWC.GenericData.WorldLocation
+   * @return Center of the area. <br />
+   *         // @type MWC.GenericData.WorldLocation
    * 
    */
   @WrapToScript
@@ -110,9 +108,8 @@ public class Plot
    * Method that returns the layers of the current plot
    * 
    * @see org.mwc.debrief.scripting.wrappers.Layers.DLayers
-   * @return Layers of the current plot.
-   * 		<br />
-   * 	 	// @type org.mwc.debrief.scripting.wrappers.Layers.DLayers
+   * @return Layers of the current plot. <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Layers.DLayers
    */
   @WrapToScript
   public DLayers getLayers()
@@ -134,9 +131,8 @@ public class Plot
    * Method that returns the plain projection of the current plot
    * 
    * @see MWC.Algorithms.PlainProjection
-   * @return Plain projection of the current plot.
-   * 		<br />
-   * 	 	// @type MWC.Algorithms.PlainProjection
+   * @return Plain projection of the current plot. <br />
+   *         // @type MWC.Algorithms.PlainProjection
    * 
    */
   @WrapToScript
@@ -158,9 +154,8 @@ public class Plot
    * Method that returns the outline of the current plot.
    * 
    * @see org.mwc.debrief.scripting.wrappers.Outline
-   * @return Outline of the current plot.
-   * 		<br />
-   * 	 	// @type org.mwc.debrief.scripting.wrappers.Outline
+   * @return Outline of the current plot. <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Outline
    * 
    */
   @WrapToScript
@@ -182,10 +177,9 @@ public class Plot
    * Method that returns the raw plot editor.
    * 
    * @see org.mwc.debrief.core.editors.PlotEditor
-   * @return Plot Editor.
-   * 		<br />
-   * 	 	// @type org.mwc.debrief.core.editors.PlotEditor 
-   *               
+   * @return Plot Editor. <br />
+   *         // @type org.mwc.debrief.core.editors.PlotEditor
+   * 
    */
   @WrapToScript
   public PlotEditor getPlot()
@@ -208,9 +202,8 @@ public class Plot
    * Method that returns the current time of the plot.
    * 
    * @see MWC.GenericData.HiResDate
-   * @return Current time of the plot.
-   * 		<br />
-   * 		// @type MWC.GenericData.HiResDate
+   * @return Current time of the plot. <br />
+   *         // @type MWC.GenericData.HiResDate
    * 
    */
   @WrapToScript
@@ -226,9 +219,8 @@ public class Plot
    * small steps, etc.
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
-   * @return Time Control Preferences.
-   * 		 <br />
-   * 		 // @type org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
+   * @return Time Control Preferences. <br />
+   *         // @type org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
    * 
    */
   @WrapToScript
@@ -251,9 +243,8 @@ public class Plot
    * Method that returns the Time Manager of the current plot.
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeManager
-   * @return Time Manager of the current plot.
-   * 		<br />
-   * 		// @type org.mwc.cmap.core.DataTypes.Temporal.TimeManager
+   * @return Time Manager of the current plot. <br />
+   *         // @type org.mwc.cmap.core.DataTypes.Temporal.TimeManager
    * 
    */
   @WrapToScript
@@ -275,9 +266,8 @@ public class Plot
    * Method that returns a reference to the Tote of the plot given
    * 
    * @see org.mwc.debrief.scripting.wrappers.Tote
-   * @return Reference to the Tote of the plot given
-   * 		<br />
-   * 		// @type org.mwc.debrief.scripting.wrappers.Tote
+   * @return Reference to the Tote of the plot given <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Tote
    * 
    */
   @WrapToScript

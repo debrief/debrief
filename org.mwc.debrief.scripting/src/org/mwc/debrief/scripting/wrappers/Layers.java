@@ -81,8 +81,9 @@ public class Layers
     {
       _layers.clear();
     }
-    
-    /**  get the names of the loaded top level tracks
+
+    /**
+     * get the names of the loaded top level tracks
      * 
      * @return an array of track names
      */
@@ -91,14 +92,15 @@ public class Layers
       final LightweightTrackWrapper[] tracks = getTracks();
       final String[] res = new String[tracks.length];
       int ctr = 0;
-      for(LightweightTrackWrapper t: tracks)
+      for (LightweightTrackWrapper t : tracks)
       {
         res[ctr++] = t.getName();
-      }      
+      }
       return res;
     }
-    
-    /** get the names of the loaded layers
+
+    /**
+     * get the names of the loaded layers
      * 
      * @return an array of layer names
      */
@@ -107,7 +109,7 @@ public class Layers
       final String[] res = new String[size()];
       int ctr = 0;
       final Enumeration<Editable> ele = _layers.elements();
-      while(ele.hasMoreElements())
+      while (ele.hasMoreElements())
       {
         final Editable l = ele.nextElement();
         res[ctr++] = l.getName();
@@ -115,16 +117,14 @@ public class Layers
       return res;
     }
 
-
     /**
      * Create (and store) a new layer with the specified name
      * 
      * @see MWC.GUI.Layer
      * @param name
      *          Name of the new layer.
-     * @return Layer with the specified name
-     * 			<br />
-     * 	 	    // @type MWC.GUI.Layer
+     * @return Layer with the specified name <br />
+     *         // @type MWC.GUI.Layer
      * 
      */
     @WrapToScript
@@ -147,9 +147,8 @@ public class Layers
      * @see MWC.GUI.Layer
      * @param name
      *          Name of the layer to find.
-     * @return Layer with the specified name.
-     * 			<br />
-     * 	 	    // @type MWC.GUI.Layer
+     * @return Layer with the specified name. <br />
+     *         // @type MWC.GUI.Layer
      * 
      */
     @WrapToScript
@@ -163,9 +162,8 @@ public class Layers
      *
      * @param name
      *          what we're looking for
-     * @return the matching item (or null)
-     * 			<br />
-     * 	 	    // @type MWC.GUI.Editable
+     * @return the matching item (or null) <br />
+     *         // @type MWC.GUI.Editable
      * 
      */
     @WrapToScript
@@ -222,9 +220,8 @@ public class Layers
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
      * @param name
      *          Name to be found.
-     * @return LightweightTrackWrapper that contains the track of the name given.
-     * 			<br />
-     * 	 	    // @type Debrief.Wrappers.Track.LightweightTrackWrapper
+     * @return LightweightTrackWrapper that contains the track of the name given. <br />
+     *         // @type Debrief.Wrappers.Track.LightweightTrackWrapper
      * 
      */
     @WrapToScript
@@ -271,9 +268,8 @@ public class Layers
      * Method that returns the track in the layers
      * 
      * @see Debrief.Wrappers.Track.LightweightTrackWrapper
-     * @return Array containing the tracks in the layer as LightweightTrackWrapper
-     * 			<br />
-     * 	 	    // @type Debrief.Wrappers.Track.LightweightTrackWrapper
+     * @return Array containing the tracks in the layer as LightweightTrackWrapper <br />
+     *         // @type Debrief.Wrappers.Track.LightweightTrackWrapper
      * 
      */
     @WrapToScript
@@ -294,7 +290,7 @@ public class Layers
       _layers.walkVisibleItems(LightweightTrackWrapper.class, function);
 
       return items.toArray(new LightweightTrackWrapper[]
-          {});
+      {});
     }
 
     /**

@@ -119,9 +119,8 @@ public class Core
    *          the green component
    * @param blue
    *          the blue component
-   * @return a color object
-   * 		<br />
-   * 		// @type java.awt.Color
+   * @return a color object <br />
+   *         // @type java.awt.Color
    * 
    */
   @WrapToScript
@@ -134,7 +133,8 @@ public class Core
   /**
    * create a new date, using indicated millis since epoch
    * 
-   * @param date elapsed millis since epoch (1st Jan 1970)
+   * @param date
+   *          elapsed millis since epoch (1st Jan 1970)
    * @return // @type MWC.GenericData.HiResDate
    * 
    */
@@ -315,7 +315,7 @@ public class Core
           final IWorkbenchPage page = window.getActivePage();
           final IEditorPart editor = page.getActiveEditor();
           final IEditorSite editorSite = editor.getEditorSite();
-          final String id =  editorSite.getId();
+          final String id = editorSite.getId();
           if (validDescriptor(id))
           {
             answer[0] = new Plot((PlotEditor) editor);
@@ -334,7 +334,7 @@ public class Core
             for (final IWorkbenchPage page : pages)
             {
               final IEditorReference[] editors = page.getEditorReferences();
-              
+
               // first check for matching filename
               if (filename != null)
               {
@@ -356,12 +356,12 @@ public class Core
                   }
                 }
               }
-              
+
               // still here? this time check for suitable editor type
               for (final IEditorReference editor : editors)
               {
                 final String descriptor = editor.getId();
-                if (filename == null || "unset".equals(filename) )
+                if (filename == null || "unset".equals(filename))
                 {
                   // ok, we either didn't have an editor name, or this matches
                   if (validDescriptor(descriptor))
@@ -382,13 +382,12 @@ public class Core
     });
     return answer[0];
   }
-  
+
   private static boolean validDescriptor(final String descriptor)
   {
     return "org.mwc.debrief.PlotEditor".equals(descriptor)
         || "org.mwc.debrief.TrackEditor".equals(descriptor);
   }
-  
 
   /**
    * helper application to help track activation/closing of new plots

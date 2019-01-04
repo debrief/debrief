@@ -14,18 +14,19 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-
+import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.ease.modules.WrapToScript;
+import org.mwc.cmap.naturalearth.ui.InsertNaturalEarth;
+import org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid;
+import org.mwc.debrief.core.creators.chartFeatures.InsertChartLibrary;
+import org.mwc.debrief.core.creators.chartFeatures.InsertCoastline;
+import org.mwc.debrief.core.creators.chartFeatures.InsertETOPO;
+import org.mwc.debrief.core.creators.chartFeatures.InsertGrid;
+import org.mwc.debrief.core.creators.chartFeatures.InsertLocalGrid;
 import org.mwc.debrief.core.creators.chartFeatures.InsertScale;
-
-import MWC.GUI.Layers;
-import MWC.GUI.Chart.Painters.CoastPainter;
-import MWC.GUI.Chart.Painters.ETOPOPainter;
-import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GUI.Coast.Coastline;
+import org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayAbsolute;
+import org.mwc.debrief.core.creators.chartFeatures.InsertTimeDisplayRelative;
+import org.mwc.debrief.core.creators.chartFeatures.InsertVPFLayers;
 
 /**
  * capabilities related to managing the chart
@@ -37,79 +38,98 @@ public class Chart
 {
 
   /**
-   * Function that creates a coast Painter object instance
-   *
-   * @see MWC.GUI.Chart.Painters.CoastPainter
-   * @return CoastPainter object created. <br />
-   *         // @type MWC.GUI.Chart.Painters.CoastPainter
-   *
+   * Function that adds a Scale to the current plot
    */
   @WrapToScript
-  public static CoastPainter createCoastPainter()
-  {
-    return new CoastPainter();
-  }
-
-  /**
-   * Function that creates a ETOPOPainter object instance.
-   *
-   * @see MWC.GUI.Chart.Painters.ETOPOPainter
-   * @param pathName
-   *          path of the ETOPOPainter object.
-   * @param parentLayers
-   *          Parent Layers of the ETOPOPainter.
-   * @return ETOPOPainter object created. <br />
-   *         // @type MWC.GUI.Chart.Painters.ETOPOPainter
-   *
-   */
-  @WrapToScript
-  public static ETOPOPainter createETOPOPainter(final String pathName,
-      final Layers parentLayers)
-  {
-    return new ETOPOPainter(pathName, parentLayers);
-  }
-
-  /**
-   * Function that creates a GridPainter object instance
-   *
-   * @see MWC.GUI.Chart.Painters.GridPainter
-   * @return GridPainter object created. <br />
-   *         // @type MWC.GUI.Chart.Painters.GridPainter
-   *
-   */
-  @WrapToScript
-  public static GridPainter createGrid()
-  {
-    return new GridPainter();
-  }
-
-  /**
-   * Function that creates a Scale to the current plot
-   */
-  @WrapToScript
-  public static void createScale()
+  public static void addScale()
   {
     new InsertScale().execute();
   }
 
   /**
-   * Function that creates a Coastline from an inputStream
-   *
-   * @param inputStream
-   *          Stream to read the information from
-   * @see MWC.GUI.Coast.Coastline
-   * @return Coastline object created. <br />
-   *         // @type MWC.GUI.Coast.Coastline
-   *
-   * @throws IOException
-   *           Exception in case the stream is not available or corrupted.
-   * @throws ParseException
-   *           Exception in case the data has a wrong format.
+   * Function that adds the time display (Absolute) to the current plot.
    */
   @WrapToScript
-  public static Coastline loadCoastline(final InputStream inputStream)
-      throws IOException, ParseException
+  public static void addTimeDisplayAbsolute()
   {
-    return new Coastline(inputStream);
+    new InsertTimeDisplayAbsolute().execute();
+  }
+
+  /**
+   * Function that adds the time display (Relative) to the current plot.
+   */
+  @WrapToScript
+  public static void addTimeDisplayRelative()
+  {
+    new InsertTimeDisplayRelative().execute();
+  }
+
+  /**
+   * Function that adds a 4WGrid to the current plot.
+   */
+  @WrapToScript
+  public static void add4WGrid()
+  {
+    new Insert4WGrid().execute();
+  }
+
+  /**
+   * Function that adds a Grid to the current plot.
+   */
+  @WrapToScript
+  public static void addGrid()
+  {
+    new InsertGrid().execute();
+  }
+
+  /**
+   * Function that adds a Local Grid to the current plot.
+   */
+  @WrapToScript
+  public static void addLocalGrid()
+  {
+    new InsertLocalGrid().execute();
+  }
+
+  /**
+   * Function that adds a Coastline to the current plot.
+   */
+  @WrapToScript
+  public static void loadCoastLine()
+  {
+    new InsertCoastline().execute();
+  }
+
+  /**
+   * Function that adds a ETOPO to the current plot.
+   */
+  @WrapToScript
+  public static void addETOPO()
+  {
+    new InsertETOPO().execute();
+  }
+
+  /**
+   * Function that adds the Chart Library defined in the maritime preferences to the current plot.
+   */
+  @WrapToScript
+  public static void addChartLibrary()
+  {
+    new InsertChartLibrary().execute();
+  }
+
+  /**
+   * Function that adds the VPT Layers to the current plot.
+   */
+  @WrapToScript
+  public static void addVPTLayers()
+  {
+    new InsertVPFLayers().execute();
+  }
+
+  @WrapToScript
+  public static void loadNaturalEarth() throws ExecutionException
+  {
+    new InsertNaturalEarth().execute(null);
   }
 }

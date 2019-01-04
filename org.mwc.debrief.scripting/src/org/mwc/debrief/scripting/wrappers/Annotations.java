@@ -73,11 +73,9 @@ public class Annotations
    *          Location of the label
    * @param theColor
    *          Color of the label
-   * @return the new label.
-   *        <br />
-   *        For autocomplete, use the following type
-   *        <br />
-   *        Debrief.Wrappers.LabelWrapper
+   * @return the new label. <br />
+   *         For autocomplete, use the following type <br />
+   *         // @type Debrief.Wrappers.LabelWrapper
    */
   @WrapToScript
   public static LabelWrapper createLabel(final String name,
@@ -99,9 +97,8 @@ public class Annotations
    *          the start (or centre) time of the label
    * @param endDTG
    *          the end time, or null if single date value
-   * @return the new dated label
-   * 		<br />
-   * 		// @type Debrief.Wrappers.LabelWrapper
+   * @return the new dated label <br />
+   *         // @type Debrief.Wrappers.LabelWrapper
    */
   @WrapToScript
   public static LabelWrapper createLabelDate(final String label,

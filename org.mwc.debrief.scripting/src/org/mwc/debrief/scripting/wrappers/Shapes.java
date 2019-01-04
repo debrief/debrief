@@ -21,7 +21,8 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import junit.framework.TestCase;
 
-/** creating shape objects
+/**
+ * creating shape objects
  * 
  * @author ian
  *
@@ -212,9 +213,8 @@ public class Shapes
    *          Location of the new Node
    * @param parent
    *          PolygonShape to add the new Node
-   * @return Reference to the added node.
-   * 		<br />
-   * 		// @type MWC.GUI.Shapes.PolygonShape.PolygonNode
+   * @return Reference to the added node. <br />
+   *         // @type MWC.GUI.Shapes.PolygonShape.PolygonNode
    * 
    */
   @WrapToScript
@@ -237,9 +237,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return Circle Shape
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return Circle Shape <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -265,9 +264,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return New Eclipse as a ShapeWrapper
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return New Eclipse as a ShapeWrapper <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -298,9 +296,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return FurthestOnCircle Shape as a ShapeWrapper.
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return FurthestOnCircle Shape as a ShapeWrapper. <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -324,9 +321,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return New line created with the parameters given
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return New line created with the parameters given <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -346,9 +342,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return Polygon Shape.
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return Polygon Shape. <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -371,9 +366,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return New RangeRingShape created as a ShapeWrapper
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return New RangeRingShape created as a ShapeWrapper <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -396,9 +390,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return New RectangleShape created as a ShapeWrapper
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return New RectangleShape created as a ShapeWrapper <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
@@ -408,7 +401,8 @@ public class Shapes
     return new ShapeWrapper(name, new RectangleShape(TL, BR), color, null);
   }
 
-  /** Create a wheel shape
+  /**
+   * Create a wheel shape
    *
    * @param theCenter
    *          the center of the wheel
@@ -420,9 +414,8 @@ public class Shapes
    *          Name of the Shape
    * @param color
    *          Color of the Shape
-   * @return New WheelShape created as a ShapeWrapper
-   * 		<br />
-   * 		// @type Debrief.Wrappers.ShapeWrapper
+   * @return New WheelShape created as a ShapeWrapper <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
    * 
    */
   @WrapToScript
