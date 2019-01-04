@@ -29,6 +29,7 @@ import org.eclipse.jface.action.Separator;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.satc_interface.SATC_Interface_Activator;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
@@ -118,19 +119,20 @@ public class CreateSATCFromManualSolution implements
   protected void addItemsTo(final SATC_Solution solution,
       final MenuManager parent, final ArrayList<RelativeTMASegment> legs)
   {
-
     final String actionTitle =
         "Generate Straight Leg forecasts for these manual legs";
 
-    parent.add(new Action(actionTitle)
+    final Action action = new Action(actionTitle)
     {
-
       @Override
       public void run()
       {
         CorePlugin.run(new StraightLegForecastsFromLegs(solution, actionTitle, legs));
       }
-    });
+    };
+    action.setImageDescriptor(SATC_Interface_Activator
+        .getImageDescriptor("icons/16/leg.png"));
+    parent.add(action);
   }
 
   private ArrayList<SATC_Solution> findExistingSolutionsIn(Layers theLayers)
