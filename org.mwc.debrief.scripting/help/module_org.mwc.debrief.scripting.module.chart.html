@@ -17,112 +17,174 @@
 			<th>Description</th>
 		</tr>
 		<tr>
-			<td><a href="#createCoastPainter">createCoastPainter</a>()</td>
-			<td>Function that creates a coast Painter object instance</td>
+			<td><a href="#add4WGrid">add4WGrid</a>()</td>
+			<td>Function that adds a 4WGrid to the current plot.</td>
 		</tr>
 		<tr>
-			<td><a href="#createETOPOPainter">createETOPOPainter</a>()</td>
-			<td>Function that creates a ETOPOPainter object instance.</td>
+			<td><a href="#addChartLibrary">addChartLibrary</a>()</td>
+			<td>Function that adds the Chart Library defined in the maritime preferences to the current plot.</td>
 		</tr>
 		<tr>
-			<td><a href="#createGrid">createGrid</a>()</td>
-			<td>Function that creates a GridPainter object instance</td>
+			<td><a href="#addETOPO">addETOPO</a>()</td>
+			<td>Function that adds a ETOPO to the current plot.</td>
 		</tr>
 		<tr>
-			<td><a href="#createScale">createScale</a>()</td>
-			<td>Function that creates a ScalePainter object instance</td>
+			<td><a href="#addGrid">addGrid</a>()</td>
+			<td>Function that adds a Grid to the current plot.</td>
 		</tr>
 		<tr>
-			<td><a href="#loadCoastline">loadCoastline</a>()</td>
-			<td>Function that creates a Coastline from an inputStream</td>
+			<td><a href="#addLocalGrid">addLocalGrid</a>()</td>
+			<td>Function that adds a Local Grid to the current plot.</td>
+		</tr>
+		<tr>
+			<td><a href="#addScale">addScale</a>()</td>
+			<td>Function that adds a Scale to the current plot</td>
+		</tr>
+		<tr>
+			<td><a href="#addTimeDisplayAbsolute">addTimeDisplayAbsolute</a>()</td>
+			<td>Function that adds the time display (Absolute) to the current plot.</td>
+		</tr>
+		<tr>
+			<td><a href="#addTimeDisplayRelative">addTimeDisplayRelative</a>()</td>
+			<td>Function that adds the time display (Relative) to the current plot.</td>
+		</tr>
+		<tr>
+			<td><a href="#addVPTLayers">addVPTLayers</a>()</td>
+			<td>Function that adds the VPT Layers to the current plot.</td>
+		</tr>
+		<tr>
+			<td><a href="#loadCoastLine">loadCoastLine</a>()</td>
+			<td>Function that adds a Coastline to the current plot.</td>
+		</tr>
+		<tr>
+			<td><a href="#loadNaturalEarth">loadNaturalEarth</a>()</td>
+			<td></td>
 		</tr>
 	</table>
 
 
 	<h2>Methods</h2>
-	<div class="command" data-method="createCoastPainter">
-		<h3><a id="createCoastPainter">createCoastPainter</a></h3>
-		<p class="synopsis">MWC.GUI.Chart.Painters.CoastPainter createCoastPainter()</p>
+	<div class="command" data-method="add4WGrid">
+		<h3><a id="add4WGrid">add4WGrid</a></h3>
+		<p class="synopsis">void add4WGrid()</p>
 
-		<p class="description">Function that creates a coast Painter object instance</p>
+		<p class="description">Function that adds a 4WGrid to the current plot.</p>
 
-
-		<p class="return">CoastPainter object created.
- 		<br />
- 		// @type MWC.GUI.Chart.Painters.CoastPainter</p>
-
-
-
-	</div>
-	<div class="command" data-method="createETOPOPainter">
-		<h3><a id="createETOPOPainter">createETOPOPainter</a></h3>
-		<p class="synopsis">MWC.GUI.Chart.Painters.ETOPOPainter createETOPOPainter(java.lang.String pathName, MWC.GUI.Layers parentLayers)</p>
-
-		<p class="description">Function that creates a ETOPOPainter object instance.</p>
-
-		<dl class="parameters">
-			<dt>pathName</dt>
-			<dd class="description" data-parameter="pathName">path of the ETOPOPainter object.</dd>
-			<dt>parentLayers</dt>
-			<dd class="description" data-parameter="parentLayers">Parent Layers of the ETOPOPainter.</dd>
-		</dl>
-
-		<p class="return">ETOPOPainter object created.
- 		<br />
- 		// @type MWC.GUI.Chart.Painters.ETOPOPainter</p>
-
-
-
-	</div>
-	<div class="command" data-method="createGrid">
-		<h3><a id="createGrid">createGrid</a></h3>
-		<p class="synopsis">MWC.GUI.Chart.Painters.GridPainter createGrid()</p>
-
-		<p class="description">Function that creates a GridPainter object instance</p>
-
-
-		<p class="return">GridPainter object created.
- 		<br />
- 		// @type MWC.GUI.Chart.Painters.GridPainter</p>
-
-
-
-	</div>
-	<div class="command" data-method="createScale">
-		<h3><a id="createScale">createScale</a></h3>
-		<p class="synopsis">void createScale(MWC.GUI.PlainChart theChart)</p>
-
-		<p class="description">Function that creates a ScalePainter object instance</p>
-
-		<dl class="parameters">
-			<dt>theChart</dt>
-			<dd class="description" data-parameter="theChart"></dd>
-		</dl>
 
 
 
 
 	</div>
-	<div class="command" data-method="loadCoastline">
-		<h3><a id="loadCoastline">loadCoastline</a></h3>
-		<p class="synopsis">MWC.GUI.Coast.Coastline loadCoastline(java.io.InputStream inputStream)</p>
+	<div class="command" data-method="addChartLibrary">
+		<h3><a id="addChartLibrary">addChartLibrary</a></h3>
+		<p class="synopsis">void addChartLibrary()</p>
 
-		<p class="description">Function that creates a Coastline from an inputStream</p>
+		<p class="description">Function that adds the Chart Library defined in the maritime preferences to the current plot.</p>
 
-		<dl class="parameters">
-			<dt>inputStream</dt>
-			<dd class="description" data-parameter="inputStream">Stream to read the information from</dd>
-		</dl>
 
-		<p class="return">Coastline object created.
- 		<br />
- 		// @type MWC.GUI.Coast.Coastline</p>
+
+
+
+	</div>
+	<div class="command" data-method="addETOPO">
+		<h3><a id="addETOPO">addETOPO</a></h3>
+		<p class="synopsis">void addETOPO()</p>
+
+		<p class="description">Function that adds a ETOPO to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addGrid">
+		<h3><a id="addGrid">addGrid</a></h3>
+		<p class="synopsis">void addGrid()</p>
+
+		<p class="description">Function that adds a Grid to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addLocalGrid">
+		<h3><a id="addLocalGrid">addLocalGrid</a></h3>
+		<p class="synopsis">void addLocalGrid()</p>
+
+		<p class="description">Function that adds a Local Grid to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addScale">
+		<h3><a id="addScale">addScale</a></h3>
+		<p class="synopsis">void addScale()</p>
+
+		<p class="description">Function that adds a Scale to the current plot</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addTimeDisplayAbsolute">
+		<h3><a id="addTimeDisplayAbsolute">addTimeDisplayAbsolute</a></h3>
+		<p class="synopsis">void addTimeDisplayAbsolute()</p>
+
+		<p class="description">Function that adds the time display (Absolute) to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addTimeDisplayRelative">
+		<h3><a id="addTimeDisplayRelative">addTimeDisplayRelative</a></h3>
+		<p class="synopsis">void addTimeDisplayRelative()</p>
+
+		<p class="description">Function that adds the time display (Relative) to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="addVPTLayers">
+		<h3><a id="addVPTLayers">addVPTLayers</a></h3>
+		<p class="synopsis">void addVPTLayers()</p>
+
+		<p class="description">Function that adds the VPT Layers to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="loadCoastLine">
+		<h3><a id="loadCoastLine">loadCoastLine</a></h3>
+		<p class="synopsis">void loadCoastLine()</p>
+
+		<p class="description">Function that adds a Coastline to the current plot.</p>
+
+
+
+
+
+	</div>
+	<div class="command" data-method="loadNaturalEarth">
+		<h3><a id="loadNaturalEarth">loadNaturalEarth</a></h3>
+		<p class="synopsis">void loadNaturalEarth()</p>
+
+		<p class="description"></p>
+
+
 
 		<dl class="exceptions">
-			<dt>IOException</dt>
-			<dd class="description" data-exception="IOException">Exception in case the stream is not available or corrupted.</dd>
-			<dt>ParseException</dt>
-			<dd class="description" data-exception="ParseException">Exception in case the data has a wrong format.</dd>
+			<dt>ExecutionException</dt>
+			<dd class="description" data-exception="ExecutionException"></dd>
 		</dl>
 
 
