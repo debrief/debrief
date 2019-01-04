@@ -262,13 +262,13 @@ public class DebriefLiteApp implements FileDropListener
   
   private void addFileMenuTasks() {
     fileMenu = new JRibbonBand("File",null);
-    MenuUtils.addCommandButton("New", null, new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("New (default plot)", "images/16/zoomin.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Open Plot", "images/16/zoomout.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
     
     JRibbonBand exitMenu = new JRibbonBand("Exit",null);
-    MenuUtils.addCommandButton("Exit", null, new AbstractAction()
+    MenuUtils.addCommandButton("Exit", "images/16/exit.png", new AbstractAction()
     {
       
       /**
@@ -286,7 +286,7 @@ public class DebriefLiteApp implements FileDropListener
     exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
     
     JRibbonBand importMenu = new JRibbonBand("Import",null);
-    MenuUtils.addCommandButton("Import Replay", null, new NewFileAction(), importMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Import Replay", "images/16/import.png", new NewFileAction(), importMenu,RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(getStandardRestrictivePolicies(importMenu));
     fileMenu.setPreferredSize(new Dimension(150,50));
     importMenu.setPreferredSize(new Dimension(50,50));
@@ -327,7 +327,7 @@ public class DebriefLiteApp implements FileDropListener
     MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Polygon", "images/16/polygon.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Line", "images/16/line.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Wheel", "images/16/wheel.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Circle", "images/16/circle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
