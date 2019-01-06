@@ -14,6 +14,7 @@ import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.Shapes.RangeRingShape;
 import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.WheelShape;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -425,5 +426,13 @@ public class Shapes
   {
     return new ShapeWrapper(name, new WheelShape(theCenter, theInnerRadius,
         theOuterRadius), color, null);
+  }
+
+  @WrapToScript
+  public static ShapeWrapper createTextLabel(final WorldLocation theLocation,
+      final String name, final Color color)
+  {
+    return new ShapeWrapper(name, new TextLabel(theLocation, name), color,
+        null);
   }
 }
