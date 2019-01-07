@@ -725,17 +725,20 @@ public class MaintainContributionsView extends ViewPart
 
   private static List<Zone> getZones(final IContributions conts)
   {
-    ArrayList<Zone> zones = new ArrayList<Zone>();
-    Iterator<BaseContribution> iter = conts.iterator();
+    final ArrayList<Zone> zones = new ArrayList<Zone>();
+    final Iterator<BaseContribution> iter = conts.iterator();
     while(iter.hasNext())
     {
-      BaseContribution cont = iter.next();
+      final BaseContribution cont = iter.next();
       if (cont instanceof StraightLegForecastContribution)
       {
-        StraightLegForecastContribution slf =
+        final StraightLegForecastContribution slf =
             (StraightLegForecastContribution) cont;
-        Zone thisZone = new Zone(slf.getStartDate().getTime(), slf
-            .getFinishDate().getTime(), slf.getColor());
+        final java.awt.Color legColor = slf.getColor();
+        final java.awt.Color zoneColor = legColor != null ? legColor
+            : java.awt.Color.RED;
+        final Zone thisZone = new Zone(slf.getStartDate().getTime(), slf
+            .getFinishDate().getTime(), zoneColor);
         zones.add(thisZone);
       }
     }
