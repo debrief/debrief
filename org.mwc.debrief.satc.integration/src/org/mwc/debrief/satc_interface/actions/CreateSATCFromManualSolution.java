@@ -34,6 +34,7 @@ import org.mwc.debrief.satc_interface.data.SATC_Solution;
 
 import com.planetmayo.debrief.satc.model.contributions.StraightLegForecastContribution;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -181,6 +182,8 @@ public class CreateSATCFromManualSolution implements
         leg.setStartDate(t.getDTG_Start().getDate());
         leg.setFinishDate(t.getDTG_End().getDate());
         leg.setName(t.getName());
+        FixWrapper firstFix = (FixWrapper) t.getData().iterator().next();
+        leg.setColor(firstFix.getColor());
         _theSolution.addContribution(leg);
         _newLegs.add(leg);
       }
