@@ -428,6 +428,17 @@ public class Shapes
         theOuterRadius), color, null);
   }
 
+  /**
+   * Create a TextLabel
+   * @param theLocation
+   *          Place where we are going to TextLabel
+   * @param name
+   *          Name of the TextLabel
+   * @param color
+   *          Color of the TextLabel
+   * @return New TextLabel created as a ShapeWrapper. <br />
+   *         // @type Debrief.Wrappers.ShapeWrapper
+   */
   @WrapToScript
   public static ShapeWrapper createTextLabel(final WorldLocation theLocation,
       final String name, final Color color)
