@@ -22,6 +22,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import MWC.GUI.Editable;
 
@@ -89,13 +90,13 @@ public class Outline
       while (i.hasNext())
       {
         final Object currentItem = i.next();
-        if (currentItem instanceof Editable)
+        if (currentItem instanceof EditableWrapper)
         {
-          editables.add((Editable) currentItem);
+          final EditableWrapper wrapped = (EditableWrapper) currentItem;
+          editables.add(wrapped.getEditable());
         }
       }
     }
-
     return editables.toArray(new Editable[0]);
   }
 
