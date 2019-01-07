@@ -26,6 +26,7 @@ import org.mwc.debrief.scripting.wrappers.Layers.DLayers;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -212,6 +213,22 @@ public class Plot
     final TimeProvider time = (TimeProvider) _plot.getAdapter(
         TimeProvider.class);
     return time.getTime();
+  }
+  
+  /**
+   * Method that returns the current period of time covered by the data on the plot
+   * 
+   * @see MWC.GenericData.TimePeriod
+   * @return Current time period of the plot. <br />
+   *         // @type MWC.GenericData.TimePeriod
+   * 
+   */
+  @WrapToScript
+  public TimePeriod getTimePeriod()
+  {
+    final TimeProvider time = (TimeProvider) _plot.getAdapter(
+        TimeProvider.class);
+    return time.getPeriod();
   }
 
   /**
