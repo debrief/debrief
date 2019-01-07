@@ -16,13 +16,21 @@ package org.mwc.debrief.scripting.wrappers;
 
 import java.awt.HeadlessException;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.ease.modules.WrapToScript;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.debrief.core.DebriefPlugin;
 
 /** Utility methods, copying data to/from the system
@@ -33,12 +41,78 @@ import org.mwc.debrief.core.DebriefPlugin;
 public class Utils
 {
   
-  /** copy the current plot onto the clipboard
+  /** copy the current plot onto the Clipboard
    * 
    */
-  public static void copyPlotToClipboard()
+  @WrapToScript
+  public static void copyPlotToClipboard(Plot plot)
   {
 
+    Display.getDefault().syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+
+        SWTCanvas canvas = (SWTCanvas) plot.getPlot().getChart().getCanvas();
+        Image image = null;
+        try
+        {
+          image = canvas.getImage();
+          if (image != null)
+          {
+            final BufferedImage _awtImage =
+                PlotViewerPlugin.convertToAWT(image.getImageData());
+            Transferable t = new Transferable()
+            {
+    
+              public DataFlavor[] getTransferDataFlavors()
+              {
+                return new DataFlavor[]
+                {DataFlavor.imageFlavor};
+              }
+    
+              public boolean isDataFlavorSupported(DataFlavor flavor)
+              {
+                if (flavor == DataFlavor.imageFlavor)
+                  return true;
+                return false;
+              }
+    
+              public Object getTransferData(DataFlavor flavor)
+                  throws UnsupportedFlavorException, IOException
+              {
+                if (isDataFlavorSupported(flavor))
+                {
+                  return _awtImage;
+                }
+                return null;
+              }
+    
+            };
+    
+            ClipboardOwner co = new ClipboardOwner()
+            {
+    
+              public void lostOwnership(Clipboard clipboard,
+                  Transferable contents)
+              {
+              }
+    
+            };
+            Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+            cb.setContents(t, co);
+          }
+        }
+        finally
+        {
+          if (image != null)
+          {
+            image.dispose();
+          }
+        }
+      }
+    });
   }
 
   
