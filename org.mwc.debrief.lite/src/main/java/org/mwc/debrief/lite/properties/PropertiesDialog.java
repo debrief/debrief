@@ -20,6 +20,7 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
@@ -80,9 +81,8 @@ public class PropertiesDialog extends JDialog
   }
   
   protected void initForm() {
-    
     SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers, _undoBuffer, _theToolParent, _owner);
-    
+    propsPanel.setBorder(new EmptyBorder(10,10,10,10));
     PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),propsPanel,_theLayers,_theToolParent,null);
     JPanel thePanel = (JPanel) ap.getPanel();
     thePanel.setName(_editableProperty.getInfo().getDisplayName());
