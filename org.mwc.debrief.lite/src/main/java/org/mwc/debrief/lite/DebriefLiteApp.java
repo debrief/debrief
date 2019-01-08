@@ -15,34 +15,32 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
@@ -51,7 +49,18 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
+import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
+import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
+import org.pushingpixels.substance.api.SubstanceCortex;
+import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
@@ -110,7 +119,12 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void main(final String[] args)
   {
-    new DebriefLiteApp();
+    javax.swing.SwingUtilities.invokeLater(new Runnable() {
+      public void run() {
+        new DebriefLiteApp();
+      }
+  });
+    
   }
 
   /**
@@ -126,15 +140,14 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   protected final FileDropSupport _dropSupport = new FileDropSupport();
-  private final JFrame theFrame;
-  private JMenuBar theMenuBar;
+  private final JRibbonFrame theFrame;
+  //private JMenuBar theMenuBar;
 
-  private JMenu theMenu;
+//  private JMenu theMenu;
 
   private JLabel statusBar;
 
-  private JLabel _notesIconLabel;
-  private boolean notesPaneExpanded = false;
+//  private JLabel _notesIconLabel;
   final private Layers _theLayers = new Layers();
 
   private SwingToolbar theToolbar;
@@ -142,7 +155,7 @@ public class DebriefLiteApp implements FileDropListener
   private final GeoToolMapRenderer geoMapRenderer;
 
   private final DebriefLiteToolParent _toolParent;
-  private JScrollPane mapPane;
+  private Component mapPane;
   private final GeoToolMapProjection projection;
 
   private final Clipboard _theClipboard = new Clipboard("Debrief");
@@ -152,6 +165,12 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteApplication app;
   
   private final UndoBuffer undoBuffer;
+  /*private JRibbonBand fileMenu;
+  private JRibbonBand viewMenu;
+  private JRibbonBand chartfeaturesMenu;
+  private JRibbonBand drawingMenu;
+  private JRibbonBand timeMenu;*/
+  private JRibbon ribbon;
 
   public DebriefLiteApp()
   {
@@ -210,16 +229,11 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    try
-    {
-      UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-    }
-    catch (ClassNotFoundException | InstantiationException
-        | IllegalAccessException | UnsupportedLookAndFeelException e)
-    {
-      e.printStackTrace();
-    }
-    theFrame = new JFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
+    //set the substance look and feel
+    JFrame.setDefaultLookAndFeelDecorated(true);
+    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    
+    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 
     initForm();
@@ -230,15 +244,116 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
 
-  private void addMenus()
-  {
-    theMenu = new JMenu("File");
-    theMenu.add(new JMenuItem("New"));
-    theMenu.add(new JMenuItem("Open"));
-    theMenu.add(new JMenuItem("Save"));
-    theMenuBar.add(theMenu);
+  private void addMenus() {
+    
+    ribbon = theFrame.getRibbon();
+    //add menus here
+    addFileMenuTasks();
+    addViewMenuTasks();
+    addChartFeaturesTasks();
+    addDrawingTasks();
+    addTimeControllerTasks();
+    
+    
+    
   }
+  
+  private void addFileMenuTasks() {
+    JRibbonBand fileMenu = new JRibbonBand("File",null);
+    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+    fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
+    JRibbonBand exitMenu = new JRibbonBand("Exit",null);
+    MenuUtils.addCommandButton("Exit", "images/16/exit.png", new AbstractAction()
+    {
+      
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
 
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        exit();
+        
+      }
+    }, exitMenu,RibbonElementPriority.MEDIUM);
+    exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
+    
+    JRibbonBand importMenu = new JRibbonBand("Import",null);
+    MenuUtils.addCommandButton("Import Replay", "images/16/import.png", new NewFileAction(), importMenu,RibbonElementPriority.MEDIUM);
+    importMenu.setResizePolicies(getStandardRestrictivePolicies(importMenu));
+    fileMenu.setPreferredSize(new Dimension(150,50));
+    importMenu.setPreferredSize(new Dimension(50,50));
+    RibbonTask fileTask = new RibbonTask("File", fileMenu,importMenu, exitMenu);
+    ribbon.addTask(fileTask);
+    fileMenu.setPreferredSize(new Dimension(50,50));
+    
+  }
+  
+  private List<RibbonBandResizePolicy> getStandardRestrictivePolicies(JRibbonBand ribbonBand){
+    List<RibbonBandResizePolicy> policies = new ArrayList<>();
+    policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
+    //policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
+    policies.add(new IconRibbonBandResizePolicy(ribbonBand));
+    return policies;
+  }
+   
+  private void addViewMenuTasks() {
+    JRibbonBand viewMenu = new JRibbonBand("View",null);
+    geoMapRenderer.addMapTool(viewMenu, ribbon);
+  }
+  private void addChartFeaturesTasks() {
+    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features",null);
+    MenuUtils.addCommandButton("Scale", "images/16/scale.png", new NewFileAction(), chartfeaturesMenu,null);
+    MenuUtils.addCommandButton("Time Display (Absolute)", null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Time Display (Relative)",null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png", new NewFileAction(), chartfeaturesMenu,null);
+    MenuUtils.addCommandButton("Grid", "images/16/grid.png", new NewFileAction(), chartfeaturesMenu,null);
+    MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png", new NewFileAction(), chartfeaturesMenu,null);
+    MenuUtils.addCommandButton("Coastline", "images/16/coast.png", new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
+    chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(chartfeaturesMenu));
+    RibbonTask chartFeaturesTask = new RibbonTask("Chart Features", chartfeaturesMenu);
+    ribbon.addTask(chartFeaturesTask);
+  }
+  private void addDrawingTasks() {
+    JRibbonBand drawingMenu = new JRibbonBand("Drawing",null);
+    MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Polygon", "images/16/polygon.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Line", "images/16/line.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Wheel", "images/16/wheel.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Circle", "images/16/circle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
+    RibbonTask drawingTask = new RibbonTask("Drawing", drawingMenu);
+    ribbon.addTask(drawingTask);
+  }
+  private void addTimeControllerTasks() {
+    JRibbonBand timeMenu = new JRibbonBand("Time Controller",null);
+    MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Record", "images/16/zoomin.png", new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
+    timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
+    RibbonTask timeTask = new RibbonTask("Time Controller", timeMenu);
+    ribbon.addTask(timeTask);
+  }
+  
+
+  
+  private static class NewFileAction extends AbstractAction{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      System.out.println("Action clicked");
+      
+    }
+  }
   private void addStatusBar()
   {
     statusBar = new JLabel("Status bar for displaying statuses");
@@ -258,62 +373,38 @@ public class DebriefLiteApp implements FileDropListener
   {
     final Dimension frameSize = theFrame.getSize();
     final int width = (int) frameSize.getWidth();
-    final int height = (int) frameSize.getHeight();
-    final JPanelWithTitleBar timeControllerPanel = new JPanelWithTitleBar(
-        "Time Controller");
+//    final int height = (int) frameSize.getHeight();
     final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar(
         "Outline");
     final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar(
         "Plot Editor");
     final JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-    final JScrollPane timeControllerPane = createScrollPane(
-        timeControllerPanel);
     addOutlineView(outlineTitlePanel, _toolParent);
-    final JScrollPane editorPane = createMapPane();// createScrollPane(editorPanel);
-    geoMapRenderer.addMapTool(theToolbar);
+    final Component editorPane = createMapPane();// createScrollPane(editorPanel);
+
     final JScrollPane graphPane = createScrollPane(graphPanel);
-    final JScrollPane notesPane = createNotesPane();
-    final JSplitPane controlPanelSplit = new JSplitPane(
-        JSplitPane.VERTICAL_SPLIT, true, timeControllerPane, outlinePanel);
+    final JPanelWithTitleBar notesPane = new JPanelWithTitleBar(
+        "Notes");
     final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         true, editorPane, graphPane);
     final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        controlPanelSplit, graphSplit);
+        outlinePanel, graphSplit);
     final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
         leftSplit, notesPane);
     rightSplit.setOneTouchExpandable(true);
+    leftSplit.setOneTouchExpandable(true);
+    graphSplit.setOneTouchExpandable(true);
+    
+    graphSplit.setDividerSize(42);
 
-    // controlPanelSplit.setOneTouchExpandable(true);
-    // graphSplit.setOneTouchExpandable(true);
-    rightSplit.setDividerLocation(width - 50);
-    graphSplit.setDividerLocation(height / 2 + height / 5);
-    controlPanelSplit.setDividerLocation(height / 2);
+    rightSplit.setDividerLocation(3 * width / 4);
+    graphSplit.setDividerLocation(300);
     leftSplit.setDividerLocation(width / 3);
     rightSplit.setResizeWeight(0.9);
     graphSplit.setResizeWeight(0.5);
     editorPanel.addMaxListenerFor(leftSplit, graphSplit);
     graphPanel.addMinListenerFor(graphSplit);
-    // leftSplit.setOneTouchExpandable(true);
 
-    _notesIconLabel.addMouseListener(new MouseAdapter()
-    {
-      @Override
-      public void mouseClicked(final MouseEvent e)
-      {
-
-        rightSplit.getRightComponent().setMinimumSize(new Dimension());
-        if (notesPaneExpanded)
-        {
-          rightSplit.setDividerLocation(0.97d);
-        }
-        else
-        {
-          rightSplit.setDividerLocation(0.7d);
-        }
-        // toggle the state
-        notesPaneExpanded = !notesPaneExpanded;
-      }
-    });
     theFrame.add(rightSplit, BorderLayout.CENTER);
     addStatusBar();
     // dummy placeholder
@@ -326,7 +417,7 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @return
    */
-  private JScrollPane createMapPane()
+  private Component createMapPane()
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
@@ -335,18 +426,6 @@ public class DebriefLiteApp implements FileDropListener
     _dropSupport.addComponent(mapPane);
 
     return mapPane;
-  }
-
-  private JScrollPane createNotesPane()
-  {
-    final JPanel notesPanel = new JPanel();
-    notesPanel.setLayout(new FlowLayout());
-    final JScrollPane notesPane = new JScrollPane(notesPanel);
-    final URL url = getClass().getClassLoader().getResource(NOTES_ICON);
-    _notesIconLabel = new JLabel();
-    _notesIconLabel.setIcon(new ImageIcon(url));
-    notesPanel.add(_notesIconLabel);
-    return notesPane;
   }
 
   protected void doPaint(final Graphics gc)
@@ -390,7 +469,16 @@ public class DebriefLiteApp implements FileDropListener
             // fake wrap it
             final File[] fList = new File[]
             {file};
-            handleImportRep(fList);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                handleImportRep(fList);    
+              }
+            });
+            
           }
           else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(
               ".DPF"))
@@ -437,7 +525,7 @@ public class DebriefLiteApp implements FileDropListener
       public void allFilesFinished(final File[] fNames, final Layers newData)
       {
         System.out.println("Finished reading all files");
-        restoreCursor();
+        
       }
 
       // handle the completion of each file
@@ -445,20 +533,26 @@ public class DebriefLiteApp implements FileDropListener
       public void fileFinished(final File fName, final Layers newData)
       {
         System.out.println("Finished reading file" + fName);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            outlinePanel.invalidate();
+            layerManager.setObject(_theLayers);
+            outlinePanel.validate();
+            restoreCursor();
+          }
+        });
+        
+       
       }
     };
 
     caller.start();
     // wait for a few secs and test the loaded file.
-    try
-    {
-      Thread.sleep(400);
-    }
-    catch (final InterruptedException ie)
-    {
-    }
-    layerManager.setObject(_theLayers);
-    outlinePanel.validate();
+    
     System.out.println("num layers:" + _theLayers.size());
     caller = null;
   }
@@ -493,12 +587,12 @@ public class DebriefLiteApp implements FileDropListener
     // and the panel
     final JPanel topSection = new JPanel();
     topSection.setLayout(new BorderLayout());
-    theMenuBar = new JMenuBar();
+   /* theMenuBar = new JMenuBar();
     theFrame.setJMenuBar(theMenuBar);
 
     // add them
     theFrame.getContentPane().add("North", theToolbar);
-
+*/
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
     theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));

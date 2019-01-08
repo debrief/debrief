@@ -49,7 +49,7 @@
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.geotools/libs" includes="*.jar"></fileset>
-			<!--fileset dir="libs" includes="*.jar"></fileset-->
+			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
 		<javac destdir="${temp.folder}/debrief_lite.jar.bin" failonerror="true">
