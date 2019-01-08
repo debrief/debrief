@@ -51,6 +51,7 @@ import java.io.Reader;
 
 import javax.swing.JFrame;
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 
 public class ReaderMonitor extends BufferedReader
 {
@@ -97,20 +98,26 @@ public class ReaderMonitor extends BufferedReader
     final float prog = (_counter / _length * 100);
     _progress = (int) prog;
 
-
-    if(_pm != null)
+    SwingUtilities.invokeLater(new Runnable()
     {
-      _pm.setProgress(_progress);
-      _pm.setNote("" + _progress + "% complete");
-
-      if(_progress >= 99)
+      
+      @Override
+      public void run()
       {
-        _pm.close();
-        _pm = null;
+        if(_pm != null)
+        {
+          _pm.setProgress(_progress);
+          _pm.setNote("" + _progress + "% complete");
+
+          if(_progress >= 99)
+          {
+            _pm.close();
+            _pm = null;
+          }
+
+        }
       }
-
-    }
-
+    });
     return super.readLine();
   }
 

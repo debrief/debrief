@@ -110,6 +110,8 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
@@ -337,6 +339,7 @@ public class ImportManager
         if (thisImporter.canImportThisFile(fName))
         {
           // handle the import
+          
           importThisOne(thisImporter, fName, theData);
 
           // finished, drop out of loop
@@ -365,14 +368,32 @@ public class ImportManager
         // first check if the file exists
         if(!theFile.exists())
         {
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file cannot be found. It may have been deleted.");
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file cannot be found. It may have been deleted.");    
+            }
+          });
+          
           return;
         }
 
         // is it there?
         if (theFile.length() == 0)
         {
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file does not contain any data (zero size)");
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file does not contain any data (zero size)");    
+            }
+          });
+          
           return;
         }
 

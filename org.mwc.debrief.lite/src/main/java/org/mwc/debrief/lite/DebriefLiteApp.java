@@ -40,6 +40,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
@@ -234,7 +235,20 @@ public class DebriefLiteApp implements FileDropListener
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     
+    //
     
+    /*try {
+                   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                   
+                 } catch (ClassNotFoundException e) {
+                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                 } catch (InstantiationException e) {
+                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                 } catch (IllegalAccessException e) {
+                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                 } catch (UnsupportedLookAndFeelException e) {
+                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                 }*/
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 
@@ -266,7 +280,6 @@ public class DebriefLiteApp implements FileDropListener
     MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
-    
     JRibbonBand exitMenu = new JRibbonBand("Exit",null);
     MenuUtils.addCommandButton("Exit", "images/16/exit.png", new AbstractAction()
     {
@@ -293,7 +306,6 @@ public class DebriefLiteApp implements FileDropListener
     RibbonTask fileTask = new RibbonTask("File", fileMenu,importMenu, exitMenu);
     ribbon.addTask(fileTask);
     fileMenu.setPreferredSize(new Dimension(50,50));
-    
     
   }
   
@@ -392,7 +404,7 @@ public class DebriefLiteApp implements FileDropListener
     final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         true, editorPane, graphPane);
     final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-        outlineTitlePanel, graphSplit);
+        outlinePanel, graphSplit);
     final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
         leftSplit, notesPane);
     rightSplit.setOneTouchExpandable(true);
@@ -473,7 +485,16 @@ public class DebriefLiteApp implements FileDropListener
             // fake wrap it
             final File[] fList = new File[]
             {file};
-            handleImportRep(fList);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+              
+              @Override
+              public void run()
+              {
+                handleImportRep(fList);    
+              }
+            });
+            
           }
           else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(
               ".DPF"))
@@ -520,7 +541,7 @@ public class DebriefLiteApp implements FileDropListener
       public void allFilesFinished(final File[] fNames, final Layers newData)
       {
         System.out.println("Finished reading all files");
-        restoreCursor();
+        
       }
 
       // handle the completion of each file
@@ -528,20 +549,26 @@ public class DebriefLiteApp implements FileDropListener
       public void fileFinished(final File fName, final Layers newData)
       {
         System.out.println("Finished reading file" + fName);
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          
+          @Override
+          public void run()
+          {
+            outlinePanel.invalidate();
+            layerManager.setObject(_theLayers);
+            outlinePanel.validate();
+            restoreCursor();
+          }
+        });
+        
+       
       }
     };
 
     caller.start();
     // wait for a few secs and test the loaded file.
-    try
-    {
-      Thread.sleep(400);
-    }
-    catch (final InterruptedException ie)
-    {
-    }
-    layerManager.setObject(_theLayers);
-    outlinePanel.validate();
+    
     System.out.println("num layers:" + _theLayers.size());
     caller = null;
   }

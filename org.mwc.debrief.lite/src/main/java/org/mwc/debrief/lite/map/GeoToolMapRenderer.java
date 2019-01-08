@@ -16,13 +16,10 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.swing.Action;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;

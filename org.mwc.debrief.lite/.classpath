@@ -13,7 +13,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/radiance-neon-1.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/radiance-flamingo-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/radiance-flamingo-1.0.2.jar" sourcepath="C:/Users/Ayesha/Downloads/radiance-master.zip"/>
 	<classpathentry exported="true" kind="lib" path="libs/radiance-substance-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/radiance-substance-extras-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/radiance-trident-1.0.2.jar"/>
