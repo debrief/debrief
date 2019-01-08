@@ -401,7 +401,6 @@ public class Core
    */
   public Core()
   {
-    System.out.println("About to start listening");
     listenToMyParts();
   }
 
