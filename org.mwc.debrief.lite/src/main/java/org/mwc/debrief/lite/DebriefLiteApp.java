@@ -148,7 +148,6 @@ public class DebriefLiteApp implements FileDropListener
   private JLabel statusBar;
 
 //  private JLabel _notesIconLabel;
-  private boolean notesPaneExpanded = false;
   final private Layers _theLayers = new Layers();
 
   private SwingToolbar theToolbar;
@@ -166,12 +165,11 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteApplication app;
   
   private final UndoBuffer undoBuffer;
-  private JRibbonBand fileMenu;
-  private JRibbonBand mapMenu;
+  /*private JRibbonBand fileMenu;
   private JRibbonBand viewMenu;
   private JRibbonBand chartfeaturesMenu;
   private JRibbonBand drawingMenu;
-  private JRibbonBand timeMenu;
+  private JRibbonBand timeMenu;*/
   private JRibbon ribbon;
 
   public DebriefLiteApp()
@@ -235,20 +233,6 @@ public class DebriefLiteApp implements FileDropListener
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     
-    //
-    
-    /*try {
-                   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                   
-                 } catch (ClassNotFoundException e) {
-                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                 } catch (InstantiationException e) {
-                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                 } catch (IllegalAccessException e) {
-                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                 } catch (UnsupportedLookAndFeelException e) {
-                     e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                 }*/
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
 
@@ -275,7 +259,7 @@ public class DebriefLiteApp implements FileDropListener
   }
   
   private void addFileMenuTasks() {
-    fileMenu = new JRibbonBand("File",null);
+    JRibbonBand fileMenu = new JRibbonBand("File",null);
     MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
@@ -318,11 +302,11 @@ public class DebriefLiteApp implements FileDropListener
   }
    
   private void addViewMenuTasks() {
-    mapMenu = new JRibbonBand("View",null);
-    geoMapRenderer.addMapTool(mapMenu, ribbon);
+    JRibbonBand viewMenu = new JRibbonBand("View",null);
+    geoMapRenderer.addMapTool(viewMenu, ribbon);
   }
   private void addChartFeaturesTasks() {
-    chartfeaturesMenu = new JRibbonBand("Chart Features",null);
+    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features",null);
     MenuUtils.addCommandButton("Scale", "images/16/scale.png", new NewFileAction(), chartfeaturesMenu,null);
     MenuUtils.addCommandButton("Time Display (Absolute)", null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Time Display (Relative)",null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
@@ -335,7 +319,7 @@ public class DebriefLiteApp implements FileDropListener
     ribbon.addTask(chartFeaturesTask);
   }
   private void addDrawingTasks() {
-    drawingMenu = new JRibbonBand("Drawing",null);
+    JRibbonBand drawingMenu = new JRibbonBand("Drawing",null);
     MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Polygon", "images/16/polygon.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Line", "images/16/line.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
@@ -347,7 +331,7 @@ public class DebriefLiteApp implements FileDropListener
     ribbon.addTask(drawingTask);
   }
   private void addTimeControllerTasks() {
-    timeMenu = new JRibbonBand("Time Controller",null);
+    JRibbonBand timeMenu = new JRibbonBand("Time Controller",null);
     MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Record", "images/16/zoomin.png", new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
     timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
@@ -389,7 +373,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     final Dimension frameSize = theFrame.getSize();
     final int width = (int) frameSize.getWidth();
-    final int height = (int) frameSize.getHeight();
+//    final int height = (int) frameSize.getHeight();
     final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar(
         "Outline");
     final JPanelWithTitleBar editorPanel = new JPanelWithTitleBar(
