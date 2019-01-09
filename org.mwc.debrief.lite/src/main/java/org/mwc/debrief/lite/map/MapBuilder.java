@@ -14,69 +14,70 @@
  */
 package org.mwc.debrief.lite.map;
 
-
-import java.awt.BorderLayout;
-
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import java.awt.Component;
 
 import MWC.GUI.Tools.Swing.SwingToolbar;
 
-public class MapBuilder {
+public class MapBuilder
+{
 
-	private MapRenderer mapRenderer;
-	
-	/** enable map tool bar **/
-	@SuppressWarnings("unused")
+  private GeoToolMapRenderer mapRenderer;
+
+  /** enable map tool bar **/
+  @SuppressWarnings("unused")
   private boolean enable = true;
-	
-	@SuppressWarnings("unused")
+
+  @SuppressWarnings("unused")
   private SwingToolbar theToolbar;
-	
-	/**
-	 * sets a map renderer object based on the map API
-	 * 
-	 * @param renderer
-	 * @return
-	 */
-	public MapBuilder setMapRenderer(MapRenderer mapRenderer) {
-		this.mapRenderer = mapRenderer;
-		
-		return this;
-	}
-	
-	/**
-	 * enable or disable toolbar
-	 * 
-	 * @param enable
-	 * @return
-	 */
-	public MapBuilder enableToolbar(boolean enable) {
-		this.enable = enable;
-		return this;
-	}
-	
-	/**
-	 * 
-	 * @param theoolbar
-	 */
-	public MapBuilder setToolbar(SwingToolbar theToolbar) {
-		this.theToolbar = theToolbar;
-		return this;
-	}
-	
-	
-	/**
-	 * builds the map pane with map content in it.
-	 */
-	public JScrollPane build() {
-		JPanel panel = new JPanel();
-	    panel.setLayout(new BorderLayout());
-	    panel.add(mapRenderer.getPane(), BorderLayout.NORTH);
-	    JScrollPane scrPane = new JScrollPane(panel);
-	    
-	 //   mapRenderer.addMapTool(theToolbar);
-	    return scrPane;	
-	}
-	
+
+  /**
+   * builds the map pane with map content in it.
+   */
+  public Component build()
+  {
+    return mapRenderer.getMap();
+//    final JPanel panel = new JPanel();
+//    panel.setLayout(new BorderLayout());
+//    panel.add(mapRenderer.getMap(), BorderLayout.CENTER);
+//    final JScrollPane scrPane = new JScrollPane(panel);
+//
+//    // mapRenderer.addMapTool(theToolbar);
+//    return scrPane;
+  }
+
+  /**
+   * enable or disable toolbar
+   * 
+   * @param enable
+   * @return
+   */
+  public MapBuilder enableToolbar(final boolean enable)
+  {
+    this.enable = enable;
+    return this;
+  }
+
+  /**
+   * sets a map renderer object based on the map API
+   * 
+   * @param renderer
+   * @return
+   */
+  public MapBuilder setMapRenderer(final GeoToolMapRenderer mapRenderer)
+  {
+    this.mapRenderer = mapRenderer;
+
+    return this;
+  }
+
+  /**
+   * 
+   * @param theoolbar
+   */
+  public MapBuilder setToolbar(final SwingToolbar theToolbar)
+  {
+    this.theToolbar = theToolbar;
+    return this;
+  }
+
 }

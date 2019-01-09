@@ -166,8 +166,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -176,7 +174,6 @@ import javax.swing.AbstractCellEditor;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -238,10 +235,13 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 	protected Hashtable<?, ?> _myNodes = new Hashtable<String, String>();
 
+  private JPanel btnHolder;
+
 	/**
 	 * the name we give to the root layer
 	 */
 	static private final String ROOT_OBJECT = new String("Data");
+	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -250,13 +250,20 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
-
 	/**
 	 * return the updated data object - not really used.
 	 */
 	protected Layers getData()
 	{
 		return _myData;
+	}
+	
+	protected void setCellRenderer(TreeCellRenderer cellRenderer) {
+	  _myTree.setCellRenderer(cellRenderer);
+	}
+	
+	protected void setCellEditor(TreeCellEditor cellEditor) {
+	  _myTree.setCellEditor(cellEditor);
 	}
 
 	/**
@@ -351,13 +358,18 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			}
 		});
 
-		final JPanel btnHolder = new JPanel();
+		btnHolder = new JPanel();
 		btnHolder.setLayout(new java.awt.GridLayout(1, 0));
 		btnHolder.add(addBtn);
 		btnHolder.add(refreshBtn);
 		add(btnHolder, java.awt.BorderLayout.NORTH);
 
 	}
+	
+	public void showButtonPanel(boolean show) {
+	 btnHolder.setVisible(show);
+	}
+	
 
 	/**
 	 * get the top-level layer which contains this node
@@ -489,7 +501,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			final java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor()
 					.getExtraPlottableEditors(getPanel());
 			thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
-					getChart().getCanvas(), parentLayer, _thePanel, _myData, extras,
+					parentLayer, _thePanel, _myData, extras,
 					topLayer);
 
 		}
@@ -501,7 +513,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 			thePopup = new JPopupMenu();
 
-			pr.createMenu(thePopup, null, thePoint, getChart().getCanvas(),
+			pr.createMenu(thePopup, null, thePoint,
 					_thePanel, null, _myData, null);
 
 		}
@@ -594,7 +606,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 * @param isVisible
 	 *          whether it is now visible or not
 	 */
-	void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
+	protected void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
 	{
 		pl.setVisible(isVisible);
 
@@ -779,7 +791,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+		@SuppressWarnings("unused")
+    private static final long serialVersionUID = 1L;
 		protected JCheckBox checkBox = new JCheckBox("");
 		private final Component strut = Box.createHorizontalStrut(5);
 		private final JPanel panel = new JPanel();
@@ -811,12 +824,13 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			super();
 			panel.setBackground(UIManager.getColor("Tree.textBackground"));
 			proxy.setOpaque(false);
-			checkBox.setOpaque(false);
+			
 			panel.setOpaque(false);
 			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			panel.add(proxy);
 			
 			panel.add(strut);
+			checkBox.setOpaque(false);
 			panel.add(checkBox);
 			
 
@@ -836,10 +850,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 					final Plottable pl = (Plottable) tn.getUserObject();
 					proxy.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
 							row, hasFocus1);
-
-					
-					
-					checkBox.setSelected(pl.getVisible());
+				  checkBox.setSelected(pl.getVisible());
 				}
 			}
 			
@@ -860,7 +871,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	//
 	// ////////////////////////////////////////////////
 
-	class ImmediateEditor extends DefaultTreeCellEditor
+	protected class ImmediateEditor extends DefaultTreeCellEditor
 	{
 		private final PlottableRenderer renderer;
 
@@ -979,7 +990,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		/**
 		 * 
 		 */
-		private static final long serialVersionUID = 1L;
+		@SuppressWarnings("unused")
+    private static final long serialVersionUID = 1L;
 
 		public Component getTreeCellRendererComponent(final JTree tree, final Object value,
 				final boolean selected1, final boolean expanded, final boolean leaf, final int row,
@@ -1000,13 +1012,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	/**
 	 * class which combines an item and it's layer into a MutableNode thingy
 	 */
-	private class PlottableNode extends javax.swing.tree.DefaultMutableTreeNode
+	protected class PlottableNode extends DefaultMutableTreeNode
 	{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		private Layer _theParentLayer = null;
+		
+		private boolean _selected;
 
 		/**
 		 * Creates a tree node with no parent, no children, but which allows
@@ -1025,12 +1039,20 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		{
 			return _theParentLayer;
 		}
+		public void setSelected(boolean selected)
+    {
+      this._selected = selected;
+    }
+		public boolean isSelected()
+    {
+      return _selected;
+    }
 	}
 
 	/**
 	 * class which handles the action of show/hide an item
 	 */
-	private class ChangeVis implements MWC.GUI.Tools.Action
+	protected class ChangeVis implements MWC.GUI.Tools.Action
 	{
 		// ////////////////////////////////////////////////
 		// member objects
@@ -1093,5 +1115,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
 			_myPlottable.setVisible(!_isVis);
 		}
 	}
+	
 
 }

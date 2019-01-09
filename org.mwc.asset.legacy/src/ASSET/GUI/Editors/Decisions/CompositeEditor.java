@@ -14,15 +14,16 @@
  */
 package ASSET.GUI.Editors.Decisions;
 
-import MWC.GUI.PlainChart;
+import java.awt.GridLayout;
+import java.beans.PropertyEditor;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
-
-import javax.swing.*;
-import java.awt.*;
-import java.beans.PropertyEditor;
 
 /**
  * Title:
@@ -34,10 +35,8 @@ import java.beans.PropertyEditor;
  * @version 1.0
  */
 
-public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
-  implements PlainPropertyEditor.EditorUsesChart,
+public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor implements
   PlainPropertyEditor.EditorUsesPropertyPanel, MWC.GUI.Properties.NoEditorButtons
-
 {
 
   //////////////////////////////////////////////////////////////////////
@@ -71,11 +70,6 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   public boolean supportsCustomEditor()
   {
     return true;
-  }
-
-  public void setChart(PlainChart theChart)
-  {
-    _theChart = theChart;
   }
 
   public void setPanel(PropertiesPanel thePanel)
@@ -120,9 +114,14 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
 
   private void updateForm()
   {
-    //   _compositeEditor = new SwingPropertyEditor2(_myComposite.getInfo(), (SwingPropertiesPanel)_thePanel, (PlainChart)_theChart, null, null);
-    _conditionEditor = new SwingPropertyEditor2(_myComposite.getCondition().getInfo(), (SwingPropertiesPanel) _thePanel, (PlainChart) _theChart, null, null);
-    _responseEditor = new SwingPropertyEditor2(_myComposite.getResponse().getInfo(), (SwingPropertiesPanel) _thePanel, (PlainChart) _theChart, null, null);
+    // _compositeEditor = new SwingPropertyEditor2(_myComposite.getInfo(),
+    // (SwingPropertiesPanel)_thePanel, (PlainChart)_theChart, null, null);
+    _conditionEditor = new SwingPropertyEditor2(_myComposite.getCondition()
+        .getInfo(), (SwingPropertiesPanel) _thePanel,
+         _theLayers, null, null);
+    _responseEditor = new SwingPropertyEditor2(_myComposite.getResponse()
+        .getInfo(), (SwingPropertiesPanel) _thePanel,
+        _theLayers, null, null);
   }
 
 }

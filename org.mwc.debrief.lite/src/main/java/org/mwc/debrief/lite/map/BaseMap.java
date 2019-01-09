@@ -14,7 +14,8 @@
  */
 package org.mwc.debrief.lite.map;
 
-import MWC.GUI.Tools.Swing.SwingToolbar;
+import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 
 /**
  *
@@ -31,11 +32,11 @@ public interface BaseMap
   /**
    * adds a map control tool
    */
-  public void addMapTool(SwingToolbar toolbar);
+  public void addMapTool(JRibbonBand toolbar,JRibbon ribbon);
 
   /**
    * creates a JSplitPane from the given map content.
-   * 
+   *
    * @return
    */
   public void createMapLayout();

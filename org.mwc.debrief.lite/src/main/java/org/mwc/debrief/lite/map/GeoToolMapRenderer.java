@@ -14,15 +14,12 @@
  */
 package org.mwc.debrief.lite.map;
 
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JSplitPane;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -35,7 +32,6 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.MapLayerTable;
 import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.NoToolAction;
 import org.geotools.swing.action.PanAction;
@@ -43,185 +39,183 @@ import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.mwc.debrief.lite.menu.MenuUtils;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-
-import MWC.GUI.Tools.Swing.SwingToolbar;
+import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
  *
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer extends MapRenderer {
+public class GeoToolMapRenderer implements BaseMap
+{
 
-	private JMapPane mapPane;
-	private MapContent mapComponent;
+  public static interface MapRenderer
+  {
+    public void paint(final Graphics gc);
+  }
 
-	private Graphics graphics;
+  private JMapPane mapPane;
+  private MapContent mapComponent;
 
-	private SimpleFeatureSource featureSource;
+  private Graphics graphics;
 
-	private boolean goingToDraw;
+  private SimpleFeatureSource featureSource;
 
-	private int x1;
-	private int y1;
-	private int x2;
-	private int y2;
+  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-	@Override
-	public void addMapTool(final SwingToolbar theToolbar) {
+  @Override
+  public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
+  {
+    MenuUtils.addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Pan", null, new PanAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Info", null, new InfoAction(mapPane), mapBand,null);
+    MenuUtils.addCommandButton("Reset", null, new ResetAction(mapPane), mapBand,null);
+    List<RibbonBandResizePolicy> policies = new ArrayList<>();
+    policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
+    policies.add(new CoreRibbonResizePolicies.Mid2Low(mapBand));
+    policies.add(new IconRibbonBandResizePolicy(mapBand));
+    mapBand.setResizePolicies(policies);
+    RibbonTask fileTask = new RibbonTask("View", mapBand);
+    ribbon.addTask(fileTask);
+  }
+  
 
-		JButton btn;
-		final ButtonGroup cursorToolGrp = new ButtonGroup();
+  public void addRenderer(final MapRenderer renderer)
+  {
+    _myRenderers.add(renderer);
+  }
 
-		// mapPane.addMouseListener(new ScrollWheelTool(mapPane));
+  @Override
+  public void createMapLayout()
+  {
+    mapPane = new JMapPane()
+    {
 
-		///// no action
-		btn = new JButton(new NoToolAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		////// zoom in
-		btn = new JButton(new ZoomInAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		////// zoom out
-		btn = new JButton(new ZoomOutAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		theToolbar.addSeparator();
-
-		//// pan action
-		btn = new JButton(new PanAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		//// info action
-		btn = new JButton(new InfoAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-
-		//// reset action
-		btn = new JButton(new ResetAction(mapPane));
-		cursorToolGrp.add(btn);
-		theToolbar.add(btn);
-	}
-
-	@Override
-	public void createMapLayout() {
-		mapPane = new JMapPane() {
-
-			/**
-       * 
+      /**
+       *
        */
       private static final long serialVersionUID = 1L;
 
       @Override
-			protected void paintComponent(Graphics arg0) {
-				super.paintComponent(arg0);
+      protected void paintComponent(final Graphics arg0)
+      {
+        super.paintComponent(arg0);
 
-				if (graphics == null) {
-					graphics = arg0;
-				}
+        paintEvent(arg0);
+      }
+    };
 
-				if (goingToDraw) {
-					arg0.setColor(Color.BLUE);
-					arg0.drawLine(x1, y1, x2, y2);
-				}
+    final StreamingRenderer streamer = new StreamingRenderer();
+    mapPane.setRenderer(streamer);
+    mapPane.setMapContent(mapComponent);
+  }
 
-			}
-		};
+  /**
+   * returns java.awt.Graphics object
+   * 
+   * @return
+   */
+  public Graphics getGraphicsContext()
+  {
+    return graphics;
+  }
 
-		mapPane.setRenderer(new StreamingRenderer());
-		mapPane.setMapContent(mapComponent);
+  /**
+   * return map component
+   * 
+   * @return
+   */
+  public MapContent getMapComponent()
+  {
+    return mapComponent;
+  }
 
-		final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
-		mapLayerTable.setVisible(false);
-		mapLayerTable.setPreferredSize(new Dimension(200, 400));
-		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false, mapLayerTable, mapPane);
-	}
 
-	/**
-	 * return map component
-	 * 
-	 * @return
-	 */
-	public MapContent getMapComponent() {
-		return mapComponent;
-	}
+  /**
+   * gets a MathTransform object
+   * 
+   * @return MathTransform
+   */
+  public MathTransform getTransformObject()
+  {
+    final SimpleFeatureType schema = featureSource.getSchema();
+    final CoordinateReferenceSystem dataCRS = schema
+        .getCoordinateReferenceSystem();
+    final CoordinateReferenceSystem worldCRS = mapComponent
+        .getCoordinateReferenceSystem();
+    MathTransform transform = null;
+    try
+    {
+      transform = CRS.findMathTransform(dataCRS, worldCRS);
+    }
+    catch (final FactoryException e)
+    {
+      e.printStackTrace();
+    }
+    return transform;
+  }
 
-	@Override
-	public void loadMapContent() {
-	  final String shape_path =
+  @Override
+  public void loadMapContent()
+  {
+    final String shape_path =
         "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
-	  File file = new File(shape_path);
-	  if(!file.exists())
-	  {
-	    file = JFileDataStoreChooser.showOpenFile("shp", null);
-	  }
-		if (file == null) {
-			return;
-		}
+    File file = new File(shape_path);
+    if (!file.exists())
+    {
+      file = JFileDataStoreChooser.showOpenFile("shp", null);
+    }
+    if (file == null)
+    {
+      return;
+    }
 
-		FileDataStore store;
-		featureSource = null;
-		try {
-			store = FileDataStoreFinder.getDataStore(file);
-			featureSource = store.getFeatureSource();
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+    FileDataStore store;
+    featureSource = null;
+    try
+    {
+      store = FileDataStoreFinder.getDataStore(file);
+      featureSource = store.getFeatureSource();
+    }
+    catch (final IOException e)
+    {
+      e.printStackTrace();
+    }
 
-		// Create a map content and add our shape file to it
-		mapComponent = new MapContent();
-		mapComponent.setTitle("Debrief Lite");
+    // Create a map content and add our shape file to it
+    mapComponent = new MapContent();
+    mapComponent.setTitle("Debrief Lite");
 
-		final Style style = SLD.createSimpleStyle(featureSource.getSchema());
-		final Layer layer = new FeatureLayer(featureSource, style);
-		mapComponent.addLayer(layer);
+    final Style style = SLD.createSimpleStyle(featureSource.getSchema());
+    final Layer layer = new FeatureLayer(featureSource, style);
+    mapComponent.addLayer(layer);
 
-	}
+  }
 
-	/**
-	 * returns java.awt.Graphics object
-	 * 
-	 * @return
-	 */
-	public Graphics getGraphicsContext() {
-		return graphics;
-	}
+  private void paintEvent(final Graphics arg0)
+  {
+    for (final MapRenderer r : _myRenderers)
+    {
+      r.paint(arg0);
+    }
+  }
 
-	/**
-	 * gets a MathTransform object
-	 * 
-	 * @return MathTransform
-	 */
-	public MathTransform getTransformObject() {
-		SimpleFeatureType schema = featureSource.getSchema();
-		CoordinateReferenceSystem dataCRS = (CoordinateReferenceSystem) schema.getCoordinateReferenceSystem();
-		CoordinateReferenceSystem worldCRS = (CoordinateReferenceSystem) mapComponent.getCoordinateReferenceSystem();
-		MathTransform transform = null;
-		try {
-			transform = CRS.findMathTransform(dataCRS, worldCRS);
-		} catch (FactoryException e) {
-			e.printStackTrace();
-		}
-		return transform;
-	}
-
-	public void drawLine(int x1, int y1, int x2, int y2) {
-		this.x1 = x1;
-		this.y1 = y1;
-		this.x2 = x2;
-		this.y2 = y2;
-
-		goingToDraw = true;
-	}
-
+  public Component getMap()
+  {
+    return mapPane;
+  }
 }

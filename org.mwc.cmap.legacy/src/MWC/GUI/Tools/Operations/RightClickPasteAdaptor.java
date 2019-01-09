@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -66,7 +65,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   public void createMenu(final javax.swing.JPopupMenu menu,
                          final Editable destination,
                          final java.awt.Point thePoint,
-                         final CanvasType theCanvas,
                          final MWC.GUI.Properties.PropertiesPanel thePanel,
                          final Layer theParent,
                          final Layers theLayers, final Layer updateLayer)
@@ -107,7 +105,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
                 paster = new PasteLayer(clipLayer,
                                         _clipboard,
                                         (Layer) destination,
-                                        theCanvas,
                                         theLayers,
                                         isCopy);
               }
@@ -120,7 +117,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
                   paster = new PasteItem(theData,
                                          _clipboard,
                                          (Layer) destination,
-                                         theCanvas,
                                          theLayers,
                                          isCopy);
                 }
@@ -160,14 +156,12 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 		Plottable _data;
     Clipboard _myClipboard;
     Layer _theDestination;
-    CanvasType _theCanvas;
     Layers _theLayers;
     boolean _isACopy;
 
     public PasteItem(final Plottable data,
                      final Clipboard clipboard,
                      final Layer theDestination,
-                     final CanvasType theCanvas,
                      final Layers theLayers,
                      final boolean isACopy)
     {
@@ -179,7 +173,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       _data = cloneThis(data);
       _myClipboard = clipboard;
       _theDestination = theDestination;
-      _theCanvas = theCanvas;
       _theLayers = theLayers;
       _isACopy = isACopy;
 
@@ -225,9 +218,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 
       // inform the listeners
       _theLayers.fireExtended();
-
-      // and update the chart
-      _theCanvas.updateMe();
     }
 
     public void actionPerformed(final ActionEvent p1)
@@ -297,11 +287,10 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 		public PasteLayer(final Layer data,
                       final Clipboard clipboard,
                       final Layer theDestination,
-                      final CanvasType theCanvas,
                       final Layers theLayers,
                       final boolean isACopy)
     {
-      super(data, clipboard, theDestination, theCanvas, theLayers, isACopy);
+      super(data, clipboard, theDestination, theLayers, isACopy);
     }
 
     public String toString()
@@ -391,9 +380,6 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       }
 
       _theLayers.fireModified(null);
-
-      // and update the chart
-      _theCanvas.updateMe();
     }
 
   }
