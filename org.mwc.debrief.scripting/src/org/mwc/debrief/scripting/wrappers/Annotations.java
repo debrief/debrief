@@ -65,6 +65,41 @@ public class Annotations
   }
 
   /**
+   * Label location constant for TOP
+   * 
+   */
+  @WrapToScript
+  final static public int LABEL_LOCATION_TOP = 0;
+
+  /**
+   * Label location constant for BOTTOM
+   * 
+   */
+  @WrapToScript
+  final static public int LABEL_LOCATION_BOTTOM = 1;
+
+  /**
+   * Label location constant for LEFT
+   * 
+   */
+  @WrapToScript
+  final static public int LABEL_LOCATION_LEFT = 2;
+
+  /**
+   * Label location constant for RIGHT
+   * 
+   */
+  @WrapToScript
+  final static public int LABEL_LOCATION_RIGHT = 3;
+
+  /**
+   * Label location constant for CENTRE
+   * 
+   */
+  @WrapToScript
+  final static public int LABEL_LOCATION_CENTRE = 4;
+
+  /**
    * Creates a label given its name, location and color
    *
    * @param name
