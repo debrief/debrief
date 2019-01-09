@@ -7976,6 +7976,14 @@ WIND_DIRECTION, WIND_SPEED, DRIFT_NORTH, DRIFT_EAST
       </sect1>
 
     </chapter>
+    <chapter xml:id="ScriptCookbook">
+      <title>Scripting Cookbook</title>
+      <sect1 xml:id="ScriptIntro">
+        <title>Introduction</title>
+        <para>Intro text</para>
+      </sect1>
+    </chapter>
+    
     <chapter xml:id="GeoToolsRef">
       <title>GeoTools in Debrief</title>
       <sect1 xml:id="GeoToolsIntro">
