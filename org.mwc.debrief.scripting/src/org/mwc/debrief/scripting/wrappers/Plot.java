@@ -22,7 +22,6 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.scripting.wrappers.Layers.DLayers;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.HiResDate;
