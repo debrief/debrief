@@ -7,11 +7,14 @@ import java.beans.PropertyChangeListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.ease.modules.ScriptParameter;
 import org.eclipse.ease.modules.WrapToScript;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorReference;
+import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
@@ -100,11 +103,11 @@ public class Core
 
       final Calendar calendarCreated = Calendar.getInstance();
       calendarCreated.setTime(created.getDate());
-      assertEquals("Correct date for testCreateDateCalendarFormat", now, calendarCreated);
+      assertEquals("Correct date for testCreateDateCalendarFormat", now,
+          calendarCreated);
     }
   }
 
-  @WrapToScript
   /**
    * Creates an opaque sRGB color with the specified red, green, and blue values in the range (0 -
    * 255). The actual color used in rendering depends on finding the best match given the color
@@ -116,23 +119,42 @@ public class Core
    *          the green component
    * @param blue
    *          the blue component
-   * @return
+   * @return a color object <br />
+   *         // @type java.awt.Color
+   * 
    */
+  @WrapToScript
   public static Color createColorRGB(final int red, final int green,
       final int blue)
   {
     return new Color(red, green, blue);
   }
 
-  @WrapToScript
-  /*
-   * Here is how to provide default value: @ScriptParameter(defaultValue="-1")
+  /**
+   * create a new date, using indicated millis since epoch
+   * 
+   * @param date
+   *          elapsed millis since epoch (1st Jan 1970)
+   * @return // @type MWC.GenericData.HiResDate
+   * 
    */
+  @WrapToScript
   public static HiResDate createDate(final long date)
   {
     return new HiResDate(date);
   }
 
+  /**
+   * create a date from this String value
+   * 
+   * @param date
+   *          the string to process
+   * @param formatter
+   *          the format for the string
+   * @return // @type MWC.GenericData.HiResDate
+   * @throws ParseException
+   *           if the parsing fails
+   */
   @WrapToScript
   public static HiResDate createDateFromString(final String date,
       final SimpleDateFormat formatter) throws ParseException
@@ -140,7 +162,6 @@ public class Core
     return new HiResDate(formatter.parse(date));
   }
 
-  @WrapToScript
   /**
    * Returns a High Resolution date from values given in the calendar format
    * 
@@ -162,8 +183,9 @@ public class Core
    * @param second
    *          Field number for get and set indicating the second within the minute. E.g., at
    *          10:04:15.250 PM the SECOND is 15.
-   * @return High Resolution date from values given in the calendar format
+   * @return // @type MWC.GenericData.HiResDate
    */
+  @WrapToScript
   public static HiResDate createDateCalendarFormat(final int year,
       final int month, final int date, final int hourOfDay, final int minute,
       final int second)
@@ -173,25 +195,48 @@ public class Core
     return new HiResDate(calendar.getTime());
   }
 
+  /**
+   * microsecond units
+   * 
+   */
   @WrapToScript
   static public final int DUR_MICROSECONDS = 0;
 
+  /**
+   * millis units
+   * 
+   */
   @WrapToScript
   static public final int DUR_MILLISECONDS = 1;
 
+  /**
+   * seconds units
+   * 
+   */
   @WrapToScript
   static public final int DUR_SECONDS = 2;
 
+  /**
+   * minute units
+   * 
+   */
   @WrapToScript
   static public final int DUR_MINUTES = 3;
-  
+
+  /**
+   * hour units
+   * 
+   */
   @WrapToScript
   static public final int DUR_HOURS = 4;
-  
+
+  /**
+   * day units
+   * 
+   */
   @WrapToScript
   static public final int DUR_DAYS = 5;
-  
-  @WrapToScript
+
   /**
    * Function that creates a duration given a value and the unit
    * 
@@ -201,14 +246,14 @@ public class Core
    * @param units
    *          Unit of the duration as an integer. Options available: MICROSECONDS = 0, MILLISECONDS
    *          = 1, SECONDS = 2, MINUTES = 3, HOURS = 4, DAYS = 5
-   * @return Duration object created.
+   * @return // @type MWC.GenericData.Duration duration
    */
+  @WrapToScript
   public static Duration createDuration(final int value, final int units)
   {
     return new Duration(value, units);
   }
 
-  @WrapToScript
   /**
    * Function that creates a font object given a font name as string, an style and size.
    * 
@@ -219,70 +264,129 @@ public class Core
    *          Style of the font. For example: java.awt.Font.PLAIN
    * @param size
    *          Size of the font created.
-   * @return Font object created.
+   * @return // @type java.awt.Font
    */
+  @WrapToScript
   public static Font createFont(final String fontName, final int style,
       final int size)
   {
     return new Font(fontName, style, size);
   }
 
-  @WrapToScript
   /**
    * Function that returns the active plot (Editor).
    * 
    * @see org.mwc.debrief.scripting.wrappers.Plot
-   * @return Plot instance currently active.
+   * @return // @type org.mwc.debrief.scripting.wrappers.Plot
    */
+  @WrapToScript
   public static Plot getActivePlot()
   {
     return getPlot(null);
   }
 
-  @WrapToScript
   /**
    * Method that returns a plot given its name.
    * 
    * @see org.mwc.debrief.scripting.wrappers.Plot
    * @param filename
    *          Name of the plot editor.
-   * @return Plot instance.
+   * @return // @type org.mwc.debrief.scripting.wrappers.Plot
    */
+  @WrapToScript
   public static Plot getPlot(@ScriptParameter(
       defaultValue = "unset") final String filename)
   {
-    final IWorkbench workbench = PlatformUI.getWorkbench();
-    final IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
-    for (final IWorkbenchWindow window : windows)
+    final Plot answer[] = new Plot[1];
+    Display.getDefault().syncExec(new Runnable()
     {
-      if (window != null)
+      @Override
+      public void run()
       {
-        final IWorkbenchPage[] pages = window.getPages();
-        for (final IWorkbenchPage page : pages)
+
+        final IWorkbench workbench = PlatformUI.getWorkbench();
+
+        // special case: if no filename is provided, and active editor is valid,
+        // then we'll return it
+        if ("unset".equals(filename) || filename == null)
         {
-          final IEditorReference[] editors = page.getEditorReferences();
-          for (final IEditorReference editor : editors)
+          final IWorkbenchWindow window = PlatformUI.getWorkbench()
+              .getActiveWorkbenchWindow();
+          final IWorkbenchPage page = window.getActivePage();
+          final IEditorPart editor = page.getActiveEditor();
+          final IEditorSite editorSite = editor.getEditorSite();
+          final String id = editorSite.getId();
+          if (validDescriptor(id))
           {
-            final String descriptor = editor.getId();
-            if (filename == null || "unset".equals(filename) || filename.equals(
-                editor.getName()))
+            answer[0] = new Plot((PlotEditor) editor);
+            return;
+          }
+        }
+
+        // ok, loop through, and find the first editor that either
+        // matches the filenma,e
+        final IWorkbenchWindow[] windows = workbench.getWorkbenchWindows();
+        for (final IWorkbenchWindow window : windows)
+        {
+          if (window != null)
+          {
+            final IWorkbenchPage[] pages = window.getPages();
+            for (final IWorkbenchPage page : pages)
             {
-              // ok, we either didn't have an editor name, or this matches
-              if ("org.mwc.debrief.PlotEditor".equals(descriptor)
-                  || "org.mwc.debrief.TrackEditor".equals(descriptor))
+              final IEditorReference[] editors = page.getEditorReferences();
+
+              // first check for matching filename
+              if (filename != null)
               {
-                final IEditorPart instance = editor.getEditor(false);
-                if (instance != null)
+                for (final IEditorReference editor : editors)
                 {
-                  return new Plot((PlotEditor) instance);
+                  final String descriptor = editor.getId();
+                  if (filename.equals(editor.getName()))
+                  {
+                    // ok, we either didn't have an editor name, or this matches
+                    if (validDescriptor(descriptor))
+                    {
+                      final IEditorPart instance = editor.getEditor(false);
+                      if (instance != null)
+                      {
+                        answer[0] = new Plot((PlotEditor) instance);
+                        return;
+                      }
+                    }
+                  }
+                }
+              }
+
+              // still here? this time check for suitable editor type
+              for (final IEditorReference editor : editors)
+              {
+                final String descriptor = editor.getId();
+                if (filename == null || "unset".equals(filename))
+                {
+                  // ok, we either didn't have an editor name, or this matches
+                  if (validDescriptor(descriptor))
+                  {
+                    final IEditorPart instance = editor.getEditor(false);
+                    if (instance != null)
+                    {
+                      answer[0] = new Plot((PlotEditor) instance);
+                      return;
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-    }
-    return null;
+    });
+    return answer[0];
+  }
+
+  private static boolean validDescriptor(final String descriptor)
+  {
+    return "org.mwc.debrief.PlotEditor".equals(descriptor)
+        || "org.mwc.debrief.TrackEditor".equals(descriptor);
   }
 
   /**
@@ -297,10 +401,15 @@ public class Core
    */
   public Core()
   {
-    System.out.println("About to start listening");
     listenToMyParts();
   }
 
+  /**
+   * set a new time
+   * 
+   * @param date
+   *          the new time to jump to
+   */
   protected void fireNewTime(final HiResDate date)
   {
     // get broker service

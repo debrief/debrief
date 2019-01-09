@@ -1,16 +1,25 @@
 package org.mwc.debrief.scripting.wrappers;
 
+import org.eclipse.ease.modules.WrapToScript;
+
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import junit.framework.TestCase;
 
+/**
+ * entities related to measured vessel data
+ * 
+ * @author ian
+ *
+ */
 public class Tactical
 {
   public static class TaticalTest extends TestCase
@@ -23,17 +32,19 @@ public class Tactical
     static final String sensorName = "sensorName";
     static final HiResDate time = new HiResDate(2500000);
     static final WorldLocation location = new WorldLocation(10, 23.5, 1.5);
-    static final double speedYps = 3.6;
-    static final double courseRads = 1.3;
+    static final double speedMs = 3.6;
+    static final double speedYps = new WorldSpeed(speedMs, WorldSpeed.M_sec)
+        .getValueIn(WorldSpeed.ft_sec) / 3;
+    static final double courseDegs = 1.3;
 
     public void testCreateFix()
     {
-      final FixWrapper fix = createFix(time, location, courseRads, speedYps);
+      final FixWrapper fix = createFix(time, location, courseDegs, speedMs);
       assertEquals("Same time for Fix", time, fix.getTime());
       assertEquals("Same location for Fix", location, fix.getLocation());
-      assertEquals("Same speedYps for Fix", speedYps, fix.getFix().getSpeed(),
+      assertEquals("Same course for Fix", courseDegs, fix.getCourseDegs(),
           1e-5);
-      assertEquals("Same courseRads for Fix", courseRads, fix.getCourse(),
+      assertEquals("Same speedYps for Fix", speedYps, fix.getFix().getSpeed(),
           1e-5);
     }
 
@@ -83,16 +94,25 @@ public class Tactical
 
   /**
    * Create a fix given the time, location, course in radians and speed in yards per seconds.
-   * @param time Time of the new fix
-   * @param location Location of the new fix
-   * @param courseRads Course in radians of the new fix
-   * @param speedYps Speed in yards per second.
-   * @return New fix object.
+   * 
+   * @param time
+   *          Time of the new fix
+   * @param location
+   *          Location of the new fix
+   * @param courseDegs
+   *          Course in degrees of the new fix
+   * @param speedMs
+   *          Speed in metres per second.
+   * @return // @type Debrief.Wrappers.FixWrapper
    */
+  @WrapToScript
   public static FixWrapper createFix(final HiResDate time,
-      final WorldLocation location, final double courseRads,
-      final double speedYps)
+      final WorldLocation location, final double courseDegs,
+      final double speedMs)
   {
+    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+    final double speedYps = new WorldSpeed(speedMs, WorldSpeed.M_sec)
+        .getValueIn(WorldSpeed.ft_sec) / 3d;
     final Fix fix = new Fix(time, location, courseRads, speedYps);
     return new FixWrapper(fix);
   }
@@ -102,21 +122,28 @@ public class Tactical
    *
    * @param title
    *          Title of the narrative.
-   * @return Narrative Wrapper Object.
+   * @return // @type MWC.TacticalData.NarrativeWrapper
    */
+  @WrapToScript
   public static NarrativeWrapper createNarrative(final String title)
   {
     return new NarrativeWrapper(title);
   }
 
   /**
+   * Create a new narrative entry.
    * 
    * @param track
+   *          the track this is a child of
    * @param type
+   *          the type of entry
    * @param DTG
+   *          when this was recorded
    * @param entry
-   * @return
+   *          the textual entry
+   * @return // @type MWC.TacticalData.NarrativeEntry
    */
+  @WrapToScript
   public static NarrativeEntry createNarrativeEntry(final String track,
       final String type, final HiResDate DTG, final String entry)
   {
@@ -125,9 +152,12 @@ public class Tactical
 
   /**
    * Create a new sensor with the given name.
-   * @param name Name of the new Sensor
-   * @return New sensor object with the name given.
+   * 
+   * @param name
+   *          Name of the new Sensor
+   * @return // @type Debrief.Wrappers.SensorWrapper
    */
+  @WrapToScript
   public static SensorWrapper createSensor(final String name)
   {
     final SensorWrapper sensor = new SensorWrapper(name);
@@ -138,9 +168,11 @@ public class Tactical
    * Creates a new sensor with the date given as DTG.
    * 
    * @see Debrief.Wrappers.SensorContactWrapper.SensorContactWrapper()
-   * @param date Date of the new sensor to be created.
-   * @return New sensor object.
+   * @param date
+   *          Date of the new sensor to be created.
+   * @return // @type Debrief.Wrappers.SensorContactWrapper
    */
+  @WrapToScript
   public static SensorContactWrapper createSensorContact(final HiResDate date)
   {
     final SensorContactWrapper res = new SensorContactWrapper();
@@ -154,8 +186,9 @@ public class Tactical
    * @see Debrief.Wrappers.TrackWrapper
    * @param name
    *          Name of the new track created.
-   * @return New Track created.
+   * @return // @type Debrief.Wrappers.TrackWrapper
    */
+  @WrapToScript
   public static TrackWrapper createTrack(final String name)
   {
     final TrackWrapper res = new TrackWrapper();

@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
+import org.eclipse.ease.modules.WrapToScript;
 import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
@@ -21,10 +22,10 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.scripting.wrappers.Layers.DLayers;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -43,7 +44,8 @@ public class Plot
    * 
    * @see org.mwc.debrief.core.editors.PlotEditor
    * 
-   * @param plot Plot reference
+   * @param plot
+   *          Plot reference
    */
   public Plot(final PlotEditor plot)
   {
@@ -53,6 +55,7 @@ public class Plot
   /**
    * Method that selects a zoom that shows all visible data
    */
+  @WrapToScript
   public void fitToWindow()
   {
     _plot.getChart().rescale();
@@ -61,9 +64,13 @@ public class Plot
 
   /**
    * Method that returns the currently selected data area
+   * 
    * @see MWC.GenericData.WorldArea
-   * @return Currently selected data area.
+   * @return Currently selected data area. <br />
+   *         // @type MWC.GenericData.WorldArea
+   * 
    */
+  @WrapToScript
   public WorldArea getArea()
   {
     if (_plot != null)
@@ -77,9 +84,13 @@ public class Plot
 
   /**
    * Function to determine the center of the area
+   * 
    * @see MWC.GenericData.WorldLocation
-   * @return Center of the area.
+   * @return Center of the area. <br />
+   *         // @type MWC.GenericData.WorldLocation
+   * 
    */
+  @WrapToScript
   public WorldLocation getCentre()
   {
     final WorldArea area = getArea();
@@ -95,9 +106,12 @@ public class Plot
 
   /**
    * Method that returns the layers of the current plot
+   * 
    * @see org.mwc.debrief.scripting.wrappers.Layers.DLayers
-   * @return Layers of the current plot.
+   * @return Layers of the current plot. <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Layers.DLayers
    */
+  @WrapToScript
   public DLayers getLayers()
   {
     if (_plot != null)
@@ -115,9 +129,13 @@ public class Plot
 
   /**
    * Method that returns the plain projection of the current plot
+   * 
    * @see MWC.Algorithms.PlainProjection
-   * @return Plain projection of the current plot.
+   * @return Plain projection of the current plot. <br />
+   *         // @type MWC.Algorithms.PlainProjection
+   * 
    */
+  @WrapToScript
   public PlainProjection getMap()
   {
     if (_plot != null)
@@ -134,9 +152,13 @@ public class Plot
 
   /**
    * Method that returns the outline of the current plot.
+   * 
    * @see org.mwc.debrief.scripting.wrappers.Outline
-   * @return Outline of the current plot.
+   * @return Outline of the current plot. <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Outline
+   * 
    */
+  @WrapToScript
   public Outline getOutline()
   {
     if (_plot != null)
@@ -153,9 +175,13 @@ public class Plot
 
   /**
    * Method that returns the raw plot editor.
+   * 
    * @see org.mwc.debrief.core.editors.PlotEditor
-   * @return Plot Editor.
+   * @return Plot Editor. <br />
+   *         // @type org.mwc.debrief.core.editors.PlotEditor
+   * 
    */
+  @WrapToScript
   public PlotEditor getPlot()
   {
     return _plot;
@@ -166,6 +192,7 @@ public class Plot
    * 
    * @return Title of the plot
    */
+  @WrapToScript
   public String getTitle()
   {
     return _plot.getTitle();
@@ -173,23 +200,46 @@ public class Plot
 
   /**
    * Method that returns the current time of the plot.
+   * 
    * @see MWC.GenericData.HiResDate
-   * @return Current time of the plot.
+   * @return Current time of the plot. <br />
+   *         // @type MWC.GenericData.HiResDate
+   * 
    */
+  @WrapToScript
   public HiResDate getTime()
   {
     final TimeProvider time = (TimeProvider) _plot.getAdapter(
         TimeProvider.class);
     return time.getTime();
   }
+  
+  /**
+   * Method that returns the current period of time covered by the data on the plot
+   * 
+   * @see MWC.GenericData.TimePeriod
+   * @return Current time period of the plot. <br />
+   *         // @type MWC.GenericData.TimePeriod
+   * 
+   */
+  @WrapToScript
+  public TimePeriod getTimePeriod()
+  {
+    final TimeProvider time = (TimeProvider) _plot.getAdapter(
+        TimeProvider.class);
+    return time.getPeriod();
+  }
 
   /**
-   * Method that returns the Time Control Preferences. This object can change
-   * the step intervals, small steps, etc.
+   * Method that returns the Time Control Preferences. This object can change the step intervals,
+   * small steps, etc.
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
-   * @return Time Control Preferences.
+   * @return Time Control Preferences. <br />
+   *         // @type org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences
+   * 
    */
+  @WrapToScript
   public TimeControlPreferences getTimeControlPreferences()
   {
     if (_plot != null)
@@ -209,8 +259,11 @@ public class Plot
    * Method that returns the Time Manager of the current plot.
    * 
    * @see org.mwc.cmap.core.DataTypes.Temporal.TimeManager
-   * @return Time Manager of the current plot.
+   * @return Time Manager of the current plot. <br />
+   *         // @type org.mwc.cmap.core.DataTypes.Temporal.TimeManager
+   * 
    */
+  @WrapToScript
   public TimeManager getTimeManager()
   {
     if (_plot != null)
@@ -226,10 +279,14 @@ public class Plot
   }
 
   /**
+   * Method that returns a reference to the Tote of the plot given
    * 
    * @see org.mwc.debrief.scripting.wrappers.Tote
-   * @return
+   * @return Reference to the Tote of the plot given <br />
+   *         // @type org.mwc.debrief.scripting.wrappers.Tote
+   * 
    */
+  @WrapToScript
   public Tote getTote()
   {
     if (_plot != null)
@@ -238,7 +295,9 @@ public class Plot
           TrackManager.class);
       if (trackManager != null)
       {
-        return new Tote(trackManager);
+        Tote answer = new Tote();
+        answer.setTrackManager(trackManager);
+        return answer;
       }
     }
     return null;

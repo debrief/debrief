@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.scripting.wrappers;
 
+import org.eclipse.ease.modules.WrapToScript;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 
 import MWC.GenericData.WatchableList;
@@ -26,19 +27,30 @@ import MWC.GenericData.WatchableList;
  */
 public class Tote
 {
-  private final TrackManager trackManager;
+  private TrackManager trackManager;
 
   /**
-   * Constructor that receives the TrackManager of the current plot.
+   * set the track manager
    * 
-   * @see org.mwc.cmap.core.DataTypes.TrackData.TrackManager
-   * 
-   * @param _trackManager
-   *          Reference to the TrackManager object of the current plot.
+   * @return the track manager object <br />
+   *         // @type org.mwc.cmap.core.DataTypes.TrackData.TrackManager
    */
-  public Tote(final TrackManager _trackManager)
+  @WrapToScript
+  public TrackManager getTrackManager()
   {
-    trackManager = _trackManager;
+    return trackManager;
+  }
+
+  /**
+   * get the track manager
+   * 
+   * @param trackManager
+   *          the new manager object
+   */
+  @WrapToScript
+  public void setTrackManager(TrackManager trackManager)
+  {
+    this.trackManager = trackManager;
   }
 
   /**
@@ -49,6 +61,7 @@ public class Tote
    * @param secondary
    *          List to be added.
    */
+  @WrapToScript
   public void addSecondary(final WatchableList secondary)
   {
     trackManager.addSecondary(secondary);
@@ -57,8 +70,11 @@ public class Tote
   /**
    * Method that returns the primary track of the current plot.
    * 
-   * @return Primary track of the current plot.
+   * @return Primary track of the current plot. <br />
+   *         // @type MWC.GenericData.WatchableList
+   * 
    */
+  @WrapToScript
   public WatchableList getPrimaryTrack()
   {
     return trackManager.getPrimaryTrack();
@@ -67,8 +83,11 @@ public class Tote
   /**
    * Method that returns the secondary tracks of the current plot.
    * 
-   * @return Array of secondary list of the current plot.
+   * @return Array of secondary list of the current plot. <br />
+   *         // @type MWC.GenericData.WatchableList
+   * 
    */
+  @WrapToScript
   public WatchableList[] getSecondaryTracks()
   {
     return trackManager.getSecondaryTracks();
@@ -80,6 +99,7 @@ public class Tote
    * @param primary
    *          New primary set
    */
+  @WrapToScript
   public void setPrimaryTrack(final WatchableList primary)
   {
     trackManager.setPrimary(primary);
@@ -91,6 +111,7 @@ public class Tote
    * @param secondary
    *          New secondary track.
    */
+  @WrapToScript
   public void setSecondary(final WatchableList secondary)
   {
     trackManager.setSecondary(secondary);
