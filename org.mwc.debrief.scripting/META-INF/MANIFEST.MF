@@ -1,9 +1,11 @@
 Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Scripting
+Automatic-Module-Name: org.mwc.debrief.scripting
 Bundle-SymbolicName: org.mwc.debrief.scripting;singleton:=true
+Export-Package: org.mwc.debrief.scripting.wrappers
+Bundle-Name: Scripting
 Bundle-Version: 1.0.1
-Require-Bundle: org.eclipse.ui.ide,
+Require-Bundle: org.eclipse.help;bundle-version="[3.5.0,4.0.0)",
+ org.eclipse.ui.ide,
  org.eclipse.core.resources,
  org.eclipse.jface,
  org.eclipse.core.runtime,
@@ -12,15 +14,18 @@ Require-Bundle: org.eclipse.ui.ide,
  org.eclipse.ease,
  org.mwc.cmap.plotViewer;bundle-version="1.1.99",
  org.eclipse.ui.workbench,
- org.eclipse.e4.core.services
-Automatic-Module-Name: org.mwc.debrief.scripting
+ org.eclipse.e4.core.services,
+ org.mwc.cmap.core
+Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
 Import-Package: org.eclipse.ui.plugin,
  org.eclipse.ui.views.contentoutline,
  org.mwc.cmap.core.DataTypes.Temporal,
  org.mwc.cmap.core.DataTypes.TrackData,
  org.mwc.cmap.core.ui_support,
+ org.mwc.cmap.naturalearth.ui,
  org.mwc.debrief.core,
+ org.mwc.debrief.core.creators.chartFeatures,
  org.mwc.debrief.core.editors
-Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
-Export-Package: org.mwc.debrief.scripting.wrappers
+
