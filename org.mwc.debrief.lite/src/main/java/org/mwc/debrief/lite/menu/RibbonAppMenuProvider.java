@@ -12,21 +12,19 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.map;
+package org.mwc.debrief.lite.menu;
 
-import javax.swing.JSplitPane;
+import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 
 /**
- * 
- * @author Unni Mana <unnivm@gmail.com>
+ * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public abstract class MapRenderer implements BaseMap {
-
-	protected JSplitPane splitPane;
-	
-	protected JSplitPane getPane() {
-		return splitPane;
-	}
-	
+public class RibbonAppMenuProvider
+{
+  public RibbonApplicationMenu createApplicationMenu() {
+      RibbonApplicationMenu appMenu = new RibbonApplicationMenu("Debrief Lite");
+      
+      return appMenu;
+  }
 }

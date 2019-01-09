@@ -1192,7 +1192,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
     jf.getContentPane().setLayout(new BorderLayout());
     jf.getContentPane().add("Center", sc.getPanel());
 
-    final SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null,
+    final SwingPropertiesPanel props = new SwingPropertiesPanel(theData, null, null,
         null);
     props.addEditor(lw.getInfo(), misc);
     jf.getContentPane().add("West", props);
