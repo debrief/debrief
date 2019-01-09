@@ -9,8 +9,8 @@
   <packaging>pom</packaging>
 
   <properties>
-    <tycho.version>0.21.0</tycho.version>
-    <tycho-extras.version>0.21.0</tycho-extras.version>
+    <tycho.version>1.2.0</tycho.version>
+    <tycho-extras.version>1.2.0</tycho-extras.version>
 
     <tycho-repo.url>https://oss.sonatype.org/content/groups/public/</tycho-repo.url>
 
@@ -86,6 +86,7 @@
     <module>org.mwc.debrief.track_shift</module>
     <module>org.mwc.gnd.demonstrator</module>
     <module>org.qinetiq.data_feed</module>
+    <module>org.mwc.debrief.scripting</module>
     <module>org.mwc.debrief.test2</module>
     <module>org.mwc.debrief.editable.test</module>
     <module>org.mwc.debrief.targetplatforms</module>
@@ -97,7 +98,7 @@
     <module>org.mwc.debrief.satc.integration</module>
     <module>org.mwc.debrief.limpet_integration</module>
 
-<!-- comment out ui_tests, we're getting timeout before we can download them into build
+<!-- comment out ui_tests, we're getting timeout before we can download them into build 
     <module>org.mwc.debrief.ui_test</module>
 -->
 
@@ -124,7 +125,7 @@
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse38</artifactId>
+             <artifactId>eclipse48</artifactId>
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>

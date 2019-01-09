@@ -27,6 +27,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPerspectiveDescriptor;
@@ -215,10 +216,40 @@ public class Startup implements IStartup
     updateViewIcons();
     initialisePrefs();
     new ResetPerspective().resetPerspective();
+    initEditors();
     if (DebriefPlugin.getDefault().getCreateProject())
     {
       new CreateDebriefProject().createStartProject();
     }
+  }
+
+  private void initEditors()
+  {
+    Display.getDefault().asyncExec(new Runnable()
+    {
+
+      @Override
+      public void run()
+      {
+        final IEditorRegistry editorRegistry = PlatformUI.getWorkbench()
+            .getEditorRegistry();
+        if (editorRegistry != null)
+          editorRegistry.setDefaultEditor("*.xml",
+              "org.mwc.debrief.PlotEditor");
+        else
+        {
+          try
+          {
+            Thread.sleep(500);
+            Display.getDefault().asyncExec(this);// retry for IEditorRegistry
+          }
+          catch (InterruptedException e)
+          {
+            e.printStackTrace();
+          }
+        }
+      }
+    });
   }
 
   private void initialisePrefs()

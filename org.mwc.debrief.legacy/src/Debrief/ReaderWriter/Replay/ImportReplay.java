@@ -723,7 +723,7 @@ public class ImportReplay extends PlainImporterBase
       _coreImporters.addElement(new ImportLine());
       _coreImporters.addElement(new ImportVector());
       _coreImporters.addElement(new ImportEllipse());
-      _coreImporters.addElement(new ImportEllipse2());
+      //_coreImporters.addElement(new ImportEllipse2());
       _coreImporters.addElement(new ImportPeriodText());
       _coreImporters.addElement(new ImportTimeText());
       _coreImporters.addElement(new ImportFixFormatter());

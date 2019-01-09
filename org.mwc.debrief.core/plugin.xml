@@ -52,8 +52,12 @@
     </extension>
 
     <extension point="org.eclipse.core.contenttype.contentTypes">
-        <content-type base-type="org.eclipse.core.runtime.xml" file-extensions="xml,dpf"
-            id="org.mwc.debrief.contenttype.DebriefPlot" name="Debrief Plot File" priority="normal">
+        <content-type
+              base-type="org.eclipse.core.runtime.xml"
+              file-extensions="xml,dpf"
+              id="org.mwc.debrief.contenttype.DebriefPlot"
+              name="Debrief Plot File"
+              priority="high">
             <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
                 <parameter name="element" value="plot"> </parameter>
             </describer>
@@ -1304,9 +1308,5 @@
             class="org.mwc.debrief.core.splashHandlers.ExtensibleSplashHandler"
             id="org.mwc.debrief.core.splashHandlers.extensible">
       </splashHandler>
-      <splashHandlerProductBinding
-            productId="org.mwc.debrief.core.Debrief"
-            splashId="org.mwc.debrief.core.splashHandlers.extensible">
-      </splashHandlerProductBinding>
    </extension>
 </plugin>
