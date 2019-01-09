@@ -2,76 +2,28 @@
 <?eclipse version="3.4"?>
 <plugin>
 
-   <extension
-         point="org.eclipse.ease.modules">
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Core"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Core"
-            visible="true">
+   <extension point="org.eclipse.ease.modules">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Core" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Core" name="Core" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Shapes"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Shapes"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Shapes" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Shapes" name="Shapes" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Spatial"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Spatial"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Spatial" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Spatial" name="Spatial" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Tactical"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Tactical"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Tactical" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Tactical" name="Tactical" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Annotations"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Annotations"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Annotations" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Annotations" name="Annotations" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Tote"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Tote"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Tote" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Tote" name="Tote" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Utils"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Utils"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Utils" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Utils" name="Utils" visible="true">
       </module>
-      <module
-            category="org.mwc.debrief.scripting.Debrief_Category"
-            class="org.mwc.debrief.scripting.wrappers.Chart"
-            icon="icons/debrief_icon.png"
-            id="org.mwc.debrief.scripting.module"
-            name="Chart"
-            visible="true">
+      <module category="org.mwc.debrief.scripting.Debrief_Category" class="org.mwc.debrief.scripting.wrappers.Chart" icon="icons/debrief_icon.png" id="org.mwc.debrief.scripting.module.Chart" name="Chart" visible="true">
       </module>
-      <category
-            id="org.mwc.debrief.scripting.Debrief_Category"
-            name="Debrief">
+      <category id="org.mwc.debrief.scripting.Debrief_Category" name="Debrief">
       </category>
    </extension>
 
+<extension point="org.eclipse.help.toc">
+<toc file="help/reference.xml" primary="false"/>
+</extension>
 </plugin>
