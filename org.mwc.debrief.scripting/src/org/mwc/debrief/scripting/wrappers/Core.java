@@ -184,13 +184,13 @@ public class Core
 
   @WrapToScript
   static public final int DUR_MINUTES = 3;
-
+  
   @WrapToScript
   static public final int DUR_HOURS = 4;
-
+  
   @WrapToScript
   static public final int DUR_DAYS = 5;
-
+  
   @WrapToScript
   /**
    * Function that creates a duration given a value and the unit
