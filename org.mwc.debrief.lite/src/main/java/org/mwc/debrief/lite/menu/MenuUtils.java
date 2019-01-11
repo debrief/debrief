@@ -21,6 +21,7 @@ import java.net.URL;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
 
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -38,14 +39,15 @@ public class MenuUtils
       Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
     }
-    mapBand.addRibbonCommand(new FlamingoCommandBuilder()
-    .setTitle(commandName)
-    .setIcon(imageIcon)
-    .setAction(actionToAdd)
-    .setTitleClickAction().build(),priority==null?RibbonElementPriority.TOP:priority);
+    FlamingoCommand command = new FlamingoCommandBuilder()
+        .setTitle(commandName)
+        .setIcon(imageIcon)
+        .setAction(actionToAdd)
+        .setTitleClickAction().build();
+    mapBand.addRibbonCommand(command,priority==null?RibbonElementPriority.TOP:priority);
   }
   
-  private static Image createImage(String imageName)
+  public static Image createImage(String imageName)
   {
     final URL iconURL = MenuUtils.class.getClassLoader().
                             getResource(imageName);

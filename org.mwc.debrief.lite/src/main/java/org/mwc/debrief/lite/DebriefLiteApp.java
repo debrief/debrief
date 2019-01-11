@@ -21,18 +21,14 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Vector;
 
-import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -49,16 +45,10 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
-import org.mwc.debrief.lite.menu.MenuUtils;
+import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
-import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
@@ -244,116 +234,8 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
 
-  private void addMenus() {
-    
-    ribbon = theFrame.getRibbon();
-    //add menus here
-    addFileMenuTasks();
-    addViewMenuTasks();
-    addChartFeaturesTasks();
-    addDrawingTasks();
-    addTimeControllerTasks();
-    
-    
-    
-  }
-  
-  private void addFileMenuTasks() {
-    JRibbonBand fileMenu = new JRibbonBand("File",null);
-    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
-    JRibbonBand exitMenu = new JRibbonBand("Exit",null);
-    MenuUtils.addCommandButton("Exit", "images/16/exit.png", new AbstractAction()
-    {
-      
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        exit();
-        
-      }
-    }, exitMenu,RibbonElementPriority.MEDIUM);
-    exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
-    
-    JRibbonBand importMenu = new JRibbonBand("Import",null);
-    MenuUtils.addCommandButton("Import Replay", "images/16/import.png", new NewFileAction(), importMenu,RibbonElementPriority.MEDIUM);
-    importMenu.setResizePolicies(getStandardRestrictivePolicies(importMenu));
-    fileMenu.setPreferredSize(new Dimension(150,50));
-    importMenu.setPreferredSize(new Dimension(50,50));
-    RibbonTask fileTask = new RibbonTask("File", fileMenu,importMenu, exitMenu);
-    ribbon.addTask(fileTask);
-    fileMenu.setPreferredSize(new Dimension(50,50));
-    
-  }
-  
-  private List<RibbonBandResizePolicy> getStandardRestrictivePolicies(JRibbonBand ribbonBand){
-    List<RibbonBandResizePolicy> policies = new ArrayList<>();
-    policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
-    //policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
-    policies.add(new IconRibbonBandResizePolicy(ribbonBand));
-    return policies;
-  }
    
-  private void addViewMenuTasks() {
-    JRibbonBand viewMenu = new JRibbonBand("View",null);
-    geoMapRenderer.addMapTool(viewMenu, ribbon);
-  }
-  private void addChartFeaturesTasks() {
-    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features",null);
-    MenuUtils.addCommandButton("Scale", "images/16/scale.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Time Display (Absolute)", null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Time Display (Relative)",null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Grid", "images/16/grid.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Coastline", "images/16/coast.png", new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(chartfeaturesMenu));
-    RibbonTask chartFeaturesTask = new RibbonTask("Chart Features", chartfeaturesMenu);
-    ribbon.addTask(chartFeaturesTask);
-  }
-  private void addDrawingTasks() {
-    JRibbonBand drawingMenu = new JRibbonBand("Drawing",null);
-    MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Polygon", "images/16/polygon.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Line", "images/16/line.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Wheel", "images/16/wheel.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Circle", "images/16/circle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
-    RibbonTask drawingTask = new RibbonTask("Drawing", drawingMenu);
-    ribbon.addTask(drawingTask);
-  }
-  private void addTimeControllerTasks() {
-    JRibbonBand timeMenu = new JRibbonBand("Time Controller",null);
-    MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Record", "images/16/zoomin.png", new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
-    timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
-    RibbonTask timeTask = new RibbonTask("Time Controller", timeMenu);
-    ribbon.addTask(timeTask);
-  }
   
-
-  
-  private static class NewFileAction extends AbstractAction{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-      System.out.println("Action clicked");
-      
-    }
-  }
   private void addStatusBar()
   {
     statusBar = new JLabel("Status bar for displaying statuses");
@@ -408,7 +290,8 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(rightSplit, BorderLayout.CENTER);
     addStatusBar();
     // dummy placeholder
-    addMenus();
+    DebriefRibbon ribbon = new DebriefRibbon(theFrame, _theLayers, _toolParent, geoMapRenderer);
+    ribbon.addMenus();
 
   }
 
@@ -437,12 +320,6 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
-  protected void exit()
-  {
-    _dropSupport.removeFileDropListener(this);
-    System.exit(0);
-
-  }
 
   @Override
   public void FilesReceived(final Vector<File> files)
@@ -555,6 +432,13 @@ public class DebriefLiteApp implements FileDropListener
     
     System.out.println("num layers:" + _theLayers.size());
     caller = null;
+  }
+  
+  protected void exit()
+  {
+    //_dropSupport.removeFileDropListener(this);
+    System.exit(0);
+
   }
 
   /**
