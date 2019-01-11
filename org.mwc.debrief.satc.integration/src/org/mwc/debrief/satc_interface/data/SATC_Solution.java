@@ -303,8 +303,8 @@ public class SATC_Solution extends BaseLayer implements
       final MethodDescriptor[] mds =
           {
               method(c, "convertToLegs", null,
-                  "Convert to Composite Track (legs)"),
-              method(c, "convertToTrack", null, "Convert to Standalone Track"),
+                  "Convert to manual TMA track"),
+              method(c, "convertToTrack", null, "Convert to merged track"),
               method(c, "recalculate", null, "Recalculate solutions")};
 
       return mds;
