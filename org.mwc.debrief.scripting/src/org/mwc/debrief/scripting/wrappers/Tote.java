@@ -84,7 +84,7 @@ public class Tote
    * Method that returns the secondary tracks of the current plot.
    * 
    * @return Array of secondary list of the current plot. <br />
-   *         // @type MWC.GenericData.WatchableList
+   *         // @type MWC.GenericData.WatchableList[]
    * 
    */
   @WrapToScript
