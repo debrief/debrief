@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.swing.AbstractAction;
 
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
@@ -39,10 +40,10 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainChart;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Shapes.EllipseShape;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
@@ -52,7 +53,6 @@ import MWC.GenericData.WorldLocation;
  */
 public class DebriefRibbon
 {
-  private PlainChart _theChart;
   private PropertiesPanel _theProperties;
   private Layers _theLayers;
   private DebriefLiteToolParent _toolParent;
@@ -64,11 +64,6 @@ public class DebriefRibbon
     _toolParent = parent;
     theFrame = frame;
     _geoMapRenderer =geoMapRenderer; 
-  }
-
-  public void setChart(PlainChart chart)
-  {
-    _theChart = chart;
   }
 
   public void setProperties(PropertiesPanel properties)
@@ -141,6 +136,16 @@ public class DebriefRibbon
     JRibbonBand viewMenu = new JRibbonBand("View",null);
     _geoMapRenderer.addMapTool(viewMenu, theRibbon);
   }
+  
+  private WorldArea getChartBounds()
+  {
+    final ReferencedEnvelope env = _geoMapRenderer.getMapComponent().getViewport().getBounds();
+    final WorldLocation tl = new WorldLocation(env.getMaxX(), env.getMinY(), 0);
+    final WorldLocation br = new WorldLocation(env.getMinX(), env.getMaxY(), 0);
+    final WorldArea res = new WorldArea(tl, br);
+    return res;
+  }
+  
   private void addChartFeaturesTasks() {
     JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features",null);
     MenuUtils.addCommandButton("Scale", "images/16/scale.png", new NewFileAction(), chartfeaturesMenu,null);
@@ -157,13 +162,19 @@ public class DebriefRibbon
   private void addDrawingTasks() {
     JRibbonBand drawingMenu = new JRibbonBand("Drawing",null);
     CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties, _theLayers,
-        _theChart, "Ellipse", "images/ellipse_add.png")
+        "Ellipse", "images/ellipse_add.png")
     {
       protected ShapeWrapper getShape(final WorldLocation centre)
       {
         return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
             new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
                 WorldDistance.DEGS)), DebriefColors.RED, null);
+      }
+
+      @Override
+      protected WorldArea getBounds()
+      {
+        return getChartBounds();
       }
     }; 
 
@@ -182,6 +193,8 @@ public class DebriefRibbon
     RibbonTask drawingTask = new RibbonTask("Drawing", drawingMenu);
     theRibbon.addTask(drawingTask);
   }
+
+
   private void addTimeControllerTasks() {
     JRibbonBand timeMenu = new JRibbonBand("Time Controller",null);
     MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);

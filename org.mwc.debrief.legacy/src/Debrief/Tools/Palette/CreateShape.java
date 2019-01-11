@@ -102,17 +102,12 @@ abstract public class CreateShape extends PlainTool
    */
   private Layers _theData;
 
-  /** the chart we are using (since want our 'duff' item to appear in the middle)
-   */
-  private MWC.GUI.PlainChart _theChart;
-
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
   public CreateShape(final ToolParent theParent,
                      final PropertiesPanel thePanel,
                      final Layers theData,
-                     final MWC.GUI.PlainChart theChart,
                      final String theName,
                      final String theImage)
   {
@@ -120,25 +115,28 @@ abstract public class CreateShape extends PlainTool
 
     _thePanel = thePanel;
     _theData = theData;
-    _theChart = theChart;
   }
 
 
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
+  
+  /** get the current visible data area
+   * 
+   */
+  abstract protected WorldArea getBounds();
 
   public final Action getData()
   {
     Action res = null;
-    final WorldArea wa = _theChart.getDataArea();
-
+    final WorldArea theBounds = getBounds();
+    
     // see if we have an area defined
-    if(wa != null)
+    if(theBounds != null)
     {
-
       // get centre of area (at zero depth)
-      final WorldLocation centre = new WorldLocation(wa.getCentreAtSurface());
+      final WorldLocation centre = new WorldLocation(theBounds.getCentreAtSurface());
 
       final ShapeWrapper theWrapper = getShape(centre);
 
@@ -243,6 +241,5 @@ abstract public class CreateShape extends PlainTool
     // remove our local references
     _thePanel = null;
     _theData = null;
-    _theChart = null;
   }
 }

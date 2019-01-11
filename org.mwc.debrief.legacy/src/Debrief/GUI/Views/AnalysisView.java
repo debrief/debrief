@@ -349,6 +349,7 @@ import MWC.GUI.Tools.Palette.CreateLocalGrid;
 import MWC.GUI.Tools.Palette.CreateScale;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -501,6 +502,11 @@ abstract public class AnalysisView extends PlainView implements
 	{
 		return _theTools.elements();
 	}
+	
+	private WorldArea getChartBounds()
+	{
+	  return _theChart.getDataArea();
+	}
 
 	/**
 	 * build the list of tools necessary for this type of view
@@ -649,7 +655,7 @@ abstract public class AnalysisView extends PlainView implements
 						_theChart, "Label", "images/label_add.png"), null, ' '));
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Ellipse", "images/ellipse_add.png")
+					 "Ellipse", "images/ellipse_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -657,11 +663,17 @@ abstract public class AnalysisView extends PlainView implements
 								new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
 										WorldDistance.DEGS)), DebriefColors.RED, null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' '));
 		// rectangle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Rectangle", "images/rectangle_add.png")
+						"Rectangle", "images/rectangle_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -669,12 +681,18 @@ abstract public class AnalysisView extends PlainView implements
 								centre.add(new WorldVector(MWC.Algorithms.Conversions
 										.Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' '));
 
 		// arc
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Arc", "images/arc_add.png")
+						"Arc", "images/arc_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -682,21 +700,33 @@ abstract public class AnalysisView extends PlainView implements
 								new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
 								false), DebriefColors.RED, null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' ')); // circle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Circle", "images/circle_add.png")
+						"Circle", "images/circle_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
 						return new ShapeWrapper("new circle",
 								new CircleShape(centre, 4000), DebriefColors.RED, null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' '));
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Line", "images/line_add.png")
+						"Line", "images/line_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -705,18 +735,30 @@ abstract public class AnalysisView extends PlainView implements
 										MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
 										DebriefColors.RED, null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' '));
 
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Polygon", "images/polygon_add.png")
+						"Polygon", "images/polygon_add.png")
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
 						return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
 								null);
 					}
+
+          @Override
+          protected WorldArea getBounds()
+          {
+            return getChartBounds();
+          }
 				}, null, ' '));
 
 	}
