@@ -63,21 +63,6 @@ public class Spatial
           1e-5);
     }
 
-    public void testCreateVector()
-    {
-      // TODO
-    }
-
-    public void testCreateVectorKm()
-    {
-      /*
-       * WorldVector vectorKM = createVectorKm(testDouble, testDouble2);
-       * assertEquals("Same value for vectorKM", testDouble, vectorKM.getRange(), 1e-5);
-       * assertEquals("Same value for vectorKM", testDouble2, vectorKM .getBearing(), 1e-5);
-       */
-      // TODO
-    }
-
     public void testCreateWorldSpeed()
     {
       final WorldSpeed worldSpeed = createWorldSpeed(testDouble, testInt);
