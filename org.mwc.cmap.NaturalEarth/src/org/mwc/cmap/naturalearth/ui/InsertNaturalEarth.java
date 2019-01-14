@@ -74,5 +74,4 @@ public class InsertNaturalEarth extends AbstractHandler
 
     return null;
   }
-
 }
