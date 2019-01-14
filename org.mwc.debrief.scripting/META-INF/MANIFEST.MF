@@ -15,7 +15,25 @@ Require-Bundle: org.eclipse.help;bundle-version="[3.5.0,4.0.0)",
  org.mwc.cmap.plotViewer;bundle-version="1.1.99",
  org.eclipse.ui.workbench,
  org.eclipse.e4.core.services,
- org.mwc.cmap.core
+ org.mwc.cmap.core,
+ org.eclipse.ease.classloader;bundle-version="0.6.0",
+ org.eclipse.ease.help;bundle-version="0.6.0",
+ org.eclipse.ease.lang.javascript;bundle-version="0.6.0",
+ org.eclipse.ease.lang.javascript.nashorn;bundle-version="0.6.0",
+ org.eclipse.ease.lang.javascript.rhino;bundle-version="0.6.0",
+ org.eclipse.ease.lang.javascript.rhino.debugger;bundle-version="0.6.0",
+ org.eclipse.ease.lang.javascript.ui;bundle-version="0.6.0",
+ org.eclipse.ease.lang.jvm.compiled;bundle-version="0.6.0",
+ org.eclipse.ease.lang.scriptarchive;bundle-version="0.6.0",
+ org.eclipse.ease.lang.scriptarchive.ui;bundle-version="0.6.0",
+ org.eclipse.ease.modules.charting;bundle-version="0.6.0",
+ org.eclipse.ease.modules.help;bundle-version="0.6.0",
+ org.eclipse.ease.modules.jvm;bundle-version="0.6.0",
+ org.eclipse.ease.modules.platform;bundle-version="0.6.0",
+ org.eclipse.ease.modules.unittest;bundle-version="0.4.0",
+ org.eclipse.ease.modules.unittest.ui;bundle-version="0.4.0",
+ org.eclipse.ease.ui;bundle-version="0.6.0",
+ org.eclipse.ease.ui.scripts;bundle-version="0.6.0"
 Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-Activator: org.mwc.debrief.scripting.ScriptingActivator
