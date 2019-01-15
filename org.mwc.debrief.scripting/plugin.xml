@@ -21,4 +21,7 @@
       <category id="org.mwc.debrief.scripting.Debrief_Category" name="Debrief">
       </category>
    </extension>
+<extension point="org.eclipse.help.toc">
+<toc file="help/reference.xml" primary="false"/>
+</extension>
 </plugin>
