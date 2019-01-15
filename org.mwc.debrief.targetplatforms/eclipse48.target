@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?pde version="3.8"?><target name="eclipse48" sequenceNumber="28">
+<?pde version="3.8"?><target name="eclipse48" sequenceNumber="34">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.8.0.v20180512-1132"/>
@@ -29,8 +29,19 @@
 <repository location="https://download.eclipse.org/webtools/repository/photon/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
+<unit id="org.eclipse.nebula.widgets.xviewer.feature.feature.group" version="1.1.0.201812241324"/>
+<repository location="https://download.eclipse.org/nebula/releases/latest/"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.ease.feature.feature.group" version="0.6.0.I201802271533"/>
 <unit id="org.eclipse.ease.lang.javascript.feature.feature.group" version="0.6.0.I201802201511"/>
+<unit id="org.eclipse.ease.lang.jvm.feature.feature.group" version="0.6.0.I201711281359"/>
+<unit id="org.eclipse.ease.lang.scriptarchive.feature.feature.group" version="0.6.0.I201711281359"/>
+<unit id="org.eclipse.ease.lang.unittest.feature.feature.group" version="0.6.0.I201802211136"/>
+<unit id="org.eclipse.ease.modules.charting.feature.feature.group" version="0.6.0.I201802191612"/>
+<unit id="org.eclipse.ease.modules.feature.feature.group" version="0.6.0.I201802191612"/>
+<unit id="org.eclipse.ease.modules.modeling.feature.feature.group" version="0.6.0.I201802191612"/>
+<unit id="org.eclipse.ease.modules.unittest.feature.feature.group" version="0.4.0.I201611210751"/>
 <unit id="org.eclipse.ease.ui.feature.feature.group" version="0.6.0.I201804241621"/>
 <repository location="http://download.eclipse.org/ease/update/release"/>
 </location>
