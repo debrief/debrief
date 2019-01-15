@@ -52,7 +52,7 @@ abstract public class InitialSensor extends CoreSensor
   /** whether we should also export the sensor data in BRT format
    * (csv with second since epoch followed by single relative bearing)
    */
-  final boolean DEV_EXPORT_BRT_FORMAT = true;
+  final boolean DEV_EXPORT_BRT_FORMAT = false;
 
   /**
 	 * 
@@ -161,9 +161,10 @@ abstract public class InitialSensor extends CoreSensor
         {
           relOut += 360;
         }
-        NumberFormat nf1 = new DecimalFormat("0.000000");        
-        NumberFormat nf2 = new DecimalFormat("0.00");        
-        double timeSecs = time / 1000.0;        
+        // output time & bearing, to simulate BRT format
+        final NumberFormat nf1 = new DecimalFormat("0.000000");
+        final NumberFormat nf2 = new DecimalFormat("0.00");
+        double timeSecs = time / 1000.0;
         System.out.println(nf1.format(timeSecs) + ", " + nf2.format(relOut));
       }
       
