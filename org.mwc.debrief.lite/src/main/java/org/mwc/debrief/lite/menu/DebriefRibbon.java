@@ -15,13 +15,22 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
@@ -59,11 +68,14 @@ public class DebriefRibbon
   private JRibbonFrame theFrame;
   private JRibbon theRibbon;
   private GeoToolMapRenderer _geoMapRenderer;
-  public DebriefRibbon(JRibbonFrame frame,Layers layers,DebriefLiteToolParent parent,GeoToolMapRenderer geoMapRenderer) {
+
+  public DebriefRibbon(JRibbonFrame frame, Layers layers,
+      DebriefLiteToolParent parent, GeoToolMapRenderer geoMapRenderer)
+  {
     _theLayers = layers;
     _toolParent = parent;
     theFrame = frame;
-    _geoMapRenderer =geoMapRenderer; 
+    _geoMapRenderer = geoMapRenderer;
   }
 
   public void setProperties(PropertiesPanel properties)
@@ -71,98 +83,125 @@ public class DebriefRibbon
     _theProperties = properties;
   }
 
-  public void addMenus() {
+  public void addMenus()
+  {
     theRibbon = theFrame.getRibbon();
-    //add menus here
+    // add menus here
     addFileMenuTasks();
     addViewMenuTasks();
     addChartFeaturesTasks();
     addDrawingTasks();
     addTimeControllerTasks();
 
-
-
   }
 
-  private void addFileMenuTasks() {
-    JRibbonBand fileMenu = new JRibbonBand("File",null);
-    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Open Plot", "images/16/open.png", new NewFileAction(), fileMenu,RibbonElementPriority.MEDIUM);
+  private void addFileMenuTasks()
+  {
+    JRibbonBand fileMenu = new JRibbonBand("File", null);
+    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(),
+        fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png",
+        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Open Plot", "images/16/open.png",
+        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
-    JRibbonBand exitMenu = new JRibbonBand("Exit",null);
-    MenuUtils.addCommandButton("Exit", "images/16/exit.png", new AbstractAction()
-    {
+    JRibbonBand exitMenu = new JRibbonBand("Exit", null);
+    MenuUtils.addCommandButton("Exit", "images/16/exit.png",
+        new AbstractAction()
+        {
 
-      /**
-       * 
-       */
-      private static final long serialVersionUID = 1L;
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        exit();
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            exit();
 
-      }
-    }, exitMenu,RibbonElementPriority.MEDIUM);
+          }
+        }, exitMenu, RibbonElementPriority.MEDIUM);
     exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
 
-    JRibbonBand importMenu = new JRibbonBand("Import",null);
-    MenuUtils.addCommandButton("Import Replay", "images/16/import.png", new NewFileAction(), importMenu,RibbonElementPriority.MEDIUM);
+    JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
+    MenuUtils.addCommandButton("Import Replay", "images/16/import.png",
+        new NewFileAction(), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(getStandardRestrictivePolicies(importMenu));
-    fileMenu.setPreferredSize(new Dimension(150,50));
-    importMenu.setPreferredSize(new Dimension(50,50));
-    RibbonTask fileTask = new RibbonTask("File", fileMenu,importMenu, exitMenu);
+    MenuUtils.addCommandButton("Copy Plot to PNG", "images/16/import.png",
+        new CopyPlotAsPNG(_geoMapRenderer), importMenu,
+        RibbonElementPriority.MEDIUM);
+    fileMenu.setPreferredSize(new Dimension(150, 50));
+    importMenu.setPreferredSize(new Dimension(50, 50));
+    RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,
+        exitMenu);
     theRibbon.addTask(fileTask);
-    fileMenu.setPreferredSize(new Dimension(50,50));
+    fileMenu.setPreferredSize(new Dimension(50, 50));
 
   }
+
   protected void exit()
   {
-    //_dropSupport.removeFileDropListener(this);
+    // _dropSupport.removeFileDropListener(this);
     System.exit(0);
 
   }
-  private List<RibbonBandResizePolicy> getStandardRestrictivePolicies(JRibbonBand ribbonBand){
+
+  private List<RibbonBandResizePolicy> getStandardRestrictivePolicies(
+      JRibbonBand ribbonBand)
+  {
     List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
-    //policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
+    // policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
     policies.add(new IconRibbonBandResizePolicy(ribbonBand));
     return policies;
   }
 
-  private void addViewMenuTasks() {
-    JRibbonBand viewMenu = new JRibbonBand("View",null);
+  private void addViewMenuTasks()
+  {
+    JRibbonBand viewMenu = new JRibbonBand("View", null);
     _geoMapRenderer.addMapTool(viewMenu, theRibbon);
   }
-  
+
   private WorldArea getChartBounds()
   {
-    final ReferencedEnvelope env = _geoMapRenderer.getMapComponent().getViewport().getBounds();
+    final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
+        .getViewport().getBounds();
     final WorldLocation tl = new WorldLocation(env.getMaxX(), env.getMinY(), 0);
     final WorldLocation br = new WorldLocation(env.getMinX(), env.getMaxY(), 0);
     final WorldArea res = new WorldArea(tl, br);
     return res;
   }
-  
-  private void addChartFeaturesTasks() {
-    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features",null);
-    MenuUtils.addCommandButton("Scale", "images/16/scale.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Time Display (Absolute)", null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Time Display (Relative)",null, new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Grid", "images/16/grid.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png", new NewFileAction(), chartfeaturesMenu,null);
-    MenuUtils.addCommandButton("Coastline", "images/16/coast.png", new NewFileAction(), chartfeaturesMenu,RibbonElementPriority.MEDIUM);
-    chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(chartfeaturesMenu));
-    RibbonTask chartFeaturesTask = new RibbonTask("Chart Features", chartfeaturesMenu);
+
+  private void addChartFeaturesTasks()
+  {
+    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features", null);
+    MenuUtils.addCommandButton("Scale", "images/16/scale.png",
+        new NewFileAction(), chartfeaturesMenu, null);
+    MenuUtils.addCommandButton("Time Display (Absolute)", null,
+        new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Time Display (Relative)", null,
+        new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png",
+        new NewFileAction(), chartfeaturesMenu, null);
+    MenuUtils.addCommandButton("Grid", "images/16/grid.png",
+        new NewFileAction(), chartfeaturesMenu, null);
+    MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png",
+        new NewFileAction(), chartfeaturesMenu, null);
+    MenuUtils.addCommandButton("Coastline", "images/16/coast.png",
+        new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
+    chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(
+        chartfeaturesMenu));
+    RibbonTask chartFeaturesTask = new RibbonTask("Chart Features",
+        chartfeaturesMenu);
     theRibbon.addTask(chartFeaturesTask);
   }
-  private void addDrawingTasks() {
-    JRibbonBand drawingMenu = new JRibbonBand("Drawing",null);
-    CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties, _theLayers,
-        "Ellipse", "images/ellipse_add.png")
+
+  private void addDrawingTasks()
+  {
+    JRibbonBand drawingMenu = new JRibbonBand("Drawing", null);
+    CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Ellipse", "images/ellipse_add.png")
     {
       protected ShapeWrapper getShape(final WorldLocation centre)
       {
@@ -176,41 +215,116 @@ public class DebriefRibbon
       {
         return getChartBounds();
       }
-    }; 
+    };
 
     JCommandButton ellipseButton = new JCommandButton("ellipse");
     ellipseButton.setDisplayState(CommandButtonDisplayState.MEDIUM);
     ellipseButton.addActionListener(ellipseShape);
-    theRibbon.add(new JRibbonComponent(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/16/ellipse.png"), new Dimension(16,16)), "Ellipse", ellipseButton));
-    //MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png", 
-    //  ellipseShape, drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Polygon", "images/16/polygon.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Line", "images/16/line.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Wheel", "images/16/wheel.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Circle", "images/16/circle.png", new NewFileAction(), drawingMenu,RibbonElementPriority.MEDIUM);
+    theRibbon.add(new JRibbonComponent(ImageWrapperResizableIcon.getIcon(
+        MenuUtils.createImage("images/16/ellipse.png"), new Dimension(16, 16)),
+        "Ellipse", ellipseButton));
+    // MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png",
+    // ellipseShape, drawingMenu,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Polygon", "images/16/polygon.png",
+        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Line", "images/16/line.png",
+        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png",
+        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Wheel", "images/16/wheel.png",
+        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Circle", "images/16/circle.png",
+        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
     drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
     RibbonTask drawingTask = new RibbonTask("Drawing", drawingMenu);
     theRibbon.addTask(drawingTask);
   }
 
-
-  private void addTimeControllerTasks() {
-    JRibbonBand timeMenu = new JRibbonBand("Time Controller",null);
-    MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Record", "images/16/zoomin.png", new NewFileAction(), timeMenu,RibbonElementPriority.MEDIUM);
+  private void addTimeControllerTasks()
+  {
+    JRibbonBand timeMenu = new JRibbonBand("Time Controller", null);
+    MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,
+        RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommandButton("Record", "images/16/zoomin.png",
+        new NewFileAction(), timeMenu, RibbonElementPriority.MEDIUM);
     timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
     RibbonTask timeTask = new RibbonTask("Time Controller", timeMenu);
     theRibbon.addTask(timeTask);
   }
 
- /* private JCommandButton addCommandButton() {
+  /*
+   * private JCommandButton addCommandButton() {
+   * 
+   * }
+   */
 
-  }*/
+  private static class CopyPlotAsPNG extends AbstractAction
+  {
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
+    private final GeoToolMapRenderer mapRenderer;
 
-  private static class NewFileAction extends AbstractAction{
+    public CopyPlotAsPNG(final GeoToolMapRenderer _geoMapRenderer)
+    {
+      mapRenderer = _geoMapRenderer;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      final JMapPane map = (JMapPane) mapRenderer.getMap();
+      final RenderedImage image = map.getBaseImage();
+
+      if (image != null)
+      {
+        Transferable t = new Transferable()
+        {
+
+          public DataFlavor[] getTransferDataFlavors()
+          {
+            return new DataFlavor[]
+            {DataFlavor.imageFlavor};
+          }
+
+          public boolean isDataFlavorSupported(DataFlavor flavor)
+          {
+            if (flavor == DataFlavor.imageFlavor)
+              return true;
+            return false;
+          }
+
+          public Object getTransferData(DataFlavor flavor)
+              throws UnsupportedFlavorException, IOException
+          {
+            if (isDataFlavorSupported(flavor))
+            {
+              return image;
+            }
+            return null;
+          }
+
+        };
+
+        ClipboardOwner co = new ClipboardOwner()
+        {
+
+          public void lostOwnership(Clipboard clipboard, Transferable contents)
+          {
+          }
+
+        };
+        Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+        cb.setContents(t, co);
+      }
+    }
+  }
+
+  private static class NewFileAction extends AbstractAction
+  {
     /**
      * 
      */
