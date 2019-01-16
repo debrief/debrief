@@ -54,6 +54,7 @@ import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
 import MWC.GUI.Tools.Palette.CreateLocalGrid;
@@ -93,11 +94,37 @@ public class DebriefRibbon
   public void addMenus()
   {
     theRibbon = theFrame.getRibbon();
+    
+    /** some of our tools are interested in the visible data area.  But, 
+     * we can't determine it when they're generated.  Instead of 
+     * providing a world area, we provide an object that 
+     * is capable of providing the _Current_ visible data area
+     */
+    final BoundsProvider bounds = new BoundsProvider()
+    {
+      @Override
+      public WorldArea getViewport()
+      {
+        final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
+            .getViewport().getBounds();
+        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(), 0);
+        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(), 0);
+        final WorldArea res = new WorldArea(tl, br);
+        return res;
+      }
+      
+      @Override
+      public WorldArea getBounds()
+      {
+        return _theLayers.getBounds();
+      }
+    };
+    
     // add menus here
     addFileMenuTasks();
     addViewMenuTasks();
-    addChartFeaturesTasks();
-    addDrawingTasks();
+    addChartFeaturesTasks(bounds);
+    addDrawingTasks(bounds);
     addTimeControllerTasks();
 
   }
@@ -170,23 +197,13 @@ public class DebriefRibbon
     _geoMapRenderer.addMapTool(viewMenu, theRibbon);
   }
 
-  private WorldArea getChartBounds()
-  {
-    final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
-        .getViewport().getBounds();
-    final WorldLocation tl = new WorldLocation(env.getMaxX(), env.getMinY(), 0);
-    final WorldLocation br = new WorldLocation(env.getMinX(), env.getMaxY(), 0);
-    final WorldArea res = new WorldArea(tl, br);
-    return res;
-  }
-
-  private void addChartFeaturesTasks()
+  private void addChartFeaturesTasks(final BoundsProvider bounds)
   {
     JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features", null);
     final Layer decs = _theLayers.findLayer(Layers.CHART_FEATURES);
     MenuUtils.addCommandButton("Scale", "images/16/scale.png",
         new CreateScale(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, null);
+            _theLayers, bounds), chartfeaturesMenu, null);
     MenuUtils.addCommandButton("Time Display (Absolute)", null,
         new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Time Display (Relative)", null,
@@ -195,13 +212,13 @@ public class DebriefRibbon
         new NewFileAction(), chartfeaturesMenu, null);
     MenuUtils.addCommandButton("Grid", "images/16/grid.png",
         new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, null);
+            _theLayers, bounds), chartfeaturesMenu, null);
     MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png",
         new CreateLocalGrid(_toolParent, _theProperties,
-            decs, _theLayers, null), chartfeaturesMenu, null);
+            decs, _theLayers, bounds), chartfeaturesMenu, null);
     MenuUtils.addCommandButton("Coastline", "images/16/coast.png",
         new CreateCoast(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
+            _theLayers, bounds), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
     chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(
         chartfeaturesMenu));
     RibbonTask chartFeaturesTask = new RibbonTask("Chart Features",
@@ -209,13 +226,13 @@ public class DebriefRibbon
     theRibbon.addTask(chartFeaturesTask);
   }
 
-  private void addDrawingTasks()
+  private void addDrawingTasks(final BoundsProvider bounds)
   {
     JRibbonBand drawingMenu = new JRibbonBand("Drawing", null);
    
     MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png",
         new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Ellipse", "images/ellipse_add.png")
+            _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -223,33 +240,21 @@ public class DebriefRibbon
                 new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
                     WorldDistance.DEGS)), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
         }, drawingMenu,RibbonElementPriority.MEDIUM);
     
     MenuUtils.addCommandButton("Polygon", "images/16/polygon.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Polygon", "images/polygon_add.png")
+            "Polygon", "images/polygon_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
                 null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
         }, drawingMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Line", "images/16/line.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Line", "images/line_add.png")
+            "Line", "images/line_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -258,16 +263,10 @@ public class DebriefRibbon
                     MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
                     DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
         }, drawingMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Rectangle", "images/rectangle_add.png")
+            "Rectangle", "images/rectangle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -275,45 +274,27 @@ public class DebriefRibbon
                 centre.add(new WorldVector(MWC.Algorithms.Conversions
                     .Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
         }, drawingMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Wheel", "images/16/wheel.png",
         new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Circle", "images/16/circle.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Circle", "images/circle_add.png")
+            "Circle", "images/circle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new circle",
                 new CircleShape(centre, 4000), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
         }, drawingMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommandButton("Arc", "images/arc_add.png", new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Arc", "images/arc_add.png")
+            "Arc", "images/arc_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new arc", new ArcShape(centre,
                 new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
                 false), DebriefColors.RED, null);
-          }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
           }
         }, drawingMenu, RibbonElementPriority.MEDIUM);
     drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
