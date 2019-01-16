@@ -16,9 +16,9 @@ package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionListener;
 import java.net.URL;
 
-import javax.swing.Action;
 import javax.swing.ImageIcon;
 
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -33,7 +33,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
  */
 public class MenuUtils
 {
-  public static void addCommandButton(final String commandName,final String imagePath, final Action actionToAdd,final JRibbonBand mapBand,RibbonElementPriority priority) {
+  public static void addCommandButton(final String commandName,final String imagePath, final ActionListener actionToAdd,final JRibbonBand mapBand,RibbonElementPriority priority) {
     ImageWrapperResizableIcon imageIcon = null;
     if(imagePath!=null) {
       Image zoominImage = createImage(imagePath);
