@@ -20,6 +20,8 @@ import java.awt.FontMetrics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.BorderFactory;
@@ -82,11 +84,13 @@ public class OutlinePanelView extends SwingLayerManager
     private static final long serialVersionUID = 1L;
     private Icon visibilityIconEnabled;
     private Icon visibilityIconDisabled;
+    @SuppressWarnings("unused")
     private int _xOffset = 0;
     private final Component strut = Box.createHorizontalStrut(5);
     private final JPanel panel = new JPanel();
     private JLabel visibility = new JLabel();
     private Border border = BorderFactory.createEmptyBorder ( 4, 2, 2, 4 );
+    private Map<String, ImageIcon> iconMap = new HashMap<String, ImageIcon>();
     
     public OutlineRenderer()
     {
@@ -128,8 +132,23 @@ public class OutlinePanelView extends SwingLayerManager
               icon = "icons/16/"+imageKey;
           }
           if(icon!=null) {
-            URL iconURL = DebriefImageHelper.class.getClassLoader().getResource(icon);
-            setIcon(new ImageIcon(iconURL));
+            // do we have this image in the cache?
+            ImageIcon match = iconMap.get(icon);
+            if(match == null)
+            {
+              // ok, we'll have to create it
+              URL iconURL = DebriefImageHelper.class.getClassLoader().getResource(icon);
+              match = new ImageIcon(iconURL);
+              iconMap.put(icon,  match);
+            }
+
+            // have we generated one?
+            if(match != null)
+            {
+              // ok, use it
+              setIcon(match);
+            }
+            
           }
           setVisibility(pl.getVisible());
         }
