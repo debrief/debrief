@@ -123,9 +123,9 @@ public class CreateTOPO extends PlainCreateLayer
 	 */
 	public CreateTOPO(final MWC.GUI.ToolParent theParent,
 			final MWC.GUI.Properties.PropertiesPanel thePanel, final Layers theData,
-			final MWC.GUI.PlainChart theChart)
+			final BoundsProvider bounds)
 	{
-		super(theParent, thePanel, theData, theChart, "TOPO Gridded Bathy",
+		super(theParent, thePanel, theData, bounds, "TOPO Gridded Bathy",
 				"images/etopo_add.png");
 
 		_myParent = theParent;
@@ -172,11 +172,9 @@ public class CreateTOPO extends PlainCreateLayer
 	 * because of it's BackgroundLayer marker interface
 	 * 
 	 */
-	protected Layer createItem(final MWC.GUI.PlainChart theChart)
+	protected Layer createItem()
 	{
-		// todo: overcome problem caused by loading ETOPO twice
-
-		return loadBathyData(theChart.getLayers());
+		return loadBathyData(getLayers());
 	}
 
 	/**

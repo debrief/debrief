@@ -332,6 +332,7 @@ import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.MenuItemInfo;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GUI.Tools.Chart.FitToWin;
 import MWC.GUI.Tools.Chart.Pan;
@@ -502,17 +503,27 @@ abstract public class AnalysisView extends PlainView implements
 	{
 		return _theTools.elements();
 	}
-	
-	private WorldArea getChartBounds()
-	{
-	  return _theChart.getDataArea();
-	}
 
 	/**
 	 * build the list of tools necessary for this type of view
 	 */
 	private void addTools()
 	{
+	  
+    final BoundsProvider bounds = new BoundsProvider()
+    {
+      @Override
+      public WorldArea getViewport()
+      {
+        return _theChart.getCanvas().getProjection().getVisibleDataArea();
+      }
+
+      @Override
+      public WorldArea getBounds()
+      {
+        return _theChart.getDataArea();
+      }
+    };
 
 		_theTools.addElement(new MenuItemInfo("File", null, "Save",
 				new SavePlotXML(_theParent, _theSession), null, ' '));
@@ -615,18 +626,18 @@ abstract public class AnalysisView extends PlainView implements
 		final Layer decs = _theSession.getData().findLayer(Layers.CHART_FEATURES);
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Scale", new CreateScale(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Grid", new CreateGrid(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Local Grid", new CreateLocalGrid(_theParent, _theProperties,
-						decs, _theSession.getData(), _theChart), null, ' '));
+						decs, _theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Coast", new CreateCoast(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 		// let's not read in the VPF reference layer, since we can't get OpenMap
 		// code to read
 		// it in from the jar file.
@@ -637,10 +648,10 @@ abstract public class AnalysisView extends PlainView implements
 		 */
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create VPF Layers", new CreateVPFLayers(_theParent, _theProperties,
-						decs, _theSession.getData(), _theChart), null, ' '));
+						decs, _theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 //		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 //				"Create Buoy Pattern",
 //				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
@@ -655,7 +666,7 @@ abstract public class AnalysisView extends PlainView implements
 						_theChart, "Label", "images/label_add.png"), null, ' '));
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-					 "Ellipse", "images/ellipse_add.png")
+					 "Ellipse", "images/ellipse_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -663,17 +674,11 @@ abstract public class AnalysisView extends PlainView implements
 								new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
 										WorldDistance.DEGS)), DebriefColors.RED, null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' '));
 		// rectangle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Rectangle", "images/rectangle_add.png")
+						"Rectangle", "images/rectangle_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -681,18 +686,12 @@ abstract public class AnalysisView extends PlainView implements
 								centre.add(new WorldVector(MWC.Algorithms.Conversions
 										.Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' '));
 
 		// arc
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Arc", "images/arc_add.png")
+						"Arc", "images/arc_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -700,33 +699,21 @@ abstract public class AnalysisView extends PlainView implements
 								new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
 								false), DebriefColors.RED, null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' ')); // circle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Circle", "images/circle_add.png")
+						"Circle", "images/circle_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
 						return new ShapeWrapper("new circle",
 								new CircleShape(centre, 4000), DebriefColors.RED, null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' '));
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Line", "images/line_add.png")
+						"Line", "images/line_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -735,30 +722,18 @@ abstract public class AnalysisView extends PlainView implements
 										MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
 										DebriefColors.RED, null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' '));
 
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						"Polygon", "images/polygon_add.png")
+						"Polygon", "images/polygon_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
 						return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
 								null);
 					}
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
 				}, null, ' '));
 
 	}

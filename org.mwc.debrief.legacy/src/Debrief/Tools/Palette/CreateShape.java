@@ -102,6 +102,8 @@ abstract public class CreateShape extends PlainTool
    */
   private Layers _theData;
 
+  private final BoundsProvider _theBounds;
+
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
@@ -109,12 +111,13 @@ abstract public class CreateShape extends PlainTool
                      final PropertiesPanel thePanel,
                      final Layers theData,
                      final String theName,
-                     final String theImage)
+                     final String theImage, BoundsProvider bounds)
   {
     super(theParent, theName, theImage);
 
     _thePanel = thePanel;
     _theData = theData;
+    _theBounds = bounds;
   }
 
 
@@ -125,7 +128,10 @@ abstract public class CreateShape extends PlainTool
   /** get the current visible data area
    * 
    */
-  abstract protected WorldArea getBounds();
+  final protected WorldArea getBounds()
+  {
+    return _theBounds.getViewport();
+  }
 
   public final Action getData()
   {
