@@ -47,7 +47,6 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
