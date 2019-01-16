@@ -155,13 +155,6 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteApplication app;
   
   private final UndoBuffer undoBuffer;
-  /*private JRibbonBand fileMenu;
-  private JRibbonBand viewMenu;
-  private JRibbonBand chartfeaturesMenu;
-  private JRibbonBand drawingMenu;
-  private JRibbonBand timeMenu;*/
-  private JRibbon ribbon;
-
   public DebriefLiteApp()
   {
 
