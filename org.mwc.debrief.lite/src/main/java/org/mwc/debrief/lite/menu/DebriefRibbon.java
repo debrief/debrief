@@ -107,8 +107,8 @@ public class DebriefRibbon
       {
         final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
             .getViewport().getBounds();
-        final WorldLocation tl = new WorldLocation(env.getMaxX(), env.getMinY(), 0);
-        final WorldLocation br = new WorldLocation(env.getMinX(), env.getMaxY(), 0);
+        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(), 0);
+        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(), 0);
         final WorldArea res = new WorldArea(tl, br);
         return res;
       }
