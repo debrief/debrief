@@ -166,6 +166,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -178,6 +179,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
@@ -593,8 +595,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		_myData.addDataReformattedListener(this);
 
 		initForm();
-
-		updateData();
+		
+		updateInThread();
 	}
 
 	/**
@@ -689,12 +691,41 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 	}
 
+	/* thread-safe way of updating UI
+	 * 
+	 */
+  private void updateInThread()
+  {
+    if (SwingUtilities.isEventDispatchThread())
+    {
+      updateData();
+    }
+    else
+    {
+      try
+      {
+        SwingUtilities.invokeAndWait(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            updateData();
+          }
+        });
+      }
+      catch (InvocationTargetException | InterruptedException e)
+      {
+        e.printStackTrace();
+      }
+    }
+  }
+	
 	/**
 	 * the main data has changed - do a fresh pass
 	 */
 	public void dataModified(final Layers theData, final Layer changedLayer)
 	{
-		updateData();
+	  updateInThread();
 	}
 
 	/**
@@ -702,7 +733,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	 */
 	public void dataExtended(final Layers theData)
 	{
-		updateData();
+	  updateInThread();
 	}
 
 	/**
@@ -746,7 +777,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 	public void doReset()
 	{
 		// rescan the tree, of course
-		updateData();
+	  updateInThread();
 	}
 
 	public void doClose()
