@@ -21,10 +21,13 @@ import java.net.URL;
 
 import javax.swing.ImageIcon;
 
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 
 /**
@@ -33,7 +36,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
  */
 public class MenuUtils
 {
-  public static void addCommandButton(final String commandName,final String imagePath, final ActionListener actionToAdd,final JRibbonBand mapBand,RibbonElementPriority priority) {
+  public static FlamingoCommand addCommand(final String commandName,final String imagePath, final ActionListener actionToAdd,final JRibbonBand mapBand,RibbonElementPriority priority) {
     ImageWrapperResizableIcon imageIcon = null;
     if(imagePath!=null) {
       Image zoominImage = createImage(imagePath);
@@ -45,6 +48,19 @@ public class MenuUtils
         .setAction(actionToAdd)
         .setTitleClickAction().build();
     mapBand.addRibbonCommand(command,priority==null?RibbonElementPriority.TOP:priority);
+    return command;
+  }
+  
+  public static JCommandButton addCommandButton(final String commandName,final String imagePath, final ActionListener actionToAdd,CommandButtonDisplayState priority) {
+    ImageWrapperResizableIcon imageIcon = null;
+    if(imagePath!=null) {
+      Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
+    }
+    JCommandButton commandButton = new JCommandButton(commandName,imageIcon);
+    commandButton.addActionListener(actionToAdd);
+    commandButton.setDisplayState(priority);
+    return commandButton;
   }
   
   public static Image createImage(String imageName)
