@@ -264,7 +264,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           MAX_LEGS = TrackShiftActivator.getDefault().getPreferenceStore()
               .getInt(PreferenceConstants.OS_TURN_MAX_LEGS);
         }
-        final AmbiguityResolver resolver = new AmbiguityResolver();
         final Logger logger = getLogger();
 
         // sort out what time period we're using
@@ -275,7 +274,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final TimePeriod analysisPeriod = getAnalysisPeriod(wholePeriod,
             trackPeriod, ownshipZoneChart.getZones());
 
-        final LegsAndZigs legsAndCuts = resolver
+        final LegsAndZigs legsAndCuts = AmbiguityResolver
             .sliceTrackIntoLegsUsingAmbiguity(_myHelper.getPrimaryTrack(),
                 MIN_ZIG, MIN_BOTH, MIN_LEG_LENGTH, logger, ambigScores,
                 OS_TURN_MIN_COURSE_CHANGE, OS_TURN_MIN_TIME_INTERVAL,
@@ -574,11 +573,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   private class ResolveCutsOperationAmbig extends CMAPOperation
   {
 
-    /**
-     * the cuts to be deleted
-     *
-     */
-    final private AmbiguityResolver _resolver;
     final private List<LegOfCuts> _legs;
     private List<ResolvedLeg> _resolved;
 
@@ -586,7 +580,6 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         final List<LegOfCuts> legs)
     {
       super("Resolve ambiguous cuts");
-      _resolver = resolver;
       _legs = legs;
     }
 
@@ -599,7 +592,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
         @Override
         public void run()
         {
-          _resolved = _resolver.resolve(_legs);
+          _resolved = AmbiguityResolver.resolve(_legs);
         }
       };
       BusyIndicator.showWhile(Display.getCurrent(), toResolve);
@@ -747,14 +740,11 @@ public class BearingResidualsView extends BaseStackedDotsView implements
           .nextElement();
       sensor.setVisible(true);
 
-      // ok, get resolving
-      final AmbiguityResolver solver = new AmbiguityResolver();
-
       final TimePeriod timePeriod = new TimePeriod.BaseTimePeriod(sensor
           .getStartDTG(), sensor.getEndDTG());
 
       // try to get zones using ambiguity delta
-      final LegsAndZigs res = solver.sliceTrackIntoLegsUsingAmbiguity(track,
+      final LegsAndZigs res = AmbiguityResolver.sliceTrackIntoLegsUsingAmbiguity(track,
           0.2, 0.2, 240, null, null, null, null, timePeriod, null);
       final List<LegOfCuts> legs = res.getLegs();
       final LegOfCuts zigs = res.getZigs();
@@ -778,7 +768,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
       // and do it again, so we've got fewer cuts
       deleted = DeleteCutsOperation.deleteTheseCuts(zigs);
 
-      final List<ResolvedLeg> resolvedLegs = solver.resolve(legs);
+      final List<ResolvedLeg> resolvedLegs = AmbiguityResolver.resolve(legs);
       assertNotNull(resolvedLegs);
       assertEquals("right num legs", 12, legs.size());
 
