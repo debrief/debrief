@@ -68,13 +68,13 @@ public class CreateDetectionPlotter extends PlainCreate
                     final ASSET.ScenarioType theScenario,
 										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart)
+										final BoundsProvider theChart)
 	{
 		super(theParent, thePanel, null, theData, theChart, "Detection Painter", "images/noise_excess.gif");
     _theScenario = theScenario;
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
     return new ScenarioDetectionPainter(_theScenario);
 	}

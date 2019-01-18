@@ -81,7 +81,6 @@ package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
@@ -94,22 +93,19 @@ abstract public class PlainCreate extends PlainTool
 	/**
 	 * the layer we are dumping this item into
 	 */
-	Layer _theLayer;
+  private final Layer _theLayer;
 
 	/**
 	 * the panel used to edit this item
 	 */
-	PropertiesPanel _thePanel;
-
-	/**
-	 * the chart we are dropping onto
-	 */
-	PlainChart _theChart;
+	private final PropertiesPanel _thePanel;
 
 	/**
 	 * the Layers object, which we need in order to fire data extended event
 	 */
-	Layers _theData;
+	private final Layers _theData;
+
+  private final BoundsProvider _boundsProvider;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -125,25 +121,20 @@ abstract public class PlainCreate extends PlainTool
 	 *          the layer we are adding the item to
 	 */
 	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layer theLayer,
-			final Layers theData, final MWC.GUI.PlainChart theChart, final String theName, final String theImage)
+			final Layers theData, final BoundsProvider boundsProvider, final String theName, final String theImage)
 	{
 		super(theParent, theName, theImage);
 
 		_thePanel = thePanel;
 		_theLayer = theLayer;
-		_theChart = theChart;
 		_theData = theData;
+		_boundsProvider = boundsProvider;
 	}
 
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
-
-	protected MWC.GUI.PlainChart getChart()
-	{
-		return _theChart;
-	}
-
+	
 	/**
 	 * accessor to retrieve the layered data
 	 */
@@ -151,15 +142,20 @@ abstract public class PlainCreate extends PlainTool
 	{
 		return _theData;
 	}
+	
+	protected BoundsProvider getBounds() 
+	{
+	  return _boundsProvider;
+	}
 
-	protected abstract Plottable createItem(MWC.GUI.PlainChart theChart);
+	protected abstract Plottable createItem();
 
 	public Action getData()
 	{
 		Action res = null;
 
 		// ask the child class to create itself
-		final Plottable pl = createItem(_theChart);
+		final Plottable pl = createItem();
 
 		// did it work?
 		if (pl != null)

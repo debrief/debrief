@@ -78,12 +78,12 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
   {
-    MenuUtils.addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Pan", null, new PanAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Info", null, new InfoAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Reset", null, new ResetAction(mapPane), mapBand,null);
+    MenuUtils.addCommand("Selector", null, new NoToolAction(mapPane), mapBand,null);
+    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Pan", null, new PanAction(mapPane), mapBand,null);
+    MenuUtils.addCommand("Info", null, new InfoAction(mapPane), mapBand,null);
+    MenuUtils.addCommand("Reset", null, new ResetAction(mapPane), mapBand,null);
     List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
     policies.add(new CoreRibbonResizePolicies.Mid2Low(mapBand));

@@ -99,6 +99,7 @@ package MWC.GUI.Tools;
 
 import MWC.GUI.Tool;
 import MWC.GUI.ToolParent;
+import MWC.GenericData.WorldArea;
 
 
 /** a GUI-independent tool implementation, mostly for commands
@@ -106,9 +107,13 @@ import MWC.GUI.ToolParent;
  * immediately the button is pressed
  */
 abstract public class PlainTool implements Tool {
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
+  
+  public static interface BoundsProvider
+  {
+    WorldArea getViewport();
+    WorldArea getBounds();
+  }
+  
   /** the parent class, where we have control over the cursor shape
    */
   ToolParent _theParent;
@@ -119,9 +124,6 @@ abstract public class PlainTool implements Tool {
    */
   private String _label;
 
-  /////////////////////////////////////////////////////////
-  // constructor
-  /////////////////////////////////////////////////////////
   public PlainTool(final ToolParent theParent, final String theLabel, final String theImage){
     _theParent = theParent;
     if(theLabel == null){

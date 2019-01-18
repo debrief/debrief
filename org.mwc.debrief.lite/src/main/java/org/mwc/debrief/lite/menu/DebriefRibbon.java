@@ -33,8 +33,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
@@ -54,6 +59,7 @@ import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
 import MWC.GUI.Tools.Palette.CreateLocalGrid;
@@ -93,11 +99,36 @@ public class DebriefRibbon
   public void addMenus()
   {
     theRibbon = theFrame.getRibbon();
+    
+    /** some of our tools are interested in the visible data area.  But, 
+     * we can't determine it when they're generated.  Instead of 
+     * providing a world area, we provide an object that 
+     * is capable of providing the _Current_ visible data area
+     */
+    final BoundsProvider bounds = new BoundsProvider()
+    {
+      @Override
+      public WorldArea getViewport()
+      {
+        final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
+            .getViewport().getBounds();
+        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(), 0);
+        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(), 0);
+        final WorldArea res = new WorldArea(tl, br);
+        return res;
+      }
+      
+      @Override
+      public WorldArea getBounds()
+      {
+        return _theLayers.getBounds();
+      }
+    };
+    
     // add menus here
     addFileMenuTasks();
     addViewMenuTasks();
-    addChartFeaturesTasks();
-    addDrawingTasks();
+    addDrawingTasks(bounds);
     addTimeControllerTasks();
 
   }
@@ -105,15 +136,15 @@ public class DebriefRibbon
   private void addFileMenuTasks()
   {
     JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommandButton("New", "images/16/new.png", new NewFileAction(),
+    MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(),
         fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("New (default plot)", "images/16/new.png",
+    MenuUtils.addCommand("New (default plot)", "images/16/new.png",
         new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Open Plot", "images/16/open.png",
+    MenuUtils.addCommand("Open Plot", "images/16/open.png",
         new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
     JRibbonBand exitMenu = new JRibbonBand("Exit", null);
-    MenuUtils.addCommandButton("Exit", "images/16/exit.png",
+    MenuUtils.addCommand("Exit", "images/16/exit.png",
         new AbstractAction()
         {
 
@@ -132,10 +163,10 @@ public class DebriefRibbon
     exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
 
     JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
-    MenuUtils.addCommandButton("Import Replay", "images/16/import.png",
+    MenuUtils.addCommand("Import Replay", "images/16/import.png",
         new NewFileAction(), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(getStandardRestrictivePolicies(importMenu));
-    MenuUtils.addCommandButton("Copy Plot to PNG", "images/16/import.png",
+    MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
         new CopyPlotAsPNG(_geoMapRenderer), importMenu,
         RibbonElementPriority.MEDIUM);
     fileMenu.setPreferredSize(new Dimension(150, 50));
@@ -170,52 +201,54 @@ public class DebriefRibbon
     _geoMapRenderer.addMapTool(viewMenu, theRibbon);
   }
 
-  private WorldArea getChartBounds()
-  {
-    final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
-        .getViewport().getBounds();
-    final WorldLocation tl = new WorldLocation(env.getMaxX(), env.getMinY(), 0);
-    final WorldLocation br = new WorldLocation(env.getMinX(), env.getMaxY(), 0);
-    final WorldArea res = new WorldArea(tl, br);
-    return res;
-  }
+ 
 
-  private void addChartFeaturesTasks()
+  private void addDrawingTasks(final BoundsProvider bounds)
   {
-    JRibbonBand chartfeaturesMenu = new JRibbonBand("Chart Features", null);
+    JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
+   
+    JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     final Layer decs = _theLayers.findLayer(Layers.CHART_FEATURES);
-    MenuUtils.addCommandButton("Scale", "images/16/scale.png",
+    FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale", "images/16/scale.png",
         new CreateScale(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, null);
-    MenuUtils.addCommandButton("Time Display (Absolute)", null,
-        new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Time Display (Relative)", null,
-        new NewFileAction(), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png",
-        new NewFileAction(), chartfeaturesMenu, null);
-    MenuUtils.addCommandButton("Grid", "images/16/grid.png",
+            _theLayers, bounds), chartfeaturesMenu, null);
+    chartfeaturesMenu.startGroup("Time Marker");
+    JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
+        new NewFileAction(), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
+    JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
+        new NewFileAction(), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
+    chartfeaturesMenu.startGroup("Grid");
+    JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png",
+        new NewFileAction(), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(grid4wCmd));
+    JCommandButton gridCmd = MenuUtils.addCommandButton("Grid", "images/16/grid.png",
         new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, null);
-    MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png",
+            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
+    JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png",
         new CreateLocalGrid(_toolParent, _theProperties,
-            decs, _theLayers, null), chartfeaturesMenu, null);
-    MenuUtils.addCommandButton("Coastline", "images/16/coast.png",
+            decs, _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(localGridCmd));
+    JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data", null);
+    FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline", "images/16/coast.png",
         new CreateCoast(_toolParent, _theProperties, decs,
-            _theLayers, null), chartfeaturesMenu, RibbonElementPriority.MEDIUM);
+            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
+    FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib", "images/16/coast.png",
+        new CreateCoast(_toolParent, _theProperties, decs,
+            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
+    FlamingoCommand naturalEarthCmd = MenuUtils.addCommand("Natural Earth", "images/16/coast.png",
+        new CreateCoast(_toolParent, _theProperties, decs,
+            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
+    referenceDataMenu.setResizePolicies(getStandardRestrictivePolicies(referenceDataMenu));
+    
     chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(
         chartfeaturesMenu));
-    RibbonTask chartFeaturesTask = new RibbonTask("Chart Features",
-        chartfeaturesMenu);
-    theRibbon.addTask(chartFeaturesTask);
-  }
-
-  private void addDrawingTasks()
-  {
-    JRibbonBand drawingMenu = new JRibbonBand("Drawing", null);
-   
-    MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png",
+    drawingMenu.startGroup("Core");
+    JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png",
         new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Ellipse", "images/ellipse_add.png")
+            _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -223,33 +256,21 @@ public class DebriefRibbon
                 new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
                     WorldDistance.DEGS)), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu,RibbonElementPriority.MEDIUM);
-    
-    MenuUtils.addCommandButton("Polygon", "images/16/polygon.png",
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon", "images/16/polygon.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Polygon", "images/polygon_add.png")
+            "Polygon", "images/polygon_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
                 null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Line", "images/16/line.png",
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    
+    JCommandButton lineCmd = MenuUtils.addCommandButton("Line", "images/16/line.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Line", "images/line_add.png")
+            "Line", "images/line_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -258,16 +279,10 @@ public class DebriefRibbon
                     MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
                     DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png",
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Rectangle", "images/rectangle_add.png")
+            "Rectangle", "images/rectangle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -275,33 +290,19 @@ public class DebriefRibbon
                 centre.add(new WorldVector(MWC.Algorithms.Conversions
                     .Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Wheel", "images/16/wheel.png",
-        new NewFileAction(), drawingMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Circle", "images/16/circle.png",
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    JCommandButton circleCmd = MenuUtils.addCommandButton("Circle", "images/16/circle.png",
         new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Circle", "images/circle_add.png")
+            "Circle", "images/circle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new circle",
                 new CircleShape(centre, 4000), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Arc", "images/arc_add.png", new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Arc", "images/arc_add.png")
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    JCommandButton arcCmd = MenuUtils.addCommandButton("Arc", "images/arc_add.png", new CreateShape(_toolParent, _theProperties, _theLayers,
+            "Arc", "images/arc_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -309,24 +310,30 @@ public class DebriefRibbon
                 new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
                 false), DebriefColors.RED, null);
           }
-
-          @Override
-          protected WorldArea getBounds()
-          {
-            return getChartBounds();
-          }
-        }, drawingMenu, RibbonElementPriority.MEDIUM);
+        }, CommandButtonDisplayState.FIT_TO_ICON);
+    
+    JCommandButtonStrip shapesStrip = new JCommandButtonStrip();
+    shapesStrip.add(ellipseShapeCmd);
+    shapesStrip.add(polygonCmd);
+    shapesStrip.add(rectCmd);
+    shapesStrip.add(circleCmd);
+    shapesStrip.add(lineCmd);
+    shapesStrip.add(arcCmd);
+    drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip));
+    
     drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
-    RibbonTask drawingTask = new RibbonTask("Drawing", drawingMenu);
+    RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,referenceDataMenu,drawingMenu);
     theRibbon.addTask(drawingTask);
   }
+  
+  
 
   private void addTimeControllerTasks()
   {
     JRibbonBand timeMenu = new JRibbonBand("Time Controller", null);
-    MenuUtils.addCommandButton("Play", null, new NewFileAction(), timeMenu,
+    MenuUtils.addCommand("Play", null, new NewFileAction(), timeMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Record", "images/16/zoomin.png",
+    MenuUtils.addCommand("Record", "images/16/zoomin.png",
         new NewFileAction(), timeMenu, RibbonElementPriority.MEDIUM);
     timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
     RibbonTask timeTask = new RibbonTask("Time Controller", timeMenu);
