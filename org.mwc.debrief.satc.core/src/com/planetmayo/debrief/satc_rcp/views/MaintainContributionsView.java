@@ -14,8 +14,6 @@
  */
 package com.planetmayo.debrief.satc_rcp.views;
 
-import java.awt.BasicStroke;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -24,11 +22,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -54,7 +49,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.custom.ScrolledComposite;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -74,25 +68,10 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.axis.DateAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.event.ChartProgressEvent;
-import org.jfree.chart.event.ChartProgressListener;
-import org.jfree.chart.plot.IntervalMarker;
-import org.jfree.chart.plot.Marker;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.experimental.chart.swt.ChartComposite;
-import org.jfree.ui.Layer;
-import org.jfree.ui.RectangleAnchor;
-import org.jfree.ui.TextAnchor;
-import org.jfree.util.ShapeUtilities;
+import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneChartConfig;
@@ -204,7 +183,6 @@ public class MaintainContributionsView extends ViewPart
   private Button recalculate;
   private Button cancelGeneration;
   private Button suppressCuts;
-  private Button showOSCourse;
   private ComboViewer precisionsCombo;
   // private ComboViewer vehiclesCombo;
   private Composite contList;
@@ -241,17 +219,22 @@ public class MaintainContributionsView extends ViewPart
       DebriefColors.ORANGE,
       DebriefColors.PINK,
       DebriefColors.LIGHT_GRAY};
-  private XYPlot legPlot;
-  private Composite legGraphComposite;
+//  private XYPlot legPlot;
+//  private Composite legGraphComposite;
   private PropertyChangeListener _legListener;
   private TabItem performanceTab;
-  private TabItem legTab;
+//  private TabItem legTab;
   private TabFolder graphTabs;
   private MDAResultsListener _sliceListener;
-  private JFreeChart legChart;
   private Action _exportBtn;
 
   private Color _colorBlack;
+
+  private ZoneChart zoneChart;
+
+  private TimeSeries measuredBearingsForZones;
+
+  private TabItem zoneTab;
 
   @Override
   public void createPartControl(final Composite parent)
@@ -511,23 +494,6 @@ public class MaintainContributionsView extends ViewPart
       }
     });
 
-    showOSCourse = new Button(preferencesComposite, SWT.CHECK);
-    showOSCourse.setText("Plot O/S Course");
-    showOSCourse.setVisible(true);
-    showOSCourse.setEnabled(false);
-    showOSCourse.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent e)
-      {
-        if (activeSolver != null)
-        {
-          redoOwnshipStates();
-        }
-      }
-    });
-
     Composite precisionPanel = new Composite(preferencesComposite, SWT.NONE);
     precisionPanel.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END
         | GridData.GRAB_HORIZONTAL | GridData.VERTICAL_ALIGN_CENTER));
@@ -632,10 +598,10 @@ public class MaintainContributionsView extends ViewPart
     // tabs.setLayout(fillLayout);
     graphTabs.setLayoutData(gridData);
 
-    legTab = new TabItem(graphTabs, SWT.NONE);
-    legTab.setText("Ownship && Target Legs");
-    legGraphComposite = initLegGraph(graphTabs);
-    legTab.setControl(legGraphComposite);
+//    legTab = new TabItem(graphTabs, SWT.NONE);
+//    legTab.setText("Ownship && Target Legs");
+//    legGraphComposite = initLegGraph(graphTabs);
+//    legTab.setControl(legGraphComposite);
 
     performanceTab = new TabItem(graphTabs, SWT.NONE);
     performanceTab.setText("Performance");
@@ -643,8 +609,8 @@ public class MaintainContributionsView extends ViewPart
     performanceTab.setControl(perfG2);
 
     // Zone Test
-    TabItem zoneTest = new TabItem(graphTabs, SWT.NONE);
-    zoneTest.setText("Zone Chart Test");
+    zoneTab = new TabItem(graphTabs, SWT.NONE);
+    zoneTab.setText("Straight Legs");
 
     ZoneChart.ColorProvider blueProvider = new ZoneChart.ColorProvider()
     {
@@ -655,42 +621,64 @@ public class MaintainContributionsView extends ViewPart
       }
     };
     ZoneChartConfig zoneConfig =
-        new ZoneChart.ZoneChartConfig("Ownship Legs", "Course",
+        new ZoneChart.ZoneChartConfig("Target Legs", "Course",
             DebriefColors.BLUE, true);
-    long[] timeArr = new long[]
-    {new Date("2016/10/10 10:00:00").getTime(),
-      new Date("2016/10/10 10:21:00").getTime(),
-      new Date("2016/10/10 11:47:00").getTime(),
-      new Date("2016/10/10 11:55:00").getTime(),
-      new Date("2016/10/10 12:23:00").getTime(),
-      new Date("2016/10/10 12:44:00").getTime(),
-      new Date("2016/10/10 13:27:00").getTime(),
-      new Date("2016/10/10 14:10:00").getTime()};
-    long[] courseArr = new long[]
-    {115, 118, 119, 121, 118, 100, 98, 97};
     
     // for the new API signature we need to put the data into JFReeChart TimeSeries
     // objects;
-    final TimeSeries courseData = new TimeSeries("");
-    for (int i = 0; i < timeArr.length; i++)
-    {
-      courseData.add(new FixedMillisecond(timeArr[i]), courseArr[i]);
-    }
-    final TimeSeriesCollection[] otherSeries = null;
+    measuredBearingsForZones = new TimeSeries("Measured Bearings");
+    final TimeSeriesCollection[] otherSeries = new TimeSeriesCollection[] {};
     
+    // build up the zones
+    final ZoneChart.Zone[] zones = new Zone[] {};
     
-    final ZoneChart zoneChart =
-        ZoneChart.create(zoneConfig, null, graphTabs, new ZoneChart.Zone[]
-        {
-            new ZoneChart.Zone(new Date("2016/10/10 11:47:00").getTime(),
-                new Date("2016/10/10 12:23:00").getTime(), blueProvider
-                    .getZoneColor()),
-            new ZoneChart.Zone(new Date("2016/10/10 12:44:00").getTime(),
-                new Date("2016/10/10 14:10:00").getTime(), blueProvider
-                    .getZoneColor())}, courseData, otherSeries, null, blueProvider, null, null, null, null);
+    zoneChart = ZoneChart.create(zoneConfig, null, graphTabs, zones,
+        measuredBearingsForZones, otherSeries, null, blueProvider, null,
+        null, null, null);
 
     zoneChart.addZoneListener(new ZoneChart.ZoneAdapter()
     {
+
+      
+      
+      @Override
+      public void added(Zone zone)
+      {
+        // ok, create the new zone
+        StraightLegForecastContribution newS = new
+            StraightLegForecastContribution();
+        newS.setStartDate(new Date(zone.getStart()));
+        newS.setFinishDate(new Date(zone.getEnd()));
+        newS.setName(new Date(zone.getStart()).toGMTString());
+        activeSolver.getContributions().addContribution(newS);
+      }
+
+      @Override
+      public void deleted(Zone zone)
+      {
+        final long tStart = zone.getStart();
+        final long tEnd = zone.getEnd();
+        // ok, find the matching zone
+        if(activeSolver != null)
+        {
+          Iterator<BaseContribution> cIter = activeSolver.getContributions().iterator();
+          while(cIter.hasNext())
+          {
+            BaseContribution base = cIter.next();
+            if(base instanceof StraightLegForecastContribution)
+            {
+              StraightLegForecastContribution st = (StraightLegForecastContribution) base;
+              if(st.getStartDate().getTime() == tStart || st.getFinishDate().getTime() == tEnd)
+              {
+                // ok, delete this contribution
+                activeSolver.getContributions().removeContribution(st);
+                return;
+              }
+            }
+          }
+        }
+        System.err.println("Failed to find zone on deletion for:" + zone);
+      }
 
       @Override
       public void moved(Zone zone)
@@ -698,16 +686,63 @@ public class MaintainContributionsView extends ViewPart
         System.out
             .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.moved()");
       }
-
+      
       @Override
       public void resized(Zone zone)
       {
-        System.out
-            .println("MaintainContributionsView.initGraphTabs(...).new ZoneAdapter() {...}.resized()");
+        final long tStart = zone.getStart();
+        final long tEnd = zone.getEnd();
+        // ok, find the matching zone
+        if(activeSolver != null)
+        {
+          Iterator<BaseContribution> cIter = activeSolver.getContributions().iterator();
+          while(cIter.hasNext())
+          {
+            BaseContribution base = cIter.next();
+            if(base instanceof StraightLegForecastContribution)
+            {
+              StraightLegForecastContribution st = (StraightLegForecastContribution) base;
+              if(st.getStartDate().getTime() == tStart)
+              {
+                // ok, update the end value
+                st.setFinishDate(new Date(tEnd));
+                return;
+              }
+              else if(st.getFinishDate().getTime() == tEnd)
+              {
+                st.setStartDate(new Date(tStart));
+                return;
+              }
+            }
+          }
+        }
+        System.err.println("Failed to find zone on drag for:" + zone);
       }
     });
 
-    zoneTest.setControl(zoneChart);
+    zoneTab.setControl(zoneChart);
+  }
+
+  private static List<Zone> getZones(final IContributions conts)
+  {
+    final ArrayList<Zone> zones = new ArrayList<Zone>();
+    final Iterator<BaseContribution> iter = conts.iterator();
+    while(iter.hasNext())
+    {
+      final BaseContribution cont = iter.next();
+      if (cont instanceof StraightLegForecastContribution)
+      {
+        final StraightLegForecastContribution slf =
+            (StraightLegForecastContribution) cont;
+        final java.awt.Color legColor = slf.getColor();
+        final java.awt.Color zoneColor = legColor != null ? legColor
+            : java.awt.Color.RED;
+        final Zone thisZone = new Zone(slf.getStartDate().getTime(), slf
+            .getFinishDate().getTime(), zoneColor);
+        zones.add(thisZone);
+      }
+    }
+    return zones;
   }
 
   private Group initPerformanceGraph(Composite parent)
@@ -759,132 +794,132 @@ public class MaintainContributionsView extends ViewPart
   /**
    * This is a callback that will allow us to create the viewer and initialize it.
    */
-  public Composite initLegGraph(final Composite parent)
-  {
-
-    legChart = ChartFactory.createTimeSeriesChart("Ownship & Target Legs", // String
-        "Time", // String timeAxisLabel
-        null, // String valueAxisLabel,
-        null, // XYDataset dataset,
-        true, // include legend
-        true, // tooltips
-        false); // urls
-
-    legPlot = (XYPlot) legChart.getPlot();
-    legPlot.setDomainCrosshairVisible(true);
-    legPlot.setRangeCrosshairVisible(true);
-    final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
-    axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
-
-    legPlot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
-    legPlot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
-    legPlot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
-
-    // format the cross hairs, when they're clicked
-    legPlot.setDomainCrosshairVisible(true);
-    legPlot.setRangeCrosshairVisible(true);
-    legPlot.setDomainCrosshairPaint(MWC.GUI.Properties.DebriefColors.GRAY);
-    legPlot.setRangeCrosshairPaint(MWC.GUI.Properties.DebriefColors.GRAY);
-    legPlot.setDomainCrosshairStroke(new BasicStroke(1));
-    legPlot.setRangeCrosshairStroke(new BasicStroke(1));
-
-    // and the plot object to display the cross hair value
-    final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
-    annot.setTextAnchor(TextAnchor.TOP_LEFT);
-    annot.setPaint(MWC.GUI.Properties.DebriefColors.BLACK);
-    annot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
-    legPlot.addAnnotation(annot);
-
-    legChart.addProgressListener(new ChartProgressListener()
-    {
-      public void chartProgress(final ChartProgressEvent cpe)
-      {
-        if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
-          return;
-
-        // double-check our label is still in the right place
-        final double xVal = legPlot.getRangeAxis().getUpperBound();
-        final double yVal = legPlot.getDomainAxis().getLowerBound();
-
-        boolean annotChanged = false;
-        if (annot.getX() != yVal)
-        {
-          annot.setX(yVal);
-          annotChanged = true;
-        }
-        if (annot.getY() != xVal)
-        {
-          annot.setY(xVal);
-          annotChanged = true;
-        }
-
-        // and write the text
-        final NumberFormat _oneDPFormat =
-            new DecimalFormat("0.0", new java.text.DecimalFormatSymbols(
-                java.util.Locale.UK));
-        final String numA =
-            _oneDPFormat.format(legPlot.getRangeCrosshairValue());
-        final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
-        final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
-        final String dateVal = _df.format(newDate);
-        final String theMessage = " [" + dateVal + "," + numA + "]";
-        if (!theMessage.equals(annot.getText()))
-        {
-          annot.setText(theMessage);
-          annotChanged = true;
-        }
-
-        // aah, now we have to add and then remove the annotation in order
-        // for the new text value to be displayed. Watch and learn...
-        if (annotChanged)
-        {
-          legPlot.removeAnnotation(annot);
-          legPlot.addAnnotation(annot);
-        }
-
-      }
-    });
-
-    ChartComposite chartFrame =
-        new ChartComposite(parent, SWT.NONE, legChart, true)
-        {
-          @Override
-          public void mouseUp(MouseEvent event)
-          {
-            super.mouseUp(event);
-            JFreeChart c = getChart();
-            if (c != null)
-            {
-              c.setNotify(true); // force redraw
-            }
-          }
-        };
-    chartFrame.setDisplayToolTips(true);
-    chartFrame.setHorizontalAxisTrace(false);
-    chartFrame.setVerticalAxisTrace(false);
-
-    return chartFrame;
-  }
+//  public Composite initLegGraph(final Composite parent)
+//  {
+//
+//    legChart = ChartFactory.createTimeSeriesChart("Ownship & Target Legs", // String
+//        "Time", // String timeAxisLabel
+//        null, // String valueAxisLabel,
+//        null, // XYDataset dataset,
+//        true, // include legend
+//        true, // tooltips
+//        false); // urls
+//
+//    legPlot = (XYPlot) legChart.getPlot();
+//    legPlot.setDomainCrosshairVisible(true);
+//    legPlot.setRangeCrosshairVisible(true);
+//    final DateAxis axis = (DateAxis) legPlot.getDomainAxis();
+//    axis.setDateFormatOverride(new GMTDateFormat("HH:mm:ss"));
+//
+//    legPlot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
+//    legPlot.setRangeGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+//    legPlot.setDomainGridlinePaint(MWC.GUI.Properties.DebriefColors.LIGHT_GRAY);
+//
+//    // format the cross hairs, when they're clicked
+//    legPlot.setDomainCrosshairVisible(true);
+//    legPlot.setRangeCrosshairVisible(true);
+//    legPlot.setDomainCrosshairPaint(MWC.GUI.Properties.DebriefColors.GRAY);
+//    legPlot.setRangeCrosshairPaint(MWC.GUI.Properties.DebriefColors.GRAY);
+//    legPlot.setDomainCrosshairStroke(new BasicStroke(1));
+//    legPlot.setRangeCrosshairStroke(new BasicStroke(1));
+//
+//    // and the plot object to display the cross hair value
+//    final XYTextAnnotation annot = new XYTextAnnotation("-----", 0, 0);
+//    annot.setTextAnchor(TextAnchor.TOP_LEFT);
+//    annot.setPaint(MWC.GUI.Properties.DebriefColors.BLACK);
+//    annot.setBackgroundPaint(MWC.GUI.Properties.DebriefColors.WHITE);
+//    legPlot.addAnnotation(annot);
+//
+//    legChart.addProgressListener(new ChartProgressListener()
+//    {
+//      public void chartProgress(final ChartProgressEvent cpe)
+//      {
+//        if (cpe.getType() != ChartProgressEvent.DRAWING_FINISHED)
+//          return;
+//
+//        // double-check our label is still in the right place
+//        final double xVal = legPlot.getRangeAxis().getUpperBound();
+//        final double yVal = legPlot.getDomainAxis().getLowerBound();
+//
+//        boolean annotChanged = false;
+//        if (annot.getX() != yVal)
+//        {
+//          annot.setX(yVal);
+//          annotChanged = true;
+//        }
+//        if (annot.getY() != xVal)
+//        {
+//          annot.setY(xVal);
+//          annotChanged = true;
+//        }
+//
+//        // and write the text
+//        final NumberFormat _oneDPFormat =
+//            new DecimalFormat("0.0", new java.text.DecimalFormatSymbols(
+//                java.util.Locale.UK));
+//        final String numA =
+//            _oneDPFormat.format(legPlot.getRangeCrosshairValue());
+//        final Date newDate = new Date((long) legPlot.getDomainCrosshairValue());
+//        final SimpleDateFormat _df = new GMTDateFormat("HHmm:ss");
+//        final String dateVal = _df.format(newDate);
+//        final String theMessage = " [" + dateVal + "," + numA + "]";
+//        if (!theMessage.equals(annot.getText()))
+//        {
+//          annot.setText(theMessage);
+//          annotChanged = true;
+//        }
+//
+//        // aah, now we have to add and then remove the annotation in order
+//        // for the new text value to be displayed. Watch and learn...
+//        if (annotChanged)
+//        {
+//          legPlot.removeAnnotation(annot);
+//          legPlot.addAnnotation(annot);
+//        }
+//
+//      }
+//    });
+//
+//    ChartComposite chartFrame =
+//        new ChartComposite(parent, SWT.NONE, legChart, true)
+//        {
+//          @Override
+//          public void mouseUp(MouseEvent event)
+//          {
+//            super.mouseUp(event);
+//            JFreeChart c = getChart();
+//            if (c != null)
+//            {
+//              c.setNotify(true); // force redraw
+//            }
+//          }
+//        };
+//    chartFrame.setDisplayToolTips(true);
+//    chartFrame.setHorizontalAxisTrace(false);
+//    chartFrame.setVerticalAxisTrace(false);
+//
+//    return chartFrame;
+//  }
 
   /**
    * clear the data on the leg graph
    * 
    */
-  private void clearLegGraph()
-  {
-    if (legPlot == null)
-      return;
-
-    if ((legGraphComposite == null) || (legGraphComposite.isDisposed()))
-      return;
-
-    legPlot.setDataset(0, null);
-    legPlot.setDataset(1, null);
-    legPlot.setDataset(2, null);
-    legPlot.setDataset(3, null);
-
-    legPlot.clearDomainMarkers();
-  }
+//  private void clearLegGraph()
+//  {
+//    if (legPlot == null)
+//      return;
+//
+//    if ((legGraphComposite == null) || (legGraphComposite.isDisposed()))
+//      return;
+//
+//    legPlot.setDataset(0, null);
+//    legPlot.setDataset(1, null);
+//    legPlot.setDataset(2, null);
+//    legPlot.setDataset(3, null);
+//
+//    legPlot.clearDomainMarkers();
+//  }
 
   private void clearPerformanceGraph()
   {
@@ -1314,7 +1349,8 @@ public class MaintainContributionsView extends ViewPart
 
       // clear the charts - just in case
       clearPerformanceGraph();
-      clearLegGraph();
+      clearZoneGraph();
+   //   clearLegGraph();
 
       activeSolver = solver;
       boolean hasSolver = activeSolver != null;
@@ -1344,6 +1380,9 @@ public class MaintainContributionsView extends ViewPart
                 liveConstraints), BeansObservables.observeValue(activeSolver,
                 ISolver.LIVE_RUNNING));
         setPartName(TITLE + " - " + activeSolver.getName());
+        
+        // also update the zone chart
+        updateZoneChart(activeSolver.getContributions());
       }
       else
       {
@@ -1356,10 +1395,55 @@ public class MaintainContributionsView extends ViewPart
         recalculate.setEnabled(hasSolver);
         performanceChart.setEnabled(hasSolver);
         suppressCuts.setEnabled(hasSolver);
-        showOSCourse.setEnabled(hasSolver);
 
         // vehiclesCombo.getCombo().setEnabled(hasSolver);
         // addContributionButton.setEnabled(hasSolver);
+      }
+    }
+  }
+
+  private void clearZoneGraph()
+  {
+    if (zoneChart == null)
+      return;
+
+    zoneChart.clearZones();
+  }
+
+  private void updateZoneChart(final IContributions contributions)
+  {
+    // ok, we need the list of straight legs
+    List<Zone> zones = getZones(contributions);
+    
+    // ok, now give these to the ZoneChart
+    zoneChart.clearZones();
+    zoneChart.setZones(zones);
+    
+    // we also need the list of bearings
+    updateZoneBearings(contributions, measuredBearingsForZones);
+  }
+
+  private void updateZoneBearings(IContributions contributions, final TimeSeries measuredBearingsForZones2)
+  {
+    // clear out any existing datasets
+    measuredBearingsForZones.clear();
+    
+    final Iterator<BaseContribution> iter = contributions.iterator();
+    while(iter.hasNext())
+    {
+      final BaseContribution cont = iter.next();
+      if(cont instanceof BearingMeasurementContribution)
+      {
+        final BearingMeasurementContribution bearings = (BearingMeasurementContribution) cont;
+        final ArrayList<BMeasurement> measurements = bearings.getMeasurements();
+        final Iterator<BMeasurement> mIter = measurements.iterator();
+        while(mIter.hasNext())
+        {
+          final BMeasurement bm = mIter.next();
+          final double degs = MWC.Algorithms.Conversions.Rads2Degs(bm.getBearingRads());
+          final long time = bm.getDate().getTime();
+          measuredBearingsForZones.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(time), degs));
+        }
       }
     }
   }
@@ -1426,9 +1510,6 @@ public class MaintainContributionsView extends ViewPart
                 @Override
                 public void startingSlice(String contName)
                 {
-                  // ok - ownship course is important for this - show it
-                  showOSCourse.setSelection(true);
-
                   startSlicingOwnshipLegs(contName);
                 }
 
@@ -1440,35 +1521,22 @@ public class MaintainContributionsView extends ViewPart
                         ArrayList<HostState> hostStates)
                 {
                   // clear the domain markers, this is a new dataset
-                  legPlot.clearDomainMarkers();
+                  // legPlot.clearDomainMarkers();
 
                   // and show the ownship states
-                  redoOwnshipStates();
+                  zoneChart.clearZones();
                 }
 
                 @Override
                 public void sliced(String contName,
                     ArrayList<StraightLegForecastContribution> arrayList)
                 {
-                  // are we currently showing ownship course?
-                  if (showOSCourse.getSelection())
-                  {
-                    // ok, ownship course is irrelevant to this, hide it
-                    showOSCourse.setSelection(false);
-
-                    // update the ownship states, now that we've hidden the O/S course
-                    redoOwnshipStates();
-                  }
-
                   // ok, now display the target legs
                   redoStraightLegs();
                 }
               };
         }
         bmc.addSliceListener(_sliceListener);
-
-        // hey, let's also re-display the ownship states
-        redoOwnshipStates();
       }
 
     }
@@ -1509,312 +1577,256 @@ public class MaintainContributionsView extends ViewPart
     }
 
     // ok, clear any leg markers
-    if (legPlot != null)
-    {
-      graphTabs.setSelection(legTab);
-
-      legPlot.clearDomainMarkers();
-    }
+//    if (legPlot != null)
+//    {
+//      graphTabs.setSelection(legTab);
+//
+//      legPlot.clearDomainMarkers();
+//    }
 
   }
 
-  protected void redoOwnshipStates()
-  {
-    if (legPlot == null)
-      return;
-
-    boolean showCourses = true;
-    if (showOSCourse != null)
-      showCourses = showOSCourse.getSelection();
-
-    java.awt.Color courseCol =
-        MWC.GUI.Properties.DebriefColors.BLUE.darker().darker();
-    java.awt.Color speedCol =
-        MWC.GUI.Properties.DebriefColors.BLUE.brighter().brighter();
-
-    // ok, now loop through and set them
-    long startTime = Long.MAX_VALUE;
-    long endTime = Long.MIN_VALUE;
-
-    // clear any datasets
-    legPlot.setDataset(0, null);
-    legPlot.setDataset(1, null);
-
-    // hmm, actually we have to remove any target leg markers
-    @SuppressWarnings("unchecked")
-    Collection<IntervalMarker> markers =
-        legPlot.getDomainMarkers(Layer.BACKGROUND);
-    if (markers != null)
-    {
-      ArrayList<IntervalMarker> markersToDelete =
-          new ArrayList<IntervalMarker>(markers);
-      Iterator<IntervalMarker> mIter = markersToDelete.iterator();
-      while (mIter.hasNext())
-      {
-        IntervalMarker im = mIter.next();
-        legPlot.removeDomainMarker(im);
-      }
-    }
-
-    // hey, does it have any ownship legs?
-    TimeSeriesCollection tscC = new TimeSeriesCollection();
-    TimeSeriesCollection tscS = new TimeSeriesCollection();
-    TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
-    TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
-    TimeSeries courses = new TimeSeries("Course");
-    TimeSeries bearings = new TimeSeries("Bearings");
-    TimeSeries speeds = new TimeSeries("Speed");
-    TimeSeries courseLegs = new TimeSeries("Course (leg)");
-    TimeSeries speedLegs = new TimeSeries("Speed (leg)");
-
-    Iterator<BaseContribution> conts =
-        activeSolver.getContributions().iterator();
-    while (conts.hasNext())
-    {
-      BaseContribution baseC = conts.next();
-      if (baseC.isActive())
-        if (baseC instanceof BearingMeasurementContribution)
-        {
-          BearingMeasurementContribution bmc =
-              (BearingMeasurementContribution) baseC;
-
-          Iterator<LegOfData> lIter = null;
-          LegOfData thisLeg = null;
-
-          if (bmc.getOwnshipLegs() != null)
-          {
-            lIter = bmc.getOwnshipLegs().iterator();
-            thisLeg = lIter.next();
-          }
-
-          List<HostState> hostStates = bmc.getHostState();
-          if (hostStates != null)
-          {
-            Iterator<HostState> stateIter = hostStates.iterator();
-            while (stateIter.hasNext())
-            {
-              BearingMeasurementContribution.HostState hostState =
-                  stateIter.next();
-              long thisTime = hostState.time;
-              double thisCourse = hostState.courseDegs;
-              if (showCourses)
-                courses.add(new FixedMillisecond(thisTime), thisCourse);
-              double thisSpeed = hostState.speedKts;
-              speeds.add(new FixedMillisecond(thisTime), thisSpeed);
-              startTime = Math.min(thisTime, startTime);
-              endTime = Math.max(thisTime, endTime);
-
-              // sort out if this is in a leg or not
-              if (thisLeg != null)
-              {
-                if (thisTime > thisLeg.getEnd() && lIter.hasNext())
-                {
-                  thisLeg = lIter.next();
-                }
-                else
-                {
-                  if (thisTime >= thisLeg.getStart())
-                  {
-                    speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
-                    if (showCourses)
-                      courseLegs
-                          .add(new FixedMillisecond(thisTime), thisCourse);
-                  }
-                }
-              }
-            }
-          }
-
-          // also, we wish to show the bearings from the BMC
-          Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
-          while (cuts.hasNext())
-          {
-            BearingMeasurementContribution.BMeasurement measurement =
-                cuts.next();
-            if (measurement.isActive())
-            {
-              long thisT = measurement.getDate().getTime();
-
-              // TODO: we're currently putting all of the measurements into one
-              // time-series (so we have to use addOrUpdate ) in case there are
-              // multiple measurements at one time-stamp.
-              // a more refined implementation would be to use multiple TimeSeries
-              // objects
-              bearings.addOrUpdate(new FixedMillisecond(thisT), Math.toDegrees(
-                  Math.abs(measurement.getBearingRads())));
-            }
-          }
-
-        }
-    }
-
-    // HEY, also shade the ownship legs
-    conts = activeSolver.getContributions().iterator();
-    while (conts.hasNext())
-    {
-      BaseContribution baseC = conts.next();
-      if (baseC.isActive())
-      {
-        if (baseC instanceof BearingMeasurementContribution)
-        {
-          BearingMeasurementContribution bmc =
-              (BearingMeasurementContribution) baseC;
-
-          Iterator<LegOfData> lIter = null;
-          if (bmc.getOwnshipLegs() != null)
-          {
-            int ctr = 1;
-            lIter = bmc.getOwnshipLegs().iterator();
-            while (lIter.hasNext())
-            {
-              LegOfData thisL = lIter.next();
-              long thisStart = thisL.getStart();
-              long thisFinish = thisL.getEnd();
-
-              java.awt.Color transCol = new java.awt.Color(0, 0, 255, 12);
-
-              final Marker bst =
-                  new IntervalMarker(thisStart, thisFinish, transCol,
-                      new BasicStroke(2.0f), null, null, 1.0f);
-              bst.setLabel("O/S-" + ctr++);
-              bst.setLabelAnchor(RectangleAnchor.TOP_LEFT);
-              bst.setLabelFont(new Font("SansSerif", Font.ITALIC + Font.BOLD,
-                  10));
-              bst.setLabelTextAnchor(TextAnchor.TOP_LEFT);
-              legPlot.addDomainMarker(bst, Layer.BACKGROUND);
-            }
-          }
-        }
-      }
-    }
-
-    tscS.addSeries(speeds);
-    tscSLegs.addSeries(speedLegs);
-    tscC.addSeries(bearings);
-
-    if (showCourses)
-    {
-      tscC.addSeries(courses);
-      tscCLegs.addSeries(courseLegs);
-    }
-
-    legPlot.setDataset(0, null);
-    legPlot.setDataset(1, null);
-    legPlot.setDataset(2, null);
-    legPlot.setDataset(3, null);
-    legPlot.setDataset(0, tscC);
-    legPlot.setDataset(1, tscS);
-    legPlot.setDataset(2, tscCLegs);
-    legPlot.setDataset(3, tscSLegs);
-
-    final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
-    legPlot.setRangeAxis(1, axis2);
-    legPlot.mapDatasetToRangeAxis(1, 1);
-    legPlot.mapDatasetToRangeAxis(3, 1);
-
-    legPlot.getRangeAxis(0).setLabel("Crse/Brg (Degs)");
-    legPlot.mapDatasetToRangeAxis(0, 0);
-    legPlot.mapDatasetToRangeAxis(2, 0);
-
-    final XYLineAndShapeRenderer lineRenderer1 =
-        new XYLineAndShapeRenderer(true, true);
-    lineRenderer1.setSeriesPaint(1, courseCol);
-    lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(0.1f));
-    lineRenderer1.setSeriesPaint(0, MWC.GUI.Properties.DebriefColors.RED);
-    lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(2f));
-
-    final XYLineAndShapeRenderer lineRenderer2 =
-        new XYLineAndShapeRenderer(true, false);
-    lineRenderer2.setSeriesPaint(0, speedCol);
-
-    final XYLineAndShapeRenderer lineRenderer3 =
-        new XYLineAndShapeRenderer(false, true);
-    lineRenderer3.setSeriesPaint(0, courseCol);
-    lineRenderer3.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
-
-    final XYLineAndShapeRenderer lineRenderer4 =
-        new XYLineAndShapeRenderer(false, true);
-    lineRenderer4.setSeriesPaint(0, speedCol);
-    lineRenderer4.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
-
-    // ok, and store them
-    legPlot.setRenderer(0, lineRenderer1);
-    legPlot.setRenderer(1, lineRenderer2);
-    legPlot.setRenderer(2, lineRenderer3);
-    legPlot.setRenderer(3, lineRenderer4);
-
-    if (startTime != Long.MAX_VALUE)
-      legPlot.getDomainAxis().setRange(startTime, endTime);
-
-    // ok - get the straight legs to sort themselves out
-    // redoStraightLegs();
-  }
+//  protected void redoOwnshipStates()
+//  {
+//    if (legPlot == null)
+//      return;
+//
+//    boolean showCourses = true;
+//    if (showOSCourse != null)
+//      showCourses = showOSCourse.getSelection();
+//
+//    java.awt.Color courseCol =
+//        MWC.GUI.Properties.DebriefColors.BLUE.darker().darker();
+//    java.awt.Color speedCol =
+//        MWC.GUI.Properties.DebriefColors.BLUE.brighter().brighter();
+//
+//    // ok, now loop through and set them
+//    long startTime = Long.MAX_VALUE;
+//    long endTime = Long.MIN_VALUE;
+//
+//    // clear any datasets
+//    legPlot.setDataset(0, null);
+//    legPlot.setDataset(1, null);
+//
+//    // hmm, actually we have to remove any target leg markers
+//    @SuppressWarnings("unchecked")
+//    Collection<IntervalMarker> markers =
+//        legPlot.getDomainMarkers(Layer.BACKGROUND);
+//    if (markers != null)
+//    {
+//      ArrayList<IntervalMarker> markersToDelete =
+//          new ArrayList<IntervalMarker>(markers);
+//      Iterator<IntervalMarker> mIter = markersToDelete.iterator();
+//      while (mIter.hasNext())
+//      {
+//        IntervalMarker im = mIter.next();
+//        legPlot.removeDomainMarker(im);
+//      }
+//    }
+//
+//    // hey, does it have any ownship legs?
+//    TimeSeriesCollection tscC = new TimeSeriesCollection();
+//    TimeSeriesCollection tscS = new TimeSeriesCollection();
+//    TimeSeriesCollection tscCLegs = new TimeSeriesCollection();
+//    TimeSeriesCollection tscSLegs = new TimeSeriesCollection();
+//    TimeSeries courses = new TimeSeries("Course");
+//    TimeSeries bearings = new TimeSeries("Bearings");
+//    TimeSeries speeds = new TimeSeries("Speed");
+//    TimeSeries courseLegs = new TimeSeries("Course (leg)");
+//    TimeSeries speedLegs = new TimeSeries("Speed (leg)");
+//
+//    Iterator<BaseContribution> conts =
+//        activeSolver.getContributions().iterator();
+//    while (conts.hasNext())
+//    {
+//      BaseContribution baseC = conts.next();
+//      if (baseC.isActive())
+//        if (baseC instanceof BearingMeasurementContribution)
+//        {
+//          BearingMeasurementContribution bmc =
+//              (BearingMeasurementContribution) baseC;
+//
+//          Iterator<LegOfData> lIter = null;
+//          LegOfData thisLeg = null;
+//
+//          if (bmc.getOwnshipLegs() != null)
+//          {
+//            lIter = bmc.getOwnshipLegs().iterator();
+//            thisLeg = lIter.next();
+//          }
+//
+//          List<HostState> hostStates = bmc.getHostState();
+//          if (hostStates != null)
+//          {
+//            Iterator<HostState> stateIter = hostStates.iterator();
+//            while (stateIter.hasNext())
+//            {
+//              BearingMeasurementContribution.HostState hostState =
+//                  stateIter.next();
+//              long thisTime = hostState.time;
+//              double thisCourse = hostState.courseDegs;
+//              if (showCourses)
+//                courses.add(new FixedMillisecond(thisTime), thisCourse);
+//              double thisSpeed = hostState.speedKts;
+//              speeds.add(new FixedMillisecond(thisTime), thisSpeed);
+//              startTime = Math.min(thisTime, startTime);
+//              endTime = Math.max(thisTime, endTime);
+//
+//              // sort out if this is in a leg or not
+//              if (thisLeg != null)
+//              {
+//                if (thisTime > thisLeg.getEnd() && lIter.hasNext())
+//                {
+//                  thisLeg = lIter.next();
+//                }
+//                else
+//                {
+//                  if (thisTime >= thisLeg.getStart())
+//                  {
+//                    speedLegs.add(new FixedMillisecond(thisTime), thisSpeed);
+//                    if (showCourses)
+//                      courseLegs
+//                          .add(new FixedMillisecond(thisTime), thisCourse);
+//                  }
+//                }
+//              }
+//            }
+//          }
+//
+//          // also, we wish to show the bearings from the BMC
+//          Iterator<BMeasurement> cuts = bmc.getMeasurements().iterator();
+//          while (cuts.hasNext())
+//          {
+//            BearingMeasurementContribution.BMeasurement measurement =
+//                cuts.next();
+//            if (measurement.isActive())
+//            {
+//              long thisT = measurement.getDate().getTime();
+//
+//              // TODO: we're currently putting all of the measurements into one
+//              // time-series (so we have to use addOrUpdate ) in case there are
+//              // multiple measurements at one time-stamp.
+//              // a more refined implementation would be to use multiple TimeSeries
+//              // objects
+//              bearings.addOrUpdate(new FixedMillisecond(thisT), Math.toDegrees(
+//                  Math.abs(measurement.getBearingRads())));
+//            }
+//          }
+//
+//        }
+//    }
+//
+//    // HEY, also shade the ownship legs
+//    conts = activeSolver.getContributions().iterator();
+//    while (conts.hasNext())
+//    {
+//      BaseContribution baseC = conts.next();
+//      if (baseC.isActive())
+//      {
+//        if (baseC instanceof BearingMeasurementContribution)
+//        {
+//          BearingMeasurementContribution bmc =
+//              (BearingMeasurementContribution) baseC;
+//
+//          Iterator<LegOfData> lIter = null;
+//          if (bmc.getOwnshipLegs() != null)
+//          {
+//            int ctr = 1;
+//            lIter = bmc.getOwnshipLegs().iterator();
+//            while (lIter.hasNext())
+//            {
+//              LegOfData thisL = lIter.next();
+//              long thisStart = thisL.getStart();
+//              long thisFinish = thisL.getEnd();
+//
+//              java.awt.Color transCol = new java.awt.Color(0, 0, 255, 12);
+//
+//              final Marker bst =
+//                  new IntervalMarker(thisStart, thisFinish, transCol,
+//                      new BasicStroke(2.0f), null, null, 1.0f);
+//              bst.setLabel("O/S-" + ctr++);
+//              bst.setLabelAnchor(RectangleAnchor.TOP_LEFT);
+//              bst.setLabelFont(new Font("SansSerif", Font.ITALIC + Font.BOLD,
+//                  10));
+//              bst.setLabelTextAnchor(TextAnchor.TOP_LEFT);
+//              legPlot.addDomainMarker(bst, Layer.BACKGROUND);
+//            }
+//          }
+//        }
+//      }
+//    }
+//
+//    tscS.addSeries(speeds);
+//    tscSLegs.addSeries(speedLegs);
+//    tscC.addSeries(bearings);
+//
+//    if (showCourses)
+//    {
+//      tscC.addSeries(courses);
+//      tscCLegs.addSeries(courseLegs);
+//    }
+//
+//    legPlot.setDataset(0, null);
+//    legPlot.setDataset(1, null);
+//    legPlot.setDataset(2, null);
+//    legPlot.setDataset(3, null);
+//    legPlot.setDataset(0, tscC);
+//    legPlot.setDataset(1, tscS);
+//    legPlot.setDataset(2, tscCLegs);
+//    legPlot.setDataset(3, tscSLegs);
+//
+//    final NumberAxis axis2 = new NumberAxis("Speed (Kts)");
+//    legPlot.setRangeAxis(1, axis2);
+//    legPlot.mapDatasetToRangeAxis(1, 1);
+//    legPlot.mapDatasetToRangeAxis(3, 1);
+//
+//    legPlot.getRangeAxis(0).setLabel("Crse/Brg (Degs)");
+//    legPlot.mapDatasetToRangeAxis(0, 0);
+//    legPlot.mapDatasetToRangeAxis(2, 0);
+//
+//    final XYLineAndShapeRenderer lineRenderer1 =
+//        new XYLineAndShapeRenderer(true, true);
+//    lineRenderer1.setSeriesPaint(1, courseCol);
+//    lineRenderer1.setSeriesShape(1, ShapeUtilities.createDiamond(0.1f));
+//    lineRenderer1.setSeriesPaint(0, MWC.GUI.Properties.DebriefColors.RED);
+//    lineRenderer1.setSeriesShape(0, ShapeUtilities.createDiamond(2f));
+//
+//    final XYLineAndShapeRenderer lineRenderer2 =
+//        new XYLineAndShapeRenderer(true, false);
+//    lineRenderer2.setSeriesPaint(0, speedCol);
+//
+//    final XYLineAndShapeRenderer lineRenderer3 =
+//        new XYLineAndShapeRenderer(false, true);
+//    lineRenderer3.setSeriesPaint(0, courseCol);
+//    lineRenderer3.setSeriesShape(0, ShapeUtilities.createUpTriangle(2f));
+//
+//    final XYLineAndShapeRenderer lineRenderer4 =
+//        new XYLineAndShapeRenderer(false, true);
+//    lineRenderer4.setSeriesPaint(0, speedCol);
+//    lineRenderer4.setSeriesShape(0, ShapeUtilities.createDownTriangle(2f));
+//
+//    // ok, and store them
+//    legPlot.setRenderer(0, lineRenderer1);
+//    legPlot.setRenderer(1, lineRenderer2);
+//    legPlot.setRenderer(2, lineRenderer3);
+//    legPlot.setRenderer(3, lineRenderer4);
+//
+//    if (startTime != Long.MAX_VALUE)
+//      legPlot.getDomainAxis().setRange(startTime, endTime);
+//
+//    // ok - get the straight legs to sort themselves out
+//    // redoStraightLegs();
+//  }
 
   protected void redoStraightLegs()
   {
     // ok, clear any leg markers
-    if (legPlot != null)
+    if (zoneTab != null)
     {
       if (!graphTabs.isDisposed())
-        graphTabs.setSelection(legTab);
-
-      // hmm, actually we have to remove any target leg markers
-      @SuppressWarnings("unchecked")
-      Collection<IntervalMarker> markers =
-          legPlot.getDomainMarkers(Layer.FOREGROUND);
-      if (markers != null)
-      {
-        ArrayList<IntervalMarker> markersToDelete =
-            new ArrayList<IntervalMarker>(markers);
-        Iterator<IntervalMarker> mIter = markersToDelete.iterator();
-        while (mIter.hasNext())
-        {
-          IntervalMarker im = mIter.next();
-          legPlot.removeDomainMarker(im);
-        }
-      }
-
-      Iterator<BaseContribution> conts =
-          activeSolver.getContributions().iterator();
-      while (conts.hasNext())
-      {
-        BaseContribution baseC = conts.next();
-        if (baseC.isActive())
-          if (baseC instanceof StraightLegForecastContribution)
-          {
-            StraightLegForecastContribution slf =
-                (StraightLegForecastContribution) baseC;
-            java.awt.Color thisCol = slf.getColor();
-
-            // hmm, has it been given a color (initialised) yet?
-            if (thisCol == null)
-              continue;
-
-            long thisStart = baseC.getStartDate().getTime();
-            long thisFinish = baseC.getFinishDate().getTime();
-
-            java.awt.Color transCol = new java.awt.Color(255, 0, 0, 22);
-
-            final Marker bst =
-                new IntervalMarker(thisStart, thisFinish, transCol,
-                    new BasicStroke(2.0f), null, null, 1.0f);
-            bst.setLabel(baseC.getName());
-            bst.setLabelAnchor(RectangleAnchor.BOTTOM_LEFT);
-            bst.setLabelFont(new Font("SansSerif", Font.ITALIC + Font.BOLD, 10));
-            bst.setLabelTextAnchor(TextAnchor.BASELINE_LEFT);
-            legPlot.addDomainMarker(bst, Layer.FOREGROUND);
-          }
-          else
-          {
-            if (baseC instanceof BearingMeasurementContribution)
-            {
-
-            }
-          }
-      }
-
+        graphTabs.setSelection(zoneTab);
+      updateZoneChart(activeSolver.getContributions());
     }
-
   }
 
   protected void removeContribution(BaseContribution contribution,

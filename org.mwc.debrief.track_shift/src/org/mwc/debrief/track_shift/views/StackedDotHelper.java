@@ -1452,8 +1452,13 @@ public final class StackedDotHelper
           toUse.setLocation(tmpFix.getLocation());
         }
       };
-      segment.getWrapper().addPropertyChangeListener(
-          PlainWrapper.LOCATION_CHANGED, newListener);
+      final TrackWrapper parent = segment.getWrapper();
+      if (parent != null)
+      {
+        // note: SATC_Solutions don't have a track parent, so we can't listen to it.
+        segment.getWrapper().addPropertyChangeListener(
+            PlainWrapper.LOCATION_CHANGED, newListener);
+      }
     }
 
     doublet.targetFix = toUse;
@@ -2138,7 +2143,6 @@ public final class StackedDotHelper
             }
           }
         }
-
       }
     }
   }
