@@ -155,7 +155,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         final PropertyDescriptor[] _coreDescriptors = new PropertyDescriptor[]
         {displayExpertLongProp("SymbolType", "Snail symbol type",
             "the type of symbol plotted for this label", FORMAT,
-            SymbolFactoryPropertyEditor.class), displayExpertLongProp(
+            SymbolFactoryPropertyEditor.class), 
+          displayExpertProp("SymbolColor",
+              "Symbol color", "the color of the symbol highligher", FORMAT),
+          displayExpertLongProp(
                 "LineThickness", "Line thickness",
                 "the width to draw this track", FORMAT,
                 LineWidthPropertyEditor.class), expertProp("Name",

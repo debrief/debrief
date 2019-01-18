@@ -1452,8 +1452,13 @@ public final class StackedDotHelper
           toUse.setLocation(tmpFix.getLocation());
         }
       };
-      segment.getWrapper().addPropertyChangeListener(
-          PlainWrapper.LOCATION_CHANGED, newListener);
+      final TrackWrapper parent = segment.getWrapper();
+      if (parent != null)
+      {
+        // note: SATC_Solutions don't have a track parent, so we can't listen to it.
+        segment.getWrapper().addPropertyChangeListener(
+            PlainWrapper.LOCATION_CHANGED, newListener);
+      }
     }
 
     doublet.targetFix = toUse;
@@ -1865,9 +1870,14 @@ public final class StackedDotHelper
 
     for (final LegOfData leg : legs)
     {
-      final Zone newZone = new Zone(leg.getStart(), leg.getEnd(), colorProvider
-          .getZoneColor());
-      res.add(newZone);
+      // just check it's not a single point of data
+      if (leg.getStart() != leg.getEnd())
+      {
+        // ok - we can add it
+        final Zone newZone = new Zone(leg.getStart(), leg.getEnd(),
+            colorProvider.getZoneColor());
+        res.add(newZone);
+      }
     }
 
     return res;
@@ -2133,7 +2143,6 @@ public final class StackedDotHelper
             }
           }
         }
-
       }
     }
   }

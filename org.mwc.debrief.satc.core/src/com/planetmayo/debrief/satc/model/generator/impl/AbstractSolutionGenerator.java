@@ -157,7 +157,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 		{
 			// get the next state
 			final BoundedState boundedState = (BoundedState) iter.next();
-
+			
 			// do we have a previous set?
 			if (lastState != null)
 			{
@@ -170,11 +170,15 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 					if (boundedState.getMemberOf() == lastState.getMemberOf())
 					{
 						// ok - we're in the same leg - what's the overlap
-						final Geometry overlap = boundedState.getLocation().getGeometry()
-								.intersection(lastState.getLocation().getGeometry());
-						final double area = overlap.getArea();
-						statesToDitch = new ScoredState(-area, boundedState);
-						sortedStates.add(statesToDitch);
+						Geometry previousGeom = lastState.getLocation().getGeometry();
+			      if (previousGeom != null && previousGeom.getNumGeometries() == 1)
+			      {
+	            final Geometry overlap = boundedState.getLocation().getGeometry()
+	                .intersection(previousGeom);
+	            final double area = overlap.getArea();
+	            statesToDitch = new ScoredState(-area, boundedState);
+	            sortedStates.add(statesToDitch);
+			      }
 					}
 					else
 					{
