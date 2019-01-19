@@ -14,7 +14,10 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -24,14 +27,28 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.InsetsUIResource;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
+import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -99,11 +116,11 @@ public class DebriefRibbon
   public void addMenus()
   {
     theRibbon = theFrame.getRibbon();
-    
-    /** some of our tools are interested in the visible data area.  But, 
-     * we can't determine it when they're generated.  Instead of 
-     * providing a world area, we provide an object that 
-     * is capable of providing the _Current_ visible data area
+
+    /**
+     * some of our tools are interested in the visible data area. But, we can't determine it when
+     * they're generated. Instead of providing a world area, we provide an object that is capable of
+     * providing the _Current_ visible data area
      */
     final BoundsProvider bounds = new BoundsProvider()
     {
@@ -112,19 +129,21 @@ public class DebriefRibbon
       {
         final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
             .getViewport().getBounds();
-        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(), 0);
-        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(), 0);
+        final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(),
+            0);
+        final WorldLocation br = new WorldLocation(env.getMinY(), env.getMaxX(),
+            0);
         final WorldArea res = new WorldArea(tl, br);
         return res;
       }
-      
+
       @Override
       public WorldArea getBounds()
       {
         return _theLayers.getBounds();
       }
     };
-    
+
     // add menus here
     addFileMenuTasks();
     addViewMenuTasks();
@@ -140,26 +159,25 @@ public class DebriefRibbon
         fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("New (default plot)", "images/16/new.png",
         new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Open Plot", "images/16/open.png",
-        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Open Plot", "images/16/open.png", new NewFileAction(),
+        fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(getStandardRestrictivePolicies(fileMenu));
     JRibbonBand exitMenu = new JRibbonBand("Exit", null);
-    MenuUtils.addCommand("Exit", "images/16/exit.png",
-        new AbstractAction()
-        {
+    MenuUtils.addCommand("Exit", "images/16/exit.png", new AbstractAction()
+    {
 
-          /**
-           * 
-           */
-          private static final long serialVersionUID = 1L;
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
 
-          @Override
-          public void actionPerformed(ActionEvent e)
-          {
-            exit();
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        exit();
 
-          }
-        }, exitMenu, RibbonElementPriority.MEDIUM);
+      }
+    }, exitMenu, RibbonElementPriority.MEDIUM);
     exitMenu.setResizePolicies(getStandardRestrictivePolicies(exitMenu));
 
     JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
@@ -201,17 +219,15 @@ public class DebriefRibbon
     _geoMapRenderer.addMapTool(viewMenu, theRibbon);
   }
 
- 
-
   private void addDrawingTasks(final BoundsProvider bounds)
   {
     JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
-   
+
     JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     final Layer decs = _theLayers.findLayer(Layers.CHART_FEATURES);
-    FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale", "images/16/scale.png",
-        new CreateScale(_toolParent, _theProperties, decs,
-            _theLayers, bounds), chartfeaturesMenu, null);
+    FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
+        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
+            decs, _theLayers, bounds), chartfeaturesMenu, null);
     chartfeaturesMenu.startGroup("Time Marker");
     JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
         new NewFileAction(), CommandButtonDisplayState.MEDIUM);
@@ -220,34 +236,40 @@ public class DebriefRibbon
         new NewFileAction(), CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
     chartfeaturesMenu.startGroup("Grid");
-    JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid", "images/16/grid4w.png",
-        new NewFileAction(), CommandButtonDisplayState.MEDIUM);
+    JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid",
+        "images/16/grid4w.png", new NewFileAction(),
+        CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(grid4wCmd));
-    JCommandButton gridCmd = MenuUtils.addCommandButton("Grid", "images/16/grid.png",
-        new CreateGrid(_toolParent, _theProperties, decs,
+    JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
+        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
             _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
-    JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid", "images/16/local_grid.png",
-        new CreateLocalGrid(_toolParent, _theProperties,
-            decs, _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+    JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid",
+        "images/16/local_grid.png", new CreateLocalGrid(_toolParent,
+            _theProperties, decs, _theLayers, bounds),
+        CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(localGridCmd));
     JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data", null);
-    FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline", "images/16/coast.png",
-        new CreateCoast(_toolParent, _theProperties, decs,
-            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
-    FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib", "images/16/coast.png",
-        new CreateCoast(_toolParent, _theProperties, decs,
-            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
-    FlamingoCommand naturalEarthCmd = MenuUtils.addCommand("Natural Earth", "images/16/coast.png",
-        new CreateCoast(_toolParent, _theProperties, decs,
-            _theLayers, bounds), referenceDataMenu,RibbonElementPriority.MEDIUM);
-    referenceDataMenu.setResizePolicies(getStandardRestrictivePolicies(referenceDataMenu));
-    
+    FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
+        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+            decs, _theLayers, bounds), referenceDataMenu,
+        RibbonElementPriority.MEDIUM);
+    FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib",
+        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+            decs, _theLayers, bounds), referenceDataMenu,
+        RibbonElementPriority.MEDIUM);
+    FlamingoCommand naturalEarthCmd = MenuUtils.addCommand("Natural Earth",
+        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+            decs, _theLayers, bounds), referenceDataMenu,
+        RibbonElementPriority.MEDIUM);
+    referenceDataMenu.setResizePolicies(getStandardRestrictivePolicies(
+        referenceDataMenu));
+
     chartfeaturesMenu.setResizePolicies(getStandardRestrictivePolicies(
         chartfeaturesMenu));
     drawingMenu.startGroup("Core");
-    JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse", "images/16/ellipse.png",
-        new CreateShape(_toolParent, _theProperties,
+    JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
+        "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
@@ -257,52 +279,52 @@ public class DebriefRibbon
                     WorldDistance.DEGS)), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon", "images/16/polygon.png",
-        new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Polygon", "images/polygon_add.png", bounds)
+    JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
+        "images/16/polygon.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Polygon", "images/polygon_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
-            return new ShapeWrapper("new polygon", new PolygonShape(null), DebriefColors.RED,
-                null);
+            return new ShapeWrapper("new polygon", new PolygonShape(null),
+                DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    
-    JCommandButton lineCmd = MenuUtils.addCommandButton("Line", "images/16/line.png",
-        new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Line", "images/line_add.png", bounds)
+
+    JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
+        "images/16/line.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Line", "images/line_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new line", new LineShape(centre, centre
-                .add(new WorldVector(
-                    MWC.Algorithms.Conversions.Degs2Rads(45.0), 0.05, 0))),
-                    DebriefColors.RED, null);
+                .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
+                    0.05, 0))), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle", "images/16/rectangle.png",
-        new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Rectangle", "images/rectangle_add.png", bounds)
+    JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
+        "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new rectangle", new RectangleShape(centre,
-                centre.add(new WorldVector(MWC.Algorithms.Conversions
-                    .Degs2Rads(45), 0.05, 0))), DebriefColors.RED, null);
+                centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+                    45), 0.05, 0))), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    JCommandButton circleCmd = MenuUtils.addCommandButton("Circle", "images/16/circle.png",
-        new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Circle", "images/circle_add.png", bounds)
+    JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
+        "images/16/circle.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Circle", "images/circle_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
-            return new ShapeWrapper("new circle",
-                new CircleShape(centre, 4000), DebriefColors.RED, null);
+            return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
+                DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    JCommandButton arcCmd = MenuUtils.addCommandButton("Arc", "images/arc_add.png", new CreateShape(_toolParent, _theProperties, _theLayers,
-            "Arc", "images/arc_add.png", bounds)
+    JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
+        "images/arc_add.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Arc", "images/arc_add.png", bounds)
         {
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
@@ -311,7 +333,7 @@ public class DebriefRibbon
                 false), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.FIT_TO_ICON);
-    
+
     JCommandButtonStrip shapesStrip = new JCommandButtonStrip();
     shapesStrip.add(ellipseShapeCmd);
     shapesStrip.add(polygonCmd);
@@ -320,28 +342,67 @@ public class DebriefRibbon
     shapesStrip.add(lineCmd);
     shapesStrip.add(arcCmd);
     drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip));
-    
+
     drawingMenu.setResizePolicies(getStandardRestrictivePolicies(drawingMenu));
-    RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,referenceDataMenu,drawingMenu);
+    RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
+        referenceDataMenu, drawingMenu);
     theRibbon.addTask(drawingTask);
   }
-  
-  
 
   private void addTimeControllerTasks()
   {
-    JRibbonBand timeMenu = new JRibbonBand("Time Controller", null);
+    JRibbonBand timeMenu = new JRibbonBand("Time", null);
     MenuUtils.addCommand("Play", null, new NewFileAction(), timeMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Record", "images/16/zoomin.png",
-        new NewFileAction(), timeMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Record", "images/16/zoomin.png", new NewFileAction(),
+        timeMenu, RibbonElementPriority.MEDIUM);
     timeMenu.setResizePolicies(getStandardRestrictivePolicies(timeMenu));
-    RibbonTask timeTask = new RibbonTask("Time Controller", timeMenu);
+
+    JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
+
+    // Now we create the components for the sliders
+    final JLabel minimumValue = new JLabel(" ");
+    final JLabel maximumValue = new JLabel(" ");
+    RangeSlider slider = new RangeSlider(new GregorianCalendar(2013, 0, 0),
+        new GregorianCalendar(2013, 1, 15));
+    slider.addChangeListener(new ChangeListener()
+    {
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+        // TODO Do we represent the filter using the format specified by user?
+        RangeSlider slider = (RangeSlider) e.getSource();
+        SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
+
+        minimumValue.setText(formatter.format(new Date((long) slider.getValue()
+            * 1000L)));
+        maximumValue.setText(formatter.format(new Date((long) slider
+            .getUpperValue() * 1000L)));
+      }
+    });
+
+    JPanel sliderPanel = new JPanel();
+    sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
+    sliderPanel.setPreferredSize(new Dimension(200, 200));
+    
+    // Label's panel
+    JPanel valuePanel = new JPanel();
+    valuePanel.setLayout(new BoxLayout(valuePanel, BoxLayout.X_AXIS));
+    
+    valuePanel.add(minimumValue);
+    valuePanel.add(Box.createGlue());
+    valuePanel.add(maximumValue);
+    valuePanel.setPreferredSize(new Dimension(200,200));
+
+    MenuUtils.addComponent(slider, timePeriod);
+    MenuUtils.addComponent(valuePanel, timePeriod);
+    
+    RibbonTask timeTask = new RibbonTask("Control", timeMenu, timePeriod);
+
     theRibbon.addTask(timeTask);
   }
 
-  
-   private static class CopyPlotAsPNG extends AbstractAction
+  private static class CopyPlotAsPNG extends AbstractAction
   {
 
     /**
