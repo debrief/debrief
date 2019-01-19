@@ -400,8 +400,6 @@ public class DynamicInfillSegment extends TrackSegment implements
     // ok, remember the tracks
     _before = before;
     _after = after;
-    
-    this.setWrapper(before.getWrapper());
 
     // also, we need to listen out for changes in these tracks
     startWatching(_before);
@@ -489,6 +487,11 @@ public class DynamicInfillSegment extends TrackSegment implements
     final String res = _before != null ? _before.getName() : _beforeName;
 
     return res;
+  }
+  
+  public String getSegmentNames()
+  {
+    return "before:" + _before + " after:" + _after;
   }
 
   /**
@@ -805,7 +808,10 @@ public class DynamicInfillSegment extends TrackSegment implements
     if(wasEmpty && size() >= 2)
     {
       // ok, we can now share our name
-      this.getWrapper().firePropertyChange(PlainWrapper.TEXT_CHANGED, null, getName());
+      if(this.getWrapper() != null)
+      {
+        this.getWrapper().firePropertyChange(PlainWrapper.TEXT_CHANGED, null, getName());
+      }
     }
 
     // also make it dotted, since it's artificially generated
@@ -815,8 +821,12 @@ public class DynamicInfillSegment extends TrackSegment implements
     // (we may not know it when we're first generated)
     if (this.getWrapper() != null)
     {
-      this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
-          this);
+      // ok, we can now share our name
+      if(this.getWrapper() != null)
+      {
+        this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
+            this);
+      }
     }
 
   }
