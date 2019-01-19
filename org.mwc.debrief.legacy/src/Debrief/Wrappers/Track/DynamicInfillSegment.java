@@ -821,12 +821,8 @@ public class DynamicInfillSegment extends TrackSegment implements
     // (we may not know it when we're first generated)
     if (this.getWrapper() != null)
     {
-      // ok, we can now share our name
-      if(this.getWrapper() != null)
-      {
-        this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
-            this);
-      }
+      this.getWrapper().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
+          this);
     }
 
   }
