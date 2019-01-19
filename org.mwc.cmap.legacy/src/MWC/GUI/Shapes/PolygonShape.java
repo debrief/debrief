@@ -32,7 +32,6 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
-import MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -160,10 +159,7 @@ public class PolygonShape extends PlainShape implements Editable,
      */
     public void close()
     {
-      _myName = null;
-      _myLocation = null;
       _myEditor = null;
-      _myParent = null;
     }
 
     @Override
@@ -246,23 +242,6 @@ public class PolygonShape extends PlainShape implements Editable,
       return getName();
     }
 
-  }
-
-  /**
-   * ************************************************************** embedded class which contains
-   * extended path editor, which renames a "Path" as a "Polygon"
-   * **************************************************************
-   */
-  public static class PolygonPathEditor extends SwingWorldPathPropertyEditor
-  {
-    /**
-     * over-ride the type returned by the path editor
-     */
-    @Override
-    protected String getMyType()
-    {
-      return "Polygon";
-    }
   }
 
   /**

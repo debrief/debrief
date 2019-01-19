@@ -37,7 +37,11 @@ public class CSVExportPage3 extends CustomWizardPage
   private static final String CSV_EXPORT_PURPOSE = "CSV_EXPORT_purpose";
 
   private static final String CSV_EXPORT_EXPORT_FOLDER = "CSV_EXPORT_exportFolder";
-
+  
+  private static final String PURPOSE = "PURPOSE";
+  
+  private static final String DISTRIBUTION = "DISTRIBUTION";
+  
   public static final String PAGE_ID = "3. Release";
 
   private final DropdownProvider provider;
@@ -112,10 +116,21 @@ public class CSVExportPage3 extends CustomWizardPage
 
   }
 
+  private String getValueFor(final String field) {
+    List<String> values = provider.getValuesFor(field);
+    if(values!=null && !values.isEmpty()) {
+      return values.get(0);
+    }
+    setErrorMessage("No "+field.toLowerCase()+" has been specified, may be an invalid file");
+    setPageComplete(false);
+
+    return null;
+  }
   private void addPurposeField(final Composite contents)
   {
-    if (purpose == null && !provider.getValuesFor("PURPOSE").isEmpty())
-      purpose = provider.getValuesFor("PURPOSE").get(0);
+    if (purpose == null) {
+      purpose = getValueFor(PURPOSE);
+    }
 
     final Label lbl = new Label(contents, SWT.NONE);
     lbl.setText("Purpose:");
@@ -137,8 +152,10 @@ public class CSVExportPage3 extends CustomWizardPage
   private void addStatementField(final Composite contents)
   {
 
-    if (statement == null && !provider.getValuesFor("DISTRIBUTION").isEmpty())
-      statement = provider.getValuesFor("DISTRIBUTION").get(0);
+    if (statement == null) {
+      statement = getValueFor(DISTRIBUTION);
+    }
+
     final Label lbl = new Label(contents, SWT.NONE);
     lbl.setText("Distribution Statement:");
     lbl.setToolTipText("Details on how this information can be used");

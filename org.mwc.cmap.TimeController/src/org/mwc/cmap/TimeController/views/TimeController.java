@@ -1226,7 +1226,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             @Override
             public void run()
             {
-              populateDropDownList(myLayerPainterManager);
+              updateToolbarAndMenu();
             }
           });
 
@@ -1321,7 +1321,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
             @Override
             public void run()
             {
-              populateDropDownList(myLayerPainterManager);
+              updateToolbarAndMenu();
             }
           });
         }
@@ -1794,7 +1794,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   }
 
   @SuppressWarnings(
-  {"rawtypes"})
+  {"rawtypes", "unchecked"})
   @Override
   public Object getAdapter(final Class adapter)
   {
@@ -2007,9 +2007,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
   /**
    * ok - put in the stepper mode buttons - and any others we think of.
    */
-  private void populateDropDownList(
-      final LayerPainterManager myLayerPainterManager)
+  private void updateToolbarAndMenu()
   {
+    
     // clear the list
     final IMenuManager menuManager = getViewSite().getActionBars()
         .getMenuManager();
@@ -2019,125 +2019,122 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     // ok, remove the existing items
     menuManager.removeAll();
     toolManager.removeAll();
-
-    // create a host for when we're populating the properties window
-    final ISelectionProvider provider = this;
-
-    // right, do we have something with editable layer details?
-    if (myLayerPainterManager != null)
-    {
-
-      // ok - add the painter selectors/editors
-      createPainterOptions(myLayerPainterManager, menuManager, toolManager,
-          provider);
-
-      // ok, let's have a separator
-      toolManager.add(new Separator());
-
-      // now add the highlighter options/editors
-      createHighlighterOptions(myLayerPainterManager, menuManager, provider);
-
+    if(_myTemporalDataset!=null) {
+      // create a host for when we're populating the properties window
+      final ISelectionProvider provider = this;
+  
+      // right, do we have something with editable layer details?
+      if (_layerPainterManager != null)
+      {
+  
+        // ok - add the painter selectors/editors
+        createPainterOptions(_layerPainterManager, menuManager, toolManager,
+            provider);
+  
+        // ok, let's have a separator
+        toolManager.add(new Separator());
+  
+        // now add the highlighter options/editors
+        createHighlighterOptions(_layerPainterManager, menuManager, provider);
+  
+        // and another separator
+        menuManager.add(new Separator());
+      }
+  
+      // add the list of DTG formats for the DTG slider
+      addDateFormats(menuManager);
+  
+      // add the list of DTG formats for the DTG slider
+      addBiSliderResolution(menuManager);
+  
       // and another separator
       menuManager.add(new Separator());
+  
+      // and another separator
+      toolManager.add(new Separator());
+  
+      // let user indicate whether we should be filtering to window
+      _filterToSelectionAction = new FilterToPeriodAction();
+      _filterToSelectionAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+          ICON_FILTER_TO_PERIOD));
+      _filterToSelectionAction.setToolTipText(
+          "Filter plot data to selected time period");
+      _filterToSelectionAction.setChecked(true);
+  
+      menuManager.add(_filterToSelectionAction);
+      toolManager.add(_filterToSelectionAction);
+      
+      // and another separator
+      menuManager.add(new Separator());
+  
+      // now the add-bookmark item
+      final Action _setAsBookmarkAction = new Action("Add DTG as bookmark",
+          IAction.AS_PUSH_BUTTON)
+      {
+        @Override
+        public void runWithEvent(final Event event)
+        {
+          addMarker();
+        }
+      };
+      _setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(
+          ICON_BKMRK_NAV));
+      _setAsBookmarkAction.setToolTipText(
+          "Add this DTG to the list of bookmarks");
+      _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); 
+      // give it an id, so we can
+      // refer to this later on.
+      menuManager.add(_setAsBookmarkAction);
+  
+      // and another separator
+      menuManager.add(new Separator());
+  
+      // now our own menu editor
+      final Action toolboxProperties = new Action(
+          "Edit Time controller properties", IAction.AS_PUSH_BUTTON)
+      {
+        @Override
+        public void runWithEvent(final Event event)
+        {
+          editMeInProperties(_myStepperProperties);
+        }
+      };
+      toolboxProperties.setToolTipText("Edit Time Controller properties");
+      toolboxProperties.setImageDescriptor(CorePlugin.getImageDescriptor(
+          ICON_PROPERTIES));
+  
+      menuManager.add(toolboxProperties);
+      toolManager.add(toolboxProperties);
+  
+      // now our own menu editor
+      final Action viewTimeBar = new Action("View Time Bar",
+          IAction.AS_PUSH_BUTTON)
+      {
+        @Override
+        public void runWithEvent(final Event event)
+        {
+          CorePlugin.openView(CorePlugin.TIME_BAR);
+        }
+      };
+      viewTimeBar.setToolTipText("Show Time Bar view");
+      viewTimeBar.setImageDescriptor(CorePlugin.getImageDescriptor(
+          ICON_TIME_BARS));
+  
+      toolManager.add(new Separator());
+      toolManager.add(viewTimeBar);
+  
+      // and sort out our specific items
+      refreshTimeOperations();
+  
+      // and the help link
+      menuManager.add(new Separator());
+      menuManager.add(CorePlugin.createOpenHelpAction(
+          "org.mwc.debrief.help.TimeController", null, this));
+  
+      // ok - get the action bars to re-populate themselves, otherwise we
+      // don't
+      // see our changes
     }
-
-    // add the list of DTG formats for the DTG slider
-    addDateFormats(menuManager);
-
-    // add the list of DTG formats for the DTG slider
-    addBiSliderResolution(menuManager);
-
-    // and another separator
-    menuManager.add(new Separator());
-
-    // and another separator
-    toolManager.add(new Separator());
-
-    // let user indicate whether we should be filtering to window
-    _filterToSelectionAction = new FilterToPeriodAction();
-    _filterToSelectionAction.setImageDescriptor(CorePlugin.getImageDescriptor(
-        ICON_FILTER_TO_PERIOD));
-    _filterToSelectionAction.setToolTipText(
-        "Filter plot data to selected time period");
-    _filterToSelectionAction.setChecked(true);
-    menuManager.add(_filterToSelectionAction);
-    toolManager.add(_filterToSelectionAction);
-
-    // and another separator
-    menuManager.add(new Separator());
-
-    // now the add-bookmark item
-    final Action _setAsBookmarkAction = new Action("Add DTG as bookmark",
-        IAction.AS_PUSH_BUTTON)
-    {
-      @Override
-      public void runWithEvent(final Event event)
-      {
-        addMarker();
-      }
-    };
-    _setAsBookmarkAction.setImageDescriptor(CorePlugin.getImageDescriptor(
-        ICON_BKMRK_NAV));
-    _setAsBookmarkAction.setToolTipText(
-        "Add this DTG to the list of bookmarks");
-    _setAsBookmarkAction.setId(OP_LIST_MARKER_ID); // give
-                                                   // it
-                                                   // an
-                                                   // id,
-                                                   // so
-                                                   // we
-                                                   // can
-    menuManager.add(_setAsBookmarkAction);
-    // refer to this later on.
-
-    // and another separator
-    menuManager.add(new Separator());
-
-    // now our own menu editor
-    final Action toolboxProperties = new Action(
-        "Edit Time controller properties", IAction.AS_PUSH_BUTTON)
-    {
-      @Override
-      public void runWithEvent(final Event event)
-      {
-        editMeInProperties(_myStepperProperties);
-      }
-    };
-    toolboxProperties.setToolTipText("Edit Time Controller properties");
-    toolboxProperties.setImageDescriptor(CorePlugin.getImageDescriptor(
-        ICON_PROPERTIES));
-
-    menuManager.add(toolboxProperties);
-    toolManager.add(toolboxProperties);
-
-    // now our own menu editor
-    final Action viewTimeBar = new Action("View Time Bar",
-        IAction.AS_PUSH_BUTTON)
-    {
-      @Override
-      public void runWithEvent(final Event event)
-      {
-        CorePlugin.openView(CorePlugin.TIME_BAR);
-      }
-    };
-    viewTimeBar.setToolTipText("Show Time Bar view");
-    viewTimeBar.setImageDescriptor(CorePlugin.getImageDescriptor(
-        ICON_TIME_BARS));
-
-    toolManager.add(new Separator());
-    toolManager.add(viewTimeBar);
-
-    // and sort out our specific items
-    refreshTimeOperations();
-
-    // and the help link
-    menuManager.add(new Separator());
-    menuManager.add(CorePlugin.createOpenHelpAction(
-        "org.mwc.debrief.help.TimeController", null, this));
-
-    // ok - get the action bars to re-populate themselves, otherwise we
-    // don't
-    // see our changes
     getViewSite().getActionBars().updateActionBars();
   }
 
@@ -2316,7 +2313,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
     _btnPanel.pack(true);
 
     // sort out the dropdowns
-    populateDropDownList(null);
+    updateToolbarAndMenu();
 
   }
 
@@ -2652,7 +2649,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               final IWorkbenchPart parentPart)
           {
             // was it our one?
-            if (_myTemporalDataset == part)
+            if (part.equals(_myTemporalDataset))
             {
               // ok, stop listening to this object (just in case
               // we were,
@@ -2662,7 +2659,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               _myTemporalDataset.removeListener(_temporalListener,
                   TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
 
+              // clear the temporal dataset
               _myTemporalDataset = null;
+
+              // and update the toolbar/UI
+              updateToolbarAndMenu();
+
             }
 
             // and sort out whether we should be active or not.
@@ -2955,7 +2957,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
               // ones
 
               _layerPainterManager = (LayerPainterManager) part;
-              populateDropDownList(_layerPainterManager);
+              updateToolbarAndMenu();
             }
           }
 

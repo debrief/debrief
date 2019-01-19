@@ -304,7 +304,7 @@ public abstract class Application implements ToolParent, ActionListener,
   /**
    * the name of this application
    */
-  private final String _myName = "Debrief Lite";
+  private final String _myName = "Debrief Legacy";
 
   /**
    * handle drag and drop for this item

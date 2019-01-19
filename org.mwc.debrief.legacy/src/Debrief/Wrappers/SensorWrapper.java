@@ -479,11 +479,23 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
 
     final long currentStart = this.getStartDTG().getMicros();
-    long startTime = (currentStart / interval) * interval;
+    
+    // determine when the resampling should start
+    final long startTime;
+    if(interval > 0)
+    {
+      long tmpStartTime = (currentStart / interval) * interval;
 
-    // just check we're in the range
-    if (startTime < currentStart)
-      startTime += interval;
+      // just check we're in the range
+      if (tmpStartTime < currentStart)
+        tmpStartTime += interval;
+      
+      startTime = tmpStartTime;
+    }
+    else
+    {
+      startTime = currentStart;
+    }
 
     // just check it's not a barking frequency
     if (theVal.getDate().getTime() <= 0)
@@ -826,7 +838,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
                     "the thickness to draw these sensor lines"),
                 displayProp("DefaultColor", "Default color",
                     "the default colour to plot this set of sensor data"),
-                displayProp("Coverage", "Start/Finish DTG",
+                displayReadOnlyProp("Coverage", "Start/Finish DTG",
                     "the time coverage for this sensor"),
                 displayLongProp("VisibleFrequency", "Visible frequency",
                     "How frequently to display sensor cuts",
@@ -890,6 +902,13 @@ public class SensorWrapper extends TacticalDataWrapper implements
       super(val);
     }
 
+    public final void testMyParams()
+    {
+      MWC.GUI.Editable ed = new SensorWrapper("my name");
+      MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
+      ed = null;
+    }
+    
     public void testMeasuredData() throws ParseException
     {
       TrackWrapper tw = new TrackWrapper();
@@ -1474,17 +1493,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
     }
 
     return res;
-  }
-
-  /**
-   * we need a getter in order to support Java Beans, though we don't actually allow it to be edited
-   * 
-   * @param val
-   *          new value of coverage (ignored)
-   */
-  public void setCoverage(String val)
-  {
-    System.err.println("We don't support setting hte coverage value");
   }
 
   @Override

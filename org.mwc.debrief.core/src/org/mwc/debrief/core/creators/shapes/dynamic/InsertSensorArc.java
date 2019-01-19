@@ -83,7 +83,7 @@ public class InsertSensorArc  extends CoreInsertSensorArc
   }
   
   @Override
-  protected void execute()
+  public void execute()
   {
     boolean proceed = false;
     Layers layers = getChart().getLayers();

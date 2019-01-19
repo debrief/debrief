@@ -62,6 +62,8 @@ public class EnterStringPage extends CoreEditableWizardPage
   private final String _fieldExplanation;
   private final String _prefName;
 
+  private final String _fieldName;
+
   public EnterStringPage(final ISelection selection, final String startName,
       final String pageTitle, final String pageExplanation,
       final String fieldExplanation, final String imagePath,
@@ -70,7 +72,7 @@ public class EnterStringPage extends CoreEditableWizardPage
   {
     this(selection, startName, pageTitle, pageExplanation, fieldExplanation,
         imagePath, helpContext, useDefaults, trailingMessage,
-        DEFAULT_PREF_VALUE);
+        DEFAULT_PREF_VALUE, null);
   }
 
   /**
@@ -97,12 +99,13 @@ public class EnterStringPage extends CoreEditableWizardPage
       final String pageTitle, final String pageExplanation,
       final String fieldExplanation, final String imagePath,
       final String helpContext, final boolean useDefaults,
-      final String trailingMessage, final String prefName)
+      final String trailingMessage, final String prefName, final String fieldName)
   {
     super(selection, NAME, pageTitle, pageExplanation, imagePath, helpContext,
         false, trailingMessage);
     _startName = startName;
     _fieldExplanation = fieldExplanation;
+    _fieldName = fieldName;
     _prefName = prefName;
     if (useDefaults)
       setDefaults();
@@ -139,8 +142,13 @@ public class EnterStringPage extends CoreEditableWizardPage
   @Override
   protected PropertyDescriptor[] getPropertyDescriptors()
   {
+    final PropertyDescriptor property = prop("Name", _fieldExplanation, getEditable());
+    if(_fieldName != null)
+    {
+      property.setDisplayName(_fieldName);
+    }
     final PropertyDescriptor[] descriptors =
-    {prop("Name", _fieldExplanation, getEditable())};
+    {property};
     return descriptors;
   }
 

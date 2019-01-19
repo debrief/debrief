@@ -14,6 +14,8 @@
  */
 package MWC.GUI.Properties;
 
+import MWC.GUI.Layers;
+
 /**
  * Title:
  * Description:
@@ -27,15 +29,15 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldPath;
 
 abstract public class WorldPathPropertyEditor  extends
-           java.beans.PropertyEditorSupport implements PlainPropertyEditor.EditorUsesChart,
-                                            PlainPropertyEditor.EditorUsesPropertyPanel,
-                                            PlainPropertyEditor.EditorUsesToolParent
+           java.beans.PropertyEditorSupport implements PlainPropertyEditor.EditorUsesPropertyPanel,
+                                            PlainPropertyEditor.EditorUsesToolParent,
+                                            PlainPropertyEditor.EditorUsesLayers
 {
 
   protected WorldPath _myPath;
-  protected MWC.GUI.PlainChart _myChart;
   protected PropertiesPanel _thePanel;
   protected ToolParent _theParent;
+  protected Layers _theLayers;
 
   abstract public java.awt.Component getCustomEditor();
   abstract protected void resetData();
@@ -61,11 +63,11 @@ abstract public class WorldPathPropertyEditor  extends
     return _myPath;
   }
 
-	public void setChart(final MWC.GUI.PlainChart theChart)
+  @Override
+  public void setLayers(Layers theLayers)
   {
-    _myChart = theChart;
+    _theLayers = theLayers;
   }
-
   public void setPanel(final PropertiesPanel thePanel)
   {
     _thePanel = thePanel;

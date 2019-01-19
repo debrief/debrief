@@ -163,7 +163,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
   // ////////////////////////////////////////////////////////////////////////////////////////////////
   static public final class testMe extends junit.framework.TestCase
   {
-    public void testDecimate()
+    public static void testDecimate()
     {
       final SensorWrapper sw = new SensorWrapper("mySensor");
       long nowMillis = 3000;
@@ -196,10 +196,10 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
       sw.decimate(new HiResDate(20000), 4000000);
 
-      assertEquals("correct number of decimated", 8, sw._myContacts.size());
+      assertEquals("correct number of decimated", 24, sw._myContacts.size());
     }
 
-    public void testDecimateThroughZero() throws ParseException
+    public static void testDecimateThroughZero() throws ParseException
     {
       final SensorWrapper sw = getList();
 
@@ -230,7 +230,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       }
     }
 
-    private SensorWrapper getList() throws ParseException
+    private static SensorWrapper getList() throws ParseException
     {
       final SensorWrapper sw = new SensorWrapper("mySensor");
 
@@ -292,7 +292,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
       return sw;
     }
 
-    public void testTrim() throws ParseException
+    public static void testTrim() throws ParseException
     {
       SensorWrapper ts0 = getList();
 
@@ -342,12 +342,6 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     }
 
   }
-
-  /**
-   * specify 3 minute delta
-   * 
-   */
-  private static final int THRESHOLD = 3 * 60 * 1000;
 
   /**
 	 * 
@@ -581,21 +575,15 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
         // right, we appear to be either side of the relevant item
         // interpolate the values
         // go for the freq first
-        final LinearInterpolator interp =
-            new LinearInterpolator((Watchable) _last, (Watchable) _next, tNow);
+        final LinearInterpolator interp = new LinearInterpolator(
+            (Watchable) _last, (Watchable) _next, tNow);
 
-        final long timeDelta =
-            _next.getDTG().getDate().getTime()
-                - _last.getDTG().getDate().getTime();
-        if (timeDelta < THRESHOLD)
-        {
-          // create a new data value
-          final PlottableWrapperWithTimeAndOverrideableColor newItem =
-              createItem(_last, _next, interp, tNow);
+        // create a new data value
+        final PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(
+            _last, _next, interp, tNow);
 
-          // and store it.
-          newItems.add(newItem);
-        }
+        // and store it.
+        newItems.add(newItem);
       }
     }
 

@@ -129,7 +129,7 @@ import javax.swing.JToolBar;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.PlainChart;
+import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
@@ -150,10 +150,6 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
 	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  /**
-   * chart to update
-   */
-  PlainChart _myChart;
 
   /**
    * the buffer to store the undo operations
@@ -176,6 +172,8 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    */
   private final MyMetalToolBarUI.ToolbarOwner _owner;
 
+  private final Layers _theLayers;
+
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
@@ -185,13 +183,13 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    * @param theChart      the chart we are editing
    * @param theUndoBuffer buffer to store the undo commands
    */
-  public SwingPropertiesPanel(final PlainChart theChart,
+  public SwingPropertiesPanel(final Layers theLayers,
                               final UndoBuffer theUndoBuffer,
                               final MWC.GUI.ToolParent theToolParent,
                               final MyMetalToolBarUI.ToolbarOwner owner)
   {
     super();
-    _myChart = theChart;
+    _theLayers = theLayers;
     _theBuffer = theUndoBuffer;
     _theToolParent = theToolParent;
     _owner = owner;
@@ -208,7 +206,6 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
 
     // and the objects
     _theBuffer = null;
-    _myChart = null;
     _theToolParent = null;
     _myPanels = null;
 
@@ -289,7 +286,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     {
       final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
                                                          this,
-                                                         _myChart,
+                                                         _theLayers,
                                                          _theToolParent,
                                                          parentLayer);
 
@@ -326,7 +323,7 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
     {
       final SwingPropertyEditor2 ap = new SwingPropertyEditor2(theInfo,
                                                          this,
-                                                         _myChart,
+                                                         _theLayers,
                                                          _theToolParent,
                                                          parentLayer);
 
@@ -390,8 +387,8 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
    */
   public void doApply()
   {
-    if (_myChart != null)
-      _myChart.update();
+    if (_theLayers != null)
+      _theLayers.fireModified(null);
   }
 
   /**

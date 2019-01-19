@@ -289,7 +289,7 @@ public final class SwingApplication extends Application
   /**
    * where the file name is
    */
-  private static final String IMAGE_FILE_NAME = "images/debrief_lite.png";
+  private static final String IMAGE_FILE_NAME = "images/debrief_legacy.png";
 
   /////////////////////////////////////////////////////////////
   // constructor
