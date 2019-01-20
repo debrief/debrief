@@ -22,9 +22,11 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
  */
 public class RibbonAppMenuProvider
 {
-  public RibbonApplicationMenu createApplicationMenu() {
-      RibbonApplicationMenu appMenu = new RibbonApplicationMenu("Debrief Lite");
-      
-      return appMenu;
+  public RibbonApplicationMenu createApplicationMenu()
+  {
+    final RibbonApplicationMenu appMenu = new RibbonApplicationMenu(
+        "Debrief Lite");
+
+    return appMenu;
   }
 }
