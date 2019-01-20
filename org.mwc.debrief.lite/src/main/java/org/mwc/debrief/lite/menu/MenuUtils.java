@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -36,43 +37,60 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
  */
 public class MenuUtils
 {
-  public static FlamingoCommand addCommand(final String commandName,final String imagePath, final ActionListener actionToAdd,final JRibbonBand mapBand,RibbonElementPriority priority) {
+  public static FlamingoCommand addCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final JRibbonBand mapBand, RibbonElementPriority priority)
+  {
     ImageWrapperResizableIcon imageIcon = null;
-    if(imagePath!=null) {
+    if (imagePath != null)
+    {
       Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
+          16, 16));
     }
-    FlamingoCommand command = new FlamingoCommandBuilder()
-        .setTitle(commandName)
-        .setIcon(imageIcon)
-        .setAction(actionToAdd)
-        .setTitleClickAction().build();
-    mapBand.addRibbonCommand(command,priority==null?RibbonElementPriority.TOP:priority);
+    FlamingoCommand command = new FlamingoCommandBuilder().setTitle(commandName)
+        .setIcon(imageIcon).setAction(actionToAdd).setTitleClickAction()
+        .build();
+    mapBand.addRibbonCommand(command, priority == null
+        ? RibbonElementPriority.TOP : priority);
     return command;
   }
-  
-  public static JCommandButton addCommandButton(final String commandName,final String imagePath, final ActionListener actionToAdd,CommandButtonDisplayState priority) {
+
+  public static JCommandButton addCommandButton(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      CommandButtonDisplayState priority)
+  {
     ImageWrapperResizableIcon imageIcon = null;
-    if(imagePath!=null) {
+    if (imagePath != null)
+    {
       Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(16,16));
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
+          16, 16));
     }
-    JCommandButton commandButton = new JCommandButton(commandName,imageIcon);
+    JCommandButton commandButton = new JCommandButton(commandName, imageIcon);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
   }
-  
+
+  public static JRibbonComponent addComponent(JComponent component,
+      JRibbonBand band)
+  {
+    JRibbonComponent customComponent = new JRibbonComponent(component);
+    band.addRibbonComponent(customComponent);
+    return customComponent;
+  }
+
   public static Image createImage(String imageName)
   {
-    final URL iconURL = MenuUtils.class.getClassLoader().
-                            getResource(imageName);
-    
-    if(iconURL != null) {
+    final URL iconURL = MenuUtils.class.getClassLoader().getResource(imageName);
+
+    if (iconURL != null)
+    {
       ImageIcon icon = new ImageIcon(iconURL);
       return icon.getImage();
     }
     return null;
-    
+
   }
 }
