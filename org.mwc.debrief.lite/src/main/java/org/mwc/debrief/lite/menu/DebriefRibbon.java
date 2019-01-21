@@ -56,6 +56,7 @@ public class DebriefRibbon
         _theProperties, _toolParent);
     DebriefRibbonTimeController.addTimeControllerTab(theRibbon,
         _geoMapRenderer);
+    theRibbon.setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu());
   }
 
   public void setProperties(final PropertiesPanel properties)
