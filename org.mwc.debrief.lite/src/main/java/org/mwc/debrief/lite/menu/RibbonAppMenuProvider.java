@@ -45,6 +45,11 @@ public class RibbonAppMenuProvider
         .setAction(new AbstractAction()
         {
 
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
           @Override
           public void actionPerformed(ActionEvent e)
           {
@@ -64,8 +69,13 @@ public class RibbonAppMenuProvider
         RibbonApplicationMenuPrimaryCommandBuilder()
         .setTitle("Help")
         .setIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(16,16)))
-        .setAction(new AbstractAction()
+        .setAction(new AbstractAction("Help")
         {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
           @Override
           public void actionPerformed(ActionEvent e)
@@ -87,6 +97,11 @@ public class RibbonAppMenuProvider
                 MenuUtils.createImage("images/16/exit.png"),new Dimension(16,16)))
         .setAction(new AbstractAction()
         {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
 
           @Override
           public void actionPerformed(ActionEvent e)

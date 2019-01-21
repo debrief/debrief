@@ -17,10 +17,8 @@ package org.mwc.debrief.lite.menu;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import MWC.GUI.Layers;
-import MWC.GUI.Properties.PropertiesPanel;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
