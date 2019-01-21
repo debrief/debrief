@@ -17,10 +17,8 @@ package org.mwc.debrief.lite.menu;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import MWC.GUI.Layers;
-import MWC.GUI.Properties.PropertiesPanel;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -28,39 +26,15 @@ import MWC.GUI.Properties.PropertiesPanel;
  */
 public class DebriefRibbon
 {
-  private PropertiesPanel _theProperties;
-  private final Layers _theLayers;
-  private final DebriefLiteToolParent _toolParent;
-  private final JRibbonFrame theFrame;
-  private JRibbon theRibbon;
-  private final GeoToolMapRenderer _geoMapRenderer;
-
-  public DebriefRibbon(final JRibbonFrame frame, final Layers layers,
+  public DebriefRibbon(final JRibbon ribbon, final Layers layers,
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer)
   {
-    _theLayers = layers;
-    _toolParent = parent;
-    theFrame = frame;
-    _geoMapRenderer = geoMapRenderer;
-  }
-
-  public void addMenus()
-  {
-    theRibbon = theFrame.getRibbon();
-
     // add menus here
-    DebriefRibbonFile.addFileTab(theRibbon, _geoMapRenderer);
-    DebriefRibbonView.addViewTab(theRibbon, _geoMapRenderer);
-    DebriefRibbonInsert.addInsertTab(theRibbon, _geoMapRenderer, _theLayers,
-        _theProperties, _toolParent);
-    DebriefRibbonTimeController.addTimeControllerTab(theRibbon,
-        _geoMapRenderer);
+    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
+    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer);
+    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
+        null, parent);
+    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer);
   }
-
-  public void setProperties(final PropertiesPanel properties)
-  {
-    _theProperties = properties;
-  }
-
 }

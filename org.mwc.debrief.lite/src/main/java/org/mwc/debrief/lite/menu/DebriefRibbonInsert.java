@@ -69,35 +69,26 @@ public class DebriefRibbonInsert
       }
     };
 
-    final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
-
-    final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     final Layer decs = _theLayers.findLayer(Layers.CHART_FEATURES);
-    @SuppressWarnings("unused")
-    final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
-            decs, _theLayers, bounds), chartfeaturesMenu, null);
-    chartfeaturesMenu.startGroup("Time Marker");
-    final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
-    final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
-    chartfeaturesMenu.startGroup("Grid");
-    final JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid",
-        "images/16/grid4w.png", new MenuUtils.TODOAction(),
-        CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(grid4wCmd));
-    final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
-        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
-    final JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid",
-        "images/16/local_grid.png", new CreateLocalGrid(_toolParent,
-            _theProperties, decs, _theLayers, bounds),
-        CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(localGridCmd));
+    final JRibbonBand chartfeaturesMenu = createDecorations(_theLayers,
+        _theProperties, _toolParent, bounds, decs);
+    
+    final JRibbonBand referenceDataMenu = createReferenceData(_theLayers,
+        _theProperties, _toolParent, bounds, decs);
+
+    final JRibbonBand drawingMenu = createShapes(_theLayers, _theProperties,
+        _toolParent, bounds);
+    
+    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
+        referenceDataMenu, drawingMenu);
+    ribbon.addTask(drawingTask);
+  }
+
+  private static JRibbonBand createReferenceData(final Layers _theLayers,
+      final PropertiesPanel _theProperties,
+      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final Layer decs)
+  {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
         null);
     @SuppressWarnings("unused")
@@ -117,9 +108,14 @@ public class DebriefRibbonInsert
         RibbonElementPriority.MEDIUM);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
+    return referenceDataMenu;
+  }
 
-    chartfeaturesMenu.setResizePolicies(MenuUtils
-        .getStandardRestrictivePolicies(chartfeaturesMenu));
+  private static JRibbonBand createShapes(final Layers _theLayers,
+      final PropertiesPanel _theProperties,
+      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
+  {
+    final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
     drawingMenu.startGroup("Core");
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
         "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
@@ -204,8 +200,43 @@ public class DebriefRibbonInsert
 
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
-    final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-        referenceDataMenu, drawingMenu);
-    ribbon.addTask(drawingTask);
+    return drawingMenu;
+  }
+
+  private static JRibbonBand createDecorations(final Layers _theLayers,
+      final PropertiesPanel _theProperties,
+      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final Layer decs)
+  {
+    final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
+    @SuppressWarnings("unused")
+    final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
+        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
+            decs, _theLayers, bounds), chartfeaturesMenu, null);
+    chartfeaturesMenu.startGroup("Time Marker");
+    final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
+    final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
+    chartfeaturesMenu.startGroup("Grid");
+    final JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid",
+        "images/16/grid4w.png", new MenuUtils.TODOAction(),
+        CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(grid4wCmd));
+    final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
+        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
+            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
+    final JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid",
+        "images/16/local_grid.png", new CreateLocalGrid(_toolParent,
+            _theProperties, decs, _theLayers, bounds),
+        CommandButtonDisplayState.MEDIUM);
+    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(localGridCmd));
+    
+    chartfeaturesMenu.setResizePolicies(MenuUtils
+        .getStandardRestrictivePolicies(chartfeaturesMenu));
+    return chartfeaturesMenu;
   }
 }

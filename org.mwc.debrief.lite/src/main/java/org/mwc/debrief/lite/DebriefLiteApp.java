@@ -248,9 +248,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(rightSplit, BorderLayout.CENTER);
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
-    DebriefRibbon ribbon = new DebriefRibbon(theFrame, _theLayers, _toolParent, geoMapRenderer);
-    ribbon.addMenus();
-
+    new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent, geoMapRenderer);
   }
 
   /**
@@ -387,7 +385,7 @@ public class DebriefLiteApp implements FileDropListener
   
   protected void exit()
   {
-    System.exit(0);
+    theFrame.dispose();
   }
 
   /**

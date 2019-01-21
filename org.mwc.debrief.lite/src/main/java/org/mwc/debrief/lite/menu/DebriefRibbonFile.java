@@ -82,6 +82,7 @@ public class DebriefRibbonFile
           public void lostOwnership(final Clipboard clipboard,
               final Transferable contents)
           {
+            System.out.println("Copy to PNG: Lost Ownership");
           }
 
         };
@@ -125,14 +126,14 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("Exit", "images/16/exit.png", new AbstractAction()
     {
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        MenuUtils.exit();
+        System.exit(0);
       }
     }, exitMenu, RibbonElementPriority.MEDIUM);
     exitMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
