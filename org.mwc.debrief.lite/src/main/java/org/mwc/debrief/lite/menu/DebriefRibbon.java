@@ -28,40 +28,16 @@ import MWC.GUI.Properties.PropertiesPanel;
  */
 public class DebriefRibbon
 {
-  private PropertiesPanel _theProperties;
-  private final Layers _theLayers;
-  private final DebriefLiteToolParent _toolParent;
-  private final JRibbonFrame theFrame;
-  private JRibbon theRibbon;
-  private final GeoToolMapRenderer _geoMapRenderer;
-
-  public DebriefRibbon(final JRibbonFrame frame, final Layers layers,
+  public DebriefRibbon(final JRibbon ribbon, final Layers layers,
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer)
   {
-    _theLayers = layers;
-    _toolParent = parent;
-    theFrame = frame;
-    _geoMapRenderer = geoMapRenderer;
-  }
-
-  public void addMenus()
-  {
-    theRibbon = theFrame.getRibbon();
-
     // add menus here
-    DebriefRibbonFile.addFileTab(theRibbon, _geoMapRenderer);
-    DebriefRibbonView.addViewTab(theRibbon, _geoMapRenderer);
-    DebriefRibbonInsert.addInsertTab(theRibbon, _geoMapRenderer, _theLayers,
-        _theProperties, _toolParent);
-    DebriefRibbonTimeController.addTimeControllerTab(theRibbon,
-        _geoMapRenderer);
-    theRibbon.setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu());
+    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
+    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer);
+    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
+        null, parent);
+    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer);
+    ribbon.setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu());
   }
-
-  public void setProperties(final PropertiesPanel properties)
-  {
-    _theProperties = properties;
-  }
-
 }
