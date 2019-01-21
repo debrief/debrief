@@ -19,7 +19,6 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
 import MWC.GUI.Layers;
-import MWC.GUI.Properties.PropertiesPanel;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -27,8 +26,6 @@ import MWC.GUI.Properties.PropertiesPanel;
  */
 public class DebriefRibbon
 {
-  private PropertiesPanel _theProperties;
-
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer)
@@ -37,13 +34,7 @@ public class DebriefRibbon
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
-        _theProperties, parent);
+        null, parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer);
   }
-
-  public void setProperties(final PropertiesPanel properties)
-  {
-    _theProperties = properties;
-  }
-
 }
