@@ -16,11 +16,14 @@ package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -28,8 +31,10 @@ import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuil
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
+import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
+import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -37,20 +42,35 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
  */
 public class MenuUtils
 {
+  protected static class TODOAction extends AbstractAction
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void actionPerformed(final ActionEvent e)
+    {
+      System.out.println("Action TODO");
+
+    }
+  }
+
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, RibbonElementPriority priority)
+      final JRibbonBand mapBand, final RibbonElementPriority priority)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
     {
-      Image zoominImage = createImage(imagePath);
+      final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
           16, 16));
     }
-    FlamingoCommand command = new FlamingoCommandBuilder().setTitle(commandName)
-        .setIcon(imageIcon).setAction(actionToAdd).setTitleClickAction()
-        .build();
+    final FlamingoCommand command = new FlamingoCommandBuilder().setTitle(
+        commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction().build();
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;
@@ -58,39 +78,49 @@ public class MenuUtils
 
   public static JCommandButton addCommandButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      CommandButtonDisplayState priority)
+      final CommandButtonDisplayState priority)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
     {
-      Image zoominImage = createImage(imagePath);
+      final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
           16, 16));
     }
-    JCommandButton commandButton = new JCommandButton(commandName, imageIcon);
+    final JCommandButton commandButton = new JCommandButton(commandName,
+        imageIcon);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
   }
 
-  public static JRibbonComponent addComponent(JComponent component,
-      JRibbonBand band)
-  {
-    JRibbonComponent customComponent = new JRibbonComponent(component);
-    band.addRibbonComponent(customComponent);
-    return customComponent;
-  }
-
-  public static Image createImage(String imageName)
+  public static Image createImage(final String imageName)
   {
     final URL iconURL = MenuUtils.class.getClassLoader().getResource(imageName);
 
     if (iconURL != null)
     {
-      ImageIcon icon = new ImageIcon(iconURL);
+      final ImageIcon icon = new ImageIcon(iconURL);
       return icon.getImage();
     }
     return null;
 
+  }
+
+  protected static void exit()
+  {
+    // _dropSupport.removeFileDropListener(this);
+    System.exit(0);
+
+  }
+
+  public static List<RibbonBandResizePolicy> getStandardRestrictivePolicies(
+      final JRibbonBand ribbonBand)
+  {
+    final List<RibbonBandResizePolicy> policies = new ArrayList<>();
+    policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
+    // policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
+    policies.add(new IconRibbonBandResizePolicy(ribbonBand));
+    return policies;
   }
 }
