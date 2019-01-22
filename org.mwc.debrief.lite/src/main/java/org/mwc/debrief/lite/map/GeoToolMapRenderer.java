@@ -32,26 +32,12 @@ import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.action.InfoAction;
-import org.geotools.swing.action.NoToolAction;
-import org.geotools.swing.action.PanAction;
-import org.geotools.swing.action.ResetAction;
-import org.geotools.swing.action.ZoomInAction;
-import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
-import org.mwc.debrief.lite.menu.MenuUtils;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
-import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
-import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
-import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 /**
  *
@@ -74,25 +60,6 @@ public class GeoToolMapRenderer implements BaseMap
   private SimpleFeatureSource featureSource;
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
-
-  @Override
-  public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
-  {
-    MenuUtils.addCommandButton("Selector", null, new NoToolAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Zoom In", "images/16/zoomin.png", new ZoomInAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(mapPane), mapBand,RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommandButton("Pan", null, new PanAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Info", null, new InfoAction(mapPane), mapBand,null);
-    MenuUtils.addCommandButton("Reset", null, new ResetAction(mapPane), mapBand,null);
-    List<RibbonBandResizePolicy> policies = new ArrayList<>();
-    policies.add(new CoreRibbonResizePolicies.Mirror(mapBand));
-    policies.add(new CoreRibbonResizePolicies.Mid2Low(mapBand));
-    policies.add(new IconRibbonBandResizePolicy(mapBand));
-    mapBand.setResizePolicies(policies);
-    RibbonTask fileTask = new RibbonTask("View", mapBand);
-    ribbon.addTask(fileTask);
-  }
-  
 
   public void addRenderer(final MapRenderer renderer)
   {
@@ -126,7 +93,7 @@ public class GeoToolMapRenderer implements BaseMap
 
   /**
    * returns java.awt.Graphics object
-   * 
+   *
    * @return
    */
   public Graphics getGraphicsContext()
@@ -134,9 +101,14 @@ public class GeoToolMapRenderer implements BaseMap
     return graphics;
   }
 
+  public Component getMap()
+  {
+    return mapPane;
+  }
+
   /**
    * return map component
-   * 
+   *
    * @return
    */
   public MapContent getMapComponent()
@@ -144,10 +116,9 @@ public class GeoToolMapRenderer implements BaseMap
     return mapComponent;
   }
 
-
   /**
    * gets a MathTransform object
-   * 
+   *
    * @return MathTransform
    */
   public MathTransform getTransformObject()
@@ -212,10 +183,5 @@ public class GeoToolMapRenderer implements BaseMap
     {
       r.paint(arg0);
     }
-  }
-
-  public Component getMap()
-  {
-    return mapPane;
   }
 }

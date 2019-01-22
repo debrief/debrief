@@ -70,14 +70,14 @@ public class CreateLocalGrid extends PlainCreate
                          final MWC.GUI.Properties.PropertiesPanel thePanel,
                          final MWC.GUI.Layer theLayer,
                          final MWC.GUI.Layers theData,
-                         final MWC.GUI.PlainChart theChart)
+                         final BoundsProvider theChart)
   {
     super(theParent, thePanel, theLayer, theData, theChart, "Local Grid", "images/local_grid_add.png");
   }
 
-  protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
+  protected MWC.GUI.Plottable createItem()
   {
-    final WorldLocation theOrigin = new WorldLocation(theChart.getCanvas().getProjection().getVisibleDataArea().getCentre());
+    final WorldLocation theOrigin = new WorldLocation(getBounds().getViewport().getCentreAtSurface());
     final LocalGridPainter res = new LocalGridPainter();
     res.setOrigin(theOrigin);
     return res;

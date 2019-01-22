@@ -332,6 +332,7 @@ import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.MenuItemInfo;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GUI.Tools.Chart.FitToWin;
 import MWC.GUI.Tools.Chart.Pan;
@@ -349,6 +350,7 @@ import MWC.GUI.Tools.Palette.CreateLocalGrid;
 import MWC.GUI.Tools.Palette.CreateScale;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GUI.Tools.Palette.CreateVPFLayers;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -507,6 +509,21 @@ abstract public class AnalysisView extends PlainView implements
 	 */
 	private void addTools()
 	{
+	  
+    final BoundsProvider bounds = new BoundsProvider()
+    {
+      @Override
+      public WorldArea getViewport()
+      {
+        return _theChart.getCanvas().getProjection().getVisibleDataArea();
+      }
+
+      @Override
+      public WorldArea getBounds()
+      {
+        return _theChart.getDataArea();
+      }
+    };
 
 		_theTools.addElement(new MenuItemInfo("File", null, "Save",
 				new SavePlotXML(_theParent, _theSession), null, ' '));
@@ -609,18 +626,18 @@ abstract public class AnalysisView extends PlainView implements
 		final Layer decs = _theSession.getData().findLayer(Layers.CHART_FEATURES);
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Scale", new CreateScale(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Grid", new CreateGrid(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Local Grid", new CreateLocalGrid(_theParent, _theProperties,
-						decs, _theSession.getData(), _theChart), null, ' '));
+						decs, _theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Coast", new CreateCoast(_theParent, _theProperties, decs,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 		// let's not read in the VPF reference layer, since we can't get OpenMap
 		// code to read
 		// it in from the jar file.
@@ -631,10 +648,10 @@ abstract public class AnalysisView extends PlainView implements
 		 */
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create VPF Layers", new CreateVPFLayers(_theParent, _theProperties,
-						decs, _theSession.getData(), _theChart), null, ' '));
+						decs, _theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
-						_theSession.getData(), _theChart), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 //		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 //				"Create Buoy Pattern",
 //				new Debrief.Tools.Palette.BuoyPatterns.CreateBuoyPattern(_theParent,
@@ -649,7 +666,7 @@ abstract public class AnalysisView extends PlainView implements
 						_theChart, "Label", "images/label_add.png"), null, ' '));
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Ellipse", "images/ellipse_add.png")
+					 "Ellipse", "images/ellipse_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -661,7 +678,7 @@ abstract public class AnalysisView extends PlainView implements
 		// rectangle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Rectangle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Rectangle", "images/rectangle_add.png")
+						"Rectangle", "images/rectangle_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -674,7 +691,7 @@ abstract public class AnalysisView extends PlainView implements
 		// arc
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create arc",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Arc", "images/arc_add.png")
+						"Arc", "images/arc_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -685,7 +702,7 @@ abstract public class AnalysisView extends PlainView implements
 				}, null, ' ')); // circle
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create circle",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Circle", "images/circle_add.png")
+						"Circle", "images/circle_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -696,7 +713,7 @@ abstract public class AnalysisView extends PlainView implements
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create line",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Line", "images/line_add.png")
+						"Line", "images/line_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
@@ -710,7 +727,7 @@ abstract public class AnalysisView extends PlainView implements
 		// line
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create polygon",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Polygon", "images/polygon_add.png")
+						"Polygon", "images/polygon_add.png", bounds)
 				{
 					protected ShapeWrapper getShape(final WorldLocation centre)
 					{
