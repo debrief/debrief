@@ -28,7 +28,6 @@ import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
-import MWC.GUI.Tools.Palette.CreateLocalGrid;
 import MWC.GUI.Tools.Palette.CreateScale;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -228,19 +227,10 @@ public class DebriefRibbonInsert
         new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
     chartfeaturesMenu.startGroup("Grid");
-    /*final JCommandButton grid4wCmd = MenuUtils.addCommandButton("4W Grid",
-        "images/16/grid4w.png", new MenuUtils.TODOAction(),
-        CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(grid4wCmd));*/
     final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
         "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
             _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
-    /*final JCommandButton localGridCmd = MenuUtils.addCommandButton("Local Grid",
-        "images/16/local_grid.png", new CreateLocalGrid(_toolParent,
-            _theProperties, decs, _theLayers, bounds),
-        CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(localGridCmd));*/
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(chartfeaturesMenu));
