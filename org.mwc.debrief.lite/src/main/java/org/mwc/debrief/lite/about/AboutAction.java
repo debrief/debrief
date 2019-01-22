@@ -17,6 +17,7 @@ package org.mwc.debrief.lite.about;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -24,6 +25,15 @@ import javax.swing.AbstractAction;
  */
 public class AboutAction extends AbstractAction
 {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  private JFrame parent;
+  public AboutAction(String title, JFrame parent) {
+    super(title);
+    this.parent = parent;
+  }
 
   /* (non-Javadoc)
    * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -31,9 +41,7 @@ public class AboutAction extends AbstractAction
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    AboutDialog dialog = new AboutDialog();
-    dialog.setVisible(true);
-    dialog.pack();
+    Debrief.GUI.Frames.Swing.AboutDialog.showIt(parent, "About", "Debrief Lite v1.0. \nDeveloped by Deep Blue C Ltd.");
 
   }
 

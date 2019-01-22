@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFrame;
 
 import org.mwc.debrief.lite.about.AboutAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -34,7 +35,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuPrimaryCommand
  */
 public class RibbonAppMenuProvider
 {
-  public RibbonApplicationMenu createApplicationMenu() {
+  public RibbonApplicationMenu createApplicationMenu(JFrame theFrame) {
     RibbonApplicationMenu appMenu = new RibbonApplicationMenu("Debrief Lite");
 
 
@@ -62,7 +63,7 @@ public class RibbonAppMenuProvider
     FlamingoCommand aboutMenu = new FlamingoCommandBuilder()
         .setTitle("About Us")
         .setIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(16,16)))
-        .setAction(new AboutAction())
+        .setAction(new AboutAction("About",theFrame))
         .setActionKeyTip("W").build();
 
     RibbonApplicationMenuPrimaryCommand helpAppMenu = new

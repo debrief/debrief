@@ -36,6 +36,6 @@ public class DebriefRibbon
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
         null, parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer);
-    ribbon.setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu());
+    ribbon.setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu(ribbon.getRibbonFrame()));
   }
 }
