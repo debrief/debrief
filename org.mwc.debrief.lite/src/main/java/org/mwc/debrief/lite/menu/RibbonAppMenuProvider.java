@@ -18,12 +18,12 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.JFrame;
 
 import org.mwc.debrief.lite.about.AboutAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenu;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuPrimaryCommand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuPrimaryCommand.PrimaryClearRolloverCallback;
@@ -35,10 +35,8 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonApplicationMenuPrimaryCommand
  */
 public class RibbonAppMenuProvider
 {
-  public RibbonApplicationMenu createApplicationMenu(JFrame theFrame) {
-    RibbonApplicationMenu appMenu = new RibbonApplicationMenu("Debrief Lite");
-
-
+  public RibbonApplicationMenu createApplicationMenu(JRibbonFrame theFrame) {
+    RibbonApplicationMenu appMenu = new RibbonApplicationMenu("Lite");
     RibbonApplicationMenuPrimaryCommand contentsMenu = new
         RibbonApplicationMenuPrimaryCommandBuilder()
         .setTitle("Help Contents")
@@ -113,6 +111,7 @@ public class RibbonAppMenuProvider
         .setActionKeyTip("X").setRolloverCallback(new PrimaryClearRolloverCallback())
         .build();
     appMenu.addMenuCommand(helpAppMenu);
+    appMenu.addMenuSeparator();
     appMenu.addMenuCommand(exitAction);
 
     return appMenu;

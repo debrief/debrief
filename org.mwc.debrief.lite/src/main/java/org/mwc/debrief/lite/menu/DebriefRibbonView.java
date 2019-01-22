@@ -33,7 +33,7 @@ public class DebriefRibbonView
         mapPane), viewBand, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(
         mapPane), viewBand, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Pan", null, new PanAction(mapPane), viewBand, null);
+    MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane), viewBand, null);
     MenuUtils.addCommand("Info", null, new InfoAction(mapPane), viewBand, null);
     MenuUtils.addCommand("Reset", null, new ResetAction(mapPane), viewBand,
         null);

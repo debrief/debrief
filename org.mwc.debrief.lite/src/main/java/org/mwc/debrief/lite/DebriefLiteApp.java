@@ -25,11 +25,9 @@ import java.awt.event.WindowAdapter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -45,7 +43,9 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
+import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
@@ -404,16 +404,8 @@ public class DebriefLiteApp implements FileDropListener
     });
 
     // try to give the application an icon
-    final URL iconURL = getClass().getClassLoader().getResource(
-        "images/icon.png");
-    if (iconURL != null)
-    {
-      final ImageIcon myIcon = new ImageIcon(iconURL);
-      if (myIcon != null)
-        theFrame.setIconImage(myIcon.getImage());
-    }
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(16,16)));
     theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
