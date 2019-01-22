@@ -44,6 +44,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.MenuUtils;
+import org.mwc.debrief.lite.menu.RibbonAppMenuProvider;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
@@ -85,6 +86,7 @@ public class DebriefLiteApp implements FileDropListener
     outlinePanel.setLayout(new BorderLayout());
     outlinePanel.add(jTitleBar, BorderLayout.NORTH);
     layerManager = new OutlinePanelView(undoBuffer);
+    layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
   }
@@ -201,7 +203,7 @@ public class DebriefLiteApp implements FileDropListener
     
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
-
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(32,32)));
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane);
@@ -405,7 +407,8 @@ public class DebriefLiteApp implements FileDropListener
 
     // try to give the application an icon
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(16,16)));
+    
+    theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider().createApplicationMenu(theFrame));
     theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
