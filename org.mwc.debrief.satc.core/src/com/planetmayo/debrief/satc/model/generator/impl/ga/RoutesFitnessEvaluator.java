@@ -115,42 +115,55 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
 		return calculateCompliantSpeedError(route, previous, next) + calculateSShapeScore(route);
 	}
 	
-	private double calculateCompliantSpeedError(AlteringRoute route, StraightRoute previous, StraightRoute next) 
-	{
-		double startSpeed = previous.getSpeed();
-		double endSpeed = next.getSpeed();
-		double minAlteringSpeed = route.getMinSpeed();
-		double maxAlteringSpeed = route.getMaxSpeed();
-		double error = 0;
-		if (route.getExtremumsCount() == 0) 
-		{
-			error = 0;
-		} 
-		else if (route.getExtremumsCount() == 1) 
-		{
-			double min = Math.min(startSpeed, endSpeed);
-			double max = Math.max(startSpeed, endSpeed);
-			if (minAlteringSpeed < min) 
-			{				
-				error += alteringSpeedError(min - minAlteringSpeed);
-			}
-			if (maxAlteringSpeed > max) 
-			{
-				error += alteringSpeedError(maxAlteringSpeed - max);
-			}			
-		} 
-		else 
-		{
-			error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
-		}
-		return error;		
-	}
-	
-	private double alteringSpeedError(double speedDiff)
-	{
-		double x = 1 + speedDiff / problemSpace.getVehicleType().getMaxSpeed();
-		return x * x - 1; 
-	}
+  private double calculateCompliantSpeedError(AlteringRoute route,
+      StraightRoute previous, StraightRoute next)
+  {
+    double startSpeed = previous.getSpeed();
+    double endSpeed = next.getSpeed();
+    double minAlteringSpeed = route.getMinSpeed();
+    double maxAlteringSpeed = route.getMaxSpeed();
+    double error = 0;
+    if (route.getExtremumsCount() == 0)
+    {
+      error = 0;
+    }
+    else if (route.getExtremumsCount() == 1)
+    {
+      double min = Math.min(startSpeed, endSpeed);
+      double max = Math.max(startSpeed, endSpeed);
+
+      double range = max - min;
+      double scaleFactor = 10d;
+
+      if (minAlteringSpeed < min)
+      {
+        double diff = min - minAlteringSpeed;
+        error += scaleFactor * Math.pow(diff - range, 2);
+        // error += alteringSpeedError(min - minAlteringSpeed);
+      }
+      if (maxAlteringSpeed > max)
+      {
+        double diff = maxAlteringSpeed - max;
+        error += scaleFactor * Math.pow(diff - range, 2);
+        // error += alteringSpeedError(maxAlteringSpeed - max);
+      }
+    }
+    else
+    {
+      error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
+    }
+    return error;
+  }
+
+  private double alteringSpeedError(double speedDiff)
+  {
+    // make this error more prominent.
+    final double fudgeFactor = 3d;
+    final double x = 1 + speedDiff / problemSpace.getVehicleType()
+        .getMaxSpeed();
+    final double res = fudgeFactor * (x * x - 1);
+    return res;
+  }
 	
 	private double calculateSShapeScore(AlteringRoute route) 
 	{

@@ -1440,8 +1440,12 @@ public class MaintainContributionsView extends ViewPart
         while(mIter.hasNext())
         {
           final BMeasurement bm = mIter.next();
-          final double degs = MWC.Algorithms.Conversions.Rads2Degs(bm.getBearingRads());
+          double degs = MWC.Algorithms.Conversions.Rads2Degs(bm.getBearingRads());
           final long time = bm.getDate().getTime();
+          if(degs < 0)
+          {
+            degs += 360;
+          }
           measuredBearingsForZones.addOrUpdate(new TimeSeriesDataItem(new FixedMillisecond(time), degs));
         }
       }

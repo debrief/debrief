@@ -210,7 +210,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("got no error message", 0, messages.size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 57, legTwo.getData().size());
+      assertEquals("correct after len", 58, legTwo.getData().size());
     }
 
     @SuppressWarnings("deprecation")
@@ -278,7 +278,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 3, tmaTrack.getSegments().size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 7, legTwo.getData().size());
+      assertEquals("correct after len", 8, legTwo.getData().size());
 
       // TODO - test undo processing, check second leg same as original length
       operation.undo(null, null);
@@ -406,7 +406,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       operation = new GenerateInfillOperation("title", subjects, theLayers,
           track, getMyLogger(), true);
 
-      assertEquals("correct before len", 57, legTwo.getData().size());
+      assertEquals("correct before len", 58, legTwo.getData().size());
       assertEquals("correct legs", 3, track.getSegments().size());
       messages.clear();
 
@@ -454,7 +454,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       assertEquals("correct legs", 3, track.getSegments().size());
 
       // check how many entries get deleted
-      assertEquals("correct after len", 57, legTwo.getData().size());
+      assertEquals("correct after len", 58, legTwo.getData().size());
 
       // test undo processing, check second leg same as original length
       operation.undo(null, null);
@@ -517,6 +517,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // seg = new RelativeTMASegment(sw, offset, speed, course, null);
       seg = new RelativeTMASegment(items, offset, speed, course, null,
           Color.yellow);
+      seg.setWrapper(tw);
 
       // check the create worked
       assertEquals("enough points created", 30, seg.size());
@@ -602,7 +603,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       
       assertEquals("correct before", newSeg2, infill.getBeforeSegment());
       assertEquals("correct after", seg2, infill.getAfterSegment());
-     
+      
       // ok, split the second leg
       final Enumeration<Editable> enumer3 = seg2.elements();
       enumer3.nextElement();
@@ -611,14 +612,13 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       final FixWrapper fw3 = (FixWrapper) enumer3.nextElement();
       assertNotNull("Found a fix", fw3);
       
-//      listLegs(segW);
-
       // do the split
       final Vector<TrackSegment> segs3 = segW.splitTrack(fw3, false);
       assertEquals(2, segs2.size());
 
-//      listLegs(segW);
-      
+      infill.reconstruct();
+      System.out.println(infill.getSegmentNames());
+
       TrackSegment newSeg3 = segs3.get(0);
       
       assertEquals("correct before", newSeg2, infill.getBeforeSegment());
