@@ -224,8 +224,13 @@ public class RCPIslandEvolution
 						new ArrayList<CompositeRoute>();
 				for (int i = 0; i < Math.min(40, islandPopulations.get(0).size()); i++)
 				{
-					compositeRoutes.add(solutionGenerator.solutionToRoute(
-							islandPopulations.get(0).get(i), false));
+					final List<StraightRoute> solution = islandPopulations.get(0).get(i);
+          final CompositeRoute route = solutionGenerator.solutionToRoute(
+							solution, false);
+          if(route.isPossible())
+          {
+            compositeRoutes.add(route);
+          }
 				}
 				
 				// broadcast the completed routes
