@@ -267,8 +267,19 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 		{
 			if (listener instanceof IGASolutionsListener)
 			{
+			  // do some spring cleaning
+			  List<CompositeRoute> possibleRoutes = new ArrayList<CompositeRoute>();
+			  double lowScore = Double.MAX_VALUE;
+			  for(CompositeRoute route: topRoutes)
+			  {
+			    if(route.isPossible())
+			    {
+			      possibleRoutes.add(route);
+			      lowScore = Math.min(lowScore,  route.getScore());
+			    }
+			  }
 				((IGASolutionsListener) listener).iterationComputed(
-						new ArrayList<CompositeRoute>(topRoutes), topScore);
+						possibleRoutes, lowScore);
 			}
 		}
 	}
