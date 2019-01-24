@@ -154,7 +154,7 @@ public class ExportPPTDialog extends Dialog
     createButton(parent, IDialogConstants.OK_ID, "Export", true);
     createButton(parent, IDialogConstants.CANCEL_ID,
         IDialogConstants.CANCEL_LABEL, false);
-    enableOK(false);
+    getButton(OK).setEnabled(false);
 
   }
 
