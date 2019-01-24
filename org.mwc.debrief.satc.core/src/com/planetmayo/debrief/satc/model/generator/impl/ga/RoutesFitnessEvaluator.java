@@ -127,31 +127,46 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
     {
       error = 0;
     }
-    else if (route.getExtremumsCount() == 1)
+    else /* if (route.getExtremumsCount() == 1)*/
     {
       double min = Math.min(startSpeed, endSpeed);
       double max = Math.max(startSpeed, endSpeed);
 
-      double range = max - min;
-      double scaleFactor = 10d;
+      double bigError = 1.0E45;
+      
+//      double range = max - min;
+//      double scaleFactor = 10d;
+      final double threshold = 3; // 5.8 kts
 
       if (minAlteringSpeed < min)
       {
-        double diff = min - minAlteringSpeed;
-        error += scaleFactor * Math.pow(diff - range, 2);
+        double diff = Math.abs(min - minAlteringSpeed);
+        if(diff > threshold)
+        {
+          // just mark the whole route as impossible
+          previous.setImpossible();
+          error += bigError;
+        }
+//        error += scaleFactor * Math.pow(diff - range, 2);
         // error += alteringSpeedError(min - minAlteringSpeed);
       }
       if (maxAlteringSpeed > max)
       {
-        double diff = maxAlteringSpeed - max;
-        error += scaleFactor * Math.pow(diff - range, 2);
+        double diff = Math.abs(maxAlteringSpeed - max);
+        if(diff > threshold)
+        {
+          // just mark the whole route as impossible
+          previous.setImpossible();
+          error += bigError;
+        }
+//        error += scaleFactor * Math.pow(diff - range, 2);
         // error += alteringSpeedError(maxAlteringSpeed - max);
       }
     }
-    else
-    {
-      error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
-    }
+//    else
+//    {
+//      error += 1.5 * alteringSpeedError(maxAlteringSpeed - minAlteringSpeed);
+//    }
     return error;
   }
 
