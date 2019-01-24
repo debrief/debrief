@@ -31,6 +31,22 @@ public class CompositeRoute
 		_legs = new ArrayList<CoreRoute>();
 	}
 	
+	/** convenience function to determine if all legs
+	 * in this route are possible
+	 * @return yes/no
+	 */
+	public boolean isPossible()
+	{
+	  for(final CoreRoute leg: _legs)
+	  {
+	    if(!leg.isPossible())
+	    {
+	      return false;
+	    }
+	  }
+	  return true;
+	}
+	
 	public CompositeRoute(Collection<CoreRoute> legs) 
 	{
 		_legs = new ArrayList<CoreRoute>();
