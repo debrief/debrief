@@ -16,10 +16,15 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -27,6 +32,7 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
@@ -39,6 +45,7 @@ import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.mwc.debrief.lite.DbriefJMapPane1;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
@@ -66,7 +73,7 @@ public class GeoToolMapRenderer implements BaseMap
     public void paint(final Graphics gc);
   }
 
-  private JMapPane mapPane;
+  private DbriefJMapPane1 mapPane;
   private MapContent mapComponent;
 
   private Graphics graphics;
@@ -75,6 +82,7 @@ public class GeoToolMapRenderer implements BaseMap
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
+  
   @Override
   public void addMapTool(final JRibbonBand mapBand,final JRibbon ribbon)
   {
@@ -102,7 +110,7 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void createMapLayout()
   {
-    mapPane = new JMapPane()
+    mapPane = new DbriefJMapPane1()
     {
 
       /**
@@ -114,15 +122,41 @@ public class GeoToolMapRenderer implements BaseMap
       protected void paintComponent(final Graphics arg0)
       {
         super.paintComponent(arg0);
-
         paintEvent(arg0);
       }
+     
+      
     };
 
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapComponent);
-  }
+
+    mapPane.addComponentListener(new ComponentAdapter() {
+    	@Override
+    	public void componentResized(ComponentEvent e) {
+    		Rectangle rect = mapPane.getVisibleRect();
+    		
+    		//mapPane.scaleImage(mapPane.getBaseImage(), 2.0f);
+    	
+    		//  		mapPane.setSize(600, 300);
+//    		rect.width = rect.width - 1;
+//    		Rectangle r = mapComponent.getViewport().getScreenArea();
+//    		System.out.println(" 1.....resize window..." + rect);
+//    		System.out.println(" 2.....map component screen area..." + r);
+//    		System.out.println(" 3.....mappane.bounds..." + mapPane.bounds());
+    		
+//    		if(r.width == 0)
+//    		mapComponent.getViewport().setScreenArea(r);
+//    		else {
+//    			mapPane.setSize(mapPane.bounds().width, mapPane.getHeight());
+//    			mapComponent.getViewport().setScreenArea(mapPane.bounds());
+//    			mapComponent.getViewport().getScreenToWorld();
+//    		}
+    	    
+      	}
+	});
+   }
 
   /**
    * returns java.awt.Graphics object
@@ -218,4 +252,11 @@ public class GeoToolMapRenderer implements BaseMap
   {
     return mapPane;
   }
+  
+  public void resizeMapArea() {
+	  MapViewport mvp = new MapViewport();
+      mvp.setScreenArea(mapPane.bounds());
+	  mapComponent.setViewport(mvp);
+  }
+  
 }

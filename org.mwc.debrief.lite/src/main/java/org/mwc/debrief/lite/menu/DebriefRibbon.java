@@ -22,6 +22,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ import javax.swing.AbstractAction;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.DbriefJMapPane1;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
@@ -82,6 +86,8 @@ public class DebriefRibbon
   private JRibbon theRibbon;
   private GeoToolMapRenderer _geoMapRenderer;
 
+  
+  private int ctr = 0;
   public DebriefRibbon(JRibbonFrame frame, Layers layers,
       DebriefLiteToolParent parent, GeoToolMapRenderer geoMapRenderer)
   {
@@ -89,6 +95,33 @@ public class DebriefRibbon
     _toolParent = parent;
     theFrame = frame;
     _geoMapRenderer = geoMapRenderer;
+    theFrame.addComponentListener(new ComponentAdapter() {
+	
+    	@Override
+    	public void componentResized(ComponentEvent e) {
+    		// TODO Auto-generated method stub
+    		super.componentResized(e);
+    		if(ctr >1) {
+    		 _geoMapRenderer.resizeMapArea();
+    		}
+    		ctr++;
+    	}
+    });
+    
+    
+    final DbriefJMapPane1 mapPane = (DbriefJMapPane1)_geoMapRenderer.getMap();
+    mapPane.addComponentListener(new ComponentAdapter() {
+    	@Override
+    	public void componentResized(ComponentEvent e) {
+    		super.componentResized(e);
+    		if(DebriefLiteApp.parentLoaded) {
+    			//theFrame.setSize(theFrame.getWidth()+1, theFrame.getHeight());
+    			//_geoMapRenderer.resizeMapArea();
+    		}
+      	}
+	});
+    
+    
   }
 
   public void setProperties(PropertiesPanel properties)

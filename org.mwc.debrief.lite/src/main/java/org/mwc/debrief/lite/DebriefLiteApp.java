@@ -21,7 +21,12 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -38,6 +43,7 @@ import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
+import org.geotools.map.MapViewport;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -78,6 +84,7 @@ public class DebriefLiteApp implements FileDropListener
   private SwingLayerManager layerManager;
   private final JPanel outlinePanel = new JPanel();
   
+  public static boolean parentLoaded;
 
   private void addOutlineView(final JPanelWithTitleBar jTitleBar,
       final ToolParent toolParent, UndoBuffer undoBuffer)
@@ -134,12 +141,14 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteSession session;
   private final JLabel statusBar = new JLabel("Status bar for displaying statuses");
   
+  private final MapContent mapComponent;
+    
   public DebriefLiteApp()
   {
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
+    mapComponent = geoMapRenderer.getMapComponent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
@@ -175,7 +184,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void dataExtended(final Layers theData)
       {
-        mapPane.repaint();
+    	  mapPane.repaint();
       }
 
       @Override
@@ -208,6 +217,29 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
+    
+    // register resize listener
+    theFrame.addComponentListener(new ComponentAdapter() {
+    	@Override
+    	public void componentResized(ComponentEvent e) {
+    		
+    		SwingUtilities.invokeLater(new Runnable() {
+
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					  if(!parentLoaded)
+						  parentLoaded = true;
+					  else {
+						  theFrame.validate();
+					  }
+					  //theFrame.repaint();
+					  //theFrame.validate();
+				}
+    		});
+     	}
+	});
+
   }
 
   private void createAppPanels(GeoToolMapRenderer geoMapRenderer,
@@ -227,6 +259,15 @@ public class DebriefLiteApp implements FileDropListener
         "Notes");
     final JSplitPane graphSplit = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
         true, mapPane, graphPane);
+    
+    graphSplit.addPropertyChangeListener(new PropertyChangeListener() {
+		
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			// TODO Auto-generated method stub
+		}
+	});
+    
     final JSplitPane leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
         outlinePanel, graphSplit);
     final JSplitPane rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
@@ -439,5 +480,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     statusBar.setText(message);
   }
+
 
 }
