@@ -977,7 +977,14 @@ public class MaintainContributionsView extends ViewPart
 
     // remember the times for which we have states
     ArrayList<Date> valueTimes = new ArrayList<Date>();
-
+    
+    if(topRoutes.isEmpty())
+    {
+      performanceChart.getTitle().setText("None found");
+      performanceChart.redraw();
+      return;
+    }
+    
     // ok - have a look at the scores
     Iterator<CoreRoute> legIter = topRoutes.get(0).getLegs().iterator();
     while (legIter.hasNext())
@@ -1105,7 +1112,7 @@ public class MaintainContributionsView extends ViewPart
 
     final String perfString;
     if (value > 200d)
-      perfString = "Unachievable";
+      perfString = "Unachievable:" + (int)value;
     else
       perfString = PERFORMANCE_TITLE + (int) value;
 
