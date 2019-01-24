@@ -137,23 +137,7 @@ public class GeoToolMapRenderer implements BaseMap
     	public void componentResized(ComponentEvent e) {
     		Rectangle rect = mapPane.getVisibleRect();
     		
-    		//mapPane.scaleImage(mapPane.getBaseImage(), 2.0f);
-    	
-    		//  		mapPane.setSize(600, 300);
-//    		rect.width = rect.width - 1;
-//    		Rectangle r = mapComponent.getViewport().getScreenArea();
-//    		System.out.println(" 1.....resize window..." + rect);
-//    		System.out.println(" 2.....map component screen area..." + r);
-//    		System.out.println(" 3.....mappane.bounds..." + mapPane.bounds());
-    		
-//    		if(r.width == 0)
-//    		mapComponent.getViewport().setScreenArea(r);
-//    		else {
-//    			mapPane.setSize(mapPane.bounds().width, mapPane.getHeight());
-//    			mapComponent.getViewport().setScreenArea(mapPane.bounds());
-//    			mapComponent.getViewport().getScreenToWorld();
-//    		}
-    	    
+       	    
       	}
 	});
    }
