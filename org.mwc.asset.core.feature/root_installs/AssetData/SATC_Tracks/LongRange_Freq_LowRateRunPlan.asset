@@ -10,28 +10,79 @@
 		<Surface Name="SUBJECT">
 			<Category Type="FISHING_VESSEL" Force="RED" Environment="SURFACE" />
 			<SensorFit></SensorFit>
-			<Status Course="90" Fuel="100">
+			<Status Course="0" Fuel="100">
 				<Location>
-					<shortLocation Lat="60" Long="-0.05"></shortLocation>
+					<shortLocation Lat="60,2" Long="0.15"></shortLocation>
 				</Location>
-				<Speed Value="6" Units="kts" />
+				<Speed Value="4.4" Units="kts" />
 			</Status>
 			<Waterfall Name="subject route">
-				<RectangleWander Name="">
-					<Area>
-						<TopLeft>
-							<shortLocation Lat="60.2" Long="0.3"></shortLocation>
-						</TopLeft>
-						<BottomRight>
-							<shortLocation Lat="59.9" Long="-0.3"></shortLocation>
-						</BottomRight>
-					</Area>
-					<Speed Value="6" Units="kts" />
-					<Height Value="0.0" Units="ft" />
-				</RectangleWander>
+				<Move Name="" Course="005">
+					<Vector Value="7.3" Units="km" />
+				</Move>
+				<Move Name="" Course="315">
+					<Vector Value="9.3" Units="km" />
+				</Move>				
+				<Move Name="" Course="270">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="080">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="250">
+					<Vector Value="27.3" Units="km" />
+				</Move>
+				<Move Name="" Course="185">
+					<Vector Value="24.3" Units="km" />
+				</Move>
+				<Move Name="" Course="145">
+					<Vector Value="7.3" Units="km" />
+				</Move>
+				<Move Name="" Course="190">
+					<Vector Value="8.3" Units="km" />
+				</Move>
+				<Move Name="" Course="225">
+					<Vector Value="8.3" Units="km" />
+				</Move>
+				<Move Name="" Course="145">
+					<Vector Value="8.3" Units="km" />
+				</Move>
+				<Move Name="" Course="220">
+					<Vector Value="8.3" Units="km" />
+				</Move>
+				<Move Name="" Course="090">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="010">
+					<Vector Value="9.6" Units="km" />
+				</Move>
+				<Move Name="" Course="100">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="330">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="190">
+					<Vector Value="9.5" Units="km" />
+				</Move>
+				<Move Name="" Course="050">
+					<Vector Value="28.3" Units="km" />
+				</Move>
+				<Move Name="" Course="010">
+					<Vector Value="23.3" Units="km" />
+				</Move>
+				<Move Name="" Course="340">
+					<Vector Value="9.3" Units="km" />
+				</Move>
+				<Move Name="" Course="280">
+					<Vector Value="23.3" Units="km" />
+				</Move>
+				<Move Name="" Course="250">
+					<Vector Value="24.3" Units="km" />
+				</Move>
 			</Waterfall>
 			<RadiatedCharacteristics>
-				<Narrowband BaseNoiseLevel="100" Frequency="150" />
+				<Narrowband BaseNoiseLevel="300" Frequency="150" />
 			</RadiatedCharacteristics>
 			<SurfaceMovementCharacteristics Name=""
 				FuelUsageRate="0.0">
@@ -45,16 +96,17 @@
 		<Surface Name="SENSOR">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
 			<SensorFit>
-				<TypedCookieSensor Working="true" Name="NB_BRG"
+				<TypedCookieSensor Working="false" Name="NB_BRG"
 					ProducesRange="false">
 					<TypedRangeDoublet>
 						<Type Name="RED" />
 						<DetectionRange Value="125" Units="nm" />
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
-				<NarrowbandSensor Name="NB_FREQ" Working="false"
-					HasBearing="false">
-					<SteadyTime Value="0.0" Units="millis" />
+				<NarrowbandSensor Name="NB_FREQ" Working="true"
+					HasBearing="true">
+					<SensorOffset Value="1" Units="km" />
+					<SteadyTime Value="6" Units="minutes" />
 				</NarrowbandSensor>
 			</SensorFit>
 			<Status Course="40" Fuel="100">
