@@ -104,7 +104,7 @@
 					</TypedRangeDoublet>
 				</TypedCookieSensor>
 				<NarrowbandSensor Name="NB_FREQ" Working="true"
-					HasBearing="true">
+					HasBearing="true" CanProduceRange="false">
 					<SensorOffset Value="1" Units="km" />
 					<SteadyTime Value="6" Units="minutes" />
 				</NarrowbandSensor>
