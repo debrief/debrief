@@ -260,26 +260,15 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	 * @param topScore
 	 *          the score of the best performing route
 	 */
-	protected void fireIterationComputed(List<CompositeRoute> topRoutes,
-			double topScore)
+	protected void fireIterationComputed(final List<CompositeRoute> topRoutes,
+			final double topScore)
 	{
 		for (IGenerateSolutionsListener listener : _readyListeners)
 		{
 			if (listener instanceof IGASolutionsListener)
 			{
-			  // do some spring cleaning
-			  List<CompositeRoute> possibleRoutes = new ArrayList<CompositeRoute>();
-			  double lowScore = Double.MAX_VALUE;
-			  for(CompositeRoute route: topRoutes)
-			  {
-			    if(route.isPossible())
-			    {
-			      possibleRoutes.add(route);
-			      lowScore = Math.min(lowScore,  route.getScore());
-			    }
-			  }
 				((IGASolutionsListener) listener).iterationComputed(
-						possibleRoutes, lowScore);
+				    topRoutes, topScore);
 			}
 		}
 	}
