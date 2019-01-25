@@ -1,5 +1,9 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.event.ActionEvent;
+
+import javax.swing.AbstractAction;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -7,23 +11,24 @@ import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
+import org.pushingpixels.flamingo.api.common.JCommandButtonStrip.StripOrientation;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
@@ -128,17 +133,9 @@ public class DebriefRibbonInsert
                     WorldDistance.DEGS)), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
-    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "images/16/polygon.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Polygon", "images/polygon_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new polygon", new PolygonShape(null),
-                DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM);
+    final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
+        "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
+            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM);
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
         "images/16/line.png", new CreateShape(_toolParent, _theProperties,
@@ -175,32 +172,29 @@ public class DebriefRibbonInsert
                 DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
-    final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "images/arc_add.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Arc", "images/arc_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new arc", new ArcShape(centre,
-                new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
-                false), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM);
-
-    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
-    drawingMenu.startGroup("Toggle for select target layer");
     
-    drawingMenu.startGroup("Dynamic Shapes");
-    final JCommandButtonStrip dynShapesStrip = new JCommandButtonStrip();
-    final JCommandButton sensorArcCmd = MenuUtils.addCommandButton("Polygon",
-        "images/polygon.png", null, CommandButtonDisplayState.FIT_TO_ICON);
-    dynShapesStrip.add(sensorArcCmd);
+    final JCommandButtonStrip shapesStrip = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
+    shapesStrip.setDisplayState(CommandButtonDisplayState.MEDIUM);
+    shapesStrip.add(circleCmd);
+    shapesStrip.add(labelCmd);
+    shapesStrip.add(ellipseShapeCmd);
+    shapesStrip.add(lineCmd);
+    drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip));
+    //drawingMenu.startGroup();
+    final JCommandButtonStrip shapesStrip2 = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
+    shapesStrip2.setDisplayState(CommandButtonDisplayState.MEDIUM);
+    shapesStrip2.add(rectCmd);
+    final JCommandToggleButton layerSelectCmd = MenuUtils.addCommandToggleButton("Toggle for select \ntarget layer", "images/16/layer_mgr.png", new AbstractAction()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        System.out.println("Action clicked");
+      }
+    }, CommandButtonDisplayState.MEDIUM);
+    shapesStrip2.add(layerSelectCmd);
+    drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip2));
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
     return drawingMenu;
