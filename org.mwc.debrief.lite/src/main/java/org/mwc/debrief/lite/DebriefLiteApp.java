@@ -145,7 +145,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame = new JRibbonFrame(appName 
         + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
     splashScreen.updateMessage("Loading map content..");
-        final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
+    final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     splashScreen.updateMessage("Initializing Debrief Lite");
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
@@ -204,7 +204,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), new Dimension(32,32)));
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
     // create the components
     splashScreen.updateMessage("Initializing screen...");
     initForm();

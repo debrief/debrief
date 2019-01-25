@@ -663,7 +663,7 @@ abstract public class AnalysisView extends PlainView implements
 
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Label",
 				new CreateLabel(_theParent, _theProperties, _theSession.getData(),
-						_theChart, "Label", "images/label_add.png"), null, ' '));
+				    bounds, "Label", "images/label_add.png"), null, ' '));
 		_theTools.addElement(new MenuItemInfo("Drawing", null, "Create Ellipse",
 				new CreateShape(_theParent, _theProperties, _theSession.getData(),
 					 "Ellipse", "images/ellipse_add.png", bounds)
