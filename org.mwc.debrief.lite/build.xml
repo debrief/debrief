@@ -101,6 +101,7 @@
 			<fileset dir="../org.geotools/libs" includes="*.jar"/>
 			<fileset dir="" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
+			<fileset dir="libs" includes="*.jar"/>
 		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-1.0.377.zip">
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
