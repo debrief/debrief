@@ -203,7 +203,7 @@ public class DebriefLiteApp implements FileDropListener
     
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo.getVersion()
         + ")");
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon.png"), MenuUtils.ICON_SIZE_32));
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane);
