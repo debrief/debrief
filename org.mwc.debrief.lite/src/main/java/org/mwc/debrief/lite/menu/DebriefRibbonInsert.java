@@ -129,8 +129,8 @@ public class DebriefRibbonInsert
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
             return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
-                new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-                    WorldDistance.DEGS)), DebriefColors.RED, null);
+                new WorldDistance(5, WorldDistance.NM), new WorldDistance(3,
+                    WorldDistance.NM)), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
     final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
@@ -146,7 +146,8 @@ public class DebriefRibbonInsert
           {
             return new ShapeWrapper("new line", new LineShape(centre, centre
                 .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-                    0.05, 0))), DebriefColors.RED, null);
+                    new WorldDistance(5, WorldDistance.NM), new WorldDistance(0,
+                        WorldDistance.NM)))), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
@@ -156,9 +157,11 @@ public class DebriefRibbonInsert
           @Override
           protected ShapeWrapper getShape(final WorldLocation centre)
           {
-            return new ShapeWrapper("new rectangle", new RectangleShape(centre,
-                centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
-                    45), 0.05, 0))), DebriefColors.RED, null);
+            return new ShapeWrapper("new rectangle", new RectangleShape(centre
+                .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45),
+                    -0.05, 0)), centre.add(new WorldVector(
+                        MWC.Algorithms.Conversions.Degs2Rads(45), 0.05, 0))),
+                DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
