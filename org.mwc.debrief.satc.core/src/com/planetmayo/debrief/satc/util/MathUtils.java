@@ -14,6 +14,10 @@
  */
 package com.planetmayo.debrief.satc.util;
 
+import java.util.Random;
+
+import org.uncommons.maths.random.MersenneTwisterRNG;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -221,6 +225,15 @@ public class MathUtils
 				if (y < 0) return atan - Math.PI;
 			}
 			return atan;
+	}
+	
+	/** get a new random number generator
+	 * 
+	 * @return
+	 */
+	public static Random getRNG()
+	{
+	  return new MersenneTwisterRNG();
 	}
 
 	public static boolean rayTracing(Point point, Geometry polygon, AffineTransformation transform)

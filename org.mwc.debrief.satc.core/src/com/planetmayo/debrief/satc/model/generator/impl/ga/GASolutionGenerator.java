@@ -20,7 +20,6 @@ import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.termination.ElapsedTime;
@@ -39,6 +38,7 @@ import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 
 public class GASolutionGenerator extends AbstractSolutionGenerator
@@ -194,7 +194,7 @@ public class GASolutionGenerator extends AbstractSolutionGenerator
 	private void runGA(final IProgressMonitor progressMonitor)
 			throws InterruptedException
 	{
-		Random rng = new MersenneTwisterRNG();
+		Random rng = MathUtils.getRNG();
 		final RCPIslandEvolution engine = new RCPIslandEvolution(this,
 				straightLegs, 4, rng);
 		TerminationCondition progressMonitorCondition = new TerminationCondition()

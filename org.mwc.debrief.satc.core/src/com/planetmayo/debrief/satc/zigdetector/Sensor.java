@@ -8,6 +8,8 @@ import java.util.Random;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.planetmayo.debrief.satc.util.MathUtils;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 public class Sensor
@@ -16,7 +18,7 @@ public class Sensor
 	private long[] times;
 	private double[] bearings;
 	private double[] rawBearings;
-	private final Random genny = new Random();
+	private final Random genny = MathUtils.getRNG();
 
 	public Sensor(final String path) throws IOException
 	{

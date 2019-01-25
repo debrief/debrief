@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.uncommons.maths.random.MersenneTwisterRNG;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
@@ -35,6 +34,7 @@ import com.planetmayo.debrief.satc.model.legs.CoreRoute;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc.util.MathUtils;
 
 public class SASolutionGenerator extends AbstractSolutionGenerator
 {
@@ -182,7 +182,7 @@ public class SASolutionGenerator extends AbstractSolutionGenerator
 		@SuppressWarnings("unchecked")
 		final Job<List<CoreRoute>, Void>[] jobs = new Job[parameters.getParallelThreads()];
 		
-		final Random rnd = new MersenneTwisterRNG();		
+		final Random rnd = MathUtils.getRNG();		
 		final Semaphore semaphore = new Semaphore(-parameters.getParallelThreads() + 1);
 		final AtomicBoolean hasException = new AtomicBoolean(false);
 		
