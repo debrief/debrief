@@ -48,7 +48,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
 
   static void renderVersion(Graphics2D g) {
     g.setComposite(AlphaComposite.Clear);
-    g.fillRect(0,170,600,170);
+    g.fillRect(120,140,600,150);
     g.setPaintMode();
     g.setColor(Color.BLACK);
     if(debriefVersion==null) {
@@ -59,7 +59,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   
   static void renderSplashFrame(Graphics2D g, String message) {
     g.setComposite(AlphaComposite.Clear);
-    g.fillRect(0,140,600,80);
+    g.fillRect(0,140,300,80);
     g.setPaintMode();
     g.setColor(Color.RED);
     g.drawString(message, 20, 170);
