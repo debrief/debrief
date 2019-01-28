@@ -50,7 +50,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
     g.fillRect(120,140,200,40);
     g.setPaintMode();
     g.setColor(Color.RED);
-    g.drawString(message, 120, 150);
+    g.drawString(message, 600, 150);
   }
   public DisplaySplash(int numTasks) {
     super();
@@ -61,6 +61,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
       System.out.println("SplashScreen.getSplashScreen() returned null");
       return;
     }
+    updateMessage("Loading Debrief Lite version:"+debriefVersion);
 
   }
 
@@ -113,8 +114,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
       System.out.println("g is null");
       return;
     }
-
-    renderSplashFrame(g, "Loading Debrief Lite");
+    renderSplashFrame(g, "Loading Debrief Lite:"+ debriefVersion);
     splash.update();
     for(int i=0;i<numTasks;i++) {
       try {
