@@ -15,7 +15,6 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -33,12 +32,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
 import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
-import org.jdesktop.swingx.JXCollapsiblePane;
-import org.jdesktop.swingx.JXPanel;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -81,17 +77,24 @@ public class DebriefLiteApp implements FileDropListener
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
-  private SwingLayerManager layerManager;
-  private final JXCollapsiblePaneWithTitle outlinePanel =
-      new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
-  private void addOutlineView(final ToolParent toolParent,
-      UndoBuffer undoBuffer)
+  /**
+   * creates a scroll pane with map
+   *
+   * @param geoMapRenderer
+   * @param dropSupport
+   *
+   * @return
+   */
+  private static Component createMapPane(
+      final GeoToolMapRenderer geoMapRenderer,
+      final FileDropSupport dropSupport)
   {
-    layerManager = new OutlinePanelView(undoBuffer);
-    layerManager.setObject(_theLayers);
-    layerManager.setParent(toolParent);
-    outlinePanel.add(layerManager, BorderLayout.CENTER);
+    geoMapRenderer.createMapLayout();
+    final MapBuilder builder = new MapBuilder();
+    final Component mapPane = builder.setMapRenderer(geoMapRenderer).build();
+    dropSupport.addComponent(mapPane);
+    return mapPane;
   }
 
   private static JScrollPane createScrollPane(
@@ -108,6 +111,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     javax.swing.SwingUtilities.invokeLater(new Runnable()
     {
+      @Override
       public void run()
       {
         new DebriefLiteApp();
@@ -127,6 +131,11 @@ public class DebriefLiteApp implements FileDropListener
     theSuffix = filename.substring(pos, filename.length());
     return theSuffix.toUpperCase();
   }
+
+  private SwingLayerManager layerManager;
+
+  private final JXCollapsiblePaneWithTitle outlinePanel =
+      new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
   private final JRibbonFrame theFrame;
 
@@ -171,7 +180,7 @@ public class DebriefLiteApp implements FileDropListener
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers);
-    UndoBuffer undoBuffer = session.getUndoBuffer();
+    final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
@@ -219,12 +228,21 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
 
-  private void createAppPanels(GeoToolMapRenderer geoMapRenderer,
-      UndoBuffer undoBuffer, FileDropSupport dropSupport,
+  private void addOutlineView(final ToolParent toolParent,
+      final UndoBuffer undoBuffer)
+  {
+    layerManager = new OutlinePanelView(undoBuffer);
+    layerManager.setObject(_theLayers);
+    layerManager.setParent(toolParent);
+    outlinePanel.add(layerManager, BorderLayout.CENTER);
+  }
+
+  private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
+      final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane)
   {
-    final Dimension frameSize = theFrame.getSize();
-    final int width = (int) frameSize.getWidth();
+    //final Dimension frameSize = theFrame.getSize();
+    //final int width = (int) frameSize.getWidth();
 
     theFrame.add(mapPane, BorderLayout.CENTER);
 
@@ -235,7 +253,7 @@ public class DebriefLiteApp implements FileDropListener
      * final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar( "Outline"); final
      * JPanelWithTitleBar editorPanel = new JPanelWithTitleBar( "Plot Editor"); final
      * JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-     * 
+     *
      * final JScrollPane graphPane = createScrollPane(graphPanel); final JPanelWithTitleBar
      * notesPane = new JPanelWithTitleBar( "Notes"); final JSplitPane graphSplit = new
      * JSplitPane(JSplitPane.VERTICAL_SPLIT, true, mapPane, graphPane); final JSplitPane leftSplit =
@@ -243,14 +261,14 @@ public class DebriefLiteApp implements FileDropListener
      * rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
      * rightSplit.setOneTouchExpandable(true); leftSplit.setOneTouchExpandable(true);
      * graphSplit.setOneTouchExpandable(true);
-     * 
+     *
      * graphSplit.setDividerSize(42);
-     * 
+     *
      * rightSplit.setDividerLocation(3 * width / 4); graphSplit.setDividerLocation(300);
      * leftSplit.setDividerLocation(width / 3); rightSplit.setResizeWeight(0.9);
      * graphSplit.setResizeWeight(0.5); editorPanel.addMaxListenerFor(leftSplit, graphSplit);
      * graphPanel.addMinListenerFor(graphSplit);
-     * 
+     *
      * theFrame.add(rightSplit, BorderLayout.CENTER); theFrame.add(statusBar, BorderLayout.SOUTH);
      */
 
@@ -260,24 +278,6 @@ public class DebriefLiteApp implements FileDropListener
         geoMapRenderer);
   }
 
-  /**
-   * creates a scroll pane with map
-   * 
-   * @param geoMapRenderer
-   * @param dropSupport
-   *
-   * @return
-   */
-  private static Component createMapPane(GeoToolMapRenderer geoMapRenderer,
-      FileDropSupport dropSupport)
-  {
-    geoMapRenderer.createMapLayout();
-    final MapBuilder builder = new MapBuilder();
-    Component mapPane = builder.setMapRenderer(geoMapRenderer).build();
-    dropSupport.addComponent(mapPane);
-    return mapPane;
-  }
-
   protected void doPaint(final Graphics gc)
   {
     final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
@@ -285,6 +285,11 @@ public class DebriefLiteApp implements FileDropListener
     dest.startDraw(gc);
     _theLayers.paint(dest);
     dest.endDraw(gc);
+  }
+
+  protected void exit()
+  {
+    theFrame.dispose();
   }
 
   @Override
@@ -393,14 +398,9 @@ public class DebriefLiteApp implements FileDropListener
     caller = null;
   }
 
-  protected void exit()
-  {
-    theFrame.dispose();
-  }
-
   /**
    * fill in the UI details
-   * 
+   *
    * @param theToolbar
    */
   private void initForm()
