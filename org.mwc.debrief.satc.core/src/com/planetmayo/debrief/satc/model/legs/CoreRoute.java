@@ -17,6 +17,7 @@ package com.planetmayo.debrief.satc.model.legs;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.State;
@@ -72,6 +73,11 @@ public abstract class CoreRoute
 	 */
 	private LegType _legType;
 	
+	 /** keep log of why a route is impossible
+	  * 
+	  */
+  private final List<String> impossibleReasons = new ArrayList<String>();
+	
 	protected CoreRoute(Point startP, Point endP, Date startTime, Date endTime,
 			String name, LegType legType)
 	{
@@ -117,9 +123,15 @@ public abstract class CoreRoute
 	 * indicate that this route is not achievable
 	 * 
 	 */
-	public void setImpossible()
+	protected void setImpossible()
 	{
 		_isPossible = false;
+	}
+	
+	public void setImpossible(final String reason)
+	{
+	  impossibleReasons.add(reason);
+	  setImpossible();
 	}
 
 	public boolean isPossible()

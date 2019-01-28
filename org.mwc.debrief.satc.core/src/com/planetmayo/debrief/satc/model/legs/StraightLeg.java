@@ -50,7 +50,7 @@ public class StraightLeg extends CoreLeg
 	 *          the set of bounded states that comprise the leg
 	 */
 	
-	void decideScaledPolygons(StraightRoute theRoute)
+	private void decideScaledPolygons(StraightRoute theRoute)
 	{
 		// do we already know this isn't possible?
 		if (!theRoute.isPossible())
@@ -129,7 +129,7 @@ public class StraightLeg extends CoreLeg
 						}*/
 						if (! MathUtils.rayTracing(endPt, thisL.getGeometry(), st))
 						{
-							theRoute.setImpossible();
+							theRoute.setImpossible("Failed scaled polygons");
 							break;							
 						}
 					}
@@ -155,7 +155,7 @@ public class StraightLeg extends CoreLeg
 		SpeedRange speedR = _states.get(0).getSpeed();
 		if (speedR != null && !speedR.allows(speed))
 		{
-			route.setImpossible();
+			route.setImpossible("incompatible speed");
 			return;
 		}
 
@@ -163,7 +163,7 @@ public class StraightLeg extends CoreLeg
 		CourseRange courseR = _states.get(0).getCourse();
 		if (courseR != null && !courseR.allows(thisC))
 		{
-			route.setImpossible();
+			route.setImpossible("incompatible course");
 			return;
 		}
 		

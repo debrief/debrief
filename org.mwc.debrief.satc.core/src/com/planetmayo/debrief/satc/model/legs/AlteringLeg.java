@@ -42,7 +42,7 @@ public class AlteringLeg extends CoreLeg
 
 		if (!speedRange.allows(speed))
 		{
-			route.setImpossible();
+			route.setImpossible("invalid speed");
 		}		
 	}
 
