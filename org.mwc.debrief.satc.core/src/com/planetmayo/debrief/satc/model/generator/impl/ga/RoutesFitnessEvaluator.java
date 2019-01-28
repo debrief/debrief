@@ -144,7 +144,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
         if(diff > threshold)
         {
           // just mark the whole route as impossible
-          previous.setImpossible();
+          previous.setImpossible("too slow");
           error += bigError;
         }
 //        error += scaleFactor * Math.pow(diff - range, 2);
@@ -156,7 +156,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
         if(diff > threshold)
         {
           // just mark the whole route as impossible
-          previous.setImpossible();
+          previous.setImpossible("too fast");
           error += bigError;
         }
 //        error += scaleFactor * Math.pow(diff - range, 2);
