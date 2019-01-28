@@ -18,13 +18,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.SwingConstants;
 
-import org.jdesktop.swingx.JXCollapsiblePane;
 import org.jdesktop.swingx.JXLabel;
 
 public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
@@ -40,19 +40,31 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
   private boolean dragging = false;
   private Point dragLocation = new Point();
 
-  public JXCollapsiblePaneWithTitle(Direction direction, String title)
+  public JXCollapsiblePaneWithTitle(final Direction direction,
+      final String title, final int defaultSize)
   {
-    super(direction);
+    super(direction, 20, false);
 
     final JXCollapsiblePane collapsiblePaneInstance = this;
-    collapsiblePaneInstance.setPreferredSize(new Dimension(400, 400));
+    collapsiblePaneInstance.setPreferredSize(new Dimension(defaultSize, defaultSize));
 
     titleLabel = new JXLabel(title, SwingConstants.CENTER);
+    final Dimension titleDimension;
+    
+    if ( direction.isVertical() )
+    {
+      titleDimension = new Dimension(defaultSize, 20);
+    }else
+    {
+      titleDimension = new Dimension(20, defaultSize);
+    }
+    titleLabel.setPreferredSize(titleDimension);
     setLayout(new BorderLayout());
 
     if (direction == Direction.LEFT)
     {
       add(titleLabel, BorderLayout.EAST);
+      setMinimumSize(new Dimension(30, titleLabel.getHeight()));
     }
     else if (direction == Direction.RIGHT)
     {
@@ -106,12 +118,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       @Override
       public void mouseMoved(MouseEvent event)
       {
-        // System.out.println("Mouse is moving over the title");
-        /*
-         * collapsiblePaneInstance.setSize(collapsiblePaneInstance.getWidth() + 10,
-         * collapsiblePaneInstance.getHeight()); collapsiblePaneInstance.doLayout();
-         * collapsiblePaneInstance.repaint();
-         */
+        System.out.println("Mouse is moving over the title");
       }
 
       @Override
@@ -119,27 +126,21 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       {
         if (dragging)
         {
-          System.out.println("It is dragging");
-          System.out.println("dragLocation.getX() = " + dragLocation.getX());
-          System.out.println("getWidth() = " + collapsiblePaneInstance.getWidth());
-          System.out.println("dragLocation.getY() = " + dragLocation.getY());
-          System.out.println("getHeight() = " + collapsiblePaneInstance.getHeight());
+          Rectangle bounds = collapsiblePaneInstance.getWrapper().getBounds();
+          int newDimension = (int) (collapsiblePaneInstance.getContentPane()
+              .getWidth() + event.getPoint().getX() - dragLocation.getX());
+          
+          collapsiblePaneInstance.getWrapper().setViewPosition(new Point(newDimension, 0));
+          
+          bounds.width = newDimension;
+          collapsiblePaneInstance.getWrapper().setBounds(bounds);
 
-          if (dragLocation.getX() > collapsiblePaneInstance.getWidth() - 10 && dragLocation
-              .getY() > collapsiblePaneInstance.getHeight() - 10)
-          {
-
-            System.out.println("DOING IT");
-            collapsiblePaneInstance.setSize((int) (collapsiblePaneInstance
-                .getWidth() + (event.getPoint().getX() - dragLocation.getX())),
-                (int) (collapsiblePaneInstance.getHeight() + (event.getPoint()
-                    .getY() - dragLocation.getY())));
-            System.out.println("Set Size(" + (int) (collapsiblePaneInstance
-                .getWidth() + (event.getPoint().getX() - dragLocation.getX()))
-                + ", " + (int) (collapsiblePaneInstance.getHeight() + (event
-                    .getPoint().getY() - dragLocation.getY())) + ")");
-            dragLocation = event.getPoint();
-          }
+          System.out.println(bounds);
+          // collapsiblePaneInstance.doLayout();
+          // collapsiblePaneInstance.validate();
+          // collapsiblePaneInstance.repaint();
+          collapsiblePaneInstance.getContentPane().validate();
+          System.out.println("Tamano actual: = " + getContentPane().getSize());
         }
       }
     });

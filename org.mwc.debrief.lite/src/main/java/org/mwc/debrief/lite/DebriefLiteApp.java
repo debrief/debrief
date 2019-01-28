@@ -39,10 +39,10 @@ import javax.swing.SwingUtilities;
 import org.geotools.map.MapContent;
 import org.jdesktop.swingx.JXCollapsiblePane;
 import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.JXCollapsiblePane.Direction;
 import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
+import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
@@ -83,7 +83,7 @@ public class DebriefLiteApp implements FileDropListener
   public static final String NOTES_ICON = "images/16/note.png";
   private SwingLayerManager layerManager;
   private final JXCollapsiblePaneWithTitle outlinePanel =
-      new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline");
+      new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
   private void addOutlineView(final ToolParent toolParent,
       UndoBuffer undoBuffer)

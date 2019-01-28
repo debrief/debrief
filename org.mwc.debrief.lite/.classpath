@@ -31,6 +31,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.cmap.legacy"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.legacy"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="libs/swingx-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-core-1.6.6-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-painters-1.6.6-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-common-1.6.6-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libs/swingx-mavensupport-1.6.6-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
