@@ -142,12 +142,21 @@ public class DebriefLiteApp implements FileDropListener
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     DisplaySplash splashScreen = new DisplaySplash(5);
+    Thread t = new Thread(splashScreen);
+    t.start();
+    try
+    {
+      t.join();
+    }
+    catch (InterruptedException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
     theFrame = new JRibbonFrame(appName 
         + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
-    splashScreen.updateMessage("Loading map content..");
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
-    splashScreen.updateMessage("Initializing Debrief Lite");
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
@@ -178,7 +187,7 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     
     final Component mapPane = createMapPane(geoMapRenderer, dropSupport);
-    splashScreen.updateMessage("Creating Map Pane...");
+    
     final DataListener dListener = new DataListener()
     {
       @Override
@@ -206,7 +215,6 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
     // create the components
-    splashScreen.updateMessage("Initializing screen...");
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane);
     splashScreen.updateMessage("Done...");

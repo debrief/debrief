@@ -21,6 +21,7 @@ package org.mwc.debrief.lite;
 import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.awt.event.ActionEvent;
@@ -45,12 +46,20 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
    */
   private static final long serialVersionUID = 1L;
 
+  static void renderVersion(Graphics2D g) {
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(0,170,600,170);
+    g.setPaintMode();
+    g.setColor(Color.BLACK);
+    g.drawString(debriefVersion, 330, 170);
+  }
+  
   static void renderSplashFrame(Graphics2D g, String message) {
     g.setComposite(AlphaComposite.Clear);
-    g.fillRect(120,140,200,40);
+    g.fillRect(0,140,600,80);
     g.setPaintMode();
     g.setColor(Color.RED);
-    g.drawString(message, 600, 150);
+    g.drawString(message, 20, 170);
   }
   public DisplaySplash(int numTasks) {
     super();
@@ -61,25 +70,18 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
       System.out.println("SplashScreen.getSplashScreen() returned null");
       return;
     }
-    updateMessage("Loading Debrief Lite version:"+debriefVersion);
+    if(splash.isVisible()) {
+      Graphics2D g = splash.createGraphics();
+      if (g == null) {
+        System.out.println("g is null");
+        return;
+      }
+      System.out.println("version updated:"+debriefVersion);
+      renderVersion(splash.createGraphics());
+    }
+    
 
   }
-
-  ActionListener al = new ActionListener() {
-
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-      if(numTasks>0) {
-        //System.out.println(count);
-        updateMessage("Loading Debrief Lite version:"+debriefVersion);
-      }
-      else {
-        closeSplash();;//dispose of splashscreen
-      }
-    }
-
-  };
-
 
   public void updateMessage(String message) {
     numTasks --;
@@ -89,6 +91,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
         System.out.println("g is null");
         return;
       }
+      System.out.println("MEssage updated:"+message);
       renderSplashFrame(g, message);
     }
   }
@@ -109,16 +112,19 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   @Override
   public void run()
   {
+    String[] tasks = {"Loading map content","Initializing Debrief Lite","Creating map pane","Initializing the screen","Done.."};
     Graphics2D g = splash.createGraphics();
     if (g == null) {
       System.out.println("g is null");
       return;
     }
-    renderSplashFrame(g, "Loading Debrief Lite:"+ debriefVersion);
-    splash.update();
-    for(int i=0;i<numTasks;i++) {
+
+    for(int i=0;i<tasks.length;i++) {
       try {
-        Thread.sleep(3000);
+        renderSplashFrame(g,tasks[i]);
+        splash.update();
+        Thread.sleep(900);
+        
       }
       catch(InterruptedException e) {
       }
