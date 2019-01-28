@@ -51,6 +51,9 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
     g.fillRect(0,170,600,170);
     g.setPaintMode();
     g.setColor(Color.BLACK);
+    if(debriefVersion==null) {
+      debriefVersion="Dev Mode";
+    }
     g.drawString(debriefVersion, 330, 170);
   }
   
