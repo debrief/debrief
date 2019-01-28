@@ -150,8 +150,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (InterruptedException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+       //ignore
     }
     theFrame = new JRibbonFrame(appName 
         + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
