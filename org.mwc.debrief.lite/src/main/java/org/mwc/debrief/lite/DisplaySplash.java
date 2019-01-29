@@ -19,17 +19,13 @@ package org.mwc.debrief.lite;
  *
  */
 import java.awt.AlphaComposite;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-import javax.swing.Timer;
 
 import org.mwc.debrief.lite.util.Utils;
 
@@ -87,24 +83,39 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   }
 
   public void updateMessage(String message) {
-    numTasks --;
-    if(splash.isVisible()) {
-      Graphics2D g = splash.createGraphics();
-      if (g == null) {
-        System.out.println("g is null");
-        return;
+    numTasks--;
+    if (splash != null)
+    {
+      if (splash.isVisible())
+      {
+        Graphics2D g = splash.createGraphics();
+        if (g == null)
+        {
+          System.out.println("g is null");
+          return;
+        }
+        System.out.println("Message updated:" + message);
+        renderSplashFrame(g, message);
       }
-      System.out.println("MEssage updated:"+message);
-      renderSplashFrame(g, message);
+    }
+    else
+    {
+      showSplashError();
     }
   }
+  
+  private void showSplashError()
+  {
+    System.err.println("Path for splash screen image should be provided in command path: -splash:src/main/java/images/splash.gif");
+  }
+  
   public void actionPerformed(ActionEvent ae) {
     System.exit(0);
   }
 
   private void closeSplash() {
     try {
-      if(splash.isVisible()) {
+      if(splash != null && splash.isVisible()) {
         splash.close();
       }
     }catch(Exception e) {
@@ -112,25 +123,38 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
     }
     toFront();
   }
+  
   @Override
   public void run()
   {
-    String[] tasks = {"Loading map content","Initializing Debrief Lite","Creating map pane","Initializing the screen","Done.."};
-    Graphics2D g = splash.createGraphics();
-    if (g == null) {
-      System.out.println("g is null");
-      return;
-    }
+    String[] tasks =
+    {"Loading map content", "Initializing Debrief Lite", "Creating map pane",
+        "Initializing the screen", "Done.."};
+    if (splash != null)
+    {
+      Graphics2D g = splash.createGraphics();
+      if (g == null)
+      {
+        System.out.println("g is null");
+        return;
+      }
 
-    for(int i=0;i<tasks.length;i++) {
-      try {
-        renderSplashFrame(g,tasks[i]);
-        splash.update();
-        Thread.sleep(900);
-        
+      for (int i = 0; i < tasks.length; i++)
+      {
+        try
+        {
+          renderSplashFrame(g, tasks[i]);
+          splash.update();
+          Thread.sleep(900);
+        }
+        catch (InterruptedException e)
+        {
+        }
       }
-      catch(InterruptedException e) {
-      }
+    }
+    else
+    {
+      showSplashError();
     }
 
   }
