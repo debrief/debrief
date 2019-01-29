@@ -99,17 +99,17 @@ public class DebriefRibbonInsert
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
         "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.MEDIUM, false);
     @SuppressWarnings("unused")
     final FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib",
         "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.MEDIUM, false);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
         "Natural Earth", "images/16/coast.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.MEDIUM, false);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
@@ -215,7 +215,7 @@ public class DebriefRibbonInsert
     @SuppressWarnings("unused")
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
         "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
-            decs, _theLayers, bounds), chartfeaturesMenu, null);
+            decs, _theLayers, bounds), chartfeaturesMenu, null, false);
     chartfeaturesMenu.startGroup("Time Marker");
     final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
         new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);

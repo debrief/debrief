@@ -64,7 +64,7 @@ public class MenuUtils
 
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority)
+      final JRibbonBand mapBand, final RibbonElementPriority priority, boolean isToggle)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -72,9 +72,16 @@ public class MenuUtils
       final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
     }
-    final FlamingoCommand command = new FlamingoCommandBuilder().setTitle(
+    FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
         commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction().build();
+        .setTitleClickAction();
+    
+    if ( isToggle )
+    {
+      builder.setToggle();
+    }
+    final FlamingoCommand command = builder.build();
+    
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;

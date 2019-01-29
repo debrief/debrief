@@ -22,6 +22,7 @@ import javax.swing.event.ChangeListener;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -166,10 +167,10 @@ public class DebriefRibbonTimeController
   private static JRibbonBand createDisplayMode()
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
-    MenuUtils.addCommand("Normal", "icons/48/normal.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP);
+    FlamingoCommand normalCommand = MenuUtils.addCommand("Normal", "icons/48/normal.png",
+        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP, true);
     MenuUtils.addCommand("Snail", "icons/48/snail.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP);
+        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP, true);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
