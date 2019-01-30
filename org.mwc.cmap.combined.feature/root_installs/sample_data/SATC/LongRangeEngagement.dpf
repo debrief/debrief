@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot xmlns="http://www.debrief.info/plot" Created="Mon Jan 28 15:13:44 GMT 2019" Name="Debrief Plot" PlotId="1548350637795">
-<details Text="Saved with Debrief version dated Fri Jan 25 13:53:10 GMT 2019"/>
+<plot xmlns="http://www.debrief.info/plot" Created="Wed Jan 30 15:37:51 GMT 2019" Name="Debrief Plot" PlotId="1548350637795">
+<details Text="Saved with Debrief version dated Tue Jan 29 14:56:26 GMT 2019"/>
 <session>
 <layers>
 <track ColorMode="Per-fix Shades" EndTimeLabels="true" InterpolatePoints="false" LineStyle="0" LineThickness="3" LinkPositions="true" Name="SENSOR" NameAtStart="true" NameLocation="Auto" NameVisible="true" PlotArrayCentre="false" PositionsVisible="true" SensorsVisible="false" SolutionsVisible="true" Symbol="Frigate" Visible="true">
@@ -11666,7 +11666,7 @@
     <minDecelRateMSS>0.2</minDecelRateMSS>
     <maxDecelRateMSS>0.4</maxDecelRateMSS>
   </vehicleType>
-  <precision>MEDIUM</precision>
+  <precision>LOW</precision>
   <contributions>
     <bearingMeasurementContribution>
       <name>Bearing data</name>
@@ -19162,7 +19162,7 @@
     </straightLegForecastContribution>
     <straightLegForecastContribution>
       <name>121416.00</name>
-      <active>true</active>
+      <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 14:16:00.0 UTC</startDate>
       <finishDate>2010-01-12 15:16:00.0 UTC</finishDate>
@@ -19191,7 +19191,7 @@
       <active>false</active>
       <weight>5</weight>
       <startDate>2010-01-12 16:44:00.0 UTC</startDate>
-      <finishDate>2010-01-12 17:52:00.0 UTC</finishDate>
+      <finishDate>2010-01-12 20:28:00.0 UTC</finishDate>
       <color>
         <red>255</red>
         <green>0</green>
@@ -19200,11 +19200,11 @@
       </color>
     </straightLegForecastContribution>
     <straightLegForecastContribution>
-      <name>121818.00</name>
-      <active>false</active>
+      <name>12 Jan 2010 20:52:00 GMT</name>
+      <active>true</active>
       <weight>5</weight>
-      <startDate>2010-01-12 18:18:00.0 UTC</startDate>
-      <finishDate>2010-01-12 19:04:00.0 UTC</finishDate>
+      <startDate>2010-01-12 20:52:00.0 UTC</startDate>
+      <finishDate>2010-01-12 23:02:00.0 UTC</finishDate>
       <color>
         <red>255</red>
         <green>0</green>
@@ -19213,11 +19213,50 @@
       </color>
     </straightLegForecastContribution>
     <straightLegForecastContribution>
-      <name>121930.00</name>
+      <name>12 Jan 2010 23:10:00 GMT</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-12 23:10:00.0 UTC</startDate>
+      <finishDate>2010-01-12 23:52:00.0 UTC</finishDate>
+      <color>
+        <red>255</red>
+        <green>0</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </color>
+    </straightLegForecastContribution>
+    <straightLegForecastContribution>
+      <name>13 Jan 2010 00:04:00 GMT</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-13 00:04:00.0 UTC</startDate>
+      <finishDate>2010-01-13 00:52:00.0 UTC</finishDate>
+      <color>
+        <red>255</red>
+        <green>0</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </color>
+    </straightLegForecastContribution>
+    <straightLegForecastContribution>
+      <name>13 Jan 2010 01:06:00 GMT</name>
+      <active>true</active>
+      <weight>5</weight>
+      <startDate>2010-01-13 01:06:00.0 UTC</startDate>
+      <finishDate>2010-01-13 01:52:00.0 UTC</finishDate>
+      <color>
+        <red>255</red>
+        <green>0</green>
+        <blue>0</blue>
+        <alpha>255</alpha>
+      </color>
+    </straightLegForecastContribution>
+    <straightLegForecastContribution>
+      <name>13 Jan 2010 02:00:00 GMT</name>
       <active>false</active>
       <weight>5</weight>
-      <startDate>2010-01-12 19:30:00.0 UTC</startDate>
-      <finishDate>2010-01-12 20:08:00.0 UTC</finishDate>
+      <startDate>2010-01-13 02:00:00.0 UTC</startDate>
+      <finishDate>2010-01-13 03:00:00.0 UTC</finishDate>
       <color>
         <red>255</red>
         <green>0</green>
@@ -19231,8 +19270,8 @@
       <weight>5</weight>
       <startDate>2010-01-12 12:00:00.0 UTC</startDate>
       <finishDate>2010-01-14 00:00:00.0 UTC</finishDate>
-      <minSpeed>2.0063333316</minSpeed>
-      <maxSpeed>2.4178888868</maxSpeed>
+      <minSpeed>2.1092222204000004</minSpeed>
+      <maxSpeed>2.3149999980000002</maxSpeed>
       <estimate>2.2635555536000003</estimate>
     </speedForecastContribution>
     <courseAnalysisContribution>
@@ -23806,10 +23845,10 @@
 </layers>
 <projection Border="1.100" PrimaryOriented="false" PrimaryOrigin="false" Type="Flat">
 <tl>
-<shortLocation Depth="0.000" Lat="60.2856166" Long="-0.7859513"/>
+<shortLocation Depth="0.000" Lat="60.2915537" Long="-0.8896368"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="59.9039864" Long="0.4876901"/>
+<shortLocation Depth="0.000" Lat="59.6281413" Long="0.3860651"/>
 </br>
 </projection>
 <gui>
@@ -23829,7 +23868,7 @@
 <property Name="Arc_Finish" Value="180"/>
 <property Name="LinkPositions" Value="true"/>
 <property Name="RED" Value="64"/>
-<property Name="CurrentTime" Value="100112 120000"/>
+<property Name="CurrentTime" Value="100113 012300"/>
 <property Name="NumRings" Value="3"/>
 <property Name="PointSize" Value="5"/>
 <property Name="LargeStep" Value="10.0 minutes"/>
