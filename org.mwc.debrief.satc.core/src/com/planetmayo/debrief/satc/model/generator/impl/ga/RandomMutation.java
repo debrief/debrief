@@ -25,41 +25,68 @@ import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 
 public class RandomMutation extends AbstractMutation
 {
-	private final RoutesCandidateFactory candidateFactory;
+  private final RoutesCandidateFactory candidateFactory;
 
-  public RandomMutation(List<StraightLeg> legs, Probability mutationProbability, RoutesCandidateFactory candidateFactory)
-	{
-		super(legs, mutationProbability);
-		this.candidateFactory = candidateFactory;
-	}
+  public RandomMutation(List<StraightLeg> legs, Probability mutationProbability,
+      RoutesCandidateFactory candidateFactory)
+  {
+    super(legs, mutationProbability);
+    this.candidateFactory = candidateFactory;
+  }
 
-	@Override
-	protected List<StraightRoute> mutate(List<StraightRoute> candidate, Random rng)
-	{
-		List<StraightRoute> random = candidateFactory.generateRandomCandidate(rng);
-		List<StraightRoute> mutated = new ArrayList<StraightRoute>();
-		for (int i = 0; i < candidate.size(); i++) 
-		{
-			StraightRoute res = candidate.get(i);
-			if (! mutationProbability.nextValue().nextEvent(rng)) 
-			{
-				for (int repeat = 0; repeat < 5; repeat++)
-				{
-					res = random.get(i);
-					legs.get(i).decideAchievableRoute(res);
-					if (res.isPossible())
-					{
-						break;
-					}
-					random = candidateFactory.generateRandomCandidate(rng);
-				}
-				if (! res.isPossible()) 
-				{
-					res = candidate.get(i);
-				}
-			}
-			mutated.add(res);			
-		}
-		return mutated;
-	}
+  @Override
+  protected List<StraightRoute> mutate(List<StraightRoute> candidate,
+      Random rng)
+  {
+    List<StraightRoute> random = null;
+    int ctr2 = 0;
+    while (random == null && ctr2 < 10)
+    {
+      ctr2++;
+      random = candidateFactory.generateRandomCandidate(rng);
+    }
+    int mCtr = 0;
+    List<StraightRoute> mutated = new ArrayList<StraightRoute>();
+    boolean valid = false;
+    while (!valid && mCtr < 10)
+    {
+      mCtr++;
+      mutated.clear();
+      for (int i = 0; i < candidate.size(); i++)
+      {
+        StraightRoute res = candidate.get(i);
+        if (!mutationProbability.nextValue().nextEvent(rng))
+        {
+          for (int repeat = 0; repeat < 5; repeat++)
+          {
+            res = random.get(i);
+            legs.get(i).decideAchievableRoute(res);
+            if (res.isPossible())
+            {
+              break;
+            }
+            // the current leg isn't possible. create a new solution
+            random = candidateFactory.generateRandomCandidate(rng);
+            int ctr = 0;
+            while (random == null && ctr < 5)
+            {
+              ctr++;
+              random = candidateFactory.generateRandomCandidate(rng);
+            }
+          }
+          if (!res.isPossible())
+          {
+            res = candidate.get(i);
+          }
+        }
+        mutated.add(res);
+      }
+      valid = RoutesCandidateFactory.checkValid(mutated);
+      if(!valid)
+      {
+      //  System.err.println("mutation failed");
+      }
+    }
+    return mutated;
+  }
 }
