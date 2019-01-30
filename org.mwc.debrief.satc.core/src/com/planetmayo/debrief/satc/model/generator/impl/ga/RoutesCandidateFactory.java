@@ -27,7 +27,9 @@ import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
+import com.planetmayo.debrief.satc.util.GeoSupport;
 import com.planetmayo.debrief.satc.util.MathUtils;
+import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 
@@ -79,7 +81,12 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 		List<List<StraightRoute>> population = new ArrayList<List<StraightRoute>>(populationSize);
 		for (int i = 0; i < populationSize; i++)
 		{
-			population.add(generateRandomCandidate(rng));
+      List<StraightRoute> newCand = null;
+      while (newCand == null)
+      {
+        newCand = generateRandomCandidate(rng);
+      }
+      population.add(newCand);
 		}
 		return Collections.unmodifiableList(population);
 	}
@@ -99,18 +106,65 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 	@Override
 	public List<StraightRoute> generateRandomCandidate(Random rng)
 	{
-		List<StraightRoute> solution = new ArrayList<StraightRoute>(straightLegs.size());
-		for (int j = 0; j < straightLegs.size(); j++)
+		List<StraightRoute> solution = new ArrayList<StraightRoute>();
+		boolean valid = false;
+		int attempts = 0;
+		while(!valid)
 		{
-			StraightLeg leg = straightLegs.get(j);
-			Point start = startPoints.get(j).next(rng);
-			Point end = endPoints.get(j).next(rng);
-			solution.add((StraightRoute) leg.createRoute(start, end, null));
+		  attempts++;
+		  solution.clear();
+	    for (int j = 0; j < straightLegs.size(); j++)
+	    {
+	      StraightLeg leg = straightLegs.get(j);
+	      Point start = startPoints.get(j).next(rng);
+	      Point end = endPoints.get(j).next(rng);
+	      solution.add((StraightRoute) leg.createRoute(start, end, null));
+	    }
+	    // see if it's valid (or drop out after 1000 attempts)
+	    if(attempts > 1000)
+	    {
+	      System.err.println("Can't solve it!");
+	      return null;
+	    }
+	    else
+	    {
+	      valid = checkValid(solution); 
+	    }
 		}
 		return solution;
 	}
 	
-	private interface PointsGenerator 
+	public static boolean checkValid(List<StraightRoute> solution)
+  {
+	  StraightRoute prev = null;
+	  for(StraightRoute route: solution)
+	  {
+	    if(prev != null)
+	    {
+	      long startTime = prev.getEndTime().getTime();
+	      Point startLoc = prev.getEndPoint();
+	      
+	      long endTime = route.getStartTime().getTime();
+	      Point endLoc = route.getStartPoint();
+	      GeodeticCalculator calc = GeoSupport.createCalculator();
+	      calc.setStartingGeographicPoint(startLoc.getX(), startLoc.getY());
+	      calc.setDestinationGeographicPoint(endLoc.getX(), endLoc.getY());
+	      double distM = calc.getOrthodromicDistance();
+	      double deltaMillis = endTime - startTime;
+	      double deltaSecs = deltaMillis / 1000;
+	      double speedMS = distM / deltaSecs;
+	      if(speedMS > 40)
+	        return false;
+	    }
+	    
+	    prev = route;
+	  }
+	  return true;
+  }
+
+
+
+  private interface PointsGenerator 
 	{
 		
 		Point next(Random rng);
