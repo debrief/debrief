@@ -79,7 +79,17 @@ public class RoutesCandidateFactory implements CandidateFactory<List<StraightRou
 		List<List<StraightRoute>> population = new ArrayList<List<StraightRoute>>(populationSize);
 		for (int i = 0; i < populationSize; i++)
 		{
-			population.add(generateRandomCandidate(rng));
+		  
+			List<StraightRoute> newRoute = null;
+			while(newRoute == null)
+			{
+			  newRoute = generateRandomCandidate(rng);
+			  if(!RandomMutation.isValid(newRoute))
+			  {
+			    newRoute = null;
+			  }
+			}
+      population.add(newRoute);
 		}
 		return Collections.unmodifiableList(population);
 	}
