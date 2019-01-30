@@ -112,7 +112,10 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
 	
 	private double calculateAlteringRouteScore(AlteringRoute route, StraightRoute previous, StraightRoute next)
 	{
-		return calculateCompliantSpeedError(route, previous, next) + calculateSShapeScore(route);
+		double speedError = calculateCompliantSpeedError(route, previous, next);
+    double shapeError = calculateSShapeScore(route);
+    System.out.println("Speed error:" + speedError + " s-shape:" + shapeError);
+    return speedError + shapeError;
 	}
 	
   private double calculateCompliantSpeedError(AlteringRoute route,
@@ -132,7 +135,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
       double min = Math.min(startSpeed, endSpeed);
       double max = Math.max(startSpeed, endSpeed);
 
-      double bigError = 1.0E45;
+      double bigError = 0.3;
       
 //      double range = max - min;
 //      double scaleFactor = 10d;
@@ -170,6 +173,7 @@ public class RoutesFitnessEvaluator implements FitnessEvaluator<List<StraightRou
     return error;
   }
 
+  @SuppressWarnings("unused")
   private double alteringSpeedError(double speedDiff)
   {
     // make this error more prominent.
