@@ -68,7 +68,12 @@ public class RCPIslandEvolution
 		islands = new ArrayList<EvolutionEngine<List<StraightRoute>>>(islandCount);
 		for (int i = 0; i < islandCount; i++)
 		{
-			islands.add(createIsland(i % 2 != 0));
+		  // we assessed the alteration speed on 
+		  // alternating islands. But, that gavie
+		  // us invalid solutions. So, always 
+		  // assess alterations
+//			islands.add(createIsland(i % 2 != 0));
+      islands.add(createIsland(true));
 		}
 		continent = createContinient();
 	}
@@ -276,7 +281,9 @@ public class RCPIslandEvolution
 			int index = islands.indexOf(island);
 			if (index > -1)
 			{
-				islands.set(index, createIsland(index % 2 != 0));
+			  // we use to alternate assessing alterations. Now assess them all
+//				islands.set(index, createIsland(index % 2 != 0));
+        islands.set(index, createIsland(true));
 				populations.set(index + 1, new ArrayList<List<StraightRoute>>());
 			}
 		}
