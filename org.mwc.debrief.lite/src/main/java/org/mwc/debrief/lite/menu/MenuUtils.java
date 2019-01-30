@@ -64,7 +64,7 @@ public class MenuUtils
 
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority)
+      final JRibbonBand mapBand, final RibbonElementPriority priority,boolean toggle)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -72,12 +72,23 @@ public class MenuUtils
       final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
     }
-    final FlamingoCommand command = new FlamingoCommandBuilder().setTitle(
+    final FlamingoCommandBuilder commandBuilder = new FlamingoCommandBuilder().setTitle(
         commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction().build();
+        .setTitleClickAction();
+    if(toggle) {
+      commandBuilder.setToggle();
+    }
+    FlamingoCommand command = commandBuilder.build();
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;
+  }
+  
+  public static FlamingoCommand addCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final JRibbonBand mapBand, final RibbonElementPriority priority)
+  {
+    return addCommand(commandName,imagePath,actionToAdd,mapBand,priority,false);
   }
 
   public static JCommandButton addCommandButton(final String commandName,

@@ -99,17 +99,17 @@ public class DebriefRibbonInsert
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
         "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        null);
     @SuppressWarnings("unused")
     final FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib",
         "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        null);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
         "Natural Earth", "images/16/coast.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        null);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
@@ -120,6 +120,18 @@ public class DebriefRibbonInsert
       final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
+    MenuUtils.addCommand("Label",
+        "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
+            _theLayers,bounds, "Polygon", "images/polygon_add.png"),drawingMenu,RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Toggle for select \ntarget layer", "images/16/layer_mgr.png", new AbstractAction()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        System.out.println("Action clicked");
+      }
+    },drawingMenu,RibbonElementPriority.TOP,true);
     drawingMenu.startGroup("Core");
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
         "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
@@ -133,9 +145,7 @@ public class DebriefRibbonInsert
                     WorldDistance.NM)), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM);
-    final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
-        "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
-            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM);
+    
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
         "images/16/line.png", new CreateShape(_toolParent, _theProperties,
@@ -176,28 +186,11 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM);
     
-    final JCommandButtonStrip shapesStrip = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
-    shapesStrip.setDisplayState(CommandButtonDisplayState.MEDIUM);
-    shapesStrip.add(circleCmd);
-    shapesStrip.add(labelCmd);
-    shapesStrip.add(ellipseShapeCmd);
-    shapesStrip.add(lineCmd);
-    drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip));
+    drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
+    drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
+    drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
+    drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
     //drawingMenu.startGroup();
-    final JCommandButtonStrip shapesStrip2 = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
-    shapesStrip2.setDisplayState(CommandButtonDisplayState.MEDIUM);
-    shapesStrip2.add(rectCmd);
-    final JCommandToggleButton layerSelectCmd = MenuUtils.addCommandToggleButton("Toggle for select \ntarget layer", "images/16/layer_mgr.png", new AbstractAction()
-    {
-      
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        System.out.println("Action clicked");
-      }
-    }, CommandButtonDisplayState.MEDIUM);
-    shapesStrip2.add(layerSelectCmd);
-    drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip2));
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
     return drawingMenu;
@@ -212,22 +205,12 @@ public class DebriefRibbonInsert
       final Layer decs)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
-    @SuppressWarnings("unused")
-    final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
-            decs, _theLayers, bounds), chartfeaturesMenu, null);
-    chartfeaturesMenu.startGroup("Time Marker");
-    final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
-    final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
-    chartfeaturesMenu.startGroup("Grid");
-    final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
+    MenuUtils.addCommand("Scale","images/16/scale.png", 
+        new CreateScale(_toolParent, _theProperties,decs, _theLayers, bounds), 
+        chartfeaturesMenu, null);
+    MenuUtils.addCommand("Grid",
         "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
+            _theLayers, bounds),chartfeaturesMenu ,null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(chartfeaturesMenu));
