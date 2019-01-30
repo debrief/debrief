@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import javax.swing.AbstractAction;
 
-import org.geotools.swing.JMapPane;
+import org.mwc.debrief.lite.map.DbriefJMapPane;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -39,7 +39,7 @@ public class DebriefRibbonFile
     @Override
     public void actionPerformed(final ActionEvent e)
     {
-      final JMapPane map = (JMapPane) mapRenderer.getMap();
+      final DbriefJMapPane map = (DbriefJMapPane) mapRenderer.getMap();
       final RenderedImage image = map.getBaseImage();
 
       if (image != null)

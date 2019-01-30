@@ -16,6 +16,8 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,11 +29,11 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
-import org.geotools.swing.JMapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
@@ -52,7 +54,7 @@ public class GeoToolMapRenderer implements BaseMap
     public void paint(final Graphics gc);
   }
 
-  private JMapPane mapPane;
+  private DbriefJMapPane mapPane;
   private MapContent mapComponent;
 
   private Graphics graphics;
@@ -69,7 +71,7 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void createMapLayout()
   {
-    mapPane = new JMapPane()
+    mapPane = new DbriefJMapPane()
     {
 
       /**
@@ -81,14 +83,19 @@ public class GeoToolMapRenderer implements BaseMap
       protected void paintComponent(final Graphics arg0)
       {
         super.paintComponent(arg0);
-
         paintEvent(arg0);
       }
     };
 
     final StreamingRenderer streamer = new StreamingRenderer();
-    mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapComponent);
+    mapPane.setRenderer(streamer);
+
+    mapPane.addComponentListener(new ComponentAdapter() {
+    	@Override
+    	public void componentResized(ComponentEvent e) {
+    	}
+	});
   }
 
   /**
@@ -184,4 +191,11 @@ public class GeoToolMapRenderer implements BaseMap
       r.paint(arg0);
     }
   }
+  
+  public void resizeMapArea() {
+	  MapViewport mvp = new MapViewport();
+      mvp.setScreenArea(mapPane.getBounds());
+	  mapComponent.setViewport(mvp);
+  }
+ 
 }

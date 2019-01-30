@@ -3,13 +3,13 @@ package org.mwc.debrief.lite.menu;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.InfoAction;
 import org.geotools.swing.action.NoToolAction;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.geotools.swing.action.ZoomOutAction;
+import org.mwc.debrief.lite.map.DbriefJMapPane;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -25,7 +25,7 @@ public class DebriefRibbonView
       final GeoToolMapRenderer _geoMapRenderer)
   {
     final JRibbonBand viewBand = new JRibbonBand("View", null);
-    final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
+    final DbriefJMapPane mapPane = (DbriefJMapPane) _geoMapRenderer.getMap();
 
     MenuUtils.addCommand("Selector", null, new NoToolAction(mapPane), viewBand,
         null);
