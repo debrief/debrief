@@ -1,5 +1,6 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,9 @@ public class DebriefRibbonView
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
     viewBand.startGroup();
     MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane), viewBand, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", new ZoomInAction(
-        mapPane), viewBand, RibbonElementPriority.TOP);
+    final ZoomInAction zoomInAction = new ZoomInAction(
+        mapPane);
+    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction, viewBand, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(
         mapPane), viewBand, RibbonElementPriority.TOP);
     viewBand.startGroup();
@@ -40,5 +42,10 @@ public class DebriefRibbonView
     viewBand.setResizePolicies(policies);
     final RibbonTask fileTask = new RibbonTask("View", viewBand);
     ribbon.addTask(fileTask);
+    
+    // lastly, run the zoom-in event, to put the map into that mode
+    // put the map into zoom mode
+    zoomInAction.actionPerformed(new ActionEvent(viewBand,
+        ActionEvent.ACTION_PERFORMED, "Click"));
   }
 }
