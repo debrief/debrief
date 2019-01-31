@@ -361,7 +361,7 @@ public class JXCollapsiblePane extends JXPanel
   private Direction direction = Direction.UP;
 
   /**
-   * Minimun size after being collapsed.
+   * Minimum size after being collapsed.
    */
   private Integer minimunAnimationSize = 0;
 
@@ -786,6 +786,15 @@ public class JXCollapsiblePane extends JXPanel
   public Dimension getMinimumSize()
   {
     return getPreferredSize();
+  }
+  
+  /**
+   * Returns the minimum size for the pane when it is collapsed
+   * @return
+   */
+  public Integer getMinimunAnimationSize()
+  {
+    return minimunAnimationSize;
   }
 
   /**

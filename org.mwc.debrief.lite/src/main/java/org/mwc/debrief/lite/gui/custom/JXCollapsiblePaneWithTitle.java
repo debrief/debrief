@@ -16,6 +16,7 @@ package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -127,7 +128,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
               .getContentPane().getWidth() + event.getPoint().getX()
               - dragLocation.getX());
 
-          bounds.width = newDimension;
+          bounds.width = Math.max(newDimension, getMinimunAnimationSize());
 
           collapsiblePaneInstance.setBounds(bounds);
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
@@ -144,5 +145,14 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
         System.out.print("");
       }
     });
+    
+    if ( collapsiblePaneInstance.getDirection().isVertical() )
+    {
+      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));      
+    }else
+    {
+      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+    }
+    
   }
 }
