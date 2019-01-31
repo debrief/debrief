@@ -27,7 +27,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 
-import org.mwc.debrief.lite.util.Utils;
+import org.mwc.debrief.lite.util.ManifestUtils;
 
 public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   private SplashScreen splash;
@@ -36,7 +36,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   private static String debriefVersion;
 
   static {
-    debriefVersion = Utils.readManifestVersion();
+    debriefVersion = ManifestUtils.readManifestVersion();
   }
   /**
    * 

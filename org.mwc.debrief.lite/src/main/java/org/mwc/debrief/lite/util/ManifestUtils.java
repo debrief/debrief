@@ -24,7 +24,7 @@ import org.mwc.debrief.lite.DebriefLiteApp;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class Utils
+public class ManifestUtils
 {
 
   public static String readManifestVersion() {
