@@ -121,7 +121,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
         splash.close();
       }
     }catch(Exception e) {
-      //ignore
+      // ignore - we're closing anyway
     }
     toFront();
   }
