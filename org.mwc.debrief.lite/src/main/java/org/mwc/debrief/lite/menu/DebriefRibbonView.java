@@ -1,11 +1,10 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.action.InfoAction;
-import org.geotools.swing.action.NoToolAction;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ResetAction;
 import org.geotools.swing.action.ZoomInAction;
@@ -26,19 +25,16 @@ public class DebriefRibbonView
   {
     final JRibbonBand viewBand = new JRibbonBand("View", null);
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
-
-    MenuUtils.addCommand("Selector", null, new NoToolAction(mapPane), viewBand,
-        null, false);
-    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", new ZoomInAction(
-        mapPane), viewBand, RibbonElementPriority.MEDIUM, false);
+    viewBand.startGroup();
+    MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane), viewBand, RibbonElementPriority.TOP);
+    final ZoomInAction zoomInAction = new ZoomInAction(
+        mapPane);
+    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction, viewBand, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(
-        mapPane), viewBand, RibbonElementPriority.MEDIUM, false);
-    MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane),
-        viewBand, null, false);
-    MenuUtils.addCommand("Info", null, new InfoAction(mapPane), viewBand, null,
-        false);
-    MenuUtils.addCommand("Reset", null, new ResetAction(mapPane), viewBand,
-        null, false);
+        mapPane), viewBand, RibbonElementPriority.TOP);
+    viewBand.startGroup();
+    MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png", new ResetAction(mapPane), viewBand,
+        null);
     final List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(viewBand));
     policies.add(new CoreRibbonResizePolicies.Mid2Low(viewBand));
@@ -46,5 +42,10 @@ public class DebriefRibbonView
     viewBand.setResizePolicies(policies);
     final RibbonTask fileTask = new RibbonTask("View", viewBand);
     ribbon.addTask(fileTask);
+    
+    // lastly, run the zoom-in event, to put the map into that mode
+    // put the map into zoom mode
+    zoomInAction.actionPerformed(new ActionEvent(viewBand,
+        ActionEvent.ACTION_PERFORMED, "Click"));
   }
 }
