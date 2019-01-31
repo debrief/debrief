@@ -2465,7 +2465,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final TrackSegment firstSeg = (TrackSegment) _theSegments.first();
       final TrackSegment lastSeg = (TrackSegment) _theSegments.last();
 
-      if ((firstSeg != null) && (!firstSeg.isEmpty()))
+      // check we have some data
+      if ((firstSeg != null) && (!firstSeg.isEmpty()) && (lastSeg != null
+          && !lastSeg.isEmpty()))
       {
 
         // see if this DTG is inside our data range
@@ -4339,12 +4341,16 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       ts2 = new TrackSegment(p2);
     }
 
+    // tell them who the daddy is
+    ts1.setWrapper(this);
+    ts2.setWrapper(this);
+
     // ok. removing the host segment will delete any infills. So, be sure to re-attach them
     reconnectInfills(relevantSegment, ts1, ts2);
 
     // now clear the positions
     removeElement(relevantSegment);
-
+    
     // and put back our new layers
     add(ts1);
     add(ts2);

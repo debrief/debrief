@@ -19,7 +19,6 @@ import java.awt.datatransfer.Clipboard;
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Undo.UndoBuffer;
 
 class LiteSession extends Session
 {

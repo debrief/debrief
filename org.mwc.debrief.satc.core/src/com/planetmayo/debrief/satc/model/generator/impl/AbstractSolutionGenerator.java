@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.Precision;
@@ -42,7 +43,9 @@ import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.TopologyException;
 
 public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 {
@@ -173,11 +176,20 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 						Geometry previousGeom = lastState.getLocation().getGeometry();
 			      if (previousGeom != null && previousGeom.getNumGeometries() == 1)
 			      {
-	            final Geometry overlap = boundedState.getLocation().getGeometry()
-	                .intersection(previousGeom);
-	            final double area = overlap.getArea();
-	            statesToDitch = new ScoredState(-area, boundedState);
-	            sortedStates.add(statesToDitch);
+              try
+              {
+                final Geometry overlap = boundedState.getLocation()
+                    .getGeometry().intersection(previousGeom);
+                final double area = overlap.getArea();
+                statesToDitch = new ScoredState(-area, boundedState);
+                sortedStates.add(statesToDitch);
+              }
+              catch (TopologyException et)
+              {
+                // ok, move on to the next one
+                SATC_Activator.log(Status.WARNING, "Bounds may be too close",
+                    et);
+              }
 			      }
 					}
 					else
@@ -505,7 +517,7 @@ public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 			}
 			before = after;
 			after = nxt;
-			AlteringRoute altering = new AlteringRoute("", before.getEndPoint(),
+			AlteringRoute altering = new AlteringRoute(before.getName()+"_a", before.getEndPoint(),
 					before.getEndTime(), after.getStartPoint(), after.getStartTime());
 			altering.constructRoute(before, after);
 			altering.generateSegments(problemSpaceView.getBoundedStatesBetween(

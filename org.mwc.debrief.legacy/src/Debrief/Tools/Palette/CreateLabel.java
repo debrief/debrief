@@ -77,6 +77,7 @@ import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.*;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.*;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GenericData.*;
 
 public final class CreateLabel extends PlainTool
@@ -95,7 +96,7 @@ public final class CreateLabel extends PlainTool
 
   /** the chart we are using (since want our 'duff' item to appear in the middle)
    */
-  private final MWC.GUI.PlainChart _theChart;
+  private final BoundsProvider _theBounds;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -107,7 +108,7 @@ public final class CreateLabel extends PlainTool
   public CreateLabel(final ToolParent theParent,
                      final PropertiesPanel thePanel,
                      final Layers theData,
-                     final MWC.GUI.PlainChart theChart,
+                     final BoundsProvider bounds,
                      final String theName,
                      final String theImage)
   {
@@ -115,9 +116,16 @@ public final class CreateLabel extends PlainTool
 
     _thePanel = thePanel;
     _theData = theData;
-    _theChart = theChart;
+    _theBounds = bounds;
   }
 
+  /** get the current visible data area
+   * 
+   */
+  final protected WorldArea getBounds()
+  {
+    return _theBounds.getViewport();
+  }
 
   /////////////////////////////////////////////////////////////
   // member functions
@@ -126,7 +134,7 @@ public final class CreateLabel extends PlainTool
   public final Action getData()
   {
 
-    final WorldArea wa = _theChart.getDataArea();
+    WorldArea wa = getBounds();
     if(wa != null)
     {
       // put the label in the centre of the plot (at the surface)

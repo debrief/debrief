@@ -150,14 +150,17 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    * name of the watchable list we're going to use as our origin. We need to support storing this as
    * a string so that we can defer finding the actual object pointer until after file-load is
-   * complete
+   * complete. It's also important that reference track and reference sensor
+   * objects are transient - so they don't get byte-by-byte duplication on 
+   * copy-item operation.  Doing this for very large blue track caused out of memory.
    *
    * @return
    */
   private final String _referenceTrackName;
 
   /**
-   * name of the sensor we're going to use as our origin
+   * name of the sensor we're going to use as our origin. See justification for this string reference
+   * in the reference track.
    *
    */
   private final String _referenceSensorName;
@@ -172,13 +175,13 @@ public class RelativeTMASegment extends CoreTMASegment implements
    * the feature we're based on
    *
    */
-  private TrackWrapper _referenceTrack;
+  private transient TrackWrapper _referenceTrack;
 
   /**
    * the sensor that we're using as an origin (particularly relevant for an offset sensor like a
    * towed array
    */
-  private SensorWrapper _referenceSensor;
+  private transient SensorWrapper _referenceSensor;
 
   /**
    * our editable details

@@ -65,7 +65,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
    * the provider for the time offset
    *
    */
-  private OffsetProvider _provider;
+  private transient OffsetProvider _provider;
 
   /**
    * whether the symbol is visible in the parent object for this data item
@@ -77,7 +77,7 @@ public class ColouredDataItem extends TimeSeriesDataItem implements
   /**
    * (optionally) store the Debrief item that is being represented by this chart point
    */
-  private Editable _payload;
+  private transient Editable _payload;
 
   /**
    * Constructs a new data pair.

@@ -48,6 +48,7 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.PlainTool;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -385,6 +386,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
   {
   	final CoreScenario localScenario = _theScenario;
   	final PlainChart localChart = getChart();
+  	final BoundsProvider bounds = super.getBounds();
   	
     _theTools.addElement(new MenuItemInfo("ASSET", null, "Step",
                                           new PlainTool(_theParent, "Step", "images/VCRForward.gif")
@@ -481,7 +483,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                                                                _theProperties,
                                                                                null,
                                                                                _theData,
-                                                                               getChart(),
+                                                                               bounds,
                                                                                _theScenario.getEnvironment(),
                                                                                this,
                                                                                EnvironmentType.BROADBAND_PASSIVE)
@@ -492,7 +494,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                                                                 _theProperties,
                                                                                 null,
                                                                                 _theData,
-                                                                                getChart(),
+                                                                                bounds,
                                                                                 _theScenario.getEnvironment(),
                                                                                 EnvironmentType.BROADBAND_PASSIVE)
                                           , null, 'A'));
@@ -502,7 +504,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                                                                 _theProperties,
                                                                                 null,
                                                                                 _theData,
-                                                                                getChart())
+                                                                                bounds)
                                           , null, 'A'));
 
 

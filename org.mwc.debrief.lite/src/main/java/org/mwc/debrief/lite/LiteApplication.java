@@ -22,14 +22,6 @@ import MWC.GUI.Tool;
 
 class LiteApplication extends Application
 {
-
-  private final Session _session;
-
-  public LiteApplication(final Session session)
-  {
-    _session = session;
-  }
-
   @Override
   protected void addMenuItem(final String theMenu, final String theLabel,
       final Tool theTool, final MenuShortcut theShortCut)
@@ -52,13 +44,13 @@ class LiteApplication extends Application
   @Override
   public Session createSession()
   {
-    return _session;
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
   public Session getCurrentSession()
   {
-    return _session;
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override

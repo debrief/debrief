@@ -67,7 +67,7 @@ public class CreateVPFCoast extends PlainCreate
                         final MWC.GUI.Properties.PropertiesPanel thePanel,
                         final MWC.GUI.Layer theLayer,
                         final MWC.GUI.Layers theData,
-                        final MWC.GUI.PlainChart theChart,
+                        final BoundsProvider theChart,
                         final String theName,
                         final String thePath)
   {
@@ -78,7 +78,7 @@ public class CreateVPFCoast extends PlainCreate
                         final MWC.GUI.Properties.PropertiesPanel thePanel,
                         final MWC.GUI.Layer theLayer,
                         final MWC.GUI.Layers theData,
-                        final MWC.GUI.PlainChart theChart)
+                        final BoundsProvider theChart)
 	{
 		this(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.png");
 	}
@@ -106,7 +106,7 @@ public class CreateVPFCoast extends PlainCreate
     return res;
   }
 
-	protected MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
     MWC.GUI.Plottable cl = null;
 
