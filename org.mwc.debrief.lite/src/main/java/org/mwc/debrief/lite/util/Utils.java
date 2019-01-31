@@ -16,11 +16,8 @@ package org.mwc.debrief.lite.util;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.jar.Manifest;
 
-import org.hsqldb.lib.FileUtil;
-import org.jfree.io.FileUtilities;
 import org.mwc.debrief.lite.DebriefLiteApp;
 
 /**
@@ -32,7 +29,6 @@ public class Utils
 
   public static String readManifestVersion() {
     String retVal = null;
-    Enumeration<URL> resources = null;
 
     Manifest manifest = getJarManifest(DebriefLiteApp.class);
     // check that this is your manifest and do what you need or get the next one

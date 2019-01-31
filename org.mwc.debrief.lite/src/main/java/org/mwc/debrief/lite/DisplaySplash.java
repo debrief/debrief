@@ -31,6 +31,7 @@ import org.mwc.debrief.lite.util.Utils;
 
 public class DisplaySplash extends JFrame implements ActionListener,Runnable {
   private SplashScreen splash;
+  @SuppressWarnings("unused")
   private int numTasks;
   private static String debriefVersion;
 
@@ -42,7 +43,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
    */
   private static final long serialVersionUID = 1L;
 
-  static void renderVersion(Graphics2D g) {
+  private static void renderVersion(Graphics2D g) {
     g.setComposite(AlphaComposite.Clear);
     g.fillRect(120,140,600,150);
     g.setPaintMode();
@@ -53,7 +54,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
     g.drawString(debriefVersion, 330, 170);
   }
   
-  static void renderSplashFrame(Graphics2D g, String message) {
+  private static void renderSplashFrame(Graphics2D g, String message) {
     g.setComposite(AlphaComposite.Clear);
     g.fillRect(0,140,300,80);
     g.setPaintMode();
@@ -113,6 +114,7 @@ public class DisplaySplash extends JFrame implements ActionListener,Runnable {
     System.exit(0);
   }
 
+  @SuppressWarnings("unused")
   private void closeSplash() {
     try {
       if(splash != null && splash.isVisible()) {
