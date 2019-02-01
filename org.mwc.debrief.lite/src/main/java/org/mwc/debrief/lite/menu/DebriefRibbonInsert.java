@@ -132,10 +132,10 @@ public class DebriefRibbonInsert
                 new WorldDistance(5, WorldDistance.NM), new WorldDistance(3,
                     WorldDistance.NM)), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
         "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
-            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM);
+            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM, null);
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
         "images/16/line.png", new CreateShape(_toolParent, _theProperties,
@@ -149,7 +149,7 @@ public class DebriefRibbonInsert
                     new WorldDistance(5, WorldDistance.NM), new WorldDistance(0,
                         WorldDistance.NM)))), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
         "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
@@ -163,7 +163,7 @@ public class DebriefRibbonInsert
                         MWC.Algorithms.Conversions.Degs2Rads(45), 0.05, 0))),
                 DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
         "images/16/circle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Circle", "images/circle_add.png", bounds)
@@ -174,7 +174,7 @@ public class DebriefRibbonInsert
             return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
                 DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     
     final JCommandButtonStrip shapesStrip = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
     shapesStrip.setDisplayState(CommandButtonDisplayState.MEDIUM);
@@ -218,15 +218,15 @@ public class DebriefRibbonInsert
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     chartfeaturesMenu.startGroup("Time Marker");
     final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
     final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
     chartfeaturesMenu.startGroup("Grid");
     final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
         "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+            _theLayers, bounds), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
     
     chartfeaturesMenu.setResizePolicies(MenuUtils

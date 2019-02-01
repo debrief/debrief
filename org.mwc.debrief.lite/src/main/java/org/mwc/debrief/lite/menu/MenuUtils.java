@@ -29,8 +29,10 @@ import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
+import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -114,7 +116,7 @@ public class MenuUtils
 
   public static JCommandButton addCommandButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final CommandButtonDisplayState priority)
+      final CommandButtonDisplayState priority, String description)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -124,6 +126,12 @@ public class MenuUtils
     }
     final JCommandButton commandButton = new JCommandButton(commandName,
         imageIcon);
+    RichTooltipBuilder builder = new RichTooltipBuilder();
+    
+    final String desc = description != null ? description : "Description pending";
+    
+    RichTooltip richTooltip = builder.setTitle(commandName).addDescriptionSection(desc).build();
+    commandButton.setActionRichTooltip(richTooltip);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
