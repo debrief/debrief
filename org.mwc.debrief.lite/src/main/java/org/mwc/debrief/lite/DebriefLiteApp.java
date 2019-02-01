@@ -63,8 +63,8 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
-import MWC.TacticalData.TimeManager;
-import MWC.TacticalData.TimeProvider;
+import MWC.TacticalData.temporal.TimeManager;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
@@ -148,9 +148,24 @@ public class DebriefLiteApp implements FileDropListener
 
   public DebriefLiteApp()
   {
+  //set the substance look and feel
+    JFrame.setDefaultLookAndFeelDecorated(true);
+    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    DisplaySplash splashScreen = new DisplaySplash(5);
+    Thread t = new Thread(splashScreen);
+    t.start();
+    try
+    {
+      t.join();
+    }
+    catch (InterruptedException e)
+    {
+       //ignore
+    }
+    theFrame = new JRibbonFrame(appName 
+        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
-
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
@@ -179,6 +194,7 @@ public class DebriefLiteApp implements FileDropListener
     app = new LiteApplication();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
+
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
 
@@ -215,14 +231,16 @@ public class DebriefLiteApp implements FileDropListener
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
-    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
-        .getVersion() + ")");
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("images/icon.png"), new Dimension(32, 32)));
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager);
+
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
+
+    splashScreen.updateMessage("Done...");
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);

@@ -22,7 +22,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
@@ -40,6 +39,7 @@ import MWC.GUI.Tools.Palette.PlainCreate.CreateLabelAction;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * @author ian.mayo

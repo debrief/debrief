@@ -18,13 +18,12 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
-import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.SteppableTime;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class WrappingSteppableTime implements SteppableTime, TimeProvider,
 		ScenarioSteppedListener

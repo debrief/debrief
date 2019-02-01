@@ -20,7 +20,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
 import MWC.GUI.Layers;
-import MWC.TacticalData.TimeManager;
+import MWC.TacticalData.temporal.TimeManager;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>

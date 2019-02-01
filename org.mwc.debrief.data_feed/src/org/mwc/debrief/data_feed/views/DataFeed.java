@@ -51,12 +51,12 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.ControllableTime;
 import MWC.Utilities.Errors.Trace;
 
 /**

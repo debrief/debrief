@@ -73,10 +73,7 @@ import org.mwc.asset.scenariocontroller2.CoreControllerPresenter.FilesDroppedLis
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter;
 import org.mwc.asset.scenariocontroller2.MultiScenarioPresenter.JobWithProgress;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import ASSET.ScenarioType;
@@ -85,6 +82,9 @@ import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.GUI.CommandLine.MultiScenarioCore.InstanceWrapper;
 import ASSET.Scenario.MultiScenarioLister;
 import MWC.GenericData.Duration;
+import MWC.TacticalData.temporal.SteppableTime;
+import MWC.TacticalData.temporal.TimeControlPreferences;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 public class MultiScenarioView extends ViewPart implements ISelectionProvider,

@@ -36,7 +36,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GenericData.HiResDate;
-import MWC.TacticalData.TimeManager;
+import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
 {

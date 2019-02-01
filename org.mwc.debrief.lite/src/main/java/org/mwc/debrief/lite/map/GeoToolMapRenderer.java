@@ -143,12 +143,21 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void loadMapContent()
   {
-    final String shape_path =
+    
+    //this is for dev
+    
+    String shape_path =
         "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+    
     File file = new File(shape_path);
     if (!file.exists())
     {
-      file = JFileDataStoreChooser.showOpenFile("shp", null);
+      shape_path = "org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+      file = new File(shape_path);
+      if (!file.exists())
+      {
+          file = JFileDataStoreChooser.showOpenFile("shp", null);
+      }
     }
     if (file == null)
     {

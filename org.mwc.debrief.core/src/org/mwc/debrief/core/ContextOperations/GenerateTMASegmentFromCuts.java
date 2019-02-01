@@ -975,7 +975,7 @@ public class GenerateTMASegmentFromCuts implements
             .size()];
         final SensorContactWrapper[] finalItems = wraps.toArray(items);
         final SensorContactWrapper firstContact = finalItems[0];
-
+        
         final Color firstColor = firstContact.getColor() != null ? firstContact
             .getColor() : firstContact.getSensor().getColor();
 
@@ -1031,12 +1031,13 @@ public class GenerateTMASegmentFromCuts implements
       // so, it's a number of items, Are they all sensor contact wrappers
       final SensorContactWrapper[] items =
           cutsToArray(subjects);
-      for (int i = 0; i < subjects.length; i++)
+      if(items.length > 0)
       {
-        final Editable editable = subjects[i];
+        final Editable editable = subjects[0];
         // cool, stick with it
         final SensorContactWrapper firstContact =
             (SensorContactWrapper) editable;
+        
         final Color firstColor = firstContact.getColor() != null ? firstContact
             .getColor() : firstContact.getSensor().getColor();
 

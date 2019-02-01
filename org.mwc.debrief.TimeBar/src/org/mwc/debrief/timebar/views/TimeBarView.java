@@ -37,7 +37,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.DebriefPlugin;
@@ -50,6 +49,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class TimeBarView extends ViewPart implements TimeBarPrefs
 {
