@@ -21,6 +21,9 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mwc.debrief.lite.gui.LiteStepControl;
+import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
+import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
@@ -31,6 +34,8 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+
+import MWC.GenericData.HiResDate;
 
 public class DebriefRibbonTimeController
 {
@@ -59,20 +64,20 @@ public class DebriefRibbonTimeController
   static JPopupMenu menu;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
-      final GeoToolMapRenderer _geoMapRenderer)
+      final GeoToolMapRenderer _geoMapRenderer, final LiteStepControl stepControl)
   {
     final JRibbonBand displayMode = createDisplayMode();
 
-    final JRibbonBand control = createControl();
+    final JRibbonBand control = createControl(stepControl);
 
-    final JRibbonBand filterToTime = createFilterToTime();
+    final JRibbonBand filterToTime = createFilterToTime(stepControl);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
     ribbon.addTask(timeTask);
   }
 
-  private static JRibbonBand createControl()
+  private static JRibbonBand createControl(final LiteStepControl stepControl)
   {
     final JRibbonBand control = new JRibbonBand("Control", null);
 
@@ -127,10 +132,17 @@ public class DebriefRibbonTimeController
     timeLabel.setSize(200, 60);
     timeLabel.setPreferredSize(new Dimension(200, 60));
     timeLabel.setForeground(new Color(0, 255, 0));
-    timeLabel.setBackground(new Color(0, 0, 0, 1));
-    
-
     timeLabel.setBackground(Color.BLACK);
+    
+    TimeLabel label = new TimeLabel() {
+
+      @Override
+      public void setValue(String text)
+      {
+        timeLabel.setText(text);
+      }};
+    stepControl.setTimeLabel(label);
+    
     menu = new JPopupMenu();
 
     final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
@@ -191,13 +203,13 @@ public class DebriefRibbonTimeController
     return displayMode;
   }
 
-  private static JRibbonBand createFilterToTime()
+  private static JRibbonBand createFilterToTime(final LiteStepControl stepControl)
   {
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
     final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
     
-    Calendar start = new GregorianCalendar(2013, 0, 0);
+    Calendar start = new GregorianCalendar(2013, 0, 1);
     Calendar end = new GregorianCalendar(2013, 1, 15);
     // Now we create the components for the sliders
     final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
@@ -233,6 +245,43 @@ public class DebriefRibbonTimeController
 
     timePeriod.addRibbonComponent(new JRibbonComponent(slider));
     timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
+    
+    // tie in to the stepper
+    SliderControls iSlider = new LiteStepControl.SliderControls()
+    {
+
+      @Override
+      public HiResDate getToolboxStartTime()
+      {
+        long val = slider.getLowerDate().getTimeInMillis();
+        return new HiResDate(val);
+      }
+
+      @Override
+      public HiResDate getToolboxEndTime()
+      {
+        long val = slider.getUpperDate().getTimeInMillis();
+        return new HiResDate(val);
+      }
+
+      @Override
+      public void setToolboxStartTime(HiResDate val)
+      {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(val.getDate().getTime());
+        slider.setLowerDate(cal);
+      }
+
+      @Override
+      public void setToolboxEndTime(HiResDate val)
+      {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTimeInMillis(val.getDate().getTime());
+        slider.setUpperDate(cal);
+      }
+    };
+    
+    stepControl.setSliderControls(iSlider);
 
     return timePeriod;
   }
