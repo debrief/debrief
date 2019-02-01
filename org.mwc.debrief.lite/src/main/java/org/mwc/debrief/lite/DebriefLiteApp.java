@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -22,8 +23,6 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.WindowAdapter;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -54,11 +53,11 @@ import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.GUI.Tote.Painters.PainterManager;
-import Debrief.GUI.Tote.Painters.SnailPainter;
-import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.Wrappers.Track.LightweightTrackWrapper;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
@@ -69,7 +68,6 @@ import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -154,6 +152,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JMapPane mapPane;
   private final TimeManager timeManager = new TimeManager();
   private final PainterManager painterManager;
+  private LiteTote theTote;
 
 
   public DebriefLiteApp()
@@ -242,9 +241,9 @@ public class DebriefLiteApp implements FileDropListener
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     painterManager = new PainterManager(_stepControl);
-    CanvasType theCanvas = new LiteCanvas();
+    CanvasType theCanvas = new LiteCanvas(projection, Color.GRAY);
     PlainChart theChart = new LiteChart(_theLayers, theCanvas);
-    LiteTote theTote = new LiteTote(_theLayers);
+    theTote = new LiteTote(_theLayers, _stepControl);
     final Debrief.GUI.Tote.Painters.TotePainter sp =
         new Debrief.GUI.Tote.Painters.SnailPainter(theChart, _theLayers,
             theTote);
@@ -253,7 +252,7 @@ public class DebriefLiteApp implements FileDropListener
             theTote);
     painterManager.addPainter(sp);
     painterManager.addPainter(tp);
-    painterManager.setCurrentListener(sp);
+    painterManager.setCurrentListener(tp);
 
     // create the components
     initForm();
@@ -299,6 +298,7 @@ public class DebriefLiteApp implements FileDropListener
     dest.setLineWidth(2f);
     dest.startDraw(gc);
 
+    _theLayers.paint(dest);
     painterManager.newTime(null, timeManager.getTime(), dest);
 
     dest.endDraw(gc);
@@ -401,6 +401,17 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
+        // have we got a track?
+        Enumeration<Editable> ele = newData.elements();
+        while(ele.hasMoreElements())
+        {
+          Layer l = (Layer) ele.nextElement();
+          if(l instanceof LightweightTrackWrapper)
+          {
+            LightweightTrackWrapper track = (LightweightTrackWrapper) l;
+            theTote.setPrimary(track);
+          }
+        }
       }
     };
     // ok, start loading

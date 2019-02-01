@@ -8,8 +8,8 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.image.ImageObserver;
 import java.util.Enumeration;
+import java.util.Vector;
 
-import Debrief.GUI.Tote.Painters.PainterManager;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -17,6 +17,15 @@ import MWC.GenericData.WorldLocation;
 public class LiteCanvas implements CanvasType
 {
 
+  private final PlainProjection _myProjection;
+  private Color _backColor;
+
+  public LiteCanvas(PlainProjection projection, Color backColor)
+  {
+    _myProjection = projection;
+    _backColor = backColor;
+  }
+  
   @Override
   public void updateMe()
   {
@@ -212,8 +221,7 @@ public class LiteCanvas implements CanvasType
   @Override
   public PlainProjection getProjection()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return _myProjection;
   }
 
   @Override
@@ -247,8 +255,7 @@ public class LiteCanvas implements CanvasType
   @Override
   public Color getBackgroundColor()
   {
-    // TODO Auto-generated method stub
-    return null;
+    return _backColor;
   }
 
   @Override
@@ -280,7 +287,7 @@ public class LiteCanvas implements CanvasType
   @Override
   public Enumeration<PaintListener> getPainters()
   {
-    return null;
+    return new Vector<CanvasType.PaintListener>().elements();
   }
 
   @Override
