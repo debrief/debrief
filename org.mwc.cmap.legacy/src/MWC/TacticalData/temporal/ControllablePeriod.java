@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.core.DataTypes.Temporal;
+package MWC.TacticalData.temporal;
 
 import java.util.Vector;
 

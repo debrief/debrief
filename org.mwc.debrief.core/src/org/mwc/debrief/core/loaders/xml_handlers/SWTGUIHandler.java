@@ -32,6 +32,9 @@ import org.w3c.dom.Element;
 import Debrief.ReaderWriter.XML.GUI.*;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.TimeControlPreferences;
+import MWC.TacticalData.temporal.TimeProvider;
 
 abstract public class SWTGUIHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader

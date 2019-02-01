@@ -15,7 +15,6 @@
 package org.mwc.debrief.core.creators.chartFeatures;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 
 import MWC.GUI.Layer;
@@ -25,6 +24,7 @@ import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.TimeDisplayPainter;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * @author snpe
