@@ -622,6 +622,11 @@ abstract public class StepControl implements Editable,
     return (int) _theTimer.getDelay();
   }
 
+  public final boolean isPlaying()
+  {
+    return _theTimer.isRunning();
+  }
+  
   public final String getDateFormat()
   {
     return _dateFormatter.toPattern();
