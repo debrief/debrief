@@ -100,6 +100,18 @@ public class LiteStepControl extends StepControl
     
   }
 
+  public void startStepping(boolean go)
+  {
+    if(go)
+    {
+      super.startTimer();
+    } 
+    else
+    {
+      super.stopTimer();
+    }
+  }
+  
   @Override
   protected PropertiesPanel getPropertiesPanel()
   {

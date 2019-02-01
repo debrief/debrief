@@ -3,8 +3,10 @@ package org.mwc.debrief.lite.menu;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +17,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
@@ -29,6 +32,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
@@ -147,16 +151,47 @@ public class DebriefRibbonTimeController
           @Override
           public void actionPerformed(ActionEvent e)
           {
-            // what state are we in?
-            
-            // switch the icon
-            
-            // start/stop the timer
+            // ignore, we define the action once we've finished creating the button
           }},
         CommandButtonDisplayState.SMALL);
+    
+    playCommandButton.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        // what state are we in?
+        final boolean isPlaying = stepControl.isPlaying();
+
+        stepControl.startStepping(!isPlaying);
+        
+        final String image;
+        if(isPlaying)
+          image = "icons/24/media_play.png";
+        else
+          image = "icons/24/media_stop.png";
+        
+        // switch the icon
+        final Image zoominImage = MenuUtils.createImage(image);
+        ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+
+        playCommandButton.setIcon(imageIcon);
+      }});
 
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
-        "Record", "icons/24/media_record.png", new MenuUtils.TODOAction(),
+        "Record", "icons/24/media_record.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            JOptionPane.showMessageDialog(null, "Record to PPT not yet implemented.");
+            
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton forwardCommandButton = MenuUtils.addCommandButton(
