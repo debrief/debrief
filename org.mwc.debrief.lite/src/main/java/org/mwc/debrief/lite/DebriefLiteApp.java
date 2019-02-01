@@ -63,6 +63,8 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.TimeManager;
+import MWC.TacticalData.TimeProvider;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
@@ -142,6 +144,7 @@ public class DebriefLiteApp implements FileDropListener
       "Status bar for displaying statuses");
   private final LiteStepControl _stepControl;
   private final JMapPane mapPane;
+  private final TimeManager timeManager = new TimeManager();
 
   public DebriefLiteApp()
   {
@@ -209,6 +212,8 @@ public class DebriefLiteApp implements FileDropListener
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
 
     _stepControl = new LiteStepControl(_toolParent);
+    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
         .getVersion() + ")");
@@ -217,7 +222,7 @@ public class DebriefLiteApp implements FileDropListener
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl);
+        _stepControl, timeManager);
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -234,7 +239,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
-      final Component mapPane, final LiteStepControl stepControl)
+      final Component mapPane, final LiteStepControl stepControl, final TimeManager timeManager)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -247,7 +252,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl);
+        geoMapRenderer, stepControl, timeManager);
   }
 
   protected void doPaint(final Graphics gc)
@@ -328,6 +333,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportRep(final File[] fList)
   {
+    final DebriefLiteApp source = this;
     BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
       // handle completion of the full import process
@@ -345,7 +351,8 @@ public class DebriefLiteApp implements FileDropListener
             restoreCursor();
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();
-            _stepControl.setPeriod(period, period.getStartDTG());
+            timeManager.setPeriod(source, period);
+            timeManager.setTime(source, period.getStartDTG(), true);
           }
         });
       }

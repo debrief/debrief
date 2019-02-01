@@ -36,6 +36,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.TimeManager;
 
 public class DebriefRibbonTimeController
 {
@@ -64,11 +65,11 @@ public class DebriefRibbonTimeController
   static JPopupMenu menu;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
-      final GeoToolMapRenderer _geoMapRenderer, final LiteStepControl stepControl)
+      final GeoToolMapRenderer _geoMapRenderer, final LiteStepControl stepControl, TimeManager timeManager)
   {
     final JRibbonBand displayMode = createDisplayMode();
 
-    final JRibbonBand control = createControl(stepControl);
+    final JRibbonBand control = createControl(stepControl, timeManager);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl);
 
@@ -77,7 +78,7 @@ public class DebriefRibbonTimeController
     ribbon.addTask(timeTask);
   }
 
-  private static JRibbonBand createControl(final LiteStepControl stepControl)
+  private static JRibbonBand createControl(final LiteStepControl stepControl, final TimeManager timeManager)
   {
     final JRibbonBand control = new JRibbonBand("Control", null);
 
@@ -89,7 +90,18 @@ public class DebriefRibbonTimeController
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
 
     final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
-        "Behind", "icons/24/media_beginning.png", new MenuUtils.TODOAction(),
+        "Behind", "icons/24/media_beginning.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            timeManager.setTime(control, timeManager.getPeriod().getStartDTG(), true);
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton rewindCommandButton = MenuUtils.addCommandButton(
@@ -117,7 +129,18 @@ public class DebriefRibbonTimeController
         new MenuUtils.TODOAction(), CommandButtonDisplayState.SMALL);
 
     final JCommandButton endCommandButton = MenuUtils.addCommandButton("End",
-        "icons/24/media_end.png", new MenuUtils.TODOAction(),
+        "icons/24/media_end.png", new AbstractAction() {
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        timeManager.setTime(control, timeManager.getPeriod().getEndDTG(), true);
+      }
+    },
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton propertiesCommandButton = MenuUtils.addCommandButton(
