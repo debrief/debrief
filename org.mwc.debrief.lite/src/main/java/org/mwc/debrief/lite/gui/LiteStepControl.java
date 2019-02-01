@@ -39,10 +39,7 @@ public class LiteStepControl extends StepControl
   public LiteStepControl(ToolParent parent)
   {
     super(parent);
-    // TODO Auto-generated constructor stub
   }
-  
-  
   
   @Override
   public void propertyChange(PropertyChangeEvent evt)

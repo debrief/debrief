@@ -253,7 +253,7 @@ public class DebriefRibbonTimeController
     controlPanel.add(topButtonsPanel);
     final JSlider timeSlider = new JSlider();
     timeSlider.setPreferredSize(new Dimension(420, 30));
-    // controlPanel.add(timeSlider);
+    timeSlider.setEnabled(false);
     
 
     TimeLabel label = new TimeLabel() {
@@ -275,10 +275,17 @@ public class DebriefRibbonTimeController
       @Override
       public void setRange(long start, long end)
       {
+        // ok, we can use time slider
+        timeSlider.setEnabled(true);
+        
+        // and we can use the buttons
+        setButtonsEnabled(topButtonsPanel, true);
+
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
         timeSlider.setMaximum(converter.getEnd());
-      }};
+      }
+    };
     stepControl.setTimeLabel(label);
     
     // we also need to listen to the slider
@@ -292,6 +299,9 @@ public class DebriefRibbonTimeController
         timeManager.setTime(timeSlider, new HiResDate(time), true);
       }});
     
+    // ok, start off with the buttons disabled
+    setButtonsEnabled(topButtonsPanel, false);
+    
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
 
@@ -300,10 +310,34 @@ public class DebriefRibbonTimeController
     return control;
   }
   
+  /** convenience class to bulk enable/disable controls in a panel
+   * 
+   * @param panel
+   * @param enabled
+   */
+  private static void setButtonsEnabled(final JPanel panel, final boolean enabled)
+  {
+    final Component[] items = panel.getComponents();
+    for(final Component item: items)
+    {
+      final boolean state = item.isEnabled();
+      if(state != enabled)
+      {
+        item.setEnabled(enabled);
+      }
+    }
+  }
+
+  /** utility class to handle converting between slider range and time values
+   * 
+   * @author ian
+   *
+   */
   private static class SliderConverter
   {
     private int range;
     private long origin;
+    // have one minute steps
     private final int step = 1000 * 60;
 
     public void init(long start, long end)
