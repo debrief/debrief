@@ -30,14 +30,13 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
-import org.mwc.debrief.lite.custom.JPanelWithTitleBar;
+import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
+import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -63,6 +62,7 @@ import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.TimePeriod;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
@@ -86,25 +86,15 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @return
    */
-  private static Component createMapPane(
+  private static JMapPane createMapPane(
       final GeoToolMapRenderer geoMapRenderer,
       final FileDropSupport dropSupport)
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    final Component mapPane = builder.setMapRenderer(geoMapRenderer).build();
+    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer).build();
     dropSupport.addComponent(mapPane);
     return mapPane;
-  }
-
-  private static JScrollPane createScrollPane(
-      final JPanelWithTitleBar jTitleBar)
-  {
-    final JPanel panel = new JPanel();
-    panel.setLayout(new BorderLayout());
-    panel.add(jTitleBar, BorderLayout.NORTH);
-    final JScrollPane scrPane1 = new JScrollPane(panel);
-    return scrPane1;
   }
 
   public static void main(final String[] args)
@@ -150,6 +140,8 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
+  private final LiteStepControl _stepControl;
+  private final JMapPane mapPane;
 
   public DebriefLiteApp()
   {
@@ -185,7 +177,7 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
-    final Component mapPane = createMapPane(geoMapRenderer, dropSupport);
+    mapPane = createMapPane(geoMapRenderer, dropSupport);
 
     final DataListener dListener = new DataListener()
     {
@@ -216,13 +208,16 @@ public class DebriefLiteApp implements FileDropListener
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
 
+    _stepControl = new LiteStepControl(_toolParent);
+
     theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
         .getVersion() + ")");
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("images/icon.png"), new Dimension(32, 32)));
     // create the components
     initForm();
-    createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane);
+    createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
+        _stepControl);
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -239,43 +234,20 @@ public class DebriefLiteApp implements FileDropListener
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
-      final Component mapPane)
+      final Component mapPane, final LiteStepControl stepControl)
   {
-    //final Dimension frameSize = theFrame.getSize();
-    //final int width = (int) frameSize.getWidth();
+    // final Dimension frameSize = theFrame.getSize();
+    // final int width = (int) frameSize.getWidth();
 
     theFrame.add(mapPane, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(_toolParent, undoBuffer);
 
-    /*
-     * final JPanelWithTitleBar outlineTitlePanel = new JPanelWithTitleBar( "Outline"); final
-     * JPanelWithTitleBar editorPanel = new JPanelWithTitleBar( "Plot Editor"); final
-     * JPanelWithTitleBar graphPanel = new JPanelWithTitleBar("Graph");
-     *
-     * final JScrollPane graphPane = createScrollPane(graphPanel); final JPanelWithTitleBar
-     * notesPane = new JPanelWithTitleBar( "Notes"); final JSplitPane graphSplit = new
-     * JSplitPane(JSplitPane.VERTICAL_SPLIT, true, mapPane, graphPane); final JSplitPane leftSplit =
-     * new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, outlinePanel, graphSplit); final JSplitPane
-     * rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSplit, notesPane);
-     * rightSplit.setOneTouchExpandable(true); leftSplit.setOneTouchExpandable(true);
-     * graphSplit.setOneTouchExpandable(true);
-     *
-     * graphSplit.setDividerSize(42);
-     *
-     * rightSplit.setDividerLocation(3 * width / 4); graphSplit.setDividerLocation(300);
-     * leftSplit.setDividerLocation(width / 3); rightSplit.setResizeWeight(0.9);
-     * graphSplit.setResizeWeight(0.5); editorPanel.addMaxListenerFor(leftSplit, graphSplit);
-     * graphPanel.addMinListenerFor(graphSplit);
-     *
-     * theFrame.add(rightSplit, BorderLayout.CENTER); theFrame.add(statusBar, BorderLayout.SOUTH);
-     */
-
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer);
+        geoMapRenderer, stepControl);
   }
 
   protected void doPaint(final Graphics gc)
@@ -296,6 +268,7 @@ public class DebriefLiteApp implements FileDropListener
   public void FilesReceived(final Vector<File> files)
   {
     setCursor(Cursor.WAIT_CURSOR);
+
     try
     {
       final Enumeration<File> iter = files.elements();
@@ -317,16 +290,7 @@ public class DebriefLiteApp implements FileDropListener
             // fake wrap it
             final File[] fList = new File[]
             {file};
-            SwingUtilities.invokeLater(new Runnable()
-            {
-
-              @Override
-              public void run()
-              {
-                handleImportRep(fList);
-              }
-            });
-
+            handleImportRep(fList);
           }
           else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(
               ".DPF"))
@@ -344,6 +308,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
+
     restoreCursor();
   }
 
@@ -369,33 +334,30 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void allFilesFinished(final File[] fNames, final Layers newData)
       {
-        System.out.println("Finished reading all files");
+        SwingUtilities.invokeLater(new Runnable()
+        {
+          @Override
+          public void run()
+          {
+            layerManager.dataModified(null, null);
+            mapPane.repaint();
+            
+            restoreCursor();
+            // update the time panel
+            TimePeriod period = _theLayers.getTimePeriod();
+            _stepControl.setPeriod(period, period.getStartDTG());
+          }
+        });
       }
 
       // handle the completion of each file
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
-        System.out.println("Finished reading file" + fName);
-        SwingUtilities.invokeLater(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            outlinePanel.invalidate();
-            layerManager.setObject(_theLayers);
-            outlinePanel.validate();
-            restoreCursor();
-          }
-        });
       }
     };
-
+    // ok, start loading
     caller.start();
-    // wait for a few secs and test the loaded file.
-
-    System.out.println("num layers:" + _theLayers.size());
-    caller = null;
   }
 
   /**
