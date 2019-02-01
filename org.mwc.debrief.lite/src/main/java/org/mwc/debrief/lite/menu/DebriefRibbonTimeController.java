@@ -40,6 +40,8 @@ import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
 {
+  private static SliderConverter converter = new SliderConverter();
+  
   protected static class ShowFormatAction extends AbstractAction
   {
     /**
@@ -105,15 +107,52 @@ public class DebriefRibbonTimeController
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton rewindCommandButton = MenuUtils.addCommandButton(
-        "Rewind", "icons/24/media_rewind.png", new MenuUtils.TODOAction(),
+        "Rewind", "icons/24/media_rewind.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            stepControl.doStep(false, true);
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton backCommandButton = MenuUtils.addCommandButton("Back",
-        "icons/24/media_back.png", new MenuUtils.TODOAction(),
+        "icons/24/media_back.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            stepControl.doStep(false, false);
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton playCommandButton = MenuUtils.addCommandButton("Play",
-        "icons/24/media_play.png", new MenuUtils.TODOAction(),
+        "icons/24/media_play.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            // what state are we in?
+            
+            // switch the icon
+            
+            // start/stop the timer
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
@@ -121,12 +160,34 @@ public class DebriefRibbonTimeController
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton forwardCommandButton = MenuUtils.addCommandButton(
-        "Forward", "icons/24/media_forward.png", new MenuUtils.TODOAction(),
+        "Forward", "icons/24/media_forward.png", new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            stepControl.doStep(true, false);
+          }},
         CommandButtonDisplayState.SMALL);
 
     final JCommandButton fastForwardCommandButton = MenuUtils.addCommandButton(
         "Fast Forward", "icons/24/media_fast_forward.png",
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.SMALL);
+        new AbstractAction() {
+
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            stepControl.doStep(true, true);
+          }}, CommandButtonDisplayState.SMALL);
 
     final JCommandButton endCommandButton = MenuUtils.addCommandButton("End",
         "icons/24/media_end.png", new AbstractAction() {
@@ -154,18 +215,12 @@ public class DebriefRibbonTimeController
     final JLabel timeLabel = new JLabel("       95/12/12 07:45       ");
     timeLabel.setSize(200, 60);
     timeLabel.setPreferredSize(new Dimension(200, 60));
-    timeLabel.setForeground(new Color(0, 255, 0));
-    timeLabel.setBackground(Color.BLACK);
     
-    TimeLabel label = new TimeLabel() {
-
-      @Override
-      public void setValue(String text)
-      {
-        timeLabel.setText(text);
-      }};
-    stepControl.setTimeLabel(label);
-    
+    // TODO: couldn't get black bkgnd to show, so switching fore-color
+    timeLabel.setForeground(new Color(0, 0, 0));
+//    timeLabel.setForeground(new Color(0, 255, 0));
+//    timeLabel.setBackground(Color.BLACK);
+       
     menu = new JPopupMenu();
 
     final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
@@ -199,13 +254,83 @@ public class DebriefRibbonTimeController
     final JSlider timeSlider = new JSlider();
     timeSlider.setPreferredSize(new Dimension(420, 30));
     // controlPanel.add(timeSlider);
+    
 
+    TimeLabel label = new TimeLabel() {
+
+      @Override
+      public void setValue(String text)
+      {
+        timeLabel.setText(text);
+      }
+
+      @Override
+      public void setValue(long time)
+      {
+        // find the value
+        final int value = converter.getCurrentAt(time);
+        timeSlider.setValue(value);
+      }
+
+      @Override
+      public void setRange(long start, long end)
+      {
+        converter.init(start, end);
+        timeSlider.setMinimum(converter.getStart());
+        timeSlider.setMaximum(converter.getEnd());
+      }};
+    stepControl.setTimeLabel(label);
+    
+    // we also need to listen to the slider
+    timeSlider.addChangeListener(new ChangeListener() {
+
+      @Override
+      public void stateChanged(ChangeEvent e)
+      {
+        final int pos = timeSlider.getValue();
+        long time = converter.getTimeAt(pos);
+        timeManager.setTime(timeSlider, new HiResDate(time), true);
+      }});
+    
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
 
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+  
+  private static class SliderConverter
+  {
+    private int range;
+    private long origin;
+    private final int step = 1000 * 60;
+
+    public void init(long start, long end)
+    {
+      origin = start;
+      range = (int) ((end - start) / step);
+    }
+    
+    public int getStart()
+    {
+      return 0;
+    }
+    
+    public int getEnd()
+    {
+      return range;
+    }
+    
+    public int getCurrentAt(long now)
+    {
+      return (int) ((now - origin) / step);
+    }
+    
+    public long getTimeAt(int position)
+    {
+      return origin + (position * step);
+    }
   }
 
   private static JRibbonBand createDisplayMode()

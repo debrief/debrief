@@ -1,9 +1,6 @@
 package org.mwc.debrief.lite.gui;
 
 import java.beans.PropertyChangeEvent;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.ToolParent;
@@ -11,10 +8,13 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeProvider;
+import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class LiteStepControl extends StepControl
 {
 
+  
+  
   public static interface SliderControls
   {
     public HiResDate getToolboxStartTime();
@@ -29,8 +29,10 @@ public class LiteStepControl extends StepControl
   public static interface TimeLabel
   {
     void setValue(String text);
+    void setValue(long time);
+    void setRange(long start, long end);
   }
-
+  
   private SliderControls _slider;
   private TimeLabel _timeLabel;
   
@@ -50,7 +52,10 @@ public class LiteStepControl extends StepControl
     if(evt.getPropertyName().equals(TimeProvider.TIME_CHANGED_PROPERTY_NAME))
     {
       HiResDate dtg = (HiResDate) evt.getNewValue();
-      _timeLabel.setValue(getNewTime(dtg));
+      updateForm(dtg);
+      
+      // hey, have we been set?
+      changeTime(dtg);
     }
     
     if(evt.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
@@ -58,16 +63,13 @@ public class LiteStepControl extends StepControl
       TimePeriod period = (TimePeriod) evt.getNewValue();
       _slider.setToolboxStartTime(period.getStartDTG());
       _slider.setToolboxEndTime(period.getEndDTG());
+      
+      setStartTime(period.getStartDTG());
+      setEndTime(period.getEndDTG());
+      
+      _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
+          .getEndDTG().getDate().getTime());
     }
-  }
-
-
-
-  public void setPeriod(TimePeriod period, HiResDate curTime)
-  {
-    _slider.setToolboxStartTime(period.getStartDTG());
-    _slider.setToolboxEndTime(period.getEndDTG());
-    _timeLabel.setValue(getNewTime(curTime));
   }
 
   public void setTimeLabel(final TimeLabel label)
@@ -89,9 +91,9 @@ public class LiteStepControl extends StepControl
   @Override
   protected void updateForm(HiResDate DTG)
   {
-    DateFormat df = new SimpleDateFormat("yymmdd hhMMss");
-    String str = df.format(new Date(DTG.getDate().getTime()));
+    String str = FullFormatDateTime.toString(DTG.getDate().getTime());
     _timeLabel.setValue(str);
+    _timeLabel.setValue(DTG.getDate().getTime());
   }
 
   @Override
