@@ -149,7 +149,7 @@ public class RangeSlider extends JSlider
   /**
    * Sets the upper value in the range.
    */
-  private void setUpperValue(int value)
+  public void setUpperValue(int value)
   {
     // Compute new extent.
     int lowerValue = getValue();
