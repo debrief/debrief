@@ -34,7 +34,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.satc_interface.data.SATC_Solution;
 import org.mwc.debrief.timebar.model.IEventEntry;
@@ -53,6 +52,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.TacticalData.temporal.ControllableTime;
 
 public class TimeBarViewer implements ISelectionProvider,
     ITimeBarsPainterListener

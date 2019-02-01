@@ -35,10 +35,11 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.dialog.VideoPlayerStartTimeDialog;
 import org.mwc.cmap.media.views.VideoPlayerView;
+
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class OpenVideoPlayerAction extends AbstractHandler
 {

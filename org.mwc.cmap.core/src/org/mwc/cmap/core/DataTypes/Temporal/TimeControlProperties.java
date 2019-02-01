@@ -23,6 +23,7 @@ import org.mwc.cmap.core.property_support.DurationHelper;
 
 import MWC.GUI.Properties.*;
 import MWC.GenericData.*;
+import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class TimeControlProperties extends java.beans.PropertyChangeSupport
 		implements IPropertySource2, TimeControlPreferences

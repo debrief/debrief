@@ -51,8 +51,6 @@ import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
@@ -65,6 +63,8 @@ import org.mwc.cmap.media.views.images.ImagePanel;
 import org.mwc.cmap.media.views.images.ThumbnailPackage;
 
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class ImagesView extends ViewPart
 {

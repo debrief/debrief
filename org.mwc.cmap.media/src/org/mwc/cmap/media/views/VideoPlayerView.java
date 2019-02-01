@@ -57,8 +57,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.media.Activator;
 import org.mwc.cmap.media.PlanetmayoFormats;
@@ -70,6 +68,8 @@ import org.mwc.cmap.media.xuggle.PlayerListener;
 import org.mwc.cmap.media.xuggle.XugglePlayer;
 
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class VideoPlayerView extends ViewPart
 {
