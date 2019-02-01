@@ -22,6 +22,8 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.WindowAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -51,17 +53,23 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
+import Debrief.GUI.Tote.Painters.PainterManager;
+import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.PlainChart;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -138,13 +146,15 @@ public class DebriefLiteApp implements FileDropListener
   private final GeoToolMapProjection projection;
 
   private final LiteApplication app;
-
+  
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
   private final LiteStepControl _stepControl;
   private final JMapPane mapPane;
   private final TimeManager timeManager = new TimeManager();
+  private final PainterManager painterManager;
+
 
   public DebriefLiteApp()
   {
@@ -186,7 +196,7 @@ public class DebriefLiteApp implements FileDropListener
         doPaint(gc);
       }
     });
-
+    
     // provide some file helpers
     ImportReplay.initialise(new DebriefLiteToolParent(
         ImportReplay.IMPORT_AS_OTG, 0L));
@@ -227,14 +237,23 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    // set the substance look and feel
-  //  JFrame.setDefaultLookAndFeelDecorated(true);
- //   SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
-
     _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
+    painterManager = new PainterManager(_stepControl);
+    CanvasType theCanvas = new LiteCanvas();
+    PlainChart theChart = new LiteChart(_theLayers, theCanvas);
+    LiteTote theTote = new LiteTote(_theLayers);
+    final Debrief.GUI.Tote.Painters.TotePainter sp =
+        new Debrief.GUI.Tote.Painters.SnailPainter(theChart, _theLayers,
+            theTote);
+    final Debrief.GUI.Tote.Painters.TotePainter tp =
+        new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
+            theTote);
+    painterManager.addPainter(sp);
+    painterManager.addPainter(tp);
+    painterManager.setCurrentListener(sp);
 
     // create the components
     initForm();
@@ -279,7 +298,9 @@ public class DebriefLiteApp implements FileDropListener
     final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
     dest.setLineWidth(2f);
     dest.startDraw(gc);
-    _theLayers.paint(dest);
+
+    painterManager.newTime(null, timeManager.getTime(), dest);
+
     dest.endDraw(gc);
   }
 

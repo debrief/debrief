@@ -80,7 +80,6 @@ public class LiteStepControl extends StepControl
   @Override
   protected void painterIsDefined()
   {
-    throw new IllegalArgumentException("not implemented");
   }
 
   @Override

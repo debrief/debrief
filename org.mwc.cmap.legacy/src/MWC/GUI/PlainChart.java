@@ -304,9 +304,9 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 				if (!_suspendUpdates)
 				{
-
+				  
 					// do we need to rescale the data?
-					if (getCanvas().getProjection().getDataArea() == null)
+					if (getProjectionArea() == null)
 						rescale();
 
 					// and trigger a full repaint
@@ -320,6 +320,11 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 		produceListeners();
 
+	}
+	
+	public WorldArea getProjectionArea()
+	{
+	  return getCanvas().getProjection().getDataArea();
 	}
 
 	public void setLayers(final Layers theLayers)
