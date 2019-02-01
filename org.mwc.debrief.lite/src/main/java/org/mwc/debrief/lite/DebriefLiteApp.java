@@ -153,9 +153,25 @@ public class DebriefLiteApp implements FileDropListener
 
   public DebriefLiteApp()
   {
+  //set the substance look and feel
+    JFrame.setDefaultLookAndFeelDecorated(true);
+    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    DisplaySplash splashScreen = new DisplaySplash(5);
+    Thread t = new Thread(splashScreen);
+    t.start();
+    try
+    {
+      t.join();
+    }
+    catch (InterruptedException e)
+    {
+       //ignore
+    }
+    theFrame = new JRibbonFrame(appName 
+        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
-
+    
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
@@ -186,7 +202,7 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
     final Component mapPane = createMapPane(geoMapRenderer, dropSupport);
-
+    
     final DataListener dListener = new DataListener()
     {
       @Override
@@ -212,18 +228,12 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    // set the substance look and feel
-    JFrame.setDefaultLookAndFeelDecorated(true);
-    SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
+    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
 
-    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
-        .getVersion() + ")");
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("images/icon.png"), new Dimension(32, 32)));
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane);
-
+    splashScreen.updateMessage("Done...");
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
   }

@@ -139,14 +139,18 @@ public class ImportNMEA
       final ImportNMEA importer = new ImportNMEA(tLayers);
       importer.importThis(testFile, is, 0l, 0l);
 
-      assertEquals("got new layers", 3, tLayers.size());
+      assertEquals("got new layers", 4, tLayers.size());
 
       TrackWrapper tOne = (TrackWrapper) tLayers.findLayer(
           "WECDIS_OWNSHIP_POS_GPS");
-      assertEquals("found GPS cuts", 12823, tOne.numFixes());
+      assertEquals("found GPS cuts", 12736, tOne.numFixes());
 
       TrackWrapper tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
       assertEquals("found GPS cuts", 21746, tTwo.numFixes());
+
+      TrackWrapper tThree = (TrackWrapper) tLayers.findLayer(
+          "WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 87, tThree.numFixes());
 
       Layer contacts = tLayers.findLayer("WECDIS Contacts");
       assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
@@ -163,13 +167,16 @@ public class ImportNMEA
       is = new FileInputStream(testI);
       importer.importThis(testFile, is, 15000L, 15000L);
 
-      assertEquals("got new layers", 3, tLayers.size());
+      assertEquals("got new layers", 4, tLayers.size());
 
       tOne = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_GPS");
-      assertEquals("found GPS cuts", 4166, tOne.numFixes());
+      assertEquals("found GPS cuts", 4141, tOne.numFixes());
 
       tTwo = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP-DR");
       assertEquals("found GPS cuts", 4816, tTwo.numFixes());
+
+      tThree = (TrackWrapper) tLayers.findLayer("WECDIS_OWNSHIP_POS_CMP");
+      assertEquals("found GPS cuts", 26, tThree.numFixes());
 
       contacts = tLayers.findLayer("WECDIS Contacts");
       assertEquals("loaded tracks", "WECDIS Contacts (14 items)", contacts
@@ -648,6 +655,8 @@ public class ImportNMEA
       if ("VNM".equals(str))
         res = MsgType.VESSEL_NAME;
       else if ("POS".equals(str) && "GPS".equals(str2))
+        res = MsgType.OS_POS;
+      else if ("POS".equals(str) && "CMP".equals(str2))
         res = MsgType.OS_POS;
       else if ("POS2".equals(str) && "GPS".equals(str2))
         res = MsgType.OS_POS;
