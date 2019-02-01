@@ -115,11 +115,11 @@ public class DebriefRibbonFile
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(),
-        fileMenu, RibbonElementPriority.MEDIUM, false);
+        fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("New (default plot)", "images/16/new.png",
-        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM, false);
+        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Open Plot", "images/16/open.png", new NewFileAction(),
-        fileMenu, RibbonElementPriority.MEDIUM, false);
+        fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
@@ -135,18 +135,18 @@ public class DebriefRibbonFile
       {
         System.exit(0);
       }
-    }, exitMenu, RibbonElementPriority.MEDIUM, false);
+    }, exitMenu, RibbonElementPriority.MEDIUM);
     exitMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exitMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
     MenuUtils.addCommand("Import Replay", "images/16/import.png",
-        new NewFileAction(), importMenu, RibbonElementPriority.MEDIUM, false);
+        new NewFileAction(), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
     MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
         new CopyPlotAsPNG(_geoMapRenderer), importMenu,
-        RibbonElementPriority.MEDIUM, false);
+        RibbonElementPriority.MEDIUM);
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
     final RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,

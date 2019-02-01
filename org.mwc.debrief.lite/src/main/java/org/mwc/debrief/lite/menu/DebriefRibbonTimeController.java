@@ -1,10 +1,12 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -22,7 +24,7 @@ import javax.swing.event.ChangeListener;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
-import org.pushingpixels.flamingo.api.common.FlamingoCommand;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -121,8 +123,14 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
         CommandButtonDisplayState.SMALL);
 
-    final JLabel timeLabel = new JLabel("95/12/12 07:45");
+    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ");
+    timeLabel.setSize(200, 60);
+    timeLabel.setPreferredSize(new Dimension(200, 60));
+    timeLabel.setForeground(new Color(0, 255, 0));
+    timeLabel.setBackground(new Color(0, 0, 0, 1));
+    
 
+    timeLabel.setBackground(Color.BLACK);
     menu = new JPopupMenu();
 
     final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
@@ -147,6 +155,7 @@ public class DebriefRibbonTimeController
     topButtonsPanel.add(forwardCommandButton);
     topButtonsPanel.add(fastForwardCommandButton);
     topButtonsPanel.add(endCommandButton);
+    topButtonsPanel.add(new JLabel(" | "));
     topButtonsPanel.add(propertiesCommandButton);
     topButtonsPanel.add(timeLabel);
     topButtonsPanel.add(formatCommandButton);
@@ -167,10 +176,14 @@ public class DebriefRibbonTimeController
   private static JRibbonBand createDisplayMode()
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
-    FlamingoCommand normalCommand = MenuUtils.addCommand("Normal", "icons/48/normal.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP, true);
-    MenuUtils.addCommand("Snail", "icons/48/snail.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP, true);
+    FlamingoCommandToggleGroup displayModeGroup =
+        new FlamingoCommandToggleGroup();
+    MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
+        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        true, displayModeGroup, true);
+    MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
+        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        true, displayModeGroup, false);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
@@ -182,11 +195,14 @@ public class DebriefRibbonTimeController
   {
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
+    final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
+    
+    Calendar start = new GregorianCalendar(2013, 0, 0);
+    Calendar end = new GregorianCalendar(2013, 1, 15);
     // Now we create the components for the sliders
-    final JLabel minimumValue = new JLabel(" ");
-    final JLabel maximumValue = new JLabel(" ");
-    final RangeSlider slider = new RangeSlider(new GregorianCalendar(2013, 0,
-        0), new GregorianCalendar(2013, 1, 15));
+    final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
+    final JLabel maximumValue = new JLabel(formatter.format(end.getTime()));
+    final RangeSlider slider = new RangeSlider(start, end);
     slider.addChangeListener(new ChangeListener()
     {
       @Override
@@ -194,7 +210,6 @@ public class DebriefRibbonTimeController
       {
         // TODO Do we represent the filter using the format specified by user?
         final RangeSlider slider = (RangeSlider) e.getSource();
-        final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
 
         minimumValue.setText(formatter.format(new Date(slider.getValue()
             * 1000L)));

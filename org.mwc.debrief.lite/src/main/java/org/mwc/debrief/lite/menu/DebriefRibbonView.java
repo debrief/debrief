@@ -27,15 +27,15 @@ public class DebriefRibbonView
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
     viewBand.startGroup();
     MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane),
-        viewBand, RibbonElementPriority.TOP, false);
+        viewBand, RibbonElementPriority.TOP);
     final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
     MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction,
-        viewBand, RibbonElementPriority.TOP, false);
+        viewBand, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOutAction(
-        mapPane), viewBand, RibbonElementPriority.TOP, false);
+        mapPane), viewBand, RibbonElementPriority.TOP);
     viewBand.startGroup();
     MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png",
-        new ResetAction(mapPane), viewBand, null, false);
+        new ResetAction(mapPane), viewBand, null);
     final List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(viewBand));
     policies.add(new CoreRibbonResizePolicies.Mid2Low(viewBand));

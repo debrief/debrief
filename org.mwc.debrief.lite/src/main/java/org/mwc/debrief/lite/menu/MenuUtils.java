@@ -28,6 +28,7 @@ import javax.swing.ImageIcon;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
@@ -43,10 +44,11 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
  */
 public class MenuUtils
 {
-  public static final Dimension ICON_SIZE_16 = new Dimension(16,16);
-  public static final Dimension ICON_SIZE_24 = new Dimension(24,24);
-  public static final Dimension ICON_SIZE_32 = new Dimension(32,32);
-  public static final Dimension ICON_SIZE_48 = new Dimension(48,48);
+  public static final Dimension ICON_SIZE_16 = new Dimension(16, 16);
+  public static final Dimension ICON_SIZE_24 = new Dimension(24, 24);
+  public static final Dimension ICON_SIZE_32 = new Dimension(32, 32);
+  public static final Dimension ICON_SIZE_48 = new Dimension(48, 48);
+
   protected static class TODOAction extends AbstractAction
   {
     /**
@@ -61,10 +63,11 @@ public class MenuUtils
 
     }
   }
-
-  public static FlamingoCommand addCommand(final String commandName,
+  
+  public static FlamingoCommand addCommandToggleButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority, boolean isToggle)
+      final JRibbonBand mapBand, final RibbonElementPriority priority,
+      boolean isToggle, FlamingoCommandToggleGroup group, boolean toggleSelected)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -75,13 +78,35 @@ public class MenuUtils
     FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
         commandName).setIcon(imageIcon).setAction(actionToAdd)
         .setTitleClickAction();
-    
-    if ( isToggle )
+
+    if (isToggle)
     {
       builder.setToggle();
+      builder.setToggleSelected(toggleSelected);
+      builder.inToggleGroup(group);
     }
     final FlamingoCommand command = builder.build();
-    
+
+    mapBand.addRibbonCommand(command, priority == null
+        ? RibbonElementPriority.TOP : priority);
+    return command;
+  }
+
+  public static FlamingoCommand addCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final JRibbonBand mapBand, final RibbonElementPriority priority)
+  {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+    }
+    FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
+        commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction();
+    final FlamingoCommand command = builder.build();
+
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;
@@ -103,9 +128,10 @@ public class MenuUtils
     commandButton.setDisplayState(priority);
     return commandButton;
   }
-  
-  public static JCommandToggleButton addCommandToggleButton(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
+
+  public static JCommandToggleButton addCommandToggleButton(
+      final String commandName, final String imagePath,
+      final ActionListener actionToAdd,
       final CommandButtonDisplayState priority)
   {
     ImageWrapperResizableIcon imageIcon = null;
@@ -114,8 +140,8 @@ public class MenuUtils
       final Image zoominImage = createImage(imagePath);
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
     }
-    final JCommandToggleButton commandButton = new JCommandToggleButton(commandName,
-        imageIcon);
+    final JCommandToggleButton commandButton = new JCommandToggleButton(
+        commandName, imageIcon);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
@@ -150,6 +176,7 @@ public class MenuUtils
     policies.add(new IconRibbonBandResizePolicy(ribbonBand));
     return policies;
   }
+
   public static List<RibbonBandResizePolicy> getStandardRestrictivePolicies2(
       final JRibbonBand ribbonBand)
   {
@@ -158,7 +185,8 @@ public class MenuUtils
     policies.add(new CoreRibbonResizePolicies.Mirror(ribbonBand));
     policies.add(new CoreRibbonResizePolicies.Mid2Low(ribbonBand));
     policies.add(new CoreRibbonResizePolicies.High2Low(ribbonBand));
-    policies.add(new CoreRibbonResizePolicies.IconRibbonBandResizePolicy(ribbonBand));
+    policies.add(new CoreRibbonResizePolicies.IconRibbonBandResizePolicy(
+        ribbonBand));
     return policies;
   }
 }

@@ -60,6 +60,8 @@ public class RangeSlider extends JSlider
   private void initSlider()
   {
     setOrientation(HORIZONTAL);
+    setValue(getMinimum());
+    setUpperValue(getMaximum());
   }
 
   /**
