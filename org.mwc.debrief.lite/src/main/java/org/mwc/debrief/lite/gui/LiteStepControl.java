@@ -1,5 +1,6 @@
 package org.mwc.debrief.lite.gui;
 
+import java.beans.PropertyChangeEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,6 +10,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class LiteStepControl extends StepControl
 {
@@ -38,6 +40,29 @@ public class LiteStepControl extends StepControl
     // TODO Auto-generated constructor stub
   }
   
+  
+  
+  @Override
+  public void propertyChange(PropertyChangeEvent evt)
+  {
+    super.propertyChange(evt);
+    
+    if(evt.getPropertyName().equals(TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+    {
+      HiResDate dtg = (HiResDate) evt.getNewValue();
+      _timeLabel.setValue(getNewTime(dtg));
+    }
+    
+    if(evt.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
+    {
+      TimePeriod period = (TimePeriod) evt.getNewValue();
+      _slider.setToolboxStartTime(period.getStartDTG());
+      _slider.setToolboxEndTime(period.getEndDTG());
+    }
+  }
+
+
+
   public void setPeriod(TimePeriod period, HiResDate curTime)
   {
     _slider.setToolboxStartTime(period.getStartDTG());
