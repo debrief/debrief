@@ -1,8 +1,11 @@
 package org.mwc.debrief.lite.gui.custom;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 import javax.swing.JSlider;
+
+import junit.framework.TestCase;
 
 /**
  * An extension of JSlider to select a range of values using two thumb controls. The thumb controls
@@ -17,28 +20,25 @@ import javax.swing.JSlider;
  */
 public class RangeSlider extends JSlider
 {
+  
+  public static class TestConversion extends TestCase
+  {
+    public void testConvert()
+    {
+      Calendar date = new GregorianCalendar();
+      int millis = (int) (date.getTimeInMillis() / 1000L);
+      Calendar newD = toDate(millis);
+      int sliderVal = toInt(date);
+      Calendar newD2 = toDate(sliderVal);
+      assertEquals("conversion works", millis, sliderVal);
+      assertEquals("conversion works", newD, newD2);
+    }
+  }
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
-
-  /**
-   * Constructs a RangeSlider with default minimum and maximum values of 0 and 100.
-   */
-  public RangeSlider()
-  {
-    initSlider();
-  }
-
-  /**
-   * Constructs a RangeSlider with the specified default minimum and maximum values.
-   */
-  public RangeSlider(int min, int max)
-  {
-    super(min, max);
-    initSlider();
-  }
 
   /**
    * Constructs a RangeSlider with using a Calendar, storing the values divided by 1000
@@ -48,10 +48,20 @@ public class RangeSlider extends JSlider
    */
   public RangeSlider(Calendar min, Calendar max)
   {
-    super((int) (min.getTimeInMillis() / 1000L), (int) (max.getTimeInMillis()
-        / 1000L), (int) ((min.getTimeInMillis() / 1000L) / 2 + (min
-            .getTimeInMillis() / 1000L) / 2));
+    super(toInt(min), toInt(max),  toInt(min) + (toInt(max) - toInt(min))/2);
     initSlider();
+  }
+  
+  private static int toInt(Calendar date)
+  {
+    return (int) (date.getTimeInMillis() / 1000L);
+  }
+  
+  private static Calendar toDate(int val)
+  {
+    GregorianCalendar cal = new GregorianCalendar();
+    cal.setTimeInMillis(val * 1000L);
+    return cal;
   }
 
   /**
@@ -64,6 +74,26 @@ public class RangeSlider extends JSlider
     setUpperValue(getMaximum());
   }
 
+  public Calendar getLowerDate()
+  {
+    return toDate(getValue());
+  }
+  
+  public Calendar getUpperDate()
+  {
+    return toDate(getUpperValue());
+  }
+  
+  public void setLowerDate(Calendar date)
+  {
+    setValue(toInt(date));
+  }
+  
+  public void setUpperDate(Calendar date)
+  {
+    setUpperValue(toInt(date));
+  }
+  
   /**
    * Overrides the superclass method to install the UI delegate to draw two thumbs.
    */
@@ -119,7 +149,7 @@ public class RangeSlider extends JSlider
   /**
    * Sets the upper value in the range.
    */
-  public void setUpperValue(int value)
+  private void setUpperValue(int value)
   {
     // Compute new extent.
     int lowerValue = getValue();
