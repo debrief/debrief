@@ -31,7 +31,9 @@ import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
+import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -219,8 +221,11 @@ public class DebriefRibbonTimeController
         else
           image = "icons/24/media_stop.png";
         
-        final String tooltip = isPlaying ? "Stop" : "Play";
-        playCommandButton.setToolTipText(tooltip);
+        final String tooltip = isPlaying ? "Stop playing" : "Start playing";
+        
+        RichTooltipBuilder builder = new RichTooltipBuilder();
+        RichTooltip richTooltip = builder.setTitle("Timer").addDescriptionSection(tooltip).build();
+        playCommandButton.setActionRichTooltip(richTooltip);
 
         // switch the icon
         final Image zoominImage = MenuUtils.createImage(image);
