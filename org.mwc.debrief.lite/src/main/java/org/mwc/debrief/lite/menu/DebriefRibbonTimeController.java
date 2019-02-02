@@ -41,6 +41,8 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.TotePainter;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.temporal.TimeManager;
 
@@ -116,7 +118,7 @@ public class DebriefRibbonTimeController
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager)
   {
-    final JRibbonBand displayMode = createDisplayMode();
+    final JRibbonBand displayMode = createDisplayMode(stepControl);
 
     final JRibbonBand control = createControl(stepControl, timeManager);
 
@@ -410,16 +412,32 @@ public class DebriefRibbonTimeController
     return control;
   }
 
-  private static JRibbonBand createDisplayMode()
+  private static JRibbonBand createDisplayMode(final LiteStepControl stepControl)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final FlamingoCommandToggleGroup displayModeGroup =
         new FlamingoCommandToggleGroup();
+    ActionListener selectNormal = new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        stepControl.setPainter(TotePainter.NORMAL_PAINTER);
+      }
+    };
+    ActionListener selectSnail= new ActionListener()
+    {
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        stepControl.setPainter(SnailPainter.SNAIL_NAME);
+      }
+    };
     MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        selectNormal, displayMode, RibbonElementPriority.TOP,
         true, displayModeGroup, true);
     MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        selectSnail, displayMode, RibbonElementPriority.TOP,
         true, displayModeGroup, false);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
