@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.menu;
 
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
+import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -30,11 +31,11 @@ public class DebriefRibbon
 {
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
       final DebriefLiteToolParent parent,
-      final GeoToolMapRenderer geoMapRenderer, final LiteStepControl stepControl, TimeManager timeManager)
+      final GeoToolMapRenderer geoMapRenderer, final LiteStepControl stepControl, TimeManager timeManager, GeoToolMapProjection projection)
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
-    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer);
+    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, projection);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
         null, parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer, stepControl, timeManager);

@@ -8,7 +8,7 @@ import MWC.GUI.Layers;
 
 public class LiteTote extends AnalysisTote
 {
-
+  
   public LiteTote(Layers theData, StepControl stepper)
   {
     super(theData);

@@ -56,7 +56,6 @@ import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -153,6 +152,7 @@ public class DebriefLiteApp implements FileDropListener
   private final TimeManager timeManager = new TimeManager();
   private final PainterManager painterManager;
   private LiteTote theTote;
+  private CanvasAdaptor _theCanvas;
 
 
   public DebriefLiteApp()
@@ -205,11 +205,13 @@ public class DebriefLiteApp implements FileDropListener
     session = new LiteSession(_theClipboard, _theLayers);
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
+    
+    mapPane = createMapPane(geoMapRenderer, dropSupport);
+    _theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics(), Color.GRAY);
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
 
-    mapPane = createMapPane(geoMapRenderer, dropSupport);
 
     final DataListener dListener = new DataListener()
     {
@@ -241,8 +243,7 @@ public class DebriefLiteApp implements FileDropListener
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     painterManager = new PainterManager(_stepControl);
-    CanvasType theCanvas = new LiteCanvas(projection, Color.GRAY);
-    PlainChart theChart = new LiteChart(_theLayers, theCanvas);
+    PlainChart theChart = new LiteChart(_theLayers, _theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
     final Debrief.GUI.Tote.Painters.TotePainter sp =
         new Debrief.GUI.Tote.Painters.SnailPainter(theChart, _theLayers,
@@ -257,12 +258,14 @@ public class DebriefLiteApp implements FileDropListener
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager);
+        _stepControl, timeManager, projection);
 
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
+    
+    System.out.println(mapPane.getGraphics());
   }
 
   private void addOutlineView(final ToolParent toolParent,
@@ -276,7 +279,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
-      final Component mapPane, final LiteStepControl stepControl, final TimeManager timeManager)
+      final Component mapPane, final LiteStepControl stepControl, final TimeManager timeManager, GeoToolMapProjection projection2)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -289,19 +292,20 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager);
+        geoMapRenderer, stepControl, timeManager, projection);
   }
 
   protected void doPaint(final Graphics gc)
   {
-    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
-    dest.setLineWidth(2f);
-    dest.startDraw(gc);
+//    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc, Color.WHITE);
+    _theCanvas.startDraw(gc);
+    _theCanvas.setLineWidth(2f);
 
-    _theLayers.paint(dest);
-    painterManager.newTime(null, timeManager.getTime(), dest);
+    _theLayers.paint(_theCanvas);
+    System.out.println("paint");
+    painterManager.newTime(null, timeManager.getTime(), _theCanvas);
 
-    dest.endDraw(gc);
+    _theCanvas.endDraw(gc);
   }
 
   protected void exit()

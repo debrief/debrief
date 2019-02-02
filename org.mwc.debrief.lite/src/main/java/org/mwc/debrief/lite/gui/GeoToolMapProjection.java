@@ -6,9 +6,12 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.Envelope2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.operation.projection.ProjectionException;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -36,6 +39,7 @@ public class GeoToolMapProjection extends PlainProjection
   private final DirectPosition2D _workMetres;
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
+  private CoordinateReferenceSystem _worldCoords;
 
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
@@ -47,23 +51,33 @@ public class GeoToolMapProjection extends PlainProjection
     _workDegs = new DirectPosition2D();
     _workMetres = new DirectPosition2D();
     _workScreen = new DirectPosition2D();
+    
+    // set the aspect radio matching to true. The default
+    // value for this was false - but when we did fit to
+    // window, it wasn't putting the specified area in the centre of the shape
+    _view.setMatchingAspectRatio(true);
+
     // we'll tell GeoTools to use the projection that's used by most of our
     // charts,
     // so that the chart will be displayed undistorted
     try
     {
-      final CoordinateReferenceSystem worldCoords = CRS.decode(
-          WORLD_PROJECTION);
+      _worldCoords = CRS.decode(WORLD_PROJECTION);
 
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      _degs2metres = CRS.findMathTransform(worldDegs, worldCoords);
+      _degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
+      _view.setCoordinateReferenceSystem(_worldCoords);
     }
     catch (final FactoryException e)
     {
       e.printStackTrace();
     }
+    
+    // SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept
+    // constant
+    _view.setMatchingAspectRatio(true);
   }
 
   @Override
@@ -90,13 +104,13 @@ public class GeoToolMapProjection extends PlainProjection
   {
     Point res = null;
     // and now for the actual projection bit
-    _workDegs.setLocation(val.getLong(), val.getLat());
+    _workDegs.setLocation(val.getLat(), val.getLong());
     try
     {
       _degs2metres.transform(_workDegs, _workMetres);
       // now got to screen
       // _view.getWorldToScreen().transform(_workMetres, _workScreen);
-      _view.getWorldToScreen().transform(_workDegs, _workScreen);
+      _view.getWorldToScreen().transform(_workMetres, _workScreen);
       // output the results
       res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
           .getCoordinate()[1]);
@@ -126,8 +140,8 @@ public class GeoToolMapProjection extends PlainProjection
           currentTransform.transform(_workScreen, _workMetres);
           _degs2metres.inverse().transform(_workMetres, _workDegs);
         }
-        res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
-            .getCoordinate()[0], 0);
+        res = new WorldLocation(_workDegs.getCoordinate()[0], _workDegs
+            .getCoordinate()[1], 0);
       }
     }
     catch (final MismatchedDimensionException e)
@@ -152,5 +166,93 @@ public class GeoToolMapProjection extends PlainProjection
   @Override
   public void zoom(final double value)
   {
+  }
+  
+
+  @Override
+  public void setDataArea(final WorldArea theArea)
+  {
+    if (theArea == null)
+    {
+      logError(ToolParent.WARNING, "GtProjection received null in setDataArea - maintainer to be informed", null);
+      return;
+    }
+    // trim the area to sensible bounds
+    theArea.trim();
+
+    mySetDataArea(theArea);
+
+    // and store it in the parent;
+    super.setDataArea(theArea);
+  }
+  
+
+  private void logError(int warning, String string, Object object)
+  {
+    System.err.println(string);
+  }
+
+  private void mySetDataArea(final WorldArea theArea)
+  {
+    // double-check we're not already ste to this
+    if (theArea.equals(super.getDataArea()))
+    {
+      // System.err.println("OVER-RIDING EXISTING AREA - TRAP THIS INSTANCE");
+    //  return;
+    }
+
+    // trim the coordinates
+    gtTrim(theArea);
+
+    final WorldLocation tl = theArea.getTopLeft();
+    final WorldLocation br = theArea.getBottomRight();
+
+    final DirectPosition2D tlDegs = new DirectPosition2D(tl.getLat(),
+        tl.getLong());
+    final DirectPosition2D brDegs = new DirectPosition2D(br.getLat(),
+        br.getLong());
+
+    final DirectPosition2D tlM = new DirectPosition2D();
+    final DirectPosition2D brM = new DirectPosition2D();
+
+    try
+    {
+      _degs2metres.transform(tlDegs, tlM);
+      _degs2metres.transform(brDegs, brM);
+
+      // put the coords into an envelope
+      final Envelope2D env = new Envelope2D(brM, tlM);
+      final ReferencedEnvelope rEnv = new ReferencedEnvelope(env, _worldCoords);
+      _view.setBounds(rEnv);
+    }
+    catch (final ProjectionException e)
+    {
+      logError(ToolParent.ERROR,
+          "trouble with proj, probably zoomed out too far", e);
+    }
+    catch (final MismatchedDimensionException e)
+    {
+      logError(ToolParent.ERROR, "unknown trouble with proj", e);
+    }
+    catch (final TransformException e)
+    {
+      logError(ToolParent.ERROR, "unknown trouble with proj", e);
+    }
+  }
+
+
+  private void gtTrim(final WorldArea theArea)
+  {
+    gtTrim(theArea.getTopLeft());
+    gtTrim(theArea.getBottomRight());
+  }
+
+  private void gtTrim(final WorldLocation loc)
+  {
+    loc.setLat(Math.min(loc.getLat(), 89.9999));
+    loc.setLat(Math.max(loc.getLat(), -89.9999));
+
+    loc.setLong(Math.min(loc.getLong(), 179.999));
+    loc.setLong(Math.max(loc.getLong(), -179.999));
   }
 }

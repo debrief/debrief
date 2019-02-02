@@ -4,6 +4,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 
+import org.geotools.swing.JMapPane;
+
 import MWC.GUI.CanvasType;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layers;
@@ -14,11 +16,13 @@ public class LiteChart extends PlainChart
 {
 
   private final CanvasType _myCanvas;
+  private final JMapPane _map;
 
-  public LiteChart(Layers theLayers, CanvasType canvas)
+  public LiteChart(Layers theLayers, CanvasType canvas, JMapPane mapPane)
   {
     super(theLayers);
     _myCanvas = canvas;
+    _map = mapPane;
   }
 
   
@@ -47,8 +51,7 @@ public class LiteChart extends PlainChart
   @Override
   public void update()
   {
-    // TODO Auto-generated method stub
-    
+    _map.repaint();
   }
 
   @Override
