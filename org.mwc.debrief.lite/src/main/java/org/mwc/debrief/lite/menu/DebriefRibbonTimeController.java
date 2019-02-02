@@ -124,21 +124,27 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
         CommandButtonDisplayState.SMALL);
 
-    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ") {
+    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ")
+    {
+
+      /**
+       *
+       */
+      private static final long serialVersionUID = -8661846422134734817L;
 
       @Override
-      protected void paintComponent(Graphics g)
+      protected void paintComponent(final Graphics g)
       {
         g.setColor(Color.BLACK);
         g.fillRect(0, 0, getWidth(), getHeight());
         super.paintComponent(g);
       }
-      
+
     };
     timeLabel.setOpaque(false);
     timeLabel.setForeground(new Color(0, 255, 0));
     timeLabel.setBackground(Color.BLACK);
-    
+
     menu = new JPopupMenu();
 
     final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
@@ -184,7 +190,7 @@ public class DebriefRibbonTimeController
   private static JRibbonBand createDisplayMode()
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
-    FlamingoCommandToggleGroup displayModeGroup =
+    final FlamingoCommandToggleGroup displayModeGroup =
         new FlamingoCommandToggleGroup();
     MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
         new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
@@ -204,9 +210,9 @@ public class DebriefRibbonTimeController
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
     final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
-    
-    Calendar start = new GregorianCalendar(2013, 0, 0);
-    Calendar end = new GregorianCalendar(2013, 1, 15);
+
+    final Calendar start = new GregorianCalendar(2013, 0, 0);
+    final Calendar end = new GregorianCalendar(2013, 1, 15);
     // Now we create the components for the sliders
     final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
     final JLabel maximumValue = new JLabel(formatter.format(end.getTime()));
