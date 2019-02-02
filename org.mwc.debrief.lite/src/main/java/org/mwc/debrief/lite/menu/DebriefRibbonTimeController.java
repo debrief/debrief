@@ -3,6 +3,7 @@ package org.mwc.debrief.lite.menu;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.text.SimpleDateFormat;
@@ -123,14 +124,21 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
         CommandButtonDisplayState.SMALL);
 
-    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ");
-    timeLabel.setSize(200, 60);
-    timeLabel.setPreferredSize(new Dimension(200, 60));
-    timeLabel.setForeground(new Color(0, 255, 0));
-    timeLabel.setBackground(new Color(0, 0, 0, 1));
-    
+    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ") {
 
+      @Override
+      protected void paintComponent(Graphics g)
+      {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        super.paintComponent(g);
+      }
+      
+    };
+    timeLabel.setOpaque(false);
+    timeLabel.setForeground(new Color(0, 255, 0));
     timeLabel.setBackground(Color.BLACK);
+    
     menu = new JPopupMenu();
 
     final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
