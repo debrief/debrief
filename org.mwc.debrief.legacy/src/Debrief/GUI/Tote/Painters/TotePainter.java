@@ -221,7 +221,9 @@ import MWC.GenericData.WorldArea;
 public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		Editable {
 
-	// ///////////////////////////////////////////////////////////
+	public static final String NORMAL_PAINTER = "Normal";
+
+  // ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
 	/**
@@ -722,7 +724,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		 *            the object we are editing
 		 */
 		public TotePainterInfo(final TotePainter data) {
-			super(data, "Normal", "");
+			super(data, NORMAL_PAINTER, "");
 		}
 
 		/**
@@ -752,7 +754,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 * @return the name
 	 */
 	public String toString() {
-		return "Normal";
+		return NORMAL_PAINTER;
 	}
 
 	/**

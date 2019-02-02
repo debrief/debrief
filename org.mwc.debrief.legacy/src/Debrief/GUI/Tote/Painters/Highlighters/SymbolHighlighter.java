@@ -57,7 +57,7 @@ public final class SymbolHighlighter implements PlotHighlighter
           centre = watch.getBounds().getCentre();
 
           // wrap the Graphics so we can paint to it
-          final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
+          final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest, Color.GRAY);
 
           // store the size
           final double size = sym.getScaleVal();

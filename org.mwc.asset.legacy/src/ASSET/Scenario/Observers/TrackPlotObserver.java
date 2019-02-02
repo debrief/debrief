@@ -348,7 +348,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 		BufferedImage bi = new BufferedImage(_myWid, _myHeight,
 				BufferedImage.TYPE_INT_RGB);
 		Graphics g2 = bi.getGraphics();
-		CanvasAdaptor ca = new CanvasAdaptor(_myProj, g2);
+		CanvasAdaptor ca = new CanvasAdaptor(_myProj, g2, Color.black);
 
 		ca.setColor(Color.white);
 		ca.fillRect(0, 0, _myWid, _myHeight);

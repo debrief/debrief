@@ -16,9 +16,12 @@
 package MWC.GUI.Canvas;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
+import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -31,15 +34,18 @@ import MWC.GenericData.WorldLocation;
 
 public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
-	private final java.awt.Graphics _dest;
+	private java.awt.Graphics _dest;
 
 	private final MWC.Algorithms.PlainProjection _proj;
 
+  private final Color _backColor;
+
 	/** Creates new CanvasAdaptor */
 	public CanvasAdaptor(final MWC.Algorithms.PlainProjection proj,
-			final java.awt.Graphics dest) {
+			final java.awt.Graphics dest, final Color backColor) {
 		_proj = proj;
 		_dest = dest;
+		_backColor = backColor;
 	}
 
 	public void addPainter(final CanvasType.PaintListener listener) {
@@ -109,7 +115,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * set/get the background colour
 	 */
 	public java.awt.Color getBackgroundColor() {
-		return null;
+	  return _backColor;
 	}
 
 	/**
@@ -122,8 +128,8 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public java.util.Enumeration getPainters() {
-		return null;
-	}
+    return new Vector<CanvasType.PaintListener>().elements();
+  }
 
 	public MWC.Algorithms.PlainProjection getProjection() {
 		return _proj;
@@ -208,6 +214,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	/** client is about to start drawing operation */
 	public void startDraw(final Object theVal) {
+	  _dest = (Graphics) theVal;
 		//
 	}
 

@@ -695,7 +695,7 @@ public class SnailPainter extends TotePainter
 			while (iter.hasMoreElements())
 			{
 				final Plottable p = (Plottable) iter.nextElement();
-				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest));
+				p.paint(new MWC.GUI.Canvas.CanvasAdaptor(theCanvas.getProjection(), dest, Color.GRAY));
 			}
 		}
 

@@ -66,7 +66,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
     final HostedList wrapper = (HostedList) list;
 
     // wrap the canvas
-    final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest);
+    final MWC.GUI.Canvas.CanvasAdaptor adaptor = new MWC.GUI.Canvas.CanvasAdaptor(proj, dest, Color.GRAY);
 
 
     // how long? (convert to millis)

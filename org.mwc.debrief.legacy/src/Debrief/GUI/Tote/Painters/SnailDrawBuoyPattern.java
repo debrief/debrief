@@ -14,6 +14,8 @@
  */
 package Debrief.GUI.Tote.Painters;
 
+import java.awt.Color;
+
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: SnailDrawBuoyPattern.java,v $
 // @author $Author: Ian.Mayo $
@@ -122,7 +124,7 @@ public final class SnailDrawBuoyPattern implements SnailPainter.drawHighLight, E
     final Point br = new Point(proj.toScreen(wa.getBottomRight()));
 
     // create our own canvas object
-    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest, Color.GRAY);
 
     // and do the paint
     pattern.paint(cad);

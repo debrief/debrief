@@ -69,6 +69,7 @@ package Debrief.GUI.Tote.Painters;
 //
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -106,7 +107,7 @@ public final class SnailDrawAnnotation implements SnailPainter.drawHighLight
     
     final PlainWrapper swa = (PlainWrapper)watch;
 
-    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+    final CanvasAdaptor cad = new CanvasAdaptor(proj, dest, Color.GRAY);
 
     swa.paint(cad);
 

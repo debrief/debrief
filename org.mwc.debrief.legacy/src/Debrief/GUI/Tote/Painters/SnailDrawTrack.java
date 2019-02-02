@@ -286,7 +286,7 @@ final class SnailDrawTrack
             final String msg = gw.getName();
 
             // wrap our Graphics object in a canvas, so we can paint to it
-            final CanvasAdaptor cad = new CanvasAdaptor(proj, dest);
+            final CanvasAdaptor cad = new CanvasAdaptor(proj, dest, Color.GRAY);
 
             // and get the label to paint itself
             gw.paintLabel(cad, newCol);

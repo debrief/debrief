@@ -92,7 +92,7 @@ public final class RangeHighlighter implements PlotHighlighter
 			final WorldLocation center = watch.getLocation();
 			final int header = (int) MWC.Algorithms.Conversions
 					.Rads2Degs(watch.getCourse());
-			final CanvasAdaptor can = new CanvasAdaptor(proj, dest);
+			final CanvasAdaptor can = new CanvasAdaptor(proj, dest, Color.GRAY);
 
 			drawRangeRings(center, _radius, header, _arcs, _rings, _spoke_separation,
 					can);

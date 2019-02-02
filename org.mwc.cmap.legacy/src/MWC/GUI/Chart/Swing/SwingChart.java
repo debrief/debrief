@@ -107,6 +107,7 @@
 
 package MWC.GUI.Chart.Swing;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -367,7 +368,7 @@ public class SwingChart extends PlainChart
                       final Graphics g2 = image.getGraphics();
 
                       // wrap the Graphics to make it look like a CanvasType
-                      final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas.getProjection(), g2);
+                      final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas.getProjection(), g2, Color.GRAY);
 
                       // draw into it
                       thisLayer.paint(ca);
