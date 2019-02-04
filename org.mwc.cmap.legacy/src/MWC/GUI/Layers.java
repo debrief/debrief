@@ -203,6 +203,10 @@ import java.util.List;
 import java.util.Vector;
 
 import MWC.GUI.Layer.BackgroundLayer;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -1501,5 +1505,87 @@ public class Layers implements Serializable, Plottable, PlottablesType
       }
     }
   }
-  
+
+  public TimePeriod getTimePeriod()
+  {
+    TimePeriod res = null;
+
+    for (final Enumeration<Editable> iter = elements(); iter
+        .hasMoreElements();)
+    {
+      final Layer thisLayer = (Layer) iter.nextElement();
+
+      // and through this layer
+      if (thisLayer instanceof WatchableList)
+      {
+        final WatchableList thisT = (WatchableList) thisLayer;
+        res = extend(res, thisT.getStartDTG());
+        res = extend(res, thisT.getEndDTG());
+      }
+      else if (thisLayer instanceof BaseLayer)
+      {
+        final Enumeration<Editable> elements = thisLayer.elements();
+        while (elements.hasMoreElements())
+        {
+          final Plottable nextP = (Plottable) elements.nextElement();
+          if (nextP instanceof Watchable)
+          {
+            final Watchable wrapped = (Watchable) nextP;
+            final HiResDate dtg = wrapped.getTime();
+            if (dtg != null)
+            {
+              res = extend(res, dtg);
+
+              // also see if it this data type an end time
+              if (wrapped instanceof WatchableList)
+              {
+                // ok, make sure we also handle the end time
+                final WatchableList wl = (WatchableList) wrapped;
+                final HiResDate endD = wl.getEndDTG();
+                if (endD != null)
+                {
+                  res = extend(res, endD);
+                }
+              }
+            }
+          }
+          else if (nextP instanceof WatchableList)
+          {
+            WatchableList wl = (WatchableList) nextP;
+            res = extend(res, wl.getStartDTG());
+            res = extend(res, wl.getEndDTG());
+          }
+        }
+      }
+    }
+
+    return res;
+  }
+
+
+  private static TimePeriod extend(final TimePeriod period,
+      final HiResDate date)
+  {
+    final TimePeriod result;
+    // have we received a date?
+    if (date != null)
+    {
+      if (period == null)
+      {
+        result = new TimePeriod.BaseTimePeriod(date, date);
+      }
+      else
+      {
+        result = period;
+        result.extend(date);
+      }
+    }
+    else
+    {
+      result = null;
+    }
+
+    return result;
+  }
+
 }
