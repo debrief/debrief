@@ -140,8 +140,9 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
-        "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
-            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM, null);
+        "icons/24/label_add.png", new CreateLabel(_toolParent, _theProperties,
+            _theLayers, bounds, "Polygon", "icons/24/label_add.png"),
+        CommandButtonDisplayState.MEDIUM, null);
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
         "images/16/line.png", new CreateShape(_toolParent, _theProperties,
