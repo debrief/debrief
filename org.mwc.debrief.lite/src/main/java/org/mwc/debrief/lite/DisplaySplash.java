@@ -142,6 +142,7 @@ public class DisplaySplash extends JFrame implements ActionListener, Runnable
         }
         catch (final InterruptedException e)
         {
+          // ignore
         }
       }
     }

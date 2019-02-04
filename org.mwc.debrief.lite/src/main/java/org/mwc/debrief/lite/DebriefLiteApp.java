@@ -148,7 +148,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public DebriefLiteApp()
   {
-  //set the substance look and feel
+    //set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     DisplaySplash splashScreen = new DisplaySplash(5);
@@ -198,8 +198,6 @@ public class DebriefLiteApp implements FileDropListener
     app = new LiteApplication();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
-
-
     mapPane = createMapPane(geoMapRenderer, dropSupport);
 
     final DataListener dListener = new DataListener()
@@ -227,10 +225,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    // set the substance look and feel
-  //  JFrame.setDefaultLookAndFeelDecorated(true);
- //   SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
-
     _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -240,8 +234,6 @@ public class DebriefLiteApp implements FileDropListener
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager);
-
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
