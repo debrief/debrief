@@ -3,6 +3,8 @@ package org.mwc.debrief.lite.menu;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -312,14 +314,27 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
         CommandButtonDisplayState.SMALL, "Format time control");
 
-    final JLabel timeLabel = new JLabel("       95/12/12 07:45       ");
+    final JLabel timeLabel = new JLabel("YY/MM/DD hh:mm:ss")
+    {
+      /**
+       * 
+       */
+      private static final long serialVersionUID = 1L;
+
+      @Override
+      protected void paintComponent(final Graphics g)
+      {
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+        super.paintComponent(g);
+      }
+    };
     timeLabel.setSize(200, 60);
     timeLabel.setPreferredSize(new Dimension(200, 60));
+    timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
-    // TODO: couldn't get black bkgnd to show, so switching fore-color
-    timeLabel.setForeground(new Color(0, 0, 0));
-    // timeLabel.setForeground(new Color(0, 255, 0));
-    // timeLabel.setBackground(Color.BLACK);
+    timeLabel.setForeground(new Color(0, 255, 0));
+    timeLabel.setBackground(Color.BLACK);
 
     menu = new JPopupMenu();
 
