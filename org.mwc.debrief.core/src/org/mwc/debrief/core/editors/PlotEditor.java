@@ -109,12 +109,7 @@ import org.eclipse.ui.views.contentoutline.IContentOutlinePage;
 import org.eclipse.ui.views.navigator.ResourceNavigator;
 import org.eclipse.ui.views.properties.IPropertySheetPage;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
@@ -190,6 +185,11 @@ import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
+import MWC.TacticalData.temporal.ControllablePeriod;
+import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.TimeControlPreferences;
+import MWC.TacticalData.temporal.TimeManager;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import junit.framework.TestCase;
 
@@ -286,26 +286,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private static boolean _updatingPlot = false;
 
-  private static TimePeriod extend(final TimePeriod period,
-      final HiResDate date)
-  {
-    TimePeriod result = period;
-    // have we received a date?
-    if (date != null)
-    {
-      if (result == null)
-      {
-        result = new TimePeriod.BaseTimePeriod(date, date);
-      }
-      else
-      {
-        result.extend(date);
-      }
-    }
-
-    return result;
-  }
-
   private static String getAbsoluteName(final IFile iff) throws CoreException
   {
     String name;
@@ -322,58 +302,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private static TimePeriod getPeriodFor(final Layers theData)
   {
-    TimePeriod res = null;
-
-    for (final Enumeration<Editable> iter = theData.elements(); iter
-        .hasMoreElements();)
-    {
-      final Layer thisLayer = (Layer) iter.nextElement();
-
-      // and through this layer
-      if (thisLayer instanceof TrackWrapper)
-      {
-        final TrackWrapper thisT = (TrackWrapper) thisLayer;
-        res = extend(res, thisT.getStartDTG());
-        res = extend(res, thisT.getEndDTG());
-      }
-      else if (thisLayer instanceof BaseLayer)
-      {
-        final Enumeration<Editable> elements = thisLayer.elements();
-        while (elements.hasMoreElements())
-        {
-          final Plottable nextP = (Plottable) elements.nextElement();
-          if (nextP instanceof Watchable)
-          {
-            final Watchable wrapped = (Watchable) nextP;
-            final HiResDate dtg = wrapped.getTime();
-            if (dtg != null)
-            {
-              res = extend(res, dtg);
-
-              // also see if it this data type an end time
-              if (wrapped instanceof WatchableList)
-              {
-                // ok, make sure we also handle the end time
-                final WatchableList wl = (WatchableList) wrapped;
-                final HiResDate endD = wl.getEndDTG();
-                if (endD != null)
-                {
-                  res = extend(res, endD);
-                }
-              }
-            }
-          }
-          else if (nextP instanceof WatchableList)
-          {
-            WatchableList wl = (WatchableList) nextP;
-            res = extend(res, wl.getStartDTG());
-            res = extend(res, wl.getEndDTG());
-          }
-        }
-      }
-    }
-
-    return res;
+    return theData.getTimePeriod();
   }
 
   private static boolean hasFrequencyData(final SensorWrapper thisS)

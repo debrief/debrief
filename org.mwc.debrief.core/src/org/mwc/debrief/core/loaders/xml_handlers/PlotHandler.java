@@ -14,13 +14,13 @@
  */
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DetailsHandler;
 import MWC.GUI.Layers;
+import MWC.TacticalData.temporal.TimeManager;
+import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * Title: Debrief 2000 Description: Debrief 2000 Track Analysis Software

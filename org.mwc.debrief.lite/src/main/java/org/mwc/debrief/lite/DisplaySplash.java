@@ -19,7 +19,6 @@ package org.mwc.debrief.lite;
  *
  */
 import java.awt.AlphaComposite;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.SplashScreen;
@@ -27,103 +26,156 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
-import javax.swing.JProgressBar;
-import javax.swing.Timer;
 
-import org.mwc.debrief.lite.util.Utils;
+import org.mwc.debrief.lite.util.ManifestUtils;
 
-public class DisplaySplash extends JFrame implements ActionListener,Runnable {
-  private SplashScreen splash;
-  private int numTasks;
+public class DisplaySplash extends JFrame implements ActionListener, Runnable
+{
   private static String debriefVersion;
-
-  static {
-    debriefVersion = Utils.readManifestVersion();
+  static
+  {
+    debriefVersion = ManifestUtils.readManifestVersion();
   }
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
-  static void renderSplashFrame(Graphics2D g, String message) {
+  private static void renderSplashFrame(final Graphics2D g,
+      final String message)
+  {
     g.setComposite(AlphaComposite.Clear);
-    g.fillRect(120,140,200,40);
+    g.fillRect(0, 140, 300, 80);
     g.setPaintMode();
     g.setColor(Color.RED);
-    g.drawString(message, 120, 150);
+    g.drawString(message, 20, 170);
   }
-  public DisplaySplash(int numTasks) {
+
+  private static void renderVersion(final Graphics2D g)
+  {
+    g.setComposite(AlphaComposite.Clear);
+    g.fillRect(120, 140, 600, 150);
+    g.setPaintMode();
+    g.setColor(Color.BLACK);
+    if (debriefVersion == null)
+    {
+      debriefVersion = "Dev Mode";
+    }
+    g.drawString(debriefVersion, 330, 170);
+  }
+
+  private final SplashScreen splash;
+
+  @SuppressWarnings("unused")
+  private int numTasks;
+
+  public DisplaySplash(final int numTasks)
+  {
     super();
-    this.numTasks=numTasks;
+    this.numTasks = numTasks;
 
     splash = SplashScreen.getSplashScreen();
-    if (splash == null) {
+    if (splash == null)
+    {
       System.out.println("SplashScreen.getSplashScreen() returned null");
       return;
     }
-
-  }
-
-  ActionListener al = new ActionListener() {
-
-    @Override
-    public void actionPerformed(java.awt.event.ActionEvent evt) {
-      if(numTasks>0) {
-        //System.out.println(count);
-        updateMessage("Loading Debrief Lite version:"+debriefVersion);
-      }
-      else {
-        closeSplash();;//dispose of splashscreen
-      }
-    }
-
-  };
-
-
-  public void updateMessage(String message) {
-    numTasks --;
-    if(splash.isVisible()) {
-      Graphics2D g = splash.createGraphics();
-      if (g == null) {
+    if (splash.isVisible())
+    {
+      final Graphics2D g = splash.createGraphics();
+      if (g == null)
+      {
         System.out.println("g is null");
         return;
       }
-      renderSplashFrame(g, message);
+      System.out.println("version updated:" + debriefVersion);
+      renderVersion(splash.createGraphics());
     }
   }
-  public void actionPerformed(ActionEvent ae) {
+
+  @Override
+  public void actionPerformed(final ActionEvent ae)
+  {
     System.exit(0);
   }
 
-  private void closeSplash() {
-    try {
-      if(splash.isVisible()) {
+  @SuppressWarnings("unused")
+  private void closeSplash()
+  {
+    try
+    {
+      if (splash != null && splash.isVisible())
+      {
         splash.close();
       }
-    }catch(Exception e) {
-      //ignore
+    }
+    catch (final Exception e)
+    {
+      // ignore - we're closing anyway
     }
     toFront();
   }
+
   @Override
   public void run()
   {
-    Graphics2D g = splash.createGraphics();
-    if (g == null) {
-      System.out.println("g is null");
-      return;
+    final long delay = 100L;
+    final String[] tasks =
+    {"Loading map content", "Initializing Debrief Lite", "Creating map pane",
+        "Initializing the screen", "Done.."};
+    if (splash != null)
+    {
+      final Graphics2D g = splash.createGraphics();
+      if (g == null)
+      {
+        System.out.println("g is null");
+        return;
+      }
+
+      for (int i = 0; i < tasks.length; i++)
+      {
+        try
+        {
+          renderSplashFrame(g, tasks[i]);
+          splash.update();
+          Thread.sleep(delay);
+        }
+        catch (final InterruptedException e)
+        {
+        }
+      }
+    }
+    else
+    {
+      showSplashError();
     }
 
-    renderSplashFrame(g, "Loading Debrief Lite");
-    splash.update();
-    for(int i=0;i<numTasks;i++) {
-      try {
-        Thread.sleep(3000);
-      }
-      catch(InterruptedException e) {
-      }
-    }
+  }
 
+  private void showSplashError()
+  {
+    System.err.println(
+        "Path for splash screen image should be provided in command path: -splash:src/main/java/images/splash.gif");
+  }
+
+  public void updateMessage(final String message)
+  {
+    numTasks--;
+    if (splash != null && splash.isVisible())
+    {
+      final Graphics2D g = splash.createGraphics();
+      if (g == null)
+      {
+        System.out.println("g is null");
+        return;
+      }
+      System.out.println("Message updated:" + message);
+      renderSplashFrame(g, message);
+    }
+    else
+    {
+      showSplashError();
+    }
   }
 
 }

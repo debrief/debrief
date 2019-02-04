@@ -13,6 +13,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Layer;
@@ -127,7 +128,7 @@ public class DebriefRibbonInsert
                 new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
                     WorldDistance.DEGS)), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
         "images/16/polygon.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Polygon", "images/polygon_add.png", bounds)
@@ -138,7 +139,10 @@ public class DebriefRibbonInsert
             return new ShapeWrapper("new polygon", new PolygonShape(null),
                 DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
+    final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
+        "images/16/polygon.png", new CreateLabel(_toolParent, _theProperties,
+            _theLayers,bounds, "Polygon", "images/polygon_add.png"),CommandButtonDisplayState.MEDIUM, null);
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
         "images/16/line.png", new CreateShape(_toolParent, _theProperties,
@@ -151,7 +155,7 @@ public class DebriefRibbonInsert
                 .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
                     0.05, 0))), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
         "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
@@ -163,7 +167,7 @@ public class DebriefRibbonInsert
                 centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
                     45), 0.05, 0))), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
         "images/16/circle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Circle", "images/circle_add.png", bounds)
@@ -174,7 +178,7 @@ public class DebriefRibbonInsert
             return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
                 DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
         "images/arc_add.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Arc", "images/arc_add.png", bounds)
@@ -186,20 +190,20 @@ public class DebriefRibbonInsert
                 new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
                 false), DebriefColors.RED, null);
           }
-        }, CommandButtonDisplayState.MEDIUM);
+        }, CommandButtonDisplayState.MEDIUM, null);
 
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
+    drawingMenu.addRibbonComponent(new JRibbonComponent(labelCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
     drawingMenu.startGroup("Toggle for select target layer");
-    
     drawingMenu.startGroup("Dynamic Shapes");
     final JCommandButtonStrip dynShapesStrip = new JCommandButtonStrip();
     final JCommandButton sensorArcCmd = MenuUtils.addCommandButton("Polygon",
-        "images/polygon.png", null, CommandButtonDisplayState.FIT_TO_ICON);
+        "images/polygon.png", null, CommandButtonDisplayState.FIT_TO_ICON, null);
     dynShapesStrip.add(sensorArcCmd);
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
@@ -221,15 +225,15 @@ public class DebriefRibbonInsert
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     chartfeaturesMenu.startGroup("Time Marker");
     final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
     final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM);
+        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
     chartfeaturesMenu.startGroup("Grid");
     final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
         "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, bounds), CommandButtonDisplayState.MEDIUM);
+            _theLayers, bounds), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
