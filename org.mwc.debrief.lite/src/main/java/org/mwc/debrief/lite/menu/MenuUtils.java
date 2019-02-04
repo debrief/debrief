@@ -65,6 +65,24 @@ public class MenuUtils
 
     }
   }
+
+  public static JCommandToggleButton addCommandToggleButton(
+      final String commandName, final String imagePath,
+      final ActionListener actionToAdd,
+      final CommandButtonDisplayState priority)
+  {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+    }
+    final JCommandToggleButton commandButton = new JCommandToggleButton(
+        commandName, imageIcon);
+    commandButton.addActionListener(actionToAdd);
+    commandButton.setDisplayState(priority);
+    return commandButton;
+  }
   
   public static FlamingoCommand addCommandToggleButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
@@ -132,24 +150,6 @@ public class MenuUtils
     
     RichTooltip richTooltip = builder.setTitle(commandName).addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
-    commandButton.addActionListener(actionToAdd);
-    commandButton.setDisplayState(priority);
-    return commandButton;
-  }
-
-  public static JCommandToggleButton addCommandToggleButton(
-      final String commandName, final String imagePath,
-      final ActionListener actionToAdd,
-      final CommandButtonDisplayState priority)
-  {
-    ImageWrapperResizableIcon imageIcon = null;
-    if (imagePath != null)
-    {
-      final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
-    }
-    final JCommandToggleButton commandButton = new JCommandToggleButton(
-        commandName, imageIcon);
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
