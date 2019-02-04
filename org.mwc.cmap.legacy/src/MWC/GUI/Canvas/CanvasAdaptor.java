@@ -123,7 +123,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * graphics (temporary lines, etc).
 	 */
 	public java.awt.Graphics getGraphicsTemp() {
-		return _dest;
+		return _dest.create();
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
