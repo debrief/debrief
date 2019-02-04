@@ -116,7 +116,6 @@ public class DebriefRibbonInsert
       final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
-    drawingMenu.startGroup("Core");
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
         "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
@@ -192,12 +191,12 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
 
+    drawingMenu.addRibbonComponent(new JRibbonComponent(labelCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(labelCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
     drawingMenu.startGroup("Toggle for select target layer");
     drawingMenu.startGroup("Dynamic Shapes");
@@ -230,7 +229,7 @@ public class DebriefRibbonInsert
     final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
         new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
     chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
-    chartfeaturesMenu.startGroup("Grid");
+//    chartfeaturesMenu.startGroup("Grid");
     final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
         "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
             _theLayers, bounds), CommandButtonDisplayState.MEDIUM, null);
