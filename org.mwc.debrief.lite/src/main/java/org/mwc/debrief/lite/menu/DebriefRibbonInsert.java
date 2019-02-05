@@ -19,6 +19,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.Tools.Palette.AutoSelectTarget;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
@@ -187,15 +188,7 @@ public class DebriefRibbonInsert
     final JCommandButtonStrip shapesStrip2 = new JCommandButtonStrip(StripOrientation.HORIZONTAL);
     shapesStrip2.setDisplayState(CommandButtonDisplayState.MEDIUM);
     shapesStrip2.add(rectCmd);
-    final JCommandToggleButton layerSelectCmd = MenuUtils.addCommandToggleButton("Toggle for select \ntarget layer", "images/16/layer_mgr.png", new AbstractAction()
-    {
-      
-      @Override
-      public void actionPerformed(ActionEvent e)
-      {
-        System.out.println("Action clicked");
-      }
-    }, CommandButtonDisplayState.MEDIUM);
+    final JCommandToggleButton layerSelectCmd = MenuUtils.addCommandToggleButton("Toggle for select \ntarget layer", "images/16/layer_mgr.png", new AutoSelectTarget(), CommandButtonDisplayState.MEDIUM);
     shapesStrip2.add(layerSelectCmd);
     drawingMenu.addRibbonComponent(new JRibbonComponent(shapesStrip2));
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

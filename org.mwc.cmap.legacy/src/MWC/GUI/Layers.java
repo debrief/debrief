@@ -214,6 +214,8 @@ import MWC.GenericData.WorldVector;
  */
 public class Layers implements Serializable, Plottable, PlottablesType
 {
+  public static final String NEW_LAYER_COMMAND = "[Add new layer...]";
+  public static final String DEFAULT_TARGET_LAYER = "Misc";
 
   // ////////////////////////////////////////////////////
   // member variables
@@ -1423,6 +1425,28 @@ public class Layers implements Serializable, Plottable, PlottablesType
       _newItemListeners.clear();
     }
 
+  }
+  
+  public String[] trimmedLayers()
+  {
+    final Vector<String> res = new Vector<String>(0, 1);
+    final Enumeration<Editable> enumer = elements();
+    while (enumer.hasMoreElements())
+    {
+      final Layer thisLayer = (Layer) enumer.nextElement();
+      if (thisLayer instanceof BaseLayer)
+      {
+        final BaseLayer bl = (BaseLayer) thisLayer;
+        if (bl.canTakeShapes())
+          res.add(thisLayer.getName());
+      }
+    }
+
+    res.add(NEW_LAYER_COMMAND);
+
+    final String[] sampleArray = new String[]
+    { "aa" };
+    return res.toArray(sampleArray);
   }
 
   /**
