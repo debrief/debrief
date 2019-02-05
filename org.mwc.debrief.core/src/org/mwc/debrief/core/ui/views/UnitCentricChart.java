@@ -9,7 +9,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.ui.views.UnitCentricView.IOperateOnMatch;
 
@@ -34,6 +33,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.temporal.TimeProvider;
 
 class UnitCentricChart extends SWTChart
 {

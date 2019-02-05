@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Debrief Lite
 Bundle-SymbolicName: org.mwc.debrief.lite;singleton:=true
-Bundle-Version: 1.0.388
+Bundle-Version: 1.0.389
 Export-Package: org.mwc.debrief.lite,
  org.mwc.debrief.lite.custom,
  org.mwc.debrief.lite.map

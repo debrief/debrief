@@ -31,7 +31,6 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.debrief.core.wizards.core.NewContactWizard;
@@ -42,6 +41,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * @author ian.mayo

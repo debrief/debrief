@@ -21,7 +21,6 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -43,6 +42,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class UnitCentricView extends ViewPart implements PropertyChangeListener,
     UnitDataProvider

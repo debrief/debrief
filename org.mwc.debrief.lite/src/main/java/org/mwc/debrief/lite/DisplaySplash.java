@@ -119,6 +119,7 @@ public class DisplaySplash extends JFrame implements ActionListener, Runnable
   @Override
   public void run()
   {
+    final long delay = 100L;
     final String[] tasks =
     {"Loading map content", "Initializing Debrief Lite", "Creating map pane",
         "Initializing the screen", "Done.."};
@@ -137,10 +138,11 @@ public class DisplaySplash extends JFrame implements ActionListener, Runnable
         {
           renderSplashFrame(g, tasks[i]);
           splash.update();
-          Thread.sleep(900);
+          Thread.sleep(delay);
         }
         catch (final InterruptedException e)
         {
+          // ignore
         }
       }
     }

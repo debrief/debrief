@@ -9,7 +9,6 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.GUI.Frames.Application;
@@ -18,6 +17,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class CoordinateRecorder extends CoreCoordinateRecorder
 
