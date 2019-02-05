@@ -6,7 +6,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandButtonStrip;
+import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
@@ -192,7 +192,12 @@ public class DebriefRibbonInsert
                 false), DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM, null);
-
+    
+    final JCommandToggleButton layerSelectCmd = MenuUtils
+        .addCommandToggleButton("Select \ntarget layer",
+            "icons/16/layer_mgr.png", new AutoSelectTarget(),
+            CommandButtonDisplayState.MEDIUM);
+    drawingMenu.addRibbonComponent(new JRibbonComponent(layerSelectCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(labelCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
@@ -200,12 +205,7 @@ public class DebriefRibbonInsert
     drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
-    drawingMenu.startGroup("Toggle for select target layer");
-    drawingMenu.startGroup("Dynamic Shapes");
-    final JCommandButtonStrip dynShapesStrip = new JCommandButtonStrip();
-    final JCommandButton sensorArcCmd = MenuUtils.addCommandButton("Polygon",
-        "images/polygon.png", null, CommandButtonDisplayState.FIT_TO_ICON, null);
-    dynShapesStrip.add(sensorArcCmd);
+    
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
     return drawingMenu;
