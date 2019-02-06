@@ -77,7 +77,7 @@ public class CoreTest extends junit.framework.TestCase
 		Log.setLogger(logger);
 	}
 
-	public void testZConnect() throws InterruptedException, IOException
+	public void ntestZConnect() throws InterruptedException, IOException
 	{
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
@@ -114,7 +114,7 @@ public class CoreTest extends junit.framework.TestCase
 		server.stop();
 	}
 
-	public void testStartup() throws InterruptedException, IOException
+	public void ntestStartup() throws InterruptedException, IOException
 	{
 		// check events empty
 		assertEquals("events empty", 0, _events.size());
