@@ -172,7 +172,7 @@ public class MADLookupSensor extends LookupSensor
    *
    * @return yes/no
    */
-  protected boolean canProduceRange()
+  public boolean canProduceRange()
   {
     return false;
   }
