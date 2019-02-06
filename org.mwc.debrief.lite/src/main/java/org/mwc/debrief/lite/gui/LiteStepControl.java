@@ -22,6 +22,8 @@ public class LiteStepControl extends StepControl
     public void setToolboxEndTime(final HiResDate val);
 
     public void setToolboxStartTime(final HiResDate val);
+    
+    public void setEnabled(final boolean enabled);
   }
 
   public static interface TimeLabel
@@ -100,14 +102,27 @@ public class LiteStepControl extends StepControl
     if (evt.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
     {
       final TimePeriod period = (TimePeriod) evt.getNewValue();
-      _slider.setToolboxStartTime(period.getStartDTG());
-      _slider.setToolboxEndTime(period.getEndDTG());
-
-      setStartTime(period.getStartDTG());
-      setEndTime(period.getEndDTG());
-
-      _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
-          .getEndDTG().getDate().getTime());
+      
+      // check we have a time period
+      if(period != null)
+      {
+        _slider.setToolboxStartTime(period.getStartDTG());
+        _slider.setToolboxEndTime(period.getEndDTG());
+  
+        setStartTime(period.getStartDTG());
+        setEndTime(period.getEndDTG());
+  
+        _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
+            .getEndDTG().getDate().getTime());
+        
+        // we should probably disable the slider 
+        _slider.setEnabled(true);
+      }
+      else
+      {
+        // we should probably disable the slider 
+        _slider.setEnabled(false);
+      }
     }
   }
 
