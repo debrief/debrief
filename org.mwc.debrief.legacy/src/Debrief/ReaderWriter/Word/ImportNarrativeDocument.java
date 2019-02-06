@@ -1129,7 +1129,7 @@ public class ImportNarrativeDocument
       
       importer.importThis(null, stream, layers);
       
-      assertEquals("have data", 1, layers.size());
+      assertEquals("have 1 data item", 1, layers.size());
       
       ArrayList<String> narr = getNarrativeStringsNoMetadata();
       
@@ -1137,7 +1137,7 @@ public class ImportNarrativeDocument
       narr.remove(6);
       
       int index = indexOfStart(narr);
-      assertEquals("not found start", 0, index);
+      assertEquals("not found start value", 0, index);
       
       ImportNarrativeDocument nd = new ImportNarrativeDocument(layers);
       setNarrativeHelper(only_in_period);
@@ -1146,7 +1146,7 @@ public class ImportNarrativeDocument
       
       NarrativeWrapper narrLayer = (NarrativeWrapper) layers.findLayer(LayerHandler.NARRATIVE_LAYER);
       assertNotNull(narrLayer);
-      assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
+      assertEquals("have 5 items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
     }
     
     public static void testStartOfAndEndOfPresent() throws UnsupportedEncodingException
