@@ -34,7 +34,7 @@ public class DebriefRibbon
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
-    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer);
+    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
         null, parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer, stepControl, timeManager);
