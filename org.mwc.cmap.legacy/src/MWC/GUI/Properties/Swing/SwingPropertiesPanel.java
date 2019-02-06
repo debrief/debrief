@@ -423,7 +423,11 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
       final Object source = pa.getData();
       final JPanel panel = _myPanels.get(source);
       final String newName = (String) evt.getNewValue();
-      panel.setName(newName);
+
+      if (panel != null)
+      {
+        panel.setName(newName);
+      }
 
       final int index = this.indexOfComponent(panel);
       if (index != -1)
