@@ -89,6 +89,12 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    */
   protected java.beans.PropertyChangeSupport _pSupport;
   
+  
+  /** whether this sensor can produce a range value
+   * 
+   */
+  private boolean _canProduceRange = true;
+  
   /** (optional) offset for sensor (-ve = behind)
    * 
    */
@@ -540,9 +546,9 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    * 
    * @return yes/no
    */
-  protected boolean canProduceRange()
+  public boolean canProduceRange()
   {
-    return true;
+    return _canProduceRange;
   }
 
   /**
@@ -701,7 +707,10 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
     this._sensorOffset = sensorOffset;
   }
 
-
+  public void setCanProduceRange(boolean canProduceRange)
+  {
+    _canProduceRange = canProduceRange;
+  }
 
   // //////////////////////////////////////////////////
   // the editor object
