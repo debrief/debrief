@@ -126,9 +126,6 @@ public abstract class PlainImporterBase implements PlainImporter
   {
     _theLayers = theData;
     importThis(fName, is);
-
-    // ok, forget about the layers object now that we're finished
-    _theLayers = null;
   }
 
   abstract public void importThis(String fName, java.io.InputStream is);
@@ -179,8 +176,6 @@ public abstract class PlainImporterBase implements PlainImporter
       final Layer theLayer = _theLayers.findLayer(theName);
       return theLayer;
     }
-    
-    
   }
 
   /**
