@@ -85,7 +85,9 @@ public class MenuUtils
     {
       builder.setToggle();
       builder.setToggleSelected(toggleSelected);
-      builder.inToggleGroup(group);
+      if(group!=null) {
+        builder.inToggleGroup(group);
+      }
     }
     final FlamingoCommand command = builder.build();
 

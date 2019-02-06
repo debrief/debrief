@@ -6,7 +6,6 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
-import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
@@ -98,11 +97,6 @@ public class DebriefRibbonInsert
             decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.MEDIUM);
     @SuppressWarnings("unused")
-    final FlamingoCommand chartLibraryCmd = MenuUtils.addCommand("Chart Lib",
-        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
-            decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
-    @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
         "Natural Earth", "images/16/coast.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
@@ -140,23 +134,7 @@ public class DebriefRibbonInsert
                 DebriefColors.RED, null);
           }
         }, CommandButtonDisplayState.MEDIUM, null);
-    final JCommandButton labelCmd = MenuUtils.addCommandButton("Label",
-        "icons/24/label_add.png", new CreateLabel(_toolParent, _theProperties,
-            _theLayers, bounds, "Polygon", "icons/24/label_add.png"),
-        CommandButtonDisplayState.MEDIUM, null);
-
-    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-        "images/16/line.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Line", "images/line_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new line", new LineShape(centre, centre
-                .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-                    0.05, 0))), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+    
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
         "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
@@ -193,12 +171,31 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     
-    final JCommandToggleButton layerSelectCmd = MenuUtils
+   
+
+    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
+        "images/16/line.png", new CreateShape(_toolParent, _theProperties,
+            _theLayers, "Line", "images/line_add.png", bounds)
+        {
+          @Override
+          protected ShapeWrapper getShape(final WorldLocation centre)
+          {
+            return new ShapeWrapper("new line", new LineShape(centre, centre
+                .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
+                    0.05, 0))), DebriefColors.RED, null);
+          }
+        }, CommandButtonDisplayState.MEDIUM, null);
+    
+    MenuUtils
         .addCommandToggleButton("Select \ntarget layer",
             "icons/16/layer_mgr.png", new AutoSelectTarget(),
-            CommandButtonDisplayState.MEDIUM);
-    drawingMenu.addRibbonComponent(new JRibbonComponent(layerSelectCmd));
-    drawingMenu.addRibbonComponent(new JRibbonComponent(labelCmd));
+            drawingMenu,RibbonElementPriority.TOP,true,null,false);
+    MenuUtils.addCommand("Label",
+        "icons/24/label_add.png", new CreateLabel(_toolParent, _theProperties,
+            _theLayers, bounds, "New Label", "icons/24/label_add.png"),
+            drawingMenu,RibbonElementPriority.TOP);
+    
+    drawingMenu.startGroup();
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
