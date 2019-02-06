@@ -35,6 +35,7 @@ import javax.swing.SwingUtilities;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
+import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
@@ -151,8 +152,8 @@ public class DebriefLiteApp implements FileDropListener
     //set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
-    DisplaySplash splashScreen = new DisplaySplash(5);
-    Thread t = new Thread(splashScreen);
+    final DisplaySplash splashScreen = new DisplaySplash(5);
+    final Thread t = new Thread(splashScreen);
     t.start();
     try
     {
@@ -367,6 +368,10 @@ public class DebriefLiteApp implements FileDropListener
             {
               timeManager.setTime(source, period.getStartDTG(), true);
             }
+            
+            // and the spatial bounds
+            FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
+            fitMe.actionPerformed(null);
           }
         });
       }
