@@ -95,12 +95,12 @@ public class DebriefRibbonInsert
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
         "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
-        "Natural Earth", "images/16/coast.png", new CreateCoast(_toolParent,
+        "Natural Earth", "images/16/NaturalEarth.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
@@ -221,18 +221,10 @@ public class DebriefRibbonInsert
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
         "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
-    chartfeaturesMenu.startGroup("Time Marker");
-    final JCommandButton tmaCmd = MenuUtils.addCommandButton("Absolute", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmaCmd));
-    final JCommandButton tmrCmd = MenuUtils.addCommandButton("Relative", null,
-        new MenuUtils.TODOAction(), CommandButtonDisplayState.MEDIUM, null);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(tmrCmd));
-//    chartfeaturesMenu.startGroup("Grid");
-    final JCommandButton gridCmd = MenuUtils.addCommandButton("Grid",
-        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties, decs,
-            _theLayers, bounds), CommandButtonDisplayState.MEDIUM, null);
-    chartfeaturesMenu.addRibbonComponent(new JRibbonComponent(gridCmd));
+    @SuppressWarnings("unused")
+    final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
+        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties,
+            decs, _theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(chartfeaturesMenu));
