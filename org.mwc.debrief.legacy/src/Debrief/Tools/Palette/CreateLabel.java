@@ -74,11 +74,15 @@
 package Debrief.Tools.Palette;
 
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
-import MWC.GUI.Tools.PlainTool.BoundsProvider;
-import MWC.GenericData.*;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public final class CreateLabel extends PlainTool
 {
