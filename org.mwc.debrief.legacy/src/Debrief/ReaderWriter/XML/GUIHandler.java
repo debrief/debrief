@@ -27,6 +27,7 @@ import java.awt.Color;
 
 import org.w3c.dom.Element;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Views.*;
 import Debrief.ReaderWriter.XML.GUI.*;
 
@@ -93,7 +94,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     final ComponentCreator cc = _myCreators.get(cType);
     if(cc != null)
     {
-      cc.makeThis(details, _analysisView);
+      cc.makeThis(details, _session);
     }
     else
       MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
@@ -125,7 +126,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
 
   public static  interface ComponentCreator
   {
-    public void makeThis(ComponentDetails details, Debrief.GUI.Views.AnalysisView view);
+    public void makeThis(ComponentDetails details, final Session session);
   }
 
   /////////////////////////////////////////////////////////////////////////
