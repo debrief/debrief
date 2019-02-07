@@ -17,6 +17,7 @@ package org.mwc.debrief.lite;
 import java.awt.datatransfer.Clipboard;
 
 import Debrief.GUI.Frames.Session;
+import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 
@@ -26,10 +27,19 @@ public class LiteSession extends Session
    *
    */
   private static final long serialVersionUID = 1L;
+  private final StepControl _stepper;
 
-  public LiteSession(final Clipboard clipboard, final Layers layers)
+  public LiteSession(final Clipboard clipboard, final Layers layers,
+      final StepControl stepper)
   {
     super(clipboard, layers);
+    _stepper = stepper;
+  }
+
+  @Override
+  public StepControl getStepControl()
+  {
+    return _stepper;
   }
 
   @Override
