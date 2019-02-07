@@ -192,9 +192,15 @@ public class DebriefLiteApp implements FileDropListener
     ImportReplay.initialise(new DebriefLiteToolParent(
         ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
+    
+    // sort out time control
+    _stepControl = new LiteStepControl(_toolParent);
+    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers);
+    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
 
@@ -226,9 +232,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    _stepControl = new LiteStepControl(_toolParent);
-    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 
     // create the components
