@@ -121,6 +121,8 @@
 
 package Debrief.GUI.Frames;
 
+import Debrief.GUI.Tote.StepControl;
+import Debrief.GUI.Views.AnalysisView;
 import Debrief.GUI.Views.PlainView;
 import Debrief.Tools.Operations.NewSession;
 import MWC.GUI.BaseLayer;
@@ -224,7 +226,22 @@ abstract public class Session implements Serializable, Observer
   // member functions
   ////////////////////////////////////////////////////////////
 
-
+  public StepControl getStepControl()
+  {
+    final PlainView view = getCurrentView();
+    final StepControl res;
+    if(view != null && (view instanceof AnalysisView))
+    {
+      AnalysisView av = (AnalysisView) view;
+      res = av.getTote().getStepper();
+    }
+    else
+    {
+      res = null;
+    }
+    
+    return res;
+  }
 
   /**
    * initialise the data which has to be initialised whether we

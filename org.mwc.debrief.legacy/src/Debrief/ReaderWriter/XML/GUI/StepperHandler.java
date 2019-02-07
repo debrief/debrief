@@ -26,8 +26,10 @@ package Debrief.ReaderWriter.XML.GUI;
 import java.text.ParseException;
 
 import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.XML.GUIHandler;
+import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.XML.*;
@@ -262,11 +264,9 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
   public final GUIHandler.ComponentDetails exportThis(final Debrief.GUI.Frames.Session session)
   {
     // get the stepper
-    final Debrief.GUI.Views.PlainView pv = session.getCurrentView();
-    if (pv instanceof Debrief.GUI.Views.AnalysisView)
+    final StepControl stepper = session.getStepControl();
+    if(stepper != null)
     {
-      final Debrief.GUI.Tote.StepControl stepper = ((Debrief.GUI.Views.AnalysisView) pv).getTote().getStepper();
-
       // collate the details for this component
       final GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
 
@@ -279,10 +279,11 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
         details.addProperty("VectorStretch", MWCXMLReader.writeThis(sp.getVectorStretch()));
       }
 
-      details.addProperty("Cursor", stepper.getCurrentPainter().toString());
-
-      //      details.addProperty("StepLarge", MWCXMLReader.writeThis(stepper.getStepLarge()));
-      //      details.addProperty("StepSmall", MWCXMLReader.writeThis(stepper.getStepSmall()));
+      final StepperListener painter = stepper.getCurrentPainter();
+      if(painter != null)
+      {
+        details.addProperty("Cursor", painter.toString());
+      }
 
       // ok, we're switching to exporting the step size in microseconds
       // if we ever get the plain "StepLarge" parameter - we will assume it is millis, else
