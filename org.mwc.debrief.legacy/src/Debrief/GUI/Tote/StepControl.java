@@ -886,10 +886,13 @@ abstract public class StepControl implements Editable,
   {
     if (val != null)
     {
-      _thePainterManager.setDisplay(val);
-
-      // and fire the event in the painter manager
-      _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      if(_thePainterManager != null)
+      {
+        _thePainterManager.setDisplay(val);
+  
+        // and fire the event in the painter manager
+        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      }
     }
   }
 
