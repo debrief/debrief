@@ -85,11 +85,11 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
       final MethodDescriptor[] mds =
           {
-              method(c, "addLeg", null, "Add new leg"),
-              method(c, "addClosingLeg", null, "Add closing leg"),
+              method(c, "addLeg", null, "Add New Leg"),
+              method(c, "addClosingLeg", null, "Add Closing Leg"),
               method(c, "exportThis", null, "Export Shape"),
               method(c, "appendReverse", null,
-                  "Append reverse version of segments"),};
+                  "Append Segments"),};
 
       return mds;
     }

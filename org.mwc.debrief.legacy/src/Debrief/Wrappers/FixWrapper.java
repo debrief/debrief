@@ -365,7 +365,7 @@ public class FixWrapper extends PlainWrapper implements Watchable,
             new MethodDescriptor[]
             {method(c, "resetColor", null, "Reset Color"),
                 method(c, "resetName", null, "Reset Label"),
-                method(c, "resetLabelLocation", null, "Reset label location"),
+                method(c, "resetLabelLocation", null, "Reset Label Loc"),
                 method(c, "exportThis", null, "Export Shape")};
       }
       return _methodDescriptors;

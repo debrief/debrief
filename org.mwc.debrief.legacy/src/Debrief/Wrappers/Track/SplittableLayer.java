@@ -51,7 +51,7 @@ public class SplittableLayer extends BaseLayer
 			final MethodDescriptor mds[] = super.getMethodDescriptors();
 
 			final MethodDescriptor newMeds[] = new MethodDescriptor[]
-			{ method(c, "AutoSplitTracks", null, "Automatically separate into tracks") };
+			{ method(c, "AutoSplitTracks", null, "Separate Into Tracks") };
 
 			final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
 					+ newMeds.length];
