@@ -148,8 +148,11 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     if(_myStepperHandler == null)
       _myStepperHandler = new StepperHandler();
     final ComponentDetails stepperD = _myStepperHandler.exportThis(session);
-    stepperD.exportTo("Stepper", gui, doc);
-
+    if(stepperD != null)
+    {
+      stepperD.exportTo("Stepper", gui, doc);
+    }
+    
     final PlainView pv = session.getCurrentView();
     if(pv instanceof AnalysisView)
     {
