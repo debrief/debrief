@@ -20,7 +20,7 @@ import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 
-class LiteSession extends Session
+public class LiteSession extends Session
 {
   /**
    *
