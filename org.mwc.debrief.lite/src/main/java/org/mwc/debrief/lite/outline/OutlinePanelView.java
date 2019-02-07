@@ -138,8 +138,15 @@ public class OutlinePanelView extends SwingLayerManager
             {
               // ok, we'll have to create it
               URL iconURL = DebriefImageHelper.class.getClassLoader().getResource(icon);
-              match = new ImageIcon(iconURL);
-              iconMap.put(icon,  match);
+              if(iconURL == null)
+              {
+                System.err.println("Can't find icon:" + icon);
+              }
+              else
+              {
+                match = new ImageIcon(iconURL);
+                iconMap.put(icon,  match);
+              }
             }
 
             // have we generated one?
