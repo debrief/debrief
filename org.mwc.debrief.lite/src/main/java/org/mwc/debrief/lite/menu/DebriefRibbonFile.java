@@ -16,6 +16,7 @@ import javax.swing.AbstractAction;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
+import org.mwc.debrief.lite.util.DoSaveAs;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -125,6 +126,8 @@ public class DebriefRibbonFile
     
     MenuUtils.addCommand("Save", "images/16/save.png",
         new DoSave(session), fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Save as", "images/16/save-as.png",
+        new DoSaveAs(session), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
