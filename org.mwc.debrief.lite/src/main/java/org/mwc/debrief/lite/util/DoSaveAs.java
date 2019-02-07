@@ -5,10 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import javax.swing.AbstractAction;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
+import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 
-public class DoSave extends DoSaveAs
+public class DoSaveAs extends AbstractAction
 {
 
   
@@ -16,17 +19,24 @@ public class DoSave extends DoSaveAs
    * 
    */
   private static final long serialVersionUID = 1L;
+  private final Session _session;
 
-  public DoSave(Session session)
+  public DoSaveAs(Session session)
   {
-    super(session);
+    _session = session;
+  }
+  
+  protected void performSave(final OutputStream fos)
+  {
+    DebriefXMLReaderWriter.exportThis(_session, fos);
   }
   
   @Override
   public void actionPerformed(ActionEvent e)
   {
-    // get the current file path,
-    // check we have write permission to it before starting save
+    // get a new file path to use.
+    
+    // if it already exists, check with rename/cancel
     try
     {
       OutputStream stream = new FileOutputStream("test_out.xml");
