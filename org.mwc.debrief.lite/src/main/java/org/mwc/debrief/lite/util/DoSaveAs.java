@@ -54,6 +54,7 @@ public class DoSaveAs extends AbstractAction
     }
     fileChooser.showSaveDialog(null);
     targetFile = fileChooser.getSelectedFile();
+    if(targetFile!=null) {
     String outputFileName = targetFile.getAbsolutePath();
     if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
         || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) {        
@@ -83,7 +84,7 @@ public class DoSaveAs extends AbstractAction
         }
       }
     }
-
+    }
   }
 
 }

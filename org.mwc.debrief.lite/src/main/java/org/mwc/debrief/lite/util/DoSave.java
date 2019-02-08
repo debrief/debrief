@@ -45,7 +45,9 @@ public class DoSave extends DoSaveAs
       fileChooser.setFileFilter(filter);
       fileChooser.showSaveDialog(null);
       targetFile = fileChooser.getSelectedFile();
-      outputFileName = targetFile.getAbsolutePath();
+      if(targetFile!=null) {
+        outputFileName = targetFile.getAbsolutePath();
+      }
     }
     else {
       if(fileName!=null) {
