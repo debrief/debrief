@@ -332,23 +332,34 @@ public class DebriefRibbonTimeController
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
-    timeLabel.setBackground(Color.BLACK);
 
     menu = new JPopupMenu();
+    
+    final ActionListener selfAssignFormat = new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        stepControl.setTimeFormat(e.getActionCommand());
+      }
+    }; 
 
-    final JMenuItem item1 = new JMenuItem("mm:ss.SSS");
-    final JMenuItem item2 = new JMenuItem("HHmm.ss");
-    final JMenuItem item3 = new JMenuItem("HHmm");
-    final JMenuItem item4 = new JMenuItem("ddHHmm");
-    final JMenuItem item5 = new JMenuItem("ddHHmm:ss");
-    final JMenuItem item6 = new JMenuItem("yy/MM/dd HH:mm");
-
-    menu.add(item1);
-    menu.add(item2);
-    menu.add(item3);
-    menu.add(item4);
-    menu.add(item5);
-    menu.add(item6);
+    final String[] timeFormats = new String[] {
+        "yy/MM/dd hh:mm:ss",
+        "  yy/MM/dd HH:mm ",
+        "    mm:ss.SSS    ",
+        "    ddHHmm:ss    ", 
+        "     HHmm.ss     ",
+        "      ddHHmm     ",
+        "       HHmm      ",
+    };
+    for ( final String format : timeFormats )
+    {
+      JMenuItem menuItem = new JMenuItem(format);
+      menuItem.addActionListener(selfAssignFormat);
+      menu.add(menuItem);      
+    }
 
     topButtonsPanel.add(behindCommandButton);
     topButtonsPanel.add(rewindCommandButton);

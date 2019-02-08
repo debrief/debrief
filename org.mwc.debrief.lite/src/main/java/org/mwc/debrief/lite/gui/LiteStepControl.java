@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.gui;
 
 import java.beans.PropertyChangeEvent;
+import java.text.SimpleDateFormat;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.ToolParent;
@@ -37,6 +38,7 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
+  private String timeFormat = "YY/MM/DD hh:mm:ss";
 
   public LiteStepControl(final ToolParent parent)
   {
@@ -159,11 +161,16 @@ public class LiteStepControl extends StepControl
       super.stopTimer();
     }
   }
+  
+  public void setTimeFormat(final String timeFormat)
+  {
+    this.timeFormat = timeFormat;
+  }
 
   @Override
   protected void updateForm(final HiResDate DTG)
   {
-    final String str = FullFormatDateTime.toString(DTG.getDate().getTime());
+    final String str = new SimpleDateFormat(timeFormat).format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
   }
