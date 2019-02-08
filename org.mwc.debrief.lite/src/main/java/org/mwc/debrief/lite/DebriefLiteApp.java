@@ -36,6 +36,7 @@ import javax.swing.SwingUtilities;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
+import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
@@ -157,11 +158,11 @@ public class DebriefLiteApp implements FileDropListener
 
   public DebriefLiteApp()
   {
-  //set the substance look and feel
+    //set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
-    DisplaySplash splashScreen = new DisplaySplash(5);
-    Thread t = new Thread(splashScreen);
+    final DisplaySplash splashScreen = new DisplaySplash(5);
+    final Thread t = new Thread(splashScreen);
     t.start();
     try
     {
@@ -175,7 +176,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame = new JRibbonFrame(appName 
         + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
+        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
     
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
@@ -205,13 +206,12 @@ public class DebriefLiteApp implements FileDropListener
     session = new LiteSession(_theClipboard, _theLayers);
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
-    
+
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+    
     _theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics(), Color.GRAY);
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
-
-
 
     final DataListener dListener = new DataListener()
     {
@@ -259,8 +259,6 @@ public class DebriefLiteApp implements FileDropListener
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager, projection);
-
-    theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils.createImage("images/icon_533.png"), MenuUtils.ICON_SIZE_32));
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -396,7 +394,14 @@ public class DebriefLiteApp implements FileDropListener
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();
             timeManager.setPeriod(source, period);
-            timeManager.setTime(source, period.getStartDTG(), true);
+            if(period != null)
+            {
+              timeManager.setTime(source, period.getStartDTG(), true);
+            }
+            
+            // and the spatial bounds
+            FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
+            fitMe.actionPerformed(null);
           }
         });
       }

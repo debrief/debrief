@@ -488,6 +488,7 @@ public class DebriefRibbonTimeController
             * 1000L)));
       }
     });
+    slider.setEnabled(false);
 
     final JPanel sliderPanel = new JPanel();
     sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
@@ -537,6 +538,12 @@ public class DebriefRibbonTimeController
         final GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(val.getDate().getTime());
         slider.setLowerDate(cal);
+      }
+
+      @Override
+      public void setEnabled(boolean enabled)
+      {
+        slider.setEnabled(enabled);
       }
     };
 

@@ -29,10 +29,10 @@ import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandBuilder;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
-import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
+import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -103,7 +103,9 @@ public class MenuUtils
     {
       builder.setToggle();
       builder.setToggleSelected(toggleSelected);
-      builder.inToggleGroup(group);
+      if(group!=null) {
+        builder.inToggleGroup(group);
+      }
     }
     final FlamingoCommand command = builder.build();
 
@@ -120,7 +122,8 @@ public class MenuUtils
     if (imagePath != null)
     {
       final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
+          16, 16));
     }
     FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
         commandName).setIcon(imageIcon).setAction(actionToAdd)
@@ -140,7 +143,8 @@ public class MenuUtils
     if (imagePath != null)
     {
       final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
+          16, 16));
     }
     final JCommandButton commandButton = new JCommandButton(commandName,
         imageIcon);

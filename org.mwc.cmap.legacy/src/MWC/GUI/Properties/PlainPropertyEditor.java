@@ -625,7 +625,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       {
         final Object val = getValueFor(data, p);
         res.setValue(val);
-        _theEditors.put(p, new PropertyEditorItem(p, res, data, res, editor));
+        _theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
       }
       else
       {
@@ -734,7 +734,9 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
       // find out if the value for this parameter is different to the
       // original one (has it been modified?)
-      if (!res.equals(pei.originalValue))
+      final Object orig = pei.originalValue;
+      
+      if (!res.equals(orig))
       {
         _someChanged = true;
 
@@ -743,7 +745,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
         try
         {
-          final Object[] params = {pei.originalValue};
+          final Object[] params = {orig};
           write.invoke(pei.theData, params);
         }
         catch (final Exception e)
@@ -798,11 +800,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   ////////////////////////////////////////////////////
   public static class PropertyEditorItem
   {
-    public PropertyDescriptor theDescriptor;
+    public final PropertyDescriptor theDescriptor;
     public Component theEditorGUI;
-    public PropertyEditor theEditor;
-    public Object theData;
-    public Object originalValue;
+    public final PropertyEditor theEditor;
+    public final Object theData;
+    public final Object originalValue;
     transient public Editable.EditorType theEditableInfo;
 
     public PropertyEditorItem(final PropertyDescriptor propVal,

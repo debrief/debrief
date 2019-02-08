@@ -500,12 +500,18 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// see if we have found one!
 		if (thePlottable != null)
 		{
-			final java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor()
-					.getExtraPlottableEditors(getPanel());
-			thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
-					parentLayer, _thePanel, _myData, extras,
-					topLayer);
-
+		  // check we can get a right-click-editor.
+		  // Note: we may not have one for Debrief-Lite
+		  final RightClickEdit editor = _myData.getEditor();
+		  if(editor != null)
+		  {
+	      final java.util.Vector<PlottableMenuCreator> extras = 
+	          editor.getExtraPlottableEditors(getPanel());
+	      thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
+	          parentLayer, _thePanel, _myData, extras,
+	          topLayer);
+		    
+		  }
 		}
 
 		// just check if we are trying paste into layers

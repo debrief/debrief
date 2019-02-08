@@ -82,11 +82,18 @@
 
 package Debrief.Tools.Palette;
 
+import javax.swing.JOptionPane;
+
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
-import MWC.GenericData.*;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 abstract public class CreateShape extends PlainTool
 {
@@ -108,10 +115,10 @@ abstract public class CreateShape extends PlainTool
   // constructor
   ////////////////////////////////////////////////////////////
   public CreateShape(final ToolParent theParent,
-                     final PropertiesPanel thePanel,
-                     final Layers theData,
-                     final String theName,
-                     final String theImage, BoundsProvider bounds)
+      final PropertiesPanel thePanel,
+      final Layers theData,
+      final String theName,
+      final String theImage, BoundsProvider bounds)
   {
     super(theParent, theName, theImage);
 
@@ -124,7 +131,7 @@ abstract public class CreateShape extends PlainTool
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  
+
   /** get the current visible data area
    * 
    */
@@ -137,7 +144,7 @@ abstract public class CreateShape extends PlainTool
   {
     Action res = null;
     final WorldArea theBounds = getBounds();
-    
+
     // see if we have an area defined
     if(theBounds != null)
     {
@@ -145,8 +152,8 @@ abstract public class CreateShape extends PlainTool
       final WorldLocation centre = new WorldLocation(theBounds.getCentreAtSurface());
 
       final ShapeWrapper theWrapper = getShape(centre);
-
-      Layer theLayer = _theData.findLayer("Misc");
+      String layerToAddTo = getLayerName();
+      Layer theLayer = _theData.findLayer(layerToAddTo);
       if(theLayer == null)
       {
         theLayer = new BaseLayer();
@@ -154,16 +161,16 @@ abstract public class CreateShape extends PlainTool
         _theData.addThisLayer(theLayer);
       }
 
-       res =  new CreateShapeAction(_thePanel,
-                                     theLayer,
-                                     theWrapper,
-                                     _theData);
+      res =  new CreateShapeAction(_thePanel,
+          theLayer,
+          theWrapper,
+          _theData);
     }
     else
     {
       // we haven't got an area, inform the user
       MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-    "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
+          "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
     }
 
     return res;
@@ -190,9 +197,9 @@ abstract public class CreateShape extends PlainTool
 
 
     public CreateShapeAction(final PropertiesPanel thePanel,
-                               final Layer theLayer,
-                               final ShapeWrapper theShape,
-                               final Layers theLayers)
+        final Layer theLayer,
+        final ShapeWrapper theShape,
+        final Layers theLayers)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;
@@ -230,9 +237,9 @@ abstract public class CreateShape extends PlainTool
       // add the Shape to the layer, and put it
       // in the property editor
       _theLayer.add(_theShape);
-      
+
       if(_thePanel != null)
-      	_thePanel.addEditor(_theShape.getInfo(), _theLayer);
+        _thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
       // and fire the extended event
       _theLayers.fireExtended(_theShape, _theLayer);
@@ -247,5 +254,62 @@ abstract public class CreateShape extends PlainTool
     // remove our local references
     _thePanel = null;
     _theData = null;
+  }
+  /**
+   * @return
+   */
+  protected String getLayerName()
+  {
+    String res = null;
+    // ok, are we auto-deciding?
+    if (!AutoSelectTarget.getAutoSelectTarget())
+    {
+      // nope, just use the default layer
+      res = Layers.DEFAULT_TARGET_LAYER;
+    }
+    else
+    {
+      // get the non-track layers
+      final Layers theLayers = _theData;
+      final String[] ourLayers = theLayers.trimmedLayers();
+      ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
+      listDialog.setSize(350,300);
+      listDialog.setLocationRelativeTo(null);
+      listDialog.setModal(true);
+      listDialog.setVisible(true);
+      String selection = listDialog.getSelectedItem();
+      // did user say yes?
+      if (selection != null)
+      {
+        // hmm, is it our add layer command?
+        if (selection.equals(Layers.NEW_LAYER_COMMAND))
+        {
+          // better create one. Ask the user
+
+          // create input box dialog
+          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+          // check there's something there
+          if (!txt.isEmpty())
+          {
+            res = txt;
+            // create base layer
+            final Layer newLayer = new BaseLayer();
+            newLayer.setName(res);
+
+            // add to layers object
+            theLayers.addThisLayer(newLayer);
+          }
+          else
+          {
+            res = null;
+          }
+        }
+        else {
+          res = selection;
+        }
+      }
+      }
+      
+    return res;
   }
 }
