@@ -123,7 +123,7 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("Open Plot", "images/16/open.png", new NewFileAction(),
         fileMenu, RibbonElementPriority.MEDIUM);
     
-    
+    fileMenu.startGroup();
     MenuUtils.addCommand("Save", "images/16/save.png",
         new DoSave(session), fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Save as", "images/16/save-as.png",

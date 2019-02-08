@@ -80,6 +80,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
+  public static String currentFileName = null;
 
   /**
    * creates a scroll pane with map
@@ -130,7 +131,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
-  private final JRibbonFrame theFrame;
+  private static JRibbonFrame theFrame;
 
   final private Layers _theLayers = new Layers();
 
@@ -146,6 +147,7 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteStepControl _stepControl;
   private final JMapPane mapPane;
   private final TimeManager timeManager = new TimeManager();
+  private static String defaultTitle;
 
   public DebriefLiteApp()
   {
@@ -163,9 +165,9 @@ public class DebriefLiteApp implements FileDropListener
     {
        //ignore
     }
-    
-    theFrame = new JRibbonFrame(appName 
-        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
+    defaultTitle = appName 
+        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")";
+    theFrame = new JRibbonFrame(defaultTitle);
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/icon_256.png"), MenuUtils.ICON_SIZE_32));
     
@@ -383,6 +385,10 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
+        if(currentFileName == null) {
+          currentFileName = fName.getAbsolutePath();
+          setTitle(fName.getName());
+        }
       }
     };
     // ok, start loading
@@ -432,6 +438,18 @@ public class DebriefLiteApp implements FileDropListener
   public void setStatus(final String message)
   {
     statusBar.setText(message);
+  }
+  
+  public static void setTitle(final String title) {
+    javax.swing.SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        theFrame.setTitle(defaultTitle +" - "+title);
+      }
+    });
+    
   }
 
 }
