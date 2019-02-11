@@ -548,7 +548,10 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       if(parent instanceof TrackWrapper)
       { 
         TrackWrapper track = (TrackWrapper) parent;
-        track.combineSections(_splitSections);
+        if(_splitSections != null)
+        {
+          track.combineSections(_splitSections);
+        }
       }
     }
 
