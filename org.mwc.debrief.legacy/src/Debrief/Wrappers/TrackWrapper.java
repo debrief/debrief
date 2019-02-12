@@ -4191,7 +4191,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final boolean splitBeforePoint)
   {
     FixWrapper splitPnt = splitPoint;
-    Vector<TrackSegment> res = null;
     TrackSegment relevantSegment = null;
 
     // are we still in one section?
@@ -4220,8 +4219,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     if (relevantSegment == null)
     {
-      throw new RuntimeException(
-          "failed to provide relevant segment, alg will break");
+      return null;
     }
 
     // hmm, if we're splitting after the point, we need to move along the
@@ -4290,22 +4288,35 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // if we couldn't get a sensor origin, try for the track origin
       if (secondLegOrigin == null)
       {
-        final Watchable firstMatch = theTMA.getReferenceTrack().getNearestTo(
-            splitTime)[0];
-        secondLegOrigin = firstMatch.getLocation();
+        final Watchable[] nearestF = theTMA.getReferenceTrack().getNearestTo(
+              splitTime);
+        if ((nearestF != null) && (nearestF.length > 0))
+        {
+          final Watchable firstMatch = nearestF[0];
+          secondLegOrigin = firstMatch.getLocation();
+        }
       }
-      final WorldVector secondOffset = splitPnt.getLocation().subtract(
-          secondLegOrigin);
+      
+      if (secondLegOrigin != null)
+      {
+        final WorldVector secondOffset = splitPnt.getLocation().subtract(
+            secondLegOrigin);
 
-      // put the lists back into plottable layers
-      final RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA
-          .getOffset());
-      final RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2,
-          secondOffset);
+        // put the lists back into plottable layers
+        final RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA
+            .getOffset());
+        final RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2,
+            secondOffset);
 
-      // and store them
-      ts1 = tr1;
-      ts2 = tr2;
+        // and store them
+        ts1 = tr1;
+        ts2 = tr2;
+      }
+      else
+      {
+        ts1 = null;
+        ts2 = null;
+      }
 
     }
     else if (relevantSegment instanceof AbsoluteTMASegment)
@@ -4319,19 +4330,27 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // second part of the track
       final Watchable[] matches = this.getNearestTo(splitPnt
           .getDateTimeGroup());
-      final WorldLocation origin = matches[0].getLocation();
+      if(matches.length > 0)
+      {
+        final WorldLocation origin = matches[0].getLocation();
 
-      final FixWrapper t1Start = (FixWrapper) p1.first();
+        final FixWrapper t1Start = (FixWrapper) p1.first();
 
-      // put the lists back into plottable layers
-      final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start
-          .getLocation(), null, null);
-      final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin,
-          null, null);
+        // put the lists back into plottable layers
+        final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
+            t1Start.getLocation(), null, null);
+        final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2,
+            origin, null, null);
 
-      // and store them
-      ts1 = tr1;
-      ts2 = tr2;
+        // and store them
+        ts1 = tr1;
+        ts2 = tr2;
+      }
+      else
+      {
+        ts1 = null;
+        ts2 = null;
+      }
 
     }
     else
@@ -4341,24 +4360,34 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       ts2 = new TrackSegment(p2);
     }
 
-    // tell them who the daddy is
-    ts1.setWrapper(this);
-    ts2.setWrapper(this);
+    // just check we're safe
+    final Vector<TrackSegment> res;
+    if(ts1 != null && ts1.size() > 0 && ts2 != null && ts2.size() > 0)
+    {
+      // tell them who the daddy is
+      ts1.setWrapper(this);
+      ts2.setWrapper(this);
 
-    // ok. removing the host segment will delete any infills. So, be sure to re-attach them
-    reconnectInfills(relevantSegment, ts1, ts2);
+      // ok. removing the host segment will delete any infills. So, be sure to re-attach them
+      reconnectInfills(relevantSegment, ts1, ts2);
 
-    // now clear the positions
-    removeElement(relevantSegment);
+      // now clear the positions
+      removeElement(relevantSegment);
+      
+      // and put back our new layers
+      add(ts1);
+      add(ts2);
+
+      // remember them
+      res = new Vector<TrackSegment>();
+      res.add(ts1);
+      res.add(ts2);
+    } 
+    else
+    {
+      res = null;
+    }
     
-    // and put back our new layers
-    add(ts1);
-    add(ts2);
-
-    // remember them
-    res = new Vector<TrackSegment>();
-    res.add(ts1);
-    res.add(ts2);
 
     return res;
   }
