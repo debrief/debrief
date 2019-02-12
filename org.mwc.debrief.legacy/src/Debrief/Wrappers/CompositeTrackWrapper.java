@@ -89,7 +89,7 @@ public class CompositeTrackWrapper extends TrackWrapper implements
               method(c, "addClosingLeg", null, "Add Closing Leg"),
               method(c, "exportThis", null, "Export Shape"),
               method(c, "appendReverse", null,
-                  "Append Segments"),};
+                  "Append reversed segments"),};
 
       return mds;
     }
