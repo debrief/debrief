@@ -287,9 +287,9 @@ abstract public class CreateShape extends PlainTool
           // better create one. Ask the user
 
           // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
           // check there's something there
-          if (!txt.isEmpty())
+          if (txt!=null && !txt.isEmpty())
           {
             res = txt;
             // create base layer
