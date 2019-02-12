@@ -1191,7 +1191,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				if (_methodsPanel != null)
 				{
 
-					final JButton btn = new JButton(md.getName());
+					final JButton btn = new JButton(md.getDisplayName());
 					btn.addActionListener(new DoActionPerformed(md));
 					addButton(btn);
 				}
@@ -1199,7 +1199,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				{
 					MWC.Utilities.Errors.Trace.trace(
 							"Trying to show methods when we don't have a 'methods' panel to host:"
-									+ md.getName(), false);
+									+ md.getDisplayName(), false);
 				}
 			}
 		}

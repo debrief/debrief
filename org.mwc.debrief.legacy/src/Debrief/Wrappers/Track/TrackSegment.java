@@ -284,7 +284,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // just add the reset color field first
       final Class<TrackSegment> c = TrackSegment.class;
       MethodDescriptor[] newMeds =
-      {method(c, "revealAllPositions", null, "Reveal all positions")};
+      {method(c, "revealAllPositions", null, "Reveal All Positions")};
 
       final MethodDescriptor[] mds = super.getMethodDescriptors();
       // we now need to combine the two sets
