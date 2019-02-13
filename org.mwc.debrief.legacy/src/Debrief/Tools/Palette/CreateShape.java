@@ -82,8 +82,6 @@
 
 package Debrief.Tools.Palette;
 
-import javax.swing.JOptionPane;
-
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
@@ -91,11 +89,10 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-abstract public class CreateShape extends PlainTool
+abstract public class CreateShape extends CoreCreateShape
 {
 
   /////////////////////////////////////////////////////////////
@@ -104,12 +101,6 @@ abstract public class CreateShape extends PlainTool
   /** the properties panel
    */
   private PropertiesPanel _thePanel;
-
-  /** the layers we are going to drop this shape into
-   */
-  private Layers _theData;
-
-  private final BoundsProvider _theBounds;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -120,25 +111,15 @@ abstract public class CreateShape extends PlainTool
       final String theName,
       final String theImage, BoundsProvider bounds)
   {
-    super(theParent, theName, theImage);
-
+    super(theParent, theName, theImage,theData,bounds);
     _thePanel = thePanel;
-    _theData = theData;
-    _theBounds = bounds;
+    
   }
 
 
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-
-  /** get the current visible data area
-   * 
-   */
-  final protected WorldArea getBounds()
-  {
-    return _theBounds.getViewport();
-  }
 
   public final Action getData()
   {
@@ -254,62 +235,5 @@ abstract public class CreateShape extends PlainTool
     // remove our local references
     _thePanel = null;
     _theData = null;
-  }
-  /**
-   * @return
-   */
-  protected String getLayerName()
-  {
-    String res = null;
-    // ok, are we auto-deciding?
-    if (!AutoSelectTarget.getAutoSelectTarget())
-    {
-      // nope, just use the default layer
-      res = Layers.DEFAULT_TARGET_LAYER;
-    }
-    else
-    {
-      // get the non-track layers
-      final Layers theLayers = _theData;
-      final String[] ourLayers = theLayers.trimmedLayers();
-      ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
-      listDialog.setSize(350,300);
-      listDialog.setLocationRelativeTo(null);
-      listDialog.setModal(true);
-      listDialog.setVisible(true);
-      String selection = listDialog.getSelectedItem();
-      // did user say yes?
-      if (selection != null)
-      {
-        // hmm, is it our add layer command?
-        if (selection.equals(Layers.NEW_LAYER_COMMAND))
-        {
-          // better create one. Ask the user
-
-          // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
-          // check there's something there
-          if (!txt.isEmpty())
-          {
-            res = txt;
-            // create base layer
-            final Layer newLayer = new BaseLayer();
-            newLayer.setName(res);
-
-            // add to layers object
-            theLayers.addThisLayer(newLayer);
-          }
-          else
-          {
-            res = null;
-          }
-        }
-        else {
-          res = selection;
-        }
-      }
-      }
-      
-    return res;
   }
 }
