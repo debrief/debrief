@@ -26,6 +26,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
@@ -44,6 +45,8 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
@@ -116,13 +119,15 @@ public class DebriefRibbonTimeController
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
-      final LiteStepControl stepControl, final TimeManager timeManager)
+      final LiteStepControl stepControl, final TimeManager timeManager,
+      final PlotOperations operations)
   {
     final JRibbonBand displayMode = createDisplayMode();
 
     final JRibbonBand control = createControl(stepControl, timeManager);
 
-    final JRibbonBand filterToTime = createFilterToTime(stepControl);
+    final JRibbonBand filterToTime = createFilterToTime(stepControl,
+        operations);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
@@ -222,11 +227,12 @@ public class DebriefRibbonTimeController
           image = "icons/24/media_play.png";
         else
           image = "icons/24/media_stop.png";
-        
+
         final String tooltip = isPlaying ? "Stop playing" : "Start playing";
-        
+
         RichTooltipBuilder builder = new RichTooltipBuilder();
-        RichTooltip richTooltip = builder.setTitle("Timer").addDescriptionSection(tooltip).build();
+        RichTooltip richTooltip = builder.setTitle("Timer")
+            .addDescriptionSection(tooltip).build();
         playCommandButton.setActionRichTooltip(richTooltip);
 
         // switch the icon
@@ -312,7 +318,7 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
         CommandButtonDisplayState.SMALL, "Format time control");
 
-    final JLabel timeLabel = new JLabel("YY/MM/DD hh:mm:ss")
+    final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
     {
       /**
        * 
@@ -334,31 +340,27 @@ public class DebriefRibbonTimeController
     timeLabel.setForeground(new Color(0, 255, 0));
 
     menu = new JPopupMenu();
-    
+
     final ActionListener selfAssignFormat = new ActionListener()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        timeManager.fireTimePropertyChange();
         stepControl.setTimeFormat(e.getActionCommand());
       }
-    }; 
-
-    final String[] timeFormats = new String[] {
-        "yy/MM/dd hh:mm:ss",
-        "  yy/MM/dd HH:mm ",
-        "    mm:ss.SSS    ",
-        "    ddHHmm:ss    ", 
-        "     HHmm.ss     ",
-        "      ddHHmm     ",
-        "       HHmm      ",
     };
-    for ( final String format : timeFormats )
+
+    final String[] timeFormats = new String[]
+    {"yy/MM/dd hh:mm:ss", "  yy/MM/dd HH:mm ", "    mm:ss.SSS    ",
+        "    ddHHmm:ss    ", "     HHmm.ss     ", "      ddHHmm     ",
+        "       HHmm      ",};
+    for (final String format : timeFormats)
     {
       JMenuItem menuItem = new JMenuItem(format);
       menuItem.addActionListener(selfAssignFormat);
-      menu.add(menuItem);      
+      menu.add(menuItem);
     }
 
     topButtonsPanel.add(behindCommandButton);
@@ -455,18 +457,18 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createFilterToTime(
-      final LiteStepControl stepControl)
+      final LiteStepControl stepControl, final PlotOperations operations)
   {
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
     final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
 
-    final Calendar start = new GregorianCalendar(2013, 0, 1);
-    final Calendar end = new GregorianCalendar(2013, 1, 15);
+    final Calendar start = new GregorianCalendar(1995, 11, 12);
+    final Calendar end = new GregorianCalendar(1995, 11, 12);
     // Now we create the components for the sliders
     final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
     final JLabel maximumValue = new JLabel(formatter.format(end.getTime()));
-    final RangeSlider slider = new RangeSlider(start, end);
+    final RangeSlider slider = new RangeSlider(818744400, 818768460);
     slider.addChangeListener(new ChangeListener()
     {
       @Override
@@ -475,10 +477,13 @@ public class DebriefRibbonTimeController
         // TODO Do we represent the filter using the format specified by user?
         final RangeSlider slider = (RangeSlider) e.getSource();
 
-        minimumValue.setText(formatter.format(new Date(slider.getValue()
-            * 1000L)));
-        maximumValue.setText(formatter.format(new Date(slider.getUpperValue()
-            * 1000L)));
+        Date low = RangeSlider.toDate(slider.getValue()).getTime();
+        Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
+        minimumValue.setText(formatter.format(low));
+        maximumValue.setText(formatter.format(high));
+        operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low), new HiResDate(high)));
+
+        operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
       }
     });
     slider.setEnabled(false);

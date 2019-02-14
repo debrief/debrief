@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -34,6 +35,7 @@ import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
+import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -89,13 +91,13 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @return
    */
-  private static JMapPane createMapPane(
-      final GeoToolMapRenderer geoMapRenderer,
+  private static JMapPane createMapPane(final GeoToolMapRenderer geoMapRenderer,
       final FileDropSupport dropSupport)
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer).build();
+    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
+        .build();
     dropSupport.addComponent(mapPane);
     return mapPane;
   }
@@ -145,11 +147,53 @@ public class DebriefLiteApp implements FileDropListener
       "Status bar for displaying statuses");
   private final LiteStepControl _stepControl;
   private final JMapPane mapPane;
+  private final PlotOperations _myOperations = new PlotOperations()
+  {
+    // just provide with our complete set of layers
+    @Override
+    public Object[] getTargets()
+    {
+      // ok, return our top level layers as objects
+      final Vector<Layer> res = new Vector<Layer>(0, 1);
+      for (int i = 0; i < _theLayers.size(); i++)
+      {
+        res.add(_theLayers.elementAt(i));
+      }
+      return res.toArray();
+    }
+
+    /**
+     * override performing the operation, since we'll do a screen update on completion
+     */
+    @Override
+    public Vector<Layer> performOperation(final AnOperation operationName)
+    {
+      // make the actual change
+      final Vector<Layer> res = super.performOperation(operationName);
+
+      if (res != null)
+      {
+        if (res.size() != 0)
+        {
+          for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
+          {
+            final Layer thisL = iter.next();
+            // and update the screen
+            _theLayers.fireReformatted(thisL);
+
+          }
+        }
+      }
+
+      return res;
+
+    }
+  };
   private final TimeManager timeManager = new TimeManager();
 
   public DebriefLiteApp()
   {
-    //set the substance look and feel
+    // set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
@@ -161,14 +205,14 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (InterruptedException e)
     {
-       //ignore
+      // ignore
     }
-    
-    theFrame = new JRibbonFrame(appName 
-        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
+
+    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
+        .getVersion() + ")");
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
-    
+
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
@@ -227,14 +271,15 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataModifiedListener(dListener);
 
     _stepControl = new LiteStepControl(_toolParent);
-    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
+    timeManager.addListener(_stepControl,
+        TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl,
+        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager);
+        _stepControl, timeManager, _myOperations);
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -251,7 +296,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
-      final Component mapPane, final LiteStepControl stepControl, final TimeManager timeManager)
+      final Component mapPane, final LiteStepControl stepControl,
+      final TimeManager timeManager, final PlotOperations operation)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -264,7 +310,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager);
+        geoMapRenderer, stepControl, timeManager, operation);
   }
 
   protected void doPaint(final Graphics gc)
@@ -359,16 +405,17 @@ public class DebriefLiteApp implements FileDropListener
           {
             layerManager.dataModified(null, null);
             mapPane.repaint();
-            
+
             restoreCursor();
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();
+            _myOperations.setPeriod(period);
             timeManager.setPeriod(source, period);
-            if(period != null)
+            if (period != null)
             {
               timeManager.setTime(source, period.getStartDTG(), true);
             }
-            
+
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);

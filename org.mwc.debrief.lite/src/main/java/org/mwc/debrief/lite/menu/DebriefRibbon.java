@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -30,13 +31,16 @@ public class DebriefRibbon
 {
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
       final DebriefLiteToolParent parent,
-      final GeoToolMapRenderer geoMapRenderer, final LiteStepControl stepControl, TimeManager timeManager)
+      final GeoToolMapRenderer geoMapRenderer,
+      final LiteStepControl stepControl, TimeManager timeManager,
+      final PlotOperations operations)
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
-    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
-        null, parent);
-    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer, stepControl, timeManager);
+    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
+        parent);
+    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
+        stepControl, timeManager, operations);
   }
 }

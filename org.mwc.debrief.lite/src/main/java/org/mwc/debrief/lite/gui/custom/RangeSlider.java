@@ -20,7 +20,7 @@ import junit.framework.TestCase;
  */
 public class RangeSlider extends JSlider
 {
-  
+
   public static class TestConversion extends TestCase
   {
     public void testConvert()
@@ -48,16 +48,27 @@ public class RangeSlider extends JSlider
    */
   public RangeSlider(Calendar min, Calendar max)
   {
-    super(toInt(min), toInt(max),  toInt(min) + (toInt(max) - toInt(min))/2);
+    super(toInt(min), toInt(max), toInt(min) + (toInt(max) - toInt(min)) / 2);
     initSlider();
   }
-  
-  private static int toInt(Calendar date)
+
+  /**
+   * Constructs a RangeSlider with using the time divided by 1000
+   * @param min
+   * @param max
+   */
+  public RangeSlider(int min, int max)
+  {
+    super(min, max, min + (max - min) / 2);
+    initSlider();
+  }
+
+  public static int toInt(Calendar date)
   {
     return (int) (date.getTimeInMillis() / 1000L);
   }
-  
-  private static Calendar toDate(int val)
+
+  public static Calendar toDate(int val)
   {
     GregorianCalendar cal = new GregorianCalendar();
     cal.setTimeInMillis(val * 1000L);
@@ -78,22 +89,22 @@ public class RangeSlider extends JSlider
   {
     return toDate(getValue());
   }
-  
+
   public Calendar getUpperDate()
   {
     return toDate(getUpperValue());
   }
-  
+
   public void setLowerDate(Calendar date)
   {
     setValue(toInt(date));
   }
-  
+
   public void setUpperDate(Calendar date)
   {
     setUpperValue(toInt(date));
   }
-  
+
   /**
    * Overrides the superclass method to install the UI delegate to draw two thumbs.
    */

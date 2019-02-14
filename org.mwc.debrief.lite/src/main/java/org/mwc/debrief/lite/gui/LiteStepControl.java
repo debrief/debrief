@@ -9,7 +9,6 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeProvider;
-import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class LiteStepControl extends StepControl
 {
@@ -38,7 +37,7 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
-  private String timeFormat = "YY/MM/DD hh:mm:ss";
+  private String timeFormat = "yy/MM/dd hh:mm:ss";
 
   public LiteStepControl(final ToolParent parent)
   {
@@ -117,7 +116,7 @@ public class LiteStepControl extends StepControl
         _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
             .getEndDTG().getDate().getTime());
         
-        // we should probably disable the slider 
+        // we should probably enable the slider 
         _slider.setEnabled(true);
       }
       else
