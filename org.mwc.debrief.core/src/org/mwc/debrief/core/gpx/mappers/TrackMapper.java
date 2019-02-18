@@ -52,6 +52,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
+import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 import junit.framework.TestCase;
 
 /**
@@ -80,7 +81,26 @@ public class TrackMapper implements DebriefJaxbContextAware
       final File inFile = new File(fName);
       assertTrue("input file exists", inFile.exists());
       final FileInputStream is = new FileInputStream(fName);
-      importer.importThis(fName, is, theLayers);
+      importer.importThis(fName, is, theLayers, new MonitorProvider()
+      {
+        
+        public void progress(int _progress)
+        {
+          System.out.println(_progress);
+          
+        }
+        public void init(String fileName)
+        {
+          
+          System.out.println("Loding "+ fileName);
+        }
+        
+        public void done()
+        {
+          
+          
+        }
+      });
 
       // sort out the sensors
       importer.storePendingSensors();
