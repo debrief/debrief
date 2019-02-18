@@ -1529,21 +1529,35 @@ public class ImportReplay extends PlainImporterBase
   public final void importThis(final String text, final int numLines)
   {
     final InputStream stream = new ByteArrayInputStream(text.getBytes());
-    importRep(null, stream, numLines);
+    importRep(null, stream, numLines,null);
   }
 
   @Override
   public final void importThis(final String fName, InputStream is)
   {
     final int numLines = countLinesFor(fName);
-    importRep(fName, is, numLines);
+    importRep(fName, is, numLines,null);
+  }
+  
+  public final void importThis(final String text, final int numLines,MonitorProvider provider)
+  {
+    final InputStream stream = new ByteArrayInputStream(text.getBytes());
+    importRep(null, stream, numLines,provider);
+  }
+  
+  
+  @Override
+  public final void importThis(final String fName, InputStream is,MonitorProvider provider)
+  {
+    final int numLines = countLinesFor(fName);
+    importRep(fName, is, numLines,provider);
   }
 
   /**
    * import data from this stream
    */
   private final void importRep(final String fName, final InputStream is,
-      final int numLines)
+      final int numLines,MonitorProvider provider)
   {
     // declare linecounter
     int lineCounter = 0;
@@ -1562,7 +1576,7 @@ public class ImportReplay extends PlainImporterBase
       {
         nameToUse = "Pasted REP content";
       }
-      br = new ReaderMonitor(reader, numLines, nameToUse);
+      br = provider == null ? new ReaderMonitor(reader, numLines, nameToUse) :new ReaderMonitor(reader, numLines, nameToUse, provider) ;
       // check stream is valid
       if (is.available() > 0)
       {

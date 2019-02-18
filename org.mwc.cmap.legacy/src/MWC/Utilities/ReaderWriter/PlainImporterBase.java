@@ -73,6 +73,7 @@ package MWC.Utilities.ReaderWriter;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -131,7 +132,18 @@ public abstract class PlainImporterBase implements PlainImporter
     _theLayers = null;
   }
 
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+    _theLayers = theData;
+    importThis(fName, is,provider);
+    
+  }
+  
   abstract public void importThis(String fName, java.io.InputStream is);
+  
+  abstract public void importThis(String fName, java.io.InputStream is,MonitorProvider provider);
 
   /**
    * create a new layer in the data using this name
