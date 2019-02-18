@@ -125,7 +125,7 @@ public abstract class PlainImporterBase implements PlainImporter
   public void importThis(final String fName, final java.io.InputStream is,
       final Layers theData)
   {
-   
+    importThis(fName, is,theData,null);
   }
 
   @Override

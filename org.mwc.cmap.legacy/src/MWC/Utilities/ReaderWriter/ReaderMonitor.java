@@ -164,7 +164,8 @@ public class ReaderMonitor extends BufferedReader
     @Override
     public void done()
     {
-      _tmpFrame.dispose();
+      if(_tmpFrame!=null)
+        _tmpFrame.dispose();
       _tmpFrame = null;
       if (_pm != null)
       {
