@@ -81,6 +81,7 @@ package Debrief.ReaderWriter.PCArgos;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.ParseException;
@@ -403,6 +404,20 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
        // show the message dialog
        super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+  }
+  
+  
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+    importThis(fName, is, theData);
+  }
+  
+  @Override
+  public void importThis(String fName, InputStream is, MonitorProvider provider)
+  {
+    importThis(fName, is);
   }
 
   /** produce
