@@ -42,7 +42,7 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
   public void importThis(final String fName,
                          final InputStream is)
   {
-    // null implementation!
+    importThis(fName, is, (MonitorProvider) null);
   }
 
   public boolean canHandleThis(final String type)
@@ -115,24 +115,8 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
                          final java.io.InputStream is,
                          final MWC.GUI.Layers theData)
   {
-    if(theData == null)
-    {
-      importThis(fName, is);
-    }
-    else
-    {
-//      XMLHandler handler = new LayersHandler(theData);
-//
-//      // create progress monitor for this stream
-//      javax.swing.ProgressMonitorInputStream po = new javax.swing.ProgressMonitorInputStream(null, "Opening " + fName, is);
-//
-//      // import the datafile into this set of layers
-//      doImport(new InputSource(po), handler);
-//
-//      //
-//      theData.fireModified();
 
-    }
+    importThis(fName, is, theData,null);
   }
 
 
@@ -187,13 +171,31 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
   public void importThis(String fName, InputStream is, Layers theData,
       MonitorProvider provider)
   {
-     importThis(fName, is, theData);
+     if(theData == null)
+     {
+       importThis(fName, is,provider);
+     }
+     else
+     {
+//       XMLHandler handler = new LayersHandler(theData);
+ //
+//       // create progress monitor for this stream
+//       javax.swing.ProgressMonitorInputStream po = new javax.swing.ProgressMonitorInputStream(null, "Opening " + fName, is);
+ //
+//       // import the datafile into this set of layers
+//       doImport(new InputSource(po), handler);
+ //
+//       //
+//       theData.fireModified();
+
+     }
   }
 
   @Override
   public void importThis(String fName, InputStream is, MonitorProvider provider)
   {
-     importThis(fName, is);
+     
+     // null implementation!
   }
 
 

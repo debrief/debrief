@@ -285,14 +285,16 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
   public void importThis(String fName, InputStream is, Layers theData,
       MonitorProvider provider)
   {
-   importThis(fName, is, theData);
+    // null implementation!
+    throw new RuntimeException("importThis method not implemented!");
     
   }
 
   @Override
   public void importThis(String fName, InputStream is, MonitorProvider provider)
   {
-    importThis(fName, is);
+    // null implementation!
+    throw new RuntimeException("importThis method not implemented!");
     
   }
 
