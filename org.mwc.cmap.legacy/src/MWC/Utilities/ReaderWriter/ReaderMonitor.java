@@ -92,17 +92,6 @@ public class ReaderMonitor extends BufferedReader
     return super.readLine();
   }
 
-  /**
-   * finalise, time to close the progress bar
-   *
-   */
-  protected void finalize() throws Throwable
-  {
-    super.finalize();
-    if(_provider!=null)
-      _provider.done();
-
-  }
   
   @Override
   public void close() throws IOException
