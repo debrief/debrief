@@ -116,7 +116,6 @@ public class ReaderMonitor extends BufferedReader
   {
 
     ProgressMonitor _pm;
-    private JFrame _tmpFrame;
     private Thread _myThread;
 
     @Override
@@ -175,9 +174,6 @@ public class ReaderMonitor extends BufferedReader
     @Override
     public void done()
     {
-      if(_tmpFrame!=null)
-        _tmpFrame.dispose();
-      _tmpFrame = null;
       if (_pm != null)
       {
         _pm.close();
