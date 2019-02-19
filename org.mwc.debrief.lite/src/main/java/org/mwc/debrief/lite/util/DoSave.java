@@ -7,10 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 import org.mwc.debrief.lite.DebriefLiteApp;
 
 import Debrief.GUI.Frames.Application;
@@ -39,24 +35,34 @@ public class DoSave extends DoSaveAs
     String fileName = DebriefLiteApp.currentFileName;
     File targetFile = null;
     String outputFileName = fileName;
-    if(DebriefLiteApp.currentFileName==null) {
-      JFileChooser fileChooser = new JFileChooser();
-      FileFilter filter = new FileNameExtensionFilter("dpf file","dpf");
-      fileChooser.setFileFilter(filter);
-      fileChooser.showSaveDialog(null);
-      targetFile = fileChooser.getSelectedFile();
-      if(targetFile!=null) {
-        outputFileName = targetFile.getAbsolutePath();
-      }
+    if(fileName == null) {
+      outputFileName = showSaveDialog(null,null);
+      targetFile = new File(outputFileName);
     }
     else {
       if(fileName!=null) {
-        targetFile = new File(fileName);
+        System.out.println("Filename:"+fileName);
+        if(fileName.endsWith(".dpf")) {
+          targetFile = new File(fileName);
+        }
+        else {
+          // if the file is already loaded and 
+          // has a different extension than dpf,
+          // then show the save dialog 
+          File f = new File(fileName);
+          fileName = getFileName(fileName);
+          fileName = showSaveDialog(f.getParentFile(),fileName);
+          if(fileName!=null) {
+            targetFile = new File(fileName);
+          }
+        }
       }
     }
+
     if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
         || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) 
     {        
+
       //export to this file.
       // if it already exists, check with rename/cancel
       OutputStream stream = null;
@@ -73,11 +79,8 @@ public class DoSave extends DoSaveAs
         try
         {
           stream.close();
-          if(DebriefLiteApp.currentFileName == null)
-           {
-            DebriefLiteApp.currentFileName = outputFileName;
-            DebriefLiteApp.setTitle(targetFile.getName());
-           }
+          DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
+          DebriefLiteApp.setTitle(targetFile.getName());
         }
         catch (IOException e1)
         {
@@ -86,4 +89,6 @@ public class DoSave extends DoSaveAs
       }
     }
   }
+ 
+
 }
