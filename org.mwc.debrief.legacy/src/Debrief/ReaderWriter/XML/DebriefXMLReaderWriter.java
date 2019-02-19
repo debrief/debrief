@@ -38,13 +38,13 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 public final class DebriefXMLReaderWriter extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter
 {
-	private final Debrief.GUI.Frames.Application _theApplication;
+	private final Application _theApplication;
 
 	/**
 	 * Creates new XMLReaderWriter
 	 */
 	public DebriefXMLReaderWriter(
-			final Debrief.GUI.Frames.Application theApplication)
+			final Application theApplication)
 	{
 		_theApplication = theApplication;
 	}

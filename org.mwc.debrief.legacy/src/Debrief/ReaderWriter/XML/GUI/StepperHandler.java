@@ -254,7 +254,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
   }
 
 
-  public final GUIHandler.ComponentDetails exportThis(final Debrief.GUI.Frames.Session session)
+  public final GUIHandler.ComponentDetails exportThis(final Session session)
   {
     // get the stepper
     final StepControl stepper = session.getStepControl();
@@ -263,7 +263,7 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
       // collate the details for this component
       final GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
 
-      final MWC.GUI.StepperListener theStepper = stepper.getCurrentPainter();
+      final StepperListener theStepper = stepper.getCurrentPainter();
 
       // is this the snail painter?
       if (theStepper instanceof SnailPainter)

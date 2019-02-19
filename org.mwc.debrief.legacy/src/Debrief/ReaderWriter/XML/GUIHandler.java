@@ -35,14 +35,14 @@ import Debrief.ReaderWriter.XML.GUI.*;
 public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  final Debrief.GUI.Frames.Session _session;
-  private Debrief.GUI.Views.AnalysisView _analysisView;
+  final Session _session;
+  private AnalysisView _analysisView;
 
   static private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
 
   static private StepperHandler _myStepperHandler;
 
-  public GUIHandler(final Debrief.GUI.Frames.Session session)
+  public GUIHandler(final Session session)
   {
     // inform our parent what type of class we are
     super("gui");
