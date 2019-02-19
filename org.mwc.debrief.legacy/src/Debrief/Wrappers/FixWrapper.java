@@ -250,6 +250,8 @@
 
 package Debrief.Wrappers;
 
+import static org.junit.Assert.assertNotEquals;
+
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
@@ -257,6 +259,7 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import Debrief.Wrappers.Track.TrackSegment;
@@ -295,6 +298,52 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     CreateEditorForParent, CanPlotFaded
 {
 
+  
+  private static class CantDoIt implements SubjectAction
+  {
+    private String _reason;
+
+    protected CantDoIt(final String reason)
+    {
+      _reason = reason;
+    }
+    
+    @Override
+    public boolean isUndoable()
+    {
+      return false;
+    }
+
+    @Override
+    public boolean isRedoable()
+    {
+      return false;
+    }
+
+    @Override
+    public void execute(Editable subject)
+    {
+      throw new IllegalArgumentException("Can't call this method, it's disabled");
+    }
+
+    @Override
+    public void undo(Editable subject)
+    {
+      throw new IllegalArgumentException("Can't undo this method, it's disabled");
+    }
+
+    @Override
+    public boolean isEnabled()
+    {
+      return false;
+    }
+
+    @Override
+    public String toString()
+    {
+      return _reason;
+    }
+  }
   // //////////////////////////////////////
   // member variables
   // //////////////////////////////////////
@@ -448,6 +497,8 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       return res;
     }
+    
+   
 
     @Override
     public final SubjectAction[] getUndoableActions()
@@ -457,10 +508,61 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       final FixWrapper fw = (FixWrapper) getData();
       final String lbl = fw.getLabel();
+      
+      final SubjectAction beforeA;
+      final SubjectAction afterA;
+      
+      final TrackSegment parent = fw.getSegment();
+      // find our index
+      int ctr = 0;
+      final Enumeration<Editable> numer = parent.elements();
+      final int len = parent.size();
+      while(numer.hasMoreElements())
+      {
+        final FixWrapper thisF = (FixWrapper) numer.nextElement();
+        if(thisF.equals(fw))
+        {
+          break;
+        }
+        ctr++;
+      }
+           
+      final String beforeLabel = "Split track before " + lbl;
+      final SplitTrack goodBefore = new SplitTrack(true, beforeLabel);
+      final String afterLabel = "Split track after " + lbl;
+      final SplitTrack goodAfter = new SplitTrack(false, afterLabel);
+
+      
+      if(ctr == 0)
+      {
+        beforeA = new CantDoIt(beforeLabel + " - invalid");
+        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+      }
+      else if(ctr == 1)
+      {
+        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+        afterA = goodAfter;
+        
+      }
+      else if(ctr == len - 2)
+      {
+        beforeA = goodBefore;
+        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+      }
+      else if(ctr == len - 1)
+      {
+        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+        afterA = new CantDoIt(afterLabel + " - invalid");
+      }
+      else
+      {
+        beforeA = goodBefore;
+        afterA = goodAfter;
+      }
+      
       final SubjectAction[] res =
           new SubjectAction[]
-          {new SplitTrack(true, "Split track before " + lbl),
-              new SplitTrack(false, "Split track after " + lbl)};
+          {beforeA, afterA};
       return res;
     }
 
@@ -523,6 +625,12 @@ public class FixWrapper extends PlainWrapper implements Watchable,
     }
 
     @Override
+    public boolean isEnabled()
+    {
+      return true;
+    }
+
+    @Override
     public boolean isRedoable()
     {
       return true;
@@ -569,6 +677,75 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       super(val);
     }
 
+    /**
+     * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
+     */
+    public void testCreateMethods()
+    {
+      FixWrapper fw1 = TrackWrapper_Test.createFix2(100, 1, 1, 2, 3);
+      FixWrapper fw2 = TrackWrapper_Test.createFix2(200, 2, 1, 2, 3);
+      FixWrapper fw3 = TrackWrapper_Test.createFix2(300, 2, 1, 2, 3);
+      FixWrapper fw4 = TrackWrapper_Test.createFix2(400, 2, 1, 2, 3);
+      FixWrapper fw5 = TrackWrapper_Test.createFix2(500, 2, 1, 2, 3);
+      FixWrapper fw6 = TrackWrapper_Test.createFix2(600, 2, 1, 2, 3);
+      
+      TrackSegment ats = new TrackSegment(false);
+      ats.add(fw1);
+      ats.add(fw2);
+      ats.add(fw3);
+      ats.add(fw4);
+      ats.add(fw5);
+      ats.add(fw6);
+      
+      TrackWrapper track = new TrackWrapper();
+      track.setName("name");
+      track.add(ats);
+      
+      EditorType info = fw1.getInfo();
+      SubjectAction[] methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      info = fw2.getInfo();
+      methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      info = fw3.getInfo();
+      methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      info = fw4.getInfo();
+      methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      info = fw5.getInfo();
+      methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      info = fw6.getInfo();
+      methods = info.getUndoableActions();
+      assertNotNull("found methods", methods);
+      assertEquals(2, methods.length);
+      assertEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+
+      
+    }
+    
     /**
      * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
      */
