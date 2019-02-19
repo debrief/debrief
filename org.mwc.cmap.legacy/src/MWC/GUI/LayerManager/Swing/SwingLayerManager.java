@@ -184,8 +184,10 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -666,6 +668,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 		// find out which node is currently visible
 		final int[] selections = _myTree.getSelectionRows();
 		int cur = 0;
+	//	TreePath selectionTreePath = _myTree.getSelectionPath();
 		if (selections != null && selections.length > 0)
 			cur = _myTree.getSelectionRows()[0];
 
@@ -691,11 +694,60 @@ public class SwingLayerManager extends SwingCustomEditor implements
   		// highlight the existing selection again
   		_myTree.setSelectionRow(cur);
 		}
+		/*if(selectionTreePath!=null) {
+		  _myTree.expandPath(selectionTreePath);
+		  _myTree.scrollPathToVisible(selectionTreePath);
+		  _myTree.setSelectionPath(selectionTreePath);
+		}*/
 
 		// trigger a repaint
 		_myTree.invalidate();
 
 	}
+	
+	/**
+   * have a fresh pass through the data
+   */
+  public void updateData(final Layer changedLayer,final Plottable newItem)
+  {
+    _myTree.setExpandsSelectedPaths(true);
+    // find out which node is currently visible
+    if(changedLayer != null && newItem!=null) {
+      DefaultMutableTreeNode rootNode = getTreeNode(null,changedLayer.getName(),changedLayer);
+      DefaultMutableTreeNode itemNode = getTreeNode(rootNode,newItem.getName(),newItem);
+      if(itemNode == null) {
+        itemNode = new DefaultMutableTreeNode(newItem);
+        rootNode.add(itemNode);  
+      }
+      TreePath _treePath = new TreePath(itemNode.getPath());
+      _myTree.expandPath(_treePath);
+      _myTree.scrollPathToVisible(_treePath);
+      _myTree.makeVisible(_treePath);
+        
+    }
+  }
+  
+  private DefaultMutableTreeNode getTreeNode(final DefaultMutableTreeNode parent,final String nodeText,final Object object) {
+    TreeModel model = _myTree.getModel();
+    
+    DefaultMutableTreeNode root = null;
+    if(parent == null) {
+      root = (DefaultMutableTreeNode) model.getRoot();
+    }
+    else {
+      root = parent;
+    }
+    DefaultMutableTreeNode child;
+    int childrenCount = root.getChildCount();
+    for(int i = 0; i < childrenCount; i++){
+        child = (DefaultMutableTreeNode) root.getChildAt(i);
+        if(child.toString().startsWith(nodeText) && object == child.getUserObject()){
+          return child;
+        }
+    }
+    return null;
+  }
+
 
 	/* thread-safe way of updating UI
 	 * 
