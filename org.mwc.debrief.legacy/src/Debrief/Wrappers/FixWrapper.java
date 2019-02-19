@@ -250,8 +250,6 @@
 
 package Debrief.Wrappers;
 
-import static org.junit.Assert.assertNotEquals;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
@@ -713,27 +711,27 @@ public class FixWrapper extends PlainWrapper implements Watchable,
       assertNotNull("found methods", methods);
       assertEquals(2, methods.length);
       assertEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
-      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+      assertTrue(methods[1].getClass() != new CantDoIt("aa").getClass());
 
       info = fw3.getInfo();
       methods = info.getUndoableActions();
       assertNotNull("found methods", methods);
       assertEquals(2, methods.length);
-      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
-      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+      assertTrue(methods[0].getClass() != new CantDoIt("aa").getClass());
+      assertTrue(methods[1].getClass() != new CantDoIt("aa").getClass());
 
       info = fw4.getInfo();
       methods = info.getUndoableActions();
       assertNotNull("found methods", methods);
       assertEquals(2, methods.length);
-      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
-      assertNotEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
+      assertTrue(methods[0].getClass() != new CantDoIt("aa").getClass());
+      assertTrue(methods[1].getClass() != new CantDoIt("aa").getClass());
 
       info = fw5.getInfo();
       methods = info.getUndoableActions();
       assertNotNull("found methods", methods);
       assertEquals(2, methods.length);
-      assertNotEquals(methods[0].getClass(), new CantDoIt("aa").getClass());
+      assertTrue(methods[0].getClass() != new CantDoIt("aa").getClass());
       assertEquals(methods[1].getClass(), new CantDoIt("aa").getClass());
 
       info = fw6.getInfo();
