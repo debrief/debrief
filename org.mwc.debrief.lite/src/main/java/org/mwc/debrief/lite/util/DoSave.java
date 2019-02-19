@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
@@ -21,9 +22,9 @@ public class DoSave extends DoSaveAs
    */
   private static final long serialVersionUID = 1L;
 
-  public DoSave(Session session)
+  public DoSave(Session session,JRibbonFrame theFrame)
   {
-    super(session);
+    super(session,theFrame);
   }
 
   @Override
@@ -80,7 +81,7 @@ public class DoSave extends DoSaveAs
         {
           stream.close();
           DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
-          DebriefLiteApp.setTitle(targetFile.getName());
+          _theFrame.setTitle(targetFile.getName());
         }
         catch (IOException e1)
         {

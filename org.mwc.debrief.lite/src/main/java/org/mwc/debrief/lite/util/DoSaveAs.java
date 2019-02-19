@@ -14,6 +14,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
@@ -28,10 +29,12 @@ public class DoSaveAs extends AbstractAction
    */
   private static final long serialVersionUID = 1L;
   private final Session _session;
+  protected JRibbonFrame _theFrame;
 
-  public DoSaveAs(Session session)
+  public DoSaveAs(Session session,JRibbonFrame frame)
   {
     _session = session;
+    _theFrame = frame;
   }
 
   protected void performSave(final OutputStream fos)
@@ -77,7 +80,7 @@ public class DoSaveAs extends AbstractAction
           {
             stream.close();
             DebriefLiteApp.currentFileName = outputFileName;
-            DebriefLiteApp.setTitle(targetFile.getName());
+            _theFrame.setTitle(targetFile.getName());
           }
           catch (IOException e1)
           {

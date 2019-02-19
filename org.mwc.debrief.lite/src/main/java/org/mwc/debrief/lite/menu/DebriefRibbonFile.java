@@ -125,9 +125,9 @@ public class DebriefRibbonFile
     
     fileMenu.startGroup();
     MenuUtils.addCommand("Save", "images/16/save.png",
-        new DoSave(session), fileMenu, RibbonElementPriority.MEDIUM);
+        new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Save as", "images/16/save-as.png",
-        new DoSaveAs(session), fileMenu, RibbonElementPriority.MEDIUM);
+        new DoSaveAs(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);

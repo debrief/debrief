@@ -131,7 +131,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
 
-  private static JRibbonFrame theFrame;
+  private final JRibbonFrame theFrame;
 
   final private Layers _theLayers = new Layers();
 
@@ -387,7 +387,7 @@ public class DebriefLiteApp implements FileDropListener
       {
         if(currentFileName == null) {
           currentFileName = fName.getAbsolutePath();
-          setTitle(fName.getName());
+          theFrame.setTitle(fName.getName());
         }
       }
     };
@@ -440,7 +440,7 @@ public class DebriefLiteApp implements FileDropListener
     statusBar.setText(message);
   }
   
-  public static void setTitle(final String title) {
+/*  public static void setTitle(final String title) {
     javax.swing.SwingUtilities.invokeLater(new Runnable()
     {
       @Override
@@ -451,5 +451,5 @@ public class DebriefLiteApp implements FileDropListener
     });
     
   }
-
+*/
 }
