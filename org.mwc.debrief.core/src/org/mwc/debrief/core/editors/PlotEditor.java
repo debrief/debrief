@@ -203,6 +203,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   public static class TestMe extends TestCase
   {
 
+    public void testBounds()
+    {
+      final Layers la = new Layers();
+      final TimePeriod bounds = getPeriodFor(la);
+      assertNull("should not have found any", bounds);
+      
+      final Layers la2 = null;
+      final TimePeriod bounds2 = getPeriodFor(la2);
+      assertNull("should not have found any", bounds2);
+      
+    }
+    
     public void testAmbig()
     {
       final SensorWrapper sensor = new SensorWrapper("Some name");
@@ -324,50 +336,56 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   {
     TimePeriod res = null;
 
-    for (final Enumeration<Editable> iter = theData.elements(); iter
-        .hasMoreElements();)
+    // does it have any data?
+    if (theData != null)
     {
-      final Layer thisLayer = (Layer) iter.nextElement();
+      // loop through the layers. Don't worry, it robustly handles
+      // zero layers
+      for (final Enumeration<Editable> iter = theData.elements(); iter
+          .hasMoreElements();)
+      {
+        final Layer thisLayer = (Layer) iter.nextElement();
 
-      // and through this layer
-      if (thisLayer instanceof TrackWrapper)
-      {
-        final TrackWrapper thisT = (TrackWrapper) thisLayer;
-        res = extend(res, thisT.getStartDTG());
-        res = extend(res, thisT.getEndDTG());
-      }
-      else if (thisLayer instanceof BaseLayer)
-      {
-        final Enumeration<Editable> elements = thisLayer.elements();
-        while (elements.hasMoreElements())
+        // and through this layer
+        if (thisLayer instanceof TrackWrapper)
         {
-          final Plottable nextP = (Plottable) elements.nextElement();
-          if (nextP instanceof Watchable)
+          final TrackWrapper thisT = (TrackWrapper) thisLayer;
+          res = extend(res, thisT.getStartDTG());
+          res = extend(res, thisT.getEndDTG());
+        }
+        else if (thisLayer instanceof BaseLayer)
+        {
+          final Enumeration<Editable> elements = thisLayer.elements();
+          while (elements.hasMoreElements())
           {
-            final Watchable wrapped = (Watchable) nextP;
-            final HiResDate dtg = wrapped.getTime();
-            if (dtg != null)
+            final Plottable nextP = (Plottable) elements.nextElement();
+            if (nextP instanceof Watchable)
             {
-              res = extend(res, dtg);
-
-              // also see if it this data type an end time
-              if (wrapped instanceof WatchableList)
+              final Watchable wrapped = (Watchable) nextP;
+              final HiResDate dtg = wrapped.getTime();
+              if (dtg != null)
               {
-                // ok, make sure we also handle the end time
-                final WatchableList wl = (WatchableList) wrapped;
-                final HiResDate endD = wl.getEndDTG();
-                if (endD != null)
+                res = extend(res, dtg);
+
+                // also see if it this data type an end time
+                if (wrapped instanceof WatchableList)
                 {
-                  res = extend(res, endD);
+                  // ok, make sure we also handle the end time
+                  final WatchableList wl = (WatchableList) wrapped;
+                  final HiResDate endD = wl.getEndDTG();
+                  if (endD != null)
+                  {
+                    res = extend(res, endD);
+                  }
                 }
               }
             }
-          }
-          else if (nextP instanceof WatchableList)
-          {
-            WatchableList wl = (WatchableList) nextP;
-            res = extend(res, wl.getStartDTG());
-            res = extend(res, wl.getEndDTG());
+            else if (nextP instanceof WatchableList)
+            {
+              WatchableList wl = (WatchableList) nextP;
+              res = extend(res, wl.getStartDTG());
+              res = extend(res, wl.getEndDTG());
+            }
           }
         }
       }
