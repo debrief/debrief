@@ -119,7 +119,7 @@
 				         classname="com.simontuffs.onejar.ant.OneJarTask"
 				         classpath="conf/one-jar-ant-task-0.97.jar"
 				         onerror="report"/>
-			<one-jar destfile="${dist.dir}/DebriefLite-${product.version}.jar">
+			<one-jar destfile="${dist.dir}/DebriefLegacy-${product.version}.jar">
 				<main jar="${dist.dir}/main.jar">
 				</main>
 				<lib>

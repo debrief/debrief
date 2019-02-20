@@ -1251,8 +1251,8 @@ abstract public class StepControl implements Editable,
       // just add the reset color field first
       final Class<StepControl> c = StepControl.class;
       final MethodDescriptor[] mds = {
-        method(c, "editHighlighter", null, "Edit current highlighter"),
-        method(c, "editDisplay", null, "Edit current display mode"),
+        method(c, "editHighlighter", null, "Edit Highlighter"),
+        method(c, "editDisplay", null, "Edit Display mode"),
       };
       return mds;
     }

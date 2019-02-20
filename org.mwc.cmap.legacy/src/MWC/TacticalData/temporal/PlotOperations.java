@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.debrief.core.operations;
+package MWC.TacticalData.temporal;
 
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -24,7 +24,6 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeWrapper;
-import MWC.TacticalData.temporal.ControllablePeriod;
 
 public class PlotOperations implements ControllablePeriod
 {
