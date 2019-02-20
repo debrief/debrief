@@ -528,6 +528,7 @@ public class DebriefRibbonTimeController
         final GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(val.getDate().getTime());
         slider.setMaximum(cal);
+        slider.setUpperDate(cal);
       }
 
       @Override
@@ -536,6 +537,7 @@ public class DebriefRibbonTimeController
         final GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(val.getDate().getTime());
         slider.setMinimum(cal);
+        slider.setLowerDate(cal);
       }
 
       @Override
