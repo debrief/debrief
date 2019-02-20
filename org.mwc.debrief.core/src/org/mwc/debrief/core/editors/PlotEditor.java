@@ -147,7 +147,6 @@ import org.mwc.debrief.core.operations.ExportDopplerShift;
 import org.mwc.debrief.core.operations.ExportTimeDataToClipboard;
 import org.mwc.debrief.core.operations.ExportToFlatFile;
 import org.mwc.debrief.core.operations.ExportToFlatFile2;
-import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.core.preferences.PrefsPage;
 import org.osgi.framework.Bundle;
 
@@ -187,6 +186,7 @@ import MWC.TacticalData.TrackDataProvider;
 import MWC.TacticalData.TrackDataProvider.TrackDataListener;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeControlPreferences;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;

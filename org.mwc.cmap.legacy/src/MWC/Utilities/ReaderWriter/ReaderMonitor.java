@@ -47,7 +47,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import javax.swing.JFrame;
 import javax.swing.ProgressMonitor;
 import javax.swing.SwingUtilities;
 
