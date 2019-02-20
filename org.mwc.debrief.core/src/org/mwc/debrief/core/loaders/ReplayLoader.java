@@ -124,13 +124,12 @@ public class ReplayLoader extends CoreLoader
             if(!pm.isCanceled()) {
               pm.done();
             }
-            
           }
           
           @Override
           public void init(String fileName)
           {
-            final java.io.File fl = new java.io.File(fileName);
+            final File fl = new File(fileName);
             pm.beginTask("Reading file:" + fl.getName(), 99);
             
           }
