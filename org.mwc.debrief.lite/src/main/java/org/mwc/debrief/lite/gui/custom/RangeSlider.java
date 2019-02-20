@@ -17,6 +17,8 @@ import junit.framework.TestCase;
  * defined by a value and an extent. The upper value returned by RangeSlider is simply the lower
  * value plus the extent.
  * </p>
+ * 
+ * Implementation taken from https://ernienotes.wordpress.com/2010/12/27/creating-a-java-swing-range-slider/
  */
 public class RangeSlider extends JSlider
 {
@@ -103,6 +105,16 @@ public class RangeSlider extends JSlider
   public void setUpperDate(Calendar date)
   {
     setUpperValue(toInt(date));
+  }
+  
+  public void setMinimum(Calendar date)
+  {
+    setMinimum(toInt(date));
+  }
+  
+  public void setMaximum(Calendar date)
+  {
+    setMaximum(toInt(date));
   }
 
   /**

@@ -468,7 +468,7 @@ public class DebriefRibbonTimeController
     // Now we create the components for the sliders
     final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
     final JLabel maximumValue = new JLabel(formatter.format(end.getTime()));
-    final RangeSlider slider = new RangeSlider(818744400, 818768460);
+    final RangeSlider slider = new RangeSlider(start, end);
     slider.addChangeListener(new ChangeListener()
     {
       @Override
@@ -527,7 +527,7 @@ public class DebriefRibbonTimeController
       {
         final GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(val.getDate().getTime());
-        slider.setUpperDate(cal);
+        slider.setMaximum(cal);
       }
 
       @Override
@@ -535,7 +535,7 @@ public class DebriefRibbonTimeController
       {
         final GregorianCalendar cal = new GregorianCalendar();
         cal.setTimeInMillis(val.getDate().getTime());
-        slider.setLowerDate(cal);
+        slider.setMinimum(cal);
       }
 
       @Override
