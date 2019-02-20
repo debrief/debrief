@@ -184,7 +184,6 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
@@ -723,6 +722,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
       _myTree.expandPath(_treePath);
       _myTree.scrollPathToVisible(_treePath);
       _myTree.makeVisible(_treePath);
+      _myTree.setSelectionPath(_treePath);
         
     }
   }
@@ -741,7 +741,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     int childrenCount = root.getChildCount();
     for(int i = 0; i < childrenCount; i++){
         child = (DefaultMutableTreeNode) root.getChildAt(i);
-        if(child.toString().startsWith(nodeText) && object == child.getUserObject()){
+        if(child.getUserObject().toString().contains(nodeText) && object == child.getUserObject()){
           return child;
         }
     }
