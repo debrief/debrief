@@ -33,13 +33,13 @@ import org.xml.sax.SAXParseException;
 
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
  * @author IAN MAYO
  * @version 1
  */
-public class MWCXMLReaderWriter extends MWCXMLReader implements
-		MWC.Utilities.ReaderWriter.PlainImporter
+public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 {
 	/**
 	 * flag which gets set when the user has cancelled the import process
@@ -185,7 +185,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * handle the import of XML data into an existing session
 	 */
-	public void importThis(final String fName, final InputStream is, final MWC.GUI.Layers theData)
+	public void importThis(final String fName, final InputStream is, final Layers theData)
 	{
 		if (theData == null)
 		{
