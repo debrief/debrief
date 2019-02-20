@@ -47,4 +47,10 @@ public interface SubjectAction
 	 * @param subject what we're undoing it to
 	 */
 	void undo(Editable subject);
+	
+	/** whether this action is enabled
+	 * 
+	 * @return  yes/no
+	 */
+	boolean isEnabled();
 }

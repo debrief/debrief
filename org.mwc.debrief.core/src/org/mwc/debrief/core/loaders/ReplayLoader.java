@@ -28,6 +28,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
 /**
  * @author ian.mayo
@@ -108,7 +109,32 @@ public class ReplayLoader extends CoreLoader
         importer.clearPendingSensorList();
 
         // and do the import...
-        importer.importThis(fileName, inputStream, theLayers);
+        importer.importThis(fileName, inputStream, theLayers, new MonitorProvider()
+        {
+          
+          @Override
+          public void progress(int _progress)
+          {
+            pm.worked(_progress);
+            
+          }
+          @Override
+          public void done()
+          {
+            if(!pm.isCanceled()) {
+              pm.done();
+            }
+            
+          }
+          
+          @Override
+          public void init(String fileName)
+          {
+            final java.io.File fl = new java.io.File(fileName);
+            pm.beginTask("Reading file:" + fl.getName(), 99);
+            
+          }
+        });
       }
     };
 

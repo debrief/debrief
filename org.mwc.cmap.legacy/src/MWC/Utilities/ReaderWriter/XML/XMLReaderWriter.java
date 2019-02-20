@@ -21,6 +21,7 @@ import org.xml.sax.AttributeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.Parser;
 
+import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
 /**
@@ -181,6 +182,19 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
 	{
 		
 	}
+
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+     importThis(fName, is, theData);
+  }
+
+  @Override
+  public void importThis(String fName, InputStream is, MonitorProvider provider)
+  {
+     importThis(fName, is);
+  }
 
 
 

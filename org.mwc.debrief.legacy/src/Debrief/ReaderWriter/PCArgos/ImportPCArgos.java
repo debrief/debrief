@@ -69,14 +69,23 @@
 //
 package Debrief.ReaderWriter.PCArgos;
 
-import java.io.*;
-import java.util.*;
-import java.awt.*;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Hashtable;
+import java.util.Vector;
 
-import Debrief.Wrappers.*;
-import MWC.TacticalData.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 /** class to read in a complete PCArgos file, producing vessel fixes
  */
@@ -341,6 +350,19 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
        // show the message dialog
        super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+  }
+  
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+    importThis(fName, is, theData);
+  }
+  
+  @Override
+  public void importThis(String fName, InputStream is, MonitorProvider provider)
+  {
+    importThis(fName, is);
   }
 
   /** produce

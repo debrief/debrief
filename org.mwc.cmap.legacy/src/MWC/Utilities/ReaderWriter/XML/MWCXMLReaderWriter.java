@@ -31,6 +31,7 @@ import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 
+import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
 /**
@@ -279,5 +280,20 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	{
 
 	}
+
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+   importThis(fName, is, theData);
+    
+  }
+
+  @Override
+  public void importThis(String fName, InputStream is, MonitorProvider provider)
+  {
+    importThis(fName, is);
+    
+  }
 
 }

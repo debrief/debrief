@@ -203,6 +203,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
   public static class TestMe extends TestCase
   {
 
+    public void testBounds()
+    {
+      final Layers la = new Layers();
+      final TimePeriod bounds = getPeriodFor(la);
+      assertNull("should not have found any", bounds);
+
+      final Layers la2 = null;
+      final TimePeriod bounds2 = getPeriodFor(la2);
+      assertNull("should not have found any", bounds2);
+    }
+
     public void testAmbig()
     {
       final SensorWrapper sensor = new SensorWrapper("Some name");

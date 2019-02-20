@@ -243,6 +243,12 @@ public final class SensorContactWrapper extends
       _contact.setHasAmbiguousBearing(true);
     }
 
+    @Override
+    public boolean isEnabled()
+    {
+      return true;
+    }
+
   }
 
   // //////////////////////////////////////////////////////////////////////////
