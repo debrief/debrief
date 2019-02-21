@@ -91,11 +91,10 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.PlainTool;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-abstract public class CreateShape extends PlainTool
+abstract public class CreateShape extends CoreCreateShape
 {
 
   /////////////////////////////////////////////////////////////
@@ -104,12 +103,6 @@ abstract public class CreateShape extends PlainTool
   /** the properties panel
    */
   private PropertiesPanel _thePanel;
-
-  /** the layers we are going to drop this shape into
-   */
-  private Layers _theData;
-
-  private final BoundsProvider _theBounds;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -120,25 +113,15 @@ abstract public class CreateShape extends PlainTool
       final String theName,
       final String theImage, BoundsProvider bounds)
   {
-    super(theParent, theName, theImage);
-
+    super(theParent, theName, theImage,theData,bounds);
     _thePanel = thePanel;
-    _theData = theData;
-    _theBounds = bounds;
+    
   }
 
 
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-
-  /** get the current visible data area
-   * 
-   */
-  final protected WorldArea getBounds()
-  {
-    return _theBounds.getViewport();
-  }
 
   public final Action getData()
   {
@@ -154,17 +137,25 @@ abstract public class CreateShape extends PlainTool
       final ShapeWrapper theWrapper = getShape(centre);
       String layerToAddTo = getLayerName();
       Layer theLayer = _theData.findLayer(layerToAddTo);
-      if(theLayer == null)
+      /*if(theLayer == null)
       {
         theLayer = new BaseLayer();
         theLayer.setName("Misc");
         _theData.addThisLayer(theLayer);
       }
-
-      res =  new CreateShapeAction(_thePanel,
-          theLayer,
-          theWrapper,
-          _theData);
+      else {*/
+      if(theLayer!=null) {
+        res =  new CreateShapeAction(_thePanel,
+            theLayer,
+            theWrapper,
+            _theData);
+      }
+      else {
+        JOptionPane.showMessageDialog(null, 
+            "A layer can only be created if a name is provided. "
+            + "The shape has not been created",
+            "Error", JOptionPane.ERROR_MESSAGE);
+      }
     }
     else
     {
@@ -255,6 +246,7 @@ abstract public class CreateShape extends PlainTool
     _thePanel = null;
     _theData = null;
   }
+
   /**
    * @return
    */
@@ -287,9 +279,9 @@ abstract public class CreateShape extends PlainTool
           // better create one. Ask the user
 
           // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
           // check there's something there
-          if (!txt.isEmpty())
+          if (txt!=null && !txt.isEmpty())
           {
             res = txt;
             // create base layer
@@ -308,8 +300,8 @@ abstract public class CreateShape extends PlainTool
           res = selection;
         }
       }
-      }
-      
+    }
+
     return res;
   }
 }

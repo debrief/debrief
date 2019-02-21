@@ -169,7 +169,7 @@ public class DebriefLiteApp implements FileDropListener
         + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")";
     theFrame = new JRibbonFrame(defaultTitle);
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
-        .createImage("icons/icon_256.png"), MenuUtils.ICON_SIZE_32));
+        .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
     
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();

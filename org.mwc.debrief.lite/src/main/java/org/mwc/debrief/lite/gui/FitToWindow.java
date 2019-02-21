@@ -33,17 +33,26 @@ public class FitToWindow extends AbstractAction
     final WorldArea area = _layers.getBounds();
     if (area != null)
     {
-      final WorldLocation tl = area.getTopLeft();
-      final WorldLocation br = area.getBottomRight();
-      final CoordinateReferenceSystem crs = _map.getMapContent()
-          .getCoordinateReferenceSystem();
-      final ReferencedEnvelope bounds = new ReferencedEnvelope(tl.getLong(), br
-          .getLong(), tl.getLat(), br.getLat(), crs);
-      _map.getMapContent().getViewport().setBounds(bounds);
+      // check it's not the default area that gets returned when
+      // no data is loaded
+      if(area.equals(Layers.getDebriefOrigin()))
+      {
+        // ok, don't bother resizing. Leave it as-is
+      }
+      else
+      {
+        final WorldLocation tl = area.getTopLeft();
+        final WorldLocation br = area.getBottomRight();
+        final CoordinateReferenceSystem crs = _map.getMapContent()
+            .getCoordinateReferenceSystem();
+        final ReferencedEnvelope bounds = new ReferencedEnvelope(tl.getLong(),
+            br.getLong(), tl.getLat(), br.getLat(), crs);
+        _map.getMapContent().getViewport().setBounds(bounds);
 
-      // force repaint
-      final ReferencedEnvelope paneArea = _map.getDisplayArea();
-      _map.setDisplayArea(paneArea);
+        // force repaint
+        final ReferencedEnvelope paneArea = _map.getDisplayArea();
+        _map.setDisplayArea(paneArea);
+      }
     }
   }
 
