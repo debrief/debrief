@@ -82,6 +82,8 @@
 
 package Debrief.Tools.Palette;
 
+import javax.swing.JOptionPane;
+
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
