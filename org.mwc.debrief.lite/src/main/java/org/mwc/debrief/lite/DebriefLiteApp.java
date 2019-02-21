@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -69,6 +70,7 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
@@ -85,6 +87,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
+  public static String currentFileName = null;
 
   /**
    * creates a scroll pane with map
@@ -94,13 +97,13 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @return
    */
-  private static JMapPane createMapPane(
-      final GeoToolMapRenderer geoMapRenderer,
+  private static JMapPane createMapPane(final GeoToolMapRenderer geoMapRenderer,
       final FileDropSupport dropSupport)
   {
     geoMapRenderer.createMapLayout();
     final MapBuilder builder = new MapBuilder();
-    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer).build();
+    final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
+        .build();
     dropSupport.addComponent(mapPane);
     return mapPane;
   }
@@ -150,15 +153,57 @@ public class DebriefLiteApp implements FileDropListener
       "Status bar for displaying statuses");
   private final LiteStepControl _stepControl;
   private final JMapPane mapPane;
+  private final PlotOperations _myOperations = new PlotOperations()
+  {
+    // just provide with our complete set of layers
+    @Override
+    public Object[] getTargets()
+    {
+      // ok, return our top level layers as objects
+      final Vector<Layer> res = new Vector<Layer>(0, 1);
+      for (int i = 0; i < _theLayers.size(); i++)
+      {
+        res.add(_theLayers.elementAt(i));
+      }
+      return res.toArray();
+    }
+
+    /**
+     * override performing the operation, since we'll do a screen update on completion
+     */
+    @Override
+    public Vector<Layer> performOperation(final AnOperation operationName)
+    {
+      // make the actual change
+      final Vector<Layer> res = super.performOperation(operationName);
+
+      if (res != null)
+      {
+        if (res.size() != 0)
+        {
+          for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
+          {
+            final Layer thisL = iter.next();
+            // and update the screen
+            _theLayers.fireReformatted(thisL);
+
+          }
+        }
+      }
+
+      return res;
+
+    }
+  };
   private final TimeManager timeManager = new TimeManager();
   private final PainterManager painterManager;
   private LiteTote theTote;
   private CanvasAdaptor _theCanvas;
-
+  private static String defaultTitle;
 
   public DebriefLiteApp()
   {
-    //set the substance look and feel
+    // set the substance look and feel
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
@@ -170,14 +215,16 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (InterruptedException e)
     {
-       //ignore
+      // ignore
     }
     
-    theFrame = new JRibbonFrame(appName 
-        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")");
+    defaultTitle = appName 
+        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")";
+    theFrame = new JRibbonFrame(defaultTitle);
+
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
-    
+
     final GeoToolMapRenderer geoMapRenderer = new GeoToolMapRenderer();
     geoMapRenderer.loadMapContent();
     final MapContent mapComponent = geoMapRenderer.getMapComponent();
@@ -201,9 +248,15 @@ public class DebriefLiteApp implements FileDropListener
     ImportReplay.initialise(new DebriefLiteToolParent(
         ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
+    
+    // sort out time control
+    _stepControl = new LiteStepControl(_toolParent);
+    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers);
+    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
 
@@ -238,7 +291,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
@@ -258,7 +310,7 @@ public class DebriefLiteApp implements FileDropListener
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager, projection);
+        _stepControl, timeManager, _myOperations, projection);
 
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
@@ -277,7 +329,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
-      final Component mapPane, final LiteStepControl stepControl, final TimeManager timeManager, GeoToolMapProjection projection2)
+      final Component mapPane, final LiteStepControl stepControl,
+      final TimeManager timeManager, final PlotOperations operation, final GeoToolMapProjection projection2)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -290,7 +343,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, projection);
+        geoMapRenderer, stepControl, timeManager, operation, session, projection);
   }
 
   protected void doPaint(final Graphics gc)
@@ -389,16 +442,17 @@ public class DebriefLiteApp implements FileDropListener
           {
             layerManager.dataModified(null, null);
             mapPane.repaint();
-            
+
             restoreCursor();
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();
+            _myOperations.setPeriod(period);
             timeManager.setPeriod(source, period);
-            if(period != null)
+            if (period != null)
             {
               timeManager.setTime(source, period.getStartDTG(), true);
             }
-            
+
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);
@@ -420,6 +474,10 @@ public class DebriefLiteApp implements FileDropListener
             LightweightTrackWrapper track = (LightweightTrackWrapper) l;
             theTote.setPrimary(track);
           }
+        }
+        if(currentFileName == null) {
+          currentFileName = fName.getAbsolutePath();
+          theFrame.setTitle(fName.getName());
         }
       }
     };
@@ -471,5 +529,17 @@ public class DebriefLiteApp implements FileDropListener
   {
     statusBar.setText(message);
   }
-
+  
+/*  public static void setTitle(final String title) {
+    javax.swing.SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        theFrame.setTitle(defaultTitle +" - "+title);
+      }
+    });
+    
+  }
+*/
 }

@@ -81,6 +81,7 @@ package Debrief.ReaderWriter.PCArgos;
 import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.text.ParseException;
@@ -97,11 +98,12 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 /** class to read in a complete PCArgos file, producing vessel fixes
  */
-final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
+final class ImportPMRF extends PlainImporterBase
 {
 
   /** the list of importers we know about
@@ -286,7 +288,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
    */
   public final void importThis(final Layers theData,
                          final String fName,
-                         final java.io.InputStream is,
+                         final InputStream is,
                          final WorldLocation origin,
                          final long DTG,
                          final long freq)
@@ -315,7 +317,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
   /** import data from this stream
    */
   public final void importThis(final String fName,
-                         final java.io.InputStream is){
+                         final InputStream is){
     // declare linecounter
     int lineCounter = 0;
 
@@ -403,6 +405,20 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
        // show the message dialog
        super.readError(fName, lineCounter, "Missing field error", thisLine);
     }
+  }
+  
+  
+  @Override
+  public void importThis(String fName, InputStream is, Layers theData,
+      MonitorProvider provider)
+  {
+    importThis(fName, is, theData);
+  }
+  
+  @Override
+  public void importThis(String fName, InputStream is, MonitorProvider provider)
+  {
+    importThis(fName, is);
   }
 
   /** produce
