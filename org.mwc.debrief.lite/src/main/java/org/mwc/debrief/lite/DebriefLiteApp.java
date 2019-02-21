@@ -82,6 +82,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
+  public static String currentFileName = null;
 
   /**
    * creates a scroll pane with map
@@ -190,6 +191,7 @@ public class DebriefLiteApp implements FileDropListener
     }
   };
   private final TimeManager timeManager = new TimeManager();
+  private static String defaultTitle;
 
   public DebriefLiteApp()
   {
@@ -207,9 +209,11 @@ public class DebriefLiteApp implements FileDropListener
     {
       // ignore
     }
+    
+    defaultTitle = appName 
+        + " (" + Debrief.GUI.VersionInfo.getVersion()+ ")";
+    theFrame = new JRibbonFrame(defaultTitle);
 
-    theFrame = new JRibbonFrame(appName + " (" + Debrief.GUI.VersionInfo
-        .getVersion() + ")");
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
@@ -236,9 +240,15 @@ public class DebriefLiteApp implements FileDropListener
     ImportReplay.initialise(new DebriefLiteToolParent(
         ImportReplay.IMPORT_AS_OTG, 0L));
     ImportManager.addImporter(new ImportReplay());
+    
+    // sort out time control
+    _stepControl = new LiteStepControl(_toolParent);
+    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers);
+    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
 
@@ -310,7 +320,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, operation);
+        geoMapRenderer, stepControl, timeManager, operation, session);
   }
 
   protected void doPaint(final Graphics gc)
@@ -427,6 +437,10 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
+        if(currentFileName == null) {
+          currentFileName = fName.getAbsolutePath();
+          theFrame.setTitle(fName.getName());
+        }
       }
     };
     // ok, start loading
@@ -477,5 +491,17 @@ public class DebriefLiteApp implements FileDropListener
   {
     statusBar.setText(message);
   }
-
+  
+/*  public static void setTitle(final String title) {
+    javax.swing.SwingUtilities.invokeLater(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        theFrame.setTitle(defaultTitle +" - "+title);
+      }
+    });
+    
+  }
+*/
 }

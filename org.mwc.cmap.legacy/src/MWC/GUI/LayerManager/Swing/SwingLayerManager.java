@@ -762,7 +762,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
 				"Please enter name", "New Layer",
 				javax.swing.JOptionPane.QUESTION_MESSAGE);
 
-		if (s != null)
+		if (s != null && !s.isEmpty())
 		{
 			// create the layer
 			final Layer ly = new BaseLayer();
@@ -773,6 +773,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
 			// the layers object should inform us of any update, anyway
 
+		}
+		else {
+		 javax.swing.JOptionPane.showMessageDialog(_myTree,
+	        "A name is required to create a layer, the layer was not created", "Error",
+	        javax.swing.JOptionPane.ERROR_MESSAGE);
+  
 		}
 
 	}

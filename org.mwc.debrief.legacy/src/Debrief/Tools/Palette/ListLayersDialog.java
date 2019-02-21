@@ -15,6 +15,7 @@
 package Debrief.Tools.Palette;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -27,6 +28,9 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -52,6 +56,7 @@ public class ListLayersDialog extends JDialog
     lblMessage.setText("Please select the destination layer for new feature");
     _list = new JList<>(_layersList);
     _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    _list.setBorder(new CompoundBorder(new EmptyBorder(4,4,4,4),new LineBorder(Color.BLACK,1)));
     _list.setVisibleRowCount(-1);
     JScrollPane listScroller = new JScrollPane(_list);
     listScroller.setPreferredSize(new Dimension(250, 80));

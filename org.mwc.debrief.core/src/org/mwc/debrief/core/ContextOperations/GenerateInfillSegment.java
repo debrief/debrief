@@ -750,6 +750,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
   public static class GenerateInfillOperation extends CMAPOperation
   {
 
+    public static final String INSUFFICIENT_POINTS =
+        "Legs must include at least two points for dynamic infill to be generated";
     public static final String INSUFFICIENT_TIME =
         "Insufficient time to insert data. Please try deleting some points.";
     public static final String OVERLAPPING =
@@ -831,7 +833,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
           // hold on - there's already an infill here. Move along
           continue;
         }
-
+        
         // join them
         res = fillSegments(trackOne, trackTwo);
 
@@ -939,6 +941,12 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       {
         // fail, they overlap
         res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, OVERLAPPING,
+            null);
+      }
+      else if(trackOne.size() < 2 || trackTwo.size() < 2)
+      {
+        // fail, too few points
+        res = new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, INSUFFICIENT_POINTS,
             null);
       }
       else

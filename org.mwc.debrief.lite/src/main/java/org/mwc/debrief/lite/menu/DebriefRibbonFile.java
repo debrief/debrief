@@ -15,10 +15,14 @@ import javax.swing.AbstractAction;
 
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.util.DoSave;
+import org.mwc.debrief.lite.util.DoSaveAs;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
+
+import Debrief.GUI.Frames.Session;
 
 public class DebriefRibbonFile
 {
@@ -110,16 +114,20 @@ public class DebriefRibbonFile
   }
 
   protected static void addFileTab(final JRibbon ribbon,
-      final GeoToolMapRenderer _geoMapRenderer)
+      final GeoToolMapRenderer geoMapRenderer, final Session session)
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(),
         fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("New (default plot)", "images/16/new.png",
-        new NewFileAction(), fileMenu, RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Open Plot", "images/16/open.png", new NewFileAction(),
         fileMenu, RibbonElementPriority.MEDIUM);
+    
+    fileMenu.startGroup();
+    MenuUtils.addCommand("Save", "images/16/save.png",
+        new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("Save as", "images/16/save-as.png",
+        new DoSaveAs(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
@@ -145,7 +153,7 @@ public class DebriefRibbonFile
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
     MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
-        new CopyPlotAsPNG(_geoMapRenderer), importMenu,
+        new CopyPlotAsPNG(geoMapRenderer), importMenu,
         RibbonElementPriority.MEDIUM);
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));

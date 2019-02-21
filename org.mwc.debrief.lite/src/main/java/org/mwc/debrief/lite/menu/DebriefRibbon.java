@@ -20,6 +20,7 @@ import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
+import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
 import MWC.TacticalData.temporal.TimeManager;
 
@@ -33,10 +34,11 @@ public class DebriefRibbon
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
-      final PlotOperations operations)
+      final PlotOperations operations, final Session session)
+
   {
     // add menus here
-    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer);
+    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);

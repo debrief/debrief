@@ -342,7 +342,7 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 			final Class<?> c = PolygonWrapper.class;
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape"),
-					method(c, "addNode", null, "Add node") };
+					method(c, "addNode", null, "Add Node") };
 			return mds;
 		}
 
