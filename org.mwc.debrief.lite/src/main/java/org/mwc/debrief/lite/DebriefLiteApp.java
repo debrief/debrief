@@ -35,7 +35,6 @@ import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
-import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -66,6 +65,7 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
@@ -146,7 +146,7 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
-  private final LiteStepControl _stepControl;
+  private LiteStepControl _stepControl;
   private final JMapPane mapPane;
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -280,7 +280,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl,
         TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl,

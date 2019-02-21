@@ -14,7 +14,6 @@
  */
 package org.mwc.debrief.lite.menu;
 
-import org.mwc.debrief.core.operations.PlotOperations;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -22,6 +21,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
+import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 
 /**
