@@ -388,7 +388,8 @@ public class DebriefLiteApp implements FileDropListener
           @Override
           public void run()
           {
-            layerManager.dataModified(null, null);
+            layerManager.createAndInitializeTree();
+            layerManager.dataModified(null,null);
             mapPane.repaint();
             
             restoreCursor();
