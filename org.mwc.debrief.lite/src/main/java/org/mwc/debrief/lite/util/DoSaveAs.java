@@ -102,30 +102,46 @@ public class DoSaveAs extends AbstractAction
     return fileName.substring(0,fileName.lastIndexOf("."));
   }
 
-  protected final  String showSaveDialog(final File parentDirectory,final String initialName) {
+  protected final String showSaveDialog(final File parentDirectory,
+      final String initialName)
+  {
     String outputFileName = null;
     final JFileChooser fileChooser = new JFileChooser();
-    final FileFilter filter = new FileNameExtensionFilter("dpf file","dpf");
+    final FileFilter filter = new FileNameExtensionFilter("dpf file", "dpf");
     fileChooser.setFileFilter(filter);
-    if(initialName!=null) {
-      fileChooser.setSelectedFile(new File(initialName+".dpf"));
+    if (initialName != null)
+    {
+      fileChooser.setSelectedFile(new File(initialName + ".dpf"));
     }
-    if(parentDirectory!=null) {
+    if (parentDirectory != null)
+    {
       fileChooser.setCurrentDirectory(parentDirectory);
     }
-    fileChooser.showSaveDialog(null);
-    final File targetFile = fileChooser.getSelectedFile();
-    if(targetFile!=null) {
-      if(targetFile.exists()) {
-        final int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
-        if(JOptionPane.YES_OPTION == yesNo) {
-          outputFileName = targetFile.getAbsolutePath();    
+    int res = fileChooser.showSaveDialog(null);
+    if (res == JOptionPane.OK_OPTION)
+    {
+      final File targetFile = fileChooser.getSelectedFile();
+      if (targetFile != null)
+      {
+        if (targetFile.exists())
+        {
+          int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()
+              + " already exists. Do you want to overwrite?");
+          if (JOptionPane.YES_OPTION == yesNo)
+          {
+            outputFileName = targetFile.getAbsolutePath();
+          }
+          // let the user try again otherwise
         }
-        //let the user try again otherwise
+        else
+        {
+          outputFileName = targetFile.getAbsolutePath();
+        }
       }
-      else {
-        outputFileName = targetFile.getAbsolutePath();
-      }
+    }
+    else
+    {
+      outputFileName = null;
     }
     return outputFileName;
   }
