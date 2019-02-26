@@ -48,27 +48,21 @@ public class DoSaveAs extends AbstractAction
     // get the current file path,
     // check we have write permission to it before starting save
     // get a new file path to use.
-    File targetFile = null;
+    final String outputFile;
     if (DebriefLiteApp.currentFileName != null)
     {
       File curDir = new File(DebriefLiteApp.currentFileName);
       String fileName = getFileName(curDir.getName());
-      String outputFile = showSaveDialog(curDir.getParentFile(), fileName);
-      if (outputFile != null)
-      {
-        targetFile = new File(outputFile);
-      }
+      outputFile = showSaveDialog(curDir.getParentFile(), fileName);
     }
     else
     {
-      String outputFile = showSaveDialog(null, null);
-      if (outputFile != null)
-      {
-        targetFile = new File(outputFile);
-      }
+      outputFile = showSaveDialog(null, null);
     }
-    if (targetFile != null)
+
+    if (outputFile != null)
     {
+      final File targetFile = new File(outputFile);
       String outputFileName = targetFile.getAbsolutePath();
       if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
           || (targetFile != null && !targetFile.exists() && targetFile
@@ -109,10 +103,9 @@ public class DoSaveAs extends AbstractAction
   }
 
   protected final  String showSaveDialog(final File parentDirectory,final String initialName) {
-    File targetFile = null;
     String outputFileName = null;
-    JFileChooser fileChooser = new JFileChooser();
-    FileFilter filter = new FileNameExtensionFilter("dpf file","dpf");
+    final JFileChooser fileChooser = new JFileChooser();
+    final FileFilter filter = new FileNameExtensionFilter("dpf file","dpf");
     fileChooser.setFileFilter(filter);
     if(initialName!=null) {
       fileChooser.setSelectedFile(new File(initialName+".dpf"));
@@ -121,10 +114,10 @@ public class DoSaveAs extends AbstractAction
       fileChooser.setCurrentDirectory(parentDirectory);
     }
     fileChooser.showSaveDialog(null);
-    targetFile = fileChooser.getSelectedFile();
+    final File targetFile = fileChooser.getSelectedFile();
     if(targetFile!=null) {
       if(targetFile.exists()) {
-        int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
+        final int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
         if(JOptionPane.YES_OPTION == yesNo) {
           outputFileName = targetFile.getAbsolutePath();    
         }
