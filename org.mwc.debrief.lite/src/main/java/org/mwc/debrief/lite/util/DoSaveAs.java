@@ -49,25 +49,32 @@ public class DoSaveAs extends AbstractAction
     // check we have write permission to it before starting save
     // get a new file path to use.
     File targetFile = null;
-    if(DebriefLiteApp.currentFileName!=null) {
+    if (DebriefLiteApp.currentFileName != null)
+    {
       File curDir = new File(DebriefLiteApp.currentFileName);
       String fileName = getFileName(curDir.getName());
-      String outputFile = showSaveDialog(curDir.getParentFile(),fileName);
-      if(outputFile!=null) {
+      String outputFile = showSaveDialog(curDir.getParentFile(), fileName);
+      if (outputFile != null)
+      {
         targetFile = new File(outputFile);
       }
     }
-    else {
-      String outputFile = showSaveDialog(null,null);
-      if(outputFile!=null) {
+    else
+    {
+      String outputFile = showSaveDialog(null, null);
+      if (outputFile != null)
+      {
         targetFile = new File(outputFile);
       }
     }
-    if(targetFile!=null) {
+    if (targetFile != null)
+    {
       String outputFileName = targetFile.getAbsolutePath();
-      if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
-          || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) {        
-        //export to this file.
+      if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
+          || (targetFile != null && !targetFile.exists() && targetFile
+              .getParentFile().canWrite()))
+      {
+        // export to this file.
         // if it already exists, check with rename/cancel
         OutputStream stream = null;
         try
@@ -79,7 +86,8 @@ public class DoSaveAs extends AbstractAction
         {
           Application.logError2(Application.ERROR, "Can't find file", e1);
         }
-        finally {
+        finally
+        {
           try
           {
             stream.close();
@@ -88,7 +96,7 @@ public class DoSaveAs extends AbstractAction
           }
           catch (IOException e1)
           {
-            //ignore
+            // ignore
           }
         }
       }
