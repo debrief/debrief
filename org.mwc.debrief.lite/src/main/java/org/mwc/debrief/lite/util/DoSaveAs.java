@@ -108,19 +108,24 @@ public class DoSaveAs extends AbstractAction
     if(parentDirectory!=null) {
       fileChooser.setCurrentDirectory(parentDirectory);
     }
-    fileChooser.showSaveDialog(null);
-    targetFile = fileChooser.getSelectedFile();
-    if(targetFile!=null) {
-      if(targetFile.exists()) {
-        int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
-        if(JOptionPane.YES_OPTION == yesNo) {
-          outputFileName = targetFile.getAbsolutePath();    
+    int res = fileChooser.showSaveDialog(null);
+    if(res == JOptionPane.OK_OPTION) {
+      targetFile = fileChooser.getSelectedFile();
+      if(targetFile!=null) {
+        if(targetFile.exists()) {
+          int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
+          if(JOptionPane.YES_OPTION == yesNo) {
+            outputFileName = targetFile.getAbsolutePath();    
+          }
+          //let the user try again otherwise
         }
-        //let the user try again otherwise
+        else {
+          outputFileName = targetFile.getAbsolutePath();
+        }
       }
-      else {
-        outputFileName = targetFile.getAbsolutePath();
-      }
+    }
+    else {
+      outputFileName = null;
     }
     return outputFileName;
   }
