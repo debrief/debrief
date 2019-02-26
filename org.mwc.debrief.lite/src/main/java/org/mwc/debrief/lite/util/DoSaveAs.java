@@ -48,22 +48,27 @@ public class DoSaveAs extends AbstractAction
     // get the current file path,
     // check we have write permission to it before starting save
     // get a new file path to use.
-    File targetFile = null;
-    if(DebriefLiteApp.currentFileName!=null) {
+    final String outputFile;
+    if (DebriefLiteApp.currentFileName != null)
+    {
       File curDir = new File(DebriefLiteApp.currentFileName);
       String fileName = getFileName(curDir.getName());
-      String outputFile = showSaveDialog(curDir.getParentFile(),fileName);
-      targetFile = new File(outputFile);
+      outputFile = showSaveDialog(curDir.getParentFile(), fileName);
     }
-    else {
-      String outputFile = showSaveDialog(null,null);
-      targetFile = new File(outputFile);
+    else
+    {
+      outputFile = showSaveDialog(null, null);
     }
-    if(targetFile!=null) {
+
+    if (outputFile != null)
+    {
+      final File targetFile = new File(outputFile);
       String outputFileName = targetFile.getAbsolutePath();
-      if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
-          || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) {        
-        //export to this file.
+      if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
+          || (targetFile != null && !targetFile.exists() && targetFile
+              .getParentFile().canWrite()))
+      {
+        // export to this file.
         // if it already exists, check with rename/cancel
         OutputStream stream = null;
         try
@@ -75,7 +80,8 @@ public class DoSaveAs extends AbstractAction
         {
           Application.logError2(Application.ERROR, "Can't find file", e1);
         }
-        finally {
+        finally
+        {
           try
           {
             stream.close();
@@ -84,7 +90,7 @@ public class DoSaveAs extends AbstractAction
           }
           catch (IOException e1)
           {
-            //ignore
+            // ignore
           }
         }
       }
@@ -96,35 +102,45 @@ public class DoSaveAs extends AbstractAction
     return fileName.substring(0,fileName.lastIndexOf("."));
   }
 
-  protected final  String showSaveDialog(final File parentDirectory,final String initialName) {
-    File targetFile = null;
+  protected final String showSaveDialog(final File parentDirectory,
+      final String initialName)
+  {
     String outputFileName = null;
-    JFileChooser fileChooser = new JFileChooser();
-    FileFilter filter = new FileNameExtensionFilter("dpf file","dpf");
+    final JFileChooser fileChooser = new JFileChooser();
+    final FileFilter filter = new FileNameExtensionFilter("dpf file", "dpf");
     fileChooser.setFileFilter(filter);
-    if(initialName!=null) {
-      fileChooser.setSelectedFile(new File(initialName+".dpf"));
+    if (initialName != null)
+    {
+      fileChooser.setSelectedFile(new File(initialName + ".dpf"));
     }
-    if(parentDirectory!=null) {
+    if (parentDirectory != null)
+    {
       fileChooser.setCurrentDirectory(parentDirectory);
     }
     int res = fileChooser.showSaveDialog(null);
-    if(res == JOptionPane.OK_OPTION) {
-      targetFile = fileChooser.getSelectedFile();
-      if(targetFile!=null) {
-        if(targetFile.exists()) {
-          int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()+" already exists. Do you want to overwrite?");
-          if(JOptionPane.YES_OPTION == yesNo) {
-            outputFileName = targetFile.getAbsolutePath();    
+    if (res == JOptionPane.OK_OPTION)
+    {
+      final File targetFile = fileChooser.getSelectedFile();
+      if (targetFile != null)
+      {
+        if (targetFile.exists())
+        {
+          int yesNo = JOptionPane.showConfirmDialog(null, targetFile.getName()
+              + " already exists. Do you want to overwrite?");
+          if (JOptionPane.YES_OPTION == yesNo)
+          {
+            outputFileName = targetFile.getAbsolutePath();
           }
-          //let the user try again otherwise
+          // let the user try again otherwise
         }
-        else {
+        else
+        {
           outputFileName = targetFile.getAbsolutePath();
         }
       }
     }
-    else {
+    else
+    {
       outputFileName = null;
     }
     return outputFileName;
