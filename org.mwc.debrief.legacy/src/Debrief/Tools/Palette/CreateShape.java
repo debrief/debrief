@@ -137,24 +137,24 @@ abstract public class CreateShape extends CoreCreateShape
       final ShapeWrapper theWrapper = getShape(centre);
       String layerToAddTo = getLayerName();
       Layer theLayer = _theData.findLayer(layerToAddTo);
-      /*if(theLayer == null)
+      if(theLayer == null && !AutoSelectTarget.getAutoSelectTarget())
       {
         theLayer = new BaseLayer();
         theLayer.setName("Misc");
         _theData.addThisLayer(theLayer);
       }
-      else {*/
       if(theLayer!=null) {
         res =  new CreateShapeAction(_thePanel,
             theLayer,
             theWrapper,
             _theData);
+
       }
       else {
         JOptionPane.showMessageDialog(null, 
             "A layer can only be created if a name is provided. "
-            + "The shape has not been created",
-            "Error", JOptionPane.ERROR_MESSAGE);
+                + "The shape has not been created",
+                "Error", JOptionPane.ERROR_MESSAGE);
       }
     }
     else
