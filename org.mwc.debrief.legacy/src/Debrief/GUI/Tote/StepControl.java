@@ -484,7 +484,16 @@ abstract public class StepControl implements Editable,
   /////////////////////////////////////////////////
   public final StepperListener getCurrentPainter()
   {
-    return _thePainterManager.getCurrentPainterObject();
+    final StepperListener res;
+    if(_thePainterManager != null)
+    {
+      res = _thePainterManager.getCurrentPainterObject();
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
   }
 
 
@@ -877,10 +886,13 @@ abstract public class StepControl implements Editable,
   {
     if (val != null)
     {
-      _thePainterManager.setDisplay(val);
-
-      // and fire the event in the painter manager
-      _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      if(_thePainterManager != null)
+      {
+        _thePainterManager.setDisplay(val);
+  
+        // and fire the event in the painter manager
+        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      }
     }
   }
 

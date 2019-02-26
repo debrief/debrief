@@ -252,7 +252,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 			stopListeningToThis(_myLayers);
 
 		_myScenario = null;
-		_myLayers = null;
+		_myLayers.close();
 
 		// empty the part monitor
 		if (_myPartMonitor != null)

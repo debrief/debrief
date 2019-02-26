@@ -15,6 +15,19 @@
 
 package Debrief.ReaderWriter.XML;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -25,13 +38,13 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 public final class DebriefXMLReaderWriter extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter
 {
-	private final Debrief.GUI.Frames.Application _theApplication;
+	private final Application _theApplication;
 
 	/**
 	 * Creates new XMLReaderWriter
 	 */
 	public DebriefXMLReaderWriter(
-			final Debrief.GUI.Frames.Application theApplication)
+			final Application theApplication)
 	{
 		_theApplication = theApplication;
 	}
@@ -114,6 +127,28 @@ public final class DebriefXMLReaderWriter extends
 	static public void exportThis(final Debrief.GUI.Frames.Session session,
 			final java.io.OutputStream os)
 	{
+	  
+	   // first put the plot into an XML document
+    try
+    {
+      final Document doc = DocumentBuilderFactory.newInstance()
+          .newDocumentBuilder().newDocument();
+      final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
+      doc.appendChild(plot);
+
+      outputContent(os, doc);
+
+    }
+    catch (final DOMException e)
+    {
+      Application.logError2(Application.ERROR, "Whilst export Debrief plot", e);
+
+    }
+    catch (final ParserConfigurationException e)
+    {
+      Application.logError2(Application.ERROR, "Whilst exporting Debrief plot", e);
+    }
+	  
 		// // first put the plot into an XML document
 		// final Document doc = new DocumentImpl();
 		// final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
@@ -143,6 +178,37 @@ public final class DebriefXMLReaderWriter extends
 		// }
 	}
 
+	 /**
+   * ok - we've got our output in a doc, write it to the specified stream
+   * 
+   * @param os
+   *          - where we're writing to
+   * @param doc
+   *          - the content we're outputting
+   */
+  private static void outputContent(final java.io.OutputStream os,
+      final Document doc)
+  {
+    // and now export it.
+    // this way of exporting the dom came from sample code in the Xerces 2.6.2
+    // download
+    try
+    {
+      final TransformerFactory tF = TransformerFactory.newInstance();
+      final Transformer tr = tF.newTransformer();
+      tr.setOutputProperty(OutputKeys.INDENT, "yes");
+
+      final DOMSource source = new DOMSource(doc);
+      final StreamResult result = new StreamResult(os);
+
+      tr.transform(source, result);
+    }
+    catch (final TransformerException e)
+    {
+      Application.logError2(Application.ERROR, "Failed to export document to file", e);
+    }
+  }
+	
 	// ///////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////

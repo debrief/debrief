@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
@@ -100,7 +101,7 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
   {
     boolean res = true;
 
-    if (_lightweightMode)
+    if (_lightweightMode || column == 0)
     {
       res = false;
     }
@@ -129,19 +130,26 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
   @Override
   public boolean getItemLineVisible(int row, int column)
   {
-    final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
-    // get the data series
-    final TimeSeries bts = tsc.getSeries(row);
-    final TimeSeriesDataItem tsdp = bts.getDataItem(column);
     final boolean connect;
-    if (tsdp instanceof ColouredDataItem)
+    if(column == 0)
     {
-      final ColouredDataItem cdi = (ColouredDataItem) tsdp;
-      connect = cdi.connectToPrevious();
+      connect = false;
     }
     else
     {
-      connect = super.getItemLineVisible(row, column);
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+      if (tsdp instanceof ColouredDataItem)
+      {
+        final ColouredDataItem cdi = (ColouredDataItem) tsdp;
+        connect = cdi.connectToPrevious();
+      }
+      else
+      {
+        connect = super.getItemLineVisible(row, column);
+      }
     }
     return connect;
   }
@@ -150,19 +158,26 @@ public class ResidualXYItemRenderer extends DefaultXYItemRenderer
   public Paint getItemPaint(final int row, final int column)
   {
     final Paint theColor;
-
-    final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
-    // get the data series
-    final TimeSeries bts = tsc.getSeries(row);
-    final TimeSeriesDataItem tsdp = bts.getDataItem(column);
-    if (tsdp instanceof AttractiveDataItem)
+    
+    if(column == 0)
     {
-      final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
-      theColor = cdi.getColor();
+      theColor = Color.red;
     }
     else
     {
-      theColor = super.getItemPaint(row, column);
+      final TimeSeriesCollection tsc = (TimeSeriesCollection) _dataset;
+      // get the data series
+      final TimeSeries bts = tsc.getSeries(row);
+      final TimeSeriesDataItem tsdp = bts.getDataItem(column);
+      if (tsdp instanceof AttractiveDataItem)
+      {
+        final AttractiveDataItem cdi = (AttractiveDataItem) tsdp;
+        theColor = cdi.getColor();
+      }
+      else
+      {
+        theColor = super.getItemPaint(row, column);
+      }
     }
 
     return theColor;
