@@ -340,6 +340,10 @@ public class DebriefLiteApp implements FileDropListener
     try
     {
       reader.importThis(file.getName(), new FileInputStream(file), session);
+      if(currentFileName == null) {
+        currentFileName = file.getAbsolutePath();
+        theFrame.setTitle(file.getName());
+      }
     }
     catch (final FileNotFoundException e)
     {
