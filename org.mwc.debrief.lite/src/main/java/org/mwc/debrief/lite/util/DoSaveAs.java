@@ -53,11 +53,15 @@ public class DoSaveAs extends AbstractAction
       File curDir = new File(DebriefLiteApp.currentFileName);
       String fileName = getFileName(curDir.getName());
       String outputFile = showSaveDialog(curDir.getParentFile(),fileName);
-      targetFile = new File(outputFile);
+      if(outputFile!=null) {
+        targetFile = new File(outputFile);
+      }
     }
     else {
       String outputFile = showSaveDialog(null,null);
-      targetFile = new File(outputFile);
+      if(outputFile!=null) {
+        targetFile = new File(outputFile);
+      }
     }
     if(targetFile!=null) {
       String outputFileName = targetFile.getAbsolutePath();
