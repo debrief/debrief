@@ -204,8 +204,8 @@ import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
 
 public class SwingLayerManager extends SwingCustomEditor implements
-Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
-PlainPropertyEditor.EditorUsesToolParent
+    Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
+    PlainPropertyEditor.EditorUsesToolParent
 {
   /**
    * 
@@ -231,9 +231,9 @@ PlainPropertyEditor.EditorUsesToolParent
   protected ToolParent _myParent;
 
   /**
-   * the scroll pane used to display the tree (we have to keep track of this
-   * since it is needed to help us translate a mouse-click screen location into
-   * a node in the tree, since the tree is whoosing around inside the pane).
+   * the scroll pane used to display the tree (we have to keep track of this since it is needed to
+   * help us translate a mouse-click screen location into a node in the tree, since the tree is
+   * whoosing around inside the pane).
    */
   protected javax.swing.JScrollPane _myPane;
 
@@ -245,7 +245,6 @@ PlainPropertyEditor.EditorUsesToolParent
    * the name we give to the root layer
    */
   static private final String ROOT_OBJECT = new String("Data");
-
 
   // ///////////////////////////////////////////////////////////
   // constructor
@@ -262,11 +261,13 @@ PlainPropertyEditor.EditorUsesToolParent
     return _myData;
   }
 
-  protected void setCellRenderer(TreeCellRenderer cellRenderer) {
+  protected void setCellRenderer(TreeCellRenderer cellRenderer)
+  {
     _myTree.setCellRenderer(cellRenderer);
   }
 
-  protected void setCellEditor(TreeCellEditor cellEditor) {
+  protected void setCellEditor(TreeCellEditor cellEditor)
+  {
     _myTree.setCellEditor(cellEditor);
   }
 
@@ -326,7 +327,7 @@ PlainPropertyEditor.EditorUsesToolParent
           }
         }
         else
-          // in that case it must be a left click
+        // in that case it must be a left click
         {
           // is this a double-click?
           if (e.getClickCount() == 2)
@@ -370,10 +371,10 @@ PlainPropertyEditor.EditorUsesToolParent
 
   }
 
-  public void showButtonPanel(boolean show) {
+  public void showButtonPanel(boolean show)
+  {
     btnHolder.setVisible(show);
   }
-
 
   /**
    * get the top-level layer which contains this node
@@ -469,7 +470,8 @@ PlainPropertyEditor.EditorUsesToolParent
             // identify it's parent
 
             // find the layer parent for this node
-            final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
+            final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn
+                .getParent();
 
             if (pr.getUserObject() instanceof MWC.GUI.Layer)
             {
@@ -477,9 +479,9 @@ PlainPropertyEditor.EditorUsesToolParent
               parentLayer = (MWC.GUI.Layer) pr.getUserObject();
             }
             else
-              MWC.Utilities.Errors.Trace
-              .trace("Failed to find parent layer for:" + tn
-                  + ". Please report to maintainer");
+              MWC.Utilities.Errors.Trace.trace(
+                  "Failed to find parent layer for:" + tn
+                      + ". Please report to maintainer");
           }
 
         }
@@ -487,7 +489,8 @@ PlainPropertyEditor.EditorUsesToolParent
         {
 
           // find the layer parent for this node
-          final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
+          final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn
+              .getParent();
 
           if (pr.getUserObject() instanceof MWC.GUI.Layer)
           {
@@ -505,13 +508,12 @@ PlainPropertyEditor.EditorUsesToolParent
       // check we can get a right-click-editor.
       // Note: we may not have one for Debrief-Lite
       final RightClickEdit editor = _myData.getEditor();
-      if(editor != null)
+      if (editor != null)
       {
-        final java.util.Vector<PlottableMenuCreator> extras = 
-            editor.getExtraPlottableEditors(getPanel());
+        final java.util.Vector<PlottableMenuCreator> extras = editor
+            .getExtraPlottableEditors(getPanel());
         thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
-            parentLayer, _thePanel, _myData, extras,
-            topLayer);
+            parentLayer, _thePanel, _myData, extras, topLayer);
 
       }
     }
@@ -519,12 +521,12 @@ PlainPropertyEditor.EditorUsesToolParent
     // just check if we are trying paste into layers
     if (node == null)
     {
-      final MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr = new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
+      final MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr =
+          new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
 
       thePopup = new JPopupMenu();
 
-      pr.createMenu(thePopup, null, thePoint,
-          _thePanel, null, _myData, null);
+      pr.createMenu(thePopup, null, thePoint, _thePanel, null, _myData, null);
 
     }
 
@@ -590,8 +592,7 @@ PlainPropertyEditor.EditorUsesToolParent
   }
 
   /**
-   * this is where we receive the data we are plotting, effectively the
-   * constructor
+   * this is where we receive the data we are plotting, effectively the constructor
    */
   public void setObject(final Object data)
   {
@@ -607,12 +608,14 @@ PlainPropertyEditor.EditorUsesToolParent
     createAndInitializeTree();
   }
 
-  public void createAndInitializeTree() {
+  public void createAndInitializeTree()
+  {
     // find out which node is currently visible
     final int[] selections = _myTree.getSelectionRows();
     int cur = 0;
     TreePath selectionTreePath = _myTree.getSelectionPath();
-    if (selections != null && selections.length > 0) {
+    if (selections != null && selections.length > 0)
+    {
       cur = _myTree.getSelectionRows()[0];
     }
 
@@ -632,14 +635,15 @@ PlainPropertyEditor.EditorUsesToolParent
     // and put the data into our existing tree
     _myTree.setModel(tmp.getModel());
 
-    if(cur != 0)
+    if (cur != 0)
     {
       // highlight the existing selection again
       _myTree.expandRow(cur);
       _myTree.setSelectionRow(cur);
 
     }
-    if(selectionTreePath!=null) {
+    if (selectionTreePath != null)
+    {
       _myTree.expandPath(selectionTreePath);
       _myTree.scrollPathToVisible(selectionTreePath);
       _myTree.setSelectionPath(selectionTreePath);
@@ -650,15 +654,15 @@ PlainPropertyEditor.EditorUsesToolParent
   }
 
   /**
-   * the user has changed the vis of an item - change the plottable itself, and
-   * inform the layers
+   * the user has changed the vis of an item - change the plottable itself, and inform the layers
    * 
    * @param pl
    *          the plottable which has been changed
    * @param isVisible
    *          whether it is now visible or not
    */
-  protected void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
+  protected void changeVisOfThisElement(final Plottable pl,
+      final boolean isVisible, final Layer parentLayer)
   {
     pl.setVisible(isVisible);
 
@@ -670,13 +674,14 @@ PlainPropertyEditor.EditorUsesToolParent
   }
 
   /**
-   * recursive method to pass through a layer, creating sub-layers for any
-   * layers we find
+   * recursive method to pass through a layer, creating sub-layers for any layers we find
    */
-  protected DefaultMutableTreeNode makeLayer(final Layer thisLayer, final Layer theTopLayer)
+  protected DefaultMutableTreeNode makeLayer(final Layer thisLayer,
+      final Layer theTopLayer)
   {
     // create the node
-    final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer, theTopLayer);
+    final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer,
+        theTopLayer);
 
     // and work through the elements of this layer
     final Enumeration<Editable> enumer = thisLayer.elements();
@@ -691,13 +696,13 @@ PlainPropertyEditor.EditorUsesToolParent
           final Layer otherLayer = (Layer) pl;
           thisL.add(makeLayer(otherLayer, theTopLayer));
 
-          ((DefaultTreeModel)_myTree.getModel()).reload();
+          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
         else
         {
           // hey, it's a leaf - just add it
           thisL.add(new PlottableNode(pl, theTopLayer));
-          ((DefaultTreeModel)_myTree.getModel()).reload();
+          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
       }
     }
@@ -705,11 +710,14 @@ PlainPropertyEditor.EditorUsesToolParent
     return thisL;
   }
 
-  protected DefaultMutableTreeNode updateLayer(final DefaultMutableTreeNode root,final Layer thisLayer, final Layer theTopLayer)
+  protected DefaultMutableTreeNode updateLayer(
+      final DefaultMutableTreeNode root, final Layer thisLayer,
+      final Layer theTopLayer)
   {
     // create the node
-    final DefaultMutableTreeNode thisL = getTreeNode(root, thisLayer.getName(),thisLayer);
-    //  thisL.removeAllChildren();
+    final DefaultMutableTreeNode thisL = getTreeNode(root, thisLayer.getName(),
+        thisLayer);
+    // thisL.removeAllChildren();
     // and work through the elements of this layer
     final Enumeration<Editable> enumer = thisLayer.elements();
     if (enumer != null)
@@ -721,32 +729,37 @@ PlainPropertyEditor.EditorUsesToolParent
         {
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
-          final DefaultMutableTreeNode otherL = getTreeNode(thisL, otherLayer.getName(),otherLayer);
-          if(otherL!=null) {
-            updateLayer(thisL,otherLayer,theTopLayer);
+          final DefaultMutableTreeNode otherL = getTreeNode(thisL, otherLayer
+              .getName(), otherLayer);
+          if (otherL != null)
+          {
+            updateLayer(thisL, otherLayer, theTopLayer);
           }
-          else {
+          else
+          {
             thisL.add(makeLayer(otherLayer, theTopLayer));
           }
         }
         else
         {
           // hey, it's a leaf - just add it
-          final DefaultMutableTreeNode nodeL = getTreeNode(thisL, pl.getName(),pl);
-          if(nodeL == null) {
+          final DefaultMutableTreeNode nodeL = getTreeNode(thisL, pl.getName(),
+              pl);
+          if (nodeL == null)
+          {
             thisL.add(new PlottableNode(pl, theTopLayer));
-            ((DefaultTreeModel)_myTree.getModel()).reload(thisL);
+            ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
           }
-          else {
-            //reload just that node that was modified
-            ((DefaultTreeModel)_myTree.getModel()).reload(nodeL.getParent());
+          else
+          {
+            // reload just that node that was modified
+            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL.getParent());
           }
         }
       }
     }
     return thisL;
   }
-
 
   /**
    * have a fresh pass through the data
@@ -757,31 +770,38 @@ PlainPropertyEditor.EditorUsesToolParent
     final int[] selections = _myTree.getSelectionRows();
     int cur = 0;
     TreePath selectionTreePath = _myTree.getSelectionPath();
-    if (selections != null && selections.length > 0) {
+    if (selections != null && selections.length > 0)
+    {
       cur = _myTree.getSelectionRows()[0];
     }
 
     // create a new root element
-    final DefaultMutableTreeNode root = (DefaultMutableTreeNode)_myTree.getModel().getRoot();
+    final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
+        .getModel().getRoot();
     // construct the data
     for (int i = 0; i < _myData.size(); i++)
     {
       final Layer thisL = _myData.elementAt(i);
-      DefaultMutableTreeNode rootNode = getTreeNode(null,thisL.getName(),thisL);
-      if(rootNode == null) {
+      DefaultMutableTreeNode rootNode = getTreeNode(null, thisL.getName(),
+          thisL);
+      if (rootNode == null)
+      {
         root.add(makeLayer(thisL, thisL));
-        ((DefaultTreeModel)_myTree.getModel()).reload();
+        ((DefaultTreeModel) _myTree.getModel()).reload();
       }
-      else {
-        updateLayer(root,thisL,thisL);
+      else
+      {
+        updateLayer(root, thisL, thisL);
       }
     }
-    if(cur!=0) {
+    if (cur != 0)
+    {
       _myTree.setSelectionRow(cur);
     }
 
     // create a new tree based on this data
-    if(selectionTreePath!=null) {
+    if (selectionTreePath != null)
+    {
       _myTree.expandPath(selectionTreePath);
       _myTree.scrollPathToVisible(selectionTreePath);
       _myTree.setSelectionPath(selectionTreePath);
@@ -790,21 +810,21 @@ PlainPropertyEditor.EditorUsesToolParent
     // trigger a repaint
     _myTree.invalidate();
 
-
-
   }
-
 
   /**
    * have a fresh pass through the data
    */
-  public void updateData(final Layer changedLayer,final Plottable newItem)
+  public void updateData(final Layer changedLayer, final Plottable newItem)
   {
     _myTree.setExpandsSelectedPaths(true);
     // find out which node is currently visible
-    if(changedLayer != null && newItem!=null) {
-      DefaultMutableTreeNode rootNode = getTreeNode(null,changedLayer.getName(),changedLayer);
-      DefaultMutableTreeNode itemNode = getTreeNode(rootNode,newItem.getName(),newItem);
+    if (changedLayer != null && newItem != null)
+    {
+      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
+      DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
+          newItem);
       TreePath _treePath = new TreePath(itemNode.getPath());
       _myTree.expandPath(_treePath);
       _myTree.scrollPathToVisible(_treePath);
@@ -812,8 +832,10 @@ PlainPropertyEditor.EditorUsesToolParent
       _myTree.setSelectionPath(_treePath);
 
     }
-    else if (changedLayer!=null) {
-      final DefaultMutableTreeNode rootNode = getTreeNode(null,changedLayer.getName(),changedLayer);
+    else if (changedLayer != null)
+    {
+      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
       final TreePath _treePath = new TreePath(rootNode.getPath());
       SwingUtilities.invokeLater(new Runnable()
       {
@@ -828,33 +850,39 @@ PlainPropertyEditor.EditorUsesToolParent
         }
       });
 
-
     }
   }
 
-  private DefaultMutableTreeNode getTreeNode(final DefaultMutableTreeNode parent,final String nodeText,final Object object) {
+  private DefaultMutableTreeNode getTreeNode(
+      final DefaultMutableTreeNode parent, final String nodeText,
+      final Object object)
+  {
     TreeModel model = _myTree.getModel();
 
     DefaultMutableTreeNode root = null;
-    if(parent == null) {
+    if (parent == null)
+    {
       root = (DefaultMutableTreeNode) model.getRoot();
     }
-    else {
+    else
+    {
       root = parent;
     }
     DefaultMutableTreeNode child;
     int childrenCount = root.getChildCount();
-    for(int i = 0; i < childrenCount; i++){
+    for (int i = 0; i < childrenCount; i++)
+    {
       child = (DefaultMutableTreeNode) root.getChildAt(i);
-      if(object == child.getUserObject()){
+      if (object == child.getUserObject())
+      {
         return child;
       }
     }
     return null;
   }
 
-
-  /* thread-safe way of updating UI
+  /*
+   * thread-safe way of updating UI
    * 
    */
   private void updateInThread()
@@ -992,7 +1020,8 @@ PlainPropertyEditor.EditorUsesToolParent
     private final JPanel panel = new JPanel();
     private int _xOffset = 0;
 
-    javax.swing.tree.DefaultTreeCellRenderer proxy = new DefaultTreeCellRenderer();
+    javax.swing.tree.DefaultTreeCellRenderer proxy =
+        new DefaultTreeCellRenderer();
 
     public void paint(final java.awt.Graphics g)
     {
@@ -1004,7 +1033,8 @@ PlainPropertyEditor.EditorUsesToolParent
         try
         {
           final FontMetrics fm = g.getFontMetrics();
-          _xOffset = fm.stringWidth(proxy.getText()) + strut.getPreferredSize().width;
+          _xOffset = fm.stringWidth(proxy.getText()) + strut
+              .getPreferredSize().width;
         }
         finally
         {
@@ -1027,13 +1057,11 @@ PlainPropertyEditor.EditorUsesToolParent
       checkBox.setOpaque(false);
       panel.add(checkBox);
 
-
     }
 
-
-
-    public Component getTreeCellRendererComponent(final JTree tree, final Object node,
-        final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus1)
+    public Component getTreeCellRendererComponent(final JTree tree,
+        final Object node, final boolean sel, final boolean expanded,
+        final boolean leaf, final int row, final boolean hasFocus1)
     {
       if (node instanceof DefaultMutableTreeNode)
       {
@@ -1047,7 +1075,6 @@ PlainPropertyEditor.EditorUsesToolParent
           checkBox.setSelected(pl.getVisible());
         }
       }
-
 
       panel.doLayout();
       return panel;
@@ -1079,8 +1106,9 @@ PlainPropertyEditor.EditorUsesToolParent
     /**
      * Configures the editor. Passed onto the <code>realEditor</code>.
      */
-    public Component getTreeCellEditorComponent(final JTree tree1, final Object value,
-        final boolean isSelected, final boolean expanded, final boolean leaf, final int row)
+    public Component getTreeCellEditorComponent(final JTree tree1,
+        final Object value, final boolean isSelected, final boolean expanded,
+        final boolean leaf, final int row)
     {
       return super.getTreeCellEditorComponent(tree1, value, isSelected,
           expanded, leaf, row);
@@ -1134,8 +1162,7 @@ PlainPropertyEditor.EditorUsesToolParent
     }
   }
 
-  class PlottableNodeEditor extends AbstractCellEditor implements
-  TreeCellEditor
+  class PlottableNodeEditor extends AbstractCellEditor implements TreeCellEditor
   {
     /**
      * 
@@ -1163,8 +1190,9 @@ PlainPropertyEditor.EditorUsesToolParent
       });
     }
 
-    public Component getTreeCellEditorComponent(final JTree tree, final Object value,
-        final boolean selected, final boolean expanded, final boolean leaf, final int row)
+    public Component getTreeCellEditorComponent(final JTree tree,
+        final Object value, final boolean selected, final boolean expanded,
+        final boolean leaf, final int row)
     {
       lastEditedNode = (DefaultMutableTreeNode) value;
 
@@ -1187,12 +1215,12 @@ PlainPropertyEditor.EditorUsesToolParent
     @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
 
-    public Component getTreeCellRendererComponent(final JTree tree, final Object value,
-        final boolean selected1, final boolean expanded, final boolean leaf, final int row,
-        final boolean hasFocus1)
+    public Component getTreeCellRendererComponent(final JTree tree,
+        final Object value, final boolean selected1, final boolean expanded,
+        final boolean leaf, final int row, final boolean hasFocus1)
     {
-      final Component c = super.getTreeCellRendererComponent(tree, value, selected1,
-          expanded, leaf, row, hasFocus1);
+      final Component c = super.getTreeCellRendererComponent(tree, value,
+          selected1, expanded, leaf, row, hasFocus1);
       proxy.setIcon(null);
       return c;
     }
@@ -1217,8 +1245,8 @@ PlainPropertyEditor.EditorUsesToolParent
     private boolean _selected;
 
     /**
-     * Creates a tree node with no parent, no children, but which allows
-     * children, and initializes it with the specified user object.
+     * Creates a tree node with no parent, no children, but which allows children, and initializes
+     * it with the specified user object.
      * 
      * @param userObject
      *          an Object provided by the user that constitutes the node's data
@@ -1233,10 +1261,12 @@ PlainPropertyEditor.EditorUsesToolParent
     {
       return _theParentLayer;
     }
+
     public void setSelected(boolean selected)
     {
       this._selected = selected;
     }
+
     public boolean isSelected()
     {
       return _selected;
@@ -1276,8 +1306,7 @@ PlainPropertyEditor.EditorUsesToolParent
     // ////////////////////////////////////////////////
 
     /**
-     * this method calls the 'do' event in the parent tool, passing the
-     * necessary data to it
+     * this method calls the 'do' event in the parent tool, passing the necessary data to it
      */
     public void execute()
     {
@@ -1301,14 +1330,12 @@ PlainPropertyEditor.EditorUsesToolParent
     }
 
     /**
-     * this method calls the 'undo' event in the parent tool, passing the
-     * necessary data to it
+     * this method calls the 'undo' event in the parent tool, passing the necessary data to it
      */
     public void undo()
     {
       _myPlottable.setVisible(!_isVis);
     }
   }
-
 
 }
