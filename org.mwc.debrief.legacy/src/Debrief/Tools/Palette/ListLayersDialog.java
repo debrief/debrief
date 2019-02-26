@@ -58,10 +58,11 @@ public class ListLayersDialog extends JDialog
     _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     _list.setBorder(new CompoundBorder(new EmptyBorder(4,4,4,4),new LineBorder(Color.BLACK,1)));
     _list.setVisibleRowCount(-1);
-    JScrollPane listScroller = new JScrollPane(_list);
+    JScrollPane listScroller = new JScrollPane();
+    listScroller.setViewportView(_list);
     listScroller.setPreferredSize(new Dimension(250, 80));
     add(lblMessage,BorderLayout.NORTH);
-    add(_list,BorderLayout.CENTER);
+    add(listScroller,BorderLayout.CENTER);
     JPanel southPanel = new JPanel();
     southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
     JButton okButton = new JButton("OK");
