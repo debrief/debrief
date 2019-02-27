@@ -290,13 +290,14 @@ public class DebriefLiteApp implements FileDropListener
   public void FilesReceived(final Vector<File> files)
   {
     setCursor(Cursor.WAIT_CURSOR);
-
+    File file = null;
     try
     {
       final Enumeration<File> iter = files.elements();
+      
       while (iter.hasMoreElements())
       {
-        final File file = iter.nextElement();
+        file = iter.nextElement();
 
         final String suff = suffixOf(file.getName());
         if (suff.equalsIgnoreCase(".DPL"))
@@ -330,6 +331,12 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
+    finally {
+      if(currentFileName == null) {
+        currentFileName = file.getAbsolutePath();
+        theFrame.setTitle(file.getName());
+      }
+    }
 
     restoreCursor();
   }
@@ -340,10 +347,7 @@ public class DebriefLiteApp implements FileDropListener
     try
     {
       reader.importThis(file.getName(), new FileInputStream(file), session);
-      if(currentFileName == null) {
-        currentFileName = file.getAbsolutePath();
-        theFrame.setTitle(file.getName());
-      }
+      
     }
     catch (final FileNotFoundException e)
     {
@@ -389,10 +393,6 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
-        if(currentFileName == null) {
-          currentFileName = fName.getAbsolutePath();
-          theFrame.setTitle(fName.getName());
-        }
       }
     };
     // ok, start loading
