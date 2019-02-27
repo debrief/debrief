@@ -54,9 +54,13 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import MWC.GUI.DataListenerAdaptor;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.Layers.DataListener2;
+import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
@@ -78,6 +82,8 @@ import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
 public class DebriefLiteApp implements FileDropListener
 {
 
+  protected DataListener2 _listenForMods;
+  
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "images/16/note.png";
   public static String currentFileName = null;
@@ -234,15 +240,40 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-
-
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager);
-
+    _listenForMods = new DataListenerAdaptor()
+    {
+      
+      @Override
+      public void dataExtended(Layers theData, Plottable newItem,
+          HasEditables parent)
+      {
+        update(theData, newItem, parent);
+      }
+    };        
+    _theLayers.addDataExtendedListener(_listenForMods);
+    _theLayers.addDataModifiedListener(_listenForMods);
+    _theLayers.addDataReformattedListener(_listenForMods);
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
+  }
+  
+  protected void update(Layers theData, Plottable newItem,HasEditables theLayer)
+  {
+    layerManager.updateData((Layer)theLayer,newItem);
+    
+  }
+
+  
+  /**
+   * new data has been added - have a look at the times
+   */
+  protected void layersExtended()
+  {
+    
   }
 
   private void addOutlineView(final ToolParent toolParent,
@@ -370,7 +401,8 @@ public class DebriefLiteApp implements FileDropListener
           @Override
           public void run()
           {
-            layerManager.dataModified(null, null);
+            layerManager.createAndInitializeTree();
+            layerManager.dataModified(null,null);
             mapPane.repaint();
             
             restoreCursor();
