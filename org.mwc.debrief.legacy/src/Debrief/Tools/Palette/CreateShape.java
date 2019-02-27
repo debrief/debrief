@@ -137,6 +137,7 @@ abstract public class CreateShape extends CoreCreateShape
       final ShapeWrapper theWrapper = getShape(centre);
       String layerToAddTo = getLayerName();
       Layer theLayer = _theData.findLayer(layerToAddTo);
+      //if layer is null and manual layer selection is not selected
       if(theLayer == null && !AutoSelectTarget.getAutoSelectTarget())
       {
         theLayer = new BaseLayer();
