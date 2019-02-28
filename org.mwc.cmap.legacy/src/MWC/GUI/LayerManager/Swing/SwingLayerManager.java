@@ -184,8 +184,10 @@ import javax.swing.UIManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
+import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -202,504 +204,687 @@ import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
 
 public class SwingLayerManager extends SwingCustomEditor implements
-		Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
-		PlainPropertyEditor.EditorUsesToolParent
+    Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
+    PlainPropertyEditor.EditorUsesToolParent
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
-	/**
-	 * the data we are plotting
-	 */
-	protected Layers _myData;
+  // ///////////////////////////////////////////////////////////
+  // member variables
+  // //////////////////////////////////////////////////////////
+  /**
+   * the data we are plotting
+   */
+  protected Layers _myData;
 
-	/**
-	 * the tree we display
-	 */
-	protected JTree _myTree;
+  /**
+   * the tree we display
+   */
+  protected JTree _myTree;
 
-	/**
-	 * the ToolParent we use
-	 */
-	protected ToolParent _myParent;
+  /**
+   * the ToolParent we use
+   */
+  protected ToolParent _myParent;
 
-	/**
-	 * the scroll pane used to display the tree (we have to keep track of this
-	 * since it is needed to help us translate a mouse-click screen location into
-	 * a node in the tree, since the tree is whoosing around inside the pane).
-	 */
-	protected javax.swing.JScrollPane _myPane;
+  /**
+   * the scroll pane used to display the tree (we have to keep track of this since it is needed to
+   * help us translate a mouse-click screen location into a node in the tree, since the tree is
+   * whoosing around inside the pane).
+   */
+  protected javax.swing.JScrollPane _myPane;
 
-	protected Hashtable<?, ?> _myNodes = new Hashtable<String, String>();
+  protected Hashtable<?, ?> _myNodes = new Hashtable<String, String>();
 
   private JPanel btnHolder;
 
-	/**
-	 * the name we give to the root layer
-	 */
-	static private final String ROOT_OBJECT = new String("Data");
-	
-
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-	/**
-	 * return the updated data object - not really used.
-	 */
-	protected Layers getData()
-	{
-		return _myData;
-	}
-	
-	protected void setCellRenderer(TreeCellRenderer cellRenderer) {
-	  _myTree.setCellRenderer(cellRenderer);
-	}
-	
-	protected void setCellEditor(TreeCellEditor cellEditor) {
-	  _myTree.setCellEditor(cellEditor);
-	}
-
-	/**
-	 * construct the form
-	 */
-	protected void initForm()
-	{
-		// set the name
-		super.setName("Layer Manager");
-
-		_myTree = new JTree(_myNodes);
-		_myTree.setName("Layer Tree");
-
-		final PlottableRenderer renderer = new PlottableRenderer();
-		_myTree.setCellRenderer(renderer);
-		final PlottableNodeEditor editor = new PlottableNodeEditor();
-		_myTree.setCellEditor(new ImmediateEditor(_myTree, renderer, editor));
-		_myTree.setEditable(true);
-		_myTree.setRowHeight(0);
-		// we use double-click to edit a node, so prevent the double-click from
-		// opening
-		// up a tree node. We do this by indicating that a triple-click is required
-		// to open a tree node.
-		_myTree.setToggleClickCount(3);
-
-		_myTree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		_myTree.addMouseListener(new MouseAdapter()
-		{
-			public void mouseClicked(final MouseEvent e)
-			{
-				TreeNode node = null;
-
-				// get the node for this click
-				final int row = _myTree.getRowForLocation(e.getX(), e.getY());
-				if (row != -1)
-				{
-					final TreePath path = _myTree.getPathForRow(row);
-					node = (TreeNode) path.getLastPathComponent();
-				}
-
-				// is this a right-click
-				if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-				{
-					// did we click on a node?
-					if (node == null)
-					{
-						// do nothing
-						showMenuFor(null, e.getPoint());
-					}
-					else
-					{
-						// try to get the plottable to represent this
-						showMenuFor(node, e.getPoint());
-					}
-				}
-				else
-				// in that case it must be a left click
-				{
-					// is this a double-click?
-					if (e.getClickCount() == 2)
-					{
-						if (node != null)
-							editThis(node);
-					}
-				}
-			}
-		});
-
-		this.setLayout(new BorderLayout());
-		_myPane = new JScrollPane(_myTree);
-		add(_myPane, java.awt.BorderLayout.CENTER);
-
-		// do the 'add' button
-		final JButton addBtn = new JButton("Add layer");
-		addBtn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
-				addLayer();
-			}
-		});
-
-		// do the 'refresh' button
-		final JButton refreshBtn = new JButton("Update view");
-		refreshBtn.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
-				doReset();
-			}
-		});
-
-		btnHolder = new JPanel();
-		btnHolder.setLayout(new java.awt.GridLayout(1, 0));
-		btnHolder.add(addBtn);
-		btnHolder.add(refreshBtn);
-		add(btnHolder, java.awt.BorderLayout.NORTH);
-
-	}
-	
-	public void showButtonPanel(boolean show) {
-	 btnHolder.setVisible(show);
-	}
-	
-
-	/**
-	 * get the top-level layer which contains this node
-	 */
-	protected Layer getTopLayerFor(final TreeNode node)
-	{
-		Layer res = null;
-
-		// we need to remember the "previous" layer before we get to the head, so
-		// keep it in this object
-		DefaultMutableTreeNode currentData = (DefaultMutableTreeNode) node;
-
-		// we have to walk back upwards until the user data in the parent object is
-		// the word "data"
-		DefaultMutableTreeNode parentData = (DefaultMutableTreeNode) node
-				.getParent();
-		while (!parentData.getUserObject().equals(ROOT_OBJECT))
-		{
-			// remember this (possibly valid) layer
-			currentData = parentData;
-
-			// retrieve this parent's layer
-			parentData = (DefaultMutableTreeNode) parentData.getParent();
-		}
-
-		// so the parentData object was the root - the previous one must be the
-		// top-level layer
-		res = (Layer) currentData.getUserObject();
-
-		return res;
-	}
-
-	/**
-	 * show a right-click menu for this node
-	 */
-	protected void showMenuFor(final TreeNode node, final Point thePoint)
-	{
-
-		Layer parentLayer = null;
-
-		Layer topLayer = null;
-
-		Object data = null;
-		Plottable thePlottable = null;
-		DefaultMutableTreeNode tn = null;
-
-		// just see if we have a null node (ie the blank area of the layer
-		// manager was selected
-		if (node == null)
-		{
-			data = null;
-			thePlottable = null;
-		}
-		else
-		{
-			// see if our right-click helper is created
-			tn = (DefaultMutableTreeNode) node;
-			data = tn.getUserObject();
-		}
-
-		if (tn != null)
-			if (data instanceof MWC.GUI.Plottable)
-			{
-				// well, we've found the item to edit, let's sort out its parent
-				thePlottable = (Plottable) data;
-
-				topLayer = getTopLayerFor(tn);
-
-				// has the right-click been on the background?
-				if (data instanceof MWC.GUI.Layers)
-				{
-					parentLayer = null;
-					topLayer = null;
-				}
-				// check if this item is a layer itself
-				else if (data instanceof MWC.GUI.Layer)
-				{
-					parentLayer = (MWC.GUI.Layer) data;
-
-					// and just check if it is a top-level layer, which must be deleted
-					// from
-					// the Layers object itself
-					if (topLayer == data)
-					{
-						// ok, forget the top layer, since we delete it from the Layers
-						// object
-						topLayer = null;
-					}
-					else
-					{
-						// so, whilst this is a layer, it isn't a top level one, so we need
-						// to
-						// identify it's parent
-
-						// find the layer parent for this node
-						final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
-
-						if (pr.getUserObject() instanceof MWC.GUI.Layer)
-						{
-							// the parent is clearly a layer
-							parentLayer = (MWC.GUI.Layer) pr.getUserObject();
-						}
-						else
-							MWC.Utilities.Errors.Trace
-									.trace("Failed to find parent layer for:" + tn
-											+ ". Please report to maintainer");
-					}
-
-				}
-				else
-				{
-
-					// find the layer parent for this node
-					final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn.getParent();
-
-					if (pr.getUserObject() instanceof MWC.GUI.Layer)
-					{
-						// the parent is clearly a layer
-						parentLayer = (MWC.GUI.Layer) pr.getUserObject();
-					}
-				}
-			}
-
-		JPopupMenu thePopup = null;
-
-		// see if we have found one!
-		if (thePlottable != null)
-		{
-		  // check we can get a right-click-editor.
-		  // Note: we may not have one for Debrief-Lite
-		  final RightClickEdit editor = _myData.getEditor();
-		  if(editor != null)
-		  {
-	      final java.util.Vector<PlottableMenuCreator> extras = 
-	          editor.getExtraPlottableEditors(getPanel());
-	      thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
-	          parentLayer, _thePanel, _myData, extras,
-	          topLayer);
-		    
-		  }
-		}
-
-		// just check if we are trying paste into layers
-		if (node == null)
-		{
-			final MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr = new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
-
-			thePopup = new JPopupMenu();
-
-			pr.createMenu(thePopup, null, thePoint,
-					_thePanel, null, _myData, null);
-
-		}
-
-		if (thePopup != null)
-			if (thePopup.getSubElements().length > 0)
-			{
-				this.add(thePopup);
-
-				// move the origin of the mouse event (since we're in a scrolling
-				// window)
-				final Point origin = _myPane.getViewport().getViewPosition();
-				thePoint.translate(-origin.x, -origin.y);
-
-				// and now show it
-				thePopup.show(this, thePoint.x, thePoint.y);
-			}
-
-	}
-
-	/**
-	 * process a double-click for this tree node
-	 */
-	protected void editThis(final TreeNode node)
-	{
-		if (node instanceof DefaultMutableTreeNode)
-		{
-			final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
-			final Object data = tn.getUserObject();
-			if (data instanceof MWC.GUI.Editable)
-			{
-				final Editable editable = (Editable) data;
-				if (editable.hasEditor())
-				{
-					// get the toolparent object
-					final ToolParent tp = getToolParent();
-
-					// did we get a valid toolparent?
-					if (tp != null)
-					{
-						// set it to busy
-						tp.setCursor(java.awt.Cursor.WAIT_CURSOR);
-					}
-
-					// open the editor
-					_thePanel.addEditor(editable.getInfo(), null);
-
-					// reset the cursor
-					if (tp != null)
-					{
-						tp.restoreCursor();
-					}
-				} // whether this has an editor
-			} // if this is editable
-
-			else if (data instanceof String)
-			{
-				final String layerName = (String) data;
-				final Layer thisL = _myData.findLayer(layerName);
-				if (thisL.hasEditor())
-					_thePanel.addEditor(thisL.getInfo(), null);
-			}
-		}
-	}
-
-	/**
-	 * this is where we receive the data we are plotting, effectively the
-	 * constructor
-	 */
-	public void setObject(final Object data)
-	{
-		_myData = (Layers) data;
-
-		// add us as a listener to the data
-		_myData.addDataExtendedListener(this);
-		_myData.addDataModifiedListener(this);
-		_myData.addDataReformattedListener(this);
-
-		initForm();
-		
-		updateInThread();
-	}
-
-	/**
-	 * the user has changed the vis of an item - change the plottable itself, and
-	 * inform the layers
-	 * 
-	 * @param pl
-	 *          the plottable which has been changed
-	 * @param isVisible
-	 *          whether it is now visible or not
-	 */
-	protected void changeVisOfThisElement(final Plottable pl, final boolean isVisible, final Layer parentLayer)
-	{
-		pl.setVisible(isVisible);
-
-		// and make the update happen
-		_myData.fireReformatted(parentLayer);
-
-		// add it to the undo buffer
-		_myParent.addActionToBuffer(new ChangeVis(pl, isVisible));
-	}
-
-	/**
-	 * recursive method to pass through a layer, creating sub-layers for any
-	 * layers we find
-	 */
-	protected DefaultMutableTreeNode makeLayer(final Layer thisLayer, final Layer theTopLayer)
-	{
-		// create the node
-		final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer, theTopLayer);
-
-		// and work through the elements of this layer
-		final Enumeration<Editable> enumer = thisLayer.elements();
-		if (enumer != null)
-		{
-			while (enumer.hasMoreElements())
-			{
-				final Plottable pl = (Plottable) enumer.nextElement();
-				if (pl instanceof MWC.GUI.Layer)
-				{
-					// hey, let's get recursive!
-					final Layer otherLayer = (Layer) pl;
-					thisL.add(makeLayer(otherLayer, theTopLayer));
-				}
-				else
-				{
-					// hey, it's a leaf - just add it
-					thisL.add(new PlottableNode(pl, theTopLayer));
-				}
-			}
-		}
-
-		return thisL;
-	}
-
-	/**
-	 * have a fresh pass through the data
-	 */
-	protected void updateData()
-	{
-		// find out which node is currently visible
-		final int[] selections = _myTree.getSelectionRows();
-		int cur = 0;
-		if (selections != null && selections.length > 0)
-			cur = _myTree.getSelectionRows()[0];
-
-		// create a new root element
-		final DefaultMutableTreeNode root = new PlottableNode(ROOT_OBJECT, null);
-
-		// construct the data
-		for (int i = 0; i < _myData.size(); i++)
-		{
-			final Layer thisL = _myData.elementAt(i);
-
-			root.add(makeLayer(thisL, thisL));
-		}
-
-		// create a new tree based on this data
-		final JTree tmp = new JTree(root);
-
-		// and put the data into our existing tree
-		_myTree.setModel(tmp.getModel());
-
-		if(cur != 0)
-		{
-  		// highlight the existing selection again
-  		_myTree.setSelectionRow(cur);
-		}
-
-		// trigger a repaint
-		_myTree.invalidate();
-
-	}
-
-	/* thread-safe way of updating UI
-	 * 
-	 */
+  /**
+   * the name we give to the root layer
+   */
+  static private final String ROOT_OBJECT = new String("Data");
+
+  // ///////////////////////////////////////////////////////////
+  // constructor
+  // //////////////////////////////////////////////////////////
+
+  // ///////////////////////////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////////////////////////
+  /**
+   * return the updated data object - not really used.
+   */
+  protected Layers getData()
+  {
+    return _myData;
+  }
+
+  protected void setCellRenderer(TreeCellRenderer cellRenderer)
+  {
+    _myTree.setCellRenderer(cellRenderer);
+  }
+
+  protected void setCellEditor(TreeCellEditor cellEditor)
+  {
+    _myTree.setCellEditor(cellEditor);
+  }
+
+  /**
+   * construct the form
+   */
+  protected void initForm()
+  {
+    // set the name
+    super.setName("Layer Manager");
+
+    _myTree = new JTree(_myNodes);
+    _myTree.setName("Layer Tree");
+
+    final PlottableRenderer renderer = new PlottableRenderer();
+    _myTree.setCellRenderer(renderer);
+    final PlottableNodeEditor editor = new PlottableNodeEditor();
+    _myTree.setCellEditor(new ImmediateEditor(_myTree, renderer, editor));
+    _myTree.setEditable(true);
+    _myTree.setRowHeight(0);
+    // we use double-click to edit a node, so prevent the double-click from
+    // opening
+    // up a tree node. We do this by indicating that a triple-click is required
+    // to open a tree node.
+    _myTree.setToggleClickCount(3);
+
+    _myTree.getSelectionModel().setSelectionMode(
+        TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+    _myTree.addMouseListener(new MouseAdapter()
+    {
+      public void mouseClicked(final MouseEvent e)
+      {
+        TreeNode node = null;
+
+        // get the node for this click
+        final int row = _myTree.getRowForLocation(e.getX(), e.getY());
+        if (row != -1)
+        {
+          final TreePath path = _myTree.getPathForRow(row);
+          node = (TreeNode) path.getLastPathComponent();
+        }
+
+        // is this a right-click
+        if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
+        {
+          // did we click on a node?
+          if (node == null)
+          {
+            // do nothing
+            showMenuFor(null, e.getPoint());
+          }
+          else
+          {
+            // try to get the plottable to represent this
+            showMenuFor(node, e.getPoint());
+          }
+        }
+        else
+        // in that case it must be a left click
+        {
+          // is this a double-click?
+          if (e.getClickCount() == 2)
+          {
+            if (node != null)
+              editThis(node);
+          }
+        }
+      }
+    });
+
+    this.setLayout(new BorderLayout());
+    _myPane = new JScrollPane(_myTree);
+    add(_myPane, java.awt.BorderLayout.CENTER);
+
+    // do the 'add' button
+    final JButton addBtn = new JButton("Add layer");
+    addBtn.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(final ActionEvent e)
+      {
+        addLayer();
+      }
+    });
+
+    // do the 'refresh' button
+    final JButton refreshBtn = new JButton("Update view");
+    refreshBtn.addActionListener(new ActionListener()
+    {
+      public void actionPerformed(final ActionEvent e)
+      {
+        doReset();
+      }
+    });
+
+    btnHolder = new JPanel();
+    btnHolder.setLayout(new java.awt.GridLayout(1, 0));
+    btnHolder.add(addBtn);
+    btnHolder.add(refreshBtn);
+    add(btnHolder, java.awt.BorderLayout.NORTH);
+
+  }
+
+  public void showButtonPanel(boolean show)
+  {
+    btnHolder.setVisible(show);
+  }
+
+  /**
+   * get the top-level layer which contains this node
+   */
+  protected Layer getTopLayerFor(final TreeNode node)
+  {
+    Layer res = null;
+
+    // we need to remember the "previous" layer before we get to the head, so
+    // keep it in this object
+    DefaultMutableTreeNode currentData = (DefaultMutableTreeNode) node;
+
+    // we have to walk back upwards until the user data in the parent object is
+    // the word "data"
+    DefaultMutableTreeNode parentData = (DefaultMutableTreeNode) node
+        .getParent();
+    while (!parentData.getUserObject().equals(ROOT_OBJECT))
+    {
+      // remember this (possibly valid) layer
+      currentData = parentData;
+
+      // retrieve this parent's layer
+      parentData = (DefaultMutableTreeNode) parentData.getParent();
+    }
+
+    // so the parentData object was the root - the previous one must be the
+    // top-level layer
+    res = (Layer) currentData.getUserObject();
+
+    return res;
+  }
+
+  /**
+   * show a right-click menu for this node
+   */
+  protected void showMenuFor(final TreeNode node, final Point thePoint)
+  {
+
+    Layer parentLayer = null;
+
+    Layer topLayer = null;
+
+    Object data = null;
+    Plottable thePlottable = null;
+    DefaultMutableTreeNode tn = null;
+
+    // just see if we have a null node (ie the blank area of the layer
+    // manager was selected
+    if (node == null)
+    {
+      data = null;
+      thePlottable = null;
+    }
+    else
+    {
+      // see if our right-click helper is created
+      tn = (DefaultMutableTreeNode) node;
+      data = tn.getUserObject();
+    }
+
+    if (tn != null)
+      if (data instanceof MWC.GUI.Plottable)
+      {
+        // well, we've found the item to edit, let's sort out its parent
+        thePlottable = (Plottable) data;
+
+        topLayer = getTopLayerFor(tn);
+
+        // has the right-click been on the background?
+        if (data instanceof MWC.GUI.Layers)
+        {
+          parentLayer = null;
+          topLayer = null;
+        }
+        // check if this item is a layer itself
+        else if (data instanceof MWC.GUI.Layer)
+        {
+          parentLayer = (MWC.GUI.Layer) data;
+
+          // and just check if it is a top-level layer, which must be deleted
+          // from
+          // the Layers object itself
+          if (topLayer == data)
+          {
+            // ok, forget the top layer, since we delete it from the Layers
+            // object
+            topLayer = null;
+          }
+          else
+          {
+            // so, whilst this is a layer, it isn't a top level one, so we need
+            // to
+            // identify it's parent
+
+            // find the layer parent for this node
+            final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn
+                .getParent();
+
+            if (pr.getUserObject() instanceof MWC.GUI.Layer)
+            {
+              // the parent is clearly a layer
+              parentLayer = (MWC.GUI.Layer) pr.getUserObject();
+            }
+            else
+              MWC.Utilities.Errors.Trace.trace(
+                  "Failed to find parent layer for:" + tn
+                      + ". Please report to maintainer");
+          }
+
+        }
+        else
+        {
+
+          // find the layer parent for this node
+          final DefaultMutableTreeNode pr = (DefaultMutableTreeNode) tn
+              .getParent();
+
+          if (pr.getUserObject() instanceof MWC.GUI.Layer)
+          {
+            // the parent is clearly a layer
+            parentLayer = (MWC.GUI.Layer) pr.getUserObject();
+          }
+        }
+      }
+
+    JPopupMenu thePopup = null;
+
+    // see if we have found one!
+    if (thePlottable != null)
+    {
+      // check we can get a right-click-editor.
+      // Note: we may not have one for Debrief-Lite
+      final RightClickEdit editor = _myData.getEditor();
+      if (editor != null)
+      {
+        final java.util.Vector<PlottableMenuCreator> extras = editor
+            .getExtraPlottableEditors(getPanel());
+        thePopup = RightClickEdit.createMenuFor(thePlottable, thePoint,
+            parentLayer, _thePanel, _myData, extras, topLayer);
+
+      }
+    }
+
+    // just check if we are trying paste into layers
+    if (node == null)
+    {
+      final MWC.GUI.Tools.Operations.RightClickPasteAdaptor pr =
+          new MWC.GUI.Tools.Operations.RightClickPasteAdaptor();
+
+      thePopup = new JPopupMenu();
+
+      pr.createMenu(thePopup, null, thePoint, _thePanel, null, _myData, null);
+
+    }
+
+    if (thePopup != null)
+      if (thePopup.getSubElements().length > 0)
+      {
+        this.add(thePopup);
+
+        // move the origin of the mouse event (since we're in a scrolling
+        // window)
+        final Point origin = _myPane.getViewport().getViewPosition();
+        thePoint.translate(-origin.x, -origin.y);
+
+        // and now show it
+        thePopup.show(this, thePoint.x, thePoint.y);
+      }
+
+  }
+
+  /**
+   * process a double-click for this tree node
+   */
+  protected void editThis(final TreeNode node)
+  {
+    if (node instanceof DefaultMutableTreeNode)
+    {
+      final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+      final Object data = tn.getUserObject();
+      if (data instanceof MWC.GUI.Editable)
+      {
+        final Editable editable = (Editable) data;
+        if (editable.hasEditor())
+        {
+          // get the toolparent object
+          final ToolParent tp = getToolParent();
+
+          // did we get a valid toolparent?
+          if (tp != null)
+          {
+            // set it to busy
+            tp.setCursor(java.awt.Cursor.WAIT_CURSOR);
+          }
+
+          // open the editor
+          _thePanel.addEditor(editable.getInfo(), null);
+
+          // reset the cursor
+          if (tp != null)
+          {
+            tp.restoreCursor();
+          }
+        } // whether this has an editor
+      } // if this is editable
+
+      else if (data instanceof String)
+      {
+        final String layerName = (String) data;
+        final Layer thisL = _myData.findLayer(layerName);
+        if (thisL.hasEditor())
+          _thePanel.addEditor(thisL.getInfo(), null);
+      }
+    }
+  }
+
+  /**
+   * this is where we receive the data we are plotting, effectively the constructor
+   */
+  public void setObject(final Object data)
+  {
+    _myData = (Layers) data;
+
+    // add us as a listener to the data
+    _myData.addDataExtendedListener(this);
+    _myData.addDataModifiedListener(this);
+    _myData.addDataReformattedListener(this);
+
+    initForm();
+
+    createAndInitializeTree();
+  }
+
+  public void createAndInitializeTree()
+  {
+    // find out which node is currently visible
+    final int[] selections = _myTree.getSelectionRows();
+    int cur = 0;
+    TreePath selectionTreePath = _myTree.getSelectionPath();
+    if (selections != null && selections.length > 0)
+    {
+      cur = _myTree.getSelectionRows()[0];
+    }
+
+    // create a new root element
+    final DefaultMutableTreeNode root = new PlottableNode(ROOT_OBJECT, null);
+    // construct the data
+    for (int i = 0; i < _myData.size(); i++)
+    {
+      final Layer thisL = _myData.elementAt(i);
+
+      root.add(makeLayer(thisL, thisL));
+    }
+
+    // create a new tree based on this data
+    final JTree tmp = new JTree(root);
+
+    // and put the data into our existing tree
+    _myTree.setModel(tmp.getModel());
+
+    if (cur != 0)
+    {
+      // highlight the existing selection again
+      _myTree.expandRow(cur);
+      _myTree.setSelectionRow(cur);
+
+    }
+    if (selectionTreePath != null)
+    {
+      _myTree.expandPath(selectionTreePath);
+      _myTree.scrollPathToVisible(selectionTreePath);
+      _myTree.setSelectionPath(selectionTreePath);
+    }
+
+    // trigger a repaint
+    _myTree.invalidate();
+  }
+
+  /**
+   * the user has changed the vis of an item - change the plottable itself, and inform the layers
+   * 
+   * @param pl
+   *          the plottable which has been changed
+   * @param isVisible
+   *          whether it is now visible or not
+   */
+  protected void changeVisOfThisElement(final Plottable pl,
+      final boolean isVisible, final Layer parentLayer)
+  {
+    pl.setVisible(isVisible);
+
+    // and make the update happen
+    _myData.fireReformatted(parentLayer);
+
+    // add it to the undo buffer
+    _myParent.addActionToBuffer(new ChangeVis(pl, isVisible));
+  }
+
+  /**
+   * recursive method to pass through a layer, creating sub-layers for any layers we find
+   */
+  protected DefaultMutableTreeNode makeLayer(final Layer thisLayer,
+      final Layer theTopLayer)
+  {
+    // create the node
+    final DefaultMutableTreeNode thisL = new PlottableNode(thisLayer,
+        theTopLayer);
+
+    // and work through the elements of this layer
+    final Enumeration<Editable> enumer = thisLayer.elements();
+    if (enumer != null)
+    {
+      while (enumer.hasMoreElements())
+      {
+        final Plottable pl = (Plottable) enumer.nextElement();
+        if (pl instanceof MWC.GUI.Layer)
+        {
+          // hey, let's get recursive!
+          final Layer otherLayer = (Layer) pl;
+          thisL.add(makeLayer(otherLayer, theTopLayer));
+
+          ((DefaultTreeModel) _myTree.getModel()).reload();
+        }
+        else
+        {
+          // hey, it's a leaf - just add it
+          thisL.add(new PlottableNode(pl, theTopLayer));
+          ((DefaultTreeModel) _myTree.getModel()).reload();
+        }
+      }
+    }
+
+    return thisL;
+  }
+
+  protected DefaultMutableTreeNode updateLayer(
+      final DefaultMutableTreeNode root, final Layer thisLayer,
+      final Layer theTopLayer)
+  {
+    // create the node
+    final DefaultMutableTreeNode thisL = getTreeNode(root, thisLayer.getName(),
+        thisLayer);
+    // thisL.removeAllChildren();
+    // and work through the elements of this layer
+    final Enumeration<Editable> enumer = thisLayer.elements();
+    if (enumer != null)
+    {
+      while (enumer.hasMoreElements())
+      {
+        final Plottable pl = (Plottable) enumer.nextElement();
+        if (pl instanceof MWC.GUI.Layer)
+        {
+          // hey, let's get recursive!
+          final Layer otherLayer = (Layer) pl;
+          final DefaultMutableTreeNode otherL = getTreeNode(thisL, otherLayer
+              .getName(), otherLayer);
+          if (otherL != null)
+          {
+            updateLayer(thisL, otherLayer, theTopLayer);
+          }
+          else
+          {
+            thisL.add(makeLayer(otherLayer, theTopLayer));
+          }
+        }
+        else
+        {
+          // hey, it's a leaf - just add it
+          final DefaultMutableTreeNode nodeL = getTreeNode(thisL, pl.getName(),
+              pl);
+          if (nodeL == null)
+          {
+            thisL.add(new PlottableNode(pl, theTopLayer));
+            ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
+          }
+          else
+          {
+            // reload just that node that was modified
+            ((DefaultTreeModel) _myTree.getModel()).reload(nodeL.getParent());
+          }
+        }
+      }
+    }
+    return thisL;
+  }
+
+  /**
+   * have a fresh pass through the data
+   */
+  protected void updateData()
+  {
+    // find out which node is currently visible
+    final int[] selections = _myTree.getSelectionRows();
+    int cur = 0;
+    TreePath selectionTreePath = _myTree.getSelectionPath();
+    if (selections != null && selections.length > 0)
+    {
+      cur = _myTree.getSelectionRows()[0];
+    }
+
+    // create a new root element
+    final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
+        .getModel().getRoot();
+    // construct the data
+    for (int i = 0; i < _myData.size(); i++)
+    {
+      final Layer thisL = _myData.elementAt(i);
+      DefaultMutableTreeNode rootNode = getTreeNode(null, thisL.getName(),
+          thisL);
+      if (rootNode == null)
+      {
+        root.add(makeLayer(thisL, thisL));
+        ((DefaultTreeModel) _myTree.getModel()).reload();
+      }
+      else
+      {
+        updateLayer(root, thisL, thisL);
+      }
+    }
+    if (cur != 0)
+    {
+      _myTree.setSelectionRow(cur);
+    }
+
+    // create a new tree based on this data
+    if (selectionTreePath != null)
+    {
+      _myTree.expandPath(selectionTreePath);
+      _myTree.scrollPathToVisible(selectionTreePath);
+      _myTree.setSelectionPath(selectionTreePath);
+    }
+
+    // trigger a repaint
+    _myTree.invalidate();
+
+  }
+
+  /**
+   * have a fresh pass through the data
+   */
+  public void updateData(final Layer changedLayer, final Plottable newItem)
+  {
+    _myTree.setExpandsSelectedPaths(true);
+    // find out which node is currently visible
+    if (changedLayer != null && newItem != null)
+    {
+      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
+      DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
+          newItem);
+      TreePath _treePath = new TreePath(itemNode.getPath());
+      _myTree.expandPath(_treePath);
+      _myTree.scrollPathToVisible(_treePath);
+      _myTree.makeVisible(_treePath);
+      _myTree.setSelectionPath(_treePath);
+
+    }
+    else if (changedLayer != null)
+    {
+      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
+      final TreePath _treePath = new TreePath(rootNode.getPath());
+      SwingUtilities.invokeLater(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          _myTree.expandPath(_treePath);
+          _myTree.scrollPathToVisible(_treePath);
+          _myTree.makeVisible(_treePath);
+          _myTree.setSelectionPath(_treePath);
+        }
+      });
+
+    }
+  }
+
+  private DefaultMutableTreeNode getTreeNode(
+      final DefaultMutableTreeNode parent, final String nodeText,
+      final Object object)
+  {
+    TreeModel model = _myTree.getModel();
+
+    DefaultMutableTreeNode root = null;
+    if (parent == null)
+    {
+      root = (DefaultMutableTreeNode) model.getRoot();
+    }
+    else
+    {
+      root = parent;
+    }
+    DefaultMutableTreeNode child;
+    int childrenCount = root.getChildCount();
+    for (int i = 0; i < childrenCount; i++)
+    {
+      child = (DefaultMutableTreeNode) root.getChildAt(i);
+      if (object == child.getUserObject())
+      {
+        return child;
+      }
+    }
+    return null;
+  }
+
+  /*
+   * thread-safe way of updating UI
+   * 
+   */
   private void updateInThread()
   {
     if (SwingUtilities.isEventDispatchThread())
@@ -725,439 +910,432 @@ public class SwingLayerManager extends SwingCustomEditor implements
       }
     }
   }
-	
-	/**
-	 * the main data has changed - do a fresh pass
-	 */
-	public void dataModified(final Layers theData, final Layer changedLayer)
-	{
-	  updateInThread();
-	}
 
-	/**
-	 * the main data has changed - do a fresh pass
-	 */
-	public void dataExtended(final Layers theData)
-	{
-	  updateInThread();
-	}
+  /**
+   * the main data has changed - do a fresh pass
+   */
+  public void dataModified(final Layers theData, final Layer changedLayer)
+  {
+    updateInThread();
+  }
 
-	/**
-	 * the main data has changed - do a fresh pass
-	 */
-	public void dataReformatted(final Layers theData, final Layer changedLayer)
-	{
-		// we do a wierd update here, to force the tree to reset the visibility
-		// flags of nodes in the tree
-		_myTree.paintImmediately(_myTree.getBounds());
-	}
+  /**
+   * the main data has changed - do a fresh pass
+   */
+  public void dataExtended(final Layers theData)
+  {
+    updateInThread();
+  }
 
-	/**
-	 * create a fresh (base) layer, for any old tat
-	 */
-	protected void addLayer()
-	{
-		// get the name from the user
-		final String s = javax.swing.JOptionPane.showInputDialog(_myTree,
-				"Please enter name", "New Layer",
-				javax.swing.JOptionPane.QUESTION_MESSAGE);
+  /**
+   * the main data has changed - do a fresh pass
+   */
+  public void dataReformatted(final Layers theData, final Layer changedLayer)
+  {
+    // we do a wierd update here, to force the tree to reset the visibility
+    // flags of nodes in the tree
+    _myTree.paintImmediately(_myTree.getBounds());
+  }
 
-		if (s != null && !s.isEmpty())
-		{
-			// create the layer
-			final Layer ly = new BaseLayer();
-			ly.setName(s);
+  /**
+   * create a fresh (base) layer, for any old tat
+   */
+  protected void addLayer()
+  {
+    // get the name from the user
+    final String s = javax.swing.JOptionPane.showInputDialog(_myTree,
+        "Please enter name", "New Layer",
+        javax.swing.JOptionPane.QUESTION_MESSAGE);
 
-			// add to the data
-			_myData.addThisLayer(ly);
+    if (s != null)
+    {
+      // create the layer
+      final Layer ly = new BaseLayer();
+      ly.setName(s);
 
-			// the layers object should inform us of any update, anyway
+      // add to the data
+      _myData.addThisLayer(ly);
 
-		}
-		else {
-		 javax.swing.JOptionPane.showMessageDialog(_myTree,
-	        "A name is required to create a layer, the layer was not created", "Error",
-	        javax.swing.JOptionPane.ERROR_MESSAGE);
-  
-		}
+      // the layers object should inform us of any update, anyway
 
-	}
+    }
 
-	/**
-	 * reset button has been pressed, process it
-	 */
-	public void doReset()
-	{
-		// rescan the tree, of course
-	  updateInThread();
-	}
+  }
 
-	public void doClose()
-	{
-		super.doClose();
+  /**
+   * reset button has been pressed, process it
+   */
+  public void doReset()
+  {
+    // rescan the tree, of course
+    updateInThread();
+  }
 
-		// remove us from the data
-		_myData.removeDataExtendedListener(this);
-		_myData.removeDataModifiedListener(this);
-		_myData.removeDataReformattedListener(this);
+  public void doClose()
+  {
+    super.doClose();
 
-		// and reset everything else
-		_myData = null;
-		_myParent = null;
-		_myTree.removeAll();
-		_myTree = null;
-		_myNodes = null;
+    // remove us from the data
+    _myData.removeDataExtendedListener(this);
+    _myData.removeDataModifiedListener(this);
+    _myData.removeDataReformattedListener(this);
 
-	}
+    // and reset everything else
+    _myData = null;
+    _myParent = null;
+    _myTree.removeAll();
+    _myTree = null;
+    _myNodes = null;
 
-	/**
-	 * here's the data
-	 * 
-	 * @param theParent
-	 *          the parent object
-	 */
-	public void setParent(final ToolParent theParent)
-	{
-		_myParent = theParent;
-	}
+  }
 
-	// ///////////////////////////////////////////////////////////////////////////
-	// ///////////////////////////////////////////////////////////////////////////
-	// ///////////////////////////////////////////////////////////////////////////
+  /**
+   * here's the data
+   * 
+   * @param theParent
+   *          the parent object
+   */
+  public void setParent(final ToolParent theParent)
+  {
+    _myParent = theParent;
+  }
 
-	/**
-	 * embedded class used as a renderer - indicates if each layer is visible
-	 */
-	private static class PlottableRenderer implements TreeCellRenderer
-			
-	{
-		/**
-		 * 
-		 */
-		@SuppressWarnings("unused")
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+  // ///////////////////////////////////////////////////////////////////////////
+
+  /**
+   * embedded class used as a renderer - indicates if each layer is visible
+   */
+  private static class PlottableRenderer implements TreeCellRenderer
+
+  {
+    /**
+     * 
+     */
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
-		protected JCheckBox checkBox = new JCheckBox("");
-		private final Component strut = Box.createHorizontalStrut(5);
-		private final JPanel panel = new JPanel();
-		private int _xOffset = 0;
-		
-		javax.swing.tree.DefaultTreeCellRenderer proxy = new DefaultTreeCellRenderer();
+    protected JCheckBox checkBox = new JCheckBox("");
+    private final Component strut = Box.createHorizontalStrut(5);
+    private final JPanel panel = new JPanel();
+    private int _xOffset = 0;
 
-		public void paint(final java.awt.Graphics g)
-		{
-			proxy.paint(g);
+    javax.swing.tree.DefaultTreeCellRenderer proxy =
+        new DefaultTreeCellRenderer();
 
-			// get the location of the check box, to check our ticking
-			if (g != null)
-			{
-				try
-				{
-					final FontMetrics fm = g.getFontMetrics();
-					_xOffset = fm.stringWidth(proxy.getText()) + strut.getPreferredSize().width;
-				}
-				finally
-				{
-					// g.dispose();
-				}
-			}
-		}
+    public void paint(final java.awt.Graphics g)
+    {
+      proxy.paint(g);
 
-		public PlottableRenderer()
-		{
-			super();
-			panel.setBackground(UIManager.getColor("Tree.textBackground"));
-			proxy.setOpaque(false);
-			
-			panel.setOpaque(false);
-			panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-			panel.add(proxy);
-			
-			panel.add(strut);
-			checkBox.setOpaque(false);
-			panel.add(checkBox);
-			
+      // get the location of the check box, to check our ticking
+      if (g != null)
+      {
+        try
+        {
+          final FontMetrics fm = g.getFontMetrics();
+          _xOffset = fm.stringWidth(proxy.getText()) + strut
+              .getPreferredSize().width;
+        }
+        finally
+        {
+          // g.dispose();
+        }
+      }
+    }
 
-		}
-		
-		
+    public PlottableRenderer()
+    {
+      super();
+      panel.setBackground(UIManager.getColor("Tree.textBackground"));
+      proxy.setOpaque(false);
 
-		public Component getTreeCellRendererComponent(final JTree tree, final Object node,
-				final boolean sel, final boolean expanded, final boolean leaf, final int row, final boolean hasFocus1)
-		{
-			if (node instanceof DefaultMutableTreeNode)
-			{
-				final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
-				final Object data = tn.getUserObject();
-				if (data instanceof MWC.GUI.Plottable)
-				{
-					final Plottable pl = (Plottable) tn.getUserObject();
-					proxy.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
-							row, hasFocus1);
-				  checkBox.setSelected(pl.getVisible());
-				}
-			}
-			
-			
-			panel.doLayout();
-			return panel;
-		}
+      panel.setOpaque(false);
+      panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+      panel.add(proxy);
 
-		public Dimension getCheckBoxOffset()
-		{
+      panel.add(strut);
+      checkBox.setOpaque(false);
+      panel.add(checkBox);
 
-			return new Dimension(_xOffset, 0);
-		}
+    }
 
-	} // end of renderer class
+    public Component getTreeCellRendererComponent(final JTree tree,
+        final Object node, final boolean sel, final boolean expanded,
+        final boolean leaf, final int row, final boolean hasFocus1)
+    {
+      if (node instanceof DefaultMutableTreeNode)
+      {
+        final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+        final Object data = tn.getUserObject();
+        if (data instanceof MWC.GUI.Plottable)
+        {
+          final Plottable pl = (Plottable) tn.getUserObject();
+          proxy.getTreeCellRendererComponent(tree, node, sel, expanded, leaf,
+              row, hasFocus1);
+          checkBox.setSelected(pl.getVisible());
+        }
+      }
 
-	// ////////////////////////////////////////////////
-	//
-	// ////////////////////////////////////////////////
+      panel.doLayout();
+      return panel;
+    }
 
-	protected class ImmediateEditor extends DefaultTreeCellEditor
-	{
-		private final PlottableRenderer renderer;
+    public Dimension getCheckBoxOffset()
+    {
 
-		public ImmediateEditor(final JTree tree, final PlottableRenderer renderer,
-				final PlottableNodeEditor editor)
-		{
-			super(tree, renderer.proxy, editor);
-			this.renderer = renderer;
-		}
+      return new Dimension(_xOffset, 0);
+    }
 
-		/**
-		 * Configures the editor. Passed onto the <code>realEditor</code>.
-		 */
-		public Component getTreeCellEditorComponent(final JTree tree1, final Object value,
-				final boolean isSelected, final boolean expanded, final boolean leaf, final int row)
-		{
-			return super.getTreeCellEditorComponent(tree1, value, isSelected,
-					expanded, leaf, row);
-		}
+  } // end of renderer class
 
-		protected boolean canEditImmediately(final EventObject e)
-		{
-			boolean rv = false; // rv = return value
+  // ////////////////////////////////////////////////
+  //
+  // ////////////////////////////////////////////////
 
-			if (e instanceof MouseEvent)
-			{
-				final MouseEvent me = (MouseEvent) e;
-				rv = inCheckBoxHitRegion(me);
-			}
-			return rv;
-		}
+  protected class ImmediateEditor extends DefaultTreeCellEditor
+  {
+    private final PlottableRenderer renderer;
 
-		public boolean shouldSelectCell(final EventObject e)
-		{
-			boolean rv = false; // only mouse events
+    public ImmediateEditor(final JTree tree, final PlottableRenderer renderer,
+        final PlottableNodeEditor editor)
+    {
+      super(tree, renderer.proxy, editor);
+      this.renderer = renderer;
+    }
 
-			if (e instanceof MouseEvent)
-			{
-				final MouseEvent me = (MouseEvent) e;
-				final TreePath path = tree.getPathForLocation(me.getX(), me.getY());
+    /**
+     * Configures the editor. Passed onto the <code>realEditor</code>.
+     */
+    public Component getTreeCellEditorComponent(final JTree tree1,
+        final Object value, final boolean isSelected, final boolean expanded,
+        final boolean leaf, final int row)
+    {
+      return super.getTreeCellEditorComponent(tree1, value, isSelected,
+          expanded, leaf, row);
+    }
 
-				final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
-						.getLastPathComponent();
+    protected boolean canEditImmediately(final EventObject e)
+    {
+      boolean rv = false; // rv = return value
 
-				rv = node.isLeaf() || !inCheckBoxHitRegion(me);
-				rv = false;
-			}
-			return rv;
-		}
+      if (e instanceof MouseEvent)
+      {
+        final MouseEvent me = (MouseEvent) e;
+        rv = inCheckBoxHitRegion(me);
+      }
+      return rv;
+    }
 
-		public boolean inCheckBoxHitRegion(final MouseEvent e)
-		{
-			boolean rv = false;
+    public boolean shouldSelectCell(final EventObject e)
+    {
+      boolean rv = false; // only mouse events
 
-			// find the bounds
+      if (e instanceof MouseEvent)
+      {
+        final MouseEvent me = (MouseEvent) e;
+        final TreePath path = tree.getPathForLocation(me.getX(), me.getY());
 
-			// find the bounds for this row item
-			final Rectangle bounds = tree.getRowBounds(tree.getClosestRowForLocation(e
-					.getX(), e.getY()));
-			final Dimension checkBoxOffset = renderer.getCheckBoxOffset();
+        final DefaultMutableTreeNode node = (DefaultMutableTreeNode) path
+            .getLastPathComponent();
 
-			bounds.translate(offset + checkBoxOffset.width, checkBoxOffset.height);
-			rv = bounds.contains(e.getPoint());
+        rv = node.isLeaf() || !inCheckBoxHitRegion(me);
+        rv = false;
+      }
+      return rv;
+    }
 
-			return rv;
-		}
-	}
+    public boolean inCheckBoxHitRegion(final MouseEvent e)
+    {
+      boolean rv = false;
 
-	class PlottableNodeEditor extends AbstractCellEditor implements
-			TreeCellEditor
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		PlottableNodeEditorRenderer renderer;
-		DefaultMutableTreeNode lastEditedNode;
-		JCheckBox checkBox;
+      // find the bounds
 
-		public PlottableNodeEditor()
-		{
-			renderer = new PlottableNodeEditorRenderer();
-			checkBox = renderer.getCheckBox();
+      // find the bounds for this row item
+      final Rectangle bounds = tree.getRowBounds(tree.getClosestRowForLocation(e
+          .getX(), e.getY()));
+      final Dimension checkBoxOffset = renderer.getCheckBoxOffset();
 
-			checkBox.addActionListener(new ActionListener()
-			{
-				public void actionPerformed(final ActionEvent e)
-				{
-					final Plottable pl = (Plottable) lastEditedNode.getUserObject();
-					final PlottableNode pln = (PlottableNode) lastEditedNode;
-					changeVisOfThisElement(pl, checkBox.isSelected(), pln
-							.getParentLayer());
-					stopCellEditing();
-				}
-			});
-		}
+      bounds.translate(offset + checkBoxOffset.width, checkBoxOffset.height);
+      rv = bounds.contains(e.getPoint());
 
-		public Component getTreeCellEditorComponent(final JTree tree, final Object value,
-				final boolean selected, final boolean expanded, final boolean leaf, final int row)
-		{
-			lastEditedNode = (DefaultMutableTreeNode) value;
+      return rv;
+    }
+  }
 
-			return renderer.getTreeCellRendererComponent(tree, value, selected,
-					expanded, leaf, row, true); // hasFocus ignored
-		}
+  class PlottableNodeEditor extends AbstractCellEditor implements TreeCellEditor
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    PlottableNodeEditorRenderer renderer;
+    DefaultMutableTreeNode lastEditedNode;
+    JCheckBox checkBox;
 
-		public Object getCellEditorValue()
-		{
-			return lastEditedNode.getUserObject();
-		}
-	}
+    public PlottableNodeEditor()
+    {
+      renderer = new PlottableNodeEditorRenderer();
+      checkBox = renderer.getCheckBox();
 
-	// class PlottableNodeEditorRenderer extends FileNodeRenderer {
-	class PlottableNodeEditorRenderer extends PlottableRenderer
-	{
-		/**
-		 * 
-		 */
-		@SuppressWarnings("unused")
+      checkBox.addActionListener(new ActionListener()
+      {
+        public void actionPerformed(final ActionEvent e)
+        {
+          final Plottable pl = (Plottable) lastEditedNode.getUserObject();
+          final PlottableNode pln = (PlottableNode) lastEditedNode;
+          changeVisOfThisElement(pl, checkBox.isSelected(), pln
+              .getParentLayer());
+          stopCellEditing();
+        }
+      });
+    }
+
+    public Component getTreeCellEditorComponent(final JTree tree,
+        final Object value, final boolean selected, final boolean expanded,
+        final boolean leaf, final int row)
+    {
+      lastEditedNode = (DefaultMutableTreeNode) value;
+
+      return renderer.getTreeCellRendererComponent(tree, value, selected,
+          expanded, leaf, row, true); // hasFocus ignored
+    }
+
+    public Object getCellEditorValue()
+    {
+      return lastEditedNode.getUserObject();
+    }
+  }
+
+  // class PlottableNodeEditorRenderer extends FileNodeRenderer {
+  class PlottableNodeEditorRenderer extends PlottableRenderer
+  {
+    /**
+     * 
+     */
+    @SuppressWarnings("unused")
     private static final long serialVersionUID = 1L;
 
-		public Component getTreeCellRendererComponent(final JTree tree, final Object value,
-				final boolean selected1, final boolean expanded, final boolean leaf, final int row,
-				final boolean hasFocus1)
-		{
-			final Component c = super.getTreeCellRendererComponent(tree, value, selected1,
-					expanded, leaf, row, hasFocus1);
-			proxy.setIcon(null);
-			return c;
-		}
+    public Component getTreeCellRendererComponent(final JTree tree,
+        final Object value, final boolean selected1, final boolean expanded,
+        final boolean leaf, final int row, final boolean hasFocus1)
+    {
+      final Component c = super.getTreeCellRendererComponent(tree, value,
+          selected1, expanded, leaf, row, hasFocus1);
+      proxy.setIcon(null);
+      return c;
+    }
 
-		public JCheckBox getCheckBox()
-		{
-			return checkBox;
-		}
-	}
+    public JCheckBox getCheckBox()
+    {
+      return checkBox;
+    }
+  }
 
-	/**
-	 * class which combines an item and it's layer into a MutableNode thingy
-	 */
-	protected class PlottableNode extends DefaultMutableTreeNode
-	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private Layer _theParentLayer = null;
-		
-		private boolean _selected;
+  /**
+   * class which combines an item and it's layer into a MutableNode thingy
+   */
+  protected class PlottableNode extends DefaultMutableTreeNode
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    private Layer _theParentLayer = null;
 
-		/**
-		 * Creates a tree node with no parent, no children, but which allows
-		 * children, and initializes it with the specified user object.
-		 * 
-		 * @param userObject
-		 *          an Object provided by the user that constitutes the node's data
-		 */
-		public PlottableNode(final Object userObject, final Layer parentLayer)
-		{
-			super(userObject);
-			_theParentLayer = parentLayer;
-		}
+    private boolean _selected;
 
-		public Layer getParentLayer()
-		{
-			return _theParentLayer;
-		}
-		public void setSelected(boolean selected)
+    /**
+     * Creates a tree node with no parent, no children, but which allows children, and initializes
+     * it with the specified user object.
+     * 
+     * @param userObject
+     *          an Object provided by the user that constitutes the node's data
+     */
+    public PlottableNode(final Object userObject, final Layer parentLayer)
+    {
+      super(userObject);
+      _theParentLayer = parentLayer;
+    }
+
+    public Layer getParentLayer()
+    {
+      return _theParentLayer;
+    }
+
+    public void setSelected(boolean selected)
     {
       this._selected = selected;
     }
-		public boolean isSelected()
+
+    public boolean isSelected()
     {
       return _selected;
     }
-	}
+  }
 
-	/**
-	 * class which handles the action of show/hide an item
-	 */
-	protected class ChangeVis implements MWC.GUI.Tools.Action
-	{
-		// ////////////////////////////////////////////////
-		// member objects
-		// ////////////////////////////////////////////////
+  /**
+   * class which handles the action of show/hide an item
+   */
+  protected class ChangeVis implements MWC.GUI.Tools.Action
+  {
+    // ////////////////////////////////////////////////
+    // member objects
+    // ////////////////////////////////////////////////
 
-		/**
-		 * the thing we're operating on
-		 */
-		private final Plottable _myPlottable;
+    /**
+     * the thing we're operating on
+     */
+    private final Plottable _myPlottable;
 
-		/**
-		 * the new viz state
-		 */
-		private final boolean _isVis;
+    /**
+     * the new viz state
+     */
+    private final boolean _isVis;
 
-		// ////////////////////////////////////////////////
-		// constructor
-		// ////////////////////////////////////////////////
-		public ChangeVis(final Plottable myPlottable, final boolean isVis)
-		{
-			_isVis = isVis;
-			_myPlottable = myPlottable;
-		}
+    // ////////////////////////////////////////////////
+    // constructor
+    // ////////////////////////////////////////////////
+    public ChangeVis(final Plottable myPlottable, final boolean isVis)
+    {
+      _isVis = isVis;
+      _myPlottable = myPlottable;
+    }
 
-		// ////////////////////////////////////////////////
-		// member methods
-		// ////////////////////////////////////////////////
+    // ////////////////////////////////////////////////
+    // member methods
+    // ////////////////////////////////////////////////
 
-		/**
-		 * this method calls the 'do' event in the parent tool, passing the
-		 * necessary data to it
-		 */
-		public void execute()
-		{
-			_myPlottable.setVisible(_isVis);
-		}
+    /**
+     * this method calls the 'do' event in the parent tool, passing the necessary data to it
+     */
+    public void execute()
+    {
+      _myPlottable.setVisible(_isVis);
+    }
 
-		/**
-		 * @return boolean flag to indicate whether this action may be redone
-		 */
-		public boolean isRedoable()
-		{
-			return true;
-		}
+    /**
+     * @return boolean flag to indicate whether this action may be redone
+     */
+    public boolean isRedoable()
+    {
+      return true;
+    }
 
-		/**
-		 * @return boolean flag to describe whether this operation may be undone
-		 */
-		public boolean isUndoable()
-		{
-			return true;
-		}
+    /**
+     * @return boolean flag to describe whether this operation may be undone
+     */
+    public boolean isUndoable()
+    {
+      return true;
+    }
 
-		/**
-		 * this method calls the 'undo' event in the parent tool, passing the
-		 * necessary data to it
-		 */
-		public void undo()
-		{
-			_myPlottable.setVisible(!_isVis);
-		}
-	}
-	
+    /**
+     * this method calls the 'undo' event in the parent tool, passing the necessary data to it
+     */
+    public void undo()
+    {
+      _myPlottable.setVisible(!_isVis);
+    }
+  }
 
 }

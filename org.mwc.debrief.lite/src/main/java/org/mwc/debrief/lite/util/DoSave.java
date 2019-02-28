@@ -38,7 +38,9 @@ public class DoSave extends DoSaveAs
     String outputFileName = fileName;
     if(fileName == null) {
       outputFileName = showSaveDialog(null,null);
-      targetFile = new File(outputFileName);
+      if(outputFileName!=null) {
+        targetFile = new File(outputFileName);
+      }
     }
     else {
       if(fileName!=null) {
