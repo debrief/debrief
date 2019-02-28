@@ -823,33 +823,45 @@ public class SwingLayerManager extends SwingCustomEditor implements
     {
       DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
-      DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
-          newItem);
-      TreePath _treePath = new TreePath(itemNode.getPath());
-      _myTree.expandPath(_treePath);
-      _myTree.scrollPathToVisible(_treePath);
-      _myTree.makeVisible(_treePath);
-      _myTree.setSelectionPath(_treePath);
+      if(rootNode!=null) {
+        DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
+            newItem);
+        if(itemNode!=null) {
+          final TreePath _treePath = new TreePath(itemNode.getPath());
+          SwingUtilities.invokeLater(new Runnable()
+          {
 
+            @Override
+            public void run()
+            {
+              _myTree.expandPath(_treePath);
+              _myTree.scrollPathToVisible(_treePath);
+              _myTree.makeVisible(_treePath);
+              _myTree.setSelectionPath(_treePath);
+            }
+          });
+        }
+      }
     }
     else if (changedLayer != null)
     {
       final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
-      final TreePath _treePath = new TreePath(rootNode.getPath());
-      SwingUtilities.invokeLater(new Runnable()
-      {
-
-        @Override
-        public void run()
+      if(rootNode!=null) {
+        final TreePath _treePath = new TreePath(rootNode.getPath());
+        SwingUtilities.invokeLater(new Runnable()
         {
-          _myTree.expandPath(_treePath);
-          _myTree.scrollPathToVisible(_treePath);
-          _myTree.makeVisible(_treePath);
-          _myTree.setSelectionPath(_treePath);
-        }
-      });
 
+          @Override
+          public void run()
+          {
+            _myTree.expandPath(_treePath);
+            _myTree.scrollPathToVisible(_treePath);
+            _myTree.makeVisible(_treePath);
+            _myTree.setSelectionPath(_treePath);
+          }
+        });
+      }
     }
   }
 
