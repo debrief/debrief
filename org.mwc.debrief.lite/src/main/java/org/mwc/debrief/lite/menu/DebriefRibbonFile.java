@@ -129,12 +129,15 @@ public class DebriefRibbonFile
      */
     private static final long serialVersionUID = 1L;
     
-    private JFrame _theFrame;
-    private Session _session;
-    public NewFileAction(final JFrame theFrame,final Session session)
+    private final JFrame _theFrame;
+    private final Session _session;
+
+    private Runnable _doReset;
+    public NewFileAction(final JFrame theFrame,final Session session, final Runnable doReset)
     {
       _theFrame = theFrame;
       _session = session;
+      _doReset = doReset;
     }
 
     @Override
@@ -151,10 +154,10 @@ public class DebriefRibbonFile
           else {
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,_session,_theFrame);
           }
-          DebriefLiteApp.resetPlot();
+          _doReset.run();
         }
         else if(res == JOptionPane.NO_OPTION) {
-          DebriefLiteApp.resetPlot();
+          _doReset.run();
         }
         else {
           //do nothing
@@ -172,12 +175,13 @@ public class DebriefRibbonFile
   
 
   protected static void addFileTab(final JRibbon ribbon,
-      final GeoToolMapRenderer geoMapRenderer, final Session session)
+      final GeoToolMapRenderer geoMapRenderer, final Session session, final Runnable resetAction)
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction((JFrame)ribbon.getRibbonFrame(),session),
-        fileMenu, RibbonElementPriority.MEDIUM);
+    MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(
+        (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
+        RibbonElementPriority.MEDIUM);
     MenuUtils.addCommand("Open Plot", "images/16/open.png", new TODOAction(),
         fileMenu, RibbonElementPriority.MEDIUM);
     

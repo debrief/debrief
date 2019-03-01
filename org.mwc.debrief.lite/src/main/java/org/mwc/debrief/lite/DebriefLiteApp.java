@@ -317,9 +317,15 @@ public class DebriefLiteApp implements FileDropListener
     addOutlineView(_toolParent, undoBuffer);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
-    // dummy placeholder
+    final Runnable resetAction = new Runnable() {
+
+      @Override
+      public void run()
+      {
+        
+      }};
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, session);
+        geoMapRenderer, stepControl, timeManager, session, resetAction);
   }
 
   protected void doPaint(final Graphics gc)

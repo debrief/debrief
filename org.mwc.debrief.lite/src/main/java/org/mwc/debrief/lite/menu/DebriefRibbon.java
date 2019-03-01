@@ -33,10 +33,10 @@ public class DebriefRibbon
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
-      final Session session)
+      final Session session, final Runnable resetAction)
   {
     // add menus here
-    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session);
+    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
         null, parent);
