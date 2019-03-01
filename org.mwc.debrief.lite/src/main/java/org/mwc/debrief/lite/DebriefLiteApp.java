@@ -318,11 +318,10 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable() {
-
       @Override
       public void run()
       {
-        
+        resetPlot();
       }};
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
         geoMapRenderer, stepControl, timeManager, session, resetAction);
@@ -522,10 +521,9 @@ public class DebriefLiteApp implements FileDropListener
     return _plotDirty;
   }
 
-  public static void resetPlot() {
-    
-    _instance._theLayers.clear();
-    _instance.layerManager.resetTree();
+  public void resetPlot() {
+    _theLayers.clear();
+    layerManager.resetTree();
     _plotDirty=false;
     currentFileName = null;
     setTitle(defaultTitle);

@@ -164,10 +164,8 @@ public class DebriefRibbonFile
         }
       }
       else {
-        DebriefLiteApp.resetPlot();
+        _doReset.run();
       }
-      //open the new file
-
     }
   }
 
