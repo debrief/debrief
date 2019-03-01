@@ -155,9 +155,8 @@ public class ReaderMonitor extends BufferedReader
         {
           if (_pm != null)
           {
-            _pm.setProgress(progress);
             _pm.setNote("" + progress + "% complete");
-
+            _pm.setProgress(progress);
             if (progress >= 99)
             {
               _pm.close();
@@ -173,12 +172,13 @@ public class ReaderMonitor extends BufferedReader
     @Override
     public void done()
     {
+      try {
       if (_pm != null)
       {
         _pm.close();
         _pm = null;
       }
-      
+      }catch(Exception e) {}
     }
 
     

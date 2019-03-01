@@ -2,15 +2,11 @@ package org.mwc.debrief.lite.util;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 
 public class DoSave extends DoSaveAs
@@ -38,7 +34,9 @@ public class DoSave extends DoSaveAs
     String outputFileName = fileName;
     if(fileName == null) {
       outputFileName = showSaveDialog(null,null);
-      targetFile = new File(outputFileName);
+      if(outputFileName!=null) {
+        targetFile = new File(outputFileName);
+      }
     }
     else {
       if(fileName!=null) {
@@ -59,37 +57,8 @@ public class DoSave extends DoSaveAs
         }
       }
     }
-
-    if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
-        || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) 
-    {        
-
-      //export to this file.
-      // if it already exists, check with rename/cancel
-      OutputStream stream = null;
-      try
-      {
-        stream = new FileOutputStream(targetFile.getAbsolutePath());
-        performSave(stream);
-      }
-      catch (FileNotFoundException e1)
-      {
-        Application.logError2(Application.ERROR, "Can't find file", e1);
-      }
-      finally {
-        try
-        {
-          stream.close();
-          DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
-          _theFrame.setTitle(targetFile.getName());
-        }
-        catch (IOException e1)
-        {
-          //ignore
-        }
-      }
+    if(targetFile!=null) {
+      DebriefRibbonFile.saveChanges(targetFile.getAbsolutePath(), _session, _theFrame);
     }
   }
- 
-
 }
