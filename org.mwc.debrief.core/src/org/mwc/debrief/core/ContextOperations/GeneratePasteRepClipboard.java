@@ -26,6 +26,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Editable;
@@ -73,7 +74,7 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
         final IAdaptable info) throws ExecutionException
     {
 
-      final ImportReplay tracker = new ImportReplay();
+      final ImportReplay tracker = new ImportReplay(DebriefPlugin.getSWTRunner());
       _tempLayers = new Layers();
       // import to a temp layers object
       tracker.setLayers(_tempLayers);
