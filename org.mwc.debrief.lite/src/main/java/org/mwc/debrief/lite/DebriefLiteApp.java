@@ -319,6 +319,7 @@ public class DebriefLiteApp implements FileDropListener
     painterManager.addPainter(tp);
     painterManager.setCurrentListener(tp);
 
+    // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager, _myOperations, projection);
@@ -333,8 +334,7 @@ public class DebriefLiteApp implements FileDropListener
         setDirty(true);
         
       }
-      
-    };        
+    };
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
@@ -408,7 +408,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, operation, session, projection);
+        geoMapRenderer, stepControl, timeManager, operation, session, projection, undoBuffer);
   }
 
   protected void doPaint(final Graphics gc)
