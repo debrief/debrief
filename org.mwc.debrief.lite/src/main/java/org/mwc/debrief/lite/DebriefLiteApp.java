@@ -496,13 +496,17 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void setDirty(boolean b)
   {
-    String name = new File(currentFileName).getName();
+   
     _plotDirty=b;
-    if(b) {
-      setTitle(name+" *");  
-    }
-    else {
-      setTitle(name);
+    if(currentFileName!=null)
+    {
+      String name = new File(currentFileName).getName();
+      if(b) {
+        setTitle(name+" *");  
+      }
+      else {
+        setTitle(name);
+      }
     }
     
   }
