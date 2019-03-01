@@ -50,7 +50,7 @@ public class ReplayLoader extends CoreLoader
   public ImportReplay getReplayLoader()
   {
     if (_loader == null)
-      _loader = new Debrief.ReaderWriter.Replay.ImportReplay()
+      _loader = new Debrief.ReaderWriter.Replay.ImportReplay(DebriefPlugin.getSWTRunner())
       {
         // override the count-lines method. We may only have a project-relative
         // to the data-file - and the legacy code won't be able to find the file.
