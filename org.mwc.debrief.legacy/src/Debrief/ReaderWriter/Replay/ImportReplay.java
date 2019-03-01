@@ -1657,7 +1657,8 @@ public class ImportReplay extends PlainImporterBase
     }
   }
   
-  private void handleException(Exception e,final int lineCount,final String line,final String fName,final String message)
+  private void handleException(final Exception e, final int lineCount,
+      final String line, final String fName, final String message)
   {
     // produce the error message
     SwingUtilities.invokeLater(new Runnable()
