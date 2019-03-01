@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.ResetAction;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -522,7 +523,10 @@ public class DebriefLiteApp implements FileDropListener
     _plotDirty=false;
     currentFileName = null;
     setTitle(defaultTitle);
+    
     //reset the map
+    ResetAction resetMap = new ResetAction(_instance.mapPane);
+    resetMap.actionPerformed(null);
   }
   
   public static void setTitle(String title) {
