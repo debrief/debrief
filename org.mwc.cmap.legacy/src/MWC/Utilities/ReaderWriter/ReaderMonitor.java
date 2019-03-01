@@ -155,13 +155,20 @@ public class ReaderMonitor extends BufferedReader
         {
           if (_pm != null)
           {
-            _pm.setProgress(progress);
-            _pm.setNote("" + progress + "% complete");
-
-            if (progress >= 99)
+            try
             {
-              _pm.close();
-              _pm = null;
+              _pm.setNote("" + progress + "% complete");
+              _pm.setProgress(progress);
+              if (progress >= 99)
+              {
+                _pm.close();
+                _pm = null;
+              }
+            }
+            catch (Exception e)
+            {
+              // don't worry, the pm may have been closed in another thread while we were handling
+              // it
             }
 
           }
@@ -175,13 +182,16 @@ public class ReaderMonitor extends BufferedReader
     {
       if (_pm != null)
       {
-        _pm.close();
-        _pm = null;
+        try
+        {
+          _pm.close();
+          _pm = null;
+        }
+        catch (Exception e)
+        {
+          // don't worry, the pm may have been closed in another thread while we were handling it
+        }
       }
-      
     }
-
-    
   }
-
 }
