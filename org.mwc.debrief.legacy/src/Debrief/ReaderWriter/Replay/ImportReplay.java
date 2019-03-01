@@ -86,6 +86,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportReplay extends PlainImporterBase
 {
 
+  public static interface Runner
+  {
+    void run(Runnable runnable);
+  }
+  
   final static class doublet
   {
     public final String label;
@@ -853,6 +858,8 @@ public class ImportReplay extends PlainImporterBase
   private final Map<String, Long> _lastImportedItem =
       new HashMap<String, Long>();
 
+  private final Runner _deferredRunner;
+
   /**
    * the property name we use for importing tracks (DR/ATG)
    * 
@@ -1103,17 +1110,31 @@ public class ImportReplay extends PlainImporterBase
     return getThisSymProperty(sym, SYMBOL_PREFIX);
   }
 
-  /**
-   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
-   */
-  public ImportReplay()
+  public ImportReplay(final Runner runner)
   {
+    _deferredRunner = runner;
+    
     _myTypes = new String[]
     {".rep", ".dsf", ".dtf"};
 
     checkImporters();
 
     initialiseColours();
+
+  }
+  
+  /**
+   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
+   */
+  public ImportReplay()
+  {
+    this(new Runner() {
+
+      @Override
+      public void run(final Runnable runnable)
+      {
+        SwingUtilities.invokeLater(runnable);
+      }});
   }
 
   @Override
@@ -1661,7 +1682,7 @@ public class ImportReplay extends PlainImporterBase
       final String line, final String fName, final String message)
   {
     // produce the error message
-    SwingUtilities.invokeLater(new Runnable()
+    _deferredRunner.run(new Runnable()
     {
       
       @Override

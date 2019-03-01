@@ -74,6 +74,7 @@ import org.mwc.debrief.core.ui.SWTEclipseHelper;
 import org.osgi.framework.BundleContext;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Replay.ImportReplay.Runner;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExportProvider;
@@ -327,7 +328,8 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
     // and the Replay importer/exporter (used to export items from the
     // layer-manager)
-    ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+    final Runner swtRunner = getSWTRunner();
+    ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay(swtRunner));
 
     // tell ImportReplay that we can provide more importers
     List<ExtensibleLineImporter> importers = getRepImporterExtensions();
@@ -396,6 +398,18 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
       }
     });
 
+  }
+
+  public static Runner getSWTRunner()
+  {
+    return new ImportReplay.Runner()
+    {
+      @Override
+      public void run(Runnable runnable)
+      {
+        Display.getDefault().asyncExec(runnable);
+      }
+    };
   }
 
   private void initImportExportHelpers()
