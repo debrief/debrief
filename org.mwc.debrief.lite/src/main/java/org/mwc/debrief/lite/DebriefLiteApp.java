@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
+import org.geotools.swing.action.ResetAction;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -316,9 +317,14 @@ public class DebriefLiteApp implements FileDropListener
     addOutlineView(_toolParent, undoBuffer);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
-    // dummy placeholder
+    final Runnable resetAction = new Runnable() {
+      @Override
+      public void run()
+      {
+        resetPlot();
+      }};
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, session);
+        geoMapRenderer, stepControl, timeManager, session, resetAction);
   }
 
   protected void doPaint(final Graphics gc)
@@ -515,14 +521,16 @@ public class DebriefLiteApp implements FileDropListener
     return _plotDirty;
   }
 
-  public static void resetPlot() {
-    
-    _instance._theLayers.clear();
-    _instance.layerManager.resetTree();
+  public void resetPlot() {
+    _theLayers.clear();
+    layerManager.resetTree();
     _plotDirty=false;
     currentFileName = null;
     setTitle(defaultTitle);
+    
     //reset the map
+    ResetAction resetMap = new ResetAction(_instance.mapPane);
+    resetMap.actionPerformed(null);
   }
   
   public static void setTitle(String title) {
