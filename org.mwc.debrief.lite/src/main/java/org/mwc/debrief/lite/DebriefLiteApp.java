@@ -353,7 +353,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(statusBar, BorderLayout.SOUTH);
     // dummy placeholder
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, operation, session);
+        geoMapRenderer, stepControl, timeManager, operation, session, undoBuffer);
   }
 
   protected void doPaint(final Graphics gc)

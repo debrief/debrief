@@ -31,6 +31,7 @@ import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
 import org.mwc.debrief.lite.gui.custom.RangeSlider;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.properties.PropertiesDialog;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
@@ -43,6 +44,10 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
+import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.ControllablePeriod;
@@ -120,11 +125,13 @@ public class DebriefRibbonTimeController
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager,
-      final PlotOperations operations)
+      final PlotOperations operations, final Layers layers,
+      final UndoBuffer undoBuffer)
   {
     final JRibbonBand displayMode = createDisplayMode();
 
-    final JRibbonBand control = createControl(stepControl, timeManager);
+    final JRibbonBand control = createControl(stepControl, timeManager, layers,
+        undoBuffer);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl,
         operations);
@@ -135,7 +142,8 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createControl(final LiteStepControl stepControl,
-      final TimeManager timeManager)
+      final TimeManager timeManager, final Layers layers,
+      final UndoBuffer undoBuffer)
   {
     final JRibbonBand control = new JRibbonBand("Control", null);
 
@@ -311,8 +319,30 @@ public class DebriefRibbonTimeController
         }, CommandButtonDisplayState.SMALL, "Move to end time");
 
     final JCommandButton propertiesCommandButton = MenuUtils.addCommandButton(
-        "Properties", "icons/16/properties.png", new MenuUtils.TODOAction(),
-        CommandButtonDisplayState.SMALL, "Edit time-step properties");
+        "Properties", "icons/16/properties.png", new AbstractAction()
+        {
+          /**
+           * 
+           */
+          private static final long serialVersionUID = 1973993003498667463L;
+
+          @Override
+          public void actionPerformed(ActionEvent arg0)
+          {
+            ToolbarOwner owner = null;
+            ToolParent parent = stepControl.getParent();
+            if (parent instanceof ToolbarOwner)
+            {
+              owner = (ToolbarOwner) parent;
+            }
+
+            PropertiesDialog dialog = new PropertiesDialog(stepControl, layers,
+                undoBuffer, parent, owner);
+            dialog.setSize(400, 500);
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+          }
+        }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
 
     final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
         "Format", "icons/24/gears_view.png", new ShowFormatAction(),
@@ -481,7 +511,8 @@ public class DebriefRibbonTimeController
         Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
         minimumValue.setText(formatter.format(low));
         maximumValue.setText(formatter.format(high));
-        operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low), new HiResDate(high)));
+        operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
+            new HiResDate(high)));
 
         operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
       }

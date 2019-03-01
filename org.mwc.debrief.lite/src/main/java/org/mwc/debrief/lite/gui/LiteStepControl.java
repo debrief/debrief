@@ -12,6 +12,8 @@ import MWC.TacticalData.temporal.TimeProvider;
 
 public class LiteStepControl extends StepControl
 {
+  
+  final ToolParent parent;
 
   public static interface SliderControls
   {
@@ -39,9 +41,10 @@ public class LiteStepControl extends StepControl
   private TimeLabel _timeLabel;
   private String timeFormat = "yy/MM/dd hh:mm:ss";
 
-  public LiteStepControl(final ToolParent parent)
+  public LiteStepControl(final ToolParent _parent)
   {
-    super(parent);
+    super(_parent);
+    this.parent = _parent;
   }
 
   @Override
@@ -174,4 +177,8 @@ public class LiteStepControl extends StepControl
     _timeLabel.setValue(DTG.getDate().getTime());
   }
 
+  public ToolParent getParent()
+  {
+    return parent;
+  }
 }
