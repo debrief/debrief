@@ -35,6 +35,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 import Debrief.Wrappers.DynamicShapeLayer;
@@ -1625,31 +1627,22 @@ public class ImportReplay extends PlainImporterBase
     }
     catch (final java.lang.NumberFormatException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Number format error", thisLine);
+      
+      handleException(e,lineCounter,thisLine,fName,"Number format error:"+e);
     }
     catch (final IOException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Unknown read error:"+e);
     }
     catch (final java.util.NoSuchElementException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Missing field error", thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Missing field error");
     }
     catch (final ParseException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Date format error", thisLine);
+      
+      handleException(e,lineCounter,thisLine,fName,"Date format error");
+      
     }
     finally
     {
@@ -1663,7 +1656,23 @@ public class ImportReplay extends PlainImporterBase
       }
     }
   }
-
+  
+  private void handleException(Exception e,final int lineCount,final String line,final String fName,final String message)
+  {
+    // produce the error message
+    SwingUtilities.invokeLater(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+     // produce the error message
+        MWC.Utilities.Errors.Trace.trace(e);
+        // show the message dialog    
+        readError(fName, lineCount, message, line);
+      }
+    }); 
+  }
   private void proccessShapeWrapper(final PlainLineImporter thisOne,
       final Object thisObject)
   {

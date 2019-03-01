@@ -1338,4 +1338,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
   }
 
+  public void resetTree()
+  {
+    _myData.clear();
+    createAndInitializeTree();
+    
+  }
+
 }
