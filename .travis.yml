@@ -4,8 +4,9 @@ sudo: required
 cache:
   directories:
     - $HOME/.m2
-    - $HOME/travis/build/debrief/debrief/org.mwc.debrief.ui_test/target/aut
-    - $HOME/travis/build/debrief/debrief/org.mwc.debrief.ui_test/target/runner
+    - $HOME/travis/build/debrief/debrief/rcptt.runner-2.4.0-20190304.052507-249.zip
+before_install:
+- mkdir $HOME/travis/build/debrief/debrief/ &&  curl -o $HOME/travis/build/debrief/debrief/ -OL https://repo.eclipse.org/content/repositories/rcptt-snapshots/org/eclipse/rcptt/runner/rcptt.runner/2.4.0-SNAPSHOT/rcptt.runner-2.4.0-20190304.052507-249.zip
 install:
 - mvn --version
 addons:
