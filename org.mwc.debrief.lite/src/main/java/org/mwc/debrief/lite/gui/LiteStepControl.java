@@ -13,7 +13,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 public class LiteStepControl extends StepControl
 {
   
-  final ToolParent parent;
+  private final ToolParent parent;
 
   public static interface SliderControls
   {

@@ -154,7 +154,6 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
-  private LiteStepControl _stepControl;
   private final JMapPane mapPane;
   private final PlotOperations _myOperations = new PlotOperations()
   {
@@ -180,17 +179,14 @@ public class DebriefLiteApp implements FileDropListener
       // make the actual change
       final Vector<Layer> res = super.performOperation(operationName);
 
-      if (res != null)
+      if (res != null && res.size() != 0)
       {
-        if (res.size() != 0)
+        for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
         {
-          for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
-          {
-            final Layer thisL = iter.next();
-            // and update the screen
-            _theLayers.fireReformatted(thisL);
+          final Layer thisL = iter.next();
+          // and update the screen
+          _theLayers.fireReformatted(thisL);
 
-          }
         }
       }
 
@@ -241,7 +237,7 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new ImportReplay());
     
     // sort out time control
-    _stepControl = new LiteStepControl(_toolParent);
+    LiteStepControl _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
