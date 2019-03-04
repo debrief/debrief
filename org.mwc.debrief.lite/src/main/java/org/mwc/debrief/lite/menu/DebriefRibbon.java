@@ -36,12 +36,14 @@ public class DebriefRibbon
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
-      final PlotOperations operations, final Session session, final GeoToolMapProjection projection, final UndoBuffer undoBuffer)
+
+      final PlotOperations operations, final Session session, final UndoBuffer undoBuffer, final Runnable resetAction, final GeoToolMapProjection projection)
 
   {
     // add menus here
-    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session);
+    DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, projection);
+
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
