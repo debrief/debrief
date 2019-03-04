@@ -304,11 +304,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
 
-    timeManager.addListener(_stepControl,
-        TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(_stepControl,
-        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
     painterManager = new PainterManager(_stepControl);
     PlainChart theChart = new LiteChart(_theLayers, _theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
