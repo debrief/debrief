@@ -109,7 +109,6 @@ public class GeoToolMapProjection extends PlainProjection
     {
       _degs2metres.transform(_workDegs, _workMetres);
       // now got to screen
-      // _view.getWorldToScreen().transform(_workMetres, _workScreen);
       _view.getWorldToScreen().transform(_workMetres, _workScreen);
       // output the results
       res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen

@@ -236,24 +236,10 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
-    geoMapRenderer.loadMapContent();
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
     initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
-
-    projection = new GeoToolMapProjection(mapComponent, _theLayers);
-
-    geoMapRenderer.addRenderer(new MapRenderer()
-    {
-
-      @Override
-      public void paint(final Graphics gc)
-      {
-        doPaint(gc);
-      }
-    });
 
     // provide some file helpers
     ImportReplay.initialise(new DebriefLiteToolParent(
@@ -307,13 +293,10 @@ public class DebriefLiteApp implements FileDropListener
     painterManager = new PainterManager(_stepControl);
     PlainChart theChart = new LiteChart(_theLayers, _theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
-    final Debrief.GUI.Tote.Painters.TotePainter sp =
-        new Debrief.GUI.Tote.Painters.SnailPainter(theChart, _theLayers,
-            theTote);
     final Debrief.GUI.Tote.Painters.TotePainter tp =
         new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
             theTote);
-    painterManager.addPainter(sp);
+    painterManager.addPainter(tp);
     painterManager.addPainter(tp);
     painterManager.setCurrentListener(tp);
 
