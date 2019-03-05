@@ -1,11 +1,13 @@
 eclipse.preferences.version=1
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/description=
+repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/enabled=true
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/isSystem=true
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/name=download cache
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/provider=
+repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/suffix=artifacts.xml
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/type=org.eclipse.equinox.p2.artifact.repository.simpleRepository
 repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/uri=file\:/Users/anuradhagunasekara/development/repository/github/debrief/org.mwc.debrief.ui_test/rcptt-runner/p2/org.eclipse.equinox.p2.core/cache/
-repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/version=1
+repositories/file\:_Users_anuradhagunasekara_development_repository_github_debrief_org.mwc.debrief.ui_test_rcptt-runner_p2_org.eclipse.equinox.p2.core_cache/version=1.0.0
 repositories/platform\:___plugin_org.eclipse.rcptt.updates.aspectj.e44x_dependencies/description=
 repositories/platform\:___plugin_org.eclipse.rcptt.updates.aspectj.e44x_dependencies/enabled=true
 repositories/platform\:___plugin_org.eclipse.rcptt.updates.aspectj.e44x_dependencies/isSystem=false

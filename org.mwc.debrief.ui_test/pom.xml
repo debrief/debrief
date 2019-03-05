@@ -40,7 +40,7 @@
   
 <testOptions>
     <execTimeout>2000</execTimeout>
-    <testExecTimeout>10</testExecTimeout>
+    <testExecTimeout>100</testExecTimeout>
 </testOptions>
 </configuration>
 
