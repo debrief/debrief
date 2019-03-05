@@ -225,7 +225,7 @@ public final class CreateLabel extends CoreCreateShape
         _thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
       // and fire the extended event
-      _theData.fireExtended();
+      _theData.fireExtended(_theShape, _theLayer);
     }
   }
 
