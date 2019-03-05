@@ -4,8 +4,6 @@ sudo: required
 cache:
   directories:
     - $HOME/.m2
-    - $HOME/travis/build/debrief/debrief/org.mwc.debrief.ui_test/target/aut
-    - $HOME/travis/build/debrief/debrief/org.mwc.debrief.ui_test/target/runner
 install:
 - mvn --version
 addons:
