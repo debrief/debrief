@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _MGwK0K9YEei4e5U78aujdw
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 10/17/18 1:32 AM
+Save-Time: 3/5/19 10:02 PM
 Testcase-Type: ecl
 
 ------=_.description-216f885c-d591-38ce-8ea2-e4f8cb4d6ffa
@@ -26,10 +26,10 @@ get-menu -path "Window/Show View/Outline" | click
 with [get-view Outline | get-tree] {
    
     get-item -path "Annotations \\(0 items\\)" | get-property "getText()" | equals "Annotations (0 items)" | verify-true
-    get-item -path "Chart Features \\(4 items\\)" | get-property "getText()" | equals "Chart Features (4 items)" 
+    get-item -path "Chart Features \\(3 items\\)" | get-property "getText()" | equals "Chart Features (3 items)" 
         | verify-true
-    get-item -path "Chart lib:JW_Area_1 \\(181 items\\)" | get-property "getText()" 
-        | equals "Chart lib:JW_Area_1 (181 items)" | verify-true
+   // get-item -path "Chart lib:JW_Area_1 \\(181 items\\)" | get-property "getText()" 
+   //     | equals "Chart lib:JW_Area_1 (181 items)" | verify-true
     get-item -path "Misc \\(5 items\\)" | get-property "getText()" | equals "Misc (5 items)" | verify-true
     get-item -path "Track:COLLINGWOOD" | get-property "getText()" | equals "Track:COLLINGWOOD" | verify-true
     get-item -path "Track:NELSON" | get-property "getText()" | equals "Track:NELSON" | verify-true

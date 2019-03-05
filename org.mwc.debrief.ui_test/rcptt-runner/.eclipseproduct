@@ -1,0 +1,5 @@
+#Eclipse Product File
+#Mon Mar 04 00:25:03 EST 2019
+version=2.4.0.qualifier
+name=RCPTT Runner
+id=org.eclipse.rcptt.runner.headless
