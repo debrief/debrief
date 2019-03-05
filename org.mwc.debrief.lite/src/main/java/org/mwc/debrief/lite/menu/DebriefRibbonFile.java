@@ -16,8 +16,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.DebriefLiteApp;
@@ -105,22 +107,73 @@ public class DebriefRibbonFile
     }
   }
 
-  // Actions
-
-  private static class TODOAction extends AbstractAction
+  
+  private static class OpenPlotAction extends AbstractAction
   {
+
     /**
-     *
+     * 
      */
     private static final long serialVersionUID = 1L;
+    private final JFrame _theFrame;
+    private final Session _session;
+    private Runnable _doReset;
+    private boolean isRepFile;
+    
+    public OpenPlotAction(final JFrame theFrame, final Session session,
+        final Runnable doReset,final boolean isRep)
+    {
+      _theFrame = theFrame;
+      _session = session;
+      _doReset = doReset;
+      isRepFile = isRep;
+    }
 
     @Override
-    public void actionPerformed(final ActionEvent e)
+    public void actionPerformed(ActionEvent e)
     {
-      System.out.println("Not implemented yet");
-
+      
+      final String[] fileTypes = isRepFile?new String[] {"rep"}:new String[] {"dpf","xml"};
+      final String descr = isRepFile?"Debrief Replay File":"Debrief Plot Files";
+      if (DebriefLiteApp.isDirty())
+      {
+        int res = JOptionPane.showConfirmDialog(null,
+            "Save changes before opening new plot?");
+        if (res == JOptionPane.OK_OPTION)
+        {
+          if (DebriefLiteApp.currentFileName != null
+              && DebriefLiteApp.currentFileName.endsWith(".rep"))
+          {
+            String newFileName = DebriefLiteApp.currentFileName.replaceAll(
+                ".rep", ".dpf");
+            DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
+          }
+          else
+          {
+            DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
+                _session, _theFrame);
+          }
+          doFileOpen(fileTypes,descr,isRepFile,_doReset);
+          
+        }
+        else if (res == JOptionPane.NO_OPTION)
+        {
+          doFileOpen(fileTypes,descr,isRepFile,_doReset);
+        }
+        else
+        {
+          // do nothing
+        }
+      }
+      else
+      {
+        doFileOpen(fileTypes,descr,isRepFile,_doReset);
+      }
     }
+    
   }
+  
+  
   
   private static class NewFileAction extends AbstractAction
   {
@@ -192,7 +245,7 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Open Plot", "images/16/open.png", new TODOAction(),
+    MenuUtils.addCommand("Open Plot", "images/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.MEDIUM);
     
     fileMenu.startGroup();
@@ -221,7 +274,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
     MenuUtils.addCommand("Import Replay", "images/16/import.png",
-        new TODOAction(), importMenu, RibbonElementPriority.MEDIUM);
+        new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
     MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
@@ -233,6 +286,42 @@ public class DebriefRibbonFile
         exitMenu);
     fileMenu.setPreferredSize(new Dimension(50, 50));
     ribbon.addTask(fileTask);
+  }
+
+
+
+
+  public static void doFileOpen(String[] fileTypes, String descr, boolean isRepFile,Runnable doReset)
+  {
+    //load the new selected file
+    final File fileToOpen = showOpenDialog(fileTypes,descr);
+    if(fileToOpen !=null) {
+      doReset.run();
+      if(isRepFile) {
+        DebriefLiteApp.openRepFile(fileToOpen);
+      }
+      else{
+        DebriefLiteApp.openPlotFile(fileToOpen);
+      }
+    }
+  }
+
+
+
+
+  public static File showOpenDialog(final String[] fileTypes,final String descr)
+  {
+    JFileChooser fileChooser = new JFileChooser();
+    FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr, fileTypes); 
+    fileChooser.setFileFilter(restrict); 
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    fileChooser.setMultiSelectionEnabled(false);
+    int res = fileChooser.showOpenDialog(null);
+    if(res == JFileChooser.APPROVE_OPTION) {
+      return fileChooser.getSelectedFile();
+    }
+    
+    return null;
   }
 
 
