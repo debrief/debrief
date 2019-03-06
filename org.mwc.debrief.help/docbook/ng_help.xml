@@ -8151,9 +8151,11 @@ if (!project.exists())
   print("Can't find project");
   exit(0);
 }
-//to get this script work , please choose CSV_EXCHANGE_SAMPLE.csv file from other_formats folder
+// to get this script work , please choose CSV_EXCHANGE_SAMPLE.csv file 
+// from other_formats folder
 // @type org.eclipse.ease.modules.platform.IFileHandle
-let pathToSelectedFile = showFileSelectionDialog("workspace://",1,"Select File", "Select your File that has track information") ;
+let pathToSelectedFile = showFileSelectionDialog("workspace://",1,
+    "Select File", "Select your File that has track information") ;
 // create a file within the project
 var file = openFile(pathToSelectedFile);
 if (!file.exists())
@@ -8238,9 +8240,8 @@ layers.fireModified();</programlisting></para>
             </imageobject>
           </mediaobject>
         </sect2>
-        
         <sect2>
-          <title><emphasis role="bold">Writing Calculated Values to Text File</emphasis></title>
+          <title>Writing Calculated Values to Text File</title>
           <para>Scripting, in <emphasis role="bold">Debrief, </emphasis>is not only useful for
             reading in data, but it is also useful in producing outputs of new derived datasets.
             This script will help you do that:</para>
