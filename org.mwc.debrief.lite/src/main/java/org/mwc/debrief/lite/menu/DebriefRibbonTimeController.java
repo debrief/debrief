@@ -377,8 +377,8 @@ public class DebriefRibbonTimeController
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        timeManager.fireTimePropertyChange();
         stepControl.setTimeFormat(e.getActionCommand());
+        timeManager.fireTimePropertyChange();
       }
     };
 
