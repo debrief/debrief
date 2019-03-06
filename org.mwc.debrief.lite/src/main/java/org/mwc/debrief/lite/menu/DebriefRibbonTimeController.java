@@ -56,6 +56,40 @@ import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
 {
+
+  /**
+   * Class that binds the Time Filter and Time Label.
+   * It is used to update the date formatting.
+   *
+   */
+  protected static class DateFormatBinder
+  {
+    protected LiteStepControl stepControl;
+    protected JLabel minimumValue;
+    protected JLabel maximumValue;
+    protected RangeSlider slider;
+    protected TimeManager timeManager;
+
+    public void updateTimeDateFormat(final String format)
+    {
+      stepControl.setDateFormat(format);
+      timeManager.fireTimePropertyChange();
+      updateFilterDateFormat();
+    }
+
+    public void updateFilterDateFormat()
+    {
+      Date low = RangeSlider.toDate(slider.getValue()).getTime();
+      Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
+
+      final SimpleDateFormat formatter = new SimpleDateFormat(stepControl
+          .getDateFormat());
+      minimumValue.setText(formatter.format(low));
+      maximumValue.setText(formatter.format(high));
+    }
+
+  }
+
   protected static class ShowFormatAction extends AbstractAction
   {
     /**
@@ -120,6 +154,7 @@ public class DebriefRibbonTimeController
 
   private static SliderConverter converter = new SliderConverter();
 
+  private static DateFormatBinder formatBinder = new DateFormatBinder();
   static JPopupMenu menu;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
@@ -133,8 +168,8 @@ public class DebriefRibbonTimeController
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer);
 
-    final JRibbonBand filterToTime = createFilterToTime(stepControl,
-        operations);
+    final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
+        timeManager);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
@@ -377,8 +412,7 @@ public class DebriefRibbonTimeController
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        stepControl.setDateFormat(e.getActionCommand());
-        timeManager.fireTimePropertyChange();
+        formatBinder.updateTimeDateFormat(e.getActionCommand());
       }
     };
 
@@ -487,32 +521,36 @@ public class DebriefRibbonTimeController
   }
 
   private static JRibbonBand createFilterToTime(
-      final LiteStepControl stepControl, final PlotOperations operations)
+      final LiteStepControl stepControl, final PlotOperations operations,
+      final TimeManager timeManager)
   {
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
-
-    final SimpleDateFormat formatter = new SimpleDateFormat(stepControl.getDateFormat());
 
     final Calendar start = new GregorianCalendar(1995, 11, 12);
     final Calendar end = new GregorianCalendar(1995, 11, 12);
     // Now we create the components for the sliders
-    final JLabel minimumValue = new JLabel(formatter.format(start.getTime()));
-    final JLabel maximumValue = new JLabel(formatter.format(end.getTime()));
+    final JLabel minimumValue = new JLabel();
+    final JLabel maximumValue = new JLabel();
     final RangeSlider slider = new RangeSlider(start, end);
+
+    formatBinder.stepControl = stepControl;
+    formatBinder.maximumValue = maximumValue;
+    formatBinder.minimumValue = minimumValue;
+    formatBinder.slider = slider;
+    formatBinder.timeManager = timeManager;
+
+    formatBinder.updateFilterDateFormat();
     slider.addChangeListener(new ChangeListener()
     {
       @Override
       public void stateChanged(final ChangeEvent e)
       {
-        // TODO Do we represent the filter using the format specified by user?
         final RangeSlider slider = (RangeSlider) e.getSource();
 
-        final SimpleDateFormat formatter = new SimpleDateFormat(stepControl.getDateFormat());
         Date low = RangeSlider.toDate(slider.getValue()).getTime();
         Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
-        minimumValue.setText(formatter.format(low));
-        maximumValue.setText(formatter.format(high));
-        
+        formatBinder.updateFilterDateFormat();
+
         operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
             new HiResDate(high)));
 
