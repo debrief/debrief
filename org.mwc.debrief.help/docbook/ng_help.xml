@@ -8245,7 +8245,7 @@ layers.fireModified();</programlisting></para>
           <para>Scripting, in <emphasis role="bold">Debrief, </emphasis>is not only useful for
             reading in data, but it is also useful in producing outputs of new derived datasets.
             This script will help you do that:</para>
-          <para><programlisting>       loadModule('/System/Resources', false);
+          <para><programlisting>loadModule('/System/Resources', false);
 loadModule('/Debrief/Core'); // date
 loadModule("/System/UI", false); // for the input dialogs
 // get project instance
@@ -8599,7 +8599,7 @@ showInfoDialog("Hello World", "Title")</programlisting></para>
           <para>Create another script file <emphasis role="bold">testCall.js</emphasis> with the
             following code:</para>
           <para><programlisting>// Include must contain the project name, followed by the 
-// complete path. You could include the “workspace:/” or the “project:/” tag
+// complete path. You could include the “workspace:/” tag:
 include("workspace:/project/scripting/hello.js")</programlisting></para>
           <para><emphasis role="bold">Note</emphasis>: You can copy the complete path of the
             workspace by navigating to <emphasis role="bold">Window > Preferences > Scripting >
@@ -8614,7 +8614,7 @@ include("workspace:/project/scripting/hello.js")</programlisting></para>
               role="bold"> hello</emphasis> in the script <emphasis role="bold"
               >testCall.js</emphasis>.</para>
           <para><programlisting>// Include must contain the project name, followed by the complete path. 
-// You could include the “workspace:/” or the “project:/” tag
+// You could include the “workspace:/” tag
 include("workspace://DebriefNG/sample_data/other_formats/Scripts/hello.js")
 include("workspace:/project/scripting/sum.js")
 print(sum(2,3));</programlisting></para>
