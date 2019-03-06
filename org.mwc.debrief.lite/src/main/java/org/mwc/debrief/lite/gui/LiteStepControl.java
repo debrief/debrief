@@ -1,7 +1,6 @@
 package org.mwc.debrief.lite.gui;
 
 import java.beans.PropertyChangeEvent;
-import java.text.SimpleDateFormat;
 
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.ToolParent;
@@ -13,7 +12,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 public class LiteStepControl extends StepControl
 {
   
-  final ToolParent parent;
+  private final ToolParent parent;
 
   public static interface SliderControls
   {
@@ -45,6 +44,7 @@ public class LiteStepControl extends StepControl
   {
     super(_parent);
     this.parent = _parent;
+    setDateFormat(timeFormat);
   }
 
   @Override
@@ -162,16 +162,11 @@ public class LiteStepControl extends StepControl
       super.stopTimer();
     }
   }
-  
-  public void setTimeFormat(final String timeFormat)
-  {
-    this.timeFormat = timeFormat;
-  }
 
   @Override
   protected void updateForm(final HiResDate DTG)
   {
-    final String str = new SimpleDateFormat(timeFormat).format(DTG.getDate().getTime());
+    final String str = _dateFormatter.format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
   }

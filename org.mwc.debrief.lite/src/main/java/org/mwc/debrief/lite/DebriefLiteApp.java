@@ -185,17 +185,14 @@ public class DebriefLiteApp implements FileDropListener
       // make the actual change
       final Vector<Layer> res = super.performOperation(operationName);
 
-      if (res != null)
+      if (res != null && res.size() != 0)
       {
-        if (res.size() != 0)
+        for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
         {
-          for (final Iterator<Layer> iter = res.iterator(); iter.hasNext();)
-          {
-            final Layer thisL = iter.next();
-            // and update the screen
-            _theLayers.fireReformatted(thisL);
+          final Layer thisL = iter.next();
+          // and update the screen
+          _theLayers.fireReformatted(thisL);
 
-          }
         }
       }
 
@@ -296,7 +293,6 @@ public class DebriefLiteApp implements FileDropListener
     final Debrief.GUI.Tote.Painters.TotePainter tp =
         new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
             theTote);
-    painterManager.addPainter(tp);
     painterManager.addPainter(tp);
     painterManager.setCurrentListener(tp);
 
