@@ -377,7 +377,7 @@ public class DebriefRibbonTimeController
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        stepControl.setTimeFormat(e.getActionCommand());
+        stepControl.setDateFormat(e.getActionCommand());
         timeManager.fireTimePropertyChange();
       }
     };
@@ -491,7 +491,7 @@ public class DebriefRibbonTimeController
   {
     final JRibbonBand timePeriod = new JRibbonBand("Filter to time", null);
 
-    final SimpleDateFormat formatter = new SimpleDateFormat("MMddyy");
+    final SimpleDateFormat formatter = new SimpleDateFormat(stepControl.getDateFormat());
 
     final Calendar start = new GregorianCalendar(1995, 11, 12);
     final Calendar end = new GregorianCalendar(1995, 11, 12);
@@ -507,10 +507,12 @@ public class DebriefRibbonTimeController
         // TODO Do we represent the filter using the format specified by user?
         final RangeSlider slider = (RangeSlider) e.getSource();
 
+        final SimpleDateFormat formatter = new SimpleDateFormat(stepControl.getDateFormat());
         Date low = RangeSlider.toDate(slider.getValue()).getTime();
         Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
         minimumValue.setText(formatter.format(low));
         maximumValue.setText(formatter.format(high));
+        
         operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
             new HiResDate(high)));
 
