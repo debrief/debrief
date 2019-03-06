@@ -520,10 +520,11 @@ public class DebriefRibbonTimeController
       }
     });
     slider.setEnabled(false);
+    slider.setPreferredSize(new Dimension(250, 200));
 
     final JPanel sliderPanel = new JPanel();
     sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.Y_AXIS));
-    sliderPanel.setPreferredSize(new Dimension(200, 200));
+    sliderPanel.setPreferredSize(new Dimension(250, 200));
 
     // Label's panel
     final JPanel valuePanel = new JPanel();
@@ -532,7 +533,7 @@ public class DebriefRibbonTimeController
     valuePanel.add(minimumValue);
     valuePanel.add(Box.createGlue());
     valuePanel.add(maximumValue);
-    valuePanel.setPreferredSize(new Dimension(200, 200));
+    valuePanel.setPreferredSize(new Dimension(250, 200));
 
     timePeriod.addRibbonComponent(new JRibbonComponent(slider));
     timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
