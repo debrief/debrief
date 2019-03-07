@@ -2,7 +2,6 @@ package org.mwc.debrief.lite.util;
 
 import java.awt.event.ActionEvent;
 import java.io.File;
-import java.io.OutputStream;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
@@ -15,7 +14,6 @@ import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import Debrief.GUI.Frames.Session;
-import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 
 public class DoSaveAs extends AbstractAction
 {
@@ -26,21 +24,16 @@ public class DoSaveAs extends AbstractAction
    */
   private static final long serialVersionUID = 1L;
   protected final Session _session;
-  protected JRibbonFrame _theFrame;
+  protected final JRibbonFrame _theFrame;
 
-  public DoSaveAs(Session session,JRibbonFrame frame)
+  public DoSaveAs(final Session session,final JRibbonFrame frame)
   {
     _session = session;
     _theFrame = frame;
   }
 
-  protected void performSave(final OutputStream fos)
-  {
-    DebriefXMLReaderWriter.exportThis(_session, fos);
-  }
-
   @Override
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
     // get the current file path,
     // check we have write permission to it before starting save
@@ -60,7 +53,7 @@ public class DoSaveAs extends AbstractAction
     DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
   }
 
-  protected String getFileName(String fileName)
+  protected String getFileName(final String fileName)
   {
     return fileName.substring(0,fileName.lastIndexOf("."));
   }
@@ -80,7 +73,7 @@ public class DoSaveAs extends AbstractAction
     {
       fileChooser.setCurrentDirectory(parentDirectory);
     }
-    int res = fileChooser.showSaveDialog(null);
+    final int res = fileChooser.showSaveDialog(null);
     if (res == JOptionPane.OK_OPTION)
     {
       final File targetFile = fileChooser.getSelectedFile();
