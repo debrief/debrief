@@ -207,7 +207,10 @@ public class DebriefRibbonFile
           if (DebriefLiteApp.currentFileName != null
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
-            String newFileName = DebriefLiteApp.currentFileName.replaceAll(
+            File f = new File(DebriefLiteApp.currentFileName);
+            String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
+            String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            DebriefLiteApp.currentFileName.replaceAll(
                 ".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }

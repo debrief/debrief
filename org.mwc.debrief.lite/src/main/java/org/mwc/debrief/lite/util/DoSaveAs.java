@@ -65,7 +65,7 @@ public class DoSaveAs extends AbstractAction
     return fileName.substring(0,fileName.lastIndexOf("."));
   }
 
-  protected final String showSaveDialog(final File parentDirectory,
+  public final static String showSaveDialog(final File parentDirectory,
       final String initialName)
   {
     String outputFileName = null;
