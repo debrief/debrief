@@ -535,7 +535,10 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider()
         .createApplicationMenu(theFrame));
-    theFrame.setSize((int) (dim.width * 0.6), (int) (dim.height * 0.6));
+    // It cannot be smaller than this size to have the ribbon complete!
+    int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
+    int sizeHeight = (int) (dim.height * 0.6);
+    theFrame.setSize(sizeWidth, sizeHeight);
     final Dimension sz = theFrame.getSize();
     theFrame.setLocation((dim.width - sz.width) / 2, (dim.height - sz.height)
         / 2);
