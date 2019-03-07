@@ -153,7 +153,7 @@ public interface PlainImporter
 		public static interface MonitorProvider
 	  {
 
-	    public void init(String fileName);
+	    public void init(final String fileName, final int length);
 
 	    public void progress(int _progress);
 	    
