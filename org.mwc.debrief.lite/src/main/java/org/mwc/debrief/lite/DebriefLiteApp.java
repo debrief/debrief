@@ -472,6 +472,11 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void allFilesFinished(final File[] fNames, final Layers newData)
       {
+        finishImport(source);
+      }
+
+      private void finishImport(final DebriefLiteApp source)
+      {
         SwingUtilities.invokeLater(new Runnable()
         {
           @Override
@@ -502,6 +507,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void fileFinished(final File fName, final Layers newData)
       {
+        
       }
     };
     // ok, start loading

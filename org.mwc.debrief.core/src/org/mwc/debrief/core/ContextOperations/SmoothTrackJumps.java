@@ -214,7 +214,7 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
           // comment out progress marker - too verbose
           //  System.out.println(_progress);
         }
-        public void init(String fileName)
+        public void init(String fileName, int length)
         {
           System.out.println("Loading "+ fileName);
         }
