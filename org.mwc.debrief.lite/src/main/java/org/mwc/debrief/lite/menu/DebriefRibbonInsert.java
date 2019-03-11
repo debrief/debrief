@@ -5,6 +5,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -25,6 +26,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Tools.Palette.ListLayersDialog;
+import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
@@ -35,8 +37,10 @@ import MWC.GUI.Shapes.ArcShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
@@ -147,9 +151,20 @@ public class DebriefRibbonInsert
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
-      {
-        return new ShapeWrapper("new polygon", new PolygonShape(null),
-            DebriefColors.RED, null);
+      {       
+        // create the shape, based on the centre
+        final Vector<PolygonNode> path2 = new Vector<PolygonNode>();
+
+        final PolygonShape newShape = new PolygonShape(path2);
+
+        // and now wrap the shape
+        final PolygonWrapper theWrapper = new PolygonWrapper("New polygon",
+            newShape, PlainShape.DEFAULT_COLOR, null);
+
+        // store the new point
+        newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
+
+        return theWrapper;
       }
     };
     polygonShape.setSelectedLayerSource(selectLayerCombo);
