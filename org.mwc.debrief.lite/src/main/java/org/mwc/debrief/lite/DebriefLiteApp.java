@@ -61,6 +61,7 @@ import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
@@ -257,7 +258,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void propertyChange(PropertyChangeEvent evt)
       {
-        redoTimePainter();
+        redoTimePainter(false);
       }}, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 
@@ -328,13 +329,27 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
   
-  private void redoTimePainter()
+  private void redoTimePainter(boolean bigPaint)
   {
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
     final CanvasAdaptor dest = new CanvasAdaptor(projection, graphics,
-        Color.red);
-    painterManager.newTime(null, timeManager.getTime(), dest);
+        Color.DARK_GRAY);
+    
+    if(bigPaint)
+    {
+      final CanvasType.PaintListener thisPainter =
+          (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
+
+      // it must be ok
+      thisPainter.paintMe(dest);
+    }
+    else
+    {
+      painterManager.newTime(null, timeManager.getTime(), dest);
+    }
+    
+
   }
 
   private void initializeMapContent()
@@ -411,12 +426,8 @@ public class DebriefLiteApp implements FileDropListener
     dest.startDraw(gc);
     _theLayers.paint(dest);
     
-    System.out.println("paint");
-    
     // and the time marker
-    
-    // and the time marker
-    redoTimePainter();
+    redoTimePainter(true);
 
     dest.endDraw(gc);
   }
@@ -477,7 +488,11 @@ public class DebriefLiteApp implements FileDropListener
         setTitle(file.getName());
       }
     }
-    
+    restoreCursor();
+  }
+  
+  private void populateTote()
+  {
     // see if we can set a primary
     // ok, try to set one
     final Enumeration<Editable> iter = _theLayers.elements();
@@ -501,10 +516,6 @@ public class DebriefLiteApp implements FileDropListener
         }
       }
     }
-    
-    System.out.println(theTote.getPrimary());
-
-    restoreCursor();
   }
 
   private void handleImportDPF(final File file)
@@ -566,6 +577,8 @@ public class DebriefLiteApp implements FileDropListener
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);
+
+            populateTote();
           }
         });
       }
