@@ -53,7 +53,7 @@ import MWC.GenericData.WorldVector;
 public class DebriefRibbonInsert
 {
   
-  final static String[] layerItems = new String[] {"Select Layer","User-selected Layer"};
+  final private static String[] layerItems = new String[] {"Select Layer","User-selected Layer"};
   private static String selectedLayer;
   private static ItemListener selectLayerItemListener;
   private static JComboBox<String> selectLayerCombo;
