@@ -51,6 +51,8 @@ public class DebriefRibbonInsert
   
   final static String[] layerItems = new String[] {"Select Layer","User-selected Layer"};
   private static String selectedLayer;
+  private static ItemListener selectLayerItemListener;
+  private static JComboBox<String> selectLayerCombo;
   protected static void addInsertTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer, final Layers _theLayers,
       final PropertiesPanel _theProperties,
@@ -125,82 +127,100 @@ public class DebriefRibbonInsert
       final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
+    addDropDown(selectLayerItemListener,drawingMenu,RibbonElementPriority.TOP,_theLayers);
+    final CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
+            new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
+                WorldDistance.DEGS)), DebriefColors.RED, null);
+      }
+    };
+    ellipseShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
-        "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
-                new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-                    WorldDistance.DEGS)), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+        "images/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
+    final CreateShape polygonShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Polygon", "images/polygon_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new polygon", new PolygonShape(null),
+            DebriefColors.RED, null);
+      }
+    };
+    polygonShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "images/16/polygon.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Polygon", "images/polygon_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new polygon", new PolygonShape(null),
-                DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+        "images/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     
+    final CreateShape rectShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new rectangle", new RectangleShape(centre,
+            centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
+                45), 0.05, 0))), DebriefColors.RED, null);
+      }
+    };
+    rectShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
-        "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new rectangle", new RectangleShape(centre,
-                centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(
-                    45), 0.05, 0))), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+        "images/16/rectangle.png", rectShape, CommandButtonDisplayState.MEDIUM, null);
+    
+    
+    final CreateShape circleShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Circle", "images/circle_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
+            DebriefColors.RED, null);
+      }
+    };
+    circleShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
-        "images/16/circle.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Circle", "images/circle_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new circle", new CircleShape(centre, 4000),
-                DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+        "images/16/circle.png", circleShape, CommandButtonDisplayState.MEDIUM, null);
+    
+    final CreateShape arcShape =  new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Arc", "images/arc_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new arc", new ArcShape(centre,
+            new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
+            false), DebriefColors.RED, null);
+      }
+    };
+    arcShape.setSelectedLayerSource(selectLayerCombo);
+    
     final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "images/arc_add.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Arc", "images/arc_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new arc", new ArcShape(centre,
-                new WorldDistance(4000, WorldDistance.YARDS), 135, 90, true,
-                false), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
+        "images/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
     
    
-
-    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-        "images/16/line.png", new CreateShape(_toolParent, _theProperties,
-            _theLayers, "Line", "images/line_add.png", bounds)
-        {
-          @Override
-          protected ShapeWrapper getShape(final WorldLocation centre)
-          {
-            return new ShapeWrapper("new line", new LineShape(centre, centre
-                .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
-                    0.05, 0))), DebriefColors.RED, null);
-          }
-        }, CommandButtonDisplayState.MEDIUM, null);
     
-    ItemListener selectLayerItemListener = new ItemListener()
+    final CreateShape lineShape = new CreateShape(_toolParent, _theProperties,
+        _theLayers, "Line", "images/line_add.png", bounds)
+    {
+      @Override
+      protected ShapeWrapper getShape(final WorldLocation centre)
+      {
+        return new ShapeWrapper("new line", new LineShape(centre, centre
+            .add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45.0),
+                0.05, 0))), DebriefColors.RED, null);
+      }
+    };
+    lineShape.setSelectedLayerSource(selectLayerCombo);
+    
+    final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
+        "images/16/line.png", lineShape, CommandButtonDisplayState.MEDIUM, null);
+    
+    selectLayerItemListener = new ItemListener()
     {
       
       @Override
@@ -214,26 +234,6 @@ public class DebriefRibbonInsert
             //popup list layers dialog
             selectedLayer = getLayerName(_theLayers,true);
           }
-          
-          else if(Layers.NEW_LAYER_COMMAND.equals(jcombo.getSelectedItem())) {
-            String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
-            // check there's something there
-            if (!txt.isEmpty())
-            {
-              selectedLayer = txt;
-              // create base layer
-              final Layer newLayer = new BaseLayer();
-              newLayer.setName(selectedLayer);
-
-              // add to layers object
-              _theLayers.addThisLayer(newLayer);
-              jcombo.insertItemAt(selectedLayer, jcombo.getItemCount()-1);
-              jcombo.setSelectedItem(selectedLayer);
-            }
-            else {
-              JOptionPane.showInputDialog(null, "Enter name for new layer");
-            }
-          }
           else {
             //set this as the layer to which shape is added.
             selectedLayer = (String)jcombo.getSelectedItem();
@@ -243,13 +243,14 @@ public class DebriefRibbonInsert
       }
     };
     drawingMenu.startGroup();
-    addDropDown(selectLayerItemListener,drawingMenu,RibbonElementPriority.TOP,_theLayers);
+    
     drawingMenu.startGroup();
-    CreateLabel createLabelAction =new CreateLabel(_toolParent, _theProperties,
-        _theLayers, bounds, "New Label", "icons/24/label_add.png"); 
+    final CreateLabel createLabelShape =  new CreateLabel(_toolParent, _theProperties,
+        _theLayers, bounds, "New Label", "icons/24/label_add.png") ;
+    createLabelShape.setSelectedLayerSource(selectLayerCombo);
     MenuUtils.addCommand(
         "Label",
-        "icons/24/label_add.png",createLabelAction ,
+        "icons/24/label_add.png",createLabelShape,
             drawingMenu,RibbonElementPriority.TOP);
     drawingMenu.startGroup();
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
@@ -268,27 +269,36 @@ public class DebriefRibbonInsert
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    JComboBox<String> jCombo = new JComboBox<String>(layerItems);
-    jCombo.addItemListener(actionToAdd);
-    jCombo.addFocusListener(new FocusAdapter()
+    selectLayerCombo = new JComboBox<String>(layerItems);
+    selectLayerCombo.addItemListener(actionToAdd);
+    selectLayerCombo.addFocusListener(new FocusAdapter()
     {
       @Override
       public void focusGained(FocusEvent e)
       {
-        String[] layers = theLayers.trimmedLayers(false);
         if(e.getSource() instanceof JComboBox) {
+          String[] layers = theLayers.trimmedLayers(false);         
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
+          String selectedItem = (String)jcombo.getSelectedItem();
+          System.out.println("Selected item:"+selectedItem);
           jcombo.removeAllItems();
           for(String layer:layers) {
             jcombo.addItem(layer);
           }
           jcombo.addItem(layerItems[1]);
+          //remove listener
+          jcombo.removeItemListener(selectLayerItemListener);
+          if(selectedItem!=null) {
+            jcombo.setSelectedItem(selectedItem);
+          }
+          //add it back
+          jcombo.addItemListener(selectLayerItemListener);
         }
       }
     });
     
-    panel.add(jCombo);
+    panel.add(selectLayerCombo);
     JRibbonComponent component = new JRibbonComponent(panel);
     component.setDisplayPriority(priority);
     mapBand.addRibbonComponent(component);
@@ -328,6 +338,11 @@ public class DebriefRibbonInsert
 
           // add to layers object
           theLayers.addThisLayer(newLayer);
+          selectedLayer = res;
+          selectLayerCombo.setEditable(true);
+          selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
+          selectLayerCombo.setSelectedItem(selectedLayer);
+          selectLayerCombo.setEditable(false);
         }
         else
         {
@@ -341,6 +356,10 @@ public class DebriefRibbonInsert
     }
     
     return res;
+  }
+  
+  public static final String getSelectedLayer() {
+    return (String)selectLayerCombo.getSelectedItem();
   }
 
   private static JRibbonBand createDecorations(final Layers _theLayers,

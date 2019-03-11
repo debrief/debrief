@@ -134,6 +134,7 @@ public final class CreateLabel extends CoreCreateShape
           centre,
           MWC.GUI.Properties.DebriefColors.ORANGE);
       Layer theLayer = null;
+      String selectedLayer = getSelectedLayer();
       if(selectedLayer == null) {
         String layerToAddTo = getLayerName();
         theLayer = _theData.findLayer(layerToAddTo);

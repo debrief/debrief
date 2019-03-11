@@ -14,6 +14,7 @@
  */
 package Debrief.Tools.Palette;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 
 import MWC.GUI.BaseLayer;
@@ -34,7 +35,7 @@ public abstract class CoreCreateShape extends PlainTool
    */
   protected Layers _theData;
   
-  protected String selectedLayer;
+  protected JComboBox<String> selectedLayerSource;
   
   protected final BoundsProvider _theBounds;
 
@@ -64,8 +65,17 @@ public abstract class CoreCreateShape extends PlainTool
     return _theBounds.getViewport();
   }
   
-  protected final void setSelectedLayer(String layer) {
-    selectedLayer = layer;
+  //used in debrief lite, to get the select layer from ribbon tab
+  public final void setSelectedLayerSource(JComboBox<String> jCombo) {
+    selectedLayerSource = jCombo;
+  }
+  
+  
+  protected final String getSelectedLayer() {
+    if(selectedLayerSource!=null) {
+      return (String)selectedLayerSource.getSelectedItem();
+    }
+    return null;
   }
   /**
    * @return

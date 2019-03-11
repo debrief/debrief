@@ -135,7 +135,10 @@ abstract public class CreateShape extends CoreCreateShape
       final WorldLocation centre = new WorldLocation(theBounds.getCentreAtSurface());
 
       final ShapeWrapper theWrapper = getShape(centre);
-      String layerToAddTo = getLayerName();
+      String layerToAddTo = getSelectedLayer();
+      if(layerToAddTo == null) {
+        layerToAddTo = getLayerName();
+      }
       Layer theLayer = _theData.findLayer(layerToAddTo);
       if(theLayer == null && !AutoSelectTarget.getAutoSelectTarget())
       {
