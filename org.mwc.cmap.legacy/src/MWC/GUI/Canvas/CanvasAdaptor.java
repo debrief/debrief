@@ -16,7 +16,9 @@
 package MWC.GUI.Canvas;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
 
@@ -35,14 +37,23 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	private final MWC.Algorithms.PlainProjection _proj;
 
+  private Color _backColor;
+
 	/** Creates new CanvasAdaptor */
 	public CanvasAdaptor(final MWC.Algorithms.PlainProjection proj,
 			final java.awt.Graphics dest) {
-		_proj = proj;
-		_dest = dest;
+	  this(proj, dest, null);
 	}
 
-	public void addPainter(final CanvasType.PaintListener listener) {
+	public CanvasAdaptor(final MWC.Algorithms.PlainProjection proj, 
+	    final Graphics dest, final Color bkColor)
+  {
+    _proj = proj;
+    _dest = dest;
+    _backColor = bkColor;
+  }
+
+  public void addPainter(final CanvasType.PaintListener listener) {
 		// nada
 	}
 
@@ -109,7 +120,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * set/get the background colour
 	 */
 	public java.awt.Color getBackgroundColor() {
-		return null;
+		return _backColor;
 	}
 
 	/**
