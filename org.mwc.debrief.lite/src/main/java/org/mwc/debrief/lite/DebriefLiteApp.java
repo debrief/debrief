@@ -54,6 +54,7 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
+import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import MWC.GUI.DataListenerAdaptor;
@@ -62,6 +63,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.DataListener2;
+import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
@@ -196,6 +198,9 @@ public class DebriefLiteApp implements FileDropListener
   };
   private final TimeManager timeManager = new TimeManager();
   private final GeoToolMapRenderer geoMapRenderer;
+  private PainterManager painterManager;
+  private final CanvasAdaptor _theCanvas;
+  private LiteTote theTote;
 
   protected static boolean _plotDirty;
   private static String defaultTitle;
@@ -249,6 +254,7 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+    _theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics());
 
     final DataListener dListener = new DataListener()
     {
@@ -274,11 +280,15 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-
-    timeManager.addListener(_stepControl,
-        TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(_stepControl,
-        TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+    
+    painterManager = new PainterManager(_stepControl);
+    PlainChart theChart = new LiteChart(_theLayers, _theCanvas, mapPane);
+    theTote = new LiteTote(_theLayers, _stepControl);
+    final Debrief.GUI.Tote.Painters.TotePainter tp =
+        new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
+            theTote);
+    painterManager.addPainter(tp);
+    painterManager.setCurrentListener(tp);
 
     // create the components
     initForm();
@@ -377,6 +387,12 @@ public class DebriefLiteApp implements FileDropListener
     dest.setLineWidth(2f);
     dest.startDraw(gc);
     _theLayers.paint(dest);
+    
+    System.out.println("paint");
+    
+    // and the time marker
+    painterManager.newTime(null, timeManager.getTime(), dest);
+    
     dest.endDraw(gc);
   }
 
