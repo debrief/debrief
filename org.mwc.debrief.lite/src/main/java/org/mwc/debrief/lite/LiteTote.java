@@ -18,14 +18,13 @@ import MWC.GUI.Layers;
    @Override
   protected void updateToteMembers()
   {
-    // TODO Auto-generated method stub
+  }
 
-   }
-
+   
+   
    @Override
   public Container getPanel()
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
