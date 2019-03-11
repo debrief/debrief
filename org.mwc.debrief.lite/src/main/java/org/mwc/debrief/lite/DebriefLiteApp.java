@@ -483,10 +483,7 @@ public class DebriefLiteApp implements FileDropListener
       Trace.trace(e);
     }
     finally {
-      if(currentFileName == null) {
-        currentFileName = file.getAbsolutePath();
-        setTitle(file.getName());
-      }
+      resetFileName(file);
     }
     restoreCursor();
   }
@@ -517,7 +514,38 @@ public class DebriefLiteApp implements FileDropListener
       }
     }
   }
+  
+  private static void resetFileName(final File file) {
+    if(DebriefLiteApp.currentFileName == null) {
+      DebriefLiteApp.currentFileName = file.getAbsolutePath();
+      DebriefLiteApp.setTitle(file.getName());
+    }
+  }
 
+  public static void openPlotFile(final File file) {
+    try {
+      _instance.handleImportDPF(file);
+    }catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+    finally {
+      resetFileName(file);
+    }
+  }
+  
+  public static void openRepFile(final File file) {
+    try {
+    _instance.handleImportRep(new File[] {file});
+    }catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+    finally {
+      resetFileName(file);
+    }
+  }
+  
   private void handleImportDPF(final File file)
   {
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
