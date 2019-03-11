@@ -1433,6 +1433,11 @@ public class Layers implements Serializable, Plottable, PlottablesType
   
   public String[] trimmedLayers()
   {
+    return trimmedLayers(false);
+  }
+  
+  public String[] trimmedLayers(boolean addNewLayerCmd)
+  {
     final Vector<String> res = new Vector<String>(0, 1);
     final Enumeration<Editable> enumer = elements();
     while (enumer.hasMoreElements())
@@ -1445,8 +1450,9 @@ public class Layers implements Serializable, Plottable, PlottablesType
           res.add(thisLayer.getName());
       }
     }
-
-    res.add(NEW_LAYER_COMMAND);
+    if(addNewLayerCmd) {
+      res.add(NEW_LAYER_COMMAND);
+    }
 
     final String[] sampleArray = new String[]
     { "aa" };

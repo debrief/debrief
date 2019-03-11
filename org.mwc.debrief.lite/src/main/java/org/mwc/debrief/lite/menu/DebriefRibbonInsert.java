@@ -212,8 +212,9 @@ public class DebriefRibbonInsert
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
           if(jcombo.getSelectedItem().equals(layerItems[1])) {
             //popup list layers dialog
-            selectedLayer = getLayerName(_theLayers);
+            selectedLayer = getLayerName(_theLayers,true);
           }
+          
           else if(Layers.NEW_LAYER_COMMAND.equals(jcombo.getSelectedItem())) {
             String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
             // check there's something there
@@ -274,7 +275,7 @@ public class DebriefRibbonInsert
       @Override
       public void focusGained(FocusEvent e)
       {
-        String[] layers = theLayers.trimmedLayers();
+        String[] layers = theLayers.trimmedLayers(false);
         if(e.getSource() instanceof JComboBox) {
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
@@ -298,8 +299,8 @@ public class DebriefRibbonInsert
   public void setShapesEnabled(boolean enable) {
   }
   
-  private static String getLayerName(Layers theLayers) {
-    String[] layers = theLayers.trimmedLayers();
+  private static String getLayerName(Layers theLayers,boolean addNewLayerCmd) {
+    String[] layers = theLayers.trimmedLayers(addNewLayerCmd);
     ListLayersDialog listDialog = new ListLayersDialog(layers);
     listDialog.setSize(350,300);
     listDialog.setLocationRelativeTo(null);
