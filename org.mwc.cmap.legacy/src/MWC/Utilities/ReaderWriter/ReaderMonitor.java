@@ -112,7 +112,7 @@ public class ReaderMonitor extends BufferedReader
   private static class SwingProvider implements MonitorProvider
   {
 
-    ProgressMonitor _pm;
+    private ProgressMonitor _pm;
     private Thread _myThread;
     private int _length;
 
@@ -127,8 +127,8 @@ public class ReaderMonitor extends BufferedReader
 
     protected class showMonitor extends Thread
     {
-      String _name;
-      int _length;
+      private final String _name;
+      private final int _length;
 
       public showMonitor(final String name, final int length)
       {
