@@ -16,18 +16,12 @@ package Debrief.Tools.Palette;
 
 import javax.swing.JOptionPane;
 
-import Debrief.Tools.Palette.CreateShape.CreateShapeAction;
-import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
-import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -39,6 +33,8 @@ public abstract class CoreCreateShape extends PlainTool
   /** the layers we are going to drop this shape into
    */
   protected Layers _theData;
+  
+  protected String selectedLayer;
   
   protected final BoundsProvider _theBounds;
 
@@ -66,6 +62,10 @@ public abstract class CoreCreateShape extends PlainTool
   final protected WorldArea getBounds()
   {
     return _theBounds.getViewport();
+  }
+  
+  protected final void setSelectedLayer(String layer) {
+    selectedLayer = layer;
   }
   /**
    * @return
@@ -120,7 +120,7 @@ public abstract class CoreCreateShape extends PlainTool
           res = selection;
         }
       }
-      }
+    }
       
     return res;
   }

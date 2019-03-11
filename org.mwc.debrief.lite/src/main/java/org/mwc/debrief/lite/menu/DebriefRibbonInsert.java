@@ -1,5 +1,15 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.FlowLayout;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -12,10 +22,11 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
-import Debrief.Tools.Palette.AutoSelectTarget;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
+import Debrief.Tools.Palette.ListLayersDialog;
 import Debrief.Wrappers.ShapeWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DebriefColors;
@@ -37,6 +48,9 @@ import MWC.GenericData.WorldVector;
 
 public class DebriefRibbonInsert
 {
+  
+  final static String[] layerItems = new String[] {"Select Layer","User-selected Layer"};
+  private static String selectedLayer;
   protected static void addInsertTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer, final Layers _theLayers,
       final PropertiesPanel _theProperties,
@@ -186,15 +200,56 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     
-    MenuUtils
-        .addCommandToggleButton("Select \ntarget layer",
-            "icons/16/layer_mgr.png", new AutoSelectTarget(),
-            drawingMenu,RibbonElementPriority.TOP,true,null,false);
-    MenuUtils.addCommand("Label",
-        "icons/24/label_add.png", new CreateLabel(_toolParent, _theProperties,
-            _theLayers, bounds, "New Label", "icons/24/label_add.png"),
+    ItemListener selectLayerItemListener = new ItemListener()
+    {
+      
+      @Override
+      public void itemStateChanged(ItemEvent e)
+      {
+        if(e.getStateChange() == ItemEvent.SELECTED)  
+        {
+          @SuppressWarnings("unchecked")
+          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
+          if(jcombo.getSelectedItem().equals(layerItems[1])) {
+            //popup list layers dialog
+            selectedLayer = getLayerName(_theLayers);
+          }
+          else if(Layers.NEW_LAYER_COMMAND.equals(jcombo.getSelectedItem())) {
+            String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+            // check there's something there
+            if (!txt.isEmpty())
+            {
+              selectedLayer = txt;
+              // create base layer
+              final Layer newLayer = new BaseLayer();
+              newLayer.setName(selectedLayer);
+
+              // add to layers object
+              _theLayers.addThisLayer(newLayer);
+              jcombo.insertItemAt(selectedLayer, jcombo.getItemCount()-1);
+              jcombo.setSelectedItem(selectedLayer);
+            }
+            else {
+              JOptionPane.showInputDialog(null, "Enter name for new layer");
+            }
+          }
+          else {
+            //set this as the layer to which shape is added.
+            selectedLayer = (String)jcombo.getSelectedItem();
+          }
+        }
+        
+      }
+    };
+    drawingMenu.startGroup();
+    addDropDown(selectLayerItemListener,drawingMenu,RibbonElementPriority.TOP,_theLayers);
+    drawingMenu.startGroup();
+    CreateLabel createLabelAction =new CreateLabel(_toolParent, _theProperties,
+        _theLayers, bounds, "New Label", "icons/24/label_add.png"); 
+    MenuUtils.addCommand(
+        "Label",
+        "icons/24/label_add.png",createLabelAction ,
             drawingMenu,RibbonElementPriority.TOP);
-    
     drawingMenu.startGroup();
     drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
@@ -208,7 +263,83 @@ public class DebriefRibbonInsert
     return drawingMenu;
   }
   
+  private static JRibbonComponent addDropDown(final ItemListener actionToAdd,
+      final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
+  {
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+    JComboBox<String> jCombo = new JComboBox<String>(layerItems);
+    jCombo.addItemListener(actionToAdd);
+    jCombo.addFocusListener(new FocusAdapter()
+    {
+      @Override
+      public void focusGained(FocusEvent e)
+      {
+        String[] layers = theLayers.trimmedLayers();
+        if(e.getSource() instanceof JComboBox) {
+          @SuppressWarnings("unchecked")
+          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
+          jcombo.removeAllItems();
+          for(String layer:layers) {
+            jcombo.addItem(layer);
+          }
+          jcombo.addItem(layerItems[1]);
+        }
+      }
+    });
+    
+    panel.add(jCombo);
+    JRibbonComponent component = new JRibbonComponent(panel);
+    component.setDisplayPriority(priority);
+    mapBand.addRibbonComponent(component);
+    return component;
+    
+  }
+  
   public void setShapesEnabled(boolean enable) {
+  }
+  
+  private static String getLayerName(Layers theLayers) {
+    String[] layers = theLayers.trimmedLayers();
+    ListLayersDialog listDialog = new ListLayersDialog(layers);
+    listDialog.setSize(350,300);
+    listDialog.setLocationRelativeTo(null);
+    listDialog.setModal(true);
+    listDialog.setVisible(true);
+    String selection = listDialog.getSelectedItem();
+    // did user say yes?
+    String res = null;
+    if (selection != null)
+    {
+      // hmm, is it our add layer command?
+      if (selection.equals(Layers.NEW_LAYER_COMMAND))
+      {
+        // better create one. Ask the user
+
+        // create input box dialog
+        String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+        // check there's something there
+        if (!txt.isEmpty())
+        {
+          res = txt;
+          // create base layer
+          final Layer newLayer = new BaseLayer();
+          newLayer.setName(res);
+
+          // add to layers object
+          theLayers.addThisLayer(newLayer);
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else {
+        res = selection;
+      }
+  
+    }
+    
+    return res;
   }
 
   private static JRibbonBand createDecorations(final Layers _theLayers,

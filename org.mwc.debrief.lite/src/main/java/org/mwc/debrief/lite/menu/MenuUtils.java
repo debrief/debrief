@@ -137,7 +137,9 @@ public class MenuUtils
     RichTooltip richTooltip = builder.setTitle(commandName).addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
     commandButton.addActionListener(actionToAdd);
-    commandButton.setDisplayState(priority);
+    if(priority!=null) {
+      commandButton.setDisplayState(priority);
+    }
     return commandButton;
   }
 
@@ -159,6 +161,8 @@ public class MenuUtils
     return commandButton;
   }
 
+  
+  
   public static Image createImage(final String imageName)
   {
     final URL iconURL = MenuUtils.class.getClassLoader().getResource(imageName);

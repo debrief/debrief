@@ -112,7 +112,7 @@ public final class CreateLabel extends CoreCreateShape
 
     _thePanel = thePanel;
   }
-
+  
   /** get the current visible data area
    * 
    */
@@ -133,16 +133,20 @@ public final class CreateLabel extends CoreCreateShape
       final LabelWrapper theWrapper = new LabelWrapper("blank label",
           centre,
           MWC.GUI.Properties.DebriefColors.ORANGE);
-      
-      String layerToAddTo = getLayerName();
-      Layer theLayer = _theData.findLayer(layerToAddTo);
-      if(theLayer == null)
-      {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
+      Layer theLayer = null;
+      if(selectedLayer == null) {
+        String layerToAddTo = getLayerName();
+        theLayer = _theData.findLayer(layerToAddTo);
+        if(theLayer == null)
+        {
+          theLayer = new BaseLayer();
+          theLayer.setName("Misc");
+          _theData.addThisLayer(theLayer);
+        }
       }
-
+      else {
+        theLayer = _theData.findLayer(selectedLayer);
+      }
       return new CreateLabelAction(_thePanel,
           theLayer,
           theWrapper,
