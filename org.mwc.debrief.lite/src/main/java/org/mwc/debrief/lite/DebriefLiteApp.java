@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -22,6 +23,8 @@ import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.WindowAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,7 +60,9 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.DataListenerAdaptor;
+import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -72,6 +77,7 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -245,6 +251,14 @@ public class DebriefLiteApp implements FileDropListener
     LiteStepControl _stepControl = new LiteStepControl(_toolParent);
     timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
     timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+    
+    timeManager.addListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        redoTimePainter();
+      }}, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
@@ -312,6 +326,15 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(_listenForMods);
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
+  }
+  
+  private void redoTimePainter()
+  {
+    // and the time marker
+    final Graphics graphics = mapPane.getGraphics();
+    final CanvasAdaptor dest = new CanvasAdaptor(projection, graphics,
+        Color.red);
+    painterManager.newTime(null, timeManager.getTime(), dest);
   }
 
   private void initializeMapContent()
@@ -383,7 +406,7 @@ public class DebriefLiteApp implements FileDropListener
 
   protected void doPaint(final Graphics gc)
   {
-    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc);
+    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc, Color.red);
     dest.setLineWidth(2f);
     dest.startDraw(gc);
     _theLayers.paint(dest);
@@ -391,8 +414,10 @@ public class DebriefLiteApp implements FileDropListener
     System.out.println("paint");
     
     // and the time marker
-    painterManager.newTime(null, timeManager.getTime(), dest);
     
+    // and the time marker
+    redoTimePainter();
+
     dest.endDraw(gc);
   }
 
@@ -452,6 +477,32 @@ public class DebriefLiteApp implements FileDropListener
         setTitle(file.getName());
       }
     }
+    
+    // see if we can set a primary
+    // ok, try to set one
+    final Enumeration<Editable> iter = _theLayers.elements();
+    while(iter.hasMoreElements())
+    {
+      final Layer thisL = (Layer) iter.nextElement();
+      if(thisL instanceof TrackWrapper)
+      {
+        final TrackWrapper thisT = (TrackWrapper) thisL;
+        if(theTote.getPrimary() == null)
+        {
+          theTote.setPrimary(thisT);
+        }
+        else if(theTote.getPrimary() != thisT)
+        {
+          Vector<WatchableList> secs = theTote.getSecondary();
+          if(!secs.contains(thisT))
+          {
+             theTote.setSecondary(thisT);
+          }
+        }
+      }
+    }
+    
+    System.out.println(theTote.getPrimary());
 
     restoreCursor();
   }
@@ -499,7 +550,7 @@ public class DebriefLiteApp implements FileDropListener
           public void run()
           {
             layerManager.createAndInitializeTree();
-            layerManager.dataModified(null,null);
+            layerManager.dataModified(null, null);
             mapPane.repaint();
 
             restoreCursor();
