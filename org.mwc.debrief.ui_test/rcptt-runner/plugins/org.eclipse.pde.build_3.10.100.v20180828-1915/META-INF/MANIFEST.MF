@@ -1,0 +1,144 @@
+Manifest-Version: 1.0
+Automatic-Module-Name: org.eclipse.pde.build
+Bundle-SymbolicName: org.eclipse.pde.build;singleton:=true
+Built-By: genie.releng
+Require-Bundle: org.eclipse.core.runtime;bundle-version="[3.2.0,4.0.0)
+ ",org.eclipse.ant.core;bundle-version="[3.1.100,4.0.0)",org.eclipse.o
+ sgi;bundle-version="[3.3.0,4.0.0)",org.eclipse.equinox.p2.jarprocesso
+ r;bundle-version="[1.0.1,2.0.0)",org.eclipse.equinox.p2.publisher;bun
+ dle-version="1.1.0",org.eclipse.equinox.p2.repository.tools;bundle-ve
+ rsion="[2.0.0,3.0.0)";resolution:=optional,org.eclipse.equinox.p2.dir
+ ector.app;bundle-version="1.0.200",org.eclipse.equinox.p2.publisher.e
+ clipse;bundle-version="1.0.0"
+Bundle-ManifestVersion: 2
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-SourceReferences: scm:git:git://git.eclipse.org/gitroot/pde/ec
+ lipse.pde.build.git;path="org.eclipse.pde.build";tag="I20180828-2000"
+ ;commitId=008da6eeabcbd6c71ba4079ca9745594b45393b2
+Bundle-Vendor: %providerName
+Import-Package: com.ibm.icu.util,org.eclipse.equinox.frameworkadmin;ve
+ rsion="[2.0.0,3.0.0)",org.eclipse.equinox.internal.p2.core.helpers,or
+ g.eclipse.equinox.internal.p2.engine,org.eclipse.equinox.internal.p2.
+ engine.phases,org.eclipse.equinox.internal.p2.metadata,org.eclipse.eq
+ uinox.internal.p2.metadata.expression,org.eclipse.equinox.internal.p2
+ .updatesite;resolution:=optional,org.eclipse.equinox.internal.provisi
+ onal.frameworkadmin,org.eclipse.equinox.p2.core;version="[2.0.0,3.0.0
+ )",org.eclipse.equinox.p2.engine;version="[2.0.0,3.0.0)",org.eclipse.
+ equinox.p2.metadata;version="[2.0.0,3.0.0)",org.eclipse.equinox.p2.me
+ tadata.expression;version="[2.0.0,3.0.0)",org.eclipse.equinox.p2.quer
+ y;version="[2.0.0,3.0.0)",org.eclipse.equinox.p2.repository;version="
+ [2.0.0,3.0.0)",org.eclipse.equinox.p2.repository.artifact;version="[2
+ .0.0,3.0.0)",org.eclipse.equinox.p2.repository.artifact.spi;version="
+ [2.0.0,3.0.0)",org.eclipse.equinox.p2.repository.metadata;version="[2
+ .0.0,3.0.0)",org.eclipse.equinox.simpleconfigurator.manipulator;versi
+ on="[2.0.0,3.0.0)"
+Export-Package: org.eclipse.pde.build,org.eclipse.pde.internal.build;x
+ -friends:="org.eclipse.pde.core,org.eclipse.pde.ui,org.eclipse.pde.la
+ unching",org.eclipse.pde.internal.build.ant;x-internal:=true,org.ecli
+ pse.pde.internal.build.builder;x-internal:=true,org.eclipse.pde.inter
+ nal.build.fetch;x-internal:=true,org.eclipse.pde.internal.build.packa
+ ger;x-friends:="org.eclipse.pde.core",org.eclipse.pde.internal.build.
+ properties;x-internal:=true,org.eclipse.pde.internal.build.publisher.
+ compatibility;x-internal:=true,org.eclipse.pde.internal.build.site;x-
+ friends:="org.eclipse.pde.core,org.eclipse.pde.ui",org.eclipse.pde.in
+ ternal.build.site.compatibility;x-internal:=true
+Bundle-Name: %pluginName
+Bundle-Version: 3.10.100.v20180828-1915
+Bundle-ClassPath: pdebuild.jar
+Bundle-Localization: plugin
+Bundle-Activator: org.eclipse.pde.internal.build.BuildActivator
+Created-By: Apache Maven 3.3.3
+Build-Jdk: 1.8.0_162
+Eclipse-BundleShape: dir
+
+Name: plugin.xml
+SHA-256-Digest: 8E/BwKff4FfnmdLLd5rp06GvzYH+K8o1ahQX95Ox4JM=
+
+Name: data/21/fragment/fragment.xml
+SHA-256-Digest: x6/s+72BfvzUQnh8PbMYqEr1F7FEu2VoNrPNe/AO59c=
+
+Name: about_files/LICENSE-2.0.txt
+SHA-256-Digest: z8d0m5b2O9McPEK1xHG/dWgUBT6EfBDz6wA0F7xSPTA=
+
+Name: scripts/genericTargets.xml
+SHA-256-Digest: d+iyvt/+ddVOF38UNVo6GYF69ve0cPXthmGJm67/JTo=
+
+Name: scripts/build.xml
+SHA-256-Digest: xneYNMWMpNct4m7mc/zyijnbtMnoq418vtMju8QN+2s=
+
+Name: .options
+SHA-256-Digest: 0GJsrgQN/Xa2xqSzy7mdH1o5KXFpWkGak/i/iYnKtrI=
+
+Name: templates/headless-build/customAssembly.xml
+SHA-256-Digest: SOxoDqU7hcC1u/3ut74Vsglh340QJWjbL715szg2SOg=
+
+Name: data/21/plugin/plugin.xml
+SHA-256-Digest: y3PlV2lHJ+rXBm4PLLLg+BsQpovoyP+jAbBdchUBJik=
+
+Name: plugin.properties
+SHA-256-Digest: HFH2/cDf57qvSLdg4UhuGztE1RhMkKPzMKiAFa+BOiw=
+
+Name: templates/headless-build/customTargets.xml
+SHA-256-Digest: L+HsY0a8XFvhbkv6So/hUevG+0jVLvKIas+lZTwYw0g=
+
+Name: data/30/fragment/META-INF/MANIFEST.MF
+SHA-256-Digest: REI0l8DeMweECk9EEFCUeJ1XGLWMJRprzOfaU8BGbcA=
+
+Name: templates/headless-build/build.properties
+SHA-256-Digest: aHC+v3oQf5teG+eMy9uJy0EifHEb4agPI6/87EV5mBY=
+
+Name: about.html
+SHA-256-Digest: 7mbS+ztMDS7S5/aYvJ7U49bPd/pcr0CtAylhJdsaxfA=
+
+Name: scripts/productBuild/allElements.xml
+SHA-256-Digest: 6b5oYxbAGNNwJDgh3zvq9zP+2TwklJCsiZlgj0ioY7s=
+
+Name: templates/packager/packager.properties
+SHA-256-Digest: j3KE0lqPChe3s+jQ17VgIgCoM8fMrxYNTkjvEo/es1Y=
+
+Name: data/30/plugin/META-INF/MANIFEST.MF
+SHA-256-Digest: 7AlqyoY2iy8wLstUDcfaOF0YyI0xUQOOc/hty55ajC4=
+
+Name: scripts/package.xml
+SHA-256-Digest: GjE6+BNee/m/sdFLhVbCrCsAZ646WJ15bj2BhbWUktQ=
+
+Name: .api_description
+SHA-256-Digest: QEtO+dlmMvJSAELskyQ55YV8TpDKLHC7uQbcrB+s5uo=
+
+Name: data/env.properties
+SHA-256-Digest: 83ktdd3aMdt52IBwo1aHDpPTJyQ3+Ie+xnXnLlMbmsw=
+
+Name: scripts/productBuild/productBuild.xml
+SHA-256-Digest: FqzTeNv1ex3GR0OsHtpUQi2lnB+quxkX5Vxg+K7ty30=
+
+Name: META-INF/eclipse.inf
+SHA-256-Digest: bSW1YGboX6I6p7wDw5s2jZAEdH4VEWk6/bIPMlpzOuk=
+
+Name: templates/packager/customTargets.xml
+SHA-256-Digest: OOleLl9iZiG9ojl3lfOf1nO6HjMRT1klE4psKH8a8dE=
+
+Name: templates/headless-build/allElements.xml
+SHA-256-Digest: wuKLZzu9Y8eTTGotCY+mKvNT/UO0S2pF9h02s4lPSnM=
+
+Name: templates/packager/packaging.properties
+SHA-256-Digest: xT361GjXjgKoIvWBY1NDJ/VPAJB7YRVQ+8Cr42+vrjQ=
+
+Name: data/30/fragment/fragment.xml
+SHA-256-Digest: 5dI2xQIjlZj9SgQhcx4dpqPx46cDC29OioTGtJ+3gt4=
+
+Name: templates/plugins/customBuildCallbacks.xml
+SHA-256-Digest: 52wIhV8f0A9M7l8agu8jdlCXYQwbXQj3VB75xYHC5DE=
+
+Name: templates/features/customBuildCallbacks.xml
+SHA-256-Digest: t+Q/015nu/XZaF+Gw/jwewDY3ex81QwfOkr+diCXL3g=
+
+Name: data/30/plugin/plugin.xml
+SHA-256-Digest: nSZdb7v85tBzOacQFiN3fJEQ9K6YfSn+hyLrH2thlX0=
+
+Name: lib/pdebuild-ant.jar
+SHA-256-Digest: v1Eu01/VsBVN8FW3IhSNJ/H3GCK1TMSxK7wIYatLE7o=
+
+Name: pdebuild.jar
+SHA-256-Digest: i9sGNWw/AKA2rHII7lwljf6nCzyeSXO5xUB9LlofFNk=
+
