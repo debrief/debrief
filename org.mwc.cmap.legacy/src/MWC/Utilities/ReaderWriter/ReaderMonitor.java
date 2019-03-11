@@ -56,7 +56,6 @@ public class ReaderMonitor extends BufferedReader
 {
   private final int _length;
   private int _counter;
-  private int _progress;
 
   private MonitorProvider _provider;
 
@@ -66,7 +65,6 @@ public class ReaderMonitor extends BufferedReader
     super(r);
     _length = length;
     _counter = 0;
-    _progress = 0;
     this._provider = provider;
     _provider.init(fileName, _length);
   }
