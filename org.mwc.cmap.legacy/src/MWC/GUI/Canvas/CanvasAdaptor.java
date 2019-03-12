@@ -21,6 +21,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.ImageObserver;
+import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -39,6 +40,8 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
   private Color _backColor;
 
+  private final Vector<PaintListener> _painters;
+
 	/** Creates new CanvasAdaptor */
 	public CanvasAdaptor(final MWC.Algorithms.PlainProjection proj,
 			final java.awt.Graphics dest) {
@@ -51,10 +54,11 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
     _proj = proj;
     _dest = dest;
     _backColor = bkColor;
+    _painters= new Vector<CanvasType.PaintListener>();
   }
 
   public void addPainter(final CanvasType.PaintListener listener) {
-		// nada
+    _painters.add(listener);
 	}
 
 	public void drawLine(final int x1, final int y1, final int x2, final int y2) {
@@ -133,7 +137,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public java.util.Enumeration getPainters() {
-		return null;
+	  return _painters.elements();
 	}
 
 	public MWC.Algorithms.PlainProjection getProjection() {
@@ -153,7 +157,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	}
 
 	public void removePainter(final CanvasType.PaintListener listener) {
-		//
+	  _painters.remove(listener);
 	}
 
 	/**
