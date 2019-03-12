@@ -58,6 +58,8 @@ import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
 import Debrief.GUI.Tote.Painters.PainterManager;
+import Debrief.GUI.Tote.Painters.SnailPainter;
+import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.TrackWrapper;
@@ -71,6 +73,7 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
@@ -302,13 +305,18 @@ public class DebriefLiteApp implements FileDropListener
     final Debrief.GUI.Tote.Painters.TotePainter tp =
         new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
             theTote);
-    painterManager.addPainter(tp);
-    painterManager.setCurrentListener(tp);
+    tp.setColor(Color.white);
+    SnailPainter sp = new SnailPainter(theChart, _theLayers, theTote);
+    
+    ToteSetter normalT = new ToteSetter(painterManager, tp);
+    ToteSetter snailT = new ToteSetter(painterManager, sp);
+    normalT.run();
+    
 
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager, _myOperations);
+        _stepControl, timeManager, _myOperations, normalT, snailT);
     _listenForMods = new DataListenerAdaptor()
     {
       
@@ -328,13 +336,39 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
   }
+    
+  private static class ToteSetter implements Runnable
+  {
+    final private PainterManager _manager;
+    final private StepperListener _painter;
+
+    public ToteSetter(final PainterManager manager, final StepperListener painter)
+    {
+      _manager = manager;
+      _manager.addPainter(painter);
+      _painter = painter;
+    }
+
+    @Override
+    public void run()
+    {
+      _manager.setCurrentListener(_painter);
+    }
+  }
   
   private void redoTimePainter(boolean bigPaint)
   {
+    final StepperListener current = painterManager.getCurrentPainterObject();
+    final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
+
+    // we need to use different XOR background colors depending on if 
+    // we're in normal or snail mode
+    final Color backColor = isNormal ? Color.BLACK : Color.white;
+    
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
     final CanvasAdaptor dest = new CanvasAdaptor(projection, graphics,
-        Color.DARK_GRAY);
+        backColor);
     
     if(bigPaint)
     {
@@ -346,10 +380,14 @@ public class DebriefLiteApp implements FileDropListener
     }
     else
     {
+      if(!isNormal)
+      {
+        SnailPainter snail = (SnailPainter) current;
+        snail.setVectorStretch(1d);
+      }
+      
       painterManager.newTime(null, timeManager.getTime(), dest);
     }
-    
-
   }
 
   private void initializeMapContent()
@@ -398,7 +436,7 @@ public class DebriefLiteApp implements FileDropListener
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane, final LiteStepControl stepControl,
-      final TimeManager timeManager, final PlotOperations operation)
+      final TimeManager timeManager, final PlotOperations operation, final ToteSetter normalT, final ToteSetter snailT)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -416,15 +454,23 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }};
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
-        geoMapRenderer, stepControl, timeManager, operation, session, undoBuffer, resetAction);
+        geoMapRenderer, stepControl, timeManager, operation, session, undoBuffer, resetAction,
+        normalT, snailT);
   }
 
   protected void doPaint(final Graphics gc)
   {
     final CanvasAdaptor dest = new CanvasAdaptor(projection, gc, Color.red);
-    dest.setLineWidth(2f);
-    dest.startDraw(gc);
-    _theLayers.paint(dest);
+    
+    // ok, are we in snail mode?
+    String current = painterManager.getCurrentPainterObject().toString();
+    if(current.equals(TotePainter.NORMAL_NAME))
+    {
+      // ok, we need to draw in the layers
+      dest.setLineWidth(2f);
+      dest.startDraw(gc);
+      _theLayers.paint(dest);
+    }
     
     // and the time marker
     redoTimePainter(true);
