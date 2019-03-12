@@ -377,6 +377,11 @@ public class DebriefRibbonInsert
       }
       else {
         res = selection;
+        selectedLayer = res;
+        selectLayerCombo.setEditable(true);
+        selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
+        selectLayerCombo.setSelectedItem(selectedLayer);
+        selectLayerCombo.setEditable(false);
       }
   
     }
