@@ -161,9 +161,10 @@ public class DebriefRibbonTimeController
       final GeoToolMapRenderer _geoMapRenderer,
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Layers layers,
-      final UndoBuffer undoBuffer)
+      final UndoBuffer undoBuffer, final Runnable normalPainter,
+      final Runnable snailPainter)
   {
-    final JRibbonBand displayMode = createDisplayMode();
+    final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter);
 
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer);
@@ -502,16 +503,31 @@ public class DebriefRibbonTimeController
     return control;
   }
 
-  private static JRibbonBand createDisplayMode()
+  private static JRibbonBand createDisplayMode(final Runnable normalPainter,
+      final Runnable snailPainter)
   {
     final JRibbonBand displayMode = new JRibbonBand("Display Mode", null);
     final FlamingoCommandToggleGroup displayModeGroup =
         new FlamingoCommandToggleGroup();
     MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        new AbstractAction() {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            normalPainter.run();
+          }}, displayMode, RibbonElementPriority.TOP,
         true, displayModeGroup, true);
     MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
-        new MenuUtils.TODOAction(), displayMode, RibbonElementPriority.TOP,
+        new AbstractAction() {
+          private static final long serialVersionUID = 1L;
+
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+            snailPainter.run();
+          }}, displayMode, RibbonElementPriority.TOP,
         true, displayModeGroup, false);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

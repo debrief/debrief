@@ -36,7 +36,8 @@ public class DebriefRibbon
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
       final PlotOperations operations, final Session session,
-      final UndoBuffer undoBuffer, final Runnable resetAction)
+      final UndoBuffer undoBuffer, final Runnable resetAction,
+      final Runnable normalPainter, final Runnable snailPainter)
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
@@ -44,6 +45,6 @@ public class DebriefRibbon
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
-        stepControl, timeManager, operations, layers, undoBuffer);
+        stepControl, timeManager, operations, layers, undoBuffer, normalPainter, snailPainter);
   }
 }
