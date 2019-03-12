@@ -62,10 +62,8 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
-import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -81,7 +79,6 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WatchableList;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -209,7 +206,6 @@ public class DebriefLiteApp implements FileDropListener
   private final TimeManager timeManager = new TimeManager();
   private final GeoToolMapRenderer geoMapRenderer;
   private PainterManager painterManager;
-  private final CanvasAdaptor _theCanvas;
   private LiteTote theTote;
 
   protected static boolean _plotDirty;
@@ -272,7 +268,7 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
-    _theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics());
+    CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics());
 
     final DataListener dListener = new DataListener()
     {
@@ -300,11 +296,9 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataModifiedListener(dListener);
     
     painterManager = new PainterManager(_stepControl);
-    PlainChart theChart = new LiteChart(_theLayers, _theCanvas, mapPane);
+    PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
-    final Debrief.GUI.Tote.Painters.TotePainter tp =
-        new Debrief.GUI.Tote.Painters.TotePainter(theChart, _theLayers,
-            theTote);
+    final TotePainter tp = new TotePainter(theChart, _theLayers, theTote);
     tp.setColor(Color.white);
     SnailPainter sp = new SnailPainter(theChart, _theLayers, theTote);
     
@@ -536,29 +530,7 @@ public class DebriefLiteApp implements FileDropListener
   
   private void populateTote()
   {
-    // see if we can set a primary
-    // ok, try to set one
-    final Enumeration<Editable> iter = _theLayers.elements();
-    while(iter.hasMoreElements())
-    {
-      final Layer thisL = (Layer) iter.nextElement();
-      if(thisL instanceof TrackWrapper)
-      {
-        final TrackWrapper thisT = (TrackWrapper) thisL;
-        if(theTote.getPrimary() == null)
-        {
-          theTote.setPrimary(thisT);
-        }
-        else if(theTote.getPrimary() != thisT)
-        {
-          Vector<WatchableList> secs = theTote.getSecondary();
-          if(!secs.contains(thisT))
-          {
-             theTote.setSecondary(thisT);
-          }
-        }
-      }
-    }
+
   }
   
   private static void resetFileName(final File file) {
@@ -743,6 +715,9 @@ public class DebriefLiteApp implements FileDropListener
     _plotDirty=false;
     currentFileName = null;
     setTitle(defaultTitle);
+    
+    // also clear the tote
+    theTote.clear();
     
     //reset the map
     ResetAction resetMap = new ResetAction(_instance.mapPane);
