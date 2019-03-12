@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.FlowLayout;
+import java.awt.Image;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
@@ -16,6 +17,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
@@ -92,11 +94,13 @@ public class DebriefRibbonInsert
     final JRibbonBand referenceDataMenu = createReferenceData(_theLayers,
         _theProperties, _toolParent, bounds, decs);
 
+    final JRibbonBand layersMenu = createLayerMenu(_theLayers, _theProperties, _toolParent);
+    
     final JRibbonBand drawingMenu = createShapes(_theLayers, _theProperties,
         _toolParent, bounds);
     
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
-        referenceDataMenu, drawingMenu);
+        referenceDataMenu, layersMenu, drawingMenu);
     ribbon.addTask(drawingTask);
   }
 
@@ -121,13 +125,20 @@ public class DebriefRibbonInsert
         .getStandardRestrictivePolicies(referenceDataMenu));
     return referenceDataMenu;
   }
+  
+  private static JRibbonBand createLayerMenu(final Layers _theLayers,
+      final PropertiesPanel _theProperties,
+      final DebriefLiteToolParent _toolParent) {
+    final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
+    addDropDown(selectLayerItemListener,layersMenu,RibbonElementPriority.TOP,_theLayers);
+    return layersMenu;
+  }
 
   private static JRibbonBand createShapes(final Layers _theLayers,
       final PropertiesPanel _theProperties,
       final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
-    addDropDown(selectLayerItemListener,drawingMenu,RibbonElementPriority.TOP,_theLayers);
     final CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
         _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
     {
@@ -243,8 +254,6 @@ public class DebriefRibbonInsert
       }
     };
     drawingMenu.startGroup();
-    
-    drawingMenu.startGroup();
     final CreateLabel createLabelShape =  new CreateLabel(_toolParent, _theProperties,
         _theLayers, bounds, "New Label", "icons/24/label_add.png") ;
     createLabelShape.setSelectedLayerSource(selectLayerCombo);
@@ -299,7 +308,9 @@ public class DebriefRibbonInsert
     });
     
     panel.add(selectLayerCombo);
-    JRibbonComponent component = new JRibbonComponent(panel);
+    final Image activeLayerImg = MenuUtils.createImage("icons/16/layer_mgr.png");
+    ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_16);
+    JRibbonComponent component = new JRibbonComponent(imageIcon,"",panel);
     component.setDisplayPriority(priority);
     mapBand.addRibbonComponent(component);
     return component;
