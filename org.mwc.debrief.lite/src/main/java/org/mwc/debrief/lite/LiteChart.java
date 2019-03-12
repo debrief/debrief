@@ -40,6 +40,7 @@ public class LiteChart extends PlainChart
   @Override
   public void rescale()
   {
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
@@ -61,12 +62,13 @@ public class LiteChart extends PlainChart
   @Override
   public void repaintNow(Rectangle rect)
   {
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
   public Dimension getScreenSize()
   {
-    return null;
+    throw new IllegalArgumentException("Not implemented");
   }
   
   @Override
@@ -78,7 +80,7 @@ public class LiteChart extends PlainChart
   @Override
   public Component getPanel()
   {
-    return null;
+    throw new IllegalArgumentException("Not implemented");
   }
 
 }
