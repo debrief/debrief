@@ -249,17 +249,7 @@ public class DebriefLiteApp implements FileDropListener
     
     // sort out time control
     LiteStepControl _stepControl = new LiteStepControl(_toolParent);
-    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
-    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
     
-    timeManager.addListener(new PropertyChangeListener() {
-
-      @Override
-      public void propertyChange(PropertyChangeEvent evt)
-      {
-        redoTimePainter(false);
-      }}, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
@@ -268,7 +258,17 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
-    CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics());
+    final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane.getGraphics());
+
+    timeManager.addListener(_stepControl, TimeProvider.PERIOD_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(_stepControl, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+    timeManager.addListener(new PropertyChangeListener() {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        redoTimePainter(false, theCanvas);
+      }}, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     final DataListener dListener = new DataListener()
     {
@@ -350,7 +350,7 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
   
-  private void redoTimePainter(boolean bigPaint)
+  private void redoTimePainter(boolean bigPaint, final CanvasAdaptor dest)
   {
     final StepperListener current = painterManager.getCurrentPainterObject();
     final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
@@ -361,8 +361,6 @@ public class DebriefLiteApp implements FileDropListener
     
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
-    final CanvasAdaptor dest = new CanvasAdaptor(projection, graphics,
-        backColor);
     
     if(bigPaint)
     {
@@ -370,7 +368,8 @@ public class DebriefLiteApp implements FileDropListener
           (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
 
       // it must be ok
-      thisPainter.paintMe(dest);
+      thisPainter.paintMe(new CanvasAdaptor(projection,
+          dest.getGraphicsTemp(), backColor));
     }
     else
     {
@@ -380,7 +379,8 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
       
-      painterManager.newTime(null, timeManager.getTime(), dest);
+      painterManager.newTime(null, timeManager.getTime(),
+          new CanvasAdaptor(projection, graphics, backColor));
     }
   }
 
@@ -467,7 +467,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     
     // and the time marker
-    redoTimePainter(true);
+    redoTimePainter(true, dest);
 
     dest.endDraw(gc);
   }
