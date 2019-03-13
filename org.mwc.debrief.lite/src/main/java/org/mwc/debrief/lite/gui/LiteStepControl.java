@@ -8,10 +8,11 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeProvider;
-import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
 public class LiteStepControl extends StepControl
 {
+  
+  private final ToolParent parent;
 
   public static interface SliderControls
   {
@@ -37,10 +38,13 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
+  private String timeFormat = "yy/MM/dd hh:mm:ss";
 
-  public LiteStepControl(final ToolParent parent)
+  public LiteStepControl(final ToolParent _parent)
   {
-    super(parent);
+    super(_parent);
+    this.parent = _parent;
+    setDateFormat(timeFormat);
   }
 
   @Override
@@ -82,7 +86,7 @@ public class LiteStepControl extends StepControl
   @Override
   protected void painterIsDefined()
   {
-    throw new IllegalArgumentException("not implemented");
+    // ok, ignore
   }
 
   @Override
@@ -115,7 +119,7 @@ public class LiteStepControl extends StepControl
         _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
             .getEndDTG().getDate().getTime());
         
-        // we should probably disable the slider 
+        // we should probably enable the slider 
         _slider.setEnabled(true);
       }
       else
@@ -163,9 +167,13 @@ public class LiteStepControl extends StepControl
   @Override
   protected void updateForm(final HiResDate DTG)
   {
-    final String str = FullFormatDateTime.toString(DTG.getDate().getTime());
+    final String str = _dateFormatter.format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
   }
 
+  public ToolParent getParent()
+  {
+    return parent;
+  }
 }

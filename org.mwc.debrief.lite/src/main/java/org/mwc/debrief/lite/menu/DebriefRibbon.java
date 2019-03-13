@@ -21,6 +21,8 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
+import MWC.GUI.Undo.UndoBuffer;
+import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 
 /**
@@ -33,13 +35,16 @@ public class DebriefRibbon
       final DebriefLiteToolParent parent,
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
-      final Session session, final Runnable resetAction)
+      final PlotOperations operations, final Session session,
+      final UndoBuffer undoBuffer, final Runnable resetAction,
+      final Runnable normalPainter, final Runnable snailPainter)
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
-    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers,
-        null, parent);
-    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer, stepControl, timeManager);
+    DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
+        parent);
+    DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
+        stepControl, timeManager, operations, layers, undoBuffer, normalPainter, snailPainter);
   }
 }
