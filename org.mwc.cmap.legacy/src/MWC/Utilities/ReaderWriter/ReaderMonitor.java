@@ -54,7 +54,6 @@ import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
 public class ReaderMonitor extends BufferedReader
 {
-  private final int _length;
   private int _counter;
 
   private MonitorProvider _provider;
@@ -63,10 +62,9 @@ public class ReaderMonitor extends BufferedReader
       MonitorProvider provider)
   {
     super(r);
-    _length = length;
     _counter = 0;
     this._provider = provider;
-    _provider.init(fileName, _length);
+    _provider.init(fileName, length);
   }
 
   public ReaderMonitor(final Reader r, final int length, final String fileName)

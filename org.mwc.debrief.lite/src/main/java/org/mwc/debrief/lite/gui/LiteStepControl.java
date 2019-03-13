@@ -86,6 +86,7 @@ public class LiteStepControl extends StepControl
   @Override
   protected void painterIsDefined()
   {
+    // ok, ignore
   }
 
   @Override

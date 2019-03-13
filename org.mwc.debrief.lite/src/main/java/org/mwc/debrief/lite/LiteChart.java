@@ -52,11 +52,13 @@ public class LiteChart extends PlainChart
   @Override
   public void update(HasEditables changedLayer)
   {
+    // don't bother, we don't need it
   }
 
   @Override
   public void repaint()
   {
+    // don't bother, we don't need it
   }
 
   @Override
