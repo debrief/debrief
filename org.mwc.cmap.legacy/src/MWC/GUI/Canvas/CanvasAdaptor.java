@@ -330,10 +330,12 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	}
 
-	@Override
-	public void drawText(final String str, final int x, final int y, final float rotate) {
-		
-	}
+  @Override
+  public void drawText(final String str, final int x, final int y,
+      final float rotate)
+  {
+    drawText(str, x, y, rotate, true);
+  }
 
 	@Override
 	public void setFont(final Font theFont)
@@ -341,9 +343,18 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		_dest.setFont(theFont);
 	}
 
-	@Override
-	public void drawText(String str, int x, int y, float rotate, boolean above)
-	{
-		
-	}
+  @Override
+  public void drawText(String str, int x, int y, float rotate, boolean above)
+  {
+    if (_dest instanceof Graphics2D)
+    {
+      final Graphics2D g2d = (Graphics2D) _dest;
+
+      g2d.translate((float) x, (float) y);
+      g2d.rotate(Math.toRadians(rotate));
+      g2d.drawString(str, 0, 0);
+      g2d.rotate(-Math.toRadians(rotate));
+      g2d.translate(-(float) x, -(float) y);
+    }
+  }
 }
