@@ -536,6 +536,96 @@ public class DebriefRibbonTimeController
 
     return displayMode;
   }
+  
+  private static class SliderListener implements ChangeListener
+  {
+    final private PlotOperations operations;
+    final private TimeManager timeManager;
+
+    private SliderListener(final PlotOperations operations,
+        final TimeManager time)
+    {
+      this.operations = operations;
+      timeManager = time;
+    }
+    
+    @Override
+    public void stateChanged(final ChangeEvent e)
+    {
+      final RangeSlider slider = (RangeSlider) e.getSource();
+
+      Date low = RangeSlider.toDate(slider.getValue()).getTime();
+      Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
+      formatBinder.updateFilterDateFormat();
+
+      operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
+          new HiResDate(high)));
+      
+      HiResDate currentTime = timeManager.getTime(); 
+      if ( currentTime != null )
+      {
+        Date oldTime = currentTime.getDate();
+        if ( oldTime.before(low) ) {
+          oldTime = low;
+        }
+        if ( oldTime.after(high) ) {
+          oldTime = high;
+        }
+        label.setRange(low.getTime(), high.getTime());
+        label.setValue(oldTime.getTime());
+      }
+      
+      operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+    }
+  }
+  
+  private static class LiteSliderControls implements SliderControls
+  {
+    private final RangeSlider slider;
+
+    private  LiteSliderControls(RangeSlider slider)
+    {
+      this.slider = slider;
+    }
+
+    @Override
+    public HiResDate getToolboxEndTime()
+    {
+      final long val = slider.getUpperDate().getTimeInMillis();
+      return new HiResDate(val);
+    }
+
+    @Override
+    public HiResDate getToolboxStartTime()
+    {
+      final long val = slider.getLowerDate().getTimeInMillis();
+      return new HiResDate(val);
+    }
+
+    @Override
+    public void setToolboxEndTime(final HiResDate val)
+    {
+      final GregorianCalendar cal = new GregorianCalendar();
+      cal.setTimeInMillis(val.getDate().getTime());
+      slider.setMaximum(cal);
+      slider.setUpperDate(cal);
+    }
+
+    @Override
+    public void setToolboxStartTime(final HiResDate val)
+    {
+      final GregorianCalendar cal = new GregorianCalendar();
+      cal.setTimeInMillis(val.getDate().getTime());
+      slider.setMinimum(cal);
+      slider.setLowerDate(cal);
+    }
+
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+      slider.setEnabled(enabled);
+    }
+  }
 
   private static JRibbonBand createFilterToTime(
       final LiteStepControl stepControl, final PlotOperations operations,
@@ -557,37 +647,7 @@ public class DebriefRibbonTimeController
     formatBinder.timeManager = timeManager;
 
     formatBinder.updateFilterDateFormat();
-    slider.addChangeListener(new ChangeListener()
-    {
-      @Override
-      public void stateChanged(final ChangeEvent e)
-      {
-        final RangeSlider slider = (RangeSlider) e.getSource();
-
-        Date low = RangeSlider.toDate(slider.getValue()).getTime();
-        Date high = RangeSlider.toDate(slider.getUpperValue()).getTime();
-        formatBinder.updateFilterDateFormat();
-
-        operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
-            new HiResDate(high)));
-        
-        HiResDate currentTime = timeManager.getTime(); 
-        if ( currentTime != null )
-        {
-          Date oldTime = currentTime.getDate();
-          if ( oldTime.before(low) ) {
-            oldTime = low;
-          }
-          if ( oldTime.after(high) ) {
-            oldTime = high;
-          }
-          label.setRange(low.getTime(), high.getTime());
-          label.setValue(oldTime.getTime());
-        }
-        
-        operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
-      }
-    });
+    slider.addChangeListener(new SliderListener(operations, timeManager));
     slider.setEnabled(false);
     slider.setPreferredSize(new Dimension(250, 200));
 
@@ -608,48 +668,7 @@ public class DebriefRibbonTimeController
     timePeriod.addRibbonComponent(new JRibbonComponent(valuePanel));
 
     // tie in to the stepper
-    final SliderControls iSlider = new LiteStepControl.SliderControls()
-    {
-
-      @Override
-      public HiResDate getToolboxEndTime()
-      {
-        final long val = slider.getUpperDate().getTimeInMillis();
-        return new HiResDate(val);
-      }
-
-      @Override
-      public HiResDate getToolboxStartTime()
-      {
-        final long val = slider.getLowerDate().getTimeInMillis();
-        return new HiResDate(val);
-      }
-
-      @Override
-      public void setToolboxEndTime(final HiResDate val)
-      {
-        final GregorianCalendar cal = new GregorianCalendar();
-        cal.setTimeInMillis(val.getDate().getTime());
-        slider.setMaximum(cal);
-        slider.setUpperDate(cal);
-      }
-
-      @Override
-      public void setToolboxStartTime(final HiResDate val)
-      {
-        final GregorianCalendar cal = new GregorianCalendar();
-        cal.setTimeInMillis(val.getDate().getTime());
-        slider.setMinimum(cal);
-        slider.setLowerDate(cal);
-      }
-
-      @Override
-      public void setEnabled(boolean enabled)
-      {
-        slider.setEnabled(enabled);
-      }
-    };
-
+    final SliderControls iSlider = new LiteSliderControls(slider);
     stepControl.setSliderControls(iSlider);
 
     return timePeriod;
