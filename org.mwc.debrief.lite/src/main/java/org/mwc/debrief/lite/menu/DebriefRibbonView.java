@@ -1,10 +1,10 @@
 package org.mwc.debrief.lite.menu;
 
-import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JLabel;
 
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.PanAction;
@@ -12,6 +12,7 @@ import org.geotools.swing.action.ZoomInAction;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -25,7 +26,7 @@ import MWC.GUI.Layers;
 public class DebriefRibbonView
 {
   protected static void addViewTab(final JRibbon ribbon,
-      final GeoToolMapRenderer _geoMapRenderer, final Layers layers)
+      final GeoToolMapRenderer _geoMapRenderer, final Layers layers, JLabel statusBar)
   {
     final JRibbonBand viewBand = new JRibbonBand("View", null);
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
@@ -37,6 +38,11 @@ public class DebriefRibbonView
     final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
     MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction,
         viewBand, RibbonElementPriority.TOP);
+    final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, statusBar);
+    MenuUtils.addCommand("Rne/Brg", "images/16/rng_brg.png", rangeAction,
+        viewBand, RibbonElementPriority.TOP);
+    
+    
     viewBand.startGroup();
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
         mapPane), viewBand, RibbonElementPriority.TOP);
@@ -51,7 +57,7 @@ public class DebriefRibbonView
     ribbon.addTask(fileTask);
 
     // lastly, run the zoom-in event, to put the map into that mode
-    zoomInAction.actionPerformed(new ActionEvent(viewBand,
-        ActionEvent.ACTION_PERFORMED, "Click"));
+  //  zoomInAction.actionPerformed(new ActionEvent(viewBand,
+    //    ActionEvent.ACTION_PERFORMED, "Click"));
   }
 }

@@ -36,13 +36,6 @@ public class MapBuilder
   public Component build()
   {
     return mapRenderer.getMap();
-//    final JPanel panel = new JPanel();
-//    panel.setLayout(new BorderLayout());
-//    panel.add(mapRenderer.getMap(), BorderLayout.CENTER);
-//    final JScrollPane scrPane = new JScrollPane(panel);
-//
-//    // mapRenderer.addMapTool(theToolbar);
-//    return scrPane;
   }
 
   /**

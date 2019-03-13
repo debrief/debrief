@@ -314,7 +314,7 @@ public class DebriefLiteApp implements FileDropListener
     // create the components
     initForm();
     createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager, _myOperations, normalT, snailT);
+        _stepControl, timeManager, _myOperations, normalT, snailT, statusBar);
     _listenForMods = new DataListenerAdaptor()
     {
       
@@ -327,7 +327,7 @@ public class DebriefLiteApp implements FileDropListener
         
       }
     };
-
+    
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
@@ -434,7 +434,7 @@ public class DebriefLiteApp implements FileDropListener
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane, final LiteStepControl stepControl,
-      final TimeManager timeManager, final PlotOperations operation, final ToteSetter normalT, final ToteSetter snailT)
+      final TimeManager timeManager, final PlotOperations operation, final ToteSetter normalT, final ToteSetter snailT, JLabel statusBar)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -453,7 +453,7 @@ public class DebriefLiteApp implements FileDropListener
       }};
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
         geoMapRenderer, stepControl, timeManager, operation, session, undoBuffer, resetAction,
-        normalT, snailT);
+        normalT, snailT, statusBar);
   }
 
   protected void doPaint(final Graphics gc)
