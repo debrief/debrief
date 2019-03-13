@@ -17,9 +17,12 @@ package MWC.GUI.Canvas;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.image.ImageObserver;
 import java.util.Vector;
 
@@ -44,7 +47,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 
 	/** Creates new CanvasAdaptor */
 	public CanvasAdaptor(final MWC.Algorithms.PlainProjection proj,
-			final java.awt.Graphics dest) {
+			final Graphics dest) {
 	  this(proj, dest, null);
 	}
 
@@ -115,7 +118,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		_dest.drawPolygon(xPoints, yPoints, nPoints);
 	}
 
-	public void drawText(final java.awt.Font theFont, final String theStr, final int x, final int y) {
+	public void drawText(final Font theFont, final String theStr, final int x, final int y) {
 		_dest.setFont(theFont);
 		_dest.drawString(theStr, x, y);
 	}
@@ -123,7 +126,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	/**
 	 * set/get the background colour
 	 */
-	public java.awt.Color getBackgroundColor() {
+	public Color getBackgroundColor() {
 		return _backColor;
 	}
 
@@ -131,7 +134,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * expose the graphics object, used only for plotting non-persistent
 	 * graphics (temporary lines, etc).
 	 */
-	public java.awt.Graphics getGraphicsTemp() {
+	public Graphics getGraphicsTemp() {
 		return _dest;
 	}
 
@@ -144,15 +147,15 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		return _proj;
 	}
 
-	public java.awt.Dimension getSize() {
+	public Dimension getSize() {
 		return _proj.getScreenArea().getSize();
 	}
 
-	public int getStringHeight(final java.awt.Font theFont) {
+	public int getStringHeight(final Font theFont) {
 		return _dest.getFontMetrics(theFont).getHeight();
 	}
 
-	public int getStringWidth(final java.awt.Font theFont, final String theString) {
+	public int getStringWidth(final Font theFont, final String theString) {
 		return _dest.getFontMetrics(theFont).stringWidth(theString);
 	}
 
@@ -167,7 +170,7 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		//
 	}
 
-	public void setBackgroundColor(final java.awt.Color theColor) {
+	public void setBackgroundColor(final Color theColor) {
 		//
 	}
 
@@ -179,11 +182,11 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 		//
 	}
 
-	public java.awt.Point toScreen(final WorldLocation val) {
+	public Point toScreen(final WorldLocation val) {
 		return _proj.toScreen(val);
 	}
 
-	public WorldLocation toWorld(final java.awt.Point val) {
+	public WorldLocation toWorld(final Point val) {
 		return _proj.toWorld(val);
 	}
 
@@ -231,9 +234,9 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * 
 	 */
 	public void setLineStyle(final int style) {
-		final java.awt.BasicStroke stk = MWC.GUI.Canvas.Swing.SwingCanvas
+		final BasicStroke stk = MWC.GUI.Canvas.Swing.SwingCanvas
 				.getStrokeFor(style);
-		final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _dest;
+		final Graphics2D g2 = (Graphics2D) _dest;
 		g2.setStroke(stk);
 	}
 
@@ -242,18 +245,18 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	 * 
 	 */
 	public void setLineWidth(final float width) {
-		final java.awt.BasicStroke stk = new BasicStroke(width);
-		final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _dest;
+		final BasicStroke stk = new BasicStroke(width);
+		final Graphics2D g2 = (Graphics2D) _dest;
 		g2.setStroke(stk);
 	}
 
 	public float getLineWidth() {
-		final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _dest;
+		final Graphics2D g2 = (Graphics2D) _dest;
 		final BasicStroke bs = (BasicStroke) g2.getStroke();
 		return bs.getLineWidth();
 	}
 
-	public void setColor(final java.awt.Color theCol) {
+	public void setColor(final Color theCol) {
 		//
 		_dest.setColor(theCol);
 	}
