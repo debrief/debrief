@@ -128,7 +128,7 @@ public class RangeBearingTool extends AbstractZoomTool
       bearing += 360d;
     }
     final String msg = "Range:" + (int) distance.getValueIn(
-        WorldDistance.METRES) + "m Brg:" + (int) bearing + "\u00b0";
+        WorldDistance.METRES) + "m Brg:" + (int) bearing + "°";
     if (_statusBar != null)
     {
       _statusBar.setText(msg);
