@@ -31,6 +31,8 @@ import MWC.GenericData.WorldArea;
 public abstract class CoreCreateShape extends PlainTool
 {
   
+  public static final String USER_SELECTED_LAYER_COMMAND = "User-selected Layer";
+  
   /** the layers we are going to drop this shape into
    */
   protected Layers _theData;
@@ -84,55 +86,46 @@ public abstract class CoreCreateShape extends PlainTool
   {
     String res = null;
     // ok, are we auto-deciding?
-    if (!AutoSelectTarget.getAutoSelectTarget())
+
+    // get the non-track layers
+    final Layers theLayers = _theData;
+    final String[] ourLayers = theLayers.trimmedLayers();
+    ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
+    listDialog.setSize(350,300);
+    listDialog.setLocationRelativeTo(null);
+    listDialog.setModal(true);
+    listDialog.setVisible(true);
+    String selection = listDialog.getSelectedItem();
+    // did user say yes?
+    if (selection != null)
     {
-      // nope, just use the default layer
-      res = Layers.DEFAULT_TARGET_LAYER;
-    }
-    else
-    {
-      // get the non-track layers
-      final Layers theLayers = _theData;
-      final String[] ourLayers = theLayers.trimmedLayers();
-      ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
-      listDialog.setSize(350,300);
-      listDialog.setLocationRelativeTo(null);
-      listDialog.setModal(true);
-      listDialog.setVisible(true);
-      String selection = listDialog.getSelectedItem();
-      // did user say yes?
-      if (selection != null)
+      // hmm, is it our add layer command?
+      if (selection.equals(Layers.NEW_LAYER_COMMAND))
       {
-        // hmm, is it our add layer command?
-        if (selection.equals(Layers.NEW_LAYER_COMMAND))
+        // better create one. Ask the user
+
+        // create input box dialog
+        String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
+        // check there's something there
+        if (txt!=null && !txt.isEmpty())
         {
-          // better create one. Ask the user
-
-          // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
-          // check there's something there
-          if (!txt.isEmpty())
-          {
-            res = txt;
-            // create base layer
-            final Layer newLayer = new BaseLayer();
-            newLayer.setName(res);
-
-            // add to layers object
-            theLayers.addThisLayer(newLayer);
-          }
-          else
-          {
-            res = null;
-          }
+          res = txt;
+          // create base layer
+          final Layer newLayer = new BaseLayer();
+          newLayer.setName(res);
+          // add to layers object
+          theLayers.addThisLayer(newLayer);
         }
-        else {
-          res = selection;
+        else
+        {
+          res = null;
         }
       }
+      else {
+        res = selection;
+      }
     }
-      
+
     return res;
   }
-
 }

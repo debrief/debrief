@@ -73,6 +73,8 @@
 
 package Debrief.Tools.Palette;
 
+import javax.swing.JOptionPane;
+
 import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
@@ -123,8 +125,9 @@ public final class CreateLabel extends CoreCreateShape
 
   public final Action getData()
   {
-
+    Action res = null;
     WorldArea wa = getBounds();
+    boolean userSelected=false;
     if(wa != null)
     {
       // put the label in the centre of the plot (at the surface)
@@ -134,32 +137,72 @@ public final class CreateLabel extends CoreCreateShape
           centre,
           MWC.GUI.Properties.DebriefColors.ORANGE);
       Layer theLayer = null;
-      String selectedLayer = getSelectedLayer();
-      if(selectedLayer == null) {
-        String layerToAddTo = getLayerName();
+      String layerToAddTo = getSelectedLayer();
+      if(CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo) || Layers.NEW_LAYER_COMMAND.equals(layerToAddTo)) {
+        userSelected=true;
+        if(CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo)) {
+          layerToAddTo = getLayerName();
+        }
+        else {
+          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+          // check there's something there
+          if (txt!=null && !txt.isEmpty())
+          {
+            layerToAddTo = txt;
+            // create base layer
+            final Layer newLayer = new BaseLayer();
+            newLayer.setName(layerToAddTo);
+
+            // add to layers object
+            _theData.addThisLayer(newLayer);
+          }
+        }
+        if(layerToAddTo!=null) {
+          theLayer = _theData.findLayer(layerToAddTo);
+        }
+        if(theLayer!=null) {
+          if(theLayer != null) {
+            res =  new CreateLabelAction(_thePanel,
+                theLayer,
+                theWrapper,
+                _theData);
+
+          }
+        }
+      }
+      if(layerToAddTo!=null) {
         theLayer = _theData.findLayer(layerToAddTo);
+      }
+      
+      if(userSelected && theLayer == null) {
+        //user cancelled.
+        JOptionPane.showMessageDialog(null, 
+            "A layer can only be created if a name is provided. "
+                + "The shape has not been created",
+                "Error", JOptionPane.ERROR_MESSAGE);
+        
+      }
+      //works for debrief-legacy
+      else{
         if(theLayer == null)
         {
           theLayer = new BaseLayer();
           theLayer.setName("Misc");
           _theData.addThisLayer(theLayer);
         }
+        res = new CreateLabelAction(_thePanel,
+            theLayer,
+            theWrapper,
+            _theData);
       }
-      else {
-        theLayer = _theData.findLayer(selectedLayer);
-      }
-      return new CreateLabelAction(_thePanel,
-          theLayer,
-          theWrapper,
-          _theData);
     }
     else
     {
       // we haven't got an area, inform the user
       MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
           "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-      return null;
     }
+    return res;
   }
 
   ///////////////////////////////////////////////////////

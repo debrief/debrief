@@ -25,9 +25,9 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import Debrief.Tools.Palette.CoreCreateShape;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
-import Debrief.Tools.Palette.ListLayersDialog;
 import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
@@ -41,8 +41,8 @@ import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
-import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
@@ -55,7 +55,7 @@ import MWC.GenericData.WorldVector;
 public class DebriefRibbonInsert
 {
   
-  final private static String[] layerItems = new String[] {"Select Layer","User-selected Layer"};
+  final private static String[] layerItems = new String[] {"Select Layer",CoreCreateShape.USER_SELECTED_LAYER_COMMAND};
   private static String selectedLayer;
   private static ItemListener selectLayerItemListener;
   private static JComboBox<String> selectLayerCombo;
@@ -252,19 +252,23 @@ public class DebriefRibbonInsert
       @Override
       public void itemStateChanged(ItemEvent e)
       {
+        String previousSelection = selectedLayer;
         if(e.getStateChange() == ItemEvent.SELECTED)  
         {
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
-          if(jcombo.getSelectedItem().equals(layerItems[1])) {
+          if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
             //popup list layers dialog
-            selectedLayer = getLayerName(_theLayers,true);
+            String res = getLayerName(_theLayers);
+            if(res == null) {
+              jcombo.setSelectedItem(previousSelection);
+            }
           }
           else {
-            //set this as the layer to which shape is added.
             selectedLayer = (String)jcombo.getSelectedItem();
           }
         }
+        
         
       }
     };
@@ -301,7 +305,7 @@ public class DebriefRibbonInsert
       public void focusGained(FocusEvent e)
       {
         if(e.getSource() instanceof JComboBox) {
-          String[] layers = theLayers.trimmedLayers(false);         
+          String[] layers = theLayers.trimmedLayers();         
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
           String selectedItem = (String)jcombo.getSelectedItem();
@@ -335,57 +339,31 @@ public class DebriefRibbonInsert
   public void setShapesEnabled(boolean enable) {
   }
   
-  private static String getLayerName(Layers theLayers,boolean addNewLayerCmd) {
-    String[] layers = theLayers.trimmedLayers(addNewLayerCmd);
-    ListLayersDialog listDialog = new ListLayersDialog(layers);
-    listDialog.setSize(350,300);
-    listDialog.setLocationRelativeTo(null);
-    listDialog.setModal(true);
-    listDialog.setVisible(true);
-    String selection = listDialog.getSelectedItem();
-    // did user say yes?
+  private static String getLayerName(Layers theLayers) {
+            // create input box dialog
     String res = null;
-    if (selection != null)
+    String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+    // check there's something there
+    if (txt!=null && !txt.isEmpty())
     {
-      // hmm, is it our add layer command?
-      if (selection.equals(Layers.NEW_LAYER_COMMAND))
-      {
-        // better create one. Ask the user
+      res = txt;
+      // create base layer
+      final Layer newLayer = new BaseLayer();
+      newLayer.setName(res);
 
-        // create input box dialog
-        String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
-        // check there's something there
-        if (!txt.isEmpty())
-        {
-          res = txt;
-          // create base layer
-          final Layer newLayer = new BaseLayer();
-          newLayer.setName(res);
-
-          // add to layers object
-          theLayers.addThisLayer(newLayer);
-          selectedLayer = res;
-          selectLayerCombo.setEditable(true);
-          selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
-          selectLayerCombo.setSelectedItem(selectedLayer);
-          selectLayerCombo.setEditable(false);
-        }
-        else
-        {
-          res = null;
-        }
-      }
-      else {
-        res = selection;
-        selectedLayer = res;
-        selectLayerCombo.setEditable(true);
-        selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
-        selectLayerCombo.setSelectedItem(selectedLayer);
-        selectLayerCombo.setEditable(false);
-      }
-  
+      // add to layers object
+      theLayers.addThisLayer(newLayer);
+      selectedLayer = res;
+      selectLayerCombo.setEditable(true);
+      selectLayerCombo.insertItemAt(selectedLayer, selectLayerCombo.getItemCount()-1);
+      selectLayerCombo.setSelectedItem(selectedLayer);
+      selectLayerCombo.setEditable(false);
     }
-    
+    else
+    {
+      res = null;
+      
+    }
     return res;
   }
   

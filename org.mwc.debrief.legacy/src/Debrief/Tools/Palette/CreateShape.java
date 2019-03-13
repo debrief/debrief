@@ -115,7 +115,7 @@ abstract public class CreateShape extends CoreCreateShape
   {
     super(theParent, theName, theImage,theData,bounds);
     _thePanel = thePanel;
-    
+
   }
 
 
@@ -126,6 +126,7 @@ abstract public class CreateShape extends CoreCreateShape
   public final Action getData()
   {
     Action res = null;
+    boolean userSelected = false;
     final WorldArea theBounds = getBounds();
 
     // see if we have an area defined
@@ -135,29 +136,52 @@ abstract public class CreateShape extends CoreCreateShape
       final WorldLocation centre = new WorldLocation(theBounds.getCentreAtSurface());
 
       final ShapeWrapper theWrapper = getShape(centre);
+      //this is for de-lite
       String layerToAddTo = getSelectedLayer();
-      if(layerToAddTo == null) {
+      Layer theLayer = null;
+      if("User-selected Layer".equals(layerToAddTo)|| Layers.NEW_LAYER_COMMAND.equals(layerToAddTo)) {
+        userSelected = true;
         layerToAddTo = getLayerName();
-      }
-      Layer theLayer = _theData.findLayer(layerToAddTo);
-      if(theLayer == null && !AutoSelectTarget.getAutoSelectTarget())
-      {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
-      }
-      if(theLayer!=null) {
-        res =  new CreateShapeAction(_thePanel,
-            theLayer,
-            theWrapper,
-            _theData);
+        if(layerToAddTo!=null) {
+          theLayer = _theData.findLayer(layerToAddTo);
+        }
+        if(theLayer != null) {
+          res =  new CreateShapeAction(_thePanel,
+              theLayer,
+              theWrapper,
+              _theData);
 
+        }
       }
-      else {
+      else{
+        if(layerToAddTo!=null) {
+          theLayer = _theData.findLayer(layerToAddTo);
+        }
+      }
+      //user cancelled      
+      if(userSelected && theLayer == null) {
         JOptionPane.showMessageDialog(null, 
             "A layer can only be created if a name is provided. "
                 + "The shape has not been created",
                 "Error", JOptionPane.ERROR_MESSAGE);
+      }
+      else {
+        if(theLayer == null)
+        {
+          theLayer = new BaseLayer();
+          theLayer.setName("Misc");
+          _theData.addThisLayer(theLayer);
+          res =  new CreateShapeAction(_thePanel,
+              theLayer,
+              theWrapper,
+              _theData);
+        }
+        else {
+          res =  new CreateShapeAction(_thePanel,
+              theLayer,
+              theWrapper,
+              _theData);
+        }
       }
     }
     else
@@ -257,51 +281,44 @@ abstract public class CreateShape extends CoreCreateShape
   {
     String res = null;
     // ok, are we auto-deciding?
-    if (!AutoSelectTarget.getAutoSelectTarget())
+
+    // get the non-track layers
+    final Layers theLayers = _theData;
+    final String[] ourLayers = theLayers.trimmedLayers();
+    ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
+    listDialog.setSize(350,300);
+    listDialog.setLocationRelativeTo(null);
+    listDialog.setModal(true);
+    listDialog.setVisible(true);
+    String selection = listDialog.getSelectedItem();
+    // did user say yes?
+    if (selection != null)
     {
-      // nope, just use the default layer
-      res = Layers.DEFAULT_TARGET_LAYER;
-    }
-    else
-    {
-      // get the non-track layers
-      final Layers theLayers = _theData;
-      final String[] ourLayers = theLayers.trimmedLayers();
-      ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
-      listDialog.setSize(350,300);
-      listDialog.setLocationRelativeTo(null);
-      listDialog.setModal(true);
-      listDialog.setVisible(true);
-      String selection = listDialog.getSelectedItem();
-      // did user say yes?
-      if (selection != null)
+      // hmm, is it our add layer command?
+      if (selection.equals(Layers.NEW_LAYER_COMMAND))
       {
-        // hmm, is it our add layer command?
-        if (selection.equals(Layers.NEW_LAYER_COMMAND))
+        // better create one. Ask the user
+
+        // create input box dialog
+        String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
+        // check there's something there
+        if (txt!=null && !txt.isEmpty())
         {
-          // better create one. Ask the user
+          res = txt;
+          // create base layer
+          final Layer newLayer = new BaseLayer();
+          newLayer.setName(res);
 
-          // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
-          // check there's something there
-          if (txt!=null && !txt.isEmpty())
-          {
-            res = txt;
-            // create base layer
-            final Layer newLayer = new BaseLayer();
-            newLayer.setName(res);
-
-            // add to layers object
-            theLayers.addThisLayer(newLayer);
-          }
-          else
-          {
-            res = null;
-          }
+          // add to layers object
+          theLayers.addThisLayer(newLayer);
         }
-        else {
-          res = selection;
+        else
+        {
+          res = null;
         }
+      }
+      else {
+        res = selection;
       }
     }
 
