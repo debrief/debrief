@@ -65,11 +65,12 @@ public class MenuUtils
 
     }
   }
-  
+
   public static FlamingoCommand addCommandToggleButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
       final JRibbonBand mapBand, final RibbonElementPriority priority,
-      boolean isToggle, FlamingoCommandToggleGroup group, boolean toggleSelected)
+      boolean isToggle, FlamingoCommandToggleGroup group,
+      boolean toggleSelected)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -85,7 +86,8 @@ public class MenuUtils
     {
       builder.setToggle();
       builder.setToggleSelected(toggleSelected);
-      if(group!=null) {
+      if (group != null)
+      {
         builder.inToggleGroup(group);
       }
     }
@@ -131,13 +133,16 @@ public class MenuUtils
     final JCommandButton commandButton = new JCommandButton(commandName,
         imageIcon);
     RichTooltipBuilder builder = new RichTooltipBuilder();
-    
-    final String desc = description != null ? description : "Description pending";
-    
-    RichTooltip richTooltip = builder.setTitle(commandName).addDescriptionSection(desc).build();
+
+    final String desc = description != null ? description
+        : "Description pending";
+
+    RichTooltip richTooltip = builder.setTitle(commandName)
+        .addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
     commandButton.addActionListener(actionToAdd);
-    if(priority!=null) {
+    if (priority != null)
+    {
       commandButton.setDisplayState(priority);
     }
     return commandButton;
@@ -161,8 +166,6 @@ public class MenuUtils
     return commandButton;
   }
 
-  
-  
   public static Image createImage(final String imageName)
   {
     final URL iconURL = MenuUtils.class.getClassLoader().getResource(imageName);
