@@ -1,8 +1,10 @@
 package org.mwc.debrief.lite.gui;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Enumeration;
 
 import Debrief.GUI.Tote.StepControl;
+import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.HiResDate;
@@ -161,6 +163,14 @@ public class LiteStepControl extends StepControl
     else
     {
       super.stopTimer();
+    }
+
+    // inform the listeners
+    final Enumeration<StepperListener> iter = getListeners().elements();
+    while (iter.hasMoreElements())
+    {
+      final StepperListener l = iter.nextElement();
+      l.steppingModeChanged(go);
     }
   }
 
