@@ -123,7 +123,7 @@ public class DebriefRibbonTimeController
     private int range;
     private long origin;
     // have one minute steps
-    private final int step = 1000 * 60;
+    private final int step = 1000;
 
     public int getCurrentAt(final long now)
     {
@@ -156,6 +156,7 @@ public class DebriefRibbonTimeController
 
   private static DateFormatBinder formatBinder = new DateFormatBinder();
   static JPopupMenu menu;
+  private static TimeLabel label;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -446,7 +447,7 @@ public class DebriefRibbonTimeController
     timeSlider.setPreferredSize(new Dimension(420, 30));
     timeSlider.setEnabled(false);
 
-    final TimeLabel label = new TimeLabel()
+    label = new TimeLabel()
     {
 
       @Override
@@ -569,7 +570,21 @@ public class DebriefRibbonTimeController
 
         operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
             new HiResDate(high)));
-
+        
+        HiResDate currentTime = timeManager.getTime(); 
+        if ( currentTime != null )
+        {
+          Date oldTime = currentTime.getDate();
+          if ( oldTime.before(low) ) {
+            oldTime = low;
+          }
+          if ( oldTime.after(high) ) {
+            oldTime = high;
+          }
+          label.setRange(low.getTime(), high.getTime());
+          label.setValue(oldTime.getTime());
+        }
+        
         operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
       }
     });
