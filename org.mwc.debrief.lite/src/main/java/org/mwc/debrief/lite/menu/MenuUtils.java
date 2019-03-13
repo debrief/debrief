@@ -46,11 +46,6 @@ import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
  */
 public class MenuUtils
 {
-  public static final Dimension ICON_SIZE_16 = new Dimension(16, 16);
-  public static final Dimension ICON_SIZE_24 = new Dimension(24, 24);
-  public static final Dimension ICON_SIZE_32 = new Dimension(32, 32);
-  public static final Dimension ICON_SIZE_48 = new Dimension(48, 48);
-
   protected static class TODOAction extends AbstractAction
   {
     /**
@@ -66,37 +61,10 @@ public class MenuUtils
     }
   }
 
-  public static FlamingoCommand addCommandToggleButton(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,
-      boolean isToggle, FlamingoCommandToggleGroup group,
-      boolean toggleSelected)
-  {
-    ImageWrapperResizableIcon imageIcon = null;
-    if (imagePath != null)
-    {
-      final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
-    }
-    FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
-        commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction();
-
-    if (isToggle)
-    {
-      builder.setToggle();
-      builder.setToggleSelected(toggleSelected);
-      if (group != null)
-      {
-        builder.inToggleGroup(group);
-      }
-    }
-    final FlamingoCommand command = builder.build();
-
-    mapBand.addRibbonCommand(command, priority == null
-        ? RibbonElementPriority.TOP : priority);
-    return command;
-  }
+  public static final Dimension ICON_SIZE_16 = new Dimension(16, 16);
+  public static final Dimension ICON_SIZE_24 = new Dimension(24, 24);
+  public static final Dimension ICON_SIZE_32 = new Dimension(32, 32);
+  public static final Dimension ICON_SIZE_48 = new Dimension(48, 48);
 
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
@@ -109,8 +77,8 @@ public class MenuUtils
       imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
           16, 16));
     }
-    FlamingoCommandBuilder builder = new FlamingoCommandBuilder().setTitle(
-        commandName).setIcon(imageIcon).setAction(actionToAdd)
+    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
+        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
         .setTitleClickAction();
     final FlamingoCommand command = builder.build();
 
@@ -121,7 +89,7 @@ public class MenuUtils
 
   public static JCommandButton addCommandButton(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final CommandButtonDisplayState priority, String description)
+      final CommandButtonDisplayState priority, final String description)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -132,12 +100,12 @@ public class MenuUtils
     }
     final JCommandButton commandButton = new JCommandButton(commandName,
         imageIcon);
-    RichTooltipBuilder builder = new RichTooltipBuilder();
+    final RichTooltipBuilder builder = new RichTooltipBuilder();
 
     final String desc = description != null ? description
         : "Description pending";
 
-    RichTooltip richTooltip = builder.setTitle(commandName)
+    final RichTooltip richTooltip = builder.setTitle(commandName)
         .addDescriptionSection(desc).build();
     commandButton.setActionRichTooltip(richTooltip);
     commandButton.addActionListener(actionToAdd);
@@ -164,6 +132,38 @@ public class MenuUtils
     commandButton.addActionListener(actionToAdd);
     commandButton.setDisplayState(priority);
     return commandButton;
+  }
+
+  public static FlamingoCommand addCommandToggleButton(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final JRibbonBand mapBand, final RibbonElementPriority priority,
+      final boolean isToggle, final FlamingoCommandToggleGroup group,
+      final boolean toggleSelected)
+  {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, ICON_SIZE_16);
+    }
+    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
+        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction();
+
+    if (isToggle)
+    {
+      builder.setToggle();
+      builder.setToggleSelected(toggleSelected);
+      if (group != null)
+      {
+        builder.inToggleGroup(group);
+      }
+    }
+    final FlamingoCommand command = builder.build();
+
+    mapBand.addRibbonCommand(command, priority == null
+        ? RibbonElementPriority.TOP : priority);
+    return command;
   }
 
   public static Image createImage(final String imageName)
