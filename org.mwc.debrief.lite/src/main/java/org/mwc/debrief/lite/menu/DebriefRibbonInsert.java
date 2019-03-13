@@ -149,9 +149,9 @@ public class DebriefRibbonInsert
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
       {
-        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
-            new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-                WorldDistance.DEGS)), DebriefColors.RED, null);
+        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 30,
+            new WorldDistance(5, WorldDistance.KM), new WorldDistance(3,
+                WorldDistance.KM)), DebriefColors.RED, null);
       }
     };
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
