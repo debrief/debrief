@@ -116,12 +116,12 @@ public class DebriefRibbonInsert
         null);
     @SuppressWarnings("unused")
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
-        "icons/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+        "icons/24/coast_add.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
-        "Natural Earth", "icons/16/NaturalEarth.png", new CreateCoast(_toolParent,
+        "Natural Earth", "icons/24/NaturalEarth.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
@@ -379,11 +379,11 @@ public class DebriefRibbonInsert
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     @SuppressWarnings("unused")
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "icons/16/scale.png", new CreateScale(_toolParent, _theProperties,
+        "icons/24/scale_add.png", new CreateScale(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     @SuppressWarnings("unused")
     final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
-        "icons/16/grid.png", new CreateGrid(_toolParent, _theProperties,
+        "icons/24/grid_add.png", new CreateGrid(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
