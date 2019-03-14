@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -64,6 +65,8 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
+import MWC.GUI.Defaults;
+import MWC.GUI.Defaults.PreferenceProvider;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -229,6 +232,9 @@ public class DebriefLiteApp implements FileDropListener
       // ignore
     }
 
+    // configure the default fonts, etc
+    Defaults.setProvider(new LiteProvider());
+    
     // for legacy integration we need to provide a tool-parent
     final LiteParent theParent = new LiteParent();
     Trace.initialise(theParent);
@@ -336,6 +342,38 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setVisible(true);
   }
     
+  /** introduce a preferences helper, particularly to give
+   * default font sizes
+   *
+   */
+  private static class LiteProvider implements PreferenceProvider
+  {
+
+    private Font _defaultFont;
+
+    @Override
+    public Font getDefaultFont()
+    {
+      if (_defaultFont == null)
+      {
+        // it's ok if we throw an exception here, just in case we had
+        // a platform-specific font initialise string
+        _defaultFont = new Font("Arial", Font.PLAIN, 18);
+      }
+      return _defaultFont;    }
+
+    @Override
+    public String getPreference(String name)
+    {
+      return null;
+    }
+  }
+  
+  /** helper class
+   * 
+   * @author ian
+   *
+   */
   private static class ToteSetter implements Runnable
   {
     final private PainterManager _manager;
