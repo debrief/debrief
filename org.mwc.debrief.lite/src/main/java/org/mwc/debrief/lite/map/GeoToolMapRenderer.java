@@ -15,6 +15,7 @@
 package org.mwc.debrief.lite.map;
 
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.geotools.swing.tool.CursorTool;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
@@ -65,26 +67,68 @@ public class GeoToolMapRenderer implements BaseMap
   {
     _myRenderers.add(renderer);
   }
+  
+  private static class CustomMapPane extends JMapPane
+  {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    
+    private final MouseDragLine dragLine;
+
+    private final GeoToolMapRenderer _renderer;
+
+    public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
+    {
+      super();
+      _renderer = geoToolMapRenderer;
+      
+      dragLine = new MouseDragLine(this);
+      addMouseListener(dragLine);
+      addMouseMotionListener(dragLine);
+    }
+
+    @Override
+    protected void paintComponent(final Graphics arg0)
+    {
+      super.paintComponent(arg0);
+      _renderer.paintEvent(arg0);
+    }
+    
+    @Override
+    public void setCursorTool(CursorTool tool) {
+        paramsLock.writeLock().lock();
+        try {
+            if (currentCursorTool != null) {
+                mouseEventDispatcher.removeMouseListener(currentCursorTool);
+            }
+
+            currentCursorTool = tool;
+
+            if (currentCursorTool == null) {
+                setCursor(Cursor.getDefaultCursor());
+                dragBox.setEnabled(false);
+                dragLine.setEnabled(false);
+            } else {
+                setCursor(currentCursorTool.getCursor());
+                dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
+                dragBox.setEnabled(currentCursorTool.drawDragBox());
+                currentCursorTool.setMapPane(this);
+                mouseEventDispatcher.addMouseListener(currentCursorTool);
+            }
+
+        } finally {
+            paramsLock.writeLock().unlock();
+        }
+    }
+  }
 
   @Override
   public void createMapLayout()
   {
-    mapPane = new JMapPane()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      protected void paintComponent(final Graphics arg0)
-      {
-        super.paintComponent(arg0);
-
-        paintEvent(arg0);
-      }
-    };
+    mapPane = new CustomMapPane(this);
 
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
