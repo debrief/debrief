@@ -274,7 +274,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
   /**
    * construct the form
    */
-  protected void initForm()
+  
+  protected void initForm() {
+    initForm(false);
+  }
+  protected void initForm(boolean hideLegacyButtons)
   {
     // set the name
     super.setName("Layer Manager");
@@ -343,37 +347,43 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myPane = new JScrollPane(_myTree);
     add(_myPane, java.awt.BorderLayout.CENTER);
 
-    // do the 'add' button
-    final JButton addBtn = new JButton("Add layer");
-    addBtn.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
+    if(!hideLegacyButtons) {
+      // do the 'add' button
+      final JButton addBtn = new JButton("Add layer");
+      addBtn.addActionListener(new ActionListener()
       {
-        addLayer();
-      }
-    });
+        public void actionPerformed(final ActionEvent e)
+        {
+          addLayer();
+        }
+      });
 
-    // do the 'refresh' button
-    final JButton refreshBtn = new JButton("Update view");
-    refreshBtn.addActionListener(new ActionListener()
-    {
-      public void actionPerformed(final ActionEvent e)
+      // do the 'refresh' button
+      final JButton refreshBtn = new JButton("Update view");
+      refreshBtn.addActionListener(new ActionListener()
       {
-        doReset();
-      }
-    });
+        public void actionPerformed(final ActionEvent e)
+        {
+          doReset();
+        }
+      });
 
-    btnHolder = new JPanel();
-    btnHolder.setLayout(new java.awt.GridLayout(1, 0));
-    btnHolder.add(addBtn);
-    btnHolder.add(refreshBtn);
-    add(btnHolder, java.awt.BorderLayout.NORTH);
+      btnHolder = new JPanel();
+      btnHolder.setLayout(new java.awt.GridLayout(1, 0));
+      btnHolder.add(addBtn);
+      btnHolder.add(refreshBtn);
+      add(btnHolder, java.awt.BorderLayout.NORTH);
+    }
 
   }
 
   public void showButtonPanel(boolean show)
   {
-    btnHolder.setVisible(show);
+    if(btnHolder!=null)
+    {
+      btnHolder.setVisible(show);  
+    }
+    
   }
 
   /**

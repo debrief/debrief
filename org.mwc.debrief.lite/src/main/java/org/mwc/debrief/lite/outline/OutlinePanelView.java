@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.lite.outline;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
@@ -28,6 +30,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -69,8 +72,38 @@ public class OutlinePanelView extends SwingLayerManager
   @Override
   protected void initForm()
   {
-    super.initForm();
+    super.initForm(true);
+    showButtonPanel(false);
+    JPanel commandBar = new JPanel();
+    commandBar.setBackground(Color.LIGHT_GRAY);
+    commandBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    URL editImage = getClass().getClassLoader().getResource("images/16/edit.png");
+    JButton editButton = new JButton(new ImageIcon(editImage));
+    editButton.setToolTipText("Edit");
+    commandBar.add(editButton);
+    URL copyImage = getClass().getClassLoader().getResource("images/16/copy_to_clipboard.png");
+    JButton copyButton = new JButton(new ImageIcon(copyImage));
+    copyButton.setToolTipText("Copy");
+    commandBar.add(copyButton);
+    URL pasteImage = getClass().getClassLoader().getResource("images/16/paste.png");
+    JButton pasteButton = new JButton(new ImageIcon(pasteImage));
+    pasteButton.setToolTipText("Paste");
+    commandBar.add(pasteButton);
+    URL layerImage = getClass().getClassLoader().getResource("images/16/add_layer.png");
+    JButton addLayerButton = new JButton(new ImageIcon(layerImage));
+    addLayerButton.setToolTipText("Add Layer");
+    commandBar.add(addLayerButton);
     
+    URL deleteImage = getClass().getClassLoader().getResource("images/16/remove.png");
+    JButton deleteButton = new JButton(new ImageIcon(deleteImage));
+    deleteButton.setToolTipText("Delete");
+    commandBar.add(deleteButton);
+    
+    URL refreshImage = getClass().getClassLoader().getResource("images/16/repaint.png");
+    JButton refreshViewButton = new JButton(new ImageIcon(refreshImage));
+    refreshViewButton.setToolTipText("Update View");
+    commandBar.add(refreshViewButton);
+    add(commandBar,BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
     setCellEditor(new OutlineCellEditor());
   }
