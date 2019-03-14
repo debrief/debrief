@@ -67,7 +67,7 @@ public class DebriefRibbonView
         true);
     final RangeBearingAction rangeAction = new RangeBearingAction(mapPane,
         statusBar);
-    MenuUtils.addCommandToggleButton("Rne/Brg", "images/16/rng_brg.png",
+    MenuUtils.addCommandToggleButton("Rng/Brg", "images/16/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
     viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
