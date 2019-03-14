@@ -70,6 +70,10 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
+
+    // tell the zoom in action that it's live
+    zoomInAction.actionPerformed(null);
+
     viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         viewBand));
     return viewBand;
