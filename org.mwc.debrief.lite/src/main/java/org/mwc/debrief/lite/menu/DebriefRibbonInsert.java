@@ -59,9 +59,9 @@ public class DebriefRibbonInsert
   private static ItemListener selectLayerItemListener;
   private static JComboBox<String> selectLayerCombo;
   protected static void addInsertTab(final JRibbon ribbon,
-      final GeoToolMapRenderer _geoMapRenderer, final Layers _theLayers,
-      final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent)
+      final GeoToolMapRenderer geoMapRenderer, final Layers theLayers,
+      final PropertiesPanel theProperties,
+      final DebriefLiteToolParent toolParent)
   {
     /**
      * some of our tools are interested in the visible data area. But, we can't determine it when
@@ -73,13 +73,13 @@ public class DebriefRibbonInsert
       @Override
       public WorldArea getBounds()
       {
-        return _theLayers.getBounds();
+        return theLayers.getBounds();
       }
 
       @Override
       public WorldArea getViewport()
       {
-        final ReferencedEnvelope env = _geoMapRenderer.getMapComponent()
+        final ReferencedEnvelope env = geoMapRenderer.getMapComponent()
             .getViewport().getBounds();
         final WorldLocation tl = new WorldLocation(env.getMaxY(), env.getMinX(),
             0);
@@ -90,17 +90,17 @@ public class DebriefRibbonInsert
       }
     };
 
-    final Layer decs = _theLayers.findLayer(Layers.CHART_FEATURES);
-    final JRibbonBand chartfeaturesMenu = createDecorations(_theLayers,
-        _theProperties, _toolParent, bounds, decs);
+    final Layer decs = theLayers.findLayer(Layers.CHART_FEATURES);
+    final JRibbonBand chartfeaturesMenu = createDecorations(theLayers,
+        theProperties, toolParent, bounds, decs);
     
-    final JRibbonBand referenceDataMenu = createReferenceData(_theLayers,
-        _theProperties, _toolParent, bounds, decs);
+    final JRibbonBand referenceDataMenu = createReferenceData(theLayers,
+        theProperties, toolParent, bounds, decs);
 
-    final JRibbonBand layersMenu = createLayerMenu(_theLayers, _theProperties, _toolParent);
+    final JRibbonBand layersMenu = createLayerMenu(theLayers);
     
-    final JRibbonBand drawingMenu = createShapes(_theLayers, _theProperties,
-        _toolParent, bounds);
+    final JRibbonBand drawingMenu = createShapes(theLayers, theProperties,
+        toolParent, bounds);
     
     final RibbonTask drawingTask = new RibbonTask("Insert", chartfeaturesMenu,
         referenceDataMenu, layersMenu, drawingMenu);
@@ -129,9 +129,7 @@ public class DebriefRibbonInsert
     return referenceDataMenu;
   }
   
-  private static JRibbonBand createLayerMenu(final Layers _theLayers,
-      final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent) {
+  private static JRibbonBand createLayerMenu(final Layers _theLayers) {
     final JRibbonBand layersMenu = new JRibbonBand("Active Layer", null);
     addDropDown(selectLayerItemListener,layersMenu,RibbonElementPriority.TOP,_theLayers);
     return layersMenu;

@@ -132,7 +132,7 @@ abstract public class CreateShape extends CoreCreateShape
     final GetAction getAction = new GetAction() {
 
       @Override
-      public Action CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
           final PlainWrapper theItem, final Layers theData)
       {
         return new CreateShapeAction(_thePanel, theLayer,

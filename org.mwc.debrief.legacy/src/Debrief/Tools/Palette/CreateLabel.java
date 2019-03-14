@@ -132,7 +132,7 @@ public final class CreateLabel extends CoreCreateShape
      * @param theData
      * @return
      */
-    Action CreateLabelAction(final PropertiesPanel thePanel,
+    Action createLabelAction(final PropertiesPanel thePanel,
         final Layer theLayer,
         final PlainWrapper theItem,
         final Layers theData);
@@ -232,12 +232,12 @@ public final class CreateLabel extends CoreCreateShape
           theData.addThisLayer(tmpLayer);
           
           // action to put the shape into this new layer
-          res = getAction.CreateLabelAction(thePanel, tmpLayer, theWrapper, theData);
+          res = getAction.createLabelAction(thePanel, tmpLayer, theWrapper, theData);
         }
       }
       else
       {
-        res = getAction.CreateLabelAction(thePanel, theLayer, theWrapper, theData);
+        res = getAction.createLabelAction(thePanel, theLayer, theWrapper, theData);
       }
     }
     else
@@ -257,7 +257,7 @@ public final class CreateLabel extends CoreCreateShape
     final GetAction getAction = new GetAction() {
 
       @Override
-      public Action CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
           final PlainWrapper theItem, final Layers theData)
       {
         return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
