@@ -13,6 +13,7 @@ import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -31,17 +32,20 @@ public class DebriefRibbonView
     final JRibbonBand viewBand = new JRibbonBand("View", null);
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
     final AbstractAction doFit = new FitToWindow(layers, mapPane);
-        
+
+    // group for the mosue mode radio buttons
+    final FlamingoCommandToggleGroup mouseModeGroup =
+        new FlamingoCommandToggleGroup();
+
     viewBand.startGroup();
-    MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane),
-        viewBand, RibbonElementPriority.TOP);
+    MenuUtils.addCommandToggleButton("Pan", "images/16/hand.png", new PanAction(mapPane),
+        viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
     final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
-    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction,
-        viewBand, RibbonElementPriority.TOP);
+    MenuUtils.addCommandToggleButton("Zoom In", "images/16/zoomin.png", zoomInAction,
+        viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, true);
     final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, statusBar);
-    MenuUtils.addCommand("Rne/Brg", "images/16/rng_brg.png", rangeAction,
-        viewBand, RibbonElementPriority.TOP);
-    
+    MenuUtils.addCommandToggleButton("Rne/Brg", "images/16/rng_brg.png", rangeAction,
+        viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
     
     viewBand.startGroup();
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
@@ -55,9 +59,5 @@ public class DebriefRibbonView
     viewBand.setResizePolicies(policies);
     final RibbonTask fileTask = new RibbonTask("View", viewBand);
     ribbon.addTask(fileTask);
-
-    // lastly, run the zoom-in event, to put the map into that mode
-  //  zoomInAction.actionPerformed(new ActionEvent(viewBand,
-    //    ActionEvent.ACTION_PERFORMED, "Click"));
   }
 }
