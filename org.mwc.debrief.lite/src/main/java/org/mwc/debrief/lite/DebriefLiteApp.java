@@ -198,12 +198,9 @@ public class DebriefLiteApp implements FileDropListener
           final Layer thisL = iter.next();
           // and update the screen
           _theLayers.fireReformatted(thisL);
-
         }
       }
-
       return res;
-
     }
   };
   private final TimeManager timeManager = new TimeManager();
