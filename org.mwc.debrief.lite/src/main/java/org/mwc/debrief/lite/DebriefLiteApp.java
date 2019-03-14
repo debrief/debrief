@@ -98,7 +98,7 @@ public class DebriefLiteApp implements FileDropListener
   private static DebriefLiteApp _instance;
   
   public static final String appName = "Debrief Lite";
-  public static final String NOTES_ICON = "images/16/note.png";
+  public static final String NOTES_ICON = "icons/16/note.png";
   public static String currentFileName = null;
 
   /**

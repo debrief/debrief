@@ -100,8 +100,8 @@ public class OutlinePanelView extends SwingLayerManager
       panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
       
       visibility.setOpaque(false);
-      visibilityIconEnabled = new ImageIcon(getClass().getClassLoader().getResource("images/16/visible-eye.png")); 
-      visibilityIconDisabled = new ImageIcon(getClass().getClassLoader().getResource("images/16/invisible-eye.png"));
+      visibilityIconEnabled = new ImageIcon(getClass().getClassLoader().getResource("icons/16/visible-eye.png")); 
+      visibilityIconDisabled = new ImageIcon(getClass().getClassLoader().getResource("icons/16/invisible-eye.png"));
       panel.add(visibility);
       panel.add(strut);
       panel.add(this);

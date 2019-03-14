@@ -116,12 +116,12 @@ public class DebriefRibbonInsert
         null);
     @SuppressWarnings("unused")
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
-        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+        "icons/24/coast_add.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
-        "Natural Earth", "images/16/NaturalEarth.png", new CreateCoast(_toolParent,
+        "Natural Earth", "icons/24/NaturalEarth.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
@@ -141,7 +141,7 @@ public class DebriefRibbonInsert
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
     final CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
+        _theLayers, "Ellipse", "icons/ellipse_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -153,9 +153,9 @@ public class DebriefRibbonInsert
     };
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
-        "images/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/16/ellipse.png", ellipseShape, CommandButtonDisplayState.MEDIUM, null);
     final CreateShape polygonShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Polygon", "images/polygon_add.png", bounds)
+        _theLayers, "Polygon", "icons/polygon_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -177,10 +177,10 @@ public class DebriefRibbonInsert
     };
     polygonShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "images/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape rectShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
+        _theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -192,11 +192,11 @@ public class DebriefRibbonInsert
     };
     rectShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
-        "images/16/rectangle.png", rectShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/16/rectangle.png", rectShape, CommandButtonDisplayState.MEDIUM, null);
     
     
     final CreateShape circleShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Circle", "images/circle_add.png", bounds)
+        _theLayers, "Circle", "icons/circle_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -207,10 +207,10 @@ public class DebriefRibbonInsert
     };
     circleShape.setSelectedLayerSource(selectLayerCombo);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
-        "images/16/circle.png", circleShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/16/circle.png", circleShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape arcShape =  new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Arc", "images/arc_add.png", bounds)
+        _theLayers, "Arc", "icons/arc_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -223,12 +223,12 @@ public class DebriefRibbonInsert
     arcShape.setSelectedLayerSource(selectLayerCombo);
     
     final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "images/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
     
    
     
     final CreateShape lineShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Line", "images/line_add.png", bounds)
+        _theLayers, "Line", "icons/line_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -241,7 +241,7 @@ public class DebriefRibbonInsert
     lineShape.setSelectedLayerSource(selectLayerCombo);
     
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-        "images/16/line.png", lineShape, CommandButtonDisplayState.MEDIUM, null);
+        "icons/16/line.png", lineShape, CommandButtonDisplayState.MEDIUM, null);
     
     selectLayerItemListener = new ItemListener()
     {
@@ -379,11 +379,11 @@ public class DebriefRibbonInsert
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     @SuppressWarnings("unused")
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
+        "icons/24/scale_add.png", new CreateScale(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     @SuppressWarnings("unused")
     final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
-        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties,
+        "icons/24/grid_add.png", new CreateGrid(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils

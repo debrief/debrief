@@ -37,10 +37,10 @@ public class DebriefRibbonView
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
     final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
     commandBand.startGroup();
-    MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
+    MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", new ZoomOut(
         mapPane), commandBand, RibbonElementPriority.TOP);
     final AbstractAction doFit = new FitToWindow(layers, mapPane);
-    MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png", doFit,
+    MenuUtils.addCommand("Fit to Window", "icons/24/fit_to_win.png", doFit,
         commandBand, null);
     commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         commandBand));
@@ -58,16 +58,16 @@ public class DebriefRibbonView
         new FlamingoCommandToggleGroup();
 
     viewBand.startGroup();
-    MenuUtils.addCommandToggleButton("Pan", "images/16/hand.png", new PanAction(
+    MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
         mapPane), viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
     final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
-    MenuUtils.addCommandToggleButton("Zoom In", "images/16/zoomin.png",
+    MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         true);
     final RangeBearingAction rangeAction = new RangeBearingAction(mapPane,
         statusBar);
-    MenuUtils.addCommandToggleButton("Rng/Brg", "images/16/rng_brg.png",
+    MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
     viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

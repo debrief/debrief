@@ -93,7 +93,7 @@ public class RibbonAppMenuProvider
         .setTitle("Exit")
         .setIcon(
             ImageWrapperResizableIcon.getIcon(
-                MenuUtils.createImage("images/16/exit.png"),new Dimension(16,16)))
+                MenuUtils.createImage("icons/16/exit.png"),new Dimension(16,16)))
         .setAction(new AbstractAction()
         {
 
