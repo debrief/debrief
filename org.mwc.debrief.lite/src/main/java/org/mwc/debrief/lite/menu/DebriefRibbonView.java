@@ -1,8 +1,5 @@
 package org.mwc.debrief.lite.menu;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.swing.AbstractAction;
 import javax.swing.JLabel;
 
@@ -18,20 +15,17 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
-import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies.IconRibbonBandResizePolicy;
-import org.pushingpixels.flamingo.api.ribbon.resize.RibbonBandResizePolicy;
 
 import MWC.GUI.Layers;
 
 public class DebriefRibbonView
 {
-  protected static void addViewTab(final JRibbon ribbon,
+  
+  private static JRibbonBand createMouseModes(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer, final Layers layers, JLabel statusBar)
   {
-    final JRibbonBand viewBand = new JRibbonBand("View", null);
+    final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
     final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
-    final AbstractAction doFit = new FitToWindow(layers, mapPane);
 
     // group for the mosue mode radio buttons
     final FlamingoCommandToggleGroup mouseModeGroup =
@@ -47,17 +41,36 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Rne/Brg", "images/16/rng_brg.png", rangeAction,
         viewBand, RibbonElementPriority.TOP, true, mouseModeGroup, false);
     
-    viewBand.startGroup();
+    viewBand.setResizePolicies(MenuUtils
+        .getStandardRestrictivePolicies(viewBand));
+    
+    return viewBand;
+  }
+  
+  private static JRibbonBand createMapCommands(final JRibbon ribbon,
+      final GeoToolMapRenderer _geoMapRenderer, final Layers layers, JLabel statusBar)
+  {
+    final JMapPane mapPane = (JMapPane) _geoMapRenderer.getMap();
+    final AbstractAction doFit = new FitToWindow(layers, mapPane);
+    final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
+    commandBand.startGroup();
     MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
-        mapPane), viewBand, RibbonElementPriority.TOP);
+        mapPane), commandBand, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png",
-        doFit, viewBand, null);
-    final List<RibbonBandResizePolicy> policies = new ArrayList<>();
-    policies.add(new CoreRibbonResizePolicies.Mirror(viewBand));
-    policies.add(new CoreRibbonResizePolicies.Mid2Low(viewBand));
-    policies.add(new IconRibbonBandResizePolicy(viewBand));
-    viewBand.setResizePolicies(policies);
-    final RibbonTask fileTask = new RibbonTask("View", viewBand);
+        doFit, commandBand, null);
+    commandBand.setResizePolicies(MenuUtils
+        .getStandardRestrictivePolicies(commandBand));
+    return commandBand;
+  }
+  
+  protected static void addViewTab(final JRibbon ribbon,
+      final GeoToolMapRenderer _geoMapRenderer, final Layers layers, JLabel statusBar)
+  {
+    
+    JRibbonBand mouseMode = createMouseModes(ribbon, _geoMapRenderer, layers, statusBar);
+    JRibbonBand mapCommands = createMapCommands(ribbon, _geoMapRenderer, layers, statusBar);
+  
+    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
     ribbon.addTask(fileTask);
   }
 }
