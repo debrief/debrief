@@ -145,13 +145,6 @@ abstract public class CreateShape extends CoreCreateShape
         if(layerToAddTo!=null) {
           theLayer = _theData.findLayer(layerToAddTo);
         }
-        if(theLayer != null) {
-          res =  new CreateShapeAction(_thePanel,
-              theLayer,
-              theWrapper,
-              _theData);
-
-        }
       }
       else{
         if(layerToAddTo!=null) {
@@ -171,17 +164,13 @@ abstract public class CreateShape extends CoreCreateShape
           theLayer = new BaseLayer();
           theLayer.setName("Misc");
           _theData.addThisLayer(theLayer);
-          res =  new CreateShapeAction(_thePanel,
-              theLayer,
-              theWrapper,
-              _theData);
         }
-        else {
-          res =  new CreateShapeAction(_thePanel,
-              theLayer,
-              theWrapper,
-              _theData);
-        }
+      }
+      if(theLayer!=null) {
+        res =  new CreateShapeAction(_thePanel,
+            theLayer,
+            theWrapper,
+            _theData);
       }
     }
     else

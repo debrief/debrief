@@ -160,15 +160,6 @@ public final class CreateLabel extends CoreCreateShape
         if(layerToAddTo!=null) {
           theLayer = _theData.findLayer(layerToAddTo);
         }
-        if(theLayer!=null) {
-          if(theLayer != null) {
-            res =  new CreateLabelAction(_thePanel,
-                theLayer,
-                theWrapper,
-                _theData);
-
-          }
-        }
       }
       if(layerToAddTo!=null) {
         theLayer = _theData.findLayer(layerToAddTo);
@@ -190,11 +181,15 @@ public final class CreateLabel extends CoreCreateShape
           theLayer.setName("Misc");
           _theData.addThisLayer(theLayer);
         }
-        res = new CreateLabelAction(_thePanel,
+      }
+      if(theLayer!=null) {
+        res =  new CreateLabelAction(_thePanel,
             theLayer,
             theWrapper,
             _theData);
+
       }
+  
     }
     else
     {
