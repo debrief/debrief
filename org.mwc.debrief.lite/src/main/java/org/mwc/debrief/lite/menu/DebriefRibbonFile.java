@@ -245,21 +245,21 @@ public class DebriefRibbonFile
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(
+    MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Open Plot", "images/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
+    MenuUtils.addCommand("Open Plot", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.MEDIUM);
     
     fileMenu.startGroup();
-    MenuUtils.addCommand("Save", "images/16/save.png",
+    MenuUtils.addCommand("Save", "icons/16/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Save as", "images/16/save-as.png",
+    MenuUtils.addCommand("Save as", "icons/16/save-as.png",
         new DoSaveAs(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
-    MenuUtils.addCommand("Exit", "images/16/exit.png", new AbstractAction()
+    MenuUtils.addCommand("Exit", "icons/16/exit.png", new AbstractAction()
     {
       /**
        *
@@ -276,11 +276,11 @@ public class DebriefRibbonFile
         exitMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
-    MenuUtils.addCommand("Import Replay", "images/16/import.png",
+    MenuUtils.addCommand("Import Replay", "icons/16/import.png",
         new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
-    MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
+    MenuUtils.addCommand("Copy Plot to PNG", "icons/16/import.png",
         new CopyPlotAsPNG(geoMapRenderer), importMenu,
         RibbonElementPriority.MEDIUM);
     fileMenu.setPreferredSize(new Dimension(150, 50));

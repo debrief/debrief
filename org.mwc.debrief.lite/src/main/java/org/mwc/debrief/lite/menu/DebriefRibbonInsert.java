@@ -93,12 +93,12 @@ public class DebriefRibbonInsert
         null);
     @SuppressWarnings("unused")
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
-        "images/16/coast.png", new CreateCoast(_toolParent, _theProperties,
+        "icons/16/coast.png", new CreateCoast(_toolParent, _theProperties,
             decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
-        "Natural Earth", "images/16/NaturalEarth.png", new CreateCoast(_toolParent,
+        "Natural Earth", "icons/16/NaturalEarth.png", new CreateCoast(_toolParent,
             _theProperties, decs, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
@@ -112,7 +112,7 @@ public class DebriefRibbonInsert
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
     final JCommandButton ellipseShapeCmd = MenuUtils.addCommandButton("Ellipse",
-        "images/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/ellipse.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Ellipse", "images/ellipse_add.png", bounds)
         {
           @Override
@@ -124,7 +124,7 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "images/16/polygon.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/polygon.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Polygon", "images/polygon_add.png", bounds)
         {
           @Override
@@ -136,7 +136,7 @@ public class DebriefRibbonInsert
         }, CommandButtonDisplayState.MEDIUM, null);
     
     final JCommandButton rectCmd = MenuUtils.addCommandButton("Rectangle",
-        "images/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/rectangle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Rectangle", "images/rectangle_add.png", bounds)
         {
           @Override
@@ -148,7 +148,7 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton circleCmd = MenuUtils.addCommandButton("Circle",
-        "images/16/circle.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/circle.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Circle", "images/circle_add.png", bounds)
         {
           @Override
@@ -159,7 +159,7 @@ public class DebriefRibbonInsert
           }
         }, CommandButtonDisplayState.MEDIUM, null);
     final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "images/arc_add.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/arc_add.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Arc", "images/arc_add.png", bounds)
         {
           @Override
@@ -174,7 +174,7 @@ public class DebriefRibbonInsert
    
 
     final JCommandButton lineCmd = MenuUtils.addCommandButton("Line",
-        "images/16/line.png", new CreateShape(_toolParent, _theProperties,
+        "icons/16/line.png", new CreateShape(_toolParent, _theProperties,
             _theLayers, "Line", "images/line_add.png", bounds)
         {
           @Override
@@ -219,11 +219,11 @@ public class DebriefRibbonInsert
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     @SuppressWarnings("unused")
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
-        "images/16/scale.png", new CreateScale(_toolParent, _theProperties,
+        "icons/16/scale.png", new CreateScale(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     @SuppressWarnings("unused")
     final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
-        "images/16/grid.png", new CreateGrid(_toolParent, _theProperties,
+        "icons/16/grid.png", new CreateGrid(_toolParent, _theProperties,
             decs, _theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils

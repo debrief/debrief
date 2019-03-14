@@ -32,15 +32,15 @@ public class DebriefRibbonView
     final AbstractAction doFit = new FitToWindow(layers, mapPane);
         
     viewBand.startGroup();
-    MenuUtils.addCommand("Pan", "images/16/hand.png", new PanAction(mapPane),
+    MenuUtils.addCommand("Pan", "icons/16/hand.png", new PanAction(mapPane),
         viewBand, RibbonElementPriority.TOP);
     final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
-    MenuUtils.addCommand("Zoom In", "images/16/zoomin.png", zoomInAction,
+    MenuUtils.addCommand("Zoom In", "icons/16/zoomin.png", zoomInAction,
         viewBand, RibbonElementPriority.TOP);
     viewBand.startGroup();
-    MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
+    MenuUtils.addCommand("Zoom Out", "icons/16/zoomout.png", new ZoomOut(
         mapPane), viewBand, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png",
+    MenuUtils.addCommand("Fit to Window", "icons/16/fit_to_win.png",
         doFit, viewBand, null);
     final List<RibbonBandResizePolicy> policies = new ArrayList<>();
     policies.add(new CoreRibbonResizePolicies.Mirror(viewBand));
