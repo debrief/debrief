@@ -50,7 +50,9 @@ public class DoSaveAs extends AbstractAction
       outputFile = showSaveDialog(null, null);
     }
 
-    DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
+    if(outputFile!=null) {
+      DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
+    }
   }
 
   protected String getFileName(final String fileName)

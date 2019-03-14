@@ -74,13 +74,12 @@
 package Debrief.Tools.Palette;
 
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public final class CreateLabel extends CoreCreateShape
@@ -112,49 +111,57 @@ public final class CreateLabel extends CoreCreateShape
 
     _thePanel = thePanel;
   }
+  
 
-  /** get the current visible data area
+  /** helper class, to allow common code to be used for both shapes & labels
    * 
+   * @author ian
+   *
    */
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+  public static interface GetAction
+  {
+    /** create the action that puts the item into a layer
+     * 
+     * @param thePanel
+     * @param theLayer
+     * @param theItem
+     * @param theData
+     * @return
+     */
+    Action createLabelAction(final PropertiesPanel thePanel,
+        final Layer theLayer,
+        final PlainWrapper theItem,
+        final Layers theData);
+    
+    /** create a new instance of the correct type
+     * 
+     * @param centre
+     * @return
+     */
+    PlainWrapper getItem(final WorldLocation centre);
+  }
+  
+ 
 
   public final Action getData()
   {
+    final GetAction getAction = new GetAction() {
 
-    WorldArea wa = getBounds();
-    if(wa != null)
-    {
-      // put the label in the centre of the plot (at the surface)
-      final WorldLocation centre = wa.getCentreAtSurface();
-
-      final LabelWrapper theWrapper = new LabelWrapper("blank label",
-          centre,
-          MWC.GUI.Properties.DebriefColors.ORANGE);
-      
-      String layerToAddTo = getLayerName();
-      Layer theLayer = _theData.findLayer(layerToAddTo);
-      if(theLayer == null)
+      @Override
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
       {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
+        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
       }
 
-      return new CreateLabelAction(_thePanel,
-          theLayer,
-          theWrapper,
-          _theData);
-    }
-    else
-    {
-      // we haven't got an area, inform the user
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-          "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-      return null;
-    }
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return  new LabelWrapper("blank label",
+            centre,
+            MWC.GUI.Properties.DebriefColors.ORANGE);
+      }};
+    return commonGetData(getAction, _thePanel);
   }
 
   ///////////////////////////////////////////////////////

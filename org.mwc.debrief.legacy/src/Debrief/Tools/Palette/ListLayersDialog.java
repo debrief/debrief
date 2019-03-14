@@ -31,6 +31,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -52,12 +54,22 @@ public class ListLayersDialog extends JDialog
     initForm();
   }
   public void initForm() {
+    final JButton okButton = new JButton("OK");
+    okButton.setEnabled(false);
+
     JLabel lblMessage = new JLabel();
     lblMessage.setText("Please select the destination layer for new feature");
     _list = new JList<>(_layersList);
     _list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     _list.setBorder(new CompoundBorder(new EmptyBorder(4,4,4,4),new LineBorder(Color.BLACK,1)));
     _list.setVisibleRowCount(-1);
+    _list.addListSelectionListener(new ListSelectionListener() {
+
+      @Override
+      public void valueChanged(ListSelectionEvent e)
+      {
+        okButton.setEnabled(!_list.isSelectionEmpty());
+      }});
     JScrollPane listScroller = new JScrollPane();
     listScroller.setViewportView(_list);
     listScroller.setPreferredSize(new Dimension(250, 80));
@@ -65,7 +77,6 @@ public class ListLayersDialog extends JDialog
     add(listScroller,BorderLayout.CENTER);
     JPanel southPanel = new JPanel();
     southPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    JButton okButton = new JButton("OK");
     okButton.addActionListener(new ActionListener()
     {
       

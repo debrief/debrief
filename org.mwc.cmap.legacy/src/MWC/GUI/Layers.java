@@ -1430,7 +1430,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
 
   }
-  
+
   public String[] trimmedLayers()
   {
     final Vector<String> res = new Vector<String>(0, 1);
