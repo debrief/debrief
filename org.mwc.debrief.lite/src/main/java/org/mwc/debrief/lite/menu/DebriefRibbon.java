@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.lite.menu;
 
+import javax.swing.JLabel;
+
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
@@ -37,11 +39,11 @@ public class DebriefRibbon
       final LiteStepControl stepControl, TimeManager timeManager,
       final PlotOperations operations, final Session session,
       final UndoBuffer undoBuffer, final Runnable resetAction,
-      final Runnable normalPainter, final Runnable snailPainter)
+      final Runnable normalPainter, final Runnable snailPainter, JLabel statusBar)
   {
     // add menus here
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
-    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers);
+    DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
