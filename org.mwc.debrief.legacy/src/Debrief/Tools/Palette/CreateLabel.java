@@ -219,8 +219,8 @@ public final class CreateLabel extends CoreCreateShape
           // works for debrief-legacy
           // user cancelled.
           JOptionPane.showMessageDialog(null,
-              "A layer can only be created if a name is provided. "
-                  + "The shape has not been created", "Error",
+              "An item can only be created if a parent layer is specified. "
+                  + "The item has not been created", "Error",
               JOptionPane.ERROR_MESSAGE);
           res = null;          
         }
