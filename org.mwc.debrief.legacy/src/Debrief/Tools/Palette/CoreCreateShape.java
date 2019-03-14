@@ -30,68 +30,72 @@ import MWC.GenericData.WorldArea;
  */
 public abstract class CoreCreateShape extends PlainTool
 {
-  
-  public static final String USER_SELECTED_LAYER_COMMAND = "User-selected Layer";
-  
-  /** the layers we are going to drop this shape into
+
+  public static final String USER_SELECTED_LAYER_COMMAND =
+      "User-selected Layer";
+
+  /**
+   * the layers we are going to drop this shape into
    */
   protected Layers _theData;
-  
+
   protected JComboBox<String> selectedLayerSource;
-  
+
   protected final BoundsProvider _theBounds;
 
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public CoreCreateShape(final ToolParent theParent,
-      final String theName,
-      final String theImage,
-      final Layers theData,
-      final BoundsProvider bounds)
+  public CoreCreateShape(final ToolParent theParent, final String theName,
+      final String theImage, final Layers theData, final BoundsProvider bounds)
   {
     super(theParent, theName, theImage);
     _theData = theData;
     _theBounds = bounds;
   }
 
-
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////
-  /** get the current visible data area
+  /**
+   * get the current visible data area
    * 
    */
   final protected WorldArea getBounds()
   {
     return _theBounds.getViewport();
   }
-  
-  //used in debrief lite, to get the select layer from ribbon tab
-  public final void setSelectedLayerSource(JComboBox<String> jCombo) {
+
+  /**
+   * used in debrief lite, to get the select layer from ribbon tab
+   * 
+   * @param jCombo
+   */
+  public final void setSelectedLayerSource(JComboBox<String> jCombo)
+  {
     selectedLayerSource = jCombo;
   }
-  
-  
-  protected final String getSelectedLayer() {
-    if(selectedLayerSource!=null) {
-      return (String)selectedLayerSource.getSelectedItem();
+
+  protected final String getSelectedLayer()
+  {
+    if (selectedLayerSource != null)
+    {
+      return (String) selectedLayerSource.getSelectedItem();
     }
     return null;
   }
+
   /**
    * @return
    */
   protected String getLayerName()
   {
     String res = null;
-    // ok, are we auto-deciding?
-
     // get the non-track layers
     final Layers theLayers = _theData;
     final String[] ourLayers = theLayers.trimmedLayers();
     ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
-    listDialog.setSize(350,300);
+    listDialog.setSize(350, 300);
     listDialog.setLocationRelativeTo(null);
     listDialog.setModal(true);
     listDialog.setVisible(true);
@@ -103,11 +107,10 @@ public abstract class CoreCreateShape extends PlainTool
       if (selection.equals(Layers.NEW_LAYER_COMMAND))
       {
         // better create one. Ask the user
-
-        // create input box dialog
-        String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
+        String txt = JOptionPane.showInputDialog(null,
+            "Enter name for new layer", "New Layer");
         // check there's something there
-        if (txt!=null && !txt.isEmpty())
+        if (txt != null && !txt.isEmpty())
         {
           res = txt;
           // create base layer
@@ -121,11 +124,11 @@ public abstract class CoreCreateShape extends PlainTool
           res = null;
         }
       }
-      else {
+      else
+      {
         res = selection;
       }
     }
-
     return res;
   }
 }

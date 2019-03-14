@@ -55,7 +55,6 @@ import MWC.GenericData.WorldVector;
 public class DebriefRibbonInsert
 {
   
-  final private static String[] layerItems = new String[] {"Select Layer",CoreCreateShape.USER_SELECTED_LAYER_COMMAND};
   private static String selectedLayer;
   private static ItemListener selectLayerItemListener;
   private static JComboBox<String> selectLayerCombo;
@@ -149,9 +148,9 @@ public class DebriefRibbonInsert
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
       {
-        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 0,
-            new WorldDistance(0, WorldDistance.DEGS), new WorldDistance(0,
-                WorldDistance.DEGS)), DebriefColors.RED, null);
+        return new ShapeWrapper("new ellipse", new EllipseShape(centre, 30,
+            new WorldDistance(5, WorldDistance.KM), new WorldDistance(3,
+                WorldDistance.KM)), DebriefColors.RED, null);
       }
     };
     ellipseShape.setSelectedLayerSource(selectLayerCombo);
@@ -296,6 +295,9 @@ public class DebriefRibbonInsert
   private static JRibbonComponent addDropDown(final ItemListener actionToAdd,
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
+    final String[] layerItems = new String[]
+    {"Select Layer", CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
+        Layers.NEW_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     selectLayerCombo = new JComboBox<String>(layerItems);
     selectLayerCombo.addItemListener(actionToAdd);

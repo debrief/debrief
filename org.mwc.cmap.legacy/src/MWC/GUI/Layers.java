@@ -1430,9 +1430,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     }
 
   }
-  
-  
-  
+
   public String[] trimmedLayers()
   {
     final Vector<String> res = new Vector<String>(0, 1);
@@ -1447,6 +1445,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
           res.add(thisLayer.getName());
       }
     }
+
     res.add(NEW_LAYER_COMMAND);
 
     final String[] sampleArray = new String[]

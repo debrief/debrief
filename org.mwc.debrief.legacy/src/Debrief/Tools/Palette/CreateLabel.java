@@ -138,15 +138,21 @@ public final class CreateLabel extends CoreCreateShape
           MWC.GUI.Properties.DebriefColors.ORANGE);
       Layer theLayer = null;
       String layerToAddTo = getSelectedLayer();
-      if(CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo) || Layers.NEW_LAYER_COMMAND.equals(layerToAddTo)) {
-        userSelected=true;
-        if(CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo)) {
+      final boolean wantsUserSelected =
+          CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo);
+      if (wantsUserSelected || Layers.NEW_LAYER_COMMAND.equals(layerToAddTo))
+      {
+        userSelected = true;
+        if (wantsUserSelected)
+        {
           layerToAddTo = getLayerName();
         }
-        else {
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+        else
+        {
+          String txt = JOptionPane.showInputDialog(null,
+              "Enter name for new layer");
           // check there's something there
-          if (txt!=null && !txt.isEmpty())
+          if (txt != null && !txt.isEmpty())
           {
             layerToAddTo = txt;
             // create base layer
@@ -157,25 +163,29 @@ public final class CreateLabel extends CoreCreateShape
             _theData.addThisLayer(newLayer);
           }
         }
-        if(layerToAddTo!=null) {
+        if (layerToAddTo != null)
+        {
           theLayer = _theData.findLayer(layerToAddTo);
         }
       }
-      if(layerToAddTo!=null) {
+      if (layerToAddTo != null)
+      {
         theLayer = _theData.findLayer(layerToAddTo);
       }
-      
-      if(userSelected && theLayer == null) {
-        //user cancelled.
-        JOptionPane.showMessageDialog(null, 
+
+      if (userSelected && theLayer == null)
+      {
+        // user cancelled.
+        JOptionPane.showMessageDialog(null,
             "A layer can only be created if a name is provided. "
-                + "The shape has not been created",
-                "Error", JOptionPane.ERROR_MESSAGE);
-        
+                + "The shape has not been created", "Error",
+            JOptionPane.ERROR_MESSAGE);
+
       }
-      //works for debrief-legacy
-      else{
-        if(theLayer == null)
+      // works for debrief-legacy
+      else
+      {
+        if (theLayer == null)
         {
           theLayer = new BaseLayer();
           theLayer.setName("Misc");
@@ -187,9 +197,8 @@ public final class CreateLabel extends CoreCreateShape
             theLayer,
             theWrapper,
             _theData);
-
+        res = new CreateLabelAction(_thePanel, theLayer, theWrapper, _theData);
       }
-  
     }
     else
     {
