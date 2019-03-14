@@ -25,8 +25,7 @@ public class DebriefRibbonView
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
       final JLabel statusBar)
   {
-    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, layers,
-        statusBar);
+    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
     final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
     ribbon.addTask(fileTask);
@@ -49,8 +48,7 @@ public class DebriefRibbonView
   }
 
   private static JRibbonBand createMouseModes(
-      final GeoToolMapRenderer geoMapRenderer, final Layers layers,
-      final JLabel statusBar)
+      final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar)
   {
     final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
