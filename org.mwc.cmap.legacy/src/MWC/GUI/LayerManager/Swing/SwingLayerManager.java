@@ -959,7 +959,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
         "Please enter name", "New Layer",
         javax.swing.JOptionPane.QUESTION_MESSAGE);
 
-    if (s != null)
+    if (s != null && !s.isEmpty())
     {
       // create the layer
       final Layer ly = new BaseLayer();
