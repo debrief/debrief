@@ -73,17 +73,13 @@
 
 package Debrief.Tools.Palette;
 
-import javax.swing.JOptionPane;
-
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 public final class CreateLabel extends CoreCreateShape
@@ -143,117 +139,12 @@ public final class CreateLabel extends CoreCreateShape
      * @return
      */
     PlainWrapper getItem(final WorldLocation centre);
-
-    String getASelectedLayer();
-
-    String getALayerName();
   }
   
-  /**
-   * shared functionality for creating a shape, and putting it into a layer (possibly including
-   * requesting the layer from the user
-   * 
-   * @param getAction helper class
-   * @param worldArea area in view
-   * @param theData the layers
-   * @param thePanel the current properties panel, which the new item will appear in
-   * @return
-   */
-  public static Action commonGetData(final GetAction getAction,
-      final WorldArea worldArea, final Layers theData, final PropertiesPanel thePanel)
-  {
-    final Action res;
-    boolean userSelected=false;
-    if(worldArea != null)
-    {
-      // put the label in the centre of the plot (at the surface)
-      final WorldLocation centre = worldArea.getCentreAtSurface();
-      
-      final PlainWrapper theWrapper = getAction.getItem(centre);
-
-      final Layer theLayer;
-      String layerToAddTo = getAction.getASelectedLayer();
-      final boolean wantsUserSelected =
-          CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo);
-      if (wantsUserSelected || Layers.NEW_LAYER_COMMAND.equals(layerToAddTo))
-      {
-        userSelected = true;
-        if (wantsUserSelected)
-        {
-          layerToAddTo = getAction.getALayerName();
-        }
-        else
-        {
-          String txt = JOptionPane.showInputDialog(null,
-              "Enter name for new layer");
-          // check there's something there
-          if (txt != null && !txt.isEmpty())
-          {
-            layerToAddTo = txt;
-            // create base layer
-            final Layer newLayer = new BaseLayer();
-            newLayer.setName(layerToAddTo);
-
-            // add to layers object
-            theData.addThisLayer(newLayer);
-          }
-        }      
-      }
-      
-      // do we know the target layer name?
-      if (layerToAddTo != null)
-      {
-        theLayer = theData.findLayer(layerToAddTo);
-      }
-      else
-      {
-        theLayer = null;
-      }
-
-      // do we know the target layer?
-      if(theLayer == null)
-      {
-        // no, did the user choose to not select a layer?
-        if(userSelected)
-        {
-          // works for debrief-legacy
-          // user cancelled.
-          JOptionPane.showMessageDialog(null,
-              "An item can only be created if a parent layer is specified. "
-                  + "The item has not been created", "Error",
-              JOptionPane.ERROR_MESSAGE);
-          res = null;          
-        }
-        else
-        {
-          // create a default layer, for the item to go into
-          final BaseLayer tmpLayer = new BaseLayer();
-          tmpLayer.setName("Misc");
-          theData.addThisLayer(tmpLayer);
-          
-          // action to put the shape into this new layer
-          res = getAction.createLabelAction(thePanel, tmpLayer, theWrapper, theData);
-        }
-      }
-      else
-      {
-        res = getAction.createLabelAction(thePanel, theLayer, theWrapper, theData);
-      }
-    }
-    else
-    {
-      // we haven't got an area, inform the user
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-          "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-      res = null;
-    }
-    return res;
-  }
+ 
 
   public final Action getData()
   {
-    final WorldArea wa = getBounds();
-
     final GetAction getAction = new GetAction() {
 
       @Override
@@ -269,20 +160,8 @@ public final class CreateLabel extends CoreCreateShape
         return  new LabelWrapper("blank label",
             centre,
             MWC.GUI.Properties.DebriefColors.ORANGE);
-      }
-
-      @Override
-      public String getASelectedLayer()
-      {
-        return getSelectedLayer();
-      }
-
-      @Override
-      public String getALayerName()
-      {
-        return getLayerName();
       }};
-    return commonGetData(getAction, wa, _theData, _thePanel);
+    return commonGetData(getAction, _thePanel);
   }
 
   ///////////////////////////////////////////////////////

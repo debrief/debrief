@@ -90,7 +90,6 @@ import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 abstract public class CreateShape extends CoreCreateShape
@@ -124,8 +123,6 @@ abstract public class CreateShape extends CoreCreateShape
 
   public final Action getData()
   {
-    final WorldArea wa = getBounds();
-
     final GetAction getAction = new GetAction() {
 
       @Override
@@ -140,20 +137,8 @@ abstract public class CreateShape extends CoreCreateShape
       public PlainWrapper getItem(final WorldLocation centre)
       {
         return getShape(centre);
-      }
-
-      @Override
-      public String getASelectedLayer()
-      {
-        return getSelectedLayer();
-      }
-
-      @Override
-      public String getALayerName()
-      {
-        return getLayerName();
       }};
-    return CreateLabel.commonGetData(getAction, wa, _theData, _thePanel);
+    return commonGetData(getAction, _thePanel);
   }
   
   /** get the actual instance of the shape we are creating
