@@ -125,8 +125,8 @@ public final class CreateLabel extends CoreCreateShape
 
   public final Action getData()
   {
-    Action res = null;
-    WorldArea wa = getBounds();
+    final Action res;
+    final WorldArea wa = getBounds();
     boolean userSelected=false;
     if(wa != null)
     {
@@ -136,7 +136,7 @@ public final class CreateLabel extends CoreCreateShape
       final LabelWrapper theWrapper = new LabelWrapper("blank label",
           centre,
           MWC.GUI.Properties.DebriefColors.ORANGE);
-      Layer theLayer = null;
+      final Layer theLayer;
       String layerToAddTo = getSelectedLayer();
       final boolean wantsUserSelected =
           CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo);
@@ -162,41 +162,46 @@ public final class CreateLabel extends CoreCreateShape
             // add to layers object
             _theData.addThisLayer(newLayer);
           }
-        }
-        if (layerToAddTo != null)
-        {
-          theLayer = _theData.findLayer(layerToAddTo);
-        }
+        }      
       }
+      
+      // do we know the target layer name?
       if (layerToAddTo != null)
       {
         theLayer = _theData.findLayer(layerToAddTo);
       }
-
-      if (userSelected && theLayer == null)
-      {
-        // user cancelled.
-        JOptionPane.showMessageDialog(null,
-            "A layer can only be created if a name is provided. "
-                + "The shape has not been created", "Error",
-            JOptionPane.ERROR_MESSAGE);
-
-      }
-      // works for debrief-legacy
       else
       {
-        if (theLayer == null)
+        theLayer = null;
+      }
+
+      // do we know the target layer?
+      if(theLayer == null)
+      {
+        // no, did the user choose to not select a layer?
+        if(userSelected)
         {
-          theLayer = new BaseLayer();
-          theLayer.setName("Misc");
-          _theData.addThisLayer(theLayer);
+          // works for debrief-legacy
+          // user cancelled.
+          JOptionPane.showMessageDialog(null,
+              "A layer can only be created if a name is provided. "
+                  + "The shape has not been created", "Error",
+              JOptionPane.ERROR_MESSAGE);
+          res = null;          
+        }
+        else
+        {
+          // create a default layer, for the item to go into
+          final BaseLayer tmpLayer = new BaseLayer();
+          tmpLayer.setName("Misc");
+          _theData.addThisLayer(tmpLayer);
+          
+          // action to put the shape into this new layer
+          res = new CreateLabelAction(_thePanel, tmpLayer, theWrapper, _theData);
         }
       }
-      if(theLayer!=null) {
-        res =  new CreateLabelAction(_thePanel,
-            theLayer,
-            theWrapper,
-            _theData);
+      else
+      {
         res = new CreateLabelAction(_thePanel, theLayer, theWrapper, _theData);
       }
     }
@@ -205,6 +210,7 @@ public final class CreateLabel extends CoreCreateShape
       // we haven't got an area, inform the user
       MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
           "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
+      res = null;
     }
     return res;
   }
