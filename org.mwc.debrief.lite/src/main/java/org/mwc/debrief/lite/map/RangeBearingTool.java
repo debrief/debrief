@@ -40,7 +40,7 @@ public class RangeBearingTool extends AbstractZoomTool
       "/org/geotools/swing/icons/mActionIdentify.png";
 
   /** Cursor hotspot coordinates */
-  public static final Point CURSOR_HOTSPOT = new Point(14, 9);
+  public static final Point CURSOR_HOTSPOT = new Point(0, 0);
 
   /** Icon for the control */
   public static final String ICON_IMAGE =
