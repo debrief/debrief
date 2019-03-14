@@ -207,6 +207,7 @@ public class DebriefLiteApp implements FileDropListener
   private final GeoToolMapRenderer geoMapRenderer;
   private PainterManager painterManager;
   private LiteTote theTote;
+  private LiteStepControl _stepControl;
 
   protected static boolean _plotDirty;
   private static String defaultTitle;
@@ -252,7 +253,7 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new ImportReplay());
     
     // sort out time control
-    LiteStepControl _stepControl = new LiteStepControl(_toolParent);
+    _stepControl = new LiteStepControl(_toolParent);
     
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
@@ -722,6 +723,12 @@ public class DebriefLiteApp implements FileDropListener
     
     // also clear the tote
     theTote.clear();
+    
+    // stop the timer
+    if(_stepControl.isPlaying())
+    {
+      _stepControl.startStepping(false);
+    }
     
     //reset the map
     ResetAction resetMap = new ResetAction(_instance.mapPane);

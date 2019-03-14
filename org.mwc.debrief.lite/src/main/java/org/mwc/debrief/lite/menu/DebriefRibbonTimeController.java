@@ -44,7 +44,9 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonComponent;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
+import MWC.GUI.CanvasType;
 import MWC.GUI.Layers;
+import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
@@ -56,6 +58,14 @@ import MWC.TacticalData.temporal.TimeManager;
 
 public class DebriefRibbonTimeController
 {
+
+  private static final String START_TEXT = "Start playing";
+
+  private static final String STOP_TEXT = "Stop playing";
+
+  private static final String STOP_IMAGE = "icons/24/media_stop.png";
+
+  private static final String PLAY_IMAGE = "icons/24/media_play.png";
 
   /**
    * Class that binds the Time Filter and Time Label.
@@ -241,7 +251,7 @@ public class DebriefRibbonTimeController
         }, CommandButtonDisplayState.SMALL, "Small step backwards");
 
     final JCommandButton playCommandButton = MenuUtils.addCommandButton("Play",
-        "icons/24/media_play.png", new AbstractAction()
+        PLAY_IMAGE, new AbstractAction()
         {
 
           /**
@@ -254,7 +264,7 @@ public class DebriefRibbonTimeController
           {
             // ignore, we define the action once we've finished creating the button
           }
-        }, CommandButtonDisplayState.SMALL, "Start playing");
+        }, CommandButtonDisplayState.SMALL, START_TEXT);
 
     playCommandButton.addActionListener(new ActionListener()
     {
@@ -266,27 +276,11 @@ public class DebriefRibbonTimeController
         final boolean isPlaying = stepControl.isPlaying();
 
         stepControl.startStepping(!isPlaying);
-
-        final String image;
-        if (isPlaying)
-          image = "icons/24/media_play.png";
-        else
-          image = "icons/24/media_stop.png";
-
-        final String tooltip = isPlaying ? "Stop playing" : "Start playing";
-
-        RichTooltipBuilder builder = new RichTooltipBuilder();
-        RichTooltip richTooltip = builder.setTitle("Timer")
-            .addDescriptionSection(tooltip).build();
-        playCommandButton.setActionRichTooltip(richTooltip);
-
-        // switch the icon
-        final Image zoominImage = MenuUtils.createImage(image);
-        final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-            .getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
-
-        playCommandButton.setIcon(imageIcon);
+        
+        // now update the play button UI
+        updatePlayBtnUI(playCommandButton, isPlaying);
       }
+
     });
 
     final JCommandButton recordCommandButton = MenuUtils.addCommandButton(
@@ -495,6 +489,9 @@ public class DebriefRibbonTimeController
 
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
+    
+    // we also need to listen out for the stepper control mode changing
+    stepControl.addStepperListener(new LiteStepperListener(playCommandButton));
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
@@ -502,6 +499,55 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+  
+
+  public static void updatePlayBtnUI(final JCommandButton playCommandButton,
+      final boolean isPlaying)
+  {
+    final String image;
+    if (isPlaying)
+      image = PLAY_IMAGE;
+    else
+      image = STOP_IMAGE;
+
+    final String tooltip = isPlaying ? STOP_TEXT : START_TEXT;
+
+    RichTooltipBuilder builder = new RichTooltipBuilder();
+    RichTooltip richTooltip = builder.setTitle("Timer")
+        .addDescriptionSection(tooltip).build();
+    playCommandButton.setActionRichTooltip(richTooltip);
+
+    // switch the icon
+    final Image zoominImage = MenuUtils.createImage(image);
+    final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+        .getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+    
+    playCommandButton.setExtraText(tooltip);
+
+    playCommandButton.setIcon(imageIcon);
+  }
+  
+  private static class LiteStepperListener implements StepperListener
+  {
+    private JCommandButton _playBtn;
+
+    private LiteStepperListener(JCommandButton playCommandButton)
+    {
+      _playBtn = playCommandButton;
+    }
+
+    @Override
+    public void steppingModeChanged(boolean on)
+    {
+      updatePlayBtnUI(_playBtn, !on);
+    }
+
+    @Override
+    public void newTime(HiResDate oldDTG, HiResDate newDTG, CanvasType canvas)
+    {
+      // ignore
+    }
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,

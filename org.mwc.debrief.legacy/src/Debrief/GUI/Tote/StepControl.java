@@ -443,6 +443,11 @@ abstract public class StepControl implements Editable,
     _currentHighlighter = null;
     _defaultHighlighter = null;
   }
+  
+  protected Vector<StepperListener> getListeners()
+  {
+    return _listeners;
+  }
 
   abstract protected void initForm();
 
