@@ -54,9 +54,7 @@ import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
 public class ReaderMonitor extends BufferedReader
 {
-  private final int _length;
-  private float _counter;
-  private int _progress;
+  private int _counter;
 
   private MonitorProvider _provider;
 
@@ -64,11 +62,9 @@ public class ReaderMonitor extends BufferedReader
       MonitorProvider provider)
   {
     super(r);
-    _length = length;
     _counter = 0;
-    _progress = 0;
     this._provider = provider;
-    _provider.init(fileName);
+    _provider.init(fileName, length);
   }
 
   public ReaderMonitor(final Reader r, final int length, final String fileName)
@@ -83,11 +79,9 @@ public class ReaderMonitor extends BufferedReader
   public String readLine() throws IOException
   {
     _counter++;
-    final float prog = (_counter / _length * 100);
-    _progress = (int) prog;
 
     if(_provider!=null)
-      _provider.progress(_progress);
+      _provider.progress(_counter);
     return super.readLine();
   }
 
@@ -114,32 +108,36 @@ public class ReaderMonitor extends BufferedReader
   private static class SwingProvider implements MonitorProvider
   {
 
-    ProgressMonitor _pm;
+    private ProgressMonitor _pm;
     private Thread _myThread;
+    private int _length;
 
     @Override
-    public void init(String fileName)
+    public void init(final String fileName, final int length)
     {
-      _myThread = new showMonitor(fileName);
+      _length = length;
+      _myThread = new showMonitor(fileName, length);
       _myThread.start();
 
     }
 
     protected class showMonitor extends Thread
     {
-      String _name;
+      private final String _name;
+      private final int _length;
 
-      public showMonitor(final String name)
+      public showMonitor(final String name, final int length)
       {
         super();
         _name = name;
+        _length = length;
       }
 
       public void run()
       {
         final java.io.File fl = new java.io.File(_name);
         _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank",
-            0, 99);
+            0, _length - 1);
         _pm.setMillisToPopup(200);
       }
     }
@@ -157,18 +155,12 @@ public class ReaderMonitor extends BufferedReader
           {
             try
             {
-              _pm.setNote("" + progress + "% complete");
+              _pm.setNote("" + (progress * 100 / _length) + "% complete");
               _pm.setProgress(progress);
-              if (progress >= 99)
-              {
-                _pm.close();
-                _pm = null;
-              }
             }
             catch (Exception e)
             {
-              // don't worry, the pm may have been closed in another thread while we were handling
-              // it
+              // This shouldn't happen. Let's leave it just in case.
             }
 
           }
@@ -180,18 +172,7 @@ public class ReaderMonitor extends BufferedReader
     @Override
     public void done()
     {
-      if (_pm != null)
-      {
-        try
-        {
-          _pm.close();
-          _pm = null;
-        }
-        catch (Exception e)
-        {
-          // don't worry, the pm may have been closed in another thread while we were handling it
-        }
-      }
+      // Nothing to do here :)
     }
   }
 }

@@ -41,6 +41,9 @@ public class FitToWindow extends AbstractAction
       }
       else
       {
+        // ok, let's introduce a 5% border
+        area.grow(area.getWidth() * 0.05, 0);
+
         final WorldLocation tl = area.getTopLeft();
         final WorldLocation br = area.getBottomRight();
         final CoordinateReferenceSystem crs = _map.getMapContent()

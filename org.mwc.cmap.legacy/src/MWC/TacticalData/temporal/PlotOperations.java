@@ -36,7 +36,7 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * store the time period
 	 */
-	private TimePeriod _myPeriod;
+	protected TimePeriod _myPeriod;
 
 	/**
 	 * constructor - get the ball rolling

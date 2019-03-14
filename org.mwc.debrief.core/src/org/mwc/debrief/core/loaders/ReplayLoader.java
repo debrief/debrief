@@ -127,10 +127,10 @@ public class ReplayLoader extends CoreLoader
           }
           
           @Override
-          public void init(String fileName)
+          public void init(String fileName, int length)
           {
             final File fl = new File(fileName);
-            pm.beginTask("Reading file:" + fl.getName(), 99);
+            pm.beginTask("Reading file:" + fl.getName(), length);
             
           }
         });

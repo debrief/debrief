@@ -12,8 +12,6 @@ import org.geotools.referencing.CRS;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
-import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
@@ -30,10 +28,8 @@ public class GeoToolMapProjection extends PlainProjection
    *
    */
   private static final long serialVersionUID = 3398817999418475368L;
-  private MathTransform _degs2metres;
   private final MapViewport _view;
   private final DirectPosition2D _workDegs;
-  private final DirectPosition2D _workMetres;
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
 
@@ -45,7 +41,7 @@ public class GeoToolMapProjection extends PlainProjection
 
     // initialise our working data stores
     _workDegs = new DirectPosition2D();
-    _workMetres = new DirectPosition2D();
+    new DirectPosition2D();
     _workScreen = new DirectPosition2D();
     // we'll tell GeoTools to use the projection that's used by most of our
     // charts,
@@ -58,7 +54,7 @@ public class GeoToolMapProjection extends PlainProjection
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      _degs2metres = CRS.findMathTransform(worldDegs, worldCoords);
+      CRS.findMathTransform(worldDegs, worldCoords);
     }
     catch (final FactoryException e)
     {
@@ -91,20 +87,10 @@ public class GeoToolMapProjection extends PlainProjection
     Point res = null;
     // and now for the actual projection bit
     _workDegs.setLocation(val.getLong(), val.getLat());
-    try
-    {
-      _degs2metres.transform(_workDegs, _workMetres);
-      // now got to screen
-      // _view.getWorldToScreen().transform(_workMetres, _workScreen);
-      _view.getWorldToScreen().transform(_workDegs, _workScreen);
-      // output the results
-      res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
-          .getCoordinate()[1]);
-    }
-    catch (MismatchedDimensionException | TransformException e)
-    {
-      e.printStackTrace();
-    }
+    _view.getWorldToScreen().transform(_workDegs, _workScreen);
+    // output the results
+    res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
+        .getCoordinate()[1]);
     return res;
   }
 
@@ -123,8 +109,7 @@ public class GeoToolMapProjection extends PlainProjection
         final AffineTransform currentTransform = _view.getScreenToWorld();
         if (currentTransform != null)
         {
-          currentTransform.transform(_workScreen, _workMetres);
-          _degs2metres.inverse().transform(_workMetres, _workDegs);
+          currentTransform.transform(_workScreen, _workDegs);
         }
         res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
             .getCoordinate()[0], 0);
@@ -134,17 +119,6 @@ public class GeoToolMapProjection extends PlainProjection
     {
       Application.logError2(ToolParent.ERROR,
           "Whilst trying to set convert to world coords", e);
-    }
-    catch (final org.opengis.referencing.operation.NoninvertibleTransformException e)
-    {
-      Application.logError2(ToolParent.ERROR,
-          "Unexpected non-invertable problem whilst performing screen to world",
-          e);
-    }
-    catch (final TransformException e)
-    {
-      Application.logError2(ToolParent.ERROR,
-          "Unexpected transform problem whilst performing screen to world", e);
     }
     return res;
   }

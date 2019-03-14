@@ -576,9 +576,11 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 */
 	abstract public java.awt.Component getPanel();
 
-	// //////////////////////////////////////////////////////////
-	// more listener convenience methods
-	// //////////////////////////////////////////////////////////
+  public WorldArea getProjectionArea()
+  {
+    return getCanvas().getProjection().getDataArea();
+  }
+	 
 	/**
 	 * definition of function to be implemented for each mouse movement
 	 */

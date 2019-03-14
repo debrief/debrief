@@ -506,6 +506,11 @@ abstract public class AnalysisTote implements Pane,
     return _theCurrentTime;
   }
 
+  
+  public Layers getData()
+  {
+    return _theData;
+  }
 
   /**
    * @param list             the list of items to process
@@ -640,6 +645,12 @@ abstract public class AnalysisTote implements Pane,
     _thePrimary = null;
     _theSecondary.clear();
     _theStepper = null;
+  }
+  
+  public void clear()
+  {
+    _thePrimary = null;
+    _theSecondary.clear();
   }
 
   /////////////////////////////////////////////////////////////////

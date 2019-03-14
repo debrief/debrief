@@ -15,7 +15,6 @@
 package MWC.TacticalData.temporal;
 
 import java.beans.*;
-
 import MWC.GenericData.*;
 
 /**
@@ -24,150 +23,158 @@ import MWC.GenericData.*;
 public class TimeManager implements ControllableTime, TimeProvider
 {
 
-	/**
-	 * manage all of the listeners, etc.
-	 */
-	private PropertyChangeSupport _pSupport;
+  /**
+   * manage all of the listeners, etc.
+   */
+  private PropertyChangeSupport _pSupport;
 
-	/**
-	 * the current time
-	 */
-	private HiResDate _currentTime;
+  /**
+   * the time period covered by the data
+   */
+  private TimePeriod _timePeriod;
 
-	/**
-	 * the time period covered by the data
-	 */
-	private TimePeriod _timePeriod;
-	
-	/** the id of this provider
-	 * 
-	 */
-	private String _myId;
-	
-	
-	public TimeManager()
-	{
-		_myId = "" + System.currentTimeMillis();
-	}
+  /**
+   * the current time
+   */
+  private HiResDate _currentTime;
 
-	
-	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mwc.cmap.core.DataTypes.Temporal.ControllableTime#setTime(java.lang.Object,
-	 *      MWC.GenericData.HiResDate)
-	 */
-	public void setTime(final Object origin, final HiResDate newDate, final boolean fireUpdate)
-	{
-		// ok. remember the old time (if we have one)
-		HiResDate oldTime = null;
-		if (_currentTime != null)
-			oldTime = new HiResDate(_currentTime);
+  /**
+   * the id of this provider
+   * 
+   */
+  private String _myId;
 
-		// store the new time
-		_currentTime = newDate;
+  public TimeManager()
+  {
+    _myId = "" + System.currentTimeMillis();
+  }
 
-		// do we want to fire the update?
-		if (fireUpdate)
-		{
-			// do we have any listeners?
-			if (_pSupport != null)
-			{
-				_pSupport.firePropertyChange(TIME_CHANGED_PROPERTY_NAME, oldTime, _currentTime);
-			}
-		}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.cmap.core.DataTypes.Temporal.ControllableTime#setTime(java.lang.Object,
+   * MWC.GenericData.HiResDate)
+   */
+  public void setTime(final Object origin, final HiResDate newDate,
+      final boolean fireUpdate)
+  {
+    // ok. remember the old time (if we have one)
+    HiResDate oldTime = null;
+    if (_currentTime != null)
+      oldTime = new HiResDate(_currentTime);
 
-		// done.
-	}
+    // store the new time
+    _currentTime = newDate;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mwc.cmap.core.DataTypes.Temporal.TimeProvider#getPeriod()
-	 */
-	public TimePeriod getPeriod()
-	{
-		return _timePeriod;
-	}
+    // do we want to fire the update?
+    if (fireUpdate)
+    {
+      // do we have any listeners?
+      if (_pSupport != null)
+      {
+        _pSupport.firePropertyChange(TIME_CHANGED_PROPERTY_NAME, oldTime,
+            _currentTime);
+      }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mwc.cmap.core.DataTypes.Temporal.TimeProvider#getTime()
-	 */
-	public HiResDate getTime()
-	{
-		return _currentTime;
-	}
+    // done.
+  }
 
-	/**
-	 * let somebody start listening to our changes
-	 * 
-	 * @param listener
-	 *          the new listener
-	 * @param propertyType
-	 *          the (optional) property to listen to. Use null if you don't mind
-	 */
-	public void addListener(final PropertyChangeListener listener, final String propertyType)
-	{
-		if (_pSupport == null)
-			_pSupport = new PropertyChangeSupport(this);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.cmap.core.DataTypes.Temporal.TimeProvider#getPeriod()
+   */
+  public TimePeriod getPeriod()
+  {
+    return _timePeriod;
+  }
 
-		_pSupport.addPropertyChangeListener(propertyType, listener);
-	}
-	
-	/**
-	 * let somebody stop listening to our changes
-	 * 
-	 * @param listener
-	 *          the old listener
-	 * @param propertyType
-	 *          the (optional) property to stop listening to. Use null if you
-	 *          don't mind
-	 */
-	public void removeListener(final PropertyChangeListener listener, final String propertyType)
-	{
-		_pSupport.removePropertyChangeListener(propertyType, listener);
-	}
+  public void fireTimePropertyChange()
+  {
+    // do we have any listeners?
+    if (_pSupport != null)
+    {
+      _pSupport.firePropertyChange(TIME_CHANGED_PROPERTY_NAME, null,
+          _currentTime);
+    }
+  }
 
-	/**
-	 * let somebody specify the time period we're managing.
-	 * 
-	 * @param origin -
-	 *          whoever is setting the time period (so that they can optionally
-	 *          ignore changes they triggered)
-	 * @param period -
-	 *          the new time period
-	 */
-	public void setPeriod(final Object origin, final TimePeriod period)
-	{
-		// remember the old period
-		final TimePeriod oldPeriod = _timePeriod;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.mwc.cmap.core.DataTypes.Temporal.TimeProvider#getTime()
+   */
+  public HiResDate getTime()
+  {
+    return _currentTime;
+  }
 
-		// store the new time
-		_timePeriod = period;
+  /**
+   * let somebody start listening to our changes
+   * 
+   * @param listener
+   *          the new listener
+   * @param propertyType
+   *          the (optional) property to listen to. Use null if you don't mind
+   */
+  public void addListener(final PropertyChangeListener listener,
+      final String propertyType)
+  {
+    if (_pSupport == null)
+      _pSupport = new PropertyChangeSupport(this);
 
-		// do we have any listeners?
-		if (_pSupport != null)
-		{
-			_pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, oldPeriod, _timePeriod);
-		}
+    _pSupport.addPropertyChangeListener(propertyType, listener);
+  }
 
-	}
+  /**
+   * let somebody stop listening to our changes
+   * 
+   * @param listener
+   *          the old listener
+   * @param propertyType
+   *          the (optional) property to stop listening to. Use null if you don't mind
+   */
+  public void removeListener(final PropertyChangeListener listener,
+      final String propertyType)
+  {
+    _pSupport.removePropertyChangeListener(propertyType, listener);
+  }
 
+  /**
+   * let somebody specify the time period we're managing.
+   * 
+   * @param origin
+   *          - whoever is setting the time period (so that they can optionally ignore changes they
+   *          triggered)
+   * @param period
+   *          - the new time period
+   */
+  public void setPeriod(final Object origin, final TimePeriod period)
+  {
+    // remember the old period
+    final TimePeriod oldPeriod = _timePeriod;
 
+    // store the new time
+    _timePeriod = period;
 
-	public String getId()
-	{
-		return _myId;
-	}
+    // do we have any listeners?
+    if (_pSupport != null)
+    {
+      _pSupport.firePropertyChange(PERIOD_CHANGED_PROPERTY_NAME, oldPeriod,
+          _timePeriod);
+    }
 
+  }
 
+  public String getId()
+  {
+    return _myId;
+  }
 
-	public void setId(final String val)
-	{
-		_myId = val;
-	}
+  public void setId(final String val)
+  {
+    _myId = val;
+  }
 
 }
