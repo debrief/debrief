@@ -1,6 +1,7 @@
 
 package org.mwc.debrief.lite.map;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -104,6 +105,7 @@ public class MouseDragLine extends MouseInputAdapter {
             graphics = (Graphics2D) parentComponent.getGraphics().create();
             graphics.setColor(Color.WHITE);
             graphics.setXORMode(Color.RED);
+            graphics.setStroke(new BasicStroke(3f));
         }
     }
     
