@@ -19,6 +19,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URL;
@@ -40,6 +42,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
@@ -80,6 +83,28 @@ public class OutlinePanelView extends SwingLayerManager
     URL editImage = getClass().getClassLoader().getResource("images/16/edit.png");
     JButton editButton = new JButton(new ImageIcon(editImage));
     editButton.setToolTipText("Edit");
+    editButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        int selectionCount = _myTree.getSelectionCount();
+        if(selectionCount==1) 
+        {
+          TreePath selectionPath = _myTree.getSelectionPath();
+          if(selectionPath!=null) 
+          {
+            Object node = selectionPath.getLastPathComponent();
+            if(node instanceof DefaultMutableTreeNode) 
+            {
+              editThis((DefaultMutableTreeNode)node);
+            }
+          }
+        }
+        
+      }
+    });
     commandBar.add(editButton);
     URL copyImage = getClass().getClassLoader().getResource("images/16/copy_to_clipboard.png");
     JButton copyButton = new JButton(new ImageIcon(copyImage));
@@ -92,6 +117,16 @@ public class OutlinePanelView extends SwingLayerManager
     URL layerImage = getClass().getClassLoader().getResource("images/16/add_layer.png");
     JButton addLayerButton = new JButton(new ImageIcon(layerImage));
     addLayerButton.setToolTipText("Add Layer");
+    addLayerButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        addLayer();
+        
+      }
+    });
     commandBar.add(addLayerButton);
     
     URL deleteImage = getClass().getClassLoader().getResource("images/16/remove.png");
@@ -102,6 +137,16 @@ public class OutlinePanelView extends SwingLayerManager
     URL refreshImage = getClass().getClassLoader().getResource("images/16/repaint.png");
     JButton refreshViewButton = new JButton(new ImageIcon(refreshImage));
     refreshViewButton.setToolTipText("Update View");
+    refreshViewButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        doReset();
+        
+      }
+    });
     commandBar.add(refreshViewButton);
     add(commandBar,BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
