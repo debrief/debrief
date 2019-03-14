@@ -79,6 +79,7 @@ import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
@@ -115,29 +116,63 @@ public final class CreateLabel extends CoreCreateShape
     _thePanel = thePanel;
   }
   
-  /** get the current visible data area
+
+  /** helper class, to allow common code to be used for both shapes & labels
    * 
+   * @author ian
+   *
    */
+  public static interface GetAction
+  {
+    /** create the action that puts the item into a layer
+     * 
+     * @param thePanel
+     * @param theLayer
+     * @param theItem
+     * @param theData
+     * @return
+     */
+    Action CreateLabelAction(final PropertiesPanel thePanel,
+        final Layer theLayer,
+        final PlainWrapper theItem,
+        final Layers theData);
+    
+    /** create a new instance of the correct type
+     * 
+     * @param centre
+     * @return
+     */
+    PlainWrapper getItem(final WorldLocation centre);
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+    String getASelectedLayer();
 
-  public final Action getData()
+    String getALayerName();
+  }
+  
+  /**
+   * shared functionality for creating a shape, and putting it into a layer (possibly including
+   * requesting the layer from the user
+   * 
+   * @param getAction helper class
+   * @param worldArea area in view
+   * @param theData the layers
+   * @param thePanel the current properties panel, which the new item will appear in
+   * @return
+   */
+  public static Action commonGetData(final GetAction getAction,
+      final WorldArea worldArea, final Layers theData, final PropertiesPanel thePanel)
   {
     final Action res;
-    final WorldArea wa = getBounds();
     boolean userSelected=false;
-    if(wa != null)
+    if(worldArea != null)
     {
       // put the label in the centre of the plot (at the surface)
-      final WorldLocation centre = wa.getCentreAtSurface();
+      final WorldLocation centre = worldArea.getCentreAtSurface();
+      
+      final PlainWrapper theWrapper = getAction.getItem(centre);
 
-      final LabelWrapper theWrapper = new LabelWrapper("blank label",
-          centre,
-          MWC.GUI.Properties.DebriefColors.ORANGE);
       final Layer theLayer;
-      String layerToAddTo = getSelectedLayer();
+      String layerToAddTo = getAction.getASelectedLayer();
       final boolean wantsUserSelected =
           CoreCreateShape.USER_SELECTED_LAYER_COMMAND.equals(layerToAddTo);
       if (wantsUserSelected || Layers.NEW_LAYER_COMMAND.equals(layerToAddTo))
@@ -145,7 +180,7 @@ public final class CreateLabel extends CoreCreateShape
         userSelected = true;
         if (wantsUserSelected)
         {
-          layerToAddTo = getLayerName();
+          layerToAddTo = getAction.getALayerName();
         }
         else
         {
@@ -160,7 +195,7 @@ public final class CreateLabel extends CoreCreateShape
             newLayer.setName(layerToAddTo);
 
             // add to layers object
-            _theData.addThisLayer(newLayer);
+            theData.addThisLayer(newLayer);
           }
         }      
       }
@@ -168,7 +203,7 @@ public final class CreateLabel extends CoreCreateShape
       // do we know the target layer name?
       if (layerToAddTo != null)
       {
-        theLayer = _theData.findLayer(layerToAddTo);
+        theLayer = theData.findLayer(layerToAddTo);
       }
       else
       {
@@ -194,15 +229,15 @@ public final class CreateLabel extends CoreCreateShape
           // create a default layer, for the item to go into
           final BaseLayer tmpLayer = new BaseLayer();
           tmpLayer.setName("Misc");
-          _theData.addThisLayer(tmpLayer);
+          theData.addThisLayer(tmpLayer);
           
           // action to put the shape into this new layer
-          res = new CreateLabelAction(_thePanel, tmpLayer, theWrapper, _theData);
+          res = getAction.CreateLabelAction(thePanel, tmpLayer, theWrapper, theData);
         }
       }
       else
       {
-        res = new CreateLabelAction(_thePanel, theLayer, theWrapper, _theData);
+        res = getAction.CreateLabelAction(thePanel, theLayer, theWrapper, theData);
       }
     }
     else
@@ -213,6 +248,41 @@ public final class CreateLabel extends CoreCreateShape
       res = null;
     }
     return res;
+  }
+
+  public final Action getData()
+  {
+    final WorldArea wa = getBounds();
+
+    final GetAction getAction = new GetAction() {
+
+      @Override
+      public Action CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
+      {
+        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
+      }
+
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return  new LabelWrapper("blank label",
+            centre,
+            MWC.GUI.Properties.DebriefColors.ORANGE);
+      }
+
+      @Override
+      public String getASelectedLayer()
+      {
+        return getSelectedLayer();
+      }
+
+      @Override
+      public String getALayerName()
+      {
+        return getLayerName();
+      }};
+    return commonGetData(getAction, wa, _theData, _thePanel);
   }
 
   ///////////////////////////////////////////////////////

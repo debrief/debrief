@@ -84,10 +84,12 @@ package Debrief.Tools.Palette;
 
 import javax.swing.JOptionPane;
 
+import Debrief.Tools.Palette.CreateLabel.GetAction;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
@@ -124,6 +126,40 @@ abstract public class CreateShape extends CoreCreateShape
   ////////////////////////////////////////////////////////////
 
   public final Action getData()
+  {
+    final WorldArea wa = getBounds();
+
+    final GetAction getAction = new GetAction() {
+
+      @Override
+      public Action CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
+      {
+        return new CreateShapeAction(_thePanel, theLayer,
+            (ShapeWrapper) theItem, _theData);
+      }
+
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return getShape(centre);
+      }
+
+      @Override
+      public String getASelectedLayer()
+      {
+        return getSelectedLayer();
+      }
+
+      @Override
+      public String getALayerName()
+      {
+        return getLayerName();
+      }};
+    return CreateLabel.commonGetData(getAction, wa, _theData, _thePanel);
+  }
+  
+  public final Action getDataOriginal()
   {
     Action res = null;
     boolean userSelected = false;
