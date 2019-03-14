@@ -18,6 +18,7 @@ import org.geotools.swing.tool.AbstractZoomTool;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.Algorithms.Conversions;
 
 /**
  * A cursor tool to display the measured range and bearing between two points
@@ -45,9 +46,9 @@ public class RangeBearingTool extends AbstractZoomTool
   public static final String ICON_IMAGE =
       "/org/geotools/swing/icons/mActionPan.png";
 
-  private Cursor cursor;
+  private final Cursor cursor;
 
-  WorldLocation startPos;
+  private WorldLocation startPos;
 
   private final JLabel _statusBar;
 
@@ -100,8 +101,7 @@ public class RangeBearingTool extends AbstractZoomTool
   public void onMousePressed(MapMouseEvent ev)
   {
     final DirectPosition2D startPosWorld = ev.getWorldPos();
-    startPos = new MWC.GenericData.WorldLocation(
-        startPosWorld.getY(), startPosWorld.getX(), 0);
+    startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
   }
 
   /**
@@ -115,14 +115,13 @@ public class RangeBearingTool extends AbstractZoomTool
   {
     // ok, sort out the range and bearing
     DirectPosition2D curPos = ev.getWorldPos();
-    MWC.GenericData.WorldLocation current = new MWC.GenericData.WorldLocation(
-        curPos.getY(), curPos.getX(), 0);
+    WorldLocation current = new WorldLocation(curPos.getY(), curPos.getX(), 0);
     
     // now the delta
     WorldVector delta = current.subtract(startPos);
-    WorldDistance distance = new MWC.GenericData.WorldDistance(delta.getRange(),
-        MWC.GenericData.WorldDistance.DEGS);
-    double bearing = MWC.Algorithms.Conversions.Rads2Degs(delta.getBearing());
+    WorldDistance distance = new WorldDistance(delta.getRange(),
+        WorldDistance.DEGS);
+    double bearing = Conversions.Rads2Degs(delta.getBearing());
     if (bearing < 0)
     {
       bearing += 360d;

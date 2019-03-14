@@ -76,9 +76,9 @@ public class GeoToolMapRenderer implements BaseMap
      */
     private static final long serialVersionUID = 1L;
     
-    MouseDragLine dragLine;
+    private final MouseDragLine dragLine;
 
-    private GeoToolMapRenderer _renderer;
+    private final GeoToolMapRenderer _renderer;
 
     public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
     {
