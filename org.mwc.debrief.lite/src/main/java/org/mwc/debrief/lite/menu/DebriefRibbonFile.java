@@ -200,16 +200,21 @@ public class DebriefRibbonFile
       // ask user whether to save, if file is dirty.
       if (DebriefLiteApp.isDirty())
       {
-        int res = JOptionPane.showConfirmDialog(null,
+        final int res = JOptionPane.showConfirmDialog(null,
             "Save changes before creating new file?");
         if (res == JOptionPane.OK_OPTION)
         {
           if (DebriefLiteApp.currentFileName != null
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
-            File f = new File(DebriefLiteApp.currentFileName);
-            String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
-            String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            final File f = new File(DebriefLiteApp.currentFileName);
+            final String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            if(newFileName == null || newFileName.length() ==0)
+            {
+              // drop out, don't do reset.
+              return;
+            }
             DebriefLiteApp.currentFileName.replaceAll(
                 ".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);

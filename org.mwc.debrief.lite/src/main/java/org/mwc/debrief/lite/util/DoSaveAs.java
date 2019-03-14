@@ -49,7 +49,6 @@ public class DoSaveAs extends AbstractAction
     {
       outputFile = showSaveDialog(null, null);
     }
-
     if(outputFile!=null) {
       DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
     }
@@ -63,7 +62,7 @@ public class DoSaveAs extends AbstractAction
   public final static String showSaveDialog(final File parentDirectory,
       final String initialName)
   {
-    String outputFileName = null;
+    final String outputFileName;
     final JFileChooser fileChooser = new JFileChooser();
     final FileFilter filter = new FileNameExtensionFilter("dpf file", "dpf");
     fileChooser.setFileFilter(filter);
@@ -89,12 +88,20 @@ public class DoSaveAs extends AbstractAction
           {
             outputFileName = targetFile.getAbsolutePath();
           }
+          else
+          {
+            outputFileName = null;
+          }
           // let the user try again otherwise
         }
         else
         {
           outputFileName = targetFile.getAbsolutePath();
         }
+      }
+      else
+      {
+        outputFileName = null;
       }
     }
     else
