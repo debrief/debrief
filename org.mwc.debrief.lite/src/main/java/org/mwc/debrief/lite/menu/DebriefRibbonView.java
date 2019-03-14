@@ -20,10 +20,37 @@ import MWC.GUI.Layers;
 
 public class DebriefRibbonView
 {
-  
+
+  protected static void addViewTab(final JRibbon ribbon,
+      final GeoToolMapRenderer geoMapRenderer, final Layers layers,
+      final JLabel statusBar)
+  {
+    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, layers,
+        statusBar);
+    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
+    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
+    ribbon.addTask(fileTask);
+  }
+
+  private static JRibbonBand createMapCommands(
+      final GeoToolMapRenderer geoMapRenderer, final Layers layers)
+  {
+    final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
+    final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
+    commandBand.startGroup();
+    MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
+        mapPane), commandBand, RibbonElementPriority.TOP);
+    final AbstractAction doFit = new FitToWindow(layers, mapPane);
+    MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png", doFit,
+        commandBand, null);
+    commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        commandBand));
+    return commandBand;
+  }
+
   private static JRibbonBand createMouseModes(
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
-      JLabel statusBar)
+      final JLabel statusBar)
   {
     final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
@@ -48,30 +75,5 @@ public class DebriefRibbonView
     viewBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         viewBand));
     return viewBand;
-  }
-  
-  private static JRibbonBand createMapCommands(
-      final GeoToolMapRenderer geoMapRenderer, final Layers layers)
-  {
-    final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
-    final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
-    commandBand.startGroup();
-    MenuUtils.addCommand("Zoom Out", "images/16/zoomout.png", new ZoomOut(
-        mapPane), commandBand, RibbonElementPriority.TOP);
-    final AbstractAction doFit = new FitToWindow(layers, mapPane);
-    MenuUtils.addCommand("Fit to Window", "images/16/fit_to_win.png", doFit,
-        commandBand, null);
-    commandBand.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
-        commandBand));
-    return commandBand;
-  }
-  
-  protected static void addViewTab(final JRibbon ribbon,
-      final GeoToolMapRenderer geoMapRenderer, final Layers layers, JLabel statusBar)
-  {
-    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, layers, statusBar);
-    final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
-    final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
-    ribbon.addTask(fileTask);
   }
 }

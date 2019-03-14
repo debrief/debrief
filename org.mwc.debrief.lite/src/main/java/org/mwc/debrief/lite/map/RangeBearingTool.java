@@ -15,14 +15,14 @@ import org.geotools.geometry.Envelope2D;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
 
+import MWC.Algorithms.Conversions;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import MWC.Algorithms.Conversions;
 
 /**
  * A cursor tool to display the measured range and bearing between two points
- * 
+ *
  * @author Ian Mayo - from Michael Bedward's Zoom In tool
  */
 public class RangeBearingTool extends AbstractZoomTool
@@ -54,54 +54,60 @@ public class RangeBearingTool extends AbstractZoomTool
 
   /**
    * Constructor
-   * 
+   *
    * @param statusBar
    */
-  public RangeBearingTool(JLabel statusBar)
+  public RangeBearingTool(final JLabel statusBar)
   {
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    ImageIcon imgIcon = new ImageIcon(getClass().getResource(CURSOR_IMAGE));
+    final Toolkit tk = Toolkit.getDefaultToolkit();
+    final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
+        CURSOR_IMAGE));
     cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
         TOOL_NAME);
     _statusBar = statusBar;
   }
 
   /**
+   * Returns true to indicate that this tool draws a box on the map display when the mouse is being
+   * dragged to show the zoom-in area
+   */
+  @Override
+  public boolean drawDragBox()
+  {
+    return false;
+  }
+
+  /**
+   * Get the mouse cursor for this tool
+   */
+  @Override
+  public Cursor getCursor()
+  {
+    return cursor;
+  }
+
+  /**
    * Task complete. No further action required.
-   * 
+   *
    * @param e
    *          map mapPane mouse event
    */
   @Override
-  public void onMouseClicked(MapMouseEvent e)
+  public void onMouseClicked(final MapMouseEvent e)
   {
-    Rectangle paneArea = ((JComponent) getMapPane()).getVisibleRect();
-    DirectPosition2D mapPos = e.getWorldPos();
+    final Rectangle paneArea = ((JComponent) getMapPane()).getVisibleRect();
+    final DirectPosition2D mapPos = e.getWorldPos();
 
-    double scale = getMapPane().getWorldToScreenTransform().getScaleX();
-    double newScale = scale * zoom;
+    final double scale = getMapPane().getWorldToScreenTransform().getScaleX();
+    final double newScale = scale * zoom;
 
-    DirectPosition2D corner = new DirectPosition2D(mapPos.getX() - 0.5d
+    final DirectPosition2D corner = new DirectPosition2D(mapPos.getX() - 0.5d
         * paneArea.getWidth() / newScale, mapPos.getY() + 0.5d * paneArea
             .getHeight() / newScale);
 
-    Envelope2D newMapArea = new Envelope2D();
+    final Envelope2D newMapArea = new Envelope2D();
     newMapArea.setFrameFromCenter(mapPos, corner);
     getMapPane().setDisplayArea(newMapArea);
-  }
-
-  /**
-   * Records the map position of the mouse event in case this button press is the beginning of a
-   * mouse drag
-   *
-   * @param ev
-   *          the mouse event
-   */
-  @Override
-  public void onMousePressed(MapMouseEvent ev)
-  {
-    final DirectPosition2D startPosWorld = ev.getWorldPos();
-    startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
   }
 
   /**
@@ -111,15 +117,16 @@ public class RangeBearingTool extends AbstractZoomTool
    *          the mouse event
    */
   @Override
-  public void onMouseDragged(MapMouseEvent ev)
+  public void onMouseDragged(final MapMouseEvent ev)
   {
     // ok, sort out the range and bearing
-    DirectPosition2D curPos = ev.getWorldPos();
-    WorldLocation current = new WorldLocation(curPos.getY(), curPos.getX(), 0);
-    
+    final DirectPosition2D curPos = ev.getWorldPos();
+    final WorldLocation current = new WorldLocation(curPos.getY(), curPos
+        .getX(), 0);
+
     // now the delta
-    WorldVector delta = current.subtract(startPos);
-    WorldDistance distance = new WorldDistance(delta.getRange(),
+    final WorldVector delta = current.subtract(startPos);
+    final WorldDistance distance = new WorldDistance(delta.getRange(),
         WorldDistance.DEGS);
     double bearing = Conversions.Rads2Degs(delta.getBearing());
     if (bearing < 0)
@@ -135,6 +142,20 @@ public class RangeBearingTool extends AbstractZoomTool
   }
 
   /**
+   * Records the map position of the mouse event in case this button press is the beginning of a
+   * mouse drag
+   *
+   * @param ev
+   *          the mouse event
+   */
+  @Override
+  public void onMousePressed(final MapMouseEvent ev)
+  {
+    final DirectPosition2D startPosWorld = ev.getWorldPos();
+    startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
+  }
+
+  /**
    * If the mouse was dragged, determines the bounds of the box that the user defined and passes
    * this to the mapPane's {@code setDisplayArea} method.
    *
@@ -142,27 +163,8 @@ public class RangeBearingTool extends AbstractZoomTool
    *          the mouse event
    */
   @Override
-  public void onMouseReleased(MapMouseEvent ev)
+  public void onMouseReleased(final MapMouseEvent ev)
   {
     startPos = null;
-  }
-
-  /**
-   * Get the mouse cursor for this tool
-   */
-  @Override
-  public Cursor getCursor()
-  {
-    return cursor;
-  }
-
-  /**
-   * Returns true to indicate that this tool draws a box on the map display when the mouse is being
-   * dragged to show the zoom-in area
-   */
-  @Override
-  public boolean drawDragBox()
-  {
-    return false;
   }
 }
