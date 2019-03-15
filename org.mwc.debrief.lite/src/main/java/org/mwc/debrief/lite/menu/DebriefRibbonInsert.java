@@ -340,7 +340,10 @@ public class DebriefRibbonInsert
   private static String getLayerName(Layers theLayers) {
             // create input box dialog
     String res = null;
-    String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+    
+    final String txt = JOptionPane.showInputDialog(null, "Please enter name",
+        "New Layer", JOptionPane.QUESTION_MESSAGE);
+
     // check there's something there
     if (txt!=null && !txt.isEmpty())
     {
