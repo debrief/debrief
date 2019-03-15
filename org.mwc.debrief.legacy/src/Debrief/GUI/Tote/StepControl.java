@@ -687,6 +687,21 @@ abstract public class StepControl implements Editable,
     return _timeZero;
   }
 
+  public void reset()
+  {
+    // clear the times
+    _startTime = null;
+    _endTime = null;
+    _currentTime = null;
+    
+    // inform anyone that wants to know.
+    Enumeration<StepperListener> numer = _listeners.elements();
+    while(numer.hasMoreElements())
+    {
+      StepperListener next = numer.nextElement();
+      next.reset();
+    }
+  }
 
   public void setStartTime(final HiResDate val)
   {

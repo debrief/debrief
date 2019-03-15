@@ -440,6 +440,12 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		return "Time Highlighter";
 	}
 
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
+
 	/**
 	 * following a time step, this method draws a highlight around the "current"
 	 * points on the primary and secondary tracks.
