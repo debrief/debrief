@@ -759,11 +759,17 @@ public class DebriefLiteApp implements FileDropListener
     // also clear the tote
     theTote.clear();
     
+    timeManager.setPeriod(this, null);
+    timeManager.setTime(this, null, false);
+    
     // stop the timer
     if(_stepControl.isPlaying())
     {
       _stepControl.startStepping(false);
     }
+    
+    // send a reset to the step control
+    _stepControl.reset();
     
     //reset the map
     ResetAction resetMap = new ResetAction(_instance.mapPane);
