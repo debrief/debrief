@@ -548,6 +548,12 @@ public class DebriefRibbonTimeController
     {
       // ignore
     }
+
+    @Override
+    public void reset()
+    {
+      // ignore
+    }
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
