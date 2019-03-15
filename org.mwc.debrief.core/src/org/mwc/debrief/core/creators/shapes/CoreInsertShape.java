@@ -78,7 +78,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected String getLayerName()
 	{
-		String res = null;
+		final String res;
 		// ok, are we auto-deciding?
 		if (!AutoSelectTarget.getAutoSelectTarget())
 		{
@@ -125,10 +125,10 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 				// check something got selected
 				if (val.length > 0)
 				{
-					res = val[0].toString();
+					final String selStr = val[0].toString();
 
 					// hmm, is it our add layer command?
-					if (res.equals(Layers.NEW_LAYER_COMMAND))
+					if (selStr.equals(Layers.NEW_LAYER_COMMAND))
 					{
 						// better create one. Ask the user
 
@@ -154,14 +154,22 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
           }
           else
           {
-            res = null;
+            // just use the selected string
+            res = selStr;
           }
-				}
-			}
-		}
-
-		return res;
-	}
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+    }
+    return res;
+  }
 
 	/**
 	 * produce the shape for the user
