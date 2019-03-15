@@ -5,13 +5,13 @@ import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
-import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 
 import Debrief.GUI.Frames.Session;
 
@@ -24,9 +24,9 @@ public class DoSaveAs extends AbstractAction
    */
   private static final long serialVersionUID = 1L;
   protected final Session _session;
-  protected final JRibbonFrame _theFrame;
+  protected final JFrame _theFrame;
 
-  public DoSaveAs(final Session session,final JRibbonFrame frame)
+  public DoSaveAs(final Session session,final JFrame frame)
   {
     _session = session;
     _theFrame = frame;
@@ -66,6 +66,7 @@ public class DoSaveAs extends AbstractAction
     final JFileChooser fileChooser = new JFileChooser();
     final FileFilter filter = new FileNameExtensionFilter("dpf file", "dpf");
     fileChooser.setFileFilter(filter);
+    fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
     if (initialName != null)
     {
       fileChooser.setSelectedFile(new File(initialName + ".dpf"));
