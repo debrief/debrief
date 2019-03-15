@@ -88,6 +88,7 @@ public class LiteStepControl extends StepControl
     super.reset();
     
     _slider.setEnabled(false);
+    _timeLabel.setValue(timeFormat);
   }
 
   @Override

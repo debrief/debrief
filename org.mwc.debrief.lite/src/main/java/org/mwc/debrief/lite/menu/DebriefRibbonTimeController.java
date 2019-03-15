@@ -498,6 +498,10 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
+        // move the slider to the start
+        timeSlider.setValue(0);
+        label.setValue(LiteStepControl.timeFormat);
+        
         // ok, do some disabling
         setButtonsEnabled(topButtonsPanel, false);
         timeSlider.setEnabled(false);
@@ -731,6 +735,17 @@ public class DebriefRibbonTimeController
     // tie in to the stepper
     final SliderControls iSlider = new LiteSliderControls(slider);
     stepControl.setSliderControls(iSlider);
+    
+    // listen out for time being reset
+    // we also need to listen out for the stepper control mode changing
+    stepControl.addStepperListener(new LiteStepperListener(null) {
+
+      @Override
+      public void reset()
+      {
+        minimumValue.setText(" ");
+        maximumValue.setText(" ");
+      }});
 
     return timePeriod;
   }
