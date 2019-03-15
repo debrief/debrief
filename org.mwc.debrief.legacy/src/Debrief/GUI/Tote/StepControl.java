@@ -712,6 +712,9 @@ abstract public class StepControl implements Editable,
    */
   public void reset()
   {
+    // stop the timer, we may fall over if we carry on stepping
+    stopTimer();
+    
     // clear the times
     _startTime = null;
     _endTime = null;
