@@ -296,7 +296,7 @@ public class DebriefRibbonInsert
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
     final String[] layerItems = new String[]
-    {"Select Layer", CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
+    {CoreCreateShape.SELECT_LAYER_COMMAND, CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
         Layers.NEW_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     selectLayerCombo = new JComboBox<String>(layerItems);
