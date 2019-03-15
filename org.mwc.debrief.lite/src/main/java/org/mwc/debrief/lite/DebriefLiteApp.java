@@ -63,6 +63,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Defaults;
@@ -749,10 +750,23 @@ public class DebriefLiteApp implements FileDropListener
     return _plotDirty;
   }
 
-  public void resetPlot() {
+  public void resetPlot()
+  {
+    // special behaviour. The chart creator objects take a point to the
+    // target layer on creation. So, we need to keep the same chart features layer
+    // for the running session.
+    final BaseLayer chartF = (BaseLayer) _theLayers.findLayer(
+        Layers.CHART_FEATURES);
+    chartF.removeAllElements();
+
     _theLayers.clear();
     layerManager.resetTree();
-    _plotDirty=false;
+
+    // reinstate the chart features
+    _theLayers.addThisLayer(chartF);
+
+    // continue with reset processing
+    _plotDirty = false;
     currentFileName = null;
     setTitle(defaultTitle);
     
