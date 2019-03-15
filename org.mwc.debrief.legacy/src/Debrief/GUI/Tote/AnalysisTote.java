@@ -657,6 +657,7 @@ abstract public class AnalysisTote implements Pane,
   {
     _thePrimary = null;
     _theSecondary.clear();
+    updateToteMembers();
   }
 
   /////////////////////////////////////////////////////////////////

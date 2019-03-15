@@ -660,6 +660,8 @@ public class DebriefLiteApp implements FileDropListener
               timeManager.setTime(source, period.getStartDTG(), true);
             }
 
+            theTote.assignWatchables(true);
+            
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);
