@@ -40,7 +40,7 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
-  private String timeFormat = "yy/MM/dd hh:mm:ss";
+  public static final String timeFormat = "yy/MM/dd hh:mm:ss";
 
   public LiteStepControl(final ToolParent _parent)
   {
@@ -77,6 +77,17 @@ public class LiteStepControl extends StepControl
   public HiResDate getToolboxStartTime()
   {
     return _slider.getToolboxStartTime();
+  }
+
+  
+  
+  @Override
+  public void reset()
+  {
+    // let the parent do it's stuff
+    super.reset();
+    
+    _slider.setEnabled(false);
   }
 
   @Override
