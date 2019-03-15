@@ -81,6 +81,7 @@ import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
@@ -275,7 +276,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void propertyChange(PropertyChangeEvent evt)
       {
-        redoTimePainter(false, theCanvas);
+        redoTimePainter(false, theCanvas, (HiResDate) evt.getOldValue(), (HiResDate) evt.getNewValue());
       }}, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
     final DataListener dListener = new DataListener()
@@ -390,7 +391,8 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
   
-  private void redoTimePainter(boolean bigPaint, final CanvasAdaptor dest)
+  private void redoTimePainter(boolean bigPaint, final CanvasAdaptor dest,
+      final HiResDate oldDTG, final HiResDate newDTG)
   {
     final StepperListener current = painterManager.getCurrentPainterObject();
     final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
@@ -419,7 +421,7 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
       
-      painterManager.newTime(null, timeManager.getTime(),
+      painterManager.newTime(oldDTG, newDTG,
           new CanvasAdaptor(projection, graphics, backColor));
     }
   }
@@ -507,7 +509,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     
     // and the time marker
-    redoTimePainter(true, dest);
+    redoTimePainter(true, dest, null, null);
 
     dest.endDraw(gc);
   }
