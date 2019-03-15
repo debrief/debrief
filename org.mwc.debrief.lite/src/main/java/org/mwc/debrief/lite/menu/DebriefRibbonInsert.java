@@ -210,7 +210,7 @@ public class DebriefRibbonInsert
         "icons/16/circle.png", circleShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape arcShape =  new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Arc", "icons/arc_add.png", bounds)
+        _theLayers, "Arc", "icons/16/circle.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
@@ -223,12 +223,10 @@ public class DebriefRibbonInsert
     arcShape.setSelectedLayerSource(selectLayerCombo);
     
     final JCommandButton arcCmd = MenuUtils.addCommandButton("Arc",
-        "icons/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
-    
-   
-    
+        "icons/16/arc_add.png",arcShape, CommandButtonDisplayState.MEDIUM, null);
+
     final CreateShape lineShape = new CreateShape(_toolParent, _theProperties,
-        _theLayers, "Line", "icons/line_add.png", bounds)
+        _theLayers, "Line", "icons/16/line_add.png", bounds)
     {
       @Override
       protected ShapeWrapper getShape(final WorldLocation centre)
