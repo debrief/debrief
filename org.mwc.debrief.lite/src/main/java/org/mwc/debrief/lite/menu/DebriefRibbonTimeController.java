@@ -477,13 +477,15 @@ public class DebriefRibbonTimeController
     // we also need to listen to the slider
     timeSlider.addChangeListener(new ChangeListener()
     {
-
       @Override
       public void stateChanged(final ChangeEvent e)
       {
         final int pos = timeSlider.getValue();
         final long time = converter.getTimeAt(pos);
-        timeManager.setTime(timeSlider, new HiResDate(time), true);
+        if(timeManager.getTime() == null || timeManager.getTime().getDate().getTime() != time)
+        {
+          timeManager.setTime(timeSlider, new HiResDate(time), true);
+        }
       }
     });
 
@@ -491,7 +493,15 @@ public class DebriefRibbonTimeController
     setButtonsEnabled(topButtonsPanel, false);
     
     // we also need to listen out for the stepper control mode changing
-    stepControl.addStepperListener(new LiteStepperListener(playCommandButton));
+    stepControl.addStepperListener(new LiteStepperListener(playCommandButton) {
+
+      @Override
+      public void reset()
+      {
+        // ok, do some disabling
+        setButtonsEnabled(topButtonsPanel, false);
+        timeSlider.setEnabled(false);
+      }});
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
@@ -528,7 +538,7 @@ public class DebriefRibbonTimeController
     playCommandButton.setIcon(imageIcon);
   }
   
-  private static class LiteStepperListener implements StepperListener
+  private static abstract class LiteStepperListener implements StepperListener
   {
     private JCommandButton _playBtn;
 
@@ -540,7 +550,10 @@ public class DebriefRibbonTimeController
     @Override
     public void steppingModeChanged(boolean on)
     {
-      updatePlayBtnUI(_playBtn, !on);
+      if (_playBtn != null)
+      {
+        updatePlayBtnUI(_playBtn, !on);
+      }
     }
 
     @Override
@@ -619,6 +632,8 @@ public class DebriefRibbonTimeController
         }
         label.setRange(low.getTime(), high.getTime());
         label.setValue(oldTime.getTime());
+        
+        // and enable those buttons
       }
       
       operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
