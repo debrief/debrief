@@ -63,7 +63,6 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Defaults;
@@ -209,6 +208,7 @@ public class DebriefLiteApp implements FileDropListener
   private PainterManager painterManager;
   private LiteTote theTote;
   private LiteStepControl _stepControl;
+  private final Layer safeChartFeatures;
 
   protected static boolean _plotDirty;
   private static String defaultTitle;
@@ -262,6 +262,10 @@ public class DebriefLiteApp implements FileDropListener
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    
+    // take a safe copy of the chart features layer
+    safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
+    
     final UndoBuffer undoBuffer = session.getUndoBuffer();
     app = new LiteApplication();
 
@@ -752,18 +756,14 @@ public class DebriefLiteApp implements FileDropListener
 
   public void resetPlot()
   {
-    // special behaviour. The chart creator objects take a point to the
-    // target layer on creation. So, we need to keep the same chart features layer
-    // for the running session.
-    final BaseLayer chartF = (BaseLayer) _theLayers.findLayer(
-        Layers.CHART_FEATURES);
-    chartF.removeAllElements();
-
+    // clear teh data
     _theLayers.clear();
     layerManager.resetTree();
 
-    // reinstate the chart features
-    _theLayers.addThisLayer(chartF);
+    // special behaviour. The chart creator objects take a point to the
+    // target layer on creation. So, we need to keep the same chart features layer
+    // for the running session.
+    _theLayers.addThisLayer(safeChartFeatures);
 
     // continue with reset processing
     _plotDirty = false;
