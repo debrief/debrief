@@ -126,8 +126,8 @@ public abstract class CoreCreateShape extends PlainTool
         }
         else
         {
-          final String txt = JOptionPane.showInputDialog(null,
-              "Enter name for new layer");
+          final String txt = JOptionPane.showInputDialog(null, "Please enter name",
+              "New Layer", JOptionPane.QUESTION_MESSAGE);
           // check there's something there
           if (txt != null && !txt.isEmpty())
           {
@@ -214,8 +214,8 @@ public abstract class CoreCreateShape extends PlainTool
       if (selection.equals(Layers.NEW_LAYER_COMMAND))
       {
         // better create one. Ask the user
-        String txt = JOptionPane.showInputDialog(null,
-            "Enter name for new layer", "New Layer");
+        final String txt = JOptionPane.showInputDialog(null, "Please enter name",
+            "New Layer", JOptionPane.QUESTION_MESSAGE);
         // check there's something there
         if (txt != null && !txt.isEmpty())
         {
