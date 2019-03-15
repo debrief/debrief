@@ -10,7 +10,9 @@ public class LiteParent implements MWC.GUI.ToolParent
   @Override
   public void logError(int status, String text, Exception e)
   {
-    throw new IllegalArgumentException("not implemented (yet)");
+    System.err.println(text);
+    if(e != null)
+      e.printStackTrace();
   }
 
   @Override
