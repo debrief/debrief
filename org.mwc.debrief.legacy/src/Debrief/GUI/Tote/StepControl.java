@@ -706,6 +706,25 @@ abstract public class StepControl implements Editable,
     return _timeZero;
   }
 
+  /**
+   * indicate that we no longer have a time period (this implementation favours D-Lite, TimeManager
+   * provides equivalent support in full Debrief)
+   */
+  public void reset()
+  {
+    // clear the times
+    _startTime = null;
+    _endTime = null;
+    _currentTime = null;
+
+    // inform anyone that wants to know.
+    final Enumeration<StepperListener> numer = _listeners.elements();
+    while (numer.hasMoreElements())
+    {
+      final StepperListener next = numer.nextElement();
+      next.reset();
+    }
+  }
 
   public void setStartTime(final HiResDate val)
   {

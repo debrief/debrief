@@ -176,6 +176,11 @@ public final class PainterManager implements StepperListener, Editable
 		return "Painter Manager";
 	}
 
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 
   ////////////////////////////////////////////////////////////
   // 'editable' methods
