@@ -95,7 +95,7 @@ public class DebriefRibbonTimeController
 
       final SimpleDateFormat formatter = new SimpleDateFormat(stepControl
           .getDateFormat());
-      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
       minimumValue.setText(formatter.format(low));
       maximumValue.setText(formatter.format(high));
     }
