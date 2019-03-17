@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
@@ -94,6 +95,7 @@ public class DebriefRibbonTimeController
 
       final SimpleDateFormat formatter = new SimpleDateFormat(stepControl
           .getDateFormat());
+      formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
       minimumValue.setText(formatter.format(low));
       maximumValue.setText(formatter.format(high));
     }
@@ -519,9 +521,9 @@ public class DebriefRibbonTimeController
     playCommandButton.setActionRichTooltip(richTooltip);
 
     // switch the icon
-    final Image zoominImage = MenuUtils.createImage(image);
+    final Image playStopinImage = MenuUtils.createImage(image);
     final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-        .getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+        .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
     
     playCommandButton.setExtraText(tooltip);
 
