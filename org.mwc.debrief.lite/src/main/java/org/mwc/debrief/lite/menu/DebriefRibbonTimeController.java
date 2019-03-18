@@ -86,6 +86,11 @@ public class DebriefRibbonTimeController
       timeManager.fireTimePropertyChange();
       updateFilterDateFormat();
     }
+    
+    public String getDateFormat()
+    {
+      return stepControl.getDateFormat();
+    }
 
     public void updateFilterDateFormat()
     {
@@ -106,7 +111,13 @@ public class DebriefRibbonTimeController
      *
      */
     private static final long serialVersionUID = 1L;
-
+    private final JPopupMenu menu;
+    
+    private ShowFormatAction(final JPopupMenu theMenu)
+    {
+      this.menu = theMenu;
+    }
+    
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -165,7 +176,6 @@ public class DebriefRibbonTimeController
   private static SliderConverter converter = new SliderConverter();
 
   private static DateFormatBinder formatBinder = new DateFormatBinder();
-  static JPopupMenu menu;
   private static TimeLabel label;
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
@@ -177,11 +187,12 @@ public class DebriefRibbonTimeController
   {
     final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter);
 
+    final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
+        timeManager);
+
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer);
 
-    final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
-        timeManager);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
@@ -375,8 +386,11 @@ public class DebriefRibbonTimeController
           }
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
 
+    // we need to give the menu to the command popup
+    final JPopupMenu menu =  new JPopupMenu();
+
     final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
-        "Format", "icons/24/gears_view.png", new ShowFormatAction(),
+        "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
     final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
@@ -400,8 +414,6 @@ public class DebriefRibbonTimeController
 
     timeLabel.setForeground(new Color(0, 255, 0));
 
-    menu = new JPopupMenu();
-
     final String[] timeFormats = new String[]
     {"mm:ss.SSS", "HHmm.ss", "HHmm",
         "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
@@ -409,9 +421,16 @@ public class DebriefRibbonTimeController
 
     
     final JCheckBoxMenuItem[] menuItem = new JCheckBoxMenuItem[timeFormats.length];
+    final String defaultFormat = formatBinder.getDateFormat();
     for (int i = 0 ; i < timeFormats.length; i++)
     {
       menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
+      
+      // is this the default format
+      if(defaultFormat != null && defaultFormat.equals(timeFormats[i]))
+      {
+        menuItem[i].setSelected(true);
+      }
     }
     
     final ActionListener selfAssignFormat = new ActionListener()
