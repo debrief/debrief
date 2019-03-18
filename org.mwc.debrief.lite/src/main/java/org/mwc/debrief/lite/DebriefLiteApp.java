@@ -63,6 +63,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Defaults;
@@ -763,6 +764,11 @@ public class DebriefLiteApp implements FileDropListener
     // special behaviour. The chart creator objects take a point to the
     // target layer on creation. So, we need to keep the same chart features layer
     // for the running session.
+    if(safeChartFeatures != null)
+    {
+      BaseLayer bl = (BaseLayer) safeChartFeatures;
+      bl.removeAllElements();
+    }
     _theLayers.addThisLayer(safeChartFeatures);
 
     // continue with reset processing
