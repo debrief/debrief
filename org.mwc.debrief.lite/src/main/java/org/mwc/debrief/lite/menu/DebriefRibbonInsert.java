@@ -173,9 +173,13 @@ public class DebriefRibbonInsert
         newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
         
         // and other node
-        WorldLocation newLoc = centre.add(new WorldVector(Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+        final WorldLocation newLoc = centre.add(new WorldVector(Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
             new WorldDistance(0, WorldDistance.KM)));
         newShape.add(new PolygonNode("2", newLoc, (PolygonShape) theWrapper.getShape()));
+
+        final WorldLocation newLoc2 = centre.add(new WorldVector(7 * Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+            new WorldDistance(0, WorldDistance.KM)));
+        newShape.add(new PolygonNode("3", newLoc2, (PolygonShape) theWrapper.getShape()));
 
         return theWrapper;
       }
