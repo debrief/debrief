@@ -171,6 +171,15 @@ public class DebriefRibbonInsert
 
         // store the new point
         newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
+        
+        // and other node
+        final WorldLocation newLoc = centre.add(new WorldVector(Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+            new WorldDistance(0, WorldDistance.KM)));
+        newShape.add(new PolygonNode("2", newLoc, (PolygonShape) theWrapper.getShape()));
+
+        final WorldLocation newLoc2 = centre.add(new WorldVector(7 * Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+            new WorldDistance(0, WorldDistance.KM)));
+        newShape.add(new PolygonNode("3", newLoc2, (PolygonShape) theWrapper.getShape()));
 
         return theWrapper;
       }
@@ -292,7 +301,7 @@ public class DebriefRibbonInsert
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
     final String[] layerItems = new String[]
-    {"Select Layer", CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
+    {CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
         Layers.NEW_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     selectLayerCombo = new JComboBox<String>(layerItems);
