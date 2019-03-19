@@ -47,7 +47,7 @@ public class DoSaveAs extends AbstractAction
     }
     else
     {
-      outputFile = showSaveDialog(null, null);
+      outputFile = showSaveDialog(null, "Debrief_Plot");
     }
     if(outputFile!=null) {
       DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
