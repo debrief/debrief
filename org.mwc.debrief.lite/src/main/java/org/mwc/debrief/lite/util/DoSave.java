@@ -33,14 +33,12 @@ public class DoSave extends DoSaveAs
     File targetFile = null;
     String outputFileName = fileName;
     if(fileName == null) {
-      outputFileName = showSaveDialog(null,null);
+      outputFileName = showSaveDialog(null,DEFAULT_FILENAME);
       if(outputFileName!=null) {
         targetFile = new File(outputFileName);
       }
     }
     else {
-      if(fileName!=null) {
-        System.out.println("Filename:"+fileName);
         if(fileName.endsWith(".dpf")) {
           targetFile = new File(fileName);
         }
@@ -54,7 +52,6 @@ public class DoSave extends DoSaveAs
           if(fileName!=null) {
             targetFile = new File(fileName);
           }
-        }
       }
     }
     if(targetFile!=null) {
