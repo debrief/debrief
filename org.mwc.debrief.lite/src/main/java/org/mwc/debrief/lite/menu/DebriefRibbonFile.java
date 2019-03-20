@@ -219,11 +219,19 @@ public class DebriefRibbonFile
                 ".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }
+          else if(DebriefLiteApp.currentFileName == null)
+          {
+            // ok, we have to do a save-as operation
+            DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
+            saveAs.actionPerformed(e);
+          }
           else
           {
+            // ok, it's a DPF file. we can juse save it
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
+            
           _doReset.run();
         }
         else if (res == JOptionPane.NO_OPTION)
