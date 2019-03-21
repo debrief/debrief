@@ -327,6 +327,12 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	{
 		_showLine = line;
 	}
+	
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 
 	public void setFixedDuration(final Duration dur)
 	{

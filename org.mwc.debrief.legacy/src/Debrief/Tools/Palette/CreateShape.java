@@ -82,16 +82,14 @@
 
 package Debrief.Tools.Palette;
 
-import javax.swing.JOptionPane;
-
+import Debrief.Tools.Palette.CreateLabel.GetAction;
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 abstract public class CreateShape extends CoreCreateShape
@@ -115,7 +113,7 @@ abstract public class CreateShape extends CoreCreateShape
   {
     super(theParent, theName, theImage,theData,bounds);
     _thePanel = thePanel;
-    
+
   }
 
 
@@ -125,48 +123,24 @@ abstract public class CreateShape extends CoreCreateShape
 
   public final Action getData()
   {
-    Action res = null;
-    final WorldArea theBounds = getBounds();
+    final GetAction getAction = new GetAction() {
 
-    // see if we have an area defined
-    if(theBounds != null)
-    {
-      // get centre of area (at zero depth)
-      final WorldLocation centre = new WorldLocation(theBounds.getCentreAtSurface());
-
-      final ShapeWrapper theWrapper = getShape(centre);
-      String layerToAddTo = getLayerName();
-      Layer theLayer = _theData.findLayer(layerToAddTo);
-      if(theLayer == null && !AutoSelectTarget.getAutoSelectTarget())
+      @Override
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
       {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
+        return new CreateShapeAction(_thePanel, theLayer,
+            (ShapeWrapper) theItem, _theData);
       }
-      if(theLayer!=null) {
-        res =  new CreateShapeAction(_thePanel,
-            theLayer,
-            theWrapper,
-            _theData);
 
-      }
-      else {
-        JOptionPane.showMessageDialog(null, 
-            "A layer can only be created if a name is provided. "
-                + "The shape has not been created",
-                "Error", JOptionPane.ERROR_MESSAGE);
-      }
-    }
-    else
-    {
-      // we haven't got an area, inform the user
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-          "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-    }
-
-    return res;
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return getShape(centre);
+      }};
+    return commonGetData(getAction, _thePanel);
   }
-
+  
   /** get the actual instance of the shape we are creating
    * @return ShapeWrapper containing an instance of the new shape
    * @param centre the current centre of the screen, where the shape should be centred
@@ -244,64 +218,5 @@ abstract public class CreateShape extends CoreCreateShape
 
     // remove our local references
     _thePanel = null;
-    _theData = null;
-  }
-
-  /**
-   * @return
-   */
-  protected String getLayerName()
-  {
-    String res = null;
-    // ok, are we auto-deciding?
-    if (!AutoSelectTarget.getAutoSelectTarget())
-    {
-      // nope, just use the default layer
-      res = Layers.DEFAULT_TARGET_LAYER;
-    }
-    else
-    {
-      // get the non-track layers
-      final Layers theLayers = _theData;
-      final String[] ourLayers = theLayers.trimmedLayers();
-      ListLayersDialog listDialog = new ListLayersDialog(ourLayers);
-      listDialog.setSize(350,300);
-      listDialog.setLocationRelativeTo(null);
-      listDialog.setModal(true);
-      listDialog.setVisible(true);
-      String selection = listDialog.getSelectedItem();
-      // did user say yes?
-      if (selection != null)
-      {
-        // hmm, is it our add layer command?
-        if (selection.equals(Layers.NEW_LAYER_COMMAND))
-        {
-          // better create one. Ask the user
-
-          // create input box dialog
-          String txt = JOptionPane.showInputDialog(null, "Enter name for new layer","New Layer");
-          // check there's something there
-          if (txt!=null && !txt.isEmpty())
-          {
-            res = txt;
-            // create base layer
-            final Layer newLayer = new BaseLayer();
-            newLayer.setName(res);
-
-            // add to layers object
-            theLayers.addThisLayer(newLayer);
-          }
-          else
-          {
-            res = null;
-          }
-        }
-        else {
-          res = selection;
-        }
-      }
-    }
-
-    return res;
   }
 }

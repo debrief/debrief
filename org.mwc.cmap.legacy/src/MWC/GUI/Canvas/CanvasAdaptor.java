@@ -23,6 +23,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.image.ImageObserver;
 import java.util.Vector;
 
@@ -227,28 +228,40 @@ public class CanvasAdaptor implements MWC.GUI.CanvasType {
 	/** client is about to start drawing operation */
 	public void startDraw(final Object theVal) {
 		//
+	  if(theVal instanceof Graphics2D)
+	  {
+      Graphics2D g2 = (Graphics2D) theVal;
+      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+          RenderingHints.VALUE_ANTIALIAS_ON);
+      g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	  }
 	}
 
 	/**
-	 * set the style for the line, using our constants
-	 * 
-	 */
-	public void setLineStyle(final int style) {
-		final BasicStroke stk = MWC.GUI.Canvas.Swing.SwingCanvas
-				.getStrokeFor(style);
-		final Graphics2D g2 = (Graphics2D) _dest;
-		g2.setStroke(stk);
+   * set the style for the line, using our constants
+   * 
+   */
+  public void setLineStyle(final int style)
+  {
+    final BasicStroke stk = MWC.GUI.Canvas.Swing.SwingCanvas.getStrokeFor(
+        style);
+    final BasicStroke stk2 = new BasicStroke(getLineWidth(), stk.getEndCap(),
+        stk.getLineJoin());
+    final Graphics2D g2 = (Graphics2D) _dest;
+    g2.setStroke(stk2);
 	}
 
-	/**
-	 * set the width of the line, in pixels
-	 * 
-	 */
-	public void setLineWidth(final float width) {
-		final BasicStroke stk = new BasicStroke(width);
-		final Graphics2D g2 = (Graphics2D) _dest;
-		g2.setStroke(stk);
-	}
+  /**
+   * set the width of the line, in pixels
+   * 
+   */
+  public void setLineWidth(final float width)
+  {
+    final BasicStroke stk = new BasicStroke(width);
+    final Graphics2D g2 = (Graphics2D) _dest;
+    g2.setStroke(stk);
+  }
 
 	public float getLineWidth() {
 		final Graphics2D g2 = (Graphics2D) _dest;

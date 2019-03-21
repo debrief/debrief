@@ -200,25 +200,38 @@ public class DebriefRibbonFile
       // ask user whether to save, if file is dirty.
       if (DebriefLiteApp.isDirty())
       {
-        int res = JOptionPane.showConfirmDialog(null,
+        final int res = JOptionPane.showConfirmDialog(null,
             "Save changes before creating new file?");
         if (res == JOptionPane.OK_OPTION)
         {
           if (DebriefLiteApp.currentFileName != null
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
-            File f = new File(DebriefLiteApp.currentFileName);
-            String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
-            String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            final File f = new File(DebriefLiteApp.currentFileName);
+            final String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            if(newFileName == null || newFileName.length() ==0)
+            {
+              // drop out, don't do reset.
+              return;
+            }
             DebriefLiteApp.currentFileName.replaceAll(
                 ".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }
+          else if(DebriefLiteApp.currentFileName == null)
+          {
+            // ok, we have to do a save-as operation
+            DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
+            saveAs.actionPerformed(e);
+          }
           else
           {
+            // ok, it's a DPF file. we can juse save it
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
+            
           _doReset.run();
         }
         else if (res == JOptionPane.NO_OPTION)
@@ -245,21 +258,21 @@ public class DebriefRibbonFile
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommand("New", "images/16/new.png", new NewFileAction(
+    MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Open Plot", "images/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
+    MenuUtils.addCommand("Open Plot", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.MEDIUM);
     
     fileMenu.startGroup();
-    MenuUtils.addCommand("Save", "images/16/save.png",
+    MenuUtils.addCommand("Save", "icons/16/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Save as", "images/16/save-as.png",
+    MenuUtils.addCommand("Save as", "icons/16/save-as.png",
         new DoSaveAs(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
-    MenuUtils.addCommand("Exit", "images/16/exit.png", new AbstractAction()
+    MenuUtils.addCommand("Exit", "icons/16/exit.png", new AbstractAction()
     {
       /**
        *
@@ -276,11 +289,11 @@ public class DebriefRibbonFile
         exitMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
-    MenuUtils.addCommand("Import Replay", "images/16/import.png",
+    MenuUtils.addCommand("Import Replay", "icons/16/import.png",
         new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
-    MenuUtils.addCommand("Copy Plot to PNG", "images/16/import.png",
+    MenuUtils.addCommand("Copy Plot to PNG", "icons/16/import.png",
         new CopyPlotAsPNG(geoMapRenderer), importMenu,
         RibbonElementPriority.MEDIUM);
     fileMenu.setPreferredSize(new Dimension(150, 50));
