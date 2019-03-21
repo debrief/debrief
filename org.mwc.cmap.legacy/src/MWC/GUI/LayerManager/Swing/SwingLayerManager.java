@@ -818,9 +818,21 @@ public class SwingLayerManager extends SwingCustomEditor implements
       cur = _myTree.getSelectionRows()[0];
     }
 
-    // create a new root element
+    // get the root element
     final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
         .getModel().getRoot();
+
+    // ok, capture the top level elements
+    // capture the children of this layer, since we'll remove any that
+    // don't get used
+    ArrayList<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
+    final int kids = root.getChildCount();
+    for(int i=0;i<kids;i++)
+    {
+      TreeNode item = root.getChildAt(i);
+      children.add((MutableTreeNode) item);
+    }
+
     // construct the data
     for (int i = 0; i < _myData.size(); i++)
     {
@@ -835,11 +847,24 @@ public class SwingLayerManager extends SwingCustomEditor implements
       else
       {
         updateLayer(root, thisL, thisL);
+        children.remove(rootNode);
       }
     }
     if (cur != 0)
     {
       _myTree.setSelectionRow(cur);
+    }
+    
+    // did we leave any?
+    if(!children.isEmpty())
+    {
+      // ok, we've got some stagglers to get rid of
+      for(MutableTreeNode node: children)
+      {
+        root.remove(node);
+      }
+      // reload the tree
+      ((DefaultTreeModel) _myTree.getModel()).reload(root);
     }
 
     // create a new tree based on this data
