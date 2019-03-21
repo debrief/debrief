@@ -299,12 +299,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myTree.setToggleClickCount(3);
 
     _myTree.getSelectionModel().setSelectionMode(
-        TreeSelectionModel.SINGLE_TREE_SELECTION);
+        TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
     _myTree.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(final MouseEvent e)
-      {
+      {       
         TreeNode node = null;
 
         // get the node for this click
@@ -313,6 +313,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
         {
           final TreePath path = _myTree.getPathForRow(row);
           node = (TreeNode) path.getLastPathComponent();
+        }
+        else
+        {
+          _myTree.clearSelection();
+          return;
         }
 
         // is this a right-click
