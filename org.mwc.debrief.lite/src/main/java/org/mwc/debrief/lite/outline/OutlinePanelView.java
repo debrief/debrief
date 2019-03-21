@@ -14,6 +14,16 @@
  */
 package org.mwc.debrief.lite.outline;
 
+import static Debrief.GUI.Views.LogicHelpers.getClipboardNotEmptyTest;
+import static Debrief.GUI.Views.LogicHelpers.getIsFixesTest;
+import static Debrief.GUI.Views.LogicHelpers.getIsLayerTest;
+import static Debrief.GUI.Views.LogicHelpers.getIsShapesTest;
+import static Debrief.GUI.Views.LogicHelpers.getIsTrackTest;
+import static Debrief.GUI.Views.LogicHelpers.getNotEmptyTest;
+import static Debrief.GUI.Views.LogicHelpers.getNotNarrativeTest;
+import static Debrief.GUI.Views.LogicHelpers.getOnlyOneTest;
+import static Debrief.GUI.Views.LogicHelpers.getSelectionEmptyTest;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -54,11 +64,14 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mwc.debrief.lite.menu.OutlineViewSelection;
-import org.mwc.debrief.lite.outline.LogicHelpers.*;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.CoreImageHelper;
 import Debrief.GUI.DebriefImageHelper;
+import Debrief.GUI.Views.LogicHelpers.And;
+import Debrief.GUI.Views.LogicHelpers.EnabledTest;
+import Debrief.GUI.Views.LogicHelpers.Helper;
+import Debrief.GUI.Views.LogicHelpers.Or;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -76,15 +89,13 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
-import MWC.TacticalData.NarrativeEntry;
-import MWC.TacticalData.NarrativeWrapper;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
 public class OutlinePanelView extends SwingLayerManager implements
-    ClipboardOwner, LogicHelpers.Helper
+    ClipboardOwner, Helper
 {
 
   private static final String DUPLICATE_PREFIX = "Copy of ";
@@ -99,15 +110,20 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   private static class ButtonEnabler
   {
-    private final JButton _button;
+    private final Component _button;
     private final EnabledTest _test;
-    private String _title;
+    private final String _title;
 
-    private ButtonEnabler(final JButton button, final EnabledTest test)
+    private ButtonEnabler(final String title, final Component button, final EnabledTest test)
     {
-      _title = button.getToolTipText();
+      _title = title;
       _button = button;
       _test = test;
+    }
+    
+    private ButtonEnabler(final JButton button, final EnabledTest test)
+    {
+      this(button.getToolTipText(), button, test);
     }
     
     @Override
@@ -218,24 +234,24 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest selectionIsLayer = getIsLayerTest();
     final EnabledTest clipboardIsFixes = getIsFixesTest();
     final EnabledTest clipboardIsShapes = getIsShapesTest();
-    final EnabledTest isEmpty = getEmptyTest();
+    final EnabledTest isEmpty = getSelectionEmptyTest();
     final EnabledTest notNarrative = getNotNarrativeTest();
         
     final JButton editButton = createCommandButton("Edit",
         "images/16/edit.png");
-    _enablers.add(new ButtonEnabler(editButton, new LogicHelpers.And(notEmpty, onlyOne)));
+    _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     commandBar.add(editButton);
     
     final JButton copyButton = createCommandButton("Copy",
         "images/16/copy_to_clipboard.png");
-    _enablers.add(new ButtonEnabler(copyButton, new LogicHelpers.And(notEmpty, notNarrative)));
+    _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative)));
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
         "images/16/paste.png");
-    _enablers.add(new ButtonEnabler(pasteButton, new LogicHelpers.And(
-        clipboardNotEmpty, new LogicHelpers.Or(new LogicHelpers.And(
-            selectionIsTrack, clipboardIsFixes), new LogicHelpers.And(
+    _enablers.add(new ButtonEnabler(pasteButton, new And(
+        clipboardNotEmpty, new Or(new And(
+            selectionIsTrack, clipboardIsFixes), new And(
                 selectionIsLayer, clipboardIsShapes)))));
     commandBar.add(pasteButton);    
 
@@ -260,7 +276,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       public void actionPerformed(ActionEvent e)
       {
         doReset();
-
       }
     });
     commandBar.add(refreshViewButton);
@@ -349,160 +364,19 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     });
+    deleteButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        doDelete();
+      }
+    });
 
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
     setCellEditor(new OutlineCellEditor());
-  }
-
-  private EnabledTest getNotNarrativeTest()
-  {
-    return new EnabledTest("Selection not narrative")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        ArrayList<Plottable> sel = helper.getSelection();
-        for (Plottable t : sel)
-        {
-          if (t instanceof NarrativeEntry || t instanceof NarrativeWrapper)
-          {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-  }
-
-  public EnabledTest getNotEmptyTest()
-  {
-    return new EnabledTest("Not empty")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        return !helper.getSelection().isEmpty();
-      }
-    };
-  }
-
-  public EnabledTest getOnlyOneTest()
-  {
-    return new EnabledTest("Only one")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        return helper.getSelection().size() == 1;
-      }
-    };
-  }
-
-  public EnabledTest getClipboardNotEmptyTest()
-  {
-    return new EnabledTest("Clipboard not empty")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        return !helper.getClipboardContents().isEmpty();
-      }
-    };
-  }
-
-  public EnabledTest getIsTrackTest()
-  {
-    return new EnabledTest("Selection is track")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        ArrayList<Plottable> sel = helper.getSelection();
-        if(sel.size() == 1)
-        {
-          Plottable first = sel.get(0);
-          if(first instanceof TrackWrapper)
-          {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-  }
-
-  public EnabledTest getIsLayerTest()
-  {
-    return new EnabledTest("Selection is layer")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        ArrayList<Plottable> sel = helper.getSelection();
-        if(sel.size() == 1)
-        {
-          Plottable first = sel.get(0);
-          if(first instanceof BaseLayer)
-          {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-  }
-
-  public EnabledTest getIsFixesTest()
-  {
-    return new EnabledTest("Clipboard is fixes")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        ArrayList<Plottable> sel = helper.getClipboardContents();
-        for (Plottable t : sel)
-        {
-          if (!(t instanceof FixWrapper))
-          {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-  }
-
-  public EnabledTest getIsShapesTest()
-  {
-    return new EnabledTest("Clipboard is shapes or labels")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        ArrayList<Plottable> sel = helper.getClipboardContents();
-        for (Plottable t : sel)
-        {
-          if (!(t instanceof ShapeWrapper) && !(t instanceof LabelWrapper))
-          {
-            return false;
-          }
-        }
-        return true;
-      }
-    };
-  }
-
-  public EnabledTest getEmptyTest()
-  {
-    return new EnabledTest("Is empty")
-    {
-      @Override
-      public boolean isEnabled(final Helper helper)
-      {
-        return helper.getSelection().isEmpty();
-      }
-    };
   }
 
   private JButton createCommandButton(String command, String image)
@@ -527,70 +401,92 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   }
 
-  private boolean isEnableCopy()
+//  private boolean isEnableCopy()
+//  {
+//    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+//    boolean retVal = true;
+//    if (selectionPaths != null)
+//    {
+//      @SuppressWarnings("rawtypes")
+//      Class theClass = null;
+//      if (selectionPaths.length == 1)
+//      {
+//        DefaultMutableTreeNode treenode =
+//            (DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent();
+//        if (!(treenode.getUserObject() instanceof Plottable))
+//        {
+//          retVal = false;
+//        }
+//        if (treenode.getUserObject() instanceof NarrativeWrapper || treenode
+//            .getUserObject() instanceof NarrativeEntry)
+//        {
+//          retVal = false;
+//        }
+//      }
+//      else
+//      {
+//        for (TreePath path : selectionPaths)
+//        {
+//          DefaultMutableTreeNode treenode = (DefaultMutableTreeNode) path
+//              .getLastPathComponent();
+//          if (treenode.getUserObject() instanceof Plottable && !((treenode
+//              .getUserObject() instanceof NarrativeWrapper) || (treenode
+//                  .getUserObject() instanceof NarrativeEntry)))
+//          {
+//            if (theClass == null)
+//            {
+//              theClass = treenode.getUserObject().getClass();
+//            }
+//            if (theClass != null && theClass != treenode.getUserObject()
+//                .getClass())
+//            {
+//              retVal = false;
+//            }
+//          }
+//        }
+//      }
+//    }
+//    else
+//    {
+//      retVal = false;
+//    }
+//    return retVal;
+//  }
+
+  protected void doDelete()
   {
     final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-    boolean retVal = true;
+    boolean modified = false;
     if (selectionPaths != null)
     {
-      @SuppressWarnings("rawtypes")
-      Class theClass = null;
-      if (selectionPaths.length == 1)
+      for (final TreePath item : selectionPaths)
       {
-        DefaultMutableTreeNode treenode =
-            (DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent();
-        if (!(treenode.getUserObject() instanceof Plottable))
+        Object component = item.getLastPathComponent();
+        if (component instanceof PlottableNode)
         {
-          retVal = false;
-        }
-        if (treenode.getUserObject() instanceof NarrativeWrapper || treenode
-            .getUserObject() instanceof NarrativeEntry)
-        {
-          retVal = false;
-        }
-      }
-      else
-      {
-        for (TreePath path : selectionPaths)
-        {
-          DefaultMutableTreeNode treenode = (DefaultMutableTreeNode) path
-              .getLastPathComponent();
-          if (treenode.getUserObject() instanceof Plottable && !((treenode
-              .getUserObject() instanceof NarrativeWrapper) || (treenode
-                  .getUserObject() instanceof NarrativeEntry)))
+          PlottableNode node = (PlottableNode) component;
+          Object object = node.getUserObject();
+          if(object instanceof Plottable)
           {
-            if (theClass == null)
+            int pathCount = item.getPathCount();
+            // ok, delete it, get the parent
+            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) _myTree
+                .getSelectionPath().getPathComponent(pathCount - 2);
+            Editable parent = (Editable) parentNode.getUserObject();
+            if(parent instanceof Layer)
             {
-              theClass = treenode.getUserObject().getClass();
-            }
-            if (theClass != null && theClass != treenode.getUserObject()
-                .getClass())
-            {
-              retVal = false;
+              Layer layer = (Layer) parent;
+              layer.removeElement((Editable) object);
+              modified = true;
             }
           }
         }
       }
     }
-    else
-    {
-      retVal = false;
-    }
-    return retVal;
-  }
 
-  protected void doDelete()
-  {
-    int pathCount = _myTree.getSelectionPath().getPathCount();
-    DefaultMutableTreeNode selectedNode = getSelectedNode();
-    Editable editable = (Editable) selectedNode.getUserObject();
-    if (pathCount > 1)
+    if(modified)
     {
-      DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) _myTree
-          .getSelectionPath().getPathComponent(pathCount - 1);
-      Editable obj = (Editable) parentNode.getUserObject();
-      // TODO implement delete.
-
+      doReset();
     }
 
   }
@@ -600,11 +496,11 @@ public class OutlinePanelView extends SwingLayerManager implements
     // TODO implement this
   }
 
-  private DefaultMutableTreeNode getSelectedNode()
-  {
-    return (DefaultMutableTreeNode) _myTree.getSelectionPath()
-        .getLastPathComponent();
-  }
+//  private DefaultMutableTreeNode getSelectedNode()
+//  {
+//    return (DefaultMutableTreeNode) _myTree.getSelectionPath()
+//        .getLastPathComponent();
+//  }
 
   protected void doPaste()
   {
