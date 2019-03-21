@@ -482,11 +482,18 @@ public class OutlinePanelView extends SwingLayerManager implements
             // ok, delete it, get the parent
             DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) _myTree
                 .getSelectionPath().getPathComponent(pathCount - 2);
-            Editable parent = (Editable) parentNode.getUserObject();
+            Object parent = parentNode.getUserObject();
             if(parent instanceof Layer)
             {
               Layer layer = (Layer) parent;
               layer.removeElement((Editable) object);
+              modified = true;
+            }
+            else
+            {
+              // ok, the parent isn't a layer. In that case this must
+              // be a top level layer
+              getData().removeThisLayer((Layer) object);
               modified = true;
             }
           }
