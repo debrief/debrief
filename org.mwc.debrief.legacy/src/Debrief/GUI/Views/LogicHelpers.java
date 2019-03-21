@@ -1,11 +1,106 @@
-package org.mwc.debrief.lite.outline;
+package Debrief.GUI.Views;
 
 import java.util.ArrayList;
 
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Plottable;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.NarrativeWrapper;
+import junit.framework.TestCase;
 
 public class LogicHelpers
 {
+  public static class TestLogic extends TestCase
+  {
+    public void testSelectionEmptyFail()
+    {
+      EnabledTest test = getSelectionEmptyTest();
+      Helper helper = new Helper() {
+
+        @Override
+        public ArrayList<Plottable> getClipboardContents()
+        {
+          return null;
+        }
+
+        @Override
+        public ArrayList<Plottable> getSelection()
+        {
+          ArrayList<Plottable> res= new ArrayList<Plottable>();
+          return res;
+        }};
+      assertTrue(test.isEnabled(helper));
+    }
+    
+    public void testSelectionEmptyPass()
+    {
+      EnabledTest test = getSelectionEmptyTest();
+      Helper helper = new Helper() {
+
+        @Override
+        public ArrayList<Plottable> getClipboardContents()
+        {
+          return null;
+        }
+
+        @Override
+        public ArrayList<Plottable> getSelection()
+        {
+          ArrayList<Plottable> res= new ArrayList<Plottable>();
+          res.add(new BaseLayer());
+          return res;
+        }};
+      assertTrue(!test.isEnabled(helper));
+    }
+    public void testClipboardNotEmptyFail()
+    {
+      EnabledTest test = getClipboardNotEmptyTest();
+      Helper helper = new Helper() {
+
+        @Override
+        public ArrayList<Plottable> getClipboardContents()
+        {
+          ArrayList<Plottable> res= new ArrayList<Plottable>();
+          return res;
+        }
+
+        @Override
+        public ArrayList<Plottable> getSelection()
+        {
+          return null;
+        }};
+      assertTrue(!test.isEnabled(helper));
+    }
+    
+    public void testClipboardNotEmptyPass()
+    {
+      EnabledTest test = getClipboardNotEmptyTest();
+      Helper helper = new Helper() {
+
+        @Override
+        public ArrayList<Plottable> getClipboardContents()
+        {
+          ArrayList<Plottable> res= new ArrayList<Plottable>();
+          res.add(new BaseLayer());
+          return res;
+        }
+
+        @Override
+        public ArrayList<Plottable> getSelection()
+        {
+          return null;
+        }};
+      assertTrue(test.isEnabled(helper));
+    }
+    
+    
+    
+  }
+  
   /** logical AND operation
    * 
    * @author ian
@@ -20,7 +115,7 @@ public class LogicHelpers
     }
 
     @Override
-    boolean isEnabled(final Helper helper)
+    public boolean isEnabled(final Helper helper)
     {
       for (final EnabledTest t : _tests)
       {
@@ -45,7 +140,7 @@ public class LogicHelpers
       _name = name;
     }
 
-    abstract boolean isEnabled(final Helper helper);
+    abstract public boolean isEnabled(final Helper helper);
 
     @Override
     public String toString()
@@ -104,7 +199,7 @@ public class LogicHelpers
     }
 
     @Override
-    boolean isEnabled(final Helper helper)
+    public boolean isEnabled(final Helper helper)
     {
       for (final EnabledTest t : _tests)
       {
@@ -114,4 +209,156 @@ public class LogicHelpers
       return false;
     }
   }
+  
+
+  public static EnabledTest getNotNarrativeTest()
+  {
+    return new EnabledTest("Selection not narrative")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        for (Plottable t : sel)
+        {
+          if (t instanceof NarrativeEntry || t instanceof NarrativeWrapper)
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public static EnabledTest getNotEmptyTest()
+  {
+    return new EnabledTest("Not empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return !helper.getSelection().isEmpty();
+      }
+    };
+  }
+
+  public static EnabledTest getOnlyOneTest()
+  {
+    return new EnabledTest("Only one")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return helper.getSelection().size() == 1;
+      }
+    };
+  }
+
+  public static EnabledTest getClipboardNotEmptyTest()
+  {
+    return new EnabledTest("Clipboard not empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return !helper.getClipboardContents().isEmpty();
+      }
+    };
+  }
+
+  public static EnabledTest getIsTrackTest()
+  {
+    return new EnabledTest("Selection is track")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof TrackWrapper)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  public static EnabledTest getIsLayerTest()
+  {
+    return new EnabledTest("Selection is layer")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof BaseLayer)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  public static EnabledTest getIsFixesTest()
+  {
+    return new EnabledTest("Clipboard is fixes")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getClipboardContents();
+        for (Plottable t : sel)
+        {
+          if (!(t instanceof FixWrapper))
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public static EnabledTest getIsShapesTest()
+  {
+    return new EnabledTest("Clipboard is shapes or labels")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getClipboardContents();
+        for (Plottable t : sel)
+        {
+          if (!(t instanceof ShapeWrapper) && !(t instanceof LabelWrapper))
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public static EnabledTest getSelectionEmptyTest()
+  {
+    return new EnabledTest("Is empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return helper.getSelection().isEmpty();
+      }
+    };
+  }
+
 }
