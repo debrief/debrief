@@ -22,11 +22,14 @@ import java.awt.FontMetrics;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +54,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import org.mwc.debrief.lite.menu.OutlineViewSelection;
+import org.mwc.debrief.lite.outline.LogicHelpers.*;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.CoreImageHelper;
@@ -80,7 +84,7 @@ import MWC.TacticalData.NarrativeWrapper;
  *
  */
 public class OutlinePanelView extends SwingLayerManager implements
-    ClipboardOwner
+    ClipboardOwner, LogicHelpers.Helper
 {
 
   private static final String DUPLICATE_PREFIX = "Copy of ";
@@ -91,101 +95,111 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   private UndoBuffer _undoBuffer;
   private Clipboard _clipboard;
+  private ArrayList<ButtonEnabler> _enablers = new ArrayList<ButtonEnabler>();
 
+  private static class ButtonEnabler
+  {
+    private final JButton _button;
+    private final EnabledTest _test;
+    private String _title;
+
+    private ButtonEnabler(final JButton button, final EnabledTest test)
+    {
+      _title = button.getToolTipText();
+      _button = button;
+      _test = test;
+    }
+    
+    @Override
+    public String toString()
+    {
+      return _title;
+    }
+    
+    private void refresh(final Helper helper)
+    {
+      _button.setEnabled(_test.isEnabled(helper));
+    }
+  }
+  
   public OutlinePanelView(UndoBuffer undoBuffer, Clipboard clipboard)
   {
     _undoBuffer = undoBuffer;
     _clipboard = clipboard;
   }
 
-  private abstract static class EnabledTest
-  {
-    private final String _name;
-    public EnabledTest(final String name)
-    {
-      _name = name;
-    }
-    @Override
-    public String toString()
-    {
-      return _name;
-    }
-    abstract boolean isEnabled();
-  }
-
-  private abstract static class EnabledTestGroup extends EnabledTest
-  {
-    protected EnabledTest[] _tests;
-
-    public EnabledTestGroup(final String name, EnabledTest... tests)
-    {
-      super(name);
-      _tests = tests;
-    }
-  }
-  
-  private static class Or extends EnabledTestGroup
-  {
-
-    public Or(String name, EnabledTest... tests)
-    {
-      super(name, tests);
-    }
-
-    @Override
-    boolean isEnabled()
-    {
-      for (EnabledTest t : _tests)
-      {
-        if (t.isEnabled())
-          return true;
-      }
-      return false;
-    }
-  }
-  
-  
-  private static class And extends EnabledTestGroup
-  {
-
-    public And(String name, EnabledTest... tests)
-    {
-      super(name, tests);
-    }
-
-    @Override
-    boolean isEnabled()
-    {
-      for (EnabledTest t : _tests)
-      {
-        if (!t.isEnabled())
-          return false;
-      }
-      return true;
-    }
-  }
-  
   public static void main(String[] args)
   {
-    EnabledTest t1 = new EnabledTest("t1")
+    final EnabledTest hasData = new EnabledTest("Has data")
     {
       @Override
-      public boolean isEnabled()
+      public boolean isEnabled(final Helper helper)
       {
-        return false;
+        return !helper.getSelection().isEmpty();
       }
     };
-    EnabledTest t2 = new EnabledTest("t2")
+
+    final EnabledTest isEmpty = new EnabledTest("Is empty")
     {
       @Override
-      public boolean isEnabled()
+      public boolean isEnabled(final Helper helper)
       {
-        return true;
+        return helper.getSelection().isEmpty();
       }
     };
-    
-    System.out.println(new And("and", t1, t2).isEnabled());
-    System.out.println(new Or("or", t1, t2).isEnabled());
+    final EnabledTest notEmpty = new EnabledTest("Not empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return !helper.getSelection().isEmpty();
+      }
+    };
+    final EnabledTest onlyOne = new EnabledTest("Only one")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return helper.getSelection().size() == 1;
+      }
+    };
+    Helper helper1 = new Helper() {
+
+      @Override
+      public ArrayList<Plottable> getSelection()
+      {
+        ArrayList<Plottable> res = new ArrayList<Plottable>();
+        res.add(new BaseLayer());
+        return res;
+      }
+
+      @Override
+      public ArrayList<Plottable> getClipboardContents()
+      {
+        return new ArrayList<Plottable>();
+      }};
+
+      Helper helper2 = new Helper() {
+
+        @Override
+        public ArrayList<Plottable> getSelection()
+        {
+          ArrayList<Plottable> res = new ArrayList<Plottable>();
+          res.add(new BaseLayer());
+          res.add(new BaseLayer());
+          return res;
+        }
+
+        @Override
+        public ArrayList<Plottable> getClipboardContents()
+        {
+          return new ArrayList<Plottable>();
+        }};
+
+    System.out.println(new And(hasData, isEmpty).isEnabled(helper1));
+    System.out.println(new Or(hasData, isEmpty).isEnabled(helper1));
+    System.out.println(new And(notEmpty, onlyOne).isEnabled(helper1));
+    System.out.println(new And(notEmpty, onlyOne).isEnabled(helper2));
   }
 
   @Override
@@ -195,27 +209,45 @@ public class OutlinePanelView extends SwingLayerManager implements
     JPanel commandBar = new JPanel();
     commandBar.setBackground(Color.LIGHT_GRAY);
     commandBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
+    
+    // sort out the logical tests
+    final EnabledTest notEmpty = getNotEmptyTest();
+    final EnabledTest onlyOne = getOnlyOneTest();
+    final EnabledTest clipboardNotEmpty = getClipboardNotEmptyTest();
+    final EnabledTest selectionIsTrack = getIsTrackTest();
+    final EnabledTest selectionIsLayer = getIsLayerTest();
+    final EnabledTest clipboardIsFixes = getIsFixesTest();
+    final EnabledTest clipboardIsShapes = getIsShapesTest();
+    final EnabledTest isEmpty = getEmptyTest();
+    final EnabledTest notNarrative = getNotNarrativeTest();
+        
     final JButton editButton = createCommandButton("Edit",
         "images/16/edit.png");
+    _enablers.add(new ButtonEnabler(editButton, new LogicHelpers.And(notEmpty, onlyOne)));
     commandBar.add(editButton);
-
+    
     final JButton copyButton = createCommandButton("Copy",
         "images/16/copy_to_clipboard.png");
+    _enablers.add(new ButtonEnabler(copyButton, new LogicHelpers.And(notEmpty, notNarrative)));
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
         "images/16/paste.png");
-    pasteButton.setEnabled(false);
-    commandBar.add(pasteButton);
+    _enablers.add(new ButtonEnabler(pasteButton, new LogicHelpers.And(
+        clipboardNotEmpty, new LogicHelpers.Or(new LogicHelpers.And(
+            selectionIsTrack, clipboardIsFixes), new LogicHelpers.And(
+                selectionIsLayer, clipboardIsShapes)))));
+    commandBar.add(pasteButton);    
 
     final JButton addLayerButton = createCommandButton("Add Layer",
         "images/16/add_layer.png");
+    _enablers.add(new ButtonEnabler(addLayerButton, isEmpty));
     commandBar.add(addLayerButton);
 
     final JButton deleteButton = createCommandButton("Delete",
         "images/16/remove.png");
     deleteButton.setToolTipText("Delete");
+    _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     commandBar.add(deleteButton);
 
     final JButton refreshViewButton = createCommandButton("Update View",
@@ -232,15 +264,33 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     });
     commandBar.add(refreshViewButton);
+    final Helper me = this;
     _myTree.addTreeSelectionListener(new TreeSelectionListener()
     {
-
       @Override
       public void valueChanged(TreeSelectionEvent e)
       {
-        pasteButton.setEnabled(isEnablePaste());
-        copyButton.setEnabled(isEnableCopy());
+        final ArrayList<Plottable> sel = me.getSelection();
+        final ArrayList<Plottable> clip = me.getClipboardContents();
+        Helper helper = new Helper()
+        {
+          @Override
+          public ArrayList<Plottable> getSelection()
+          {
+            return sel;
+          }
 
+          @Override
+          public ArrayList<Plottable> getClipboardContents()
+          {
+            return clip;
+          }
+        };
+        
+        for(final ButtonEnabler t: _enablers)
+        {
+          t.refresh(helper);
+        }
       }
     });
     pasteButton.addActionListener(new ActionListener()
@@ -303,6 +353,156 @@ public class OutlinePanelView extends SwingLayerManager implements
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
     setCellEditor(new OutlineCellEditor());
+  }
+
+  private EnabledTest getNotNarrativeTest()
+  {
+    return new EnabledTest("Selection not narrative")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        for (Plottable t : sel)
+        {
+          if (t instanceof NarrativeEntry || t instanceof NarrativeWrapper)
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public EnabledTest getNotEmptyTest()
+  {
+    return new EnabledTest("Not empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return !helper.getSelection().isEmpty();
+      }
+    };
+  }
+
+  public EnabledTest getOnlyOneTest()
+  {
+    return new EnabledTest("Only one")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return helper.getSelection().size() == 1;
+      }
+    };
+  }
+
+  public EnabledTest getClipboardNotEmptyTest()
+  {
+    return new EnabledTest("Clipboard not empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return !helper.getClipboardContents().isEmpty();
+      }
+    };
+  }
+
+  public EnabledTest getIsTrackTest()
+  {
+    return new EnabledTest("Selection is track")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof TrackWrapper)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  public EnabledTest getIsLayerTest()
+  {
+    return new EnabledTest("Selection is layer")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof BaseLayer)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+
+  public EnabledTest getIsFixesTest()
+  {
+    return new EnabledTest("Clipboard is fixes")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getClipboardContents();
+        for (Plottable t : sel)
+        {
+          if (!(t instanceof FixWrapper))
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public EnabledTest getIsShapesTest()
+  {
+    return new EnabledTest("Clipboard is shapes or labels")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getClipboardContents();
+        for (Plottable t : sel)
+        {
+          if (!(t instanceof ShapeWrapper) && !(t instanceof LabelWrapper))
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+
+  public EnabledTest getEmptyTest()
+  {
+    return new EnabledTest("Is empty")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        return helper.getSelection().isEmpty();
+      }
+    };
   }
 
   private JButton createCommandButton(String command, String image)
@@ -902,5 +1102,79 @@ public class OutlinePanelView extends SwingLayerManager implements
   {
     // do nothing
 
+  }
+
+  @Override
+  public ArrayList<Plottable> getSelection()
+  {
+    final ArrayList<Plottable> res = new ArrayList<Plottable>();
+    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+    if (selectionPaths != null)
+    {
+      for (final TreePath item : selectionPaths)
+      {
+        Object component = item.getLastPathComponent();
+        if (component instanceof PlottableNode)
+        {
+          PlottableNode node = (PlottableNode) component;
+          Object object = node.getUserObject();
+          if(object instanceof Plottable)
+          {
+            res.add((Plottable) object);
+          }
+        }
+      }
+    }
+    return res;
+  }
+
+  @Override
+  public ArrayList<Plottable> getClipboardContents()
+  {
+    final ArrayList<Plottable> res = new ArrayList<Plottable>();
+    Transferable tr = _clipboard.getContents(this);
+    // see if there is currently a plottable on the clipboard
+    if (tr != null && tr.isDataFlavorSupported(
+        PlottableSelection.PlottableFlavor))
+    {
+      if (tr instanceof OutlineViewSelection)
+      {
+        // extract the plottable
+        Object objectToPaste = null;
+        try
+        {
+          objectToPaste = tr.getTransferData(
+              PlottableSelection.PlottableFlavor);
+        }
+        catch (UnsupportedFlavorException e)
+        {
+          e.printStackTrace();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+
+        final Plottable[] plottables;
+        if (objectToPaste != null)
+        {
+          if (objectToPaste instanceof Plottable[])
+          {
+            plottables = (Plottable[]) objectToPaste;
+          }
+          else
+          {
+            plottables = new Plottables[1];
+            plottables[0] = (Plottable) objectToPaste;
+          }
+          // get the contents
+          for (Plottable theData : plottables)
+          {
+            res.add(theData);
+          }
+        }
+      }
+    }
+    return res;
   }
 }
