@@ -761,6 +761,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           if (otherL != null)
           {
             updateLayer(thisL, otherLayer, theTopLayer);
+            children.remove(otherL);
           }
           else
           {
