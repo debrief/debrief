@@ -315,7 +315,6 @@ public class DebriefRibbonInsert
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
           String selectedItem = (String)jcombo.getSelectedItem();
-          System.out.println("Selected item:"+selectedItem);
           jcombo.removeAllItems();
 
           // start off with our custom layer modes
