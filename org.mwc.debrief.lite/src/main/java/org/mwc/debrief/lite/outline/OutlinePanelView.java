@@ -238,17 +238,17 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest notNarrative = getNotNarrativeTest();
         
     final JButton editButton = createCommandButton("Edit",
-        "images/16/edit.png");
+        "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     commandBar.add(editButton);
     
     final JButton copyButton = createCommandButton("Copy",
-        "images/16/copy_to_clipboard.png");
+        "icons/16/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative)));
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
-        "images/16/paste.png");
+        "icons/24/paste.png");
     _enablers.add(new ButtonEnabler(pasteButton, new And(
         clipboardNotEmpty, new Or(new And(
             selectionIsTrack, clipboardIsFixes), new And(
@@ -256,18 +256,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     commandBar.add(pasteButton);    
 
     final JButton addLayerButton = createCommandButton("Add Layer",
-        "images/16/add_layer.png");
+        "icons/24/add.png");
     _enablers.add(new ButtonEnabler(addLayerButton, isEmpty));
     commandBar.add(addLayerButton);
 
     final JButton deleteButton = createCommandButton("Delete",
-        "images/16/remove.png");
+        "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     commandBar.add(deleteButton);
 
     final JButton refreshViewButton = createCommandButton("Update View",
-        "images/16/repaint.png");
+        "icons/24/repaint.png");
     refreshViewButton.setToolTipText("Update View");
     refreshViewButton.addActionListener(new ActionListener()
     {
@@ -382,7 +382,17 @@ public class OutlinePanelView extends SwingLayerManager implements
   private JButton createCommandButton(String command, String image)
   {
     URL imageIcon = getClass().getClassLoader().getResource(image);
-    final JButton button = new JButton(new ImageIcon(imageIcon));
+    ImageIcon icon = null;
+    try
+    {
+      icon = new ImageIcon(imageIcon);
+    }
+    catch (Exception e)
+    {
+      System.err.println("Failed to find icon:" + image);
+      e.printStackTrace();
+    }
+    final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
   }
