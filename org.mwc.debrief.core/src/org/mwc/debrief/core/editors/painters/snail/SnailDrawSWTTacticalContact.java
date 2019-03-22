@@ -73,14 +73,21 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight,
     final String alphaStr = Defaults.getPreference(
         SensorContactWrapper.TRANSPARENCY);
     int alpha;
-    try
+    if (alphaStr != null && alphaStr.length() > 0)
     {
-      alpha = Integer.parseInt(alphaStr);
+      try
+      {
+        alpha = Integer.parseInt(alphaStr);
+      }
+      catch (NumberFormatException e)
+      {
+        alpha = 255;
+        e.printStackTrace();
+      }
     }
-    catch (NumberFormatException e)
+    else
     {
       alpha = 255;
-      e.printStackTrace();
     }
 
     // are we plotting a back-track?

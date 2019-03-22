@@ -63,6 +63,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
@@ -369,7 +370,16 @@ public class DebriefLiteApp implements FileDropListener
     @Override
     public String getPreference(String name)
     {
-      return null;
+      final String res;
+      if(SensorContactWrapper.TRANSPARENCY.equals(name))
+      {
+        res = "100";
+      }
+      else
+      {
+        return null;
+      }
+      return res;
     }
   }
   
