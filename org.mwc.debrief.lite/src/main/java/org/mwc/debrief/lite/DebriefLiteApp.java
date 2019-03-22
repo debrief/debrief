@@ -811,6 +811,9 @@ public class DebriefLiteApp implements FileDropListener
 
     // also clear the tote
     theTote.clear();
+    
+    // and the time format dropdown
+    DebriefRibbonTimeController.resetDateFormat();
 
     // stop the timer
     if (_stepControl.isPlaying())

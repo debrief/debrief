@@ -174,6 +174,12 @@ public class DebriefRibbonTimeController
       range = (int) ((end - start) / step);
     }
   }
+  
+
+  private static final String[] timeFormats = new String[]
+  {"mm:ss.SSS", "HHmm.ss", "HHmm",
+      "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
+      "yy/MM/dd hh:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
@@ -444,24 +450,15 @@ public class DebriefRibbonTimeController
 
     timeLabel.setForeground(new Color(0, 255, 0));
 
-    final String[] timeFormats = new String[]
-    {"mm:ss.SSS", "HHmm.ss", "HHmm",
-        "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
-        "yy/MM/dd hh:mm:ss"};
 
     
     _menuItem = new JCheckBoxMenuItem[timeFormats.length];
-    final String defaultFormat = formatBinder.getDateFormat();
     for (int i = 0 ; i < timeFormats.length; i++)
     {
       _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
-      
-      // is this the default format
-      if(defaultFormat != null && defaultFormat.equals(timeFormats[i]))
-      {
-        _menuItem[i].setSelected(true);
-      }
     }
+    
+    resetDateFormat();
     
     final ActionListener selfAssignFormat = new ActionListener()
     {
@@ -555,6 +552,22 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+
+  public static void resetDateFormat()
+  {
+    final String defaultFormat = LiteStepControl.timeFormat;
+    for (int i = 0 ; i < timeFormats.length; i++)
+    {
+      // is this the default format
+      final boolean isGood = defaultFormat != null && defaultFormat.equals(timeFormats[i]);
+      _menuItem[i].setSelected(isGood);
+    }
+    
+    if(label != null)
+    {
+      label.setValue(defaultFormat);
+    }
   }
   
 
