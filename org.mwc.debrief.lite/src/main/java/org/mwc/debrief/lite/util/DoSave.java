@@ -30,35 +30,48 @@ public class DoSave extends DoSaveAs
     // check we have write permission to it before starting save
     // get a new file path to use.
     String fileName = DebriefLiteApp.currentFileName;
-    File targetFile = null;
+    final File targetFile;
     String outputFileName = fileName;
-    if(fileName == null) {
-      outputFileName = showSaveDialog(null,null);
-      if(outputFileName!=null) {
+    if (fileName == null)
+    {
+      outputFileName = showSaveDialog(null, DEFAULT_FILENAME);
+      if (outputFileName != null)
+      {
         targetFile = new File(outputFileName);
       }
+      else
+      {
+        targetFile = null;
+      }
     }
-    else {
-      if(fileName!=null) {
-        System.out.println("Filename:"+fileName);
-        if(fileName.endsWith(".dpf")) {
+    else
+    {
+      if (fileName.endsWith(".dpf"))
+      {
+        targetFile = new File(fileName);
+      }
+      else
+      {
+        // if the file is already loaded and
+        // has a different extension than dpf,
+        // then show the save dialog
+        File f = new File(fileName);
+        fileName = getFileName(fileName);
+        fileName = showSaveDialog(f.getParentFile(), fileName);
+        if (fileName != null)
+        {
           targetFile = new File(fileName);
         }
-        else {
-          // if the file is already loaded and 
-          // has a different extension than dpf,
-          // then show the save dialog 
-          File f = new File(fileName);
-          fileName = getFileName(fileName);
-          fileName = showSaveDialog(f.getParentFile(),fileName);
-          if(fileName!=null) {
-            targetFile = new File(fileName);
-          }
+        else
+        {
+          targetFile = null;
         }
       }
     }
-    if(targetFile!=null) {
-      DebriefRibbonFile.saveChanges(targetFile.getAbsolutePath(), _session, _theFrame);
+    if (targetFile != null)
+    {
+      DebriefRibbonFile.saveChanges(targetFile.getAbsolutePath(), _session,
+          _theFrame);
     }
   }
 }

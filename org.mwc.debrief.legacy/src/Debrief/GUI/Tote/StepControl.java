@@ -547,6 +547,23 @@ abstract public class StepControl implements Editable,
         {
           newDTG = _endTime.getMicros();
         }
+        
+        // inform to the closing listeners
+        final Enumeration<StepperListener> iter = _listeners.elements();
+        while (iter.hasMoreElements())
+        {
+          final StepperListener l = iter.nextElement();
+          try
+          {
+            l.steppingModeChanged(false);
+          }
+          catch (final Exception e)
+          {
+            e.printStackTrace();  // If the listener fails, hmmm,I guess we cannot solve it from here.
+          }
+        }
+        
+        stopTimer();
       }
       
       // we should now have a valid time

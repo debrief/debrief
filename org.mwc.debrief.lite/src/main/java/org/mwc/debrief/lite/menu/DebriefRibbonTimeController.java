@@ -13,12 +13,13 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import javax.swing.AbstractAction;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -86,6 +87,11 @@ public class DebriefRibbonTimeController
       timeManager.fireTimePropertyChange();
       updateFilterDateFormat();
     }
+    
+    public String getDateFormat()
+    {
+      return stepControl.getDateFormat();
+    }
 
     public void updateFilterDateFormat()
     {
@@ -94,6 +100,7 @@ public class DebriefRibbonTimeController
 
       final SimpleDateFormat formatter = new SimpleDateFormat(stepControl
           .getDateFormat());
+      formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
       minimumValue.setText(formatter.format(low));
       maximumValue.setText(formatter.format(high));
     }
@@ -106,7 +113,13 @@ public class DebriefRibbonTimeController
      *
      */
     private static final long serialVersionUID = 1L;
-
+    private final JPopupMenu menu;
+    
+    private ShowFormatAction(final JPopupMenu theMenu)
+    {
+      this.menu = theMenu;
+    }
+    
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -161,12 +174,45 @@ public class DebriefRibbonTimeController
       range = (int) ((end - start) / step);
     }
   }
+  
+
+  private static final String[] timeFormats = new String[]
+  {"mm:ss.SSS", "HHmm.ss", "HHmm",
+      "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
+      "yy/MM/dd hh:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
   private static DateFormatBinder formatBinder = new DateFormatBinder();
-  static JPopupMenu menu;
   private static TimeLabel label;
+  
+  private static JCheckBoxMenuItem[] _menuItem;
+  
+  public static void assignThisTimeFormat(String format, boolean fireUpdate)
+  {
+    if ( _menuItem != null && format != null )
+    {
+      for ( int i = 0 ; i < _menuItem.length ; i++ )
+      {
+        _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
+      }
+      final int completeSize = 17; 
+      final int diff = completeSize - format.length();
+      
+      String newFormat = format;
+      for (int i = 0 ; i < diff / 2 ; i++)
+      {
+        newFormat = " " + newFormat + " ";
+      }
+      if ( newFormat.length() < completeSize ) {
+        newFormat = newFormat + " ";
+      }
+      if ( fireUpdate && formatBinder != null )
+      {
+        formatBinder.updateTimeDateFormat(newFormat);        
+      }
+    }
+  }
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -177,11 +223,12 @@ public class DebriefRibbonTimeController
   {
     final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter);
 
+    final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
+        timeManager);
+
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer);
 
-    final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
-        timeManager);
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
@@ -375,8 +422,11 @@ public class DebriefRibbonTimeController
           }
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
 
+    // we need to give the menu to the command popup
+    final JPopupMenu menu =  new JPopupMenu();
+
     final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
-        "Format", "icons/24/gears_view.png", new ShowFormatAction(),
+        "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
     final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
@@ -400,27 +450,30 @@ public class DebriefRibbonTimeController
 
     timeLabel.setForeground(new Color(0, 255, 0));
 
-    menu = new JPopupMenu();
 
+    
+    _menuItem = new JCheckBoxMenuItem[timeFormats.length];
+    for (int i = 0 ; i < timeFormats.length; i++)
+    {
+      _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
+    }
+    
+    resetDateFormat();
+    
     final ActionListener selfAssignFormat = new ActionListener()
     {
-
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        formatBinder.updateTimeDateFormat(e.getActionCommand());
+        String format = e.getActionCommand();
+        assignThisTimeFormat(format, true);
       }
     };
-
-    final String[] timeFormats = new String[]
-    {"yy/MM/dd hh:mm:ss", "  yy/MM/dd HH:mm ", "    mm:ss.SSS    ",
-        "    ddHHmm:ss    ", "     HHmm.ss     ", "      ddHHmm     ",
-        "       HHmm      ",};
-    for (final String format : timeFormats)
+    
+    for(int i = 0 ; i < timeFormats.length; i++)
     {
-      JMenuItem menuItem = new JMenuItem(format);
-      menuItem.addActionListener(selfAssignFormat);
-      menu.add(menuItem);
+      _menuItem[i].addActionListener(selfAssignFormat);
+      menu.add(_menuItem[i]);
     }
 
     topButtonsPanel.add(behindCommandButton);
@@ -514,6 +567,22 @@ public class DebriefRibbonTimeController
         control));
     return control;
   }
+
+  public static void resetDateFormat()
+  {
+    final String defaultFormat = LiteStepControl.timeFormat;
+    for (int i = 0 ; i < timeFormats.length; i++)
+    {
+      // is this the default format
+      final boolean isGood = defaultFormat != null && defaultFormat.equals(timeFormats[i]);
+      _menuItem[i].setSelected(isGood);
+    }
+    
+    if(label != null)
+    {
+      label.setValue(defaultFormat);
+    }
+  }
   
 
   public static void updatePlayBtnUI(final JCommandButton playCommandButton,
@@ -533,9 +602,9 @@ public class DebriefRibbonTimeController
     playCommandButton.setActionRichTooltip(richTooltip);
 
     // switch the icon
-    final Image zoominImage = MenuUtils.createImage(image);
+    final Image playStopinImage = MenuUtils.createImage(image);
     final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
-        .getIcon(zoominImage, MenuUtils.ICON_SIZE_16);
+        .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
     
     playCommandButton.setExtraText(tooltip);
 

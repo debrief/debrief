@@ -171,6 +171,15 @@ public class DebriefRibbonInsert
 
         // store the new point
         newShape.add(new PolygonNode("1", centre, (PolygonShape) theWrapper.getShape()));
+        
+        // and other node
+        final WorldLocation newLoc = centre.add(new WorldVector(Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+            new WorldDistance(0, WorldDistance.KM)));
+        newShape.add(new PolygonNode("2", newLoc, (PolygonShape) theWrapper.getShape()));
+
+        final WorldLocation newLoc2 = centre.add(new WorldVector(7 * Math.PI/4, new WorldDistance(10, WorldDistance.KM),  
+            new WorldDistance(0, WorldDistance.KM)));
+        newShape.add(new PolygonNode("3", newLoc2, (PolygonShape) theWrapper.getShape()));
 
         return theWrapper;
       }
@@ -292,8 +301,7 @@ public class DebriefRibbonInsert
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
     final String[] layerItems = new String[]
-    {"Select Layer", CoreCreateShape.USER_SELECTED_LAYER_COMMAND,
-        Layers.NEW_LAYER_COMMAND};
+    {CoreCreateShape.USER_SELECTED_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
     selectLayerCombo = new JComboBox<String>(layerItems);
     selectLayerCombo.addItemListener(actionToAdd);
@@ -307,26 +315,36 @@ public class DebriefRibbonInsert
           @SuppressWarnings("unchecked")
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
           String selectedItem = (String)jcombo.getSelectedItem();
-          System.out.println("Selected item:"+selectedItem);
           jcombo.removeAllItems();
+
+          // start off with our custom layer modes
+          for(String otherItem: layerItems)
+          {
+            jcombo.addItem(otherItem);
+          }
+          
+          // now the list of trimmed layers (which includes `Add layer`)
           for(String layer:layers) {
             jcombo.addItem(layer);
           }
-          jcombo.addItem(layerItems[1]);
-          //remove listener
+          
+          //remove listener - so it doesn't get triggered when
+          // we set default value
           jcombo.removeItemListener(selectLayerItemListener);
+          
+          // if we know selection, assign it
           if(selectedItem!=null) {
             jcombo.setSelectedItem(selectedItem);
           }
-          //add it back
+          // reinstate listener
           jcombo.addItemListener(selectLayerItemListener);
         }
       }
     });
     
     panel.add(selectLayerCombo);
-    final Image activeLayerImg = MenuUtils.createImage("icons/16/layer_mgr.png");
-    ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_16);
+    final Image activeLayerImg = MenuUtils.createImage("icons/24/auto_layer.png");
+    ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(activeLayerImg, MenuUtils.ICON_SIZE_24);
     JRibbonComponent component = new JRibbonComponent(imageIcon,"",panel);
     component.setDisplayPriority(priority);
     mapBand.addRibbonComponent(component);
@@ -340,7 +358,10 @@ public class DebriefRibbonInsert
   private static String getLayerName(Layers theLayers) {
             // create input box dialog
     String res = null;
-    String txt = JOptionPane.showInputDialog(null, "Enter name for new layer");
+    
+    final String txt = JOptionPane.showInputDialog(null, "Please enter name",
+        "New Layer", JOptionPane.QUESTION_MESSAGE);
+
     // check there's something there
     if (txt!=null && !txt.isEmpty())
     {
