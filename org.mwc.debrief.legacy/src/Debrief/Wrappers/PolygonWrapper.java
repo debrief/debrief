@@ -448,10 +448,12 @@ public class PolygonWrapper extends ShapeWrapper implements Layer,
 		return _myEditor;
 	}
 
-	public String toString()
-	{
-		return getName() + " (" + (getPoly().getPoints().size()) + " nodes)";
-	}
+  public String toString()
+  {
+    final String title = getPoly().getClosed() ? "Polygon" : "Polyline";
+    return title + ":" + getName() + " (" + (getPoly().getPoints().size())
+        + " nodes)";
+  }
 
 	// /////////////////////////////////
 	// LAYER SUPPORT
