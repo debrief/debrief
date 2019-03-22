@@ -73,9 +73,6 @@ import Debrief.GUI.Views.LogicHelpers.EnabledTest;
 import Debrief.GUI.Views.LogicHelpers.Helper;
 import Debrief.GUI.Views.LogicHelpers.Or;
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
@@ -107,6 +104,8 @@ public class OutlinePanelView extends SwingLayerManager implements
   private UndoBuffer _undoBuffer;
   private Clipboard _clipboard;
   private ArrayList<ButtonEnabler> _enablers = new ArrayList<ButtonEnabler>();
+  private Transferable _cutContents;
+  private TreePath _theCutParent; 
 
   private static class ButtonEnabler
   {
@@ -242,6 +241,11 @@ public class OutlinePanelView extends SwingLayerManager implements
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     commandBar.add(editButton);
     
+    final JButton cutButton =  createCommandButton("Cut",
+        "icons/16/cut.png");
+    _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative)));
+    commandBar.add(cutButton);
+    
     final JButton copyButton = createCommandButton("Copy",
         "icons/16/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative)));
@@ -313,6 +317,9 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        if(_cutContents!=null) {
+          restoreCutContents();
+        }
         doPaste();
 
       }
@@ -349,17 +356,36 @@ public class OutlinePanelView extends SwingLayerManager implements
 
       }
     });
+    cutButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        int selectionCount = _myTree.getSelectionCount();
+        if (selectionCount > 0)
+        {
+          TreePath selectionPath[] = _myTree.getSelectionPaths();
+          if(_cutContents!=null) {
+            restoreCutContents();
+          }
+          doCut(selectionPath);
+        }
+      }
+    });
     copyButton.addActionListener(new ActionListener()
     {
 
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        _clipboard.getContents(this);
         int selectionCount = _myTree.getSelectionCount();
         if (selectionCount > 0)
         {
           TreePath selectionPath[] = _myTree.getSelectionPaths();
+          if(_cutContents!=null) {
+            restoreCutContents();
+          }
           doCopy(selectionPath);
         }
       }
@@ -370,6 +396,9 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(ActionEvent e)
       {
+        if(_cutContents!=null) {
+          restoreCutContents();
+        }
         doDelete();
       }
     });
@@ -410,58 +439,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     _clipboard.setContents(selection, this);
 
   }
-
-//  private boolean isEnableCopy()
-//  {
-//    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-//    boolean retVal = true;
-//    if (selectionPaths != null)
-//    {
-//      @SuppressWarnings("rawtypes")
-//      Class theClass = null;
-//      if (selectionPaths.length == 1)
-//      {
-//        DefaultMutableTreeNode treenode =
-//            (DefaultMutableTreeNode) selectionPaths[0].getLastPathComponent();
-//        if (!(treenode.getUserObject() instanceof Plottable))
-//        {
-//          retVal = false;
-//        }
-//        if (treenode.getUserObject() instanceof NarrativeWrapper || treenode
-//            .getUserObject() instanceof NarrativeEntry)
-//        {
-//          retVal = false;
-//        }
-//      }
-//      else
-//      {
-//        for (TreePath path : selectionPaths)
-//        {
-//          DefaultMutableTreeNode treenode = (DefaultMutableTreeNode) path
-//              .getLastPathComponent();
-//          if (treenode.getUserObject() instanceof Plottable && !((treenode
-//              .getUserObject() instanceof NarrativeWrapper) || (treenode
-//                  .getUserObject() instanceof NarrativeEntry)))
-//          {
-//            if (theClass == null)
-//            {
-//              theClass = treenode.getUserObject().getClass();
-//            }
-//            if (theClass != null && theClass != treenode.getUserObject()
-//                .getClass())
-//            {
-//              retVal = false;
-//            }
-//          }
-//        }
-//      }
-//    }
-//    else
-//    {
-//      retVal = false;
-//    }
-//    return retVal;
-//  }
 
   protected void doDelete()
   {
@@ -508,16 +485,51 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   }
 
-  protected void doCut()
+  protected void doCut(TreePath[] selectionPaths)
   {
-    // TODO implement this
+    //restore any contents that were cut 
+    //previously before starting the new one.
+    doCopy(selectionPaths);
+    //parent object is the destination
+    rememberCutContents();
+    doDelete();
+    //if the next action is not paste then undo delete
   }
 
-//  private DefaultMutableTreeNode getSelectedNode()
-//  {
-//    return (DefaultMutableTreeNode) _myTree.getSelectionPath()
-//        .getLastPathComponent();
-//  }
+  private void restoreCutContents() {
+    Transferable tr = _cutContents;
+    ArrayList<Plottable> plottables = getContentsFromTransferable(tr);
+    final CanEnumerate destination;
+    if(_theCutParent!=null && plottables!=null && !plottables.isEmpty()) {
+      Object obj = ((DefaultMutableTreeNode)_theCutParent.getLastPathComponent()).getUserObject();
+      if(obj instanceof String) {
+        destination = null;
+      }
+      else {
+        destination = (CanEnumerate)obj;
+      }
+    }
+    else {
+      destination = null;
+    }
+    for(Plottable theData:plottables) {
+      addBackData(theData,destination);
+    }
+    _cutContents = null;
+    _theCutParent = null;
+    _myData.fireModified(null);
+}
+
+
+  private void rememberCutContents()
+  {
+    if (_clipboard != null)
+    {
+      // copy in the new data
+      _cutContents = _clipboard.getContents(this);
+      _theCutParent = _myTree.getSelectionPath().getParentPath();
+    }
+  }
 
   protected void doPaste()
   {
@@ -541,63 +553,41 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Transferable tr = _clipboard.getContents(this);
     final OutlineViewSelection os = (OutlineViewSelection) tr;
     final boolean _isCopy = os.isACopy();
+    ArrayList<Plottable> plottables = getClipboardContents();
     // see if there is currently a plottable on the clipboard
-    if (tr != null && tr.isDataFlavorSupported(
-        PlottableSelection.PlottableFlavor))
+    // see if it is a layer or not
+    for (Plottable theData : plottables)
     {
-      // we're off!
+      addBackData(theData,destination);
+    }
+    if (!_isCopy)
+    {
+      // clear the clipboard
+      _clipboard.setContents(null, null);
+    }
+    _myData.fireModified(null);
 
-      try
+  }
+
+  private void addBackData(Plottable theData, CanEnumerate destination)
+  {
+    if (theData instanceof Layer)
+    {
+      pasteLayer(destination, (Layer) theData);
+    }
+    else
+    {
+      //renameIfNecessary((Editable)theData, destination);
+      if (destination instanceof Layer)
       {
-
-        // extract the plottable
-        final Object objectToPaste = tr.getTransferData(
-            PlottableSelection.PlottableFlavor);
-        final Plottable[] plottables;
-
-        if (objectToPaste instanceof Plottable[])
-        {
-          plottables = (Plottable[]) objectToPaste;
-        }
-        else
-        {
-          plottables = new Plottables[1];
-          plottables[0] = (Plottable) objectToPaste;
-        }
-        // see if it is a layer or not
-        for (Plottable theData : plottables)
-        {
-          // do the checks that are opposite
-          if (theData instanceof Layer)
-          {
-            pasteLayer(destination, (Layer) theData);
-          }
-          else
-          {
-            renameIfNecessary(editable, destination);
-            if (destination instanceof Layer)
-            {
-              ((Layer) destination).add(theData);
-            }
-            else
-            {
-              ((TrackWrapper) destination).add(theData);
-            }
-          }
-        }
-        if (!_isCopy)
-        {
-          // clear the clipboard
-          _clipboard.setContents(null, null);
-        }
-        _myData.fireModified(null);
+        ((Layer) destination).add(theData);
       }
-      catch (Exception e)
+      else
       {
-        MWC.Utilities.Errors.Trace.trace(e);
+        ((TrackWrapper) destination).add(theData);
       }
     }
-
+    
   }
 
   /**
@@ -709,83 +699,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
 
-  }
-
-  protected boolean isEnablePaste()
-  {
-    boolean retVal = true;
-    if (_myTree.getSelectionCount() == 1)
-    {
-      TreePath path = _myTree.getSelectionPath();
-      DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) path
-          .getLastPathComponent();
-      Object objectToPasteInto = selectedNode.getUserObject();
-      Transferable tr = _clipboard.getContents(this);
-      // see if there is currently a plottable on the clipboard
-      if (tr != null && tr.isDataFlavorSupported(
-          PlottableSelection.PlottableFlavor))
-      {
-        // we're off!
-        try
-        {
-          // extract the plottable
-          Object objectToPaste = tr.getTransferData(
-              PlottableSelection.PlottableFlavor);
-          if (tr instanceof OutlineViewSelection)
-          {
-            final Plottable[] plottables;
-            if (objectToPaste instanceof Plottable[])
-            {
-              plottables = (Plottable[]) objectToPaste;
-            }
-            else
-            {
-              plottables = new Plottables[1];
-              plottables[0] = (Plottable) objectToPaste;
-            }
-            // see if it is a layer or not
-            for (Plottable theData : plottables)
-            {
-              // do the checks that are opposite
-              if (objectToPasteInto instanceof BaseLayer)
-              {
-                if (!(theData instanceof BaseLayer)
-                    && !(theData instanceof ShapeWrapper)
-                    && !(theData instanceof LabelWrapper))
-                {
-                  retVal = false;
-                }
-              }
-              if (objectToPasteInto instanceof TrackWrapper)
-              {
-                if (!(theData instanceof FixWrapper)
-                    && !(theData instanceof SensorContactWrapper))
-                {
-                  retVal = false;
-                }
-                if (!retVal)
-                {
-                  break;
-                }
-              }
-            }
-          }
-        }
-        catch (Exception e)
-        {
-          MWC.Utilities.Errors.Trace.trace(e);
-        }
-      }
-      else if (tr == null)
-      {
-        retVal = false;
-      }
-    }
-    else
-    {
-      retVal = false;
-    }
-    return retVal;
   }
 
   private class OutlineRenderer extends DefaultTreeCellRenderer
@@ -1041,12 +954,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     return res;
   }
 
-  @Override
-  public ArrayList<Plottable> getClipboardContents()
-  {
+  public ArrayList<Plottable> getContentsFromTransferable(final Transferable tr){
     final ArrayList<Plottable> res = new ArrayList<Plottable>();
-    Transferable tr = _clipboard.getContents(this);
-    // see if there is currently a plottable on the clipboard
     if (tr != null && tr.isDataFlavorSupported(
         PlottableSelection.PlottableFlavor))
     {
@@ -1089,5 +998,15 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
     return res;
+
+  }
+  
+  @Override
+  public ArrayList<Plottable> getClipboardContents()
+  {
+    
+    Transferable tr = _clipboard.getContents(this);
+    // see if there is currently a plottable on the clipboard
+    return getContentsFromTransferable(tr);
   }
 }

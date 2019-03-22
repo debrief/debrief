@@ -800,7 +800,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
       // reload just that node that was modified
       ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
     }
-    
     return thisL;
   }
 
