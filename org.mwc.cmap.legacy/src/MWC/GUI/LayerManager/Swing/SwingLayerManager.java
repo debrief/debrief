@@ -167,6 +167,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
@@ -185,6 +186,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
@@ -299,12 +301,12 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myTree.setToggleClickCount(3);
 
     _myTree.getSelectionModel().setSelectionMode(
-        TreeSelectionModel.SINGLE_TREE_SELECTION);
+        TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
 
     _myTree.addMouseListener(new MouseAdapter()
     {
       public void mouseClicked(final MouseEvent e)
-      {
+      {       
         TreeNode node = null;
 
         // get the node for this click
@@ -313,6 +315,11 @@ public class SwingLayerManager extends SwingCustomEditor implements
         {
           final TreePath path = _myTree.getPathForRow(row);
           node = (TreeNode) path.getLastPathComponent();
+        }
+        else
+        {
+          _myTree.clearSelection();
+          return;
         }
 
         // is this a right-click
@@ -727,7 +734,17 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // create the node
     final DefaultMutableTreeNode thisL = getTreeNode(root, thisLayer.getName(),
         thisLayer);
-    // thisL.removeAllChildren();
+    
+    // capture the children of this layer, since we'll remove any that
+    // don't get used
+    ArrayList<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
+    final int kids = thisL.getChildCount();
+    for(int i=0;i<kids;i++)
+    {
+      TreeNode item = thisL.getChildAt(i);
+      children.add((MutableTreeNode) item);
+    }
+    
     // and work through the elements of this layer
     final Enumeration<Editable> enumer = thisLayer.elements();
     if (enumer != null)
@@ -744,6 +761,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           if (otherL != null)
           {
             updateLayer(thisL, otherLayer, theTopLayer);
+            children.remove(otherL);
           }
           else
           {
@@ -764,10 +782,25 @@ public class SwingLayerManager extends SwingCustomEditor implements
           {
             // reload just that node that was modified
             ((DefaultTreeModel) _myTree.getModel()).reload(nodeL.getParent());
+            
+            // ok, we've used this one
+            children.remove(nodeL);
           }
         }
       }
     }
+    
+    if(!children.isEmpty())
+    {
+      // ok, we've got some stagglers to get rid of
+      for(MutableTreeNode node: children)
+      {
+        thisL.remove(node);
+      }
+      // reload just that node that was modified
+      ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
+    }
+    
     return thisL;
   }
 
@@ -785,9 +818,21 @@ public class SwingLayerManager extends SwingCustomEditor implements
       cur = _myTree.getSelectionRows()[0];
     }
 
-    // create a new root element
+    // get the root element
     final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
         .getModel().getRoot();
+
+    // ok, capture the top level elements
+    // capture the children of this layer, since we'll remove any that
+    // don't get used
+    ArrayList<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
+    final int kids = root.getChildCount();
+    for(int i=0;i<kids;i++)
+    {
+      TreeNode item = root.getChildAt(i);
+      children.add((MutableTreeNode) item);
+    }
+
     // construct the data
     for (int i = 0; i < _myData.size(); i++)
     {
@@ -802,11 +847,24 @@ public class SwingLayerManager extends SwingCustomEditor implements
       else
       {
         updateLayer(root, thisL, thisL);
+        children.remove(rootNode);
       }
     }
     if (cur != 0)
     {
       _myTree.setSelectionRow(cur);
+    }
+    
+    // did we leave any?
+    if(!children.isEmpty())
+    {
+      // ok, we've got some stagglers to get rid of
+      for(MutableTreeNode node: children)
+      {
+        root.remove(node);
+      }
+      // reload the tree
+      ((DefaultTreeModel) _myTree.getModel()).reload(root);
     }
 
     // create a new tree based on this data
