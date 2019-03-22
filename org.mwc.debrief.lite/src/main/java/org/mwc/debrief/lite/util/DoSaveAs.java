@@ -18,7 +18,7 @@ import Debrief.GUI.Frames.Session;
 public class DoSaveAs extends AbstractAction
 {
 
-
+  protected static final String DEFAULT_FILENAME = "Debrief_Plot";
   /**
    * 
    */
@@ -47,7 +47,7 @@ public class DoSaveAs extends AbstractAction
     }
     else
     {
-      outputFile = showSaveDialog(null, "Debrief_Plot");
+      outputFile = showSaveDialog(null, DEFAULT_FILENAME);
     }
     if(outputFile!=null) {
       DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
