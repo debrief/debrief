@@ -144,15 +144,31 @@ public class DebriefRibbonFile
           if (DebriefLiteApp.currentFileName != null
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
-            String newFileName = DebriefLiteApp.currentFileName.replaceAll(
+            final File f = new File(DebriefLiteApp.currentFileName);
+            final String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
+            if(newFileName == null || newFileName.length() ==0)
+            {
+              // drop out, don't do reset.
+              return;
+            }
+            DebriefLiteApp.currentFileName.replaceAll(
                 ".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }
+          else if(DebriefLiteApp.currentFileName == null)
+          {
+            // ok, we have to do a save-as operation
+            DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
+            saveAs.actionPerformed(e);
+          }
           else
           {
+            // ok, it's a DPF file. we can juse save it
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
+            
           doFileOpen(fileTypes,descr,isRepFile,_doReset);
           
         }
