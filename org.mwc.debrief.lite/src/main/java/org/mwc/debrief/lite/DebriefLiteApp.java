@@ -460,7 +460,7 @@ public class DebriefLiteApp implements FileDropListener
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
-    layerManager = new OutlinePanelView(undoBuffer);
+    layerManager = new OutlinePanelView(undoBuffer,session.getClipboard());
     layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
