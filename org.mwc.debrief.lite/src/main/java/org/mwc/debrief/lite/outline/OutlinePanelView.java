@@ -106,6 +106,10 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
     final JButton editButton = createCommandButton("Edit","images/16/edit.png");
     commandBar.add(editButton);
     
+    final JButton cutButton = createCommandButton("Copy","images/16/cut.png");
+    commandBar.add(cutButton);
+    
+    
     final JButton copyButton = createCommandButton("Copy","images/16/copy_to_clipboard.png");
     commandBar.add(copyButton);
     
@@ -118,6 +122,15 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 
     final JButton deleteButton = createCommandButton("Delete","images/16/remove.png");
     deleteButton.setToolTipText("Delete");
+    deleteButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        doDelete();
+      }
+    });
     commandBar.add(deleteButton);
 
     final JButton refreshViewButton = createCommandButton("Update View","images/16/repaint.png");
@@ -183,6 +196,22 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
       {
         addLayer();
 
+      }
+    });
+    cutButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        _clipboard.getContents(this);
+        int selectionCount = _myTree.getSelectionCount();
+        if(selectionCount>0) 
+        {
+          TreePath selectionPath[] = _myTree.getSelectionPaths();
+          doCut(selectionPath);
+        }
+        
       }
     });
     copyButton.addActionListener(new ActionListener()
@@ -272,21 +301,44 @@ public class OutlinePanelView extends SwingLayerManager implements ClipboardOwne
 
   protected void doDelete()
   {
-    int pathCount = _myTree.getSelectionPath().getPathCount();
-    DefaultMutableTreeNode selectedNode = getSelectedNode();
-    Editable editable = (Editable)selectedNode.getUserObject();
-    if(pathCount>1) {
-      DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)_myTree.getSelectionPath().getPathComponent(pathCount-1);
-      Editable obj = (Editable)parentNode.getUserObject();
-      //TODO implement delete.
-     
-      
+    final int selectionCount = _myTree.getSelectionPaths().length;
+    if(selectionCount==1) 
+    {
+      int pathCount = _myTree.getSelectionPath().getPathCount();
+      DefaultMutableTreeNode selectedNode = getSelectedNode();
+      final Editable editable = (Editable)selectedNode.getUserObject();
+      if(pathCount>1) 
+      {
+        if(editable instanceof Layer) {
+          _myData.removeThisLayer((Layer)editable);
+        }
+        else if(editable instanceof TrackWrapper) {
+          _myData.removeThisLayer((TrackWrapper)editable);
+        }
+        else 
+        {
+          final int index = pathCount-2;
+          if(index>=0)
+          {
+            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode)_myTree.getSelectionPath().getPathComponent(pathCount-2);
+            if(parentNode.getUserObject() instanceof Layer) {
+              _myData.removeThisEditable((Layer)parentNode.getUserObject(), editable);
+            }
+            else if(parentNode.getUserObject() instanceof TrackWrapper) {
+              _myData.removeThisEditable((TrackWrapper)parentNode.getUserObject(), editable);
+            }
+            else {
+              throw new IllegalArgumentException("Object cannot be deleted");
+            }
+          }
+        }
+      }
     }
-    
-    
+    _myData.fireModified(null);
+
   }
-  
-  protected void doCut() {
+
+  protected void doCut(TreePath[] treePaths) {
     //TODO implement this
   }
 
