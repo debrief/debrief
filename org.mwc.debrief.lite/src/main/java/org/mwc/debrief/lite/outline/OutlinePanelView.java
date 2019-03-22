@@ -20,6 +20,7 @@ import static Debrief.GUI.Views.LogicHelpers.getIsLayerTest;
 import static Debrief.GUI.Views.LogicHelpers.getIsShapesTest;
 import static Debrief.GUI.Views.LogicHelpers.getIsTrackTest;
 import static Debrief.GUI.Views.LogicHelpers.getNotEmptyTest;
+import static Debrief.GUI.Views.LogicHelpers.getNotLayerTest;
 import static Debrief.GUI.Views.LogicHelpers.getNotNarrativeTest;
 import static Debrief.GUI.Views.LogicHelpers.getOnlyOneTest;
 import static Debrief.GUI.Views.LogicHelpers.getSelectionEmptyTest;
@@ -235,6 +236,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest clipboardIsShapes = getIsShapesTest();
     final EnabledTest isEmpty = getSelectionEmptyTest();
     final EnabledTest notNarrative = getNotNarrativeTest();
+    final EnabledTest notIsLayer = getNotLayerTest();
         
     final JButton editButton = createCommandButton("Edit",
         "icons/24/edit.png");
@@ -243,12 +245,12 @@ public class OutlinePanelView extends SwingLayerManager implements
     
     final JButton cutButton =  createCommandButton("Cut",
         "icons/16/cut.png");
-    _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative)));
+    _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
     commandBar.add(cutButton);
     
     final JButton copyButton = createCommandButton("Copy",
         "icons/16/copy_to_clipboard.png");
-    _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative)));
+    _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",

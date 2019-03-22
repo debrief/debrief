@@ -308,7 +308,28 @@ public class LogicHelpers
       }
     };
   }
-
+  public static EnabledTest getNotLayerTest()
+  {
+    return new EnabledTest("Selection is not layer")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof BaseLayer)
+          {
+            return false;
+          }
+        }
+        return true;
+      }
+    };
+  }
+  
+  
   public static EnabledTest getIsFixesTest()
   {
     return new EnabledTest("Clipboard is fixes")
