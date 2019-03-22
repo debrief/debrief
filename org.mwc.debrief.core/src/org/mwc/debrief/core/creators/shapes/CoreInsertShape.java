@@ -14,19 +14,29 @@
  */
 package org.mwc.debrief.core.creators.shapes;
 
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
 
-import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.*;
+import javax.swing.JOptionPane;
+
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
 
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.PlainShape;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldLocation;
 
 /**
  * @author ian.mayo
@@ -68,7 +78,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected String getLayerName()
 	{
-		String res = null;
+		final String res;
 		// ok, are we auto-deciding?
 		if (!AutoSelectTarget.getAutoSelectTarget())
 		{
@@ -115,51 +125,51 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 				// check something got selected
 				if (val.length > 0)
 				{
-					res = val[0].toString();
+					final String selStr = val[0].toString();
 
 					// hmm, is it our add layer command?
-					if (res.equals(Layers.NEW_LAYER_COMMAND))
+					if (selStr.equals(Layers.NEW_LAYER_COMMAND))
 					{
 						// better create one. Ask the user
 
-						// create input box dialog
-						final InputDialog inp = new InputDialog(Display.getCurrent()
-								.getActiveShell(), "New layer", "Enter name for new layer",
-								"name here...", null);
+            // create input box dialog
+            final String txt = JOptionPane.showInputDialog(null,
+                "Please enter name", "New Layer", JOptionPane.QUESTION_MESSAGE);
 
-						// did he cancel?
-						if (inp.open() == InputDialog.OK)
-						{
-							// get the results
-							final String txt = inp.getValue();
+            // check there's something there
+            if (txt.length() > 0)
+            {
+              res = txt;
+              // create base layer
+              final Layer newLayer = new BaseLayer();
+              newLayer.setName(res);
 
-							// check there's something there
-							if (txt.length() > 0)
-							{
-								res = txt;
-								// create base layer
-								final Layer newLayer = new BaseLayer();
-								newLayer.setName(res);
-
-								// add to layers object
-								theLayers.addThisLayer(newLayer);
-							}
-							else
-							{
-								res = null;
-							}
-						}
-						else
-						{
-							res = null;
-						}
-					}
-				}
-			}
-		}
-
-		return res;
-	}
+              // add to layers object
+              theLayers.addThisLayer(newLayer);
+            }
+            else
+            {
+              res = null;
+            }
+          }
+          else
+          {
+            // just use the selected string
+            res = selStr;
+          }
+        }
+        else
+        {
+          res = null;
+        }
+      }
+      else
+      {
+        res = null;
+      }
+    }
+    return res;
+  }
 
 	/**
 	 * produce the shape for the user

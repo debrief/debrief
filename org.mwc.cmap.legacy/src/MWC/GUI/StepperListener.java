@@ -32,6 +32,11 @@ public interface StepperListener
 	 * the name of this listener
 	 */
 	String toString();
+	
+	/** we no longer have a valid time period
+	 * 
+	 */
+	void reset();
 
 	/**
 	 * embedded interface for an actual stepper controller (such as the Debrief
