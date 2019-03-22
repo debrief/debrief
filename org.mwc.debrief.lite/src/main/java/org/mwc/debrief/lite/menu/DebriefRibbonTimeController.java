@@ -174,11 +174,45 @@ public class DebriefRibbonTimeController
       range = (int) ((end - start) / step);
     }
   }
+  
+
+  private static final String[] timeFormats = new String[]
+  {"mm:ss.SSS", "HHmm.ss", "HHmm",
+      "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
+      "yy/MM/dd hh:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
   private static DateFormatBinder formatBinder = new DateFormatBinder();
   private static TimeLabel label;
+  
+  private static JCheckBoxMenuItem[] _menuItem;
+  
+  public static void assignThisTimeFormat(String format, boolean fireUpdate)
+  {
+    if ( _menuItem != null && format != null )
+    {
+      for ( int i = 0 ; i < _menuItem.length ; i++ )
+      {
+        _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
+      }
+      final int completeSize = 17; 
+      final int diff = completeSize - format.length();
+      
+      String newFormat = format;
+      for (int i = 0 ; i < diff / 2 ; i++)
+      {
+        newFormat = " " + newFormat + " ";
+      }
+      if ( newFormat.length() < completeSize ) {
+        newFormat = newFormat + " ";
+      }
+      if ( fireUpdate && formatBinder != null )
+      {
+        formatBinder.updateTimeDateFormat(newFormat);        
+      }
+    }
+  }
 
   protected static void addTimeControllerTab(final JRibbon ribbon,
       final GeoToolMapRenderer _geoMapRenderer,
@@ -416,24 +450,15 @@ public class DebriefRibbonTimeController
 
     timeLabel.setForeground(new Color(0, 255, 0));
 
-    final String[] timeFormats = new String[]
-    {"mm:ss.SSS", "HHmm.ss", "HHmm",
-        "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
-        "yy/MM/dd hh:mm:ss"};
 
     
-    final JCheckBoxMenuItem[] menuItem = new JCheckBoxMenuItem[timeFormats.length];
-    final String defaultFormat = formatBinder.getDateFormat();
+    _menuItem = new JCheckBoxMenuItem[timeFormats.length];
     for (int i = 0 ; i < timeFormats.length; i++)
     {
-      menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
-      
-      // is this the default format
-      if(defaultFormat != null && defaultFormat.equals(timeFormats[i]))
-      {
-        menuItem[i].setSelected(true);
-      }
+      _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
     }
+    
+    resetDateFormat();
     
     final ActionListener selfAssignFormat = new ActionListener()
     {
@@ -441,29 +466,14 @@ public class DebriefRibbonTimeController
       public void actionPerformed(ActionEvent e)
       {
         String format = e.getActionCommand();
-        for ( int i = 0 ; i < menuItem.length ; i++ )
-        {
-          menuItem[i].setSelected(format.equals(menuItem[i].getText()));
-        }
-        final int completeSize = 17; 
-        final int diff = completeSize - format.length();
-        
-        String newFormat = format;
-        for (int i = 0 ; i < diff / 2 ; i++)
-        {
-          newFormat = " " + newFormat + " ";
-        }
-        if ( newFormat.length() < completeSize ) {
-          newFormat = newFormat + " ";
-        }
-        formatBinder.updateTimeDateFormat(newFormat);
+        assignThisTimeFormat(format, true);
       }
     };
     
     for(int i = 0 ; i < timeFormats.length; i++)
     {
-      menuItem[i].addActionListener(selfAssignFormat);
-      menu.add(menuItem[i]);
+      _menuItem[i].addActionListener(selfAssignFormat);
+      menu.add(_menuItem[i]);
     }
 
     topButtonsPanel.add(behindCommandButton);
@@ -542,6 +552,22 @@ public class DebriefRibbonTimeController
     control.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         control));
     return control;
+  }
+
+  public static void resetDateFormat()
+  {
+    final String defaultFormat = LiteStepControl.timeFormat;
+    for (int i = 0 ; i < timeFormats.length; i++)
+    {
+      // is this the default format
+      final boolean isGood = defaultFormat != null && defaultFormat.equals(timeFormats[i]);
+      _menuItem[i].setSelected(isGood);
+    }
+    
+    if(label != null)
+    {
+      label.setValue(defaultFormat);
+    }
   }
   
 
