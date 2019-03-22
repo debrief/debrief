@@ -706,6 +706,8 @@ public class DebriefLiteApp implements FileDropListener
               timeManager.setTime(source, period.getStartDTG(), true);
             }
 
+            theTote.assignWatchables(true);
+            
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);
@@ -822,6 +824,9 @@ public class DebriefLiteApp implements FileDropListener
     // also clear the tote
     theTote.clear();
     
+    timeManager.setPeriod(this, null);
+    timeManager.setTime(this, null, false);
+    
     // and the time format dropdown
     DebriefRibbonTimeController.resetDateFormat();
 
@@ -830,7 +835,10 @@ public class DebriefLiteApp implements FileDropListener
     {
       _stepControl.startStepping(false);
     }
-
+    
+    // send a reset to the step control
+    _stepControl.reset();
+    
     // reset the map
     ResetAction resetMap = new ResetAction(_instance.mapPane);
     resetMap.actionPerformed(null);

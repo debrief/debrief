@@ -79,6 +79,18 @@ public class LiteStepControl extends StepControl
     return _slider.getToolboxStartTime();
   }
 
+  
+  
+  @Override
+  public void reset()
+  {
+    // let the parent do it's stuff
+    super.reset();
+    
+    _slider.setEnabled(false);
+    _timeLabel.setValue(timeFormat);
+  }
+
   @Override
   protected void initForm()
   {
