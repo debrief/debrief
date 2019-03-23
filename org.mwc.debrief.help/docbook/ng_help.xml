@@ -7287,6 +7287,7 @@ and entry type can be multi-word if surrounded by quotes (").
             <primary>Replay File Format</primary>
             <secondary>Planning legs</secondary>
           </indexterm>
+            Note that the final leg in a set of planning legs can take an optional <emphasis>CLOSING</emphasis> field.  This will make it join back to the start point.
           <screen width="70"><markup>
 ;; PLANNING TRACKS
 
@@ -7305,6 +7306,10 @@ and entry type can be multi-word if surrounded by quotes (").
 ;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT
 ;; leg based upon speed/time
 ;; platform, leg-name,  speed (kts), duration (secs)
+
+;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT CLOSING
+;; If supplied as the last in a series of legs, this becomes a closing leg.
+
             </markup>   </screen>
           </para>
         </sect2>
