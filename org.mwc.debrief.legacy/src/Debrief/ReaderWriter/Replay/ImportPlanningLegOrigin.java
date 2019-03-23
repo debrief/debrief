@@ -221,7 +221,7 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     String line = _myTypeOrigin + " ";
     
     // export the origin
-    line += MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(track.getStartDate());
+    line += DebriefFormatDateTime.toStringHiRes(track.getStartDate());
 
     // the track name may contain spaces - wrap in quotes if we have to
     line += " " + ImportFix.wrapTrackName(track.getName());
@@ -246,6 +246,7 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
       final String NULL = "NULL";
           
       Editable next = legs.nextElement();
+      
       if(next instanceof PlanningSegment)
       {
         PlanningSegment leg = (PlanningSegment) next;
@@ -290,8 +291,6 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     }
     line += System.lineSeparator();
 
-   
-    
     return line;
 
   }

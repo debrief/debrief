@@ -401,8 +401,9 @@ public final class ImportFix extends AbstractPlainLineImporter
 		return theLine;
 	}
 
-  public static String wrapTrackName(String theTrackName)
+  public static String wrapTrackName(String trackName)
   {
+    String theTrackName = trackName;
     if (theTrackName.indexOf(" ") >= 0)
 		{
 			theTrackName = "\"" + theTrackName + "\"";
