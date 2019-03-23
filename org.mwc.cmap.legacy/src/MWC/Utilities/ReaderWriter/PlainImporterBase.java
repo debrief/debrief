@@ -307,6 +307,11 @@ public abstract class PlainImporterBase implements PlainImporter
   {
     _beingExported = null;
   }
+  
+  public StringBuffer getBuffer()
+  {
+    return _beingExported;
+  }
 
   /**
    * ok, we've build up our string to export. put it on the clipboard

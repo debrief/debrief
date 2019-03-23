@@ -93,6 +93,10 @@
 package Debrief.ReaderWriter.Replay;
 
 import java.awt.Color;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Enumeration;
@@ -102,6 +106,7 @@ import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -110,12 +115,52 @@ import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class to parse a label from a line of text
  */
-final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
+final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 {
+
+  /**
+   * @author Administrator
+   * 
+   */
+  public static class PlanningLegImporterTest extends TestCase
+  {
+
+    private final static String tracks =
+        "../org.mwc.cmap.combined.feature/root_installs/sample_data/planning_tracks.rep";
+
+    public void testImport() throws FileNotFoundException
+    {
+      final Layers tLayers = new Layers();
+
+      // start off with the ownship track
+      final File boatFile = new File(tracks);
+      assertTrue(boatFile.exists());
+      final InputStream bs = new FileInputStream(boatFile);
+
+      final ImportReplay trackImporter = new ImportReplay();
+      ImportReplay.initialise(new ImportReplay.testImport.TestParent(
+          ImportReplay.IMPORT_AS_OTG, 0L));
+      trackImporter.importThis(tracks, bs, tLayers);
+
+      assertEquals("read in tracks", 2, tLayers.size());
+      
+      // ok, now export one of them
+      CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
+      assertNotNull("found planning leg", ctw);
+      trackImporter.exportThis(ctw);
+      
+      String output = trackImporter.getBuffer().toString();
+      assertNotNull("produced output");
+      assertTrue("has content", output.length() > 200);   // was originally 388 cgars
+    }
+
+  }
+
   public static final String CLOSING = "CLOSING";
   /**
    * the type for this string
@@ -127,12 +172,13 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 
   /**
    * read in this string and return a Label
-   * @throws ParseException 
+   * 
+   * @throws ParseException
    */
   public final Object readThisLine(final String theLine) throws ParseException
   {
 
-    // ;PLANNING_ORIGIN: YYMMDD HHMMSS AAAAAA @@ 22 12 10.28 N 21 32 40.33 W 
+    // ;PLANNING_ORIGIN: YYMMDD HHMMSS AAAAAA @@ 22 12 10.28 N 21 32 40.33 W
 
     // get a stream from the string
     final StringTokenizer st = new StringTokenizer(theLine);
@@ -158,8 +204,8 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     double latSec = MWCXMLReader.readThisDouble(st.nextToken());
 
     /**
-     * now, we may have trouble here, since there may not be a space between the
-     * hemisphere character and a 3-digit latitude value - so BE CAREFUL
+     * now, we may have trouble here, since there may not be a space between the hemisphere
+     * character and a 3-digit latitude value - so BE CAREFUL
      */
     final String vDiff = st.nextToken();
     char latHem;
@@ -175,7 +221,7 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     {
       // they are separate, so only the hem is in this one
       latHem = vDiff.charAt(0);
-      longDeg =  MWCXMLReader.readThisDouble(st.nextToken());
+      longDeg = MWCXMLReader.readThisDouble(st.nextToken());
     }
     double longMin = MWCXMLReader.readThisDouble(st.nextToken());
     double longSec = MWCXMLReader.readThisDouble(st.nextToken());
@@ -183,17 +229,17 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 
     double theDepth = MWCXMLReader.readThisDouble(st.nextToken());
 
-    WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem, longDeg,
-        longMin, longSec, longHem, theDepth);
+    WorldLocation theLoc = new WorldLocation(latDeg, latMin, latSec, latHem,
+        longDeg, longMin, longSec, longHem, theDepth);
 
-      Color theColor = ImportReplay.replayColorFor(symbology);
+    Color theColor = ImportReplay.replayColorFor(symbology);
 
-      final CompositeTrackWrapper data = new CompositeTrackWrapper(theDtg, theLoc);
-      data.setColor(theColor);
-      data.setName(theTrack);
-      
-      
-      return data;
+    final CompositeTrackWrapper data = new CompositeTrackWrapper(theDtg,
+        theLoc);
+    data.setColor(theColor);
+    data.setName(theTrack);
+
+    return data;
   }
 
   /**
@@ -214,68 +260,74 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
   public final String exportThis(final MWC.GUI.Plottable theWrapper)
   {
     CompositeTrackWrapper track = (CompositeTrackWrapper) theWrapper;
-    
+
     final DecimalFormat sig6 = new DecimalFormat("0.######");
 
     // output the origin
     String line = _myTypeOrigin + " ";
-    
+
     // export the origin
     line += DebriefFormatDateTime.toStringHiRes(track.getStartDate());
 
     // the track name may contain spaces - wrap in quotes if we have to
     line += " " + ImportFix.wrapTrackName(track.getName());
-    
+
     line += " " + ImportReplay.replaySymbolFor(track.getColor(), null);
 
+    line += " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(
+        track.getOrigin());
 
-    line +=  " "
-        + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(track.getOrigin());
-    
     // finally the depth
-    WorldDistance depth = new WorldDistance(track.getOrigin().getDepth(), WorldDistance.METRES);
+    WorldDistance depth = new WorldDistance(track.getOrigin().getDepth(),
+        WorldDistance.METRES);
     line += " " + sig6.format(depth.getValueIn(WorldDistance.METRES));
 
     // now work through the legs
     Enumeration<Editable> legs = track.elements();
-    while(legs.hasMoreElements())
+    while (legs.hasMoreElements())
     {
       // start on a new line
       line += System.lineSeparator();
-      
+
       final String NULL = "NULL";
-          
+
       Editable next = legs.nextElement();
-      
-      if(next instanceof PlanningSegment)
+
+      if (next instanceof PlanningSegment)
       {
         PlanningSegment leg = (PlanningSegment) next;
-        
+
         // is it the closing leg?
         boolean closing = leg instanceof ClosingSegment;
 
         int model = leg.getCalculation();
         final String trackName = ImportFix.wrapTrackName(track.getName());
-        
+
         final String legName = ImportFix.wrapTrackName(leg.getName());
-        
+
         final WorldDistance rng = leg.getDistance();
-        final String rngStr = rng != null ?  sig6.format(rng.getValueIn(WorldDistance.METRES)) : NULL;
+        final String rngStr = rng != null ? sig6.format(rng.getValueIn(
+            WorldDistance.METRES)) : NULL;
         final Duration len = leg.getDuration();
-        final String durStr = len != null ? sig6.format(len.getValueIn(Duration.SECONDS)) : NULL;
+        final String durStr = len != null ? sig6.format(len.getValueIn(
+            Duration.SECONDS)) : NULL;
         final WorldSpeed spd = leg.getSpeed();
-        final String spdStr = spd != null ? sig6.format(spd.getValueIn(WorldSpeed.Kts)) : NULL;
-        
-        switch(model)
+        final String spdStr = spd != null ? sig6.format(spd.getValueIn(
+            WorldSpeed.Kts)) : NULL;
+
+        switch (model)
         {
           case 0:
-            line += _myTypePlanning_spd_time + " " + trackName + " " + legName + " " + spdStr + " " + durStr; 
+            line += _myTypePlanning_spd_time + " " + trackName + " " + legName
+                + " " + spdStr + " " + durStr;
             break;
           case 1:
-            line += _myTypePlanning_rng_time + " " + trackName + " " + legName + " " + rngStr + " " + durStr; 
+            line += _myTypePlanning_rng_time + " " + trackName + " " + legName
+                + " " + rngStr + " " + durStr;
             break;
           case 2:
-            line += _myTypePlanning_rng_spd + " " + trackName + " " + legName + " " + rngStr + " " + spdStr; 
+            line += _myTypePlanning_rng_spd + " " + trackName + " " + legName
+                + " " + rngStr + " " + spdStr;
             break;
           default:
             break;
@@ -283,9 +335,9 @@ final class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 
         // and the course
         line += " " + sig6.format(leg.getCourse());
-        
+
         String closeStr = closing ? CLOSING : "";
-        
+
         line += " " + closeStr;
       }
     }
