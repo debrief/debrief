@@ -253,6 +253,7 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
         theLoc);
     data.setColor(theColor);
     data.setName(theTrack);
+    data.setNameVisible(false);
 
     return data;
   }
