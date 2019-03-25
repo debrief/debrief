@@ -105,6 +105,7 @@ import java.util.StringTokenizer;
 import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GenericData.Duration;
@@ -150,13 +151,27 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
       assertEquals("read in tracks", 2, tLayers.size());
       
       // ok, now export one of them
-      CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
-      assertNotNull("found planning leg", ctw);
-      trackImporter.exportThis(ctw);
+      CompositeTrackWrapper ctw1 = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED");
+      assertNotNull("found planning leg", ctw1);
+      trackImporter.exportThis(ctw1);
       
       String output = trackImporter.getBuffer().toString();
       assertNotNull("produced output");
       assertTrue("has content", output.length() > 200);   // was originally 388 cgars
+      
+      SegmentList legs1 = ctw1.getSegments();
+      assertEquals("correct number of legs", 5, legs1.size());
+      
+      // and the other one
+      CompositeTrackWrapper ctw = (CompositeTrackWrapper) tLayers.findLayer("SENSOR_PLANNED2");
+      assertNotNull("found planning leg", ctw);
+      trackImporter.exportThis(ctw);
+      
+      SegmentList legs = ctw.getSegments();
+      assertEquals("correct number of legs", 6, legs.size());
+      
+      PlanningSegment closer = (PlanningSegment) legs.last();
+      assertTrue("is closing segment", closer instanceof PlanningSegment.ClosingSegment);
     }
 
   }
