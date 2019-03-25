@@ -7297,17 +7297,17 @@ and entry type can be multi-word if surrounded by quotes (").
 
 ;PLANNING_RANGE_SPEED: AAAAAA BBBBBB RRRR SSS CCC
 ;; leg based upon range/speed
-;; platform, leg-name, range (metres), speed (kts)
+;; platform, leg-name, range (yds), speed (kts), course (degs)
 
 ;PLANNING_RANGE_TIME: AAAAAA BBBBBB RRRR TTT CCC
 ;; leg based upon range/duration
-;; platform, leg-name, range (metres), duration (secs)
+;; platform, leg-name, range (yds), duration (secs), course (degs)
 
-;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT
+;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT CCC
 ;; leg based upon speed/time
-;; platform, leg-name,  speed (kts), duration (secs)
+;; platform, leg-name,  speed (kts), duration (secs), course (degs)
 
-;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT CLOSING
+;PLANNING_RANGE_SPEED:  AAAAAA BBBBBB RRRR SSS CCC CLOSING
 ;; If supplied as the last in a series of legs, this becomes a closing leg.
 
             </markup>   </screen>
