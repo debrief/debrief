@@ -40,6 +40,7 @@ import org.junit.runners.Suite;
     Debrief.ReaderWriter.Replay.ImportSensor2.testMe.class,
     Debrief.ReaderWriter.Replay.ImportSensor3.testMe.class,
     Debrief.ReaderWriter.Replay.ImportTMA_Pos.testImportTMA_POS.class,
+    Debrief.ReaderWriter.Replay.ImportPlanningLegOrigin.PlanningLegImporterTest.class,    
     Debrief.ReaderWriter.Replay.extensions.TA_ForeAft_DataHandler.TestMe.class,
     Debrief.ReaderWriter.Replay.extensions.TA_Modules_DataHandler.TestMe.class,
     Debrief.ReaderWriter.Replay.ImportTMA_RngBrg.testImportTMA_RngBrg.class,

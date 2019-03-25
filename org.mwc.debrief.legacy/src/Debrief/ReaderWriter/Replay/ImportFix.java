@@ -395,15 +395,23 @@ public final class ImportFix extends AbstractPlainLineImporter
 		String theTrackName = trackName;
 		String theLine = line;
 		// right, we may need to quote the track name
-		if (theTrackName.indexOf(" ") >= 0)
-		{
-			theTrackName = "\"" + theTrackName + "\"";
-		}
+		theTrackName = wrapTrackName(theTrackName);
 
 		theLine += " " + theTrackName;
 		return theLine;
 	}
 
+  public static String wrapTrackName(String trackName)
+  {
+    String theTrackName = trackName;
+    if (theTrackName.indexOf(" ") >= 0)
+		{
+			theTrackName = "\"" + theTrackName + "\"";
+		}
+    return theTrackName;
+  }
+
+	
 	// ////////////////////////////////////////////////
 	// testing code...
 	// ////////////////////////////////////////////////
