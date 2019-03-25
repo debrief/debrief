@@ -173,7 +173,7 @@ final class ImportPlanningLegRangeSpeed extends AbstractPlainLineImporter
     final String theLeg = AbstractPlainLineImporter.checkForQuotedName(st);
 
     final WorldDistance range = new WorldDistance(MWCXMLReader.readThisDouble(st
-        .nextToken()), WorldDistance.METRES);
+        .nextToken()), WorldDistance.YARDS);
     final WorldSpeed speed = new WorldSpeed(MWCXMLReader.readThisDouble(st
         .nextToken()), WorldSpeed.Kts);
     final double course = MWCXMLReader.readThisDouble(st.nextToken());

@@ -173,7 +173,7 @@ final class ImportPlanningLegRangeTime extends AbstractPlainLineImporter
     final String theLeg = AbstractPlainLineImporter.checkForQuotedName(st);
 
     final WorldDistance range = new WorldDistance(MWCXMLReader.readThisDouble(st
-        .nextToken()), WorldDistance.METRES);
+        .nextToken()), WorldDistance.YARDS);
     final Duration time = new Duration(MWCXMLReader.readThisDouble(st
         .nextToken()), Duration.SECONDS);
     final double course = MWCXMLReader.readThisDouble(st.nextToken());

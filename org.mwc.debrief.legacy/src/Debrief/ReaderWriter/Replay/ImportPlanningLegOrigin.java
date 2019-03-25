@@ -307,7 +307,7 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 
         final WorldDistance rng = leg.getDistance();
         final String rngStr = rng != null ? sig6.format(rng.getValueIn(
-            WorldDistance.METRES)) : NULL;
+            WorldDistance.YARDS)) : NULL;
         final Duration len = leg.getDuration();
         final String durStr = len != null ? sig6.format(len.getValueIn(
             Duration.SECONDS)) : NULL;
