@@ -108,6 +108,7 @@ import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GUI.Properties.PlanningLegCalcModelPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -334,7 +335,6 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     // is it the closing leg?
     final boolean closing = leg instanceof ClosingSegment;
 
-    final int model = leg.getCalculation();
     final String legName = ImportFix.wrapTrackName(leg.getName());
 
     final WorldDistance rng = leg.getDistance();
@@ -347,30 +347,33 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     final String spdStr = spd != null ? sig6.format(spd.getValueIn(
         WorldSpeed.Kts)) : NULL;
 
-    switch (model)
+    final String legType;
+    final String fields;
+    switch (leg.getCalculation())
     {
-      case 0:
-        line += _myTypePlanning_spd_time + " " + trackName + " " + legName
-            + " " + spdStr + " " + durStr;
+      case PlanningLegCalcModelPropertyEditor.SPEED_TIME:
+        legType = _myTypePlanning_spd_time;
+        fields = spdStr + " " + durStr;
         break;
-      case 1:
-        line += _myTypePlanning_rng_time + " " + trackName + " " + legName
-            + " " + rngStr + " " + durStr;
+      case PlanningLegCalcModelPropertyEditor.RANGE_TIME:
+        legType = _myTypePlanning_rng_time;
+        fields = rngStr + " " + durStr;
         break;
-      case 2:
-        line += _myTypePlanning_rng_spd + " " + trackName + " " + legName
-            + " " + rngStr + " " + spdStr;
+      case PlanningLegCalcModelPropertyEditor.RANGE_SPEED:
+        legType = _myTypePlanning_rng_spd;
+        fields = rngStr + " " + spdStr;
         break;
       default:
+        legType = null;
+        fields = null;
         break;
     }
 
-    // and the course
-    line += " " + sig6.format(leg.getCourse());
+    line += legType + " " + trackName + " " + legName
+        + " " + fields + " " + sig6.format(leg.getCourse());
 
-    final String closeStr = closing ? CLOSING : "";
-
-    line += " " + closeStr;
+    // append closing tag, if necessary
+    line += " " + (closing ? CLOSING : "");
     return line;
   }
 
