@@ -61,7 +61,10 @@ abstract public class DistanceWithUnitsPropertyEditor extends
    */
   static protected DecimalFormat _formatter = new DecimalFormat("0.######");
 
-
+  /** keep track of if we've received an array offset value
+   * 
+   */
+  private boolean _isArrayOffset = false;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -92,6 +95,9 @@ abstract public class DistanceWithUnitsPropertyEditor extends
 		// try to catch if we are receiving a null (uninitialised) value
 		if(p1 != null)
     {
+		  // is it array offset?
+		  _isArrayOffset = p1 instanceof WorldDistance.ArrayLength;
+		  
       // check it's a Double
       if(p1 instanceof WorldDistance)
       {
@@ -164,9 +170,15 @@ abstract public class DistanceWithUnitsPropertyEditor extends
       final int units = getUnits();
 
       // scale the distance to our output units (minutes)
-      val = new WorldDistance(distance, units);
-
-
+      if(_isArrayOffset)
+      {
+        final WorldDistance tmp = new WorldDistance(distance, units);
+        val = new WorldDistance.ArrayLength(tmp);
+      }
+      else
+      {
+        val = new WorldDistance(distance, units);
+      }
 		}
 		catch(final NumberFormatException e)
 		{
