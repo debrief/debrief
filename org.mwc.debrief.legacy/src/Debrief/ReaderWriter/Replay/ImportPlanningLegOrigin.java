@@ -298,6 +298,11 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
         WorldDistance.METRES);
     line += " " + sig6.format(depth.getValueIn(WorldDistance.METRES));
 
+    // retrieve the track name
+    final String trackName = ImportFix.wrapTrackName(track.getName());
+
+    final String NULL = "NULL";
+
     // now work through the legs
     Enumeration<Editable> legs = track.elements();
     while (legs.hasMoreElements())
@@ -305,62 +310,66 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
       // start on a new line
       line += System.lineSeparator();
 
-      final String NULL = "NULL";
-
       Editable next = legs.nextElement();
 
       if (next instanceof PlanningSegment)
       {
         PlanningSegment leg = (PlanningSegment) next;
 
-        // is it the closing leg?
-        boolean closing = leg instanceof ClosingSegment;
-
-        int model = leg.getCalculation();
-        final String trackName = ImportFix.wrapTrackName(track.getName());
-
-        final String legName = ImportFix.wrapTrackName(leg.getName());
-
-        final WorldDistance rng = leg.getDistance();
-        final String rngStr = rng != null ? sig6.format(rng.getValueIn(
-            WorldDistance.YARDS)) : NULL;
-        final Duration len = leg.getDuration();
-        final String durStr = len != null ? sig6.format(len.getValueIn(
-            Duration.SECONDS)) : NULL;
-        final WorldSpeed spd = leg.getSpeed();
-        final String spdStr = spd != null ? sig6.format(spd.getValueIn(
-            WorldSpeed.Kts)) : NULL;
-
-        switch (model)
-        {
-          case 0:
-            line += _myTypePlanning_spd_time + " " + trackName + " " + legName
-                + " " + spdStr + " " + durStr;
-            break;
-          case 1:
-            line += _myTypePlanning_rng_time + " " + trackName + " " + legName
-                + " " + rngStr + " " + durStr;
-            break;
-          case 2:
-            line += _myTypePlanning_rng_spd + " " + trackName + " " + legName
-                + " " + rngStr + " " + spdStr;
-            break;
-          default:
-            break;
-        }
-
-        // and the course
-        line += " " + sig6.format(leg.getCourse());
-
-        String closeStr = closing ? CLOSING : "";
-
-        line += " " + closeStr;
+        // ok, now output this leg
+        line = outputThisLeg(sig6, line, trackName, NULL, leg);
       }
     }
     line += System.lineSeparator();
 
     return line;
 
+  }
+
+  public String outputThisLeg(final DecimalFormat sig6, String line,
+      final String trackName, final String NULL, PlanningSegment leg)
+  {
+    // is it the closing leg?
+    final boolean closing = leg instanceof ClosingSegment;
+
+    final int model = leg.getCalculation();
+    final String legName = ImportFix.wrapTrackName(leg.getName());
+
+    final WorldDistance rng = leg.getDistance();
+    final String rngStr = rng != null ? sig6.format(rng.getValueIn(
+        WorldDistance.YARDS)) : NULL;
+    final Duration len = leg.getDuration();
+    final String durStr = len != null ? sig6.format(len.getValueIn(
+        Duration.SECONDS)) : NULL;
+    final WorldSpeed spd = leg.getSpeed();
+    final String spdStr = spd != null ? sig6.format(spd.getValueIn(
+        WorldSpeed.Kts)) : NULL;
+
+    switch (model)
+    {
+      case 0:
+        line += _myTypePlanning_spd_time + " " + trackName + " " + legName
+            + " " + spdStr + " " + durStr;
+        break;
+      case 1:
+        line += _myTypePlanning_rng_time + " " + trackName + " " + legName
+            + " " + rngStr + " " + durStr;
+        break;
+      case 2:
+        line += _myTypePlanning_rng_spd + " " + trackName + " " + legName
+            + " " + rngStr + " " + spdStr;
+        break;
+      default:
+        break;
+    }
+
+    // and the course
+    line += " " + sig6.format(leg.getCourse());
+
+    final String closeStr = closing ? CLOSING : "";
+
+    line += " " + closeStr;
+    return line;
   }
 
   /**
