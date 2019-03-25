@@ -7281,6 +7281,38 @@ and entry type can be multi-word if surrounded by quotes (").
             </markup>   </screen>
           </para>
         </sect2>
+        <sect2 xml:id="planning_legs">
+          <title>Planning Legs</title>
+          <para><indexterm>
+            <primary>Replay File Format</primary>
+            <secondary>Planning legs</secondary>
+          </indexterm>
+            Note that the final leg in a set of planning legs can take an optional <emphasis>CLOSING</emphasis> field.  This will make it join back to the start point.
+          <screen width="70"><markup>
+;; PLANNING TRACKS
+
+;PLANNING_ORIGIN: YYMMDD HHMMSS AAAAAA @@ 22 12 10.28 N 21 32 40.33 W 0
+;; origin point for a set of planning legs
+;; date-time, platform, symbology, origin, depth (metres)
+
+;PLANNING_RANGE_SPEED: AAAAAA BBBBBB RRRR SSS CCC
+;; leg based upon range/speed
+;; platform, leg-name, range (yds), speed (kts), course (degs)
+
+;PLANNING_RANGE_TIME: AAAAAA BBBBBB RRRR TTT CCC
+;; leg based upon range/duration
+;; platform, leg-name, range (yds), duration (secs), course (degs)
+
+;PLANNING_SPEED_TIME:  AAAAAA BBBBBB SSS TTT CCC
+;; leg based upon speed/time
+;; platform, leg-name,  speed (kts), duration (secs), course (degs)
+
+;PLANNING_RANGE_SPEED:  AAAAAA BBBBBB RRRR SSS CCC CLOSING
+;; If supplied as the last in a series of legs, this becomes a closing leg.
+
+            </markup>   </screen>
+          </para>
+        </sect2>
         <sect2 xml:id="entry_comments">
           <title>Entry comments</title>
           <para><indexterm>

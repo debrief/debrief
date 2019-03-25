@@ -27,6 +27,7 @@ import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
+import MWC.GUI.ExportLayerAsSingleItem;
 import MWC.GUI.FireExtended;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
@@ -51,7 +52,7 @@ import MWC.TacticalData.Fix;
  * 
  */
 public class CompositeTrackWrapper extends TrackWrapper implements
-    GriddableSeriesMarker, NeedsToKnowAboutLayers
+    GriddableSeriesMarker, NeedsToKnowAboutLayers, ExportLayerAsSingleItem
 {
 
   public static interface GiveMeALeg

@@ -39,6 +39,7 @@ import javax.swing.SwingUtilities;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
+import Debrief.Wrappers.CompositeTrackWrapper;
 import Debrief.Wrappers.DynamicShapeLayer;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.IDynamicShapeWrapper;
@@ -52,6 +53,7 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeWrapper;
 import Debrief.Wrappers.Track.LightweightTrackWrapper;
+import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
@@ -768,6 +770,10 @@ public class ImportReplay extends PlainImporterBase
       // they are handled by the ImportReplay method. We are including it in
       // this list so that we can use it as an exporter
       _coreImporters.addElement(new ImportFix());
+      _coreImporters.addElement(new ImportPlanningLegOrigin());
+      _coreImporters.addElement(new ImportPlanningLegRangeSpeed());
+      _coreImporters.addElement(new ImportPlanningLegRangeTime());
+      _coreImporters.addElement(new ImportPlanningLegSpeedTime());
 
       _coreImporters.addElement(new ImportDynamicRectangle());
       _coreImporters.addElement(new ImportDynamicCircle());
@@ -2342,6 +2348,36 @@ public class ImportReplay extends PlainImporterBase
     else if (thisObject instanceof SensorContactWrapper)
     {
       res = processSensorContactWrapper((SensorContactWrapper) thisObject);
+    }
+    else if(thisObject instanceof CompositeTrackWrapper)
+    {
+      // ok, add this new track
+      addLayer((Layer) thisObject);
+    }
+    else if(thisObject instanceof PlanningSegment)
+    {
+      PlanningSegment ps = (PlanningSegment) thisObject;
+      
+      String trackName = ps.getParentName();
+      Layer track =  getLayerFor(trackName, false);
+      if(track == null)
+      {
+        Application.logError2(ToolParent.INFO,
+            "Failed to find track origin for planning segment. Track titled:" + trackName, null);
+      }
+      else
+      {
+        if(track instanceof CompositeTrackWrapper)
+        {
+          CompositeTrackWrapper comp = (CompositeTrackWrapper) track;
+          comp.add(ps);
+        }
+        else
+        {
+          Application.logError2(ToolParent.INFO,
+              "Track for this leg isn't planning leg. Track titled:" + trackName, null);
+        }
+      }
     }
     else if (thisObject instanceof DynamicTrackShapeWrapper)
     {
