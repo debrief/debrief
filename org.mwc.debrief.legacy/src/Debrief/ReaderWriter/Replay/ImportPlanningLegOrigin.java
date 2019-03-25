@@ -326,9 +326,11 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
 
   }
 
-  public String outputThisLeg(final DecimalFormat sig6, String line,
-      final String trackName, final String NULL, PlanningSegment leg)
+  public String outputThisLeg(final DecimalFormat sig6, final String lineIn,
+      final String trackName, final String NULL, final PlanningSegment leg)
   {
+    String line = lineIn;
+    
     // is it the closing leg?
     final boolean closing = leg instanceof ClosingSegment;
 
