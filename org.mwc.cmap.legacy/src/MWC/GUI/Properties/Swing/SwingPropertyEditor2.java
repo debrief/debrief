@@ -308,6 +308,7 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.SteppingBoundedInteger;
 import MWC.GUI.Swing.MultiLineLabel;
+import MWC.GenericData.WorldDistance;
 
 /**
  * Swing implementation of a property editor. note that setRowHeight in initForm
@@ -439,6 +440,8 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 					SwingWorldSpeedPropertyEditor.class);
 			PropertyEditorManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
 					SwingWorldAccelerationPropertyEditor.class);
+	    PropertyEditorManager.registerEditor(WorldDistance.ArrayLength.class, 
+	        SwingDistanceWithUnitsPropertyEditor.class);
 			// we were adding the Color editor in this method - but instead
 			// we've added it in the Swing application initialisation classes
 			// so that it is also available to the right-click editing algorithms,
