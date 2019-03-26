@@ -858,6 +858,7 @@ public interface Editable
       p.setShortDescription(description);
       p.setPropertyEditorClass(editor);
       p.setDisplayName(displayName);
+      p.setExpert(true);
       return p;
     }
 
