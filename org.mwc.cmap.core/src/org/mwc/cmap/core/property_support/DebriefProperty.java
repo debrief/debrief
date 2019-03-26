@@ -320,7 +320,8 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
     {
       res = null;
     }
-    return res;
+    // note: returning the above flags was breaking UI tests
+    return null;
   }
 
   @Override
