@@ -1046,7 +1046,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
             displayProp("SymbolVisible", "Symbol visible",
                 "whether a symbol is plotted", FORMAT), displayProp(
                     "LabelLocation", "Label location",
-                    "the relative location of the label", FORMAT), prop(
+                    "the relative location of the label", FORMAT), expertProp(
                         "Location", "the location of the origin of the label",
                         SPATIAL), displayProp("SymbolType", "Symbol type",
                             "the type of symbol plotted for this label",
