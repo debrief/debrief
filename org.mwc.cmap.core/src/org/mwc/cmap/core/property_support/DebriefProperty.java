@@ -309,6 +309,7 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   @Override
   public String[] getFilterFlags()
   {
+    @SuppressWarnings("unused")
     final String[] res;
     // if it's an expert property, pass this on as a filter flag
     if (_thisProp.isExpert())
