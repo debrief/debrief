@@ -891,8 +891,24 @@ public class SwingLayerManager extends SwingCustomEditor implements
       DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
       if(rootNode!=null) {
-        DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
+        final DefaultMutableTreeNode itemNode;
+        if(rootNode instanceof Layer){
+          itemNode = getTreeNode(rootNode, newItem.getName(),
+        
             newItem);
+        }
+        else {
+          //if not a layer but a trackwrapper
+          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)rootNode.getFirstChild();
+          if(firstChild != null) {
+            itemNode = getTreeNode((DefaultMutableTreeNode)rootNode.getFirstChild(), newItem.getName(),
+              
+              newItem);
+          }
+          else {
+            itemNode = null;
+          }
+        }
         if(itemNode!=null) {
           final TreePath _treePath = new TreePath(itemNode.getPath());
           SwingUtilities.invokeLater(new Runnable()

@@ -78,6 +78,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
@@ -558,16 +559,22 @@ public class OutlinePanelView extends SwingLayerManager implements
     ArrayList<Plottable> plottables = getClipboardContents();
     // see if there is currently a plottable on the clipboard
     // see if it is a layer or not
-    for (Plottable theData : plottables)
+    if(!plottables.isEmpty())
     {
-      addBackData(theData,destination);
+      for (Plottable theData : plottables)
+      {
+        addBackData(theData,destination);
+      }
+      _myData.fireExtended(plottables.get(0), (HasEditables)destination);
     }
     if (!_isCopy)
     {
       // clear the clipboard
       _clipboard.setContents(null, null);
     }
-    _myData.fireModified(null);
+    
+    
+    
 
   }
 
