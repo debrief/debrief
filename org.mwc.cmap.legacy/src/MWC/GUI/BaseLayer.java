@@ -452,7 +452,7 @@ public class BaseLayer extends Plottables implements Layer, SupportsPropertyList
 						prop("Name", "the name of the Layer", FORMAT),
 						displayProp("LineThickness", "Line thickness", "the thickness of lines in this layer",
 								FORMAT),
-						prop("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT), };
+						expertProp("Buffered", "whether to double-buffer Layer. ('Yes' for better performance)", FORMAT), };
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
