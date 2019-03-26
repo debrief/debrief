@@ -854,14 +854,21 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
     // sort out the alpha
     String alphaStr = Defaults.getPreference(SensorContactWrapper.TRANSPARENCY);
     int alpha;
-    try
+    if (alphaStr != null && alphaStr.length() > 0)
     {
-      alpha = Integer.parseInt(alphaStr);
+      try
+      {
+        alpha = Integer.parseInt(alphaStr);
+      }
+      catch (NumberFormatException e)
+      {
+        alpha = 255;
+        e.printStackTrace();
+      }
     }
-    catch (NumberFormatException e)
+    else
     {
       alpha = 255;
-      e.printStackTrace();
     }
 
     // trigger our child sensor contact data items to plot themselves

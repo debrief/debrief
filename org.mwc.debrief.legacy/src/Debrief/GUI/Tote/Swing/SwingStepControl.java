@@ -1092,7 +1092,7 @@ public final class SwingStepControl extends StepControl implements
 	 * @param go
 	 *          boolean whether to go auto or not
 	 */
-	void doAuto(final boolean go)
+	private void doAuto(final boolean go)
 	{
 
 		if (go)

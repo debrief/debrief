@@ -443,6 +443,11 @@ abstract public class StepControl implements Editable,
     _currentHighlighter = null;
     _defaultHighlighter = null;
   }
+  
+  protected Vector<StepperListener> getListeners()
+  {
+    return _listeners;
+  }
 
   abstract protected void initForm();
 
@@ -484,7 +489,16 @@ abstract public class StepControl implements Editable,
   /////////////////////////////////////////////////
   public final StepperListener getCurrentPainter()
   {
-    return _thePainterManager.getCurrentPainterObject();
+    final StepperListener res;
+    if(_thePainterManager != null)
+    {
+      res = _thePainterManager.getCurrentPainterObject();
+    }
+    else
+    {
+      res = null;
+    }
+    return res;
   }
 
 
@@ -533,6 +547,23 @@ abstract public class StepControl implements Editable,
         {
           newDTG = _endTime.getMicros();
         }
+        
+        // inform to the closing listeners
+        final Enumeration<StepperListener> iter = _listeners.elements();
+        while (iter.hasMoreElements())
+        {
+          final StepperListener l = iter.nextElement();
+          try
+          {
+            l.steppingModeChanged(false);
+          }
+          catch (final Exception e)
+          {
+            e.printStackTrace();  // If the listener fails, hmmm,I guess we cannot solve it from here.
+          }
+        }
+        
+        stopTimer();
       }
       
       // we should now have a valid time
@@ -622,6 +653,11 @@ abstract public class StepControl implements Editable,
     return (int) _theTimer.getDelay();
   }
 
+  public final boolean isPlaying()
+  {
+    return _theTimer.isRunning();
+  }
+  
   public final String getDateFormat()
   {
     return _dateFormatter.toPattern();
@@ -693,6 +729,9 @@ abstract public class StepControl implements Editable,
    */
   public void reset()
   {
+    // stop the timer, we may fall over if we carry on stepping
+    stopTimer();
+    
     // clear the times
     _startTime = null;
     _endTime = null;
@@ -891,10 +930,13 @@ abstract public class StepControl implements Editable,
   {
     if (val != null)
     {
-      _thePainterManager.setDisplay(val);
-
-      // and fire the event in the painter manager
-      _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      if(_thePainterManager != null)
+      {
+        _thePainterManager.setDisplay(val);
+  
+        // and fire the event in the painter manager
+        _thePainterManager.getInfo().fireChanged(this, "Painter", null, val);
+      }
     }
   }
 
@@ -1265,8 +1307,8 @@ abstract public class StepControl implements Editable,
       // just add the reset color field first
       final Class<StepControl> c = StepControl.class;
       final MethodDescriptor[] mds = {
-        method(c, "editHighlighter", null, "Edit current highlighter"),
-        method(c, "editDisplay", null, "Edit current display mode"),
+        method(c, "editHighlighter", null, "Edit Highlighter"),
+        method(c, "editDisplay", null, "Edit Display mode"),
       };
       return mds;
     }

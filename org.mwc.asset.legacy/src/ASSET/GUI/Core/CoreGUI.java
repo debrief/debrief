@@ -25,7 +25,9 @@ import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
 import MWC.GUI.Tools.Operations.ShowLayers;
 import MWC.GUI.Tools.Operations.ShowVideo;
 import MWC.GUI.Tools.Palette.*;
+import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Undo.UndoBuffer;
+import MWC.GenericData.WorldArea;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -254,6 +256,24 @@ abstract public class CoreGUI
    */
   abstract protected void addUniqueTools();
 
+  protected BoundsProvider getBounds()
+  {
+    return new BoundsProvider()
+    {
+      
+      @Override
+      public WorldArea getViewport()
+      {
+        return _theChart.getCanvas().getProjection().getVisibleDataArea();
+      }
+      
+      @Override
+      public WorldArea getBounds()
+      {
+        return _theChart.getDataArea();
+      }
+    };
+  }
 
   /**
    * build the list of tools necessary for this type of view
@@ -261,11 +281,9 @@ abstract public class CoreGUI
   private void addTools()
   {
 
-    //////////////////////////
-    // ASSET components
-    //////////////////////////
     addUniqueTools();
-
+    
+    final BoundsProvider bounds = getBounds();
 
     // NOTE: wrap this next creator, in case we haven't got the right files avaialble
     try
@@ -308,34 +326,34 @@ abstract public class CoreGUI
                                           new CreateScale(_theParent, _theProperties,
                                                           decs,
                                                           _theData,
-                                                          _theChart), null, ' '));
+                                                          bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create Grid",
                                           new CreateGrid(_theParent, _theProperties,
                                                          decs,
                                                          _theData,
-                                                         _theChart), null, ' '));
+                                                         bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create VPF Layers",
                                           new CreateVPFLayers(_theParent, _theProperties,
                                                               decs,
                                                               _theData,
-                                                              _theChart), null, ' '));
+                                                              bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create World Coastline",
                                           new CreateCoast(_theParent, _theProperties,
                                                           decs,
                                                           _theData,
-                                                          _theChart), null, ' '));
+                                                          bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create ETOPO Bathy",
                                           new CreateTOPO(_theParent, _theProperties,
                                                          _theData,
-                                                         _theChart), null, ' '));
+                                                         bounds), null, ' '));
 
   }
 

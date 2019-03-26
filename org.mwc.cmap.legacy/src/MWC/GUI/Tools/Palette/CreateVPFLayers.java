@@ -90,9 +90,9 @@ public class CreateVPFLayers extends PlainCreate
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
 										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart)
+										final BoundsProvider bounds)
 	{
-		super(theParent, thePanel, theLayer, theData, theChart, "VPF Layers", "images/vpf.png");
+		super(theParent, thePanel, theLayer, theData, bounds, "VPF Layers", "images/vpf.png");
 		
 		// are we getting our toolparent initialised?
 		if(theParent != null)
@@ -108,7 +108,7 @@ public class CreateVPFLayers extends PlainCreate
 		_myParent = theParent;
 	}
 
-  public MWC.GUI.Plottable createItem(final MWC.GUI.PlainChart theChart)
+  protected MWC.GUI.Plottable createItem()
   {
     return createMyLibrary(true);
   }

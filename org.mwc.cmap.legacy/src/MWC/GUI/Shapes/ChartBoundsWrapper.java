@@ -343,7 +343,7 @@ public class ChartBoundsWrapper extends MWC.GUI.PlainWrapper implements
 			// just add the reset color field first
 			final Class<?> c = ChartBoundsWrapper.class;
 			final MethodDescriptor[] mds =
-			{ method(c, "loadThisChart", null, "Load this chart") };
+			{ method(c, "loadThisChart", null, "Load Chart") };
 
 			return mds;
 		}

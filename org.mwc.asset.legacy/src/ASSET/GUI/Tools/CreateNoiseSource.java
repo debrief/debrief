@@ -61,7 +61,7 @@ public class CreateNoiseSource extends PlainCreate
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
 										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart,
+										final BoundsProvider theChart,
                     final EnvironmentType theEnv,
                     final int medium)
 	{
@@ -70,9 +70,9 @@ public class CreateNoiseSource extends PlainCreate
     _medium = medium;
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
-    final WorldLocation origin = new WorldLocation(0,0,0);
+    final WorldLocation origin = getBounds().getViewport().getCentreAtSurface();
     return new NoiseSourcePainter(origin, 180, _theEnv, EnvironmentType.BROADBAND_PASSIVE);
 	}
 }

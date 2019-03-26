@@ -35,6 +35,8 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.SwingUtilities;
+
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay.ProvidesModeSelector.ImportSettings;
 import Debrief.Wrappers.CompositeTrackWrapper;
@@ -86,6 +88,11 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportReplay extends PlainImporterBase
 {
 
+  public static interface Runner
+  {
+    void run(Runnable runnable);
+  }
+  
   final static class doublet
   {
     public final String label;
@@ -857,6 +864,8 @@ public class ImportReplay extends PlainImporterBase
   private final Map<String, Long> _lastImportedItem =
       new HashMap<String, Long>();
 
+  private final Runner _deferredRunner;
+
   /**
    * the property name we use for importing tracks (DR/ATG)
    * 
@@ -1107,17 +1116,31 @@ public class ImportReplay extends PlainImporterBase
     return getThisSymProperty(sym, SYMBOL_PREFIX);
   }
 
-  /**
-   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
-   */
-  public ImportReplay()
+  public ImportReplay(final Runner runner)
   {
+    _deferredRunner = runner;
+    
     _myTypes = new String[]
     {".rep", ".dsf", ".dtf"};
 
     checkImporters();
 
     initialiseColours();
+
+  }
+  
+  /**
+   * constructor, initialise Vector with the list of non-Fix items which we will be reading in
+   */
+  public ImportReplay()
+  {
+    this(new Runner() {
+
+      @Override
+      public void run(final Runnable runnable)
+      {
+        SwingUtilities.invokeLater(runnable);
+      }});
   }
 
   @Override
@@ -1631,31 +1654,22 @@ public class ImportReplay extends PlainImporterBase
     }
     catch (final java.lang.NumberFormatException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Number format error", thisLine);
+      
+      handleException(e,lineCounter,thisLine,fName,"Number format error:"+e);
     }
     catch (final IOException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Unknown read error:" + e, thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Unknown read error:"+e);
     }
     catch (final java.util.NoSuchElementException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Missing field error", thisLine);
+      handleException(e,lineCounter,thisLine,fName,"Missing field error");
     }
     catch (final ParseException e)
     {
-      // produce the error message
-      MWC.Utilities.Errors.Trace.trace(e);
-      // show the message dialog
-      super.readError(fName, lineCounter, "Date format error", thisLine);
+      
+      handleException(e,lineCounter,thisLine,fName,"Date format error");
+      
     }
     finally
     {
@@ -1669,7 +1683,24 @@ public class ImportReplay extends PlainImporterBase
       }
     }
   }
-
+  
+  private void handleException(final Exception e, final int lineCount,
+      final String line, final String fName, final String message)
+  {
+    // produce the error message
+    _deferredRunner.run(new Runnable()
+    {
+      
+      @Override
+      public void run()
+      {
+     // produce the error message
+        MWC.Utilities.Errors.Trace.trace(e);
+        // show the message dialog    
+        readError(fName, lineCount, message, line);
+      }
+    }); 
+  }
   private void proccessShapeWrapper(final PlainLineImporter thisOne,
       final Object thisObject)
   {

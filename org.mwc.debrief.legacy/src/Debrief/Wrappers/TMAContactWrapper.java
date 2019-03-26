@@ -1259,7 +1259,7 @@ public final class TMAContactWrapper extends
 						displayProp("VectorVisible", "Vector visible",
 								"whether the target vector for this solution is visible",
 								EditorType.FORMAT),
-						displayProp("Color", "Solution color", "the color for this solution", EditorType.FORMAT),
+						displayProp("Color", "Color", "the color for this solution", EditorType.FORMAT),
 						longProp("Symbol", "the symbol to use for this solution",
 								SymbolFactoryPropertyEditor.class, EditorType.FORMAT),
 						displayLongProp("LabelLocation", "Label location", "the label location",

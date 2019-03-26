@@ -54,13 +54,13 @@ public class CreateNoiseExcess extends PlainCreate
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
 										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart)
+										final BoundsProvider theChart)
 	{
 		super(theParent, thePanel, null, theData, theChart, "Excess Scenario Noise", "images/noise_excess.gif");
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
-    return new NoiseSourceExcessPainter("Noise Excess", super.getLayers());
+    return new NoiseSourceExcessPainter("Noise Excess", getLayers());
 	}
 }

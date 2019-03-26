@@ -221,9 +221,8 @@ import MWC.GenericData.WorldArea;
 public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		Editable {
 
-	// ///////////////////////////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////////////////////////
+	public static final String NORMAL_NAME = "Normal";
+
 	/**
 	 * the chart we are plotting to
 	 */
@@ -728,7 +727,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 		 *            the object we are editing
 		 */
 		public TotePainterInfo(final TotePainter data) {
-			super(data, "Normal", "");
+			super(data, NORMAL_NAME, "");
 		}
 
 		/**
@@ -758,7 +757,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 	 * @return the name
 	 */
 	public String toString() {
-		return "Normal";
+		return NORMAL_NAME;
 	}
 
 	/**

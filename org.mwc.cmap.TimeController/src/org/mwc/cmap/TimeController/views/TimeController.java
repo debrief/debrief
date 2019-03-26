@@ -3136,6 +3136,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         {
           _playButton.setToolTipText(PLAY_TEXT);
           _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
+          _playButton.setSelection(false);
 
           // and update the VCR buttons
           setVCREnabled(true);

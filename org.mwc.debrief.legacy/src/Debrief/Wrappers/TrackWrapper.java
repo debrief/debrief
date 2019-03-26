@@ -136,7 +136,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final MethodDescriptor[] _methodDescriptors = new MethodDescriptor[]
       {method(c, "exportThis", null, "Export Shape"), method(c, "resetLabels",
           null, "Reset DTG Labels"), method(c, "calcCourseSpeed", null,
-              "Generate calculated Course and Speed")};
+              "Calc Course & Speed")};
 
       return _methodDescriptors;
     }

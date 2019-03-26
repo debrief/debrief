@@ -30,6 +30,7 @@ import org.junit.runners.Suite;
     Debrief.GUI.Tote.StepControl.testMe.class,
     Debrief.GUI.Tote.StepControl.testMe.class,
     Debrief.GUI.Tote.Swing.SwingStepControl.testStepper.class,
+    Debrief.GUI.Views.LogicHelpers.TestLogic.class,
     Debrief.ReaderWriter.FlatFile.FlatFileExporter.testMe.class,
     Debrief.ReaderWriter.Replay.ImportFix.testImport.class,
     Debrief.ReaderWriter.Replay.ImportNarrative.testImport.class,
