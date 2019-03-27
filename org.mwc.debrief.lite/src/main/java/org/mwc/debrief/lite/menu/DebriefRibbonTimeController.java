@@ -571,17 +571,19 @@ public class DebriefRibbonTimeController
   public static void resetDateFormat()
   {
     final String defaultFormat = LiteStepControl.timeFormat;
-    for (int i = 0 ; i < timeFormats.length; i++)
+    if ( defaultFormat != null )
     {
-      // is this the default format
-      final boolean isGood = defaultFormat != null && defaultFormat.equals(timeFormats[i]);
-      _menuItem[i].setSelected(isGood);
+      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false);
+      
+      formatBinder.stepControl.setDateFormat(defaultFormat);
+      formatBinder.updateFilterDateFormat();
     }
     
     if(label != null)
     {
       label.setValue(defaultFormat);
     }
+    
   }
   
 
