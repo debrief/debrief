@@ -249,7 +249,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     commandBar.add(cutButton);
     
     final JButton copyButton = createCommandButton("Copy",
-        "icons/16/copy_to_clipboard.png");
+        "icons/24/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
     commandBar.add(copyButton);
 
