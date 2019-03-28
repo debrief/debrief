@@ -244,7 +244,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     commandBar.add(editButton);
     
     final JButton cutButton =  createCommandButton("Cut",
-        "icons/16/cut.png");
+        "icons/24/cut.png");
     _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
     commandBar.add(cutButton);
     
