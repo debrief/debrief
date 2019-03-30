@@ -196,20 +196,9 @@ public class DebriefRibbonTimeController
       {
         _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
       }
-      final int completeSize = 17; 
-      final int diff = completeSize - format.length();
-      
-      String newFormat = format;
-      for (int i = 0 ; i < diff / 2 ; i++)
-      {
-        newFormat = " " + newFormat + " ";
-      }
-      if ( newFormat.length() < completeSize ) {
-        newFormat = newFormat + " ";
-      }
       if ( fireUpdate && formatBinder != null )
       {
-        formatBinder.updateTimeDateFormat(newFormat);        
+        formatBinder.updateTimeDateFormat(format);        
       }
     }
   }
@@ -444,8 +433,6 @@ public class DebriefRibbonTimeController
         super.paintComponent(g);
       }
     };
-    timeLabel.setSize(200, 60);
-    timeLabel.setPreferredSize(new Dimension(200, 60));
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
@@ -522,7 +509,19 @@ public class DebriefRibbonTimeController
       @Override
       public void setValue(final String text)
       {
-        timeLabel.setText(text);
+
+        final int completeSize = 17; 
+        final int diff = completeSize - text.length();
+        
+        String newText = text;
+        for (int i = 0 ; i < diff / 2 ; i++)
+        {
+          newText = " " + newText + " ";
+        }
+        if ( newText.length() < completeSize ) {
+          newText = newText + " ";
+        }
+        timeLabel.setText(newText);
       }
     };
     stepControl.setTimeLabel(label);
