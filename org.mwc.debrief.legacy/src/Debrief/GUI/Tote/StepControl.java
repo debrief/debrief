@@ -830,7 +830,11 @@ abstract public class StepControl implements Editable,
   {
     if (_currentHighlighter.hasEditor())
     {
-      getPropertiesPanel().addEditor(_currentHighlighter.getInfo(), null);
+      PropertiesPanel panel = getPropertiesPanel();
+      if ( panel != null )
+      {
+        panel.addEditor(_currentHighlighter.getInfo(), null);
+      }
     }
   }
 
