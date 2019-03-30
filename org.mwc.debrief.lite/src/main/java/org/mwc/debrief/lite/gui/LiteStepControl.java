@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.Tote.StepControl;
+import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
@@ -71,7 +72,26 @@ public class LiteStepControl extends StepControl
   @Override
   protected void doEditPainter()
   {
-    throw new IllegalArgumentException("not implemented");
+    final StepperListener painter = this.getCurrentPainter();
+    if ( painter instanceof Editable )
+    {
+      ToolbarOwner owner = null;
+      ToolParent parent = getParent();
+      if (parent instanceof ToolbarOwner)
+      {
+        owner = (ToolbarOwner) parent;
+      }
+
+      PropertiesDialog dialog = new PropertiesDialog((Editable)painter, _layers,
+          _undoBuffer, parent, owner);
+      dialog.setSize(400, 500);
+      dialog.setLocationRelativeTo(null);
+      dialog.setVisible(true);
+    }else
+    {
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Properties Editor",
+          "Current Painter is not editable.");
+    }
   }
 
   @Override
