@@ -523,6 +523,14 @@ public class DebriefRibbonTimeController
         }
         timeLabel.setText(newText);
       }
+
+      @Override
+      public void setFontSize(int newSize)
+      {
+        Font originalFont = timeLabel.getFont();
+        final Font newFont = new Font(originalFont.getName(), originalFont.getStyle(), newSize);
+        timeLabel.setFont(newFont);
+      }
     };
     stepControl.setTimeLabel(label);
 

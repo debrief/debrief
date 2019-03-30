@@ -41,6 +41,8 @@ public class LiteStepControl extends StepControl
     void setValue(long time);
 
     void setValue(String text);
+    
+    void setFontSize(int newSize);
   }
 
   private SliderControls _slider;
@@ -75,7 +77,7 @@ public class LiteStepControl extends StepControl
   @Override
   protected void formatTimeText()
   {
-    throw new IllegalArgumentException("not implemented");
+    _timeLabel.setFontSize(_fontSize);
   }
 
   @Override
