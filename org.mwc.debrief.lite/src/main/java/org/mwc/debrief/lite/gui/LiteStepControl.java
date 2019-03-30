@@ -19,7 +19,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 
 public class LiteStepControl extends StepControl
 {
-  
+
   private final ToolParent parent;
 
   public static interface SliderControls
@@ -31,7 +31,7 @@ public class LiteStepControl extends StepControl
     public void setToolboxEndTime(final HiResDate val);
 
     public void setToolboxStartTime(final HiResDate val);
-    
+
     public void setEnabled(final boolean enabled);
   }
 
@@ -42,7 +42,7 @@ public class LiteStepControl extends StepControl
     void setValue(long time);
 
     void setValue(String text);
-    
+
     void setFontSize(int newSize);
   }
 
@@ -73,7 +73,7 @@ public class LiteStepControl extends StepControl
   protected void doEditPainter()
   {
     final StepperListener painter = this.getCurrentPainter();
-    if ( painter instanceof Editable )
+    if (painter instanceof Editable)
     {
       ToolbarOwner owner = null;
       ToolParent parent = getParent();
@@ -82,12 +82,13 @@ public class LiteStepControl extends StepControl
         owner = (ToolbarOwner) parent;
       }
 
-      PropertiesDialog dialog = new PropertiesDialog((Editable)painter, _layers,
-          _undoBuffer, parent, owner);
+      PropertiesDialog dialog = new PropertiesDialog((Editable) painter,
+          _layers, _undoBuffer, parent, owner);
       dialog.setSize(400, 500);
       dialog.setLocationRelativeTo(null);
       dialog.setVisible(true);
-    }else
+    }
+    else
     {
       MWC.GUI.Dialogs.DialogFactory.showMessage("Properties Editor",
           "Current Painter is not editable.");
@@ -110,8 +111,8 @@ public class LiteStepControl extends StepControl
       owner = (ToolbarOwner) parent;
     }
 
-    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter(), _layers,
-        _undoBuffer, parent, owner);
+    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter(),
+        _layers, _undoBuffer, parent, owner);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);
@@ -129,13 +130,13 @@ public class LiteStepControl extends StepControl
   {
     return _slider.getToolboxStartTime();
   }
-  
+
   @Override
   public void reset()
   {
     // let the parent do it's stuff
     super.reset();
-    
+
     _slider.setEnabled(false);
     _timeLabel.setValue(timeFormat);
   }
@@ -143,7 +144,10 @@ public class LiteStepControl extends StepControl
   @Override
   protected void initForm()
   {
-    throw new IllegalArgumentException("not implemented");
+    /* This is not needed, because the implementation of the form initialization
+     * has been done in the Ribbon.
+     */
+    
   }
 
   @Override
@@ -169,25 +173,25 @@ public class LiteStepControl extends StepControl
     if (evt.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
     {
       final TimePeriod period = (TimePeriod) evt.getNewValue();
-      
+
       // check we have a time period
-      if(period != null)
+      if (period != null)
       {
         _slider.setToolboxStartTime(period.getStartDTG());
         _slider.setToolboxEndTime(period.getEndDTG());
-  
+
         setStartTime(period.getStartDTG());
         setEndTime(period.getEndDTG());
-  
+
         _timeLabel.setRange(period.getStartDTG().getDate().getTime(), period
             .getEndDTG().getDate().getTime());
-        
-        // we should probably enable the slider 
+
+        // we should probably enable the slider
         _slider.setEnabled(true);
       }
       else
       {
-        // we should probably disable the slider 
+        // we should probably disable the slider
         _slider.setEnabled(false);
       }
     }
