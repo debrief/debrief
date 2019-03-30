@@ -264,6 +264,9 @@ public class DebriefLiteApp implements FileDropListener
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
 
+    _stepControl.setUndoBuffer(session.getUndoBuffer());
+    _stepControl.setLayers(session.getData());
+    
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 

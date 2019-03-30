@@ -3,10 +3,15 @@ package org.mwc.debrief.lite.gui;
 import java.beans.PropertyChangeEvent;
 import java.util.Enumeration;
 
+import org.mwc.debrief.lite.properties.PropertiesDialog;
+
 import Debrief.GUI.Tote.StepControl;
+import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
+import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -41,12 +46,24 @@ public class LiteStepControl extends StepControl
   private SliderControls _slider;
   private TimeLabel _timeLabel;
   public static final String timeFormat = "yy/MM/dd hh:mm:ss";
+  private Layers _layers;
+  private UndoBuffer _undoBuffer;
 
   public LiteStepControl(final ToolParent _parent)
   {
     super(_parent);
     this.parent = _parent;
     setDateFormat(timeFormat);
+  }
+
+  public void setLayers(Layers _layers)
+  {
+    this._layers = _layers;
+  }
+
+  public void setUndoBuffer(UndoBuffer _undoBuffer)
+  {
+    this._undoBuffer = _undoBuffer;
   }
 
   @Override
@@ -64,7 +81,19 @@ public class LiteStepControl extends StepControl
   @Override
   protected PropertiesPanel getPropertiesPanel()
   {
-    throw new IllegalArgumentException("not implemented");
+    ToolbarOwner owner = null;
+    ToolParent parent = getParent();
+    if (parent instanceof ToolbarOwner)
+    {
+      owner = (ToolbarOwner) parent;
+    }
+
+    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter(), _layers,
+        _undoBuffer, parent, owner);
+    dialog.setSize(400, 500);
+    dialog.setLocationRelativeTo(null);
+    dialog.setVisible(true);
+    return null;
   }
 
   @Override
@@ -78,8 +107,6 @@ public class LiteStepControl extends StepControl
   {
     return _slider.getToolboxStartTime();
   }
-
-  
   
   @Override
   public void reset()
