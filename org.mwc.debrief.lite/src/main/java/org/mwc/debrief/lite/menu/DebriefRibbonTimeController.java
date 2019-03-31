@@ -84,7 +84,6 @@ public class DebriefRibbonTimeController
     public void updateTimeDateFormat(final String format)
     {
       stepControl.setDateFormat(format);
-      timeManager.fireTimePropertyChange();
       updateFilterDateFormat();
     }
     
