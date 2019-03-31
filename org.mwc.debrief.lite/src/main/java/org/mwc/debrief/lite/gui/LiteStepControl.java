@@ -3,6 +3,7 @@ package org.mwc.debrief.lite.gui;
 import java.beans.PropertyChangeEvent;
 import java.util.Enumeration;
 
+import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
 import Debrief.GUI.Tote.StepControl;
@@ -10,6 +11,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
@@ -245,6 +247,7 @@ public class LiteStepControl extends StepControl
     final String str = _dateFormatter.format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
+    DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(), false, true);
   }
 
   public ToolParent getParent()

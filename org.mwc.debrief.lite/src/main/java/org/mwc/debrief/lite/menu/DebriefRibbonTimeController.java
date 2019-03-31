@@ -81,10 +81,16 @@ public class DebriefRibbonTimeController
     protected RangeSlider slider;
     protected TimeManager timeManager;
 
-    public void updateTimeDateFormat(final String format)
+    public void updateTimeDateFormat(final String format, boolean updateTimeLabel, boolean updateFilters)
     {
-      stepControl.setDateFormat(format);
-      updateFilterDateFormat();
+      if ( updateTimeLabel )
+      {
+        stepControl.setDateFormat(format);
+      }
+      if ( updateFilters )
+      {
+        updateFilterDateFormat();
+      }
     }
     
     public String getDateFormat()
@@ -187,7 +193,7 @@ public class DebriefRibbonTimeController
   
   private static JCheckBoxMenuItem[] _menuItem;
   
-  public static void assignThisTimeFormat(String format, boolean fireUpdate)
+  public static void assignThisTimeFormat(String format, boolean updateTimeLabel, boolean updateFilters)
   {
     if ( _menuItem != null && format != null )
     {
@@ -195,9 +201,9 @@ public class DebriefRibbonTimeController
       {
         _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
       }
-      if ( fireUpdate && formatBinder != null )
+      if ( formatBinder != null )
       {
-        formatBinder.updateTimeDateFormat(format);        
+        formatBinder.updateTimeDateFormat(format, updateTimeLabel, updateFilters);        
       }
     }
   }
@@ -452,7 +458,7 @@ public class DebriefRibbonTimeController
       public void actionPerformed(ActionEvent e)
       {
         String format = e.getActionCommand();
-        assignThisTimeFormat(format, true);
+        assignThisTimeFormat(format, true, false);
       }
     };
     
@@ -579,7 +585,7 @@ public class DebriefRibbonTimeController
     final String defaultFormat = LiteStepControl.timeFormat;
     if ( defaultFormat != null )
     {
-      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false);
+      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false, false);
       
       formatBinder.stepControl.setDateFormat(defaultFormat);
       formatBinder.updateFilterDateFormat();
