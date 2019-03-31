@@ -11,7 +11,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
