@@ -266,7 +266,25 @@ public class DebriefRibbonFile
     }
   }
 
-  
+  private static class ImportReplayAction extends AbstractAction
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -804226120198968206L;
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      final File fileToOpen = showOpenDialog(new String[] {"rep"},"Debrief replay file");
+      if(fileToOpen !=null)
+      {
+        DebriefLiteApp.openRepFile(fileToOpen);
+      }
+    }
+    
+  }
   
 
   protected static void addFileTab(final JRibbon ribbon,
@@ -306,7 +324,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
     MenuUtils.addCommand("Import Replay", "icons/16/import.png",
-        new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), importMenu, RibbonElementPriority.MEDIUM);
+        new ImportReplayAction(), importMenu, RibbonElementPriority.MEDIUM);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
     MenuUtils.addCommand("Copy Plot to PNG", "icons/16/import.png",
