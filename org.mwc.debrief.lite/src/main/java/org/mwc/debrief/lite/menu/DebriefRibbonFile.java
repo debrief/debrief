@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -26,8 +27,15 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.pushingpixels.flamingo.api.common.JCommandButton;
+import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
+import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
+import org.pushingpixels.flamingo.api.common.popup.JCommandPopupMenu;
+import org.pushingpixels.flamingo.api.common.popup.JPopupPanel;
+import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
+import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
@@ -77,7 +85,7 @@ public class DebriefRibbonFile
           public DataFlavor[] getTransferDataFlavors()
           {
             return new DataFlavor[]
-            {DataFlavor.imageFlavor};
+                {DataFlavor.imageFlavor};
           }
 
           @Override
@@ -107,7 +115,7 @@ public class DebriefRibbonFile
     }
   }
 
-  
+
   private static class OpenPlotAction extends AbstractAction
   {
 
@@ -119,7 +127,7 @@ public class DebriefRibbonFile
     private final Session _session;
     private Runnable _doReset;
     private boolean isRepFile;
-    
+
     public OpenPlotAction(final JFrame theFrame, final Session session,
         final Runnable doReset,final boolean isRep)
     {
@@ -132,7 +140,7 @@ public class DebriefRibbonFile
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      
+
       final String[] fileTypes = isRepFile?new String[] {"rep"}:new String[] {"dpf","xml"};
       final String descr = isRepFile?"Debrief Replay File":"Debrief Plot Files";
       if (DebriefLiteApp.isDirty())
@@ -168,9 +176,9 @@ public class DebriefRibbonFile
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
-            
+
           doFileOpen(fileTypes,descr,isRepFile,_doReset);
-          
+
         }
         else if (res == JOptionPane.NO_OPTION)
         {
@@ -186,22 +194,22 @@ public class DebriefRibbonFile
         doFileOpen(fileTypes,descr,isRepFile,_doReset);
       }
     }
-    
+
   }
-  
-  
-  
+
+
+
   private static class NewFileAction extends AbstractAction
   {
     /**
      *
      */
     private static final long serialVersionUID = 1L;
-    
+
     private final JFrame _theFrame;
     private final Session _session;
     private Runnable _doReset;
-    
+
     public NewFileAction(final JFrame theFrame, final Session session,
         final Runnable doReset)
     {
@@ -247,7 +255,7 @@ public class DebriefRibbonFile
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
-            
+
           _doReset.run();
         }
         else if (res == JOptionPane.NO_OPTION)
@@ -266,8 +274,8 @@ public class DebriefRibbonFile
     }
   }
 
-  
-  
+
+
 
   protected static void addFileTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Session session, final Runnable resetAction)
@@ -276,17 +284,24 @@ public class DebriefRibbonFile
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
-        RibbonElementPriority.MEDIUM);
+        RibbonElementPriority.TOP);
     MenuUtils.addCommand("Open Plot", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
-        fileMenu, RibbonElementPriority.MEDIUM);
-    
-    fileMenu.startGroup();
+        fileMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Save", "icons/16/save.png",
-        new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Save as", "icons/16/save-as.png",
-        new DoSaveAs(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.MEDIUM);
+        new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
+        new PopupPanelCallback()
+    {
+
+      @Override
+      public JPopupPanel getPopupPanel(JCommandButton commandButton)
+      {
+        return new SavePopupMenu(session,ribbon.getRibbonFrame());
+      }
+    });
+
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
+
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
     MenuUtils.addCommand("Exit", "icons/16/exit.png", new AbstractAction()
     {
@@ -300,18 +315,24 @@ public class DebriefRibbonFile
       {
         System.exit(0);
       }
-    }, exitMenu, RibbonElementPriority.MEDIUM);
+    }, exitMenu, RibbonElementPriority.TOP);
     exitMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exitMenu));
 
-    final JRibbonBand importMenu = new JRibbonBand("Import / Export", null);
-    MenuUtils.addCommand("Import Replay", "icons/16/import.png",
-        new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), importMenu, RibbonElementPriority.MEDIUM);
+    final JRibbonBand importMenu = new JRibbonBand("Import", null);
+    MenuUtils.addCommand("Replay", "icons/16/import.png",
+        new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), 
+        importMenu, RibbonElementPriority.TOP);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
+
+    final JRibbonBand exportMenu = new JRibbonBand("Export",null);
+
     MenuUtils.addCommand("Copy Plot to PNG", "icons/16/import.png",
-        new CopyPlotAsPNG(geoMapRenderer), importMenu,
-        RibbonElementPriority.MEDIUM);
+        new CopyPlotAsPNG(geoMapRenderer), exportMenu,
+        RibbonElementPriority.TOP);
+    exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        exportMenu));
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
     final RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,
@@ -352,7 +373,7 @@ public class DebriefRibbonFile
     if(res == JFileChooser.APPROVE_OPTION) {
       return fileChooser.getSelectedFile();
     }
-    
+
     return null;
   }
 
@@ -384,7 +405,7 @@ public class DebriefRibbonFile
           stream.close();
           DebriefLiteApp.currentFileName = targetFile.getAbsolutePath();
           DebriefLiteApp.setDirty(false);
-          
+
         }
         catch (IOException e1)
         {
@@ -392,6 +413,29 @@ public class DebriefRibbonFile
         }
       }
     }
-    
+
+  }
+
+  private static class SavePopupMenu extends JCommandPopupMenu{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    public SavePopupMenu(final Session session,final JRibbonFrame theFrame)
+    {
+      final Image saveImage = MenuUtils.createImage("icons/16/save.png");
+      final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(saveImage, new Dimension(
+          16, 16));
+      JCommandMenuButton saveButton = new JCommandMenuButton("Save",imageIcon);
+      saveButton.getActionModel().addActionListener(new DoSave(session, theFrame));
+      addMenuButton(saveButton);
+      final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
+      final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon.getIcon(saveAsImage, new Dimension(
+          16, 16));
+      JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",imageIcon2);
+      saveAsButton.getActionModel().addActionListener(new DoSaveAs(session, theFrame));
+      addMenuButton(saveAsButton);
+    }
   }
 }
