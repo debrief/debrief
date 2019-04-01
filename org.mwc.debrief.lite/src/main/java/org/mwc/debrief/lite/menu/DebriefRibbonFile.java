@@ -302,12 +302,12 @@ public class DebriefRibbonFile
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
-    final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
+    /*final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
     MenuUtils.addCommand("Exit", "icons/16/exit.png", new AbstractAction()
     {
-      /**
+      *//**
        *
-       */
+       *//*
       private static final long serialVersionUID = 1L;
 
       @Override
@@ -319,7 +319,7 @@ public class DebriefRibbonFile
     exitMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exitMenu));
 
-    final JRibbonBand importMenu = new JRibbonBand("Import", null);
+*/    final JRibbonBand importMenu = new JRibbonBand("Import", null);
     MenuUtils.addCommand("Replay", "icons/16/import.png",
         new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), 
         importMenu, RibbonElementPriority.TOP);
@@ -336,7 +336,7 @@ public class DebriefRibbonFile
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
     final RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,
-        exportMenu,exitMenu);
+        exportMenu);
     fileMenu.setPreferredSize(new Dimension(50, 50));
     ribbon.addTask(fileTask);
   }
