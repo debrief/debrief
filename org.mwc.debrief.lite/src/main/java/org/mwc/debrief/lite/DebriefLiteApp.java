@@ -50,9 +50,9 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
+import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
-import org.mwc.debrief.lite.menu.RibbonAppMenuProvider;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
@@ -348,6 +348,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(_listenForMods);
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     theFrame.setVisible(true);
+    theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
   /**
@@ -747,8 +748,8 @@ public class DebriefLiteApp implements FileDropListener
     // try to give the application an icon
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-    theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider()
-        .createApplicationMenu(theFrame));
+    /*theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider()
+        .createApplicationMenu(theFrame));*/
     // It cannot be smaller than this size to have the ribbon complete!
     int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
     int sizeHeight = (int) (dim.height * 0.6);

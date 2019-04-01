@@ -277,6 +277,11 @@ public class DebriefRibbonFile
 
 
 
+  private static RibbonTask fileTask;
+
+
+
+
   protected static void addFileTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Session session, final Runnable resetAction)
   {
@@ -335,7 +340,7 @@ public class DebriefRibbonFile
         exportMenu));
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
-    final RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,
+    fileTask = new RibbonTask("File", fileMenu, importMenu,
         exportMenu);
     fileMenu.setPreferredSize(new Dimension(50, 50));
     ribbon.addTask(fileTask);
@@ -437,5 +442,13 @@ public class DebriefRibbonFile
       saveAsButton.getActionModel().addActionListener(new DoSaveAs(session, theFrame));
       addMenuButton(saveAsButton);
     }
+  }
+
+
+
+
+  public static RibbonTask getFileTask()
+  {
+    return fileTask;
   }
 }
