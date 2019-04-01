@@ -285,7 +285,7 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
         RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Open Plot", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
+    MenuUtils.addCommand("Open", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.TOP);
     MenuUtils.addCommand("Save", "icons/16/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
@@ -328,7 +328,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand exportMenu = new JRibbonBand("Export",null);
 
-    MenuUtils.addCommand("Copy Plot to PNG", "icons/16/import.png",
+    MenuUtils.addCommand("PNG", "icons/16/export.png",
         new CopyPlotAsPNG(geoMapRenderer), exportMenu,
         RibbonElementPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
@@ -336,7 +336,7 @@ public class DebriefRibbonFile
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
     final RibbonTask fileTask = new RibbonTask("File", fileMenu, importMenu,
-        exitMenu);
+        exportMenu,exitMenu);
     fileMenu.setPreferredSize(new Dimension(50, 50));
     ribbon.addTask(fileTask);
   }
