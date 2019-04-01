@@ -20,7 +20,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/gt-main-20.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-metadata-20.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-opengis-20.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/gt-referencing-20.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/gt-referencing-20.3.jar" sourcepath="libs/sources/gt-referencing-20.3-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-render-20.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-shapefile-20.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-swing-20.3.jar"/>
@@ -29,12 +29,17 @@
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-tiff-1.1.28.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/imageio-ext-utilities-1.1.28.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jdom2-2.0.6.jar"/>
-	<classpathentry kind="lib" path="libs/jsr305-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jt-utils-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jt-zonalstats-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.16.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-20.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/unit-api-2.0-EDR.jar" sourcepath="libs/sources/unit-api-2.0-EDR-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jscience-4.3.1.jar" sourcepath="libs/sources/jscience-4.3.1-sources.jar"/>
+	<classpathentry kind="lib" path="libs/si-units-java8-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/jsr305-3.0.0.jar"/>
+	<classpathentry kind="lib" path="libs/uom-lib-common-1.0.2.jar"/>
+	<classpathentry kind="lib" path="libs/unit-api-2.0-EDR.jar"/>
+	<classpathentry kind="lib" path="libs/systems-common-java8-0.9.jar"/>
+	<classpathentry kind="lib" path="libs/uom-se-1.0.9.jar"/>
+	<classpathentry kind="lib" path="libs/si-quantity-0.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
