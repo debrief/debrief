@@ -274,13 +274,7 @@ public class DebriefRibbonFile
     }
   }
 
-
-
-
   private static RibbonTask fileTask;
-
-
-
 
   protected static void addFileTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Session session, final Runnable resetAction)
@@ -292,6 +286,7 @@ public class DebriefRibbonFile
         RibbonElementPriority.TOP);
     MenuUtils.addCommand("Open", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.TOP);
+    final SavePopupMenu savePopup = new SavePopupMenu(session,ribbon.getRibbonFrame());
     MenuUtils.addCommand("Save", "icons/16/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
         new PopupPanelCallback()
@@ -300,31 +295,13 @@ public class DebriefRibbonFile
       @Override
       public JPopupPanel getPopupPanel(JCommandButton commandButton)
       {
-        return new SavePopupMenu(session,ribbon.getRibbonFrame());
+        return savePopup;
       }
     });
-
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
-    /*final JRibbonBand exitMenu = new JRibbonBand("Exit", null);
-    MenuUtils.addCommand("Exit", "icons/16/exit.png", new AbstractAction()
-    {
-      *//**
-       *
-       *//*
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.exit(0);
-      }
-    }, exitMenu, RibbonElementPriority.TOP);
-    exitMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
-        exitMenu));
-
-*/    final JRibbonBand importMenu = new JRibbonBand("Import", null);
+    final JRibbonBand importMenu = new JRibbonBand("Import", null);
     MenuUtils.addCommand("Replay", "icons/16/import.png",
         new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), 
         importMenu, RibbonElementPriority.TOP);
@@ -349,7 +326,7 @@ public class DebriefRibbonFile
 
 
 
-  public static void doFileOpen(String[] fileTypes, String descr, boolean isRepFile,Runnable doReset)
+  public static void doFileOpen(final String[] fileTypes, final String descr, final boolean isRepFile,final Runnable doReset)
   {
     //load the new selected file
     final File fileToOpen = showOpenDialog(fileTypes,descr);
@@ -385,9 +362,9 @@ public class DebriefRibbonFile
 
 
 
-  public static void saveChanges(String currentFileName,Session session,JFrame theFrame)
+  public static void saveChanges(final String currentFileName,final Session session,final JFrame theFrame)
   {
-    File targetFile = new File(currentFileName);
+    final File targetFile = new File(currentFileName);
     if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
         || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) 
     {        
@@ -432,23 +409,22 @@ public class DebriefRibbonFile
       final Image saveImage = MenuUtils.createImage("icons/16/save.png");
       final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(saveImage, new Dimension(
           16, 16));
-      JCommandMenuButton saveButton = new JCommandMenuButton("Save",imageIcon);
+      final JCommandMenuButton saveButton = new JCommandMenuButton("Save",imageIcon);
       saveButton.getActionModel().addActionListener(new DoSave(session, theFrame));
       addMenuButton(saveButton);
       final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
       final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon.getIcon(saveAsImage, new Dimension(
           16, 16));
-      JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",imageIcon2);
+      final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",imageIcon2);
       saveAsButton.getActionModel().addActionListener(new DoSaveAs(session, theFrame));
       addMenuButton(saveAsButton);
     }
   }
 
-
-
-
   public static RibbonTask getFileTask()
   {
     return fileTask;
   }
+
+
 }
