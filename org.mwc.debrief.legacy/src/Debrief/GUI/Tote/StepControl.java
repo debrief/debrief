@@ -399,7 +399,6 @@ abstract public class StepControl implements Editable,
     {
       _myHighlighters = new Vector<PlotHighlighter>(0, 1);
       _myHighlighters.add(_defaultHighlighter);
-      _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.RangeHighlighter());
       _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter());
     }
 
