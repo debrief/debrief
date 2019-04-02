@@ -1307,10 +1307,6 @@ public final class SwingStepControl extends StepControl implements
 			final SwingStepControl ssc = new SwingStepControl(null, layers, null, null, null,
 					null);
 
-			// ok, set it's date value
-			// get our date format to use
-			final String format = "'T+' SSS";
-
 			// check this is valid
 			final MWC.GUI.Properties.DateFormatPropertyEditor pe = new MyDateEditor();
 
@@ -1318,66 +1314,7 @@ public final class SwingStepControl extends StepControl implements
 
 			// check we found tags
 			assertNotNull("tags got found from property editor", tags);
-			assertEquals("tags found from property editor", 8, tags.length);
-
-			boolean found = false;
-
-			for (int i = 0; i < tags.length; i++)
-			{
-				final String thisTag = tags[i];
-				if (thisTag.equals(format))
-				{
-					found = true;
-					break;
-				}
-			}
-			// did we find this format?
-			assertTrue("We are testing with valid format", found);
-
-			// so, use it!
-			ssc.setDateFormat(format);
-
-			// now set a default time
-			final java.util.Calendar start = new java.util.GregorianCalendar(2001, 5, 7, 12,
-					22, 00);
-
-			// and the current
-			final java.util.Calendar current = new java.util.GregorianCalendar(2001, 5, 7, 12,
-					26, 35);
-
-			// and a previous time
-			final java.util.Calendar earlier = new java.util.GregorianCalendar(2001, 5, 7, 12,
-					17, 33);
-
-			// check we handle missing start time
-			final String blank = ssc.getNewTime(new HiResDate(current.getTime().getTime()));
-
-			assertEquals("Managing fact that sliders not yet initialised", blank, "N/A");
-
-			// set this as the current time
-			ssc.setToolboxStartTime(new HiResDate(start.getTime().getTime()));
-
-			// set the time zero
-			ssc.setTimeZero(new HiResDate(start.getTime()));
-
-			// and to the test
-
-			// try output before and after our time
-			assertEquals("before our time", ssc.getNewTime(new HiResDate(current.getTime()
-					.getTime())), "T +275s");
-			assertEquals("after our time", ssc.getNewTime(new HiResDate(earlier.getTime()
-					.getTime())), "T -267s");
-
-			// hey, try another format
-			final String new_format = "'T+' MM:SS";
-
-			ssc.setDateFormat(new_format);
-
-			// try output before and after our time
-			assertEquals("before our current time", ssc.getNewTime(new HiResDate(current
-					.getTime().getTime())), "T +4:35");
-			assertEquals("after our current time", ssc.getNewTime(new HiResDate(earlier
-					.getTime().getTime())), "T -4:27");
+			assertEquals("tags found from property editor", 6, tags.length);
 
 			// and ditch the stuff
 			ssc.closeMe();
