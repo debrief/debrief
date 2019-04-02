@@ -1325,17 +1325,7 @@ abstract public class StepControl implements Editable,
   ///////////////////////////////////////////////////////////
   public static final class MyDateEditor extends MWC.GUI.Properties.DateFormatPropertyEditor
   {
-    public final String[] getTags()
-    {
-      final String[] parents = super.getTags();
-      final String[] newS = new String[parents.length + 2];
-
-      System.arraycopy(parents, 0, newS, 0, parents.length);
-      newS[parents.length] = "'T+' SSS";
-      newS[parents.length + 1] = "'T+' MM:SS";
-
-      return newS;
-    }
+    
   }
 
   ////////////////////////////////////////////////////////////
