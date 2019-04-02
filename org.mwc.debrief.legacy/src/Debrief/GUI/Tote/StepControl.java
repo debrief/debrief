@@ -778,7 +778,7 @@ abstract public class StepControl implements Editable,
 
   public final BoundedInteger getFontSize()
   {
-    return new BoundedInteger(_fontSize, 1, 30);
+    return new BoundedInteger(_fontSize, 1, 20);
   }
 
   public final void setFontSize(final BoundedInteger val)
