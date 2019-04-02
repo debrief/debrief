@@ -17,8 +17,7 @@ package org.mwc.debrief.lite.menu;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JFrame;
-
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -35,22 +34,13 @@ public class DebriefRibbonLite
   private static class ExitLiteApp implements ActionListener
   {
 
-    private JFrame _theFrame;
-    private Session _session;
-    public ExitLiteApp(final JFrame theFrame,final Session session)
-    {
-      _theFrame = theFrame;
-      _session = session;
-    }
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      _session.close();
-      _theFrame.dispose();
-      System.exit(0);
-
+      DebriefLiteApp.getInstance().exit();
     }
 
+    
   }
   private static class HelpAction implements ActionListener
   {
@@ -75,7 +65,7 @@ public class DebriefRibbonLite
     MenuUtils.addCommand("Help", "icons/16/help.png", new HelpAction(), liteMenu,
         RibbonElementPriority.TOP);
     MenuUtils.addCommand("Exit", "icons/16/open.png", 
-        new ExitLiteApp((JFrame)ribbon.getRibbonFrame(),session),
+        new ExitLiteApp(),
         liteMenu, RibbonElementPriority.TOP);
     
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(liteMenu));

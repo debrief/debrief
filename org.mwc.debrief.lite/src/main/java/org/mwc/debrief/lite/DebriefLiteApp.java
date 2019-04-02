@@ -35,6 +35,7 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
@@ -54,6 +55,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
+import org.mwc.debrief.lite.util.DoSaveAs;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -138,6 +140,10 @@ public class DebriefLiteApp implements FileDropListener
       }
     });
 
+  }
+  
+  public static DebriefLiteApp getInstance() {
+    return _instance;
   }
 
   /**
@@ -542,8 +548,49 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
-  protected void exit()
+  public void exit()
   {
+    if(DebriefLiteApp.isDirty()) {
+      int res = JOptionPane.showConfirmDialog(theFrame, "Save before exiting Debrief Lite?", "Warning", JOptionPane.WARNING_MESSAGE);
+      if(res == JOptionPane.OK_OPTION) {
+        final String currentFileName = DebriefLiteApp.currentFileName;
+        String outputFileName = null;
+        if(currentFileName!=null) {
+          final File currentFile = new File(currentFileName);
+          final File directory = currentFile.getParentFile();
+          if(currentFileName.endsWith(".dpf")) {
+            DebriefRibbonFile.saveChanges(currentFileName, session, theFrame);
+            exitApp();
+          }
+          else {
+            final String initialName = currentFile.getName().substring(0, currentFile.getName().lastIndexOf(".")); 
+            outputFileName = DoSaveAs.showSaveDialog(directory, initialName);
+          }
+        }
+        else {
+          outputFileName = DoSaveAs.showSaveDialog(null, "DebriefPlot");
+        }
+        if(outputFileName!=null) {
+          DebriefRibbonFile.saveChanges(outputFileName, session, theFrame);
+          exitApp();
+        }
+
+      }
+      else if(res == JOptionPane.CANCEL_OPTION) {
+        //do nothing
+      }
+      else {
+        exitApp();
+      }
+    }
+    else {
+      exitApp();
+    }
+    
+  }
+  
+  private void exitApp() {
+    session.close();
     theFrame.dispose();
   }
 
