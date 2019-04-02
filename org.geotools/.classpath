@@ -37,7 +37,6 @@
 	<classpathentry kind="lib" path="libs/si-units-java8-0.9.jar"/>
 	<classpathentry kind="lib" path="libs/jsr305-3.0.0.jar"/>
 	<classpathentry kind="lib" path="libs/uom-lib-common-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libs/unit-api-2.0-EDR.jar"/>
 	<classpathentry kind="lib" path="libs/systems-common-java8-0.9.jar"/>
 	<classpathentry kind="lib" path="libs/uom-se-1.0.9.jar"/>
 	<classpathentry kind="lib" path="libs/si-quantity-0.9.jar"/>
