@@ -58,6 +58,7 @@ public class LiteStepControl extends StepControl
     super(_parent);
     this.parent = _parent;
     setDateFormat(timeFormat);
+    _largeSteps = false;
   }
 
   public void setLayers(Layers _layers)
