@@ -692,10 +692,9 @@ public class DebriefLiteApp implements FileDropListener
           @Override
           public void run()
           {
+            setCursor(Cursor.WAIT_CURSOR);
             layerManager.createAndInitializeTree();
-            layerManager.dataModified(null, null);
             mapPane.repaint();
-
             restoreCursor();
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();
