@@ -985,7 +985,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
         }
         catch (InterruptedException e)
         {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
     }
