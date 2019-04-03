@@ -40,7 +40,7 @@ import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Time;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import si.uom.NonSI;
 import si.uom.SI;
 import tec.uom.se.AbstractUnit;
@@ -110,7 +110,7 @@ public class SampleData
     }
   }
 
-  public static final Unit<?> DEGREE_ANGLE = RADIAN.times(Math.PI / 180d);
+  public static final Unit<?> DEGREE_ANGLE = RADIAN.multiply(Math.PI / 180d);
 
   public StoreGroup getData(long count)
   {
@@ -127,28 +127,28 @@ public class SampleData
             null, SampleData.MILLIS);
     NumberDocumentBuilder speedSeries1b =
         new NumberDocumentBuilder(SPEED_ONE, METRE.divide(SECOND).asType(
-            Velocity.class), null, SampleData.MILLIS);
+            Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedSeries2b =
         new NumberDocumentBuilder(SPEED_TWO, METRE.divide(SECOND).asType(
-            Velocity.class), null, SampleData.MILLIS);
+            Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedSeries3 =
         new NumberDocumentBuilder(SPEED_THREE_LONGER, METRE.divide(SECOND)
-            .asType(Velocity.class), null, SampleData.MILLIS);
+            .asType(Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedEarly1 =
         new NumberDocumentBuilder(SPEED_EARLY, METRE.divide(SECOND).asType(
-            Velocity.class), null, SampleData.MILLIS);
+            Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedIrregularB =
         new NumberDocumentBuilder(SPEED_IRREGULAR2, METRE.divide(SECOND)
-            .asType(Velocity.class), null, SampleData.MILLIS);
+            .asType(Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedSeries4 =
         new NumberDocumentBuilder(SPEED_FOUR, METRE.divide(SECOND).asType(
-            Velocity.class), null, SampleData.MILLIS);
+            Speed.class), null, SampleData.MILLIS);
     NumberDocumentBuilder speedRadNoise =
         new NumberDocumentBuilder(SPEED_ONE_RAD, NonSI.DECIBEL, null,
             SampleData.MILLIS);
     NumberDocumentBuilder radNoiseLookup =
         new NumberDocumentBuilder(RAD_NOISE_LOOKUP, NonSI.DECIBEL, null, METRE
-            .divide(SECOND).asType(Velocity.class));
+            .divide(SECOND).asType(Speed.class));
     NumberDocumentBuilder length1 =
         new NumberDocumentBuilder(LENGTH_ONE, METRE.asType(Length.class), null,
             null);
@@ -162,7 +162,7 @@ public class SampleData
             null, null);
     NumberDocumentBuilder singletonRange1b =
         new NumberDocumentBuilder(RANGED_SPEED_SINGLETON, METRE.divide(SECOND)
-            .asType(Velocity.class), null, null);
+            .asType(Speed.class), null, null);
     NumberDocumentBuilder singletonLength =
         new NumberDocumentBuilder(LENGTH_SINGLETON, METRE.asType(Length.class),
             null, null);
@@ -302,7 +302,7 @@ public class SampleData
 
     NumberDocumentBuilder singletonRange2b =
         new NumberDocumentBuilder(RANGED_SPEED_SINGLETON, METRE.divide(SECOND)
-            .asType(Velocity.class), null, null);
+            .asType(Speed.class), null, null);
     double minR1 = 940d;
     double maxR1 = 1050d;
     Range speedRange1 = new Range(minR1, maxR1);

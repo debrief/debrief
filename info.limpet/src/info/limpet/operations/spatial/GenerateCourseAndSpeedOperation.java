@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DoubleDataset;
@@ -274,7 +274,7 @@ public class GenerateCourseAndSpeedOperation implements IOperation
           {
             protected Unit<?> getUnits()
             {
-              return METRE.divide(SECOND).asType(Velocity.class);
+              return METRE.divide(SECOND).asType(Speed.class);
             }
 
             protected String getOutputName(final String name)

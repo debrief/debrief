@@ -42,7 +42,7 @@ import java.util.List;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import si.uom.SI;
 
 import org.eclipse.january.dataset.IDataset;
@@ -312,7 +312,7 @@ public class DopplerShiftBetweenTracksOperation implements IOperation
       public double getSpeedAt(long time)
       {
         return aTests.valueAt(_speed, time, METRE.divide(SECOND).asType(
-            Velocity.class));
+            Speed.class));
       }
 
       @Override

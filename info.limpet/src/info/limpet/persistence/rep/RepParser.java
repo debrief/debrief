@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import si.uom.SI;
 
 public class RepParser extends FileParser
@@ -180,7 +180,7 @@ public class RepParser extends FileParser
                 SampleData.DEGREE_ANGLE, null, SampleData.MILLIS);
         _speed =
             new NumberDocumentBuilder(name + "-speed", METRE.divide(SECOND)
-                .asType(Velocity.class), null, SampleData.MILLIS);
+                .asType(Speed.class), null, SampleData.MILLIS);
         _depth =
             new NumberDocumentBuilder(name + "-depth", METRE, null,
                 SampleData.MILLIS);

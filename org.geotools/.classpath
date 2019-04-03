@@ -41,7 +41,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/systems-common-java8-0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/uom-se-1.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/si-quantity-0.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/unit-api-1.0.jar">
+	<classpathentry exported="true" kind="lib" path="libs/unit-api-1.0.jar" sourcepath="libs/sources/unit-api-1.0-sources.jar">
 		<accessrules>
 			<accessrule kind="accessible" pattern="javax/measure/*"/>
 		</accessrules>

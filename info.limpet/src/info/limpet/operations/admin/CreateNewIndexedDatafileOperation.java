@@ -74,7 +74,7 @@ public class CreateNewIndexedDatafileOperation extends BinaryQuantityOperation
         final Unit<?> second)
     {
       // return product of units
-      return first.times(second);
+      return first.multiply(second);
     }
 
     @Override

@@ -14,10 +14,13 @@
  *****************************************************************************/
 package info.limpet.persistence.csv;
 
+
+import static systems.uom.common.USCustomary.YARD;
+import static systems.uom.common.USCustomary.MILE;
+
 import static si.uom.NonSI.BAR;
 import static si.uom.NonSI.DECIBEL;
 import static si.uom.NonSI.NAUTICAL_MILE;
-import static si.uom.NonSI.YARD;
 import static si.uom.SI.CENTI;
 import static si.uom.SI.GRAM;
 import static si.uom.SI.HERTZ;
@@ -52,6 +55,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.AngularVelocity;
 import javax.measure.quantity.Dimensionless;
@@ -60,11 +64,13 @@ import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import javax.measure.quantity.VolumetricDensity;
 import si.uom.NonSI;
 import si.uom.SI;
 import javax.measure.Unit;
+import org.geotools.measure.Units;
+import si.uom.SI;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
@@ -616,15 +622,15 @@ public class CsvParser extends FileParser
         new String[]
         {"g/cm3", "g/cm"}));
     _candidates.add(new TemporalSeriesSupporter(NAUTICAL_MILE.divide(
-        SECOND.times(3600)).asType(Velocity.class), null, "kts"));
-    _candidates.add(new TemporalSeriesSupporter(NonSI.MILE.divide(
-        SI.SECOND.times(60 * 60)).asType(Velocity.class), null, new String[]
+        SECOND.multiply(3600)).asType(Speed.class), null, "kts"));
+    _candidates.add(new TemporalSeriesSupporter(MILE.divide(
+        SI.SECOND.multiply(60 * 60)).asType(Speed.class), null, new String[]
     {"mph"}));
     _candidates.add(new TemporalSeriesSupporter(NonSI.REVOLUTION.divide(SECOND
-        .times(60)), null, new String[]
+        .multiply(60)), null, new String[]
     {"rpm"}));
     _candidates.add(new TemporalSeriesSupporter(METRE.divide(SECOND).asType(
-        Velocity.class), null, new String[]
+        Speed.class), null, new String[]
     {"M/Sec", "m/s"}));
     _candidates.add(new TemporalSeriesSupporter(SI.CELSIUS
         .asType(Temperature.class), null, new String[]

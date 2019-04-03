@@ -59,7 +59,7 @@ import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
-import javax.measure.quantity.Velocity;
+import javax.measure.quantity.Speed;
 import si.uom.NonSI;
 import si.uom.SI;
 import tec.uom.se.AbstractUnit;
@@ -355,7 +355,7 @@ public class OperationsLibrary
     // Speed
     conversions.add(new UnitConversionOperation(METRES_PER_SECOND));
     conversions.add(new UnitConversionOperation(NAUTICAL_MILE.divide(
-        SECOND.times(3600)).asType(Velocity.class)));
+        SECOND.multiply(3600)).asType(Speed.class)));
 
     // Acceleration
     conversions.add(new UnitConversionOperation(METRES_PER_SQUARE_SECOND));
@@ -391,7 +391,7 @@ public class OperationsLibrary
     create.add(new CreateSingletonGenerator("decibels", NonSI.DECIBEL));
 
     create.add(new CreateSingletonGenerator("speed (m/s)", METRE.divide(SECOND)
-        .asType(Velocity.class)));
+        .asType(Speed.class)));
 
     create.add(new CreateSingletonGenerator("course (degs)",
         SampleData.DEGREE_ANGLE.asType(Angle.class)));
