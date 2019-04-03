@@ -1318,7 +1318,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				final boolean p4, final int p5, final int p6)
 		{
 			final PropertyDescriptor pd = (PropertyDescriptor) p2;
-			final JLabel res = new JLabel(pd.getName());
+			final String displayName = pd.getDisplayName();
+			final String name = displayName != null ? displayName : pd.getName();
+			final JLabel res = new JLabel(name);
 			res.setPreferredSize(res.getMinimumSize());
 			final String myStr = pd.getShortDescription();
 			res.setToolTipText(myStr);

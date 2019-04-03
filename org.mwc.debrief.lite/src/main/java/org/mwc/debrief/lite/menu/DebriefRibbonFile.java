@@ -115,7 +115,6 @@ public class DebriefRibbonFile
     }
   }
 
-
   private static class OpenPlotAction extends AbstractAction
   {
 
@@ -129,7 +128,7 @@ public class DebriefRibbonFile
     private boolean isRepFile;
 
     public OpenPlotAction(final JFrame theFrame, final Session session,
-        final Runnable doReset,final boolean isRep)
+        final Runnable doReset, final boolean isRep)
     {
       _theFrame = theFrame;
       _session = session;
@@ -153,18 +152,19 @@ public class DebriefRibbonFile
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
             final File f = new File(DebriefLiteApp.currentFileName);
-            final String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
-            final String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
-            if(newFileName == null || newFileName.length() ==0)
+            final String newname = f.getName().substring(0, f.getName()
+                .lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f
+                .getParentFile(), newname);
+            if (newFileName == null || newFileName.length() == 0)
             {
               // drop out, don't do reset.
               return;
             }
-            DebriefLiteApp.currentFileName.replaceAll(
-                ".rep", ".dpf");
+            DebriefLiteApp.currentFileName.replaceAll(".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }
-          else if(DebriefLiteApp.currentFileName == null)
+          else if (DebriefLiteApp.currentFileName == null)
           {
             // ok, we have to do a save-as operation
             DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
@@ -176,13 +176,11 @@ public class DebriefRibbonFile
             DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
                 _session, _theFrame);
           }
-
-          doFileOpen(fileTypes,descr,isRepFile,_doReset);
-
+          doFileOpen(fileTypes, descr, isRepFile, _doReset);
         }
         else if (res == JOptionPane.NO_OPTION)
         {
-          doFileOpen(fileTypes,descr,isRepFile,_doReset);
+          doFileOpen(fileTypes, descr, isRepFile, _doReset);
         }
         else
         {
@@ -191,13 +189,11 @@ public class DebriefRibbonFile
       }
       else
       {
-        doFileOpen(fileTypes,descr,isRepFile,_doReset);
+        doFileOpen(fileTypes, descr, isRepFile, _doReset);
       }
     }
 
   }
-
-
 
   private static class NewFileAction extends AbstractAction
   {
@@ -232,18 +228,19 @@ public class DebriefRibbonFile
               && DebriefLiteApp.currentFileName.endsWith(".rep"))
           {
             final File f = new File(DebriefLiteApp.currentFileName);
-            final String newname = f.getName().substring(0,f.getName().lastIndexOf(".rep"));
-            final String newFileName = DoSaveAs.showSaveDialog(f.getParentFile(), newname);
-            if(newFileName == null || newFileName.length() ==0)
+            final String newname = f.getName().substring(0, f.getName()
+                .lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f
+                .getParentFile(), newname);
+            if (newFileName == null || newFileName.length() == 0)
             {
               // drop out, don't do reset.
               return;
             }
-            DebriefLiteApp.currentFileName.replaceAll(
-                ".rep", ".dpf");
+            DebriefLiteApp.currentFileName.replaceAll(".rep", ".dpf");
             DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
           }
-          else if(DebriefLiteApp.currentFileName == null)
+          else if (DebriefLiteApp.currentFileName == null)
           {
             // ok, we have to do a save-as operation
             DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
@@ -276,13 +273,37 @@ public class DebriefRibbonFile
 
   private static RibbonTask fileTask;
 
+  private static class ImportReplayAction extends AbstractAction
+  {
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -804226120198968206L;
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      final File fileToOpen = showOpenDialog(new String[]
+      {"rep"}, "Debrief replay file");
+      if (fileToOpen != null)
+      {
+        DebriefLiteApp.openRepFile(fileToOpen);
+      }
+    }
+
+  }
+
+
   protected static void addFileTab(final JRibbon ribbon,
-      final GeoToolMapRenderer geoMapRenderer, final Session session, final Runnable resetAction)
+      final GeoToolMapRenderer geoMapRenderer, final Session session,
+      final Runnable resetAction)
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
+
         RibbonElementPriority.TOP);
     MenuUtils.addCommand("Open", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.TOP);
@@ -290,14 +311,14 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("Save", "icons/16/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
         new PopupPanelCallback()
-    {
+        {
 
-      @Override
-      public JPopupPanel getPopupPanel(JCommandButton commandButton)
-      {
-        return savePopup;
-      }
-    });
+          @Override
+          public JPopupPanel getPopupPanel(JCommandButton commandButton)
+          {
+            return savePopup;
+          }
+        });
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
@@ -323,53 +344,52 @@ public class DebriefRibbonFile
     ribbon.addTask(fileTask);
   }
 
-
-
-
-  public static void doFileOpen(final String[] fileTypes, final String descr, final boolean isRepFile,final Runnable doReset)
+  public static void doFileOpen(String[] fileTypes, String descr,
+      boolean isRepFile, Runnable doReset)
   {
-    //load the new selected file
-    final File fileToOpen = showOpenDialog(fileTypes,descr);
-    if(fileToOpen !=null) {
+    // load the new selected file
+    final File fileToOpen = showOpenDialog(fileTypes, descr);
+    if (fileToOpen != null)
+    {
       doReset.run();
-      if(isRepFile) {
+      if (isRepFile)
+      {
         DebriefLiteApp.openRepFile(fileToOpen);
       }
-      else{
+      else
+      {
         DebriefLiteApp.openPlotFile(fileToOpen);
       }
     }
   }
 
-
-
-
-  public static File showOpenDialog(final String[] fileTypes,final String descr)
+  public static File showOpenDialog(final String[] fileTypes,
+      final String descr)
   {
     JFileChooser fileChooser = new JFileChooser();
-    FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr, fileTypes); 
-    fileChooser.setFileFilter(restrict); 
+    FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr,
+        fileTypes);
+    fileChooser.setFileFilter(restrict);
     fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     fileChooser.setMultiSelectionEnabled(false);
     int res = fileChooser.showOpenDialog(null);
-    if(res == JFileChooser.APPROVE_OPTION) {
+    if (res == JFileChooser.APPROVE_OPTION)
+    {
       return fileChooser.getSelectedFile();
     }
 
     return null;
   }
 
-
-
-
-  public static void saveChanges(final String currentFileName,final Session session,final JFrame theFrame)
+  public static void saveChanges(String currentFileName, Session session,
+      JFrame theFrame)
   {
-    final File targetFile = new File(currentFileName);
-    if((targetFile!=null && targetFile.exists() && targetFile.canWrite()) 
-        || (targetFile!=null && !targetFile.exists() && targetFile.getParentFile().canWrite()) ) 
-    {        
-
-      //export to this file.
+    File targetFile = new File(currentFileName);
+    if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
+        || (targetFile != null && !targetFile.exists() && targetFile
+            .getParentFile().canWrite()))
+    {
+      // export to this file.
       // if it already exists, check with rename/cancel
       OutputStream stream = null;
       try
@@ -381,7 +401,8 @@ public class DebriefRibbonFile
       {
         Application.logError2(Application.ERROR, "Can't find file", e1);
       }
-      finally {
+      finally
+      {
         try
         {
           stream.close();
@@ -391,7 +412,7 @@ public class DebriefRibbonFile
         }
         catch (IOException e1)
         {
-          //ignore
+          // ignore
         }
       }
     }
@@ -425,6 +446,4 @@ public class DebriefRibbonFile
   {
     return fileTask;
   }
-
-
 }

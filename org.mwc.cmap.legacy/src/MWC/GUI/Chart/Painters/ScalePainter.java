@@ -863,7 +863,7 @@ public class ScalePainter implements Plottable, Serializable, ExcludeFromRightCl
       {
         final PropertyDescriptor[] res = {
           prop("Color", "the Color to draw the Scale", FORMAT),
-          displayProp("FillBackground", "Fill Background", "whether fill background for this Scale", FORMAT),
+          displayProp("FillBackground", "Fill background", "whether fill background for this Scale", FORMAT),
           prop("Background", "the background for this Scale", FORMAT),
           prop("Font", "the font for this Scale", FORMAT),
        /*   displayProp("SemiTransparent", "Semi transparent",

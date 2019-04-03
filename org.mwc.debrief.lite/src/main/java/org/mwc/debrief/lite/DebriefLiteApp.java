@@ -709,7 +709,7 @@ public class DebriefLiteApp implements FileDropListener
       if (_stepControl.getDateFormat() != null)
       {
         DebriefRibbonTimeController.assignThisTimeFormat(_stepControl
-            .getDateFormat(), false);
+            .getDateFormat(), true);
       }
     }
     catch (final FileNotFoundException e)

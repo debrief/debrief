@@ -241,16 +241,19 @@ public class OutlinePanelView extends SwingLayerManager implements
     final JButton editButton = createCommandButton("Edit",
         "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
+    editButton.setEnabled(false);
     commandBar.add(editButton);
     
     final JButton cutButton =  createCommandButton("Cut",
-        "icons/16/cut.png");
+        "icons/24/cut.png");
     _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
+    cutButton.setEnabled(false);
     commandBar.add(cutButton);
     
     final JButton copyButton = createCommandButton("Copy",
-        "icons/16/copy_to_clipboard.png");
+        "icons/24/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
+    copyButton.setEnabled(false);
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
@@ -259,6 +262,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         clipboardNotEmpty, new Or(new And(
             selectionIsTrack, clipboardIsFixes), new And(
                 selectionIsLayer, clipboardIsShapes)))));
+    pasteButton.setEnabled(false);
     commandBar.add(pasteButton);    
 
     final JButton addLayerButton = createCommandButton("Add Layer",
@@ -270,6 +274,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
+    deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
 
     final JButton refreshViewButton = createCommandButton("Update View",
