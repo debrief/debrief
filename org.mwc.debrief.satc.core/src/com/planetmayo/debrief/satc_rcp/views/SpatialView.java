@@ -80,10 +80,10 @@ import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings;
 import com.planetmayo.debrief.satc_rcp.model.SpatialViewSettings.SpatialSettingsListener;
 import com.planetmayo.debrief.satc_rcp.ui.UIListener;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 

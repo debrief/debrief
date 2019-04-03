@@ -29,14 +29,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.measure.converter.UnitConverter;
-import javax.measure.unit.Dimension;
 import si.uom.SI;
 import javax.measure.Unit;
+import javax.measure.UnitConverter;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.metadata.AxesMetadata;
+import org.locationtech.jts.geom.Dimension;
 
 public class CollectionComplianceTests
 {

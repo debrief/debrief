@@ -18,7 +18,7 @@ import java.awt.Color;
 import java.util.Date;
 
 import com.planetmayo.debrief.satc.model.states.BaseRange.IncompatibleStateException;
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.geom.LineString;
 
 public class BoundedState implements Comparable<BoundedState>
 {

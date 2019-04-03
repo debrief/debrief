@@ -14,15 +14,15 @@
  *****************************************************************************/
 package info.limpet.operations;
 
-import static javax.measure.unit.NonSI.MINUTE;
-import static javax.measure.unit.NonSI.NAUTICAL_MILE;
-import static javax.measure.unit.SI.CELSIUS;
-import static javax.measure.unit.SI.HERTZ;
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.METRES_PER_SECOND;
-import static javax.measure.unit.SI.METRES_PER_SQUARE_SECOND;
-import static javax.measure.unit.SI.RADIAN;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.NonSI.MINUTE;
+import static si.uom.NonSI.NAUTICAL_MILE;
+import static si.uom.SI.CELSIUS;
+import static si.uom.SI.HERTZ;
+import static si.uom.SI.METRE;
+import static si.uom.SI.METRES_PER_SECOND;
+import static si.uom.SI.METRES_PER_SQUARE_SECOND;
+import static si.uom.SI.RADIAN;
+import static si.uom.SI.SECOND;
 import info.limpet.IOperation;
 import info.limpet.IStoreItem;
 import info.limpet.impl.SampleData;
@@ -60,9 +60,11 @@ import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Velocity;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.NonSI;
+import si.uom.SI;
+import tec.uom.se.AbstractUnit;
+
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.Maths;
@@ -142,7 +144,7 @@ public class OperationsLibrary
       @Override
       protected Unit<?> getUnaryOutputUnit(Unit<?> first)
       {
-        return Dimensionless.UNIT;
+        return AbstractUnit.ONE;
       }
 
       @Override

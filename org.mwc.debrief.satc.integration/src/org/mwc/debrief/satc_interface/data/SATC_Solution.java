@@ -108,7 +108,7 @@ import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.State;
 import com.planetmayo.debrief.satc.util.MathUtils;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 public class SATC_Solution extends BaseLayer implements
     NeedsToBeInformedOfRemove, NeedsToKnowAboutLayers, WatchableList,
@@ -196,7 +196,7 @@ public class SATC_Solution extends BaseLayer implements
     @Override
     public void step(final CoreRoute thisRoute, final State thisState)
     {
-      final com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+      final org.locationtech.jts.geom.Point loc = thisState.getLocation();
       // convert to screen
       final WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
 
@@ -258,7 +258,7 @@ public class SATC_Solution extends BaseLayer implements
     @Override
     public void step(final CoreRoute thisRoute, final State thisState)
     {
-      final com.vividsolutions.jts.geom.Point loc = thisState.getLocation();
+      final org.locationtech.jts.geom.Point loc = thisState.getLocation();
       // convert to our coord system
       final WorldLocation wLoc = conversions.toLocation(loc.getCoordinate());
       final double range = wLoc.rangeFrom(origin);

@@ -44,8 +44,8 @@ import com.planetmayo.debrief.satc.model.legs.StraightRoute;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.TopologyException;
 
 public abstract class AbstractSolutionGenerator implements ISolutionGenerator
 {

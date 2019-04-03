@@ -14,7 +14,7 @@
  */
 package com.planetmayo.debrief.satc.model.states;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * class representing a bounded set of locations, stored as a polygon

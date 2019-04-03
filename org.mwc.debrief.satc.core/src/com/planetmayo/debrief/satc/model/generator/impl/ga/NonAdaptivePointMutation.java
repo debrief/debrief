@@ -21,7 +21,7 @@ import org.uncommons.maths.random.Probability;
 
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.util.MathUtils;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 public class NonAdaptivePointMutation extends AbstractMutation
 {

@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/org.mwc.debrief.satc.core"/>
+	<classpathentry kind="lib" path="libs/jts-core-1.16.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

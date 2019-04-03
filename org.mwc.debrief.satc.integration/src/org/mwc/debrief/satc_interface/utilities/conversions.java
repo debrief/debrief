@@ -17,7 +17,7 @@ package org.mwc.debrief.satc_interface.utilities;
 import MWC.GenericData.WorldLocation;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 
 /** convenience methods to move between SATC and Debrief location models
  * 

@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 /* the state of an object at a specific time
  * 

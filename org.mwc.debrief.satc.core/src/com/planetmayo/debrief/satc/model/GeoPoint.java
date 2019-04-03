@@ -17,8 +17,8 @@ package com.planetmayo.debrief.satc.model;
 import java.text.DecimalFormat;
 
 import com.planetmayo.debrief.satc.util.GeoSupport;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 
 public class GeoPoint extends ModelObject
 {

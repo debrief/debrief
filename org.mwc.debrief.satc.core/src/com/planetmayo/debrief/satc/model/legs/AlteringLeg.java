@@ -15,7 +15,7 @@
 package com.planetmayo.debrief.satc.model.legs;
 
 import com.planetmayo.debrief.satc.model.states.SpeedRange;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Point;
 
 public class AlteringLeg extends CoreLeg
 {

@@ -46,12 +46,12 @@ import com.planetmayo.debrief.satc.util.calculator.GeodeticCalculator;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc.zigdetector.OwnshipLegDetector;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
