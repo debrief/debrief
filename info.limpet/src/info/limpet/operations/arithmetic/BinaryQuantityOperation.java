@@ -29,8 +29,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import javax.measure.unit.NonSI;
-import javax.measure.unit.Unit;
+import si.uom.NonSI;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Comparisons;
 import org.eclipse.january.dataset.Comparisons.Monotonicity;

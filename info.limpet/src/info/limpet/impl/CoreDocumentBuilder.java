@@ -7,7 +7,7 @@ import info.limpet.IDocumentBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.DoubleDataset;

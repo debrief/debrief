@@ -2,13 +2,13 @@ package info.limpet.impl;
 
 import info.limpet.ICommand;
 import info.limpet.operations.RangedEntity;
+import tec.uom.se.AbstractUnit;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Iterator;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DatasetFactory;
@@ -96,7 +96,7 @@ public class NumberDocument extends Document<Double> implements RangedEntity
 
     if (qType == null)
     {
-      this.qType = Dimensionless.UNIT;
+      this.qType = AbstractUnit.ONE;
     }
     else
     {

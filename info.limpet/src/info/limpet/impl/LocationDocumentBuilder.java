@@ -8,7 +8,7 @@ import info.limpet.operations.spatial.IGeoCalculator;
 import java.awt.geom.Point2D;
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.IDataset;

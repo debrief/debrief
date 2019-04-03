@@ -14,17 +14,17 @@
  *****************************************************************************/
 package info.limpet.persistence.csv;
 
-import static javax.measure.unit.NonSI.BAR;
-import static javax.measure.unit.NonSI.DECIBEL;
-import static javax.measure.unit.NonSI.NAUTICAL_MILE;
-import static javax.measure.unit.NonSI.YARD;
-import static javax.measure.unit.SI.CENTI;
-import static javax.measure.unit.SI.GRAM;
-import static javax.measure.unit.SI.HERTZ;
-import static javax.measure.unit.SI.METER;
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.MILLI;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.NonSI.BAR;
+import static si.uom.NonSI.DECIBEL;
+import static si.uom.NonSI.NAUTICAL_MILE;
+import static si.uom.NonSI.YARD;
+import static si.uom.SI.CENTI;
+import static si.uom.SI.GRAM;
+import static si.uom.SI.HERTZ;
+import static si.uom.SI.METRE;
+import static si.uom.SI.MILLI;
+import static si.uom.SI.SECOND;
+
 import info.limpet.IDocumentBuilder;
 import info.limpet.IStoreItem;
 import info.limpet.impl.LocationDocumentBuilder;
@@ -62,9 +62,9 @@ import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Velocity;
 import javax.measure.quantity.VolumetricDensity;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.NonSI;
+import si.uom.SI;
+import javax.measure.Unit;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;

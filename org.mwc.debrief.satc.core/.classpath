@@ -14,9 +14,8 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="tests"/>
-	<classpathentry exported="true" kind="lib" path="libs/jts-1.13.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/joda-time-2.1.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/flanagan.jar"/>
-	<classpathentry kind="lib" path="libs/unit-api-2.0-EDR.jar"/>
+	<classpathentry kind="lib" path="libs/jts-core-1.16.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

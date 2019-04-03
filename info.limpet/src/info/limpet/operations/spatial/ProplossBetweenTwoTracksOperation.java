@@ -24,7 +24,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.unit.NonSI;
+import si.uom.NonSI;
 
 public class ProplossBetweenTwoTracksOperation extends TwoTrackOperation
 {

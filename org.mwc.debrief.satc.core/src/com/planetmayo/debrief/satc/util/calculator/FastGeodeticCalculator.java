@@ -19,7 +19,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.GeneralPath;
 import java.io.IOException;
 import java.text.Format;
-import javax.measure.unit.NonSI;
+import si.uom.NonSI;
 import static java.lang.Math.*;
 
 import org.opengis.referencing.datum.Datum;

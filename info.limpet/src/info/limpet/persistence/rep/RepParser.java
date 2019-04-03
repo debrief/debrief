@@ -1,7 +1,7 @@
 package info.limpet.persistence.rep;
 
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.SI.METRE;
+import static si.uom.SI.SECOND;
 import info.limpet.IStoreItem;
 import info.limpet.impl.LocationDocument;
 import info.limpet.impl.LocationDocumentBuilder;
@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.measure.quantity.Velocity;
-import javax.measure.unit.SI;
+import si.uom.SI;
 
 public class RepParser extends FileParser
 {

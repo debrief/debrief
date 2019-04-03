@@ -8,7 +8,7 @@ import java.awt.geom.Point2D;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;

@@ -12,7 +12,7 @@ import info.limpet.operations.CollectionComplianceTests;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DoubleDataset;

@@ -6,7 +6,7 @@ import info.limpet.operations.arithmetic.UnaryQuantityOperation;
 
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 

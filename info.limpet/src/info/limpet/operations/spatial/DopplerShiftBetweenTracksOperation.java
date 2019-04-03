@@ -14,10 +14,10 @@
  *****************************************************************************/
 package info.limpet.operations.spatial;
 
-import static javax.measure.unit.SI.HERTZ;
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.RADIAN;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.SI.HERTZ;
+import static si.uom.SI.METRE;
+import static si.uom.SI.RADIAN;
+import static si.uom.SI.SECOND;
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;
@@ -43,7 +43,7 @@ import java.util.List;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Velocity;
-import javax.measure.unit.SI;
+import si.uom.SI;
 
 import org.eclipse.january.dataset.IDataset;
 

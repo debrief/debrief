@@ -14,10 +14,10 @@
  *****************************************************************************/
 package info.limpet.impl;
 
-import static javax.measure.unit.SI.HERTZ;
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.RADIAN;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.SI.HERTZ;
+import static si.uom.SI.METRE;
+import static si.uom.SI.RADIAN;
+import static si.uom.SI.SECOND;
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;
@@ -41,9 +41,9 @@ import javax.measure.quantity.Duration;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Velocity;
-import javax.measure.unit.NonSI;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.NonSI;
+import si.uom.SI;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DatasetFactory;
 import org.eclipse.january.dataset.StringDataset;

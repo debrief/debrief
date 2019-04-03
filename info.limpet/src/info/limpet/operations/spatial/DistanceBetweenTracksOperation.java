@@ -14,7 +14,7 @@
  *****************************************************************************/
 package info.limpet.operations.spatial;
 
-import static javax.measure.unit.SI.METRE;
+import static si.uom.SI.METRE;
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;

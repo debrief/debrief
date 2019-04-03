@@ -14,8 +14,8 @@
  *****************************************************************************/
 package info.limpet.operations.spatial;
 
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.SI.METRE;
+import static si.uom.SI.SECOND;
 import info.limpet.ICommand;
 import info.limpet.IContext;
 import info.limpet.IDocument;
@@ -36,7 +36,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.measure.quantity.Velocity;
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DoubleDataset;
 import org.eclipse.january.dataset.IDataset;

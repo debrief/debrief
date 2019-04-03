@@ -35,11 +35,17 @@
 	<classpathentry exported="true" kind="lib" path="libs/jt-zonalstats-1.5.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jts-core-1.16.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/gt-api-20.3.jar"/>
-	<classpathentry kind="lib" path="libs/si-units-java8-0.9.jar"/>
-	<classpathentry kind="lib" path="libs/jsr305-3.0.0.jar"/>
-	<classpathentry kind="lib" path="libs/uom-lib-common-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libs/systems-common-java8-0.9.jar"/>
-	<classpathentry kind="lib" path="libs/uom-se-1.0.9.jar"/>
-	<classpathentry kind="lib" path="libs/si-quantity-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/si-units-java8-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/uom-lib-common-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/systems-common-java8-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/uom-se-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/si-quantity-0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/unit-api-1.0.jar">
+		<accessrules>
+			<accessrule kind="accessible" pattern="javax/measure/*"/>
+		</accessrules>
+	</classpathentry>
+	<classpathentry exported="true" kind="lib" path="libs/unit-ri-1.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

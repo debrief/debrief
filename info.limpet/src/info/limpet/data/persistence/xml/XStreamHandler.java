@@ -22,6 +22,11 @@ import info.limpet.impl.StoreGroup;
 import info.limpet.operations.AbstractCommand;
 import info.limpet.operations.arithmetic.simple.AddQuantityOperation.AddQuantityValues;
 import info.limpet.operations.arithmetic.simple.MultiplyQuantityOperation.MultiplyQuantityValues;
+import tec.uom.se.function.MultiplyConverter;
+import tec.uom.se.unit.AlternateUnit;
+import tec.uom.se.unit.BaseUnit;
+import tec.uom.se.unit.ProductUnit;
+import tec.uom.se.unit.TransformedUnit;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,12 +34,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
-
-import javax.measure.converter.MultiplyConverter;
-import javax.measure.unit.AlternateUnit;
-import javax.measure.unit.BaseUnit;
-import javax.measure.unit.ProductUnit;
-import javax.measure.unit.TransformedUnit;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.resources.IFile;

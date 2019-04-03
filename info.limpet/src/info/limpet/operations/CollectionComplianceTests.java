@@ -14,8 +14,8 @@
  *****************************************************************************/
 package info.limpet.operations;
 
-import static javax.measure.unit.SI.METRE;
-import static javax.measure.unit.SI.SECOND;
+import static si.uom.SI.METRE;
+import static si.uom.SI.SECOND;
 import info.limpet.IDocument;
 import info.limpet.IStoreGroup;
 import info.limpet.IStoreItem;
@@ -31,8 +31,8 @@ import java.util.List;
 
 import javax.measure.converter.UnitConverter;
 import javax.measure.unit.Dimension;
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.SI;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.DoubleDataset;

@@ -26,7 +26,7 @@ import info.limpet.operations.arithmetic.InterpolatedMaths.IOperationPerformer;
 import java.util.Collection;
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 import org.eclipse.january.dataset.Dataset;
 import org.eclipse.january.dataset.Maths;

@@ -4,8 +4,8 @@ import info.limpet.impl.SampleData;
 
 import java.awt.geom.Point2D;
 
-import javax.measure.unit.SI;
-import javax.measure.unit.Unit;
+import si.uom.SI;
+import javax.measure.Unit;
 
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 

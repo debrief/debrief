@@ -29,7 +29,7 @@ import info.limpet.operations.CollectionComplianceTests;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.measure.unit.Unit;
+import javax.measure.Unit;
 
 public class CreateSingletonGenerator implements IOperation
 {
