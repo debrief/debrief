@@ -1314,7 +1314,7 @@ public final class SwingStepControl extends StepControl implements
 
 			// check we found tags
 			assertNotNull("tags got found from property editor", tags);
-			assertEquals("tags found from property editor", 6, tags.length);
+			assertEquals("tags found from property editor", 7, tags.length);
 
 			// and ditch the stuff
 			ssc.closeMe();
