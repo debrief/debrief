@@ -892,7 +892,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
           .getName(), changedLayer);
       if(rootNode!=null) {
         final DefaultMutableTreeNode itemNode;
-        if(rootNode instanceof Layer){
+        if(rootNode.getUserObject() instanceof Layer){
           itemNode = getTreeNode(rootNode, newItem.getName(),
         
             newItem);
