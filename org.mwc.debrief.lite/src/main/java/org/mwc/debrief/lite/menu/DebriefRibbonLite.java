@@ -62,9 +62,9 @@ public class DebriefRibbonLite
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
-    MenuUtils.addCommand("Help", "icons/16/help.png", new HelpAction(), liteMenu,
+    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(), liteMenu,
         RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/16/open.png", 
+    MenuUtils.addCommand("Exit", "icons/24/exit.png", 
         new ExitLiteApp(),
         liteMenu, RibbonElementPriority.TOP);
     
