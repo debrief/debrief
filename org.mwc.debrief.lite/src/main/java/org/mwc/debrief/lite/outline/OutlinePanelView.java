@@ -41,7 +41,6 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,7 +81,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
 import MWC.GUI.Plottables;
-import MWC.GUI.Renamable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
@@ -96,7 +94,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     ClipboardOwner, Helper
 {
 
-  private static final String DUPLICATE_PREFIX = "Copy of ";
   /**
    * 
    */
@@ -595,59 +592,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
     
-  }
-
-  /**
-   * see if this layer contains an item with the specified name
-   * 
-   * @param name
-   *          name we're checking against.
-   * @param destination
-   *          layer we're looking at
-   * 
-   * @return
-   */
-  private static boolean containsThis(final String name,
-      final CanEnumerate destination)
-  {
-    final Enumeration<Editable> enumeration = destination.elements();
-    while (enumeration.hasMoreElements())
-    {
-      final Editable next = enumeration.nextElement();
-      if (next.getName() != null && next.getName().equals(name))
-      {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * helper method, to find if an item with this name already exists. If it does, we'll prepend the
-   * duplicate phrase
-   * 
-   * @param editable
-   *          the item we're going to add
-   * @param enumeration
-   *          the destination for the add operation
-   */
-  private static void renameIfNecessary(final Editable editable,
-      final CanEnumerate destination)
-  {
-    if (editable instanceof Renamable)
-    {
-      String hisName = editable.getName();
-      while (containsThis(hisName, destination))
-      {
-        hisName = DUPLICATE_PREFIX + hisName;
-      }
-
-      // did it change?
-      if (!hisName.equals(editable.getName()))
-      {
-        ((Renamable) editable).setName(hisName);
-      }
-    }
   }
 
   public void pasteLayer(final CanEnumerate destination, final Layer theData)
