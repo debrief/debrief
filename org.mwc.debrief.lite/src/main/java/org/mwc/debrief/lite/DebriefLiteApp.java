@@ -352,7 +352,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
-    theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
@@ -551,7 +551,7 @@ public class DebriefLiteApp implements FileDropListener
   public void exit()
   {
     if(DebriefLiteApp.isDirty()) {
-      int res = JOptionPane.showConfirmDialog(theFrame, "Save before exiting Debrief Lite?", "Warning", JOptionPane.WARNING_MESSAGE);
+      int res = JOptionPane.showConfirmDialog(theFrame, "Save before exiting Debrief Lite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
       if(res == JOptionPane.OK_OPTION) {
         final String currentFileName = DebriefLiteApp.currentFileName;
         String outputFileName = null;
@@ -576,10 +576,7 @@ public class DebriefLiteApp implements FileDropListener
         }
 
       }
-      else if(res == JOptionPane.CANCEL_OPTION) {
-        //do nothing
-      }
-      else {
+      else if(res == JOptionPane.NO_OPTION) {
         exitApp();
       }
     }
@@ -592,6 +589,7 @@ public class DebriefLiteApp implements FileDropListener
   private void exitApp() {
     session.close();
     theFrame.dispose();
+    System.exit(0);
   }
 
   @Override
