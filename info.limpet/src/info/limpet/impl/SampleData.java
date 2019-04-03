@@ -185,10 +185,10 @@ public class SampleData
         new LocationDocumentBuilder(SINGLETON_LOC_2, null, null);
     LocationDocumentBuilder track1_2D =
         new LocationDocumentBuilder(TRACK_2D_ONE, null, SampleData.MILLIS,
-            SI.METER);
+            SI.METRE);
     LocationDocumentBuilder track2_2D =
         new LocationDocumentBuilder(TRACK_2D_TWO, null, SampleData.MILLIS,
-            SI.METER);
+            SI.METRE);
 
     long thisTime = 0;
 

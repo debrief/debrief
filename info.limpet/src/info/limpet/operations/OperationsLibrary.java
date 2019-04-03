@@ -14,7 +14,7 @@
  *****************************************************************************/
 package info.limpet.operations;
 
-import static si.uom.NonSI.MINUTE;
+import static systems.uom.common.USCustomary.MINUTE;
 import static si.uom.NonSI.NAUTICAL_MILE;
 import static si.uom.SI.CELSIUS;
 import static si.uom.SI.HERTZ;

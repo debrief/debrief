@@ -64,6 +64,7 @@ import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Pressure;
 import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 import javax.measure.quantity.Speed;
 import javax.measure.quantity.VolumetricDensity;
 import si.uom.NonSI;
@@ -598,11 +599,11 @@ public class CsvParser extends FileParser
     _candidates = new ArrayList<DataImporter>();
     _candidates.add(new AbsoluteLocationImporter());
     _candidates.add(new RelativeLocationImporter());
-    _candidates.add(new TemporalSeriesSupporter(SECOND.asType(Duration.class),
+    _candidates.add(new TemporalSeriesSupporter(SECOND.asType(Time.class),
         null, new String[]
         {"secs", "s"}));
     _candidates.add(new TemporalSeriesSupporter(MILLI(SECOND).asType(
-        Duration.class), null, "ms"));
+        Time.class), null, "ms"));
     _candidates.add(new TemporalSeriesSupporter(HERTZ.asType(Frequency.class),
         null, "Hz"));
     _candidates.add(new TemporalSeriesSupporter(SampleData.DEGREE_ANGLE.divide(
