@@ -797,7 +797,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   public void createControl(final Composite parent)
   {
 
-    _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
+    _treeViewer = new MyTreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL
         | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
     _treeViewer.setUseHashlookup(true);
@@ -807,6 +807,22 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
     _treeViewer.setLabelProvider(_myLabelProvider);
     _treeViewer.setComparator(_myComparator);
     _treeViewer.setInput(_myLayers);
+    //this will eliminate the need for user to do a ctrl+click to deselect.
+    _treeViewer.getTree().addMouseListener(new MouseAdapter()
+    {
+      @Override
+      public void mouseDown(MouseEvent e)
+      {
+        Tree tree = (Tree) e.getSource();
+        if (tree.getItem(new Point(e.x, e.y)) != null) {}
+            // an item was clicked.
+        else {
+          // no item was clicked.
+          tree.deselectAll();
+        }
+          
+      }
+    });
     _treeViewer.setComparer(new IElementComparer()
     {
       @Override
