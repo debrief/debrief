@@ -301,14 +301,14 @@ public class DebriefRibbonFile
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommand("New", "icons/16/new.png", new NewFileAction(
+    MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
 
         RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Open", "icons/16/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
+    MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.TOP);
     final SavePopupMenu savePopup = new SavePopupMenu(session,ribbon.getRibbonFrame());
-    MenuUtils.addCommand("Save", "icons/16/save.png",
+    MenuUtils.addCommand("Save", "icons/24/save.png",
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
         new PopupPanelCallback()
         {
@@ -323,7 +323,7 @@ public class DebriefRibbonFile
         fileMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
-    MenuUtils.addCommand("Replay", "icons/16/import.png",
+    MenuUtils.addCommand("Replay", "icons/24/import.png",
         new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), 
         importMenu, RibbonElementPriority.TOP);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
@@ -331,7 +331,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand exportMenu = new JRibbonBand("Export",null);
 
-    MenuUtils.addCommand("PNG", "icons/16/export.png",
+    MenuUtils.addCommand("PNG", "icons/24/export_gpx.png",
         new CopyPlotAsPNG(geoMapRenderer), exportMenu,
         RibbonElementPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
