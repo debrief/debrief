@@ -797,7 +797,7 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
   public void createControl(final Composite parent)
   {
 
-    _treeViewer = new MyTreeViewer(parent, SWT.SINGLE | SWT.H_SCROLL
+    _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
         | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
     _treeViewer.setUseHashlookup(true);
