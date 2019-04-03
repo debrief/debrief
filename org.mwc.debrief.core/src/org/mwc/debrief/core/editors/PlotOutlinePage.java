@@ -814,13 +814,11 @@ public class PlotOutlinePage extends Page implements IContentOutlinePage
       public void mouseDown(MouseEvent e)
       {
         Tree tree = (Tree) e.getSource();
-        if (tree.getItem(new Point(e.x, e.y)) != null) {}
-            // an item was clicked.
-        else {
+        if (tree.getItem(new Point(e.x, e.y)) == null) 
+        {
           // no item was clicked.
           tree.deselectAll();
         }
-          
       }
     });
     _treeViewer.setComparer(new IElementComparer()
