@@ -11,6 +11,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
@@ -49,7 +50,7 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
-  public static final String timeFormat = "yy/MM/dd hh:mm:ss";
+  public static final String timeFormat = DateFormatPropertyEditor.DEFAULT_DATETIME_FORMAT;
   private Layers _layers;
   private UndoBuffer _undoBuffer;
 

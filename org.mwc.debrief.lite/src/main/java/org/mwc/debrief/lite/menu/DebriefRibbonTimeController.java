@@ -423,7 +423,7 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
-    final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
+    final JLabel timeLabel = new JLabel(LiteStepControl.timeFormat)
     {
       /**
        * 
