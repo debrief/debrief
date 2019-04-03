@@ -55,7 +55,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.measure.quantity.Duration;
+import javax.measure.quantity.Time;
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
 import javax.measure.quantity.Frequency;
@@ -383,7 +383,7 @@ public class OperationsLibrary
     create.add(new AddLayerOperation());
 
     create
-        .add(new CreateSingletonGenerator("dimensionless", Dimensionless.UNIT));
+        .add(new CreateSingletonGenerator("dimensionless", AbstractUnit.ONE));
 
     create.add(new CreateSingletonGenerator("frequency", HERTZ
         .asType(Frequency.class)));
@@ -396,7 +396,7 @@ public class OperationsLibrary
     create.add(new CreateSingletonGenerator("course (degs)",
         SampleData.DEGREE_ANGLE.asType(Angle.class)));
     create.add(new CreateSingletonGenerator("time (secs)",
-        SI.SECOND.asType(Duration.class)));
+        SI.SECOND.asType(Time.class)));
     // create.add(new CreateLocationAction());
     create.add(new GenerateGrid());
 

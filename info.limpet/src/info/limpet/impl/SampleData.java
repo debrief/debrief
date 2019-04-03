@@ -37,12 +37,14 @@ import java.util.List;
 
 import javax.measure.quantity.Angle;
 import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Duration;
+import javax.measure.quantity.Time;
 import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Length;
 import javax.measure.quantity.Velocity;
 import si.uom.NonSI;
 import si.uom.SI;
+import tec.uom.se.AbstractUnit;
+
 import javax.measure.Unit;
 
 import org.eclipse.january.dataset.DatasetFactory;
@@ -51,7 +53,7 @@ import org.eclipse.january.dataset.StringDataset;
 public class SampleData
 {
   public static final Unit<?> MILLIS = SI.MILLI(SECOND).asType(
-      Duration.class);
+      Time.class);
 
   public static final String SPEED_DATA_FOLDER = "Speed data";
   public static final String SPEED_THREE_LONGER = "Speed Three (longer)";
@@ -156,7 +158,7 @@ public class SampleData
     ObjectColl string1 = new ObjectColl(STRING_ONE, null);
     ObjectColl string2 = new ObjectColl(STRING_TWO, null);
     NumberDocumentBuilder singleton1 =
-        new NumberDocumentBuilder(FLOATING_POINT_FACTOR, Dimensionless.UNIT,
+        new NumberDocumentBuilder(FLOATING_POINT_FACTOR, AbstractUnit.ONE,
             null, null);
     NumberDocumentBuilder singletonRange1b =
         new NumberDocumentBuilder(RANGED_SPEED_SINGLETON, METRE.divide(SECOND)
@@ -166,12 +168,12 @@ public class SampleData
             null, null);
     NumberDocumentBuilder timeIntervals =
         new NumberDocumentBuilder(TIME_INTERVALS,
-            SECOND.asType(Duration.class), null, SampleData.MILLIS);
+            SECOND.asType(Time.class), null, SampleData.MILLIS);
     NumberDocumentBuilder timeStamps_1 =
-        new NumberDocumentBuilder(TIME_STAMPS_1, SECOND.asType(Duration.class),
+        new NumberDocumentBuilder(TIME_STAMPS_1, SECOND.asType(Time.class),
             null, null);
     NumberDocumentBuilder timeStamps_2 =
-        new NumberDocumentBuilder(TIME_STAMPS_2, SECOND.asType(Duration.class),
+        new NumberDocumentBuilder(TIME_STAMPS_2, SECOND.asType(Time.class),
             null, null);
     LocationDocumentBuilder track1 =
         new LocationDocumentBuilder(TRACK_ONE, null, SampleData.MILLIS);

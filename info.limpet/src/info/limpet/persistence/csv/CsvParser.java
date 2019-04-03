@@ -372,7 +372,7 @@ public class CsvParser extends FileParser
         final Unit<?> indexUnits)
     {
       final LocationDocumentBuilder res =
-          new LocationDocumentBuilder(name, null, indexUnits, METER);
+          new LocationDocumentBuilder(name, null, indexUnits, METRE);
       return res;
     }
 
@@ -612,7 +612,7 @@ public class CsvParser extends FileParser
         .asType(Angle.class), null, new String[]
     {"Degs", "Degr", "Deg"}));
     _candidates.add(new TemporalSeriesSupporter(GRAM
-        .divide(CENTI(METER).pow(3)).asType(VolumetricDensity.class), null,
+        .divide(CENTI(METRE).pow(3)).asType(VolumetricDensity.class), null,
         new String[]
         {"g/cm3", "g/cm"}));
     _candidates.add(new TemporalSeriesSupporter(NAUTICAL_MILE.divide(
