@@ -166,6 +166,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.EventObject;
@@ -967,14 +968,26 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
     else
     {
-        SwingUtilities.invokeLater(new Runnable()
+        try
         {
-          @Override
-          public void run()
+          SwingUtilities.invokeAndWait(new Runnable()
           {
-            updateData();
-          }
-        });
+            @Override
+            public void run()
+            {
+              updateData();
+            }
+          });
+        }
+        catch (InvocationTargetException e)
+        {
+          e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
     }
   }
 
