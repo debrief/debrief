@@ -39,7 +39,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/jsr305-3.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/uom-lib-common-1.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/systems-common-java8-0.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/uom-se-1.0.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/uom-se-1.0.9.jar" sourcepath="libs/sources/uom-se-1.0.9-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/si-quantity-0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/unit-api-1.0.jar" sourcepath="libs/sources/unit-api-1.0-sources.jar">
 		<accessrules>
