@@ -47,5 +47,6 @@
 		</accessrules>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="libs/unit-ri-1.0.jar"/>
+	<classpathentry kind="lib" path="libs/jscience-4.3.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
