@@ -84,11 +84,16 @@ public class DebriefRibbonTimeController
     protected RangeSlider slider;
     protected TimeManager timeManager;
 
-    public void updateTimeDateFormat(final String format)
+    public void updateTimeDateFormat(final String format, boolean updateTimeLabel, boolean updateFilters)
     {
-      stepControl.setDateFormat(format);
-      timeManager.fireTimePropertyChange();
-      updateFilterDateFormat();
+      if ( updateTimeLabel )
+      {
+        stepControl.setDateFormat(format);
+      }
+      if ( updateFilters )
+      {
+        updateFilterDateFormat();
+      }
     }
     
     public String getDateFormat()
@@ -191,7 +196,7 @@ public class DebriefRibbonTimeController
   
   private static JCheckBoxMenuItem[] _menuItem;
   
-  public static void assignThisTimeFormat(String format, boolean fireUpdate)
+  public static void assignThisTimeFormat(String format, boolean updateTimeLabel, boolean updateFilters)
   {
     if ( _menuItem != null && format != null )
     {
@@ -199,20 +204,9 @@ public class DebriefRibbonTimeController
       {
         _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
       }
-      final int completeSize = 17; 
-      final int diff = completeSize - format.length();
-      
-      String newFormat = format;
-      for (int i = 0 ; i < diff / 2 ; i++)
+      if ( formatBinder != null )
       {
-        newFormat = " " + newFormat + " ";
-      }
-      if ( newFormat.length() < completeSize ) {
-        newFormat = newFormat + " ";
-      }
-      if ( fireUpdate && formatBinder != null )
-      {
-        formatBinder.updateTimeDateFormat(newFormat);        
+        formatBinder.updateTimeDateFormat(format, updateTimeLabel, updateFilters);        
       }
     }
   }
@@ -432,7 +426,7 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
-    final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
+    final JLabel timeLabel = new JLabel(LiteStepControl.timeFormat)
     {
       /**
        * 
@@ -447,8 +441,6 @@ public class DebriefRibbonTimeController
         super.paintComponent(g);
       }
     };
-    timeLabel.setSize(200, 60);
-    timeLabel.setPreferredSize(new Dimension(200, 60));
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
@@ -469,7 +461,7 @@ public class DebriefRibbonTimeController
       public void actionPerformed(ActionEvent e)
       {
         String format = e.getActionCommand();
-        assignThisTimeFormat(format, true);
+        assignThisTimeFormat(format, true, false);
       }
     };
     
@@ -525,7 +517,27 @@ public class DebriefRibbonTimeController
       @Override
       public void setValue(final String text)
       {
-        timeLabel.setText(text);
+
+        final int completeSize = 17; 
+        final int diff = completeSize - text.length();
+        
+        String newText = text;
+        for (int i = 0 ; i < diff / 2 ; i++)
+        {
+          newText = " " + newText + " ";
+        }
+        if ( newText.length() < completeSize ) {
+          newText = newText + " ";
+        }
+        timeLabel.setText(newText);
+      }
+
+      @Override
+      public void setFontSize(int newSize)
+      {
+        Font originalFont = timeLabel.getFont();
+        final Font newFont = new Font(originalFont.getName(), originalFont.getStyle(), newSize);
+        timeLabel.setFont(newFont);
       }
     };
     stepControl.setTimeLabel(label);
@@ -576,7 +588,7 @@ public class DebriefRibbonTimeController
     final String defaultFormat = LiteStepControl.timeFormat;
     if ( defaultFormat != null )
     {
-      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false);
+      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false, false);
       
       formatBinder.stepControl.setDateFormat(defaultFormat);
       formatBinder.updateFilterDateFormat();

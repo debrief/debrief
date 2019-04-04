@@ -311,6 +311,9 @@ public class DebriefLiteApp implements FileDropListener
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
 
+    _stepControl.setUndoBuffer(session.getUndoBuffer());
+    _stepControl.setLayers(session.getData());
+    
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 
@@ -713,7 +716,7 @@ public class DebriefLiteApp implements FileDropListener
       if (_stepControl.getDateFormat() != null)
       {
         DebriefRibbonTimeController.assignThisTimeFormat(_stepControl
-            .getDateFormat(), true);
+            .getDateFormat(), true, true);
       }
     }
     catch (final FileNotFoundException e)
@@ -742,10 +745,9 @@ public class DebriefLiteApp implements FileDropListener
           @Override
           public void run()
           {
+            setCursor(Cursor.WAIT_CURSOR);
             layerManager.createAndInitializeTree();
-            layerManager.dataModified(null, null);
             mapPane.repaint();
-
             restoreCursor();
             // update the time panel
             TimePeriod period = _theLayers.getTimePeriod();

@@ -637,23 +637,26 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			}
 		}
 
-		buttonHolder.add(_apply);
-		_apply.addActionListener(new ActionListener()
+		if ( !_theEditors.isEmpty() )
 		{
-			public void actionPerformed(final ActionEvent e)
-			{
-				apply();
-			}
-		});
+		  buttonHolder.add(_apply);
+	    _apply.addActionListener(new ActionListener()
+	    {
+	      public void actionPerformed(final ActionEvent e)
+	      {
+	        apply();
+	      }
+	    });
 
-		buttonHolder.add(_reset);
-		_reset.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(final ActionEvent e)
-			{
-				reset();
-			}
-		});
+	    buttonHolder.add(_reset);
+	    _reset.addActionListener(new ActionListener()
+	    {
+	      public void actionPerformed(final ActionEvent e)
+	      {
+	        reset();
+	      }
+	    });
+		}
 
 	}
 

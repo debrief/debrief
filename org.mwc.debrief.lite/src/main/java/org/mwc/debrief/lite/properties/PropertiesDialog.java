@@ -16,6 +16,7 @@ package org.mwc.debrief.lite.properties;
 
 import java.awt.BorderLayout;
 import java.net.URL;
+import java.util.Stack;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -42,7 +43,7 @@ public class PropertiesDialog extends JDialog
 
   private Editable _editableProperty;
   private Layers _theLayers;
-  private static PropertiesDialog dialog;
+  private static Stack<PropertiesDialog> dialogs = new Stack<>();
   /**
    * the toolparent we supply to any new panels
    */
@@ -66,7 +67,7 @@ public class PropertiesDialog extends JDialog
     _owner = owner;
     _theToolParent = toolParent;
     _undoBuffer = undoBuffer;  
-    dialog=this;
+    dialogs.add(this);
     initForm();
     setModal(true);
     setTitle("Edit Properties");
@@ -105,7 +106,11 @@ public class PropertiesDialog extends JDialog
     public void close()
     {
       super.close();
-      dialog.dispose();
+      if ( !dialogs.isEmpty() )
+      {
+        PropertiesDialog lastDialog = dialogs.pop();
+        lastDialog.dispose();
+      }
     }
     
   }

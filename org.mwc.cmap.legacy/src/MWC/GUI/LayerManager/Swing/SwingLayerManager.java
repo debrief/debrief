@@ -712,18 +712,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
           thisL.add(makeLayer(otherLayer, theTopLayer));
-
-          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
         else
         {
           // hey, it's a leaf - just add it
           thisL.add(new PlottableNode(pl, theTopLayer));
-          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
       }
     }
-
+    ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
     return thisL;
   }
 
@@ -813,10 +810,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
     int cur = 0;
     TreePath selectionTreePath = _myTree.getSelectionPath();
     if (selections != null && selections.length > 0)
-    {
+    { 
       cur = _myTree.getSelectionRows()[0];
     }
-
     // get the root element
     final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
         .getModel().getRoot();
@@ -972,21 +968,25 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
     else
     {
-      try
-      {
-        SwingUtilities.invokeAndWait(new Runnable()
+        try
         {
-          @Override
-          public void run()
+          SwingUtilities.invokeAndWait(new Runnable()
           {
-            updateData();
-          }
-        });
-      }
-      catch (InvocationTargetException | InterruptedException e)
-      {
-        e.printStackTrace();
-      }
+            @Override
+            public void run()
+            {
+              updateData();
+            }
+          });
+        }
+        catch (InvocationTargetException e)
+        {
+          e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
     }
   }
 
