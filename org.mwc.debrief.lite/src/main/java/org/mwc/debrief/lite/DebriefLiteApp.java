@@ -37,6 +37,7 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.geotools.map.MapContent;
@@ -55,8 +56,8 @@ import org.mwc.debrief.lite.menu.DebriefRibbon;
 import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
-import org.mwc.debrief.lite.menu.RibbonAppMenuProvider;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
+import org.mwc.debrief.lite.util.DoSaveAs;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -85,7 +86,6 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
-import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -186,6 +186,10 @@ public class DebriefLiteApp implements FileDropListener
     });
 
   }
+  
+  public static DebriefLiteApp getInstance() {
+    return _instance;
+  }
 
   /**
    * @param filename
@@ -199,7 +203,7 @@ public class DebriefLiteApp implements FileDropListener
     return theSuffix.toUpperCase();
   }
 
-  private SwingLayerManager layerManager;
+  private OutlinePanelView layerManager;
 
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
@@ -399,8 +403,9 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
-    theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    theFrame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     theFrame.setVisible(true);
+    theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
   /**
@@ -541,7 +546,7 @@ public class DebriefLiteApp implements FileDropListener
     _instance.getLayerManager().updateData((Layer) theLayer, newItem);
   }
 
-  public SwingLayerManager getLayerManager()
+  public OutlinePanelView getLayerManager()
   {
     return layerManager;
   }
@@ -594,9 +599,48 @@ public class DebriefLiteApp implements FileDropListener
     dest.endDraw(gc);
   }
 
-  protected void exit()
+  public void exit()
   {
+    if(DebriefLiteApp.isDirty()) {
+      int res = JOptionPane.showConfirmDialog(theFrame, "Save before exiting Debrief Lite?", "Warning", JOptionPane.YES_NO_CANCEL_OPTION);
+      if(res == JOptionPane.OK_OPTION) {
+        final String currentFileName = DebriefLiteApp.currentFileName;
+        String outputFileName = null;
+        if(currentFileName!=null) {
+          final File currentFile = new File(currentFileName);
+          final File directory = currentFile.getParentFile();
+          if(currentFileName.endsWith(".dpf")) {
+            DebriefRibbonFile.saveChanges(currentFileName, session, theFrame);
+            exitApp();
+          }
+          else {
+            final String initialName = currentFile.getName().substring(0, currentFile.getName().lastIndexOf(".")); 
+            outputFileName = DoSaveAs.showSaveDialog(directory, initialName);
+          }
+        }
+        else {
+          outputFileName = DoSaveAs.showSaveDialog(null, "DebriefPlot");
+        }
+        if(outputFileName!=null) {
+          DebriefRibbonFile.saveChanges(outputFileName, session, theFrame);
+          exitApp();
+        }
+
+      }
+      else if(res == JOptionPane.NO_OPTION) {
+        exitApp();
+      }
+    }
+    else {
+      exitApp();
+    }
+    
+  }
+  
+  private void exitApp() {
+    session.close();
     theFrame.dispose();
+    System.exit(0);
   }
 
   @Override
@@ -799,8 +843,8 @@ public class DebriefLiteApp implements FileDropListener
     // try to give the application an icon
     final Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
-    theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider()
-        .createApplicationMenu(theFrame));
+    /*theFrame.getRibbon().setApplicationMenu(new RibbonAppMenuProvider()
+        .createApplicationMenu(theFrame));*/
     // It cannot be smaller than this size to have the ribbon complete!
     int sizeWidth = Math.max((int) (dim.width * 0.6), 870);
     int sizeHeight = (int) (dim.height * 0.6);
