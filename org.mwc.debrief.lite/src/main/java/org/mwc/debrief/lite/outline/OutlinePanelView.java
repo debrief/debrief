@@ -53,6 +53,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
@@ -77,6 +78,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
+import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
@@ -560,18 +562,100 @@ public class OutlinePanelView extends SwingLayerManager implements
     ArrayList<Plottable> plottables = getClipboardContents();
     // see if there is currently a plottable on the clipboard
     // see if it is a layer or not
-    for (Plottable theData : plottables)
+    if(!plottables.isEmpty())
     {
-      addBackData(theData,destination);
+      for (Plottable theData : plottables)
+      {
+        addBackData(theData,destination);
+      }
+      _myData.fireExtended(plottables.get(0), (HasEditables)destination);
     }
     if (!_isCopy)
     {
       // clear the clipboard
       _clipboard.setContents(null, null);
     }
-    _myData.fireModified(null);
+    
+    
+    
 
   }
+  
+  /**
+   * have a fresh pass through the data
+   */
+  public void updateData(final Layer changedLayer, final Plottable newItem)
+  {
+    _myTree.setExpandsSelectedPaths(true);
+    // find out which node is currently visible
+    if (changedLayer != null && newItem != null)
+    {
+      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
+      if(rootNode!=null) {
+        final DefaultMutableTreeNode itemNode;
+        if(rootNode.getUserObject() instanceof Layer){
+          //used class name instead of instanceof as otherwise
+          //there will be cyclic dependency in eclipse manifest.
+         
+          if(newItem instanceof FixWrapper) {
+            rootNode = (DefaultMutableTreeNode)rootNode.getFirstChild();
+          }
+          itemNode = getTreeNode(rootNode, newItem.getName(),
+        
+            newItem);
+        }
+        else {
+          //if not a layer but a trackwrapper
+          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)rootNode.getFirstChild();
+          if(firstChild != null) {
+            itemNode = getTreeNode((DefaultMutableTreeNode)rootNode.getFirstChild(), newItem.getName(),
+              
+              newItem);
+          }
+          else {
+            itemNode = null;
+          }
+        }
+        if(itemNode!=null) {
+          final TreePath _treePath = new TreePath(itemNode.getPath());
+          SwingUtilities.invokeLater(new Runnable()
+          {
+
+            @Override
+            public void run()
+            {
+              _myTree.expandPath(_treePath);
+              _myTree.scrollPathToVisible(_treePath);
+              _myTree.makeVisible(_treePath);
+              _myTree.setSelectionPath(_treePath);
+            }
+          });
+        }
+      }
+    }
+    else if (changedLayer != null)
+    {
+      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+          .getName(), changedLayer);
+      if(rootNode!=null) {
+        final TreePath _treePath = new TreePath(rootNode.getPath());
+        SwingUtilities.invokeLater(new Runnable()
+        {
+
+          @Override
+          public void run()
+          {
+            _myTree.expandPath(_treePath);
+            _myTree.scrollPathToVisible(_treePath);
+            _myTree.makeVisible(_treePath);
+            _myTree.setSelectionPath(_treePath);
+          }
+        });
+      }
+    }
+  }
+
 
   private void addBackData(Plottable theData, CanEnumerate destination)
   {
