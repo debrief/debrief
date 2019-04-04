@@ -26,6 +26,7 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -270,6 +271,8 @@ public class DebriefRibbonFile
       }
     }
   }
+  
+  public static FlamingoCommand closeButton;
 
   protected static void addFileTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Session session,
@@ -290,9 +293,10 @@ public class DebriefRibbonFile
     MenuUtils.addCommand("Save as", "icons/16/save-as.png", new DoSaveAs(
         session, ribbon.getRibbonFrame()), fileMenu,
         RibbonElementPriority.MEDIUM);
-    MenuUtils.addCommand("Close", "icons/16/close.png", new NewFileAction(
+    closeButton = MenuUtils.addCommand("Close", "icons/16/close.png", new NewFileAction(
         (JFrame) ribbon.getRibbonFrame(), session, resetAction, true), fileMenu,
         RibbonElementPriority.MEDIUM);
+    closeButton.setEnabled(false);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
     final JRibbonBand exitMenu = new JRibbonBand("Exit", null);

@@ -23,13 +23,18 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.EventListener;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -50,6 +55,7 @@ import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
 import org.mwc.debrief.lite.map.MapBuilder;
 import org.mwc.debrief.lite.menu.DebriefRibbon;
+import org.mwc.debrief.lite.menu.DebriefRibbonFile;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.menu.RibbonAppMenuProvider;
@@ -107,6 +113,50 @@ public class DebriefLiteApp implements FileDropListener
   public static final String appName = "Debrief Lite";
   public static final String NOTES_ICON = "icons/16/note.png";
   public static String currentFileName = null;
+
+  public static final String ACTIVE_STATE = "ACTIVE";
+  public static final String INACTIVE_STATE = "INACTIVE";
+  public static String state = ACTIVE_STATE;
+
+  /**
+   * State of the application. Inactive will disable all the button.
+   * 
+   * @param newState
+   */
+  public static void setState(final String newState)
+  {
+    final String oldState = state;
+    state = newState;
+    
+    notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+  }
+
+  public static PropertyChangeListener enableDisableButtons =
+      new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+          boolean isActive = ACTIVE_STATE.equals(evt.getNewValue());
+          DebriefRibbonTimeController.setButtonsEnabled(
+              DebriefRibbonTimeController.topButtonsPanel, isActive);
+          DebriefRibbonFile.closeButton.setEnabled(isActive);
+        }
+      };
+
+  private static void notifyListenersStateChanged(Object source,
+      String property, String oldValue, String newValue)
+  {
+    for (PropertyChangeListener event : stateListeners)
+    {
+      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
+          newValue));
+    }
+  }
+
+  private static ArrayList<PropertyChangeListener> stateListeners =
+      new ArrayList<>(Arrays.asList(enableDisableButtons));
 
   /**
    * creates a scroll pane with map
@@ -338,8 +388,11 @@ public class DebriefLiteApp implements FileDropListener
           HasEditables parent)
       {
         update(theData, newItem, parent);
-        setDirty(true);
-
+        if (parent != null)
+        {
+          setDirty(true);
+          setState(ACTIVE_STATE);
+        }
       }
     };
 
@@ -375,7 +428,7 @@ public class DebriefLiteApp implements FileDropListener
     public String getPreference(String name)
     {
       final String res;
-      if(SensorContactWrapper.TRANSPARENCY.equals(name))
+      if (SensorContactWrapper.TRANSPARENCY.equals(name))
       {
         res = "100";
       }
@@ -476,7 +529,7 @@ public class DebriefLiteApp implements FileDropListener
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
-    layerManager = new OutlinePanelView(undoBuffer,session.getClipboard());
+    layerManager = new OutlinePanelView(undoBuffer, session.getClipboard());
     layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
@@ -707,7 +760,7 @@ public class DebriefLiteApp implements FileDropListener
             }
 
             theTote.assignWatchables(true);
-            
+
             // and the spatial bounds
             FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
             fitMe.actionPerformed(null);
@@ -818,15 +871,16 @@ public class DebriefLiteApp implements FileDropListener
 
     // continue with reset processing
     _plotDirty = false;
+    setState(INACTIVE_STATE);
     currentFileName = null;
     setTitle(defaultTitle);
 
     // also clear the tote
     theTote.clear();
-    
+
     timeManager.setPeriod(this, null);
     timeManager.setTime(this, null, false);
-    
+
     // and the time format dropdown
     DebriefRibbonTimeController.resetDateFormat();
 
@@ -835,10 +889,10 @@ public class DebriefLiteApp implements FileDropListener
     {
       _stepControl.startStepping(false);
     }
-    
+
     // send a reset to the step control
     _stepControl.reset();
-    
+
     // reset the map
     ResetAction resetMap = new ResetAction(_instance.mapPane);
     resetMap.actionPerformed(null);
