@@ -1,16 +1,22 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListDataListener;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
@@ -300,44 +306,68 @@ public class DebriefRibbonInsert
   private static JRibbonComponent addDropDown(final ItemListener actionToAdd,
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
-    final String[] layerItems = new String[]
-    {CoreCreateShape.USER_SELECTED_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    selectLayerCombo = new JComboBox<String>(layerItems);
+   
+    
+    final DefaultComboBoxModel<String>  selectLayerModel = new DefaultComboBoxModel<String>();
+    selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+    selectLayerCombo = new JComboBox<String>(selectLayerModel);
     selectLayerCombo.addItemListener(actionToAdd);
+   
     selectLayerCombo.addFocusListener(new FocusAdapter()
     {
+      @Override
+      public void focusLost(FocusEvent e)
+      {
+        selectLayerModel.removeAllElements();
+        selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+      }
       @Override
       public void focusGained(FocusEvent e)
       {
         if(e.getSource() instanceof JComboBox) {
-          String[] layers = theLayers.trimmedLayers();         
-          @SuppressWarnings("unchecked")
-          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
-          String selectedItem = (String)jcombo.getSelectedItem();
-          jcombo.removeAllItems();
-
-          // start off with our custom layer modes
-          for(String otherItem: layerItems)
+          
+          EventQueue.invokeLater(new Runnable()
           {
-            jcombo.addItem(otherItem);
-          }
+            
+            @Override
+            public void run()
+            {
+              String[] layers = theLayers.trimmedLayers();         
+              @SuppressWarnings("unchecked")
+              
+              String selectedItem = (String)selectLayerCombo.getSelectedItem();
+              selectLayerModel.removeAllElements();
+
+              // start off with our custom layer modes
+              selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+              
+              // now the list of trimmed layers (which includes `Add layer`)
+              for(String layer:layers) {
+                selectLayerModel.addElement(layer);
+              }
+              
+              boolean popupVisible = selectLayerCombo.isPopupVisible();
+              selectLayerCombo.updateUI();
+              if(popupVisible && !selectLayerCombo.isPopupVisible()) {
+                selectLayerCombo.showPopup();
+              }
+              
+              //remove listener - so it doesn't get triggered when
+              // we set default value
+              selectLayerCombo.removeItemListener(selectLayerItemListener);
+              
+              // if we know selection, assign it
+              if(selectedItem!=null) {
+                selectLayerCombo.setSelectedItem(selectedItem);
+              }
+             
+              // reinstate listener
+              selectLayerCombo.addItemListener(selectLayerItemListener);
+              
+            }
+          });
           
-          // now the list of trimmed layers (which includes `Add layer`)
-          for(String layer:layers) {
-            jcombo.addItem(layer);
-          }
-          
-          //remove listener - so it doesn't get triggered when
-          // we set default value
-          jcombo.removeItemListener(selectLayerItemListener);
-          
-          // if we know selection, assign it
-          if(selectedItem!=null) {
-            jcombo.setSelectedItem(selectedItem);
-          }
-          // reinstate listener
-          jcombo.addItemListener(selectLayerItemListener);
         }
       }
     });
