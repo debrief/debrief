@@ -20,6 +20,7 @@ import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
+import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
@@ -42,11 +43,16 @@ public class DebriefRibbon
       final Runnable normalPainter, final Runnable snailPainter, JLabel statusBar)
   {
     // add menus here
+    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
         stepControl, timeManager, operations, layers, undoBuffer, normalPainter, snailPainter);
+  }
+  
+  public static RibbonTask getLiteTask() {
+    return DebriefRibbonLite.getLiteTask();
   }
 }
