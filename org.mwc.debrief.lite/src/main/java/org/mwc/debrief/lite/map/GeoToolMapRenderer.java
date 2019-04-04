@@ -194,10 +194,13 @@ public class GeoToolMapRenderer implements BaseMap
         "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
     
     File file = new File(shape_path);
+    //System.out.println("Checking for shape file at:"+file.getAbsolutePath());
     if (!file.exists())
     {
-      shape_path = "org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+//      System.out.println("File does not exist");
+      shape_path = "data/ne_10M_admin0_countries_89S.shp";
       file = new File(shape_path);
+  //    System.out.println("Trying again at:"+file.getAbsolutePath());
       if (!file.exists())
       {
           file = JFileDataStoreChooser.showOpenFile("shp", null);
