@@ -27,6 +27,7 @@ import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.util.DoSave;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.common.JCommandButton;
 import org.pushingpixels.flamingo.api.common.JCommandMenuButton;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
@@ -205,13 +206,15 @@ public class DebriefRibbonFile
     private final JFrame _theFrame;
     private final Session _session;
     private Runnable _doReset;
+    private boolean _close;
 
     public NewFileAction(final JFrame theFrame, final Session session,
-        final Runnable doReset)
+        final Runnable doReset, final boolean close)
     {
       _theFrame = theFrame;
       _session = session;
       _doReset = doReset;
+      _close = close;
     }
 
     @Override
@@ -220,8 +223,9 @@ public class DebriefRibbonFile
       // ask user whether to save, if file is dirty.
       if (DebriefLiteApp.isDirty())
       {
-        final int res = JOptionPane.showConfirmDialog(null,
-            "Save changes before creating new file?");
+        final int res = JOptionPane.showConfirmDialog(null, _close
+            ? "Do you want to save the plot before closing?"
+            : "Save changes before creating new file?");
         if (res == JOptionPane.OK_OPTION)
         {
           if (DebriefLiteApp.currentFileName != null
@@ -270,9 +274,12 @@ public class DebriefRibbonFile
       }
     }
   }
+  
+  public static FlamingoCommand closeButton;
 
   private static RibbonTask fileTask;
 
+  @SuppressWarnings("unused")
   private static class ImportReplayAction extends AbstractAction
   {
 
@@ -302,8 +309,7 @@ public class DebriefRibbonFile
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
     MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(
-        (JFrame) ribbon.getRibbonFrame(), session, resetAction), fileMenu,
-
+        (JFrame) ribbon.getRibbonFrame(), session, resetAction, false), fileMenu,
         RibbonElementPriority.TOP);
     MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
         fileMenu, RibbonElementPriority.TOP);
@@ -312,7 +318,6 @@ public class DebriefRibbonFile
         new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
         new PopupPanelCallback()
         {
-
           @Override
           public JPopupPanel getPopupPanel(JCommandButton commandButton)
           {

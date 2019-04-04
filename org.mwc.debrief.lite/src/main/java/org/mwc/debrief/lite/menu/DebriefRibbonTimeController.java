@@ -27,6 +27,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
@@ -67,6 +68,8 @@ public class DebriefRibbonTimeController
   private static final String STOP_IMAGE = "icons/24/media_stop.png";
 
   private static final String PLAY_IMAGE = "icons/24/media_play.png";
+  
+  public static JPanel topButtonsPanel;
 
   /**
    * Class that binds the Time Filter and Time Label.
@@ -239,7 +242,7 @@ public class DebriefRibbonTimeController
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
     controlPanel.setPreferredSize(new Dimension(500, 80));
 
-    final JPanel topButtonsPanel = new JPanel();
+    topButtonsPanel = new JPanel();
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
 
     final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
@@ -496,7 +499,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        setButtonsEnabled(topButtonsPanel, true);
+        DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -568,7 +571,7 @@ public class DebriefRibbonTimeController
         label.setValue(LiteStepControl.timeFormat);
         
         // ok, do some disabling
-        setButtonsEnabled(topButtonsPanel, false);
+        DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
         timeSlider.setEnabled(false);
       }});
 
@@ -839,7 +842,7 @@ public class DebriefRibbonTimeController
    * @param panel
    * @param enabled
    */
-  private static void setButtonsEnabled(final JPanel panel,
+  public static void setButtonsEnabled(final JPanel panel,
       final boolean enabled)
   {
     final Component[] items = panel.getComponents();
