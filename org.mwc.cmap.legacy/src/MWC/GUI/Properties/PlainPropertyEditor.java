@@ -625,10 +625,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       {
         final Object val = getValueFor(data, p);
         res.setValue(val);
-        if(!p.isExpert())
-        {
-          _theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
-        }
+        _theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
       }
       else
       {
