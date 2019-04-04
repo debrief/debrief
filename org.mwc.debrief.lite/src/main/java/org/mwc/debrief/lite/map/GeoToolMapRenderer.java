@@ -67,7 +67,7 @@ public class GeoToolMapRenderer implements BaseMap
   {
     _myRenderers.add(renderer);
   }
-  
+
   private static class CustomMapPane extends JMapPane
   {
 
@@ -75,7 +75,7 @@ public class GeoToolMapRenderer implements BaseMap
      *
      */
     private static final long serialVersionUID = 1L;
-    
+
     private final MouseDragLine dragLine;
 
     private final GeoToolMapRenderer _renderer;
@@ -84,7 +84,7 @@ public class GeoToolMapRenderer implements BaseMap
     {
       super();
       _renderer = geoToolMapRenderer;
-      
+
       dragLine = new MouseDragLine(this);
       addMouseListener(dragLine);
       addMouseMotionListener(dragLine);
@@ -96,32 +96,32 @@ public class GeoToolMapRenderer implements BaseMap
       super.paintComponent(arg0);
       _renderer.paintEvent(arg0);
     }
-    
+
     @Override
     public void setCursorTool(CursorTool tool) {
-        paramsLock.writeLock().lock();
-        try {
-            if (currentCursorTool != null) {
-                mouseEventDispatcher.removeMouseListener(currentCursorTool);
-            }
-
-            currentCursorTool = tool;
-
-            if (currentCursorTool == null) {
-                setCursor(Cursor.getDefaultCursor());
-                dragBox.setEnabled(false);
-                dragLine.setEnabled(false);
-            } else {
-                setCursor(currentCursorTool.getCursor());
-                dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
-                dragBox.setEnabled(currentCursorTool.drawDragBox());
-                currentCursorTool.setMapPane(this);
-                mouseEventDispatcher.addMouseListener(currentCursorTool);
-            }
-
-        } finally {
-            paramsLock.writeLock().unlock();
+      paramsLock.writeLock().lock();
+      try {
+        if (currentCursorTool != null) {
+          mouseEventDispatcher.removeMouseListener(currentCursorTool);
         }
+
+        currentCursorTool = tool;
+
+        if (currentCursorTool == null) {
+          setCursor(Cursor.getDefaultCursor());
+          dragBox.setEnabled(false);
+          dragLine.setEnabled(false);
+        } else {
+          setCursor(currentCursorTool.getCursor());
+          dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
+          dragBox.setEnabled(currentCursorTool.drawDragBox());
+          currentCursorTool.setMapPane(this);
+          mouseEventDispatcher.addMouseListener(currentCursorTool);
+        }
+
+      } finally {
+        paramsLock.writeLock().unlock();
+      }
     }
   }
 
@@ -187,24 +187,18 @@ public class GeoToolMapRenderer implements BaseMap
   @Override
   public void loadMapContent()
   {
-    
+
     //this is for dev
-    
+
     String shape_path =
-        "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
-    
+        "data/ne_10M_admin0_countries_89S.shp";
+
     File file = new File(shape_path);
     //System.out.println("Checking for shape file at:"+file.getAbsolutePath());
     if (!file.exists())
     {
-//      System.out.println("File does not exist");
-      shape_path = "data/ne_10M_admin0_countries_89S.shp";
-      file = new File(shape_path);
-  //    System.out.println("Trying again at:"+file.getAbsolutePath());
-      if (!file.exists())
-      {
-          file = JFileDataStoreChooser.showOpenFile("shp", null);
-      }
+      //      System.out.println("File does not exist");
+      file = JFileDataStoreChooser.showOpenFile("shp", null);
     }
     if (file == null)
     {
