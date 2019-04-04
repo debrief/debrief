@@ -193,7 +193,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -879,76 +878,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
   }
 
-  /**
-   * have a fresh pass through the data
-   */
-  public void updateData(final Layer changedLayer, final Plottable newItem)
-  {
-    _myTree.setExpandsSelectedPaths(true);
-    // find out which node is currently visible
-    if (changedLayer != null && newItem != null)
-    {
-      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        final DefaultMutableTreeNode itemNode;
-        if(rootNode.getUserObject() instanceof Layer){
-          itemNode = getTreeNode(rootNode, newItem.getName(),
-        
-            newItem);
-        }
-        else {
-          //if not a layer but a trackwrapper
-          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)rootNode.getFirstChild();
-          if(firstChild != null) {
-            itemNode = getTreeNode((DefaultMutableTreeNode)rootNode.getFirstChild(), newItem.getName(),
-              
-              newItem);
-          }
-          else {
-            itemNode = null;
-          }
-        }
-        if(itemNode!=null) {
-          final TreePath _treePath = new TreePath(itemNode.getPath());
-          SwingUtilities.invokeLater(new Runnable()
-          {
-
-            @Override
-            public void run()
-            {
-              _myTree.expandPath(_treePath);
-              _myTree.scrollPathToVisible(_treePath);
-              _myTree.makeVisible(_treePath);
-              _myTree.setSelectionPath(_treePath);
-            }
-          });
-        }
-      }
-    }
-    else if (changedLayer != null)
-    {
-      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        final TreePath _treePath = new TreePath(rootNode.getPath());
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            _myTree.expandPath(_treePath);
-            _myTree.scrollPathToVisible(_treePath);
-            _myTree.makeVisible(_treePath);
-            _myTree.setSelectionPath(_treePath);
-          }
-        });
-      }
-    }
-  }
-
-  private DefaultMutableTreeNode getTreeNode(
+ 
+  protected DefaultMutableTreeNode getTreeNode(
       final DefaultMutableTreeNode parent, final String nodeText,
       final Object object)
   {

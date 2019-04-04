@@ -82,7 +82,6 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
-import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -152,7 +151,7 @@ public class DebriefLiteApp implements FileDropListener
     return theSuffix.toUpperCase();
   }
 
-  private SwingLayerManager layerManager;
+  private OutlinePanelView layerManager;
 
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
@@ -488,7 +487,7 @@ public class DebriefLiteApp implements FileDropListener
     _instance.getLayerManager().updateData((Layer) theLayer, newItem);
   }
 
-  public SwingLayerManager getLayerManager()
+  public OutlinePanelView getLayerManager()
   {
     return layerManager;
   }
