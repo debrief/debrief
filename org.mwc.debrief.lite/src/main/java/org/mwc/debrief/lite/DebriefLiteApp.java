@@ -623,7 +623,8 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final Exception e)
     {
-      Trace.trace(e);
+      
+      throw new RuntimeException (e);
     }
     finally
     {
@@ -640,7 +641,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final Exception e)
     {
-      Trace.trace(e);
+     throw new RuntimeException(e);
     }
     finally
     {

@@ -351,13 +351,17 @@ public class DebriefRibbonFile
     if (fileToOpen != null)
     {
       doReset.run();
-      if (isRepFile)
-      {
-        DebriefLiteApp.openRepFile(fileToOpen);
-      }
-      else
-      {
-        DebriefLiteApp.openPlotFile(fileToOpen);
+      try {
+        if (isRepFile)
+        {
+          DebriefLiteApp.openRepFile(fileToOpen);
+        }
+        else
+        {
+          DebriefLiteApp.openPlotFile(fileToOpen);
+        }
+      }catch(Exception e) {
+        JOptionPane.showMessageDialog(null, "The file could not be loaded due to errors:\n"+e.getMessage(), "Error reading file", JOptionPane.ERROR_MESSAGE, null);
       }
     }
   }
