@@ -43,6 +43,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import MWC.GUI.ToolParent;
 
 public class DebriefRibbonFile
 {
@@ -86,7 +87,7 @@ public class DebriefRibbonFile
           public DataFlavor[] getTransferDataFlavors()
           {
             return new DataFlavor[]
-                {DataFlavor.imageFlavor};
+            {DataFlavor.imageFlavor};
           }
 
           @Override
@@ -116,81 +117,23 @@ public class DebriefRibbonFile
     }
   }
 
-  private static class OpenPlotAction extends AbstractAction
+  @SuppressWarnings("unused")
+  private static class ImportReplayAction extends AbstractAction
   {
 
     /**
-     * 
+     *
      */
-    private static final long serialVersionUID = 1L;
-    private final JFrame _theFrame;
-    private final Session _session;
-    private Runnable _doReset;
-    private boolean isRepFile;
-
-    public OpenPlotAction(final JFrame theFrame, final Session session,
-        final Runnable doReset, final boolean isRep)
-    {
-      _theFrame = theFrame;
-      _session = session;
-      _doReset = doReset;
-      isRepFile = isRep;
-    }
+    private static final long serialVersionUID = -804226120198968206L;
 
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
     {
-
-      final String[] fileTypes = isRepFile?new String[] {"rep"}:new String[] {"dpf","xml"};
-      final String descr = isRepFile?"Debrief Replay File":"Debrief Plot Files";
-      if (DebriefLiteApp.isDirty())
+      final File fileToOpen = showOpenDialog(new String[]
+      {"rep"}, "Debrief replay file");
+      if (fileToOpen != null)
       {
-        int res = JOptionPane.showConfirmDialog(null,
-            "Save changes before opening new plot?");
-        if (res == JOptionPane.OK_OPTION)
-        {
-          if (DebriefLiteApp.currentFileName != null
-              && DebriefLiteApp.currentFileName.endsWith(".rep"))
-          {
-            final File f = new File(DebriefLiteApp.currentFileName);
-            final String newname = f.getName().substring(0, f.getName()
-                .lastIndexOf(".rep"));
-            final String newFileName = DoSaveAs.showSaveDialog(f
-                .getParentFile(), newname);
-            if (newFileName == null || newFileName.length() == 0)
-            {
-              // drop out, don't do reset.
-              return;
-            }
-            DebriefLiteApp.currentFileName.replaceAll(".rep", ".dpf");
-            DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
-          }
-          else if (DebriefLiteApp.currentFileName == null)
-          {
-            // ok, we have to do a save-as operation
-            DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
-            saveAs.actionPerformed(e);
-          }
-          else
-          {
-            // ok, it's a DPF file. we can juse save it
-            DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
-                _session, _theFrame);
-          }
-          doFileOpen(fileTypes, descr, isRepFile, _doReset);
-        }
-        else if (res == JOptionPane.NO_OPTION)
-        {
-          doFileOpen(fileTypes, descr, isRepFile, _doReset);
-        }
-        else
-        {
-          // do nothing
-        }
-      }
-      else
-      {
-        doFileOpen(fileTypes, descr, isRepFile, _doReset);
+        DebriefLiteApp.openRepFile(fileToOpen);
       }
     }
 
@@ -205,8 +148,8 @@ public class DebriefRibbonFile
 
     private final JFrame _theFrame;
     private final Session _session;
-    private Runnable _doReset;
-    private boolean _close;
+    private final Runnable _doReset;
+    private final boolean _close;
 
     public NewFileAction(final JFrame theFrame, final Session session,
         final Runnable doReset, final boolean close)
@@ -247,7 +190,7 @@ public class DebriefRibbonFile
           else if (DebriefLiteApp.currentFileName == null)
           {
             // ok, we have to do a save-as operation
-            DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
+            final DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
             saveAs.actionPerformed(e);
           }
           else
@@ -274,33 +217,121 @@ public class DebriefRibbonFile
       }
     }
   }
-  
-  public static FlamingoCommand closeButton;
 
-  private static RibbonTask fileTask;
-
-  @SuppressWarnings("unused")
-  private static class ImportReplayAction extends AbstractAction
+  private static class OpenPlotAction extends AbstractAction
   {
 
     /**
-     * 
+     *
      */
-    private static final long serialVersionUID = -804226120198968206L;
+    private static final long serialVersionUID = 1L;
+    private final JFrame _theFrame;
+    private final Session _session;
+    private final Runnable _doReset;
+    private final boolean isRepFile;
+
+    public OpenPlotAction(final JFrame theFrame, final Session session,
+        final Runnable doReset, final boolean isRep)
+    {
+      _theFrame = theFrame;
+      _session = session;
+      _doReset = doReset;
+      isRepFile = isRep;
+    }
 
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
     {
-      final File fileToOpen = showOpenDialog(new String[]
-      {"rep"}, "Debrief replay file");
-      if (fileToOpen != null)
+
+      final String[] fileTypes = isRepFile ? new String[]
+      {"rep"} : new String[]
+      {"dpf", "xml"};
+      final String descr = isRepFile ? "Debrief Replay File"
+          : "Debrief Plot Files";
+      if (DebriefLiteApp.isDirty())
       {
-        DebriefLiteApp.openRepFile(fileToOpen);
+        final int res = JOptionPane.showConfirmDialog(null,
+            "Save changes before opening new plot?");
+        if (res == JOptionPane.OK_OPTION)
+        {
+          if (DebriefLiteApp.currentFileName != null
+              && DebriefLiteApp.currentFileName.endsWith(".rep"))
+          {
+            final File f = new File(DebriefLiteApp.currentFileName);
+            final String newname = f.getName().substring(0, f.getName()
+                .lastIndexOf(".rep"));
+            final String newFileName = DoSaveAs.showSaveDialog(f
+                .getParentFile(), newname);
+            if (newFileName == null || newFileName.length() == 0)
+            {
+              // drop out, don't do reset.
+              return;
+            }
+            DebriefLiteApp.currentFileName.replaceAll(".rep", ".dpf");
+            DebriefRibbonFile.saveChanges(newFileName, _session, _theFrame);
+          }
+          else if (DebriefLiteApp.currentFileName == null)
+          {
+            // ok, we have to do a save-as operation
+            final DoSaveAs saveAs = new DoSaveAs(_session, _theFrame);
+            saveAs.actionPerformed(e);
+          }
+          else
+          {
+            // ok, it's a DPF file. we can juse save it
+            DebriefRibbonFile.saveChanges(DebriefLiteApp.currentFileName,
+                _session, _theFrame);
+          }
+          doFileOpen(fileTypes, descr, isRepFile, _doReset);
+        }
+        else if (res == JOptionPane.NO_OPTION)
+        {
+          doFileOpen(fileTypes, descr, isRepFile, _doReset);
+        }
+        else
+        {
+          // do nothing
+        }
+      }
+      else
+      {
+        doFileOpen(fileTypes, descr, isRepFile, _doReset);
       }
     }
 
   }
 
+  private static class SavePopupMenu extends JCommandPopupMenu
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    public SavePopupMenu(final Session session, final JRibbonFrame theFrame)
+    {
+      final Image saveImage = MenuUtils.createImage("icons/16/save.png");
+      final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
+          .getIcon(saveImage, new Dimension(16, 16));
+      final JCommandMenuButton saveButton = new JCommandMenuButton("Save",
+          imageIcon);
+      saveButton.getActionModel().addActionListener(new DoSave(session,
+          theFrame));
+      addMenuButton(saveButton);
+      final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
+      final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon
+          .getIcon(saveAsImage, new Dimension(16, 16));
+      final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",
+          imageIcon2);
+      saveAsButton.getActionModel().addActionListener(new DoSaveAs(session,
+          theFrame));
+      addMenuButton(saveAsButton);
+    }
+  }
+
+  public static FlamingoCommand closeButton;
+
+  private static RibbonTask fileTask;
 
   protected static void addFileTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Session session,
@@ -308,49 +339,53 @@ public class DebriefRibbonFile
   {
 
     final JRibbonBand fileMenu = new JRibbonBand("File", null);
-    MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(
-        (JFrame) ribbon.getRibbonFrame(), session, resetAction, false), fileMenu,
+    MenuUtils.addCommand("New", "icons/24/new.png", new NewFileAction(ribbon
+        .getRibbonFrame(), session, resetAction, false), fileMenu,
         RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,false),
-        fileMenu, RibbonElementPriority.TOP);
-    final SavePopupMenu savePopup = new SavePopupMenu(session,ribbon.getRibbonFrame());
-    MenuUtils.addCommand("Save", "icons/24/save.png",
-        new DoSave(session,ribbon.getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
+    MenuUtils.addCommand("Open", "icons/24/open.png", new OpenPlotAction(ribbon
+        .getRibbonFrame(), session, resetAction, false), fileMenu,
+        RibbonElementPriority.TOP);
+    final SavePopupMenu savePopup = new SavePopupMenu(session, ribbon
+        .getRibbonFrame());
+    MenuUtils.addCommand("Save", "icons/24/save.png", new DoSave(session, ribbon
+        .getRibbonFrame()), fileMenu, RibbonElementPriority.TOP,
         new PopupPanelCallback()
         {
           @Override
-          public JPopupPanel getPopupPanel(JCommandButton commandButton)
+          public JPopupPanel getPopupPanel(final JCommandButton commandButton)
           {
             return savePopup;
           }
         });
+    closeButton = MenuUtils.addCommand("Close", "icons/24/delete.png",
+        new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
+        fileMenu, RibbonElementPriority.TOP);
+    closeButton.setEnabled(false);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
-    MenuUtils.addCommand("Replay", "icons/24/import.png",
-        new OpenPlotAction((JFrame)ribbon.getRibbonFrame(),session,resetAction,true), 
-        importMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Replay", "icons/24/import.png", new OpenPlotAction(
+        ribbon.getRibbonFrame(), session, resetAction, true), importMenu,
+        RibbonElementPriority.TOP);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
 
-    final JRibbonBand exportMenu = new JRibbonBand("Export",null);
+    final JRibbonBand exportMenu = new JRibbonBand("Export", null);
 
-    MenuUtils.addCommand("PNG", "icons/24/export_gpx.png",
-        new CopyPlotAsPNG(geoMapRenderer), exportMenu,
-        RibbonElementPriority.TOP);
+    MenuUtils.addCommand("PNG", "icons/24/export_gpx.png", new CopyPlotAsPNG(
+        geoMapRenderer), exportMenu, RibbonElementPriority.TOP);
     exportMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         exportMenu));
     fileMenu.setPreferredSize(new Dimension(150, 50));
     importMenu.setPreferredSize(new Dimension(50, 50));
-    fileTask = new RibbonTask("File", fileMenu, importMenu,
-        exportMenu);
+    fileTask = new RibbonTask("File", fileMenu, importMenu, exportMenu);
     fileMenu.setPreferredSize(new Dimension(50, 50));
     ribbon.addTask(fileTask);
   }
 
-  public static void doFileOpen(String[] fileTypes, String descr,
-      boolean isRepFile, Runnable doReset)
+  public static void doFileOpen(final String[] fileTypes, final String descr,
+      final boolean isRepFile, final Runnable doReset)
   {
     // load the new selected file
     final File fileToOpen = showOpenDialog(fileTypes, descr);
@@ -368,28 +403,15 @@ public class DebriefRibbonFile
     }
   }
 
-  public static File showOpenDialog(final String[] fileTypes,
-      final String descr)
+  public static RibbonTask getFileTask()
   {
-    JFileChooser fileChooser = new JFileChooser();
-    FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr,
-        fileTypes);
-    fileChooser.setFileFilter(restrict);
-    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-    fileChooser.setMultiSelectionEnabled(false);
-    int res = fileChooser.showOpenDialog(null);
-    if (res == JFileChooser.APPROVE_OPTION)
-    {
-      return fileChooser.getSelectedFile();
-    }
-
-    return null;
+    return fileTask;
   }
 
-  public static void saveChanges(String currentFileName, Session session,
-      JFrame theFrame)
+  public static void saveChanges(final String currentFileName,
+      final Session session, final JFrame theFrame)
   {
-    File targetFile = new File(currentFileName);
+    final File targetFile = new File(currentFileName);
     if ((targetFile != null && targetFile.exists() && targetFile.canWrite())
         || (targetFile != null && !targetFile.exists() && targetFile
             .getParentFile().canWrite()))
@@ -402,9 +424,9 @@ public class DebriefRibbonFile
         stream = new FileOutputStream(targetFile.getAbsolutePath());
         DebriefXMLReaderWriter.exportThis(session, stream);
       }
-      catch (FileNotFoundException e1)
+      catch (final FileNotFoundException e1)
       {
-        Application.logError2(Application.ERROR, "Can't find file", e1);
+        Application.logError2(ToolParent.ERROR, "Can't find file", e1);
       }
       finally
       {
@@ -415,7 +437,7 @@ public class DebriefRibbonFile
           DebriefLiteApp.setDirty(false);
 
         }
-        catch (IOException e1)
+        catch (final IOException e1)
         {
           // ignore
         }
@@ -424,31 +446,21 @@ public class DebriefRibbonFile
 
   }
 
-  private static class SavePopupMenu extends JCommandPopupMenu{
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-
-    public SavePopupMenu(final Session session,final JRibbonFrame theFrame)
-    {
-      final Image saveImage = MenuUtils.createImage("icons/16/save.png");
-      final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon.getIcon(saveImage, new Dimension(
-          16, 16));
-      final JCommandMenuButton saveButton = new JCommandMenuButton("Save",imageIcon);
-      saveButton.getActionModel().addActionListener(new DoSave(session, theFrame));
-      addMenuButton(saveButton);
-      final Image saveAsImage = MenuUtils.createImage("icons/16/save-as.png");
-      final ImageWrapperResizableIcon imageIcon2 = ImageWrapperResizableIcon.getIcon(saveAsImage, new Dimension(
-          16, 16));
-      final JCommandMenuButton saveAsButton = new JCommandMenuButton("Save As",imageIcon2);
-      saveAsButton.getActionModel().addActionListener(new DoSaveAs(session, theFrame));
-      addMenuButton(saveAsButton);
-    }
-  }
-
-  public static RibbonTask getFileTask()
+  public static File showOpenDialog(final String[] fileTypes,
+      final String descr)
   {
-    return fileTask;
+    final JFileChooser fileChooser = new JFileChooser();
+    final FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr,
+        fileTypes);
+    fileChooser.setFileFilter(restrict);
+    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    fileChooser.setMultiSelectionEnabled(false);
+    final int res = fileChooser.showOpenDialog(null);
+    if (res == JFileChooser.APPROVE_OPTION)
+    {
+      return fileChooser.getSelectedFile();
+    }
+
+    return null;
   }
 }
