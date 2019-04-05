@@ -324,6 +324,10 @@ public class DebriefRibbonFile
             return savePopup;
           }
         });
+    closeButton = MenuUtils.addCommand("Close", "icons/24/delete.png",
+        new NewFileAction(ribbon.getRibbonFrame(), session, resetAction, true),
+        fileMenu, RibbonElementPriority.TOP);
+    closeButton.setEnabled(false);
     fileMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         fileMenu));
 

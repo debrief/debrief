@@ -113,7 +113,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static final String ACTIVE_STATE = "ACTIVE";
   public static final String INACTIVE_STATE = "INACTIVE";
-  public static String state = ACTIVE_STATE;
+  public static String state = INACTIVE_STATE;
 
   /**
    * State of the application. Inactive will disable all the button.
