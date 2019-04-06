@@ -167,7 +167,7 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
         this.repaint();
 
         // create the new editor
-        spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, null, _theParent, null);
+        spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, null, _theParent, null, null);
 
         // put into the panel
         _editors.add(spe.getPanel());

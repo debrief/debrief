@@ -384,14 +384,15 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 *          the object we are going to edit
 	 * @param parent
 	 *          the panel we are contained in
+	 * @param propsPanel JTabbedPane
 	 * @param theChart
 	 *          the chart we will send updates to
 	 */
 	public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
 			final SwingPropertiesPanel parent, final Layers theLayers,
-			final MWC.GUI.ToolParent toolParent, final Layer parentLayer)
+			final MWC.GUI.ToolParent toolParent, final Layer parentLayer, SwingPropertiesPanel propsPanel)
 	{
-		super(info, theLayers, parent, toolParent, parentLayer);
+		super(info, theLayers, parent, toolParent, parentLayer, propsPanel);
 
 		// store the parent
 		_theParent = parent;

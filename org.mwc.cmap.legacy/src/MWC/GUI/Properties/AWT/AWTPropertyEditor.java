@@ -200,7 +200,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
                            final MWC.GUI.ToolParent theParent,
                            final Layer parentLayer)
   {
-    super(info, theLayers, parent, theParent, parentLayer);
+    super(info, theLayers, parent, theParent, parentLayer, null);
 
     _theParent = parent;
   }

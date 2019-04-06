@@ -118,10 +118,10 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor 
     // (SwingPropertiesPanel)_thePanel, (PlainChart)_theChart, null, null);
     _conditionEditor = new SwingPropertyEditor2(_myComposite.getCondition()
         .getInfo(), (SwingPropertiesPanel) _thePanel,
-         _theLayers, null, null);
+         _theLayers, null, null, null);
     _responseEditor = new SwingPropertyEditor2(_myComposite.getResponse()
         .getInfo(), (SwingPropertiesPanel) _thePanel,
-        _theLayers, null, null);
+        _theLayers, null, null, null);
   }
 
 }

@@ -44,6 +44,7 @@ public class PropertiesDialog extends JDialog
   private Editable _editableProperty;
   private Layers _theLayers;
   private static Stack<PropertiesDialog> dialogs = new Stack<>();
+  
   /**
    * the toolparent we supply to any new panels
    */
@@ -84,7 +85,7 @@ public class PropertiesDialog extends JDialog
   protected void initForm() {
     SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers, _undoBuffer, _theToolParent, _owner);
     propsPanel.setBorder(new EmptyBorder(10,10,10,10));
-    PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),propsPanel,_theLayers,_theToolParent,null);
+    PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),propsPanel,_theLayers,_theToolParent,null, propsPanel);
     JPanel thePanel = (JPanel) ap.getPanel();
     thePanel.setName(_editableProperty.getInfo().getDisplayName());
     // now, listen out for the name of the panel changing - we are removed as listener by the SwingPropertyEditor
@@ -98,9 +99,9 @@ public class PropertiesDialog extends JDialog
   private static class PropsEditor extends SwingPropertyEditor2{
 
     public PropsEditor(EditorType info, SwingPropertiesPanel parent,
-        Layers theLayers, ToolParent toolParent, Layer parentLayer)
+        Layers theLayers, ToolParent toolParent, Layer parentLayer, SwingPropertiesPanel propsPanel)
     {
-      super(info, parent, theLayers, toolParent, parentLayer);
+      super(info, parent, theLayers, toolParent, parentLayer, propsPanel);
     }
     @Override
     public void close()

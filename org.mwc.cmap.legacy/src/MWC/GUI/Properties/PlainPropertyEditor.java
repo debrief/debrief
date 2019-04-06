@@ -247,6 +247,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
+import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -330,6 +331,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    * the listener object we declare for this item, so that we can remove it later on
    */
   private PropertyChangeListener _reportListener;
+  
+  /**
+   * JTabbedPane 
+   */
+  private final SwingPropertiesPanel _propsPanel;
 
   protected final Layers _theLayers;
 
@@ -340,8 +346,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
                              final Layers theLayers,
                              final PropertiesPanel thePanel,
                              final MWC.GUI.ToolParent toolParent,
-                             final Layer parentLayer)
+                             final Layer parentLayer,
+                             final SwingPropertiesPanel propsPanel)
   {
+    _propsPanel = propsPanel;
 
     // store the editor
     _theInfo = theInfo;
@@ -955,10 +963,14 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       while (enumer.hasMoreElements())
       {
         final PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
-        if ( "Name".equals(it.propertyName) )
+        if ( "Name".equals(it.propertyName))
         {
           _theName = it.newValue.toString();
           _theInfo.setName(it.newValue.toString());
+          if ( _propsPanel != null )
+          {
+            _propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);            
+          }
         }
         
         doThis(it.setter,
