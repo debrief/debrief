@@ -955,10 +955,19 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       while (enumer.hasMoreElements())
       {
         final PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
+        if ( "Name".equals(it.propertyName) )
+        {
+          _theName = it.newValue.toString();
+          _theInfo.setName(it.newValue.toString());
+        }
+        
         doThis(it.setter,
           it.data,
           it.newValue);
         it.editorInfo.fireChanged(this, it.propertyName, it.oldValue, it.newValue);
+        // TODO We are calling it after every change, and we are forcing to update UI again anda again.
+        // Maybe it could be done once at the end.
+        // Saul Hidalgo
       }
 
       // try to update just the layer

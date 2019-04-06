@@ -285,7 +285,7 @@ public interface Editable
     /**
      * the name of this instance
      */
-    private final String _name;
+    private String _name;
 
     /**
      * the class of this object
@@ -563,7 +563,7 @@ public interface Editable
      */
     public String getDisplayName()
     {
-      return _displayName + " " + getName();
+      return (_displayName + " " + getName()).trim();
     }
 
     /**
@@ -574,6 +574,14 @@ public interface Editable
     public String getName()
     {
       return _name;
+    }
+    
+    /**
+     * set a new name to this object
+     */
+    public void setName(String newName)
+    {
+      this._name = newName;
     }
 
     /**
