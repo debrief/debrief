@@ -706,7 +706,8 @@ public class DebriefLiteApp implements FileDropListener
           else
           {
             Trace.trace("This file type not handled:" + suff);
-            MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "This file type not handled:" + suff);
+            MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+                "This file type not handled:" + suff);
           }
         }
       }
@@ -714,7 +715,8 @@ public class DebriefLiteApp implements FileDropListener
     catch (final Exception e)
     {
       Trace.trace(e);
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Error Opening the file: " + e.getMessage());
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+          "Error Opening the file: " + e.getMessage());
     }
     finally
     {
