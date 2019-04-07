@@ -133,11 +133,14 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 			MWC.Utilities.Errors.Trace.trace(sre,
 					"Unknown trouble with SAX parsing (not recognised):"
 							+ sre.getMessage());
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Unknown trouble with SAX parsing (not recognised):"
+          + sre.getMessage());
 		}
 		catch (final SAXNotSupportedException spe)
 		{
 			MWC.Utilities.Errors.Trace.trace(spe,
 					"Unknown trouble with SAX parsing (not supported)");
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Unknown trouble with SAX parsing (not supported)");
 		}
 		catch (final SAXException se)
 		{
@@ -146,6 +149,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 		catch (final IOException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e, "Errors parsing XML document");
+			MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", "Errors parsing XML document");
 		}
 	}
 
