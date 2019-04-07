@@ -11,7 +11,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -69,7 +68,7 @@ public class DebriefRibbonFile
       final JMapPane map = (JMapPane) mapRenderer.getMap();
       final BufferedImage img = new BufferedImage(map.getWidth(), map
           .getHeight(), BufferedImage.TYPE_INT_ARGB);
-      Graphics g = img.getGraphics();
+      final Graphics g = img.getGraphics();
       map.paint(g);
       g.dispose();
 
