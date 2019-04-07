@@ -16,6 +16,10 @@ package org.mwc.debrief.lite;
 
 import java.awt.datatransfer.Clipboard;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Layers;
@@ -45,7 +49,7 @@ public class LiteSession extends Session
   @Override
   public void closeGUI()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // Nothing to do here.
   }
 
   @Override
@@ -63,7 +67,8 @@ public class LiteSession extends Session
   @Override
   protected boolean wantsToClose()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // action handled by DebriefLiteApp class.
+    return true;
   }
 
 }
