@@ -921,7 +921,7 @@ public abstract class Application implements ToolParent, ActionListener,
    * @param name
    *          autofilled
    */
-  public final String getProperty(final String name)
+  public String getProperty(final String name)
   {
     String res = null;
     if (_substituteParent != null)
