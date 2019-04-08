@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -9,7 +10,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.image.RenderedImage;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -65,9 +66,13 @@ public class DebriefRibbonFile
     public void actionPerformed(final ActionEvent e)
     {
       final JMapPane map = (JMapPane) mapRenderer.getMap();
-      final RenderedImage image = map.getBaseImage();
+      final BufferedImage img = new BufferedImage(map.getWidth(), map
+          .getHeight(), BufferedImage.TYPE_INT_ARGB);
+      final Graphics g = img.getGraphics();
+      map.paint(g);
+      g.dispose();
 
-      if (image != null)
+      if (img != null)
       {
         final Transferable t = new Transferable()
         {
@@ -78,7 +83,7 @@ public class DebriefRibbonFile
           {
             if (isDataFlavorSupported(flavor))
             {
-              return image;
+              return img;
             }
             return null;
           }
