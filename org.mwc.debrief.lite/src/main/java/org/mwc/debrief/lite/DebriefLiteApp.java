@@ -47,6 +47,7 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -353,6 +354,7 @@ public class DebriefLiteApp implements FileDropListener
 
   protected DataListener2 _listenForMods;
   private OutlinePanelView layerManager;
+  private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
@@ -566,6 +568,15 @@ public class DebriefLiteApp implements FileDropListener
     outlinePanel.add(layerManager, BorderLayout.CENTER);
   }
 
+  private void addGraphView(final ToolParent toolParent,
+      final UndoBuffer undoBuffer)
+  {
+    graphPanelView = new GraphPanelView();
+    graphPanelView.setObject(_theLayers);
+    graphPanelView.setParent(toolParent);
+    graphPanel.add(graphPanelView, BorderLayout.CENTER);
+  }
+
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane, final LiteStepControl stepControl,
@@ -594,6 +605,7 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
+    addGraphView(app, undoBuffer);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
