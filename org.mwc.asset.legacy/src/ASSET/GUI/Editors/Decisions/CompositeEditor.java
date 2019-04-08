@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package ASSET.GUI.Editors.Decisions;
 
@@ -26,17 +26,15 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
 
 /**
- * Title:
- * Description:
- * Copyright:    Copyright (c) 2001
- * Company:
+ * Title: Description: Copyright: Copyright (c) 2001 Company:
  *
  * @author
  * @version 1.0
  */
 
-public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor implements
-  PlainPropertyEditor.EditorUsesPropertyPanel, MWC.GUI.Properties.NoEditorButtons
+public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
+    implements PlainPropertyEditor.EditorUsesPropertyPanel,
+    MWC.GUI.Properties.NoEditorButtons
 {
 
   //////////////////////////////////////////////////////////////////////
@@ -44,14 +42,14 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor 
   //////////////////////////////////////////////////////////////////////
 
   /**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	SwingPropertyEditor2 _compositeEditor = null;
+   *
+   */
+  private static final long serialVersionUID = 1L;
+  SwingPropertyEditor2 _compositeEditor = null;
   SwingPropertyEditor2 _conditionEditor = null;
   SwingPropertyEditor2 _responseEditor = null;
 
-  //  PlainChart _theChart;
+  // PlainChart _theChart;
   PropertyEditor _theEditor;
 
   //////////////////////////////////////////////////////////////////////
@@ -67,19 +65,31 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor 
 
   }
 
-  public boolean supportsCustomEditor()
+  private void initForm()
   {
-    return true;
+    // right, at the top we need our name editor
+    this.setLayout(new GridLayout(0, 1));
+
+    // create the 3 property editors
+    final JComponent cond = (JComponent) _conditionEditor.getPanel();
+    cond.setBorder(BorderFactory.createTitledBorder("Condition"));
+    final JComponent resp = (JComponent) _responseEditor.getPanel();
+    resp.setBorder(BorderFactory.createTitledBorder("Response"));
+
+    this.add(cond);
+    this.add(resp);
   }
 
-  public void setPanel(PropertiesPanel thePanel)
-  {
-    _thePanel = thePanel;
-  }
-
+  @Override
   public void setObject(final Object value)
   {
     setValue(value);
+  }
+
+  @Override
+  public void setPanel(final PropertiesPanel thePanel)
+  {
+    _thePanel = thePanel;
   }
 
   private void setValue(final Object value)
@@ -95,21 +105,9 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor 
     }
   }
 
-
-  private void initForm()
+  public boolean supportsCustomEditor()
   {
-    // right, at the top we need our name editor
-    this.setLayout(new GridLayout(0, 1));
-
-
-    // create the 3 property editors
-    JComponent cond = (JComponent) _conditionEditor.getPanel();
-    cond.setBorder(BorderFactory.createTitledBorder("Condition"));
-    JComponent resp = (JComponent) _responseEditor.getPanel();
-    resp.setBorder(BorderFactory.createTitledBorder("Response"));
-
-    this.add(cond);
-    this.add(resp);
+    return true;
   }
 
   private void updateForm()
@@ -117,11 +115,11 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor 
     // _compositeEditor = new SwingPropertyEditor2(_myComposite.getInfo(),
     // (SwingPropertiesPanel)_thePanel, (PlainChart)_theChart, null, null);
     _conditionEditor = new SwingPropertyEditor2(_myComposite.getCondition()
-        .getInfo(), (SwingPropertiesPanel) _thePanel,
-         _theLayers, null, null);
+        .getInfo(), (SwingPropertiesPanel) _thePanel, _theLayers, null, null,
+        null);
     _responseEditor = new SwingPropertyEditor2(_myComposite.getResponse()
-        .getInfo(), (SwingPropertiesPanel) _thePanel,
-        _theLayers, null, null);
+        .getInfo(), (SwingPropertiesPanel) _thePanel, _theLayers, null, null,
+        null);
   }
 
 }
