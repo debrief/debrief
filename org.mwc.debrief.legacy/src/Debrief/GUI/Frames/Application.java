@@ -253,6 +253,7 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Toolbar;
 import MWC.GUI.Dialogs.ApplicationProperties;
 import MWC.GUI.DragDrop.FileDropSupport;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.Utilities.Errors.Trace;
@@ -357,6 +358,7 @@ public abstract class Application implements ToolParent, ActionListener,
 
     // ok, do some more initialisation
     ImportReplay.initialise(this);
+    NewFormattedJFreeChart.initialise(this);
 
   }
 
