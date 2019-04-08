@@ -431,7 +431,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
    * embedded helper class to handle updating the text control when the users edits it
    */
   private static class HandleTextChange extends java.awt.event.FocusAdapter
-      implements java.awt.event.ActionListener
+      implements ActionListener
   {
     PropertyEditor _myEditor;
 
@@ -492,7 +492,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   public static class MyTable extends JTable
   {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     /**
@@ -591,7 +591,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   protected class paintLabel extends JPanel
   {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -605,7 +605,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       _myLabel = new JLabel("  ")
       {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 1L;
 
@@ -688,7 +688,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
         javax.swing.ListCellRenderer
     {
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
@@ -737,7 +737,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     }
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
@@ -851,7 +851,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   /**
    * accessor to let other classes get to our property manager
-   * 
+   *
    * @return the manager containing a list of gui-independent and gui-dependent editors
    */
   public static PropertyEditorManager getPropertyManager()
@@ -923,7 +923,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   // //////////////////////////////////////////////////////////
   /**
    * the constructor for our Swing property editor
-   * 
+   *
    * @param info
    *          the object we are going to edit
    * @param parent
@@ -953,8 +953,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   /**
    * stick the panel into the interface
    */
-  private void addPanel(final String lbl, final Component c,
-      final String details, final PropertyDescriptor p)
+  private void addPanel(final Component c, final PropertyDescriptor p)
   {
 
     // take a copy of the component, so that we can edit
@@ -1062,7 +1061,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   /**
    * convenience function to find a dedicated editor and put it into it's own panel
-   * 
+   *
    * @param op
    *          what we're editing
    * @param thePanel
@@ -1155,7 +1154,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   /**
    * the object we are listening to has fired a new report. Display it in our GUI if we want to
-   * 
+   *
    * @param report
    *          the text to show
    */
@@ -1173,7 +1172,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   /**
    * get the Swing panel we have been drawn into
-   * 
+   *
    * @return Swing panel
    */
   public Component getPanel()
@@ -1183,7 +1182,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   /**
    * layout the editors on the page
-   * 
+   *
    * @param thePanel
    *          our parent properties panel
    */
@@ -1195,7 +1194,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     _main = new SwingPropertiesPanel.CloseableJPanel()
     {
       /**
-       * 
+       *
        */
       private static final long serialVersionUID = 1L;
 
@@ -1441,8 +1440,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
   /**
    * create a drop down list to edit this item
    */
-  private Component makeChoice(final PropertyDescriptor p,
-      final PropertyEditor pe, final String[] tags)
+  private Component makeChoice(final PropertyEditor pe, final String[] tags)
   {
     final TickableComboBox cl = createChoiceEditor(pe, tags);
 
@@ -1577,7 +1575,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
       if (tags != null)
       {
         // create a choice item
-        theComp = makeChoice(p, pe, tags);
+        theComp = makeChoice(pe, tags);
       }
       else
       {
@@ -1596,7 +1594,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     {
       // todo: if this attribute is optional, wrap it in a holder containing an
       // "ignore" checkbox
-      addPanel(p.getDisplayName(), theComp, p.getShortDescription(), p);
+      addPanel(theComp, p);
     }
     else
     {

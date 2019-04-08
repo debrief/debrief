@@ -710,7 +710,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   ////////////////////////////////////////////////////////////
   public PlainPropertyEditor(final MWC.GUI.Editable.EditorType theInfo,
       final Layers theLayers, final PropertiesPanel thePanel,
-      final MWC.GUI.ToolParent toolParent, final Layer parentLayer,
+      final ToolParent toolParent, final Layer parentLayer,
       final SwingPropertiesPanel propsPanel)
   {
     _propsPanel = propsPanel;
