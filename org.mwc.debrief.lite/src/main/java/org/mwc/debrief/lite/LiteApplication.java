@@ -20,8 +20,9 @@ import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Tool;
 
-class LiteApplication extends Application
+public class LiteApplication extends Application
 {
+  
   @Override
   protected void addMenuItem(final String theMenu, final String theLabel,
       final Tool theTool, final MenuShortcut theShortCut)

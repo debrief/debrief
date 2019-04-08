@@ -34,7 +34,16 @@ public class DoSave extends DoSaveAs
     String outputFileName = fileName;
     if (fileName == null)
     {
-      outputFileName = showSaveDialog(null, DEFAULT_FILENAME);
+      final File location;
+      String lastFileLocation = DebriefLiteApp.getLastFileLocation();
+      if(lastFileLocation!=null) 
+      {
+        location = new File(lastFileLocation);
+      }
+      else {
+        location = null;
+      }
+      outputFileName = showSaveDialog(location, DEFAULT_FILENAME);
       if (outputFileName != null)
       {
         targetFile = new File(outputFileName);

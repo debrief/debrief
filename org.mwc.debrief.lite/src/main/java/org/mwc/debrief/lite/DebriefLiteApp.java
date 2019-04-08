@@ -641,7 +641,16 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          outputFileName = DoSaveAs.showSaveDialog(null, "DebriefPlot");
+          final File directory;
+          String lastFileLocation = DebriefLiteApp.getLastFileLocation();
+          if(lastFileLocation!=null) 
+          {
+            directory = new File(lastFileLocation);
+          }
+          else {
+            directory = null;
+          }
+          outputFileName = DoSaveAs.showSaveDialog(directory, "DebriefPlot");
         }
         if (outputFileName != null)
         {
@@ -972,5 +981,20 @@ public class DebriefLiteApp implements FileDropListener
       final HasEditables theLayer)
   {
     _instance.getLayerManager().updateData((Layer) theLayer, newItem);
+  }
+  public static String getLastFileLocation()
+  {
+    return _instance.app.getProperty("last_file_location");
+  }
+  public static void setLastFileSaveLocation(String fileLocation) {
+    _instance.app.setProperty("last_file_location", fileLocation);
+  }
+  
+  public static String getLastFileOpenLocation()
+  {
+    return _instance.app.getProperty("last_fileopen_location");
+  }
+  public static void setLastFileOpenLocation(String fileLocation) {
+    _instance.app.setProperty("last_fileopen_location", fileLocation);
   }
 }

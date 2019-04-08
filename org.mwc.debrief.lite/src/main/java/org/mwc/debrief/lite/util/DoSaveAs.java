@@ -47,7 +47,16 @@ public class DoSaveAs extends AbstractAction
     }
     else
     {
-      outputFile = showSaveDialog(null, DEFAULT_FILENAME);
+      final File directory;
+      String lastFileLocation = DebriefLiteApp.getLastFileLocation();
+      if(lastFileLocation!=null) 
+      {
+        directory = new File(lastFileLocation);
+      }
+      else {
+        directory = null;
+      }
+      outputFile = showSaveDialog(directory, DEFAULT_FILENAME);
     }
     if(outputFile!=null) {
       DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
