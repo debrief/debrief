@@ -35,7 +35,8 @@ public class DoSave extends DoSaveAs
     if (fileName == null)
     {
       final File location;
-      String lastFileLocation = DebriefLiteApp.getLastFileLocation();
+      final String lastFileLocation = DebriefLiteApp.getDefault().getProperty(
+          DoSaveAs.LAST_FILE_LOCATION);
       if(lastFileLocation!=null) 
       {
         location = new File(lastFileLocation);

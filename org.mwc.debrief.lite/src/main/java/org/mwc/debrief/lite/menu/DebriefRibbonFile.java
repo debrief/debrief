@@ -48,6 +48,9 @@ import MWC.GUI.ToolParent;
 
 public class DebriefRibbonFile
 {
+  
+  private static final String LAST_FILE_OPEN_LOCATION = "last_fileopen_location";
+  
   private static class CopyPlotAsPNG extends AbstractAction
   {
     /**
@@ -134,7 +137,8 @@ public class DebriefRibbonFile
     @Override
     public void actionPerformed(final ActionEvent e)
     {
-      final String initialFileLocation = DebriefLiteApp.getLastFileOpenLocation();
+      final String initialFileLocation = DebriefLiteApp.getDefault()
+          .getProperty("last_fileopen_location");
       final File fileToOpen = showOpenDialog(initialFileLocation,new String[]
       {"rep"}, "Debrief replay file");
       if (fileToOpen != null)
@@ -394,7 +398,8 @@ public class DebriefRibbonFile
       final boolean isRepFile, final Runnable doReset)
   {
     // load the new selected file
-    final String initialFileLocation = DebriefLiteApp.getLastFileOpenLocation();
+    final String initialFileLocation = DebriefLiteApp.getDefault().getProperty(
+        "last_fileopen_location");
     final File fileToOpen = showOpenDialog(initialFileLocation,fileTypes, descr);
     if (fileToOpen != null)
     {
@@ -407,7 +412,8 @@ public class DebriefRibbonFile
       {
         DebriefLiteApp.openPlotFile(fileToOpen);
       }
-      DebriefLiteApp.setLastFileOpenLocation(fileToOpen.getParentFile().getAbsolutePath());
+      DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
+          fileToOpen.getParentFile().getAbsolutePath());
     }
   }
 
@@ -431,8 +437,9 @@ public class DebriefRibbonFile
       {
         stream = new FileOutputStream(targetFile.getAbsolutePath());
         DebriefXMLReaderWriter.exportThis(session, stream);
-        //remember the last file save location
-        DebriefLiteApp.setLastFileSaveLocation(targetFile.getParentFile().getAbsolutePath());
+        // remember the last file save location
+        DebriefLiteApp.getDefault().setProperty(DoSaveAs.LAST_FILE_LOCATION,
+            targetFile.getParentFile().getAbsolutePath());
       }
       catch (final FileNotFoundException e1)
       {
