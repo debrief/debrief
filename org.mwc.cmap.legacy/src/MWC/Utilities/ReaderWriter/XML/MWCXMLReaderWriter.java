@@ -290,7 +290,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
   {
 
     // create progress monitor for this stream
-    final javax.swing.ProgressMonitorInputStream po =
+    final ProgressMonitorInputStream po =
         new ModifiedProgressMonitorInputStream(null, "Opening " + fName, is);
 
     // initialise cancelled flag
