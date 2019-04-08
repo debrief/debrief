@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,6 +40,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -353,6 +356,8 @@ public class DebriefLiteApp implements FileDropListener
   private OutlinePanelView layerManager;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
+  private final JXCollapsiblePaneWithTitle graphPanel =
+      new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
   private final DebriefLiteToolParent _toolParent = new DebriefLiteToolParent(
@@ -573,7 +578,22 @@ public class DebriefLiteApp implements FileDropListener
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
 
-    theFrame.add(mapPane, BorderLayout.CENTER);
+    JPanel centerPanel = new JPanel();
+    centerPanel.setLayout(new BorderLayout());
+    mapPane.addComponentListener(new ComponentAdapter()
+    {
+      @Override
+      public void componentResized(ComponentEvent e)
+      {
+        mapPane.setVisible(false);
+        mapPane.setVisible(true);
+      }
+    });
+
+    centerPanel.add(mapPane, BorderLayout.CENTER);
+    centerPanel.add(graphPanel, BorderLayout.PAGE_END);
+
+    theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(_toolParent, undoBuffer);

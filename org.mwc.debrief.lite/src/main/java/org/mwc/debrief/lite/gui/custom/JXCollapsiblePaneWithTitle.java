@@ -76,6 +76,7 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     else if (direction == Direction.DOWN)
     {
       add(titleLabel, BorderLayout.NORTH);
+      setMinimumSize(new Dimension(titleLabel.getWidth(), 30));
     }
     else if (direction == Direction.UP)
     {
@@ -123,13 +124,27 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
       {
         if (dragging)
         {
+          int deltaMultiplier = 1;
+          if (direction == Direction.DOWN || direction == Direction.RIGHT)
+          {
+            deltaMultiplier *= -1;
+          }
           final Rectangle bounds = collapsiblePaneInstance.getBounds();
-          final int newDimension = (int) (collapsiblePaneInstance
-              .getContentPane().getWidth() + event.getPoint().getX()
-              - dragLocation.getX());
+          if ( direction.isVertical() )
+          {
+            final int newDimension = (int) (collapsiblePaneInstance
+                .getContentPane().getHeight() + event.getPoint().getY() * deltaMultiplier
+                + dragLocation.getY());
 
-          bounds.width = Math.max(newDimension, getMinimunAnimationSize());
+            bounds.height = Math.max(newDimension, getMinimunAnimationSize());
+          }else
+          {
+            final int newDimension = (int) (collapsiblePaneInstance
+                .getContentPane().getWidth() + event.getPoint().getX() * deltaMultiplier
+                - dragLocation.getX());
 
+            bounds.width = Math.max(newDimension, getMinimunAnimationSize());
+          }
           collapsiblePaneInstance.setBounds(bounds);
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
               bounds.height));
