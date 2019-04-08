@@ -48,6 +48,9 @@ import MWC.GUI.ToolParent;
 
 public class DebriefRibbonFile
 {
+  
+  private static final String LAST_FILE_OPEN_LOCATION = "last_fileopen_location";
+  
   private static class CopyPlotAsPNG extends AbstractAction
   {
     /**
@@ -134,7 +137,9 @@ public class DebriefRibbonFile
     @Override
     public void actionPerformed(final ActionEvent e)
     {
-      final File fileToOpen = showOpenDialog(new String[]
+      final String initialFileLocation = DebriefLiteApp.getDefault()
+          .getProperty("last_fileopen_location");
+      final File fileToOpen = showOpenDialog(initialFileLocation,new String[]
       {"rep"}, "Debrief replay file");
       if (fileToOpen != null)
       {
@@ -392,7 +397,9 @@ public class DebriefRibbonFile
       final boolean isRepFile, final Runnable doReset)
   {
     // load the new selected file
-    final File fileToOpen = showOpenDialog(fileTypes, descr);
+    final String initialFileLocation = DebriefLiteApp.getDefault().getProperty(
+        "last_fileopen_location");
+    final File fileToOpen = showOpenDialog(initialFileLocation,fileTypes, descr);
     if (fileToOpen != null)
     {
       doReset.run();
@@ -404,6 +411,8 @@ public class DebriefRibbonFile
       {
         DebriefLiteApp.openPlotFile(fileToOpen);
       }
+      DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
+          fileToOpen.getParentFile().getAbsolutePath());
     }
   }
 
@@ -427,6 +436,9 @@ public class DebriefRibbonFile
       {
         stream = new FileOutputStream(targetFile.getAbsolutePath());
         DebriefXMLReaderWriter.exportThis(session, stream);
+        // remember the last file save location
+        DebriefLiteApp.getDefault().setProperty(DoSaveAs.LAST_FILE_LOCATION,
+            targetFile.getParentFile().getAbsolutePath());
       }
       catch (final FileNotFoundException e1)
       {
@@ -450,10 +462,15 @@ public class DebriefRibbonFile
 
   }
 
-  public static File showOpenDialog(final String[] fileTypes,
+  public static File showOpenDialog(final String openDir,final String[] fileTypes,
       final String descr)
   {
+    
     final JFileChooser fileChooser = new JFileChooser();
+    if(openDir!=null)
+    {
+      fileChooser.setCurrentDirectory(new File(openDir));
+    }
     final FileNameExtensionFilter restrict = new FileNameExtensionFilter(descr,
         fileTypes);
     fileChooser.setFileFilter(restrict);
