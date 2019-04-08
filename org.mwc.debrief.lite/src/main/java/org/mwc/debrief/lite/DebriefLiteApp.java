@@ -355,7 +355,8 @@ public class DebriefLiteApp implements FileDropListener
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
   private GeoToolMapProjection projection;
-  private static LiteApplication app;
+  private final static LiteApplication app = new LiteApplication(
+      ImportReplay.IMPORT_AS_OTG, 0L);;
 
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
@@ -447,8 +448,6 @@ public class DebriefLiteApp implements FileDropListener
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
-
-    app = new LiteApplication(ImportReplay.IMPORT_AS_OTG, 0L);  
 
     // provide some file helpers
     ImportReplay.initialise(app);
