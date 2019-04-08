@@ -370,9 +370,8 @@ public class DebriefRibbonFile
         fileMenu));
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
-    MenuUtils.addCommand("Replay", "icons/24/import.png", new OpenPlotAction(
-        ribbon.getRibbonFrame(), session, resetAction, true), importMenu,
-        RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Replay", "icons/24/import.png",
+        new ImportReplayAction(), importMenu, RibbonElementPriority.TOP);
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
 
