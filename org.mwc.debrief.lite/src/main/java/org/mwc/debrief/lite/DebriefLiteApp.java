@@ -47,7 +47,6 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
-import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -360,8 +359,6 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
-  private final DebriefLiteToolParent _toolParent = new DebriefLiteToolParent(
-      ImportReplay.IMPORT_AS_OTG, 0L);
   private GeoToolMapProjection projection;
   private final LiteApplication app;
 
@@ -456,13 +453,14 @@ public class DebriefLiteApp implements FileDropListener
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
 
+    app = new LiteApplication(ImportReplay.IMPORT_AS_OTG, 0L);
+
     // provide some file helpers
-    ImportReplay.initialise(new DebriefLiteToolParent(
-        ImportReplay.IMPORT_AS_OTG, 0L));
+    ImportReplay.initialise(app);
     ImportManager.addImporter(new ImportReplay());
 
     // sort out time control
-    _stepControl = new LiteStepControl(_toolParent);
+    _stepControl = new LiteStepControl(app);
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
@@ -474,7 +472,6 @@ public class DebriefLiteApp implements FileDropListener
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 
     final UndoBuffer undoBuffer = session.getUndoBuffer();
-    app = new LiteApplication();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
@@ -596,7 +593,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
-    addOutlineView(_toolParent, undoBuffer);
+    addOutlineView(app, undoBuffer);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -607,7 +604,7 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
+    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app,
         geoMapRenderer, stepControl, timeManager, operation, session,
         undoBuffer, resetAction, normalT, snailT, statusBar);
   }
@@ -769,7 +766,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final FileNotFoundException e)
     {
-      _toolParent.logError(ToolParent.ERROR, "Failed to read DPF File", e);
+      app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
     }
     _theLayers.fireModified(null);
   }
