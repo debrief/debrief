@@ -110,13 +110,13 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
     final PlainChart theChart = getChart();
 
     final CreateLabelAction res = createAction(theChart);
-
-    // We store the object created in the _shape variable to user it in the createAndStore method
-    _shape = res.getNewFeature();
-
+    
     // did we get an action?
     if (res != null)
     {
+      // We store the object created in the _shape variable to user it in the createAndStore method
+      _shape = res.getNewFeature();
+
       // do we know the layer?
       Layer layer = res.getLayer();
 
