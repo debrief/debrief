@@ -138,15 +138,16 @@ public class DebriefRibbonFile
     public void actionPerformed(final ActionEvent e)
     {
       final String initialFileLocation = DebriefLiteApp.getDefault()
-          .getProperty("last_fileopen_location");
+          .getProperty(LAST_FILE_OPEN_LOCATION);
       final File fileToOpen = showOpenDialog(initialFileLocation,new String[]
       {"rep"}, "Debrief replay file");
       if (fileToOpen != null)
       {
         DebriefLiteApp.openRepFile(fileToOpen);
+        DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
+            fileToOpen.getParentFile().getAbsolutePath());
       }
     }
-
   }
 
   private static class NewFileAction extends AbstractAction
@@ -398,7 +399,7 @@ public class DebriefRibbonFile
   {
     // load the new selected file
     final String initialFileLocation = DebriefLiteApp.getDefault().getProperty(
-        "last_fileopen_location");
+        LAST_FILE_OPEN_LOCATION);
     final File fileToOpen = showOpenDialog(initialFileLocation,fileTypes, descr);
     if (fileToOpen != null)
     {
