@@ -10,19 +10,19 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.creators.shapes;
 
 import java.util.Date;
 import java.util.Enumeration;
 
-import javax.swing.JOptionPane;
-
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
@@ -44,102 +44,80 @@ import MWC.GenericData.WorldLocation;
 abstract public class CoreInsertShape extends CoreInsertChartFeature
 {
 
-	/**
-	 * the target layer where we dump new items
-	 * 
-	 */
-	private static final String DEFAULT_TARGET_LAYER = "Misc";
+  /**
+   * the target layer where we dump new items
+   *
+   */
+  private static final String DEFAULT_TARGET_LAYER = "Misc";
 
-	/**
-	 * get a plottable object
-	 * 
-	 * @param centre
-	 * @param theChart
-	 * @return
-	 */
-	protected Plottable getPlottable(final PlainChart theChart)
-	{
-		// get centre of area
-		final WorldLocation centre = new WorldLocation(getCentre(theChart));
+  /**
+   * @return
+   */
+  @Override
+  protected String getLayerName()
+  {
+    final String res;
+    // ok, are we auto-deciding?
+    if (!AutoSelectTarget.getAutoSelectTarget())
+    {
+      // nope, just use the default layer
+      res = DEFAULT_TARGET_LAYER;
+    }
+    else
+    {
+      // ok, get the non-track layers for the current plot
 
-		// create the shape, based on the centre
-		final PlainShape shape = getShape(centre);
+      // get the current plot
+      final PlainChart theChart = getChart();
 
-		// and now wrap the shape
-		final ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(), shape,
-				PlainShape.DEFAULT_COLOR, null);
+      // get the non-track layers
+      final Layers theLayers = theChart.getLayers();
+      final String[] ourLayers = theLayers.trimmedLayers();
 
-		return theWrapper;
+      // popup the layers in a question dialog
+      final IStructuredContentProvider theVals = new ArrayContentProvider();
+      final ILabelProvider theLabels = new LabelProvider();
 
-	}
+      // collate the dialog
+      final ListDialog list = new ListDialog(Display.getCurrent()
+          .getActiveShell());
+      list.setContentProvider(theVals);
+      list.setLabelProvider(theLabels);
+      list.setInput(ourLayers);
+      list.setMessage("Please select the destination layer for new feature");
+      list.setTitle("Adding new drawing feature");
+      list.setHelpAvailable(false);
 
-	/**
-	 * @return
-	 */
-	protected String getLayerName()
-	{
-		final String res;
-		// ok, are we auto-deciding?
-		if (!AutoSelectTarget.getAutoSelectTarget())
-		{
-			// nope, just use the default layer
-			res = DEFAULT_TARGET_LAYER;
-		}
-		else
-		{
-			// ok, get the non-track layers for the current plot
+      // select the first item, so it's valid to press OK immediately
+      list.setInitialSelections(new Object[]
+      {ourLayers[0]});
 
-			// get the current plot
-			final PlainChart theChart = getChart();
+      // open it
+      final int selection = list.open();
 
-			// get the non-track layers
-			final Layers theLayers = theChart.getLayers();
-			final String[] ourLayers = theLayers.trimmedLayers();
+      // did user say yes?
+      if (selection != Window.CANCEL)
+      {
+        // yup, store it's name
+        final Object[] val = list.getResult();
 
-			// popup the layers in a question dialog
-			final IStructuredContentProvider theVals = new ArrayContentProvider();
-			final ILabelProvider theLabels = new LabelProvider();
+        // check something got selected
+        if (val.length > 0)
+        {
+          final String selStr = val[0].toString();
 
-			// collate the dialog
-			final ListDialog list = new ListDialog(Display.getCurrent().getActiveShell());
-			list.setContentProvider(theVals);
-			list.setLabelProvider(theLabels);
-			list.setInput(ourLayers);
-			list.setMessage("Please select the destination layer for new feature");
-			list.setTitle("Adding new drawing feature");
-			list.setHelpAvailable(false);
-
-			// select the first item, so it's valid to press OK immediately
-			list.setInitialSelections(new Object[]
-			{ ourLayers[0] });
-
-			// open it
-			final int selection = list.open();
-
-			// did user say yes?
-			if (selection != ListDialog.CANCEL)
-			{
-				// yup, store it's name
-				final Object[] val = list.getResult();
-
-				// check something got selected
-				if (val.length > 0)
-				{
-					final String selStr = val[0].toString();
-
-					// hmm, is it our add layer command?
-					if (selStr.equals(Layers.NEW_LAYER_COMMAND))
-					{
-						// better create one. Ask the user
+          // hmm, is it our add layer command?
+          if (selStr.equals(Layers.NEW_LAYER_COMMAND))
+          {
+            // better create one. Ask the user
 
             // create input box dialog
-            final String txt = JOptionPane.showInputDialog(null,
-                "Please enter name", "New Layer", JOptionPane.QUESTION_MESSAGE);
+            final InputDialog dlg = new InputDialog(Display.getCurrent()
+                .getActiveShell(), "Please enter name", "New Layer", "", null);
 
-            // check there's something there
-            if (txt.length() > 0)
+            if (dlg.open() == Window.OK)
             {
-              res = txt;
+              res = dlg.getValue();
               // create base layer
               final Layer newLayer = new BaseLayer();
               newLayer.setName(res);
@@ -151,6 +129,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             {
               res = null;
             }
+
           }
           else
           {
@@ -171,36 +150,70 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
     return res;
   }
 
-	/**
-	 * produce the shape for the user
-	 * 
-	 * @param centre
-	 *          the current centre of the screen
-	 * @return a shape, based on the centre
-	 */
-	abstract protected PlainShape getShape(WorldLocation centre);
+  /**
+   * get a plottable object
+   *
+   * @param centre
+   * @param theChart
+   * @return
+   */
+  @Override
+  protected Plottable getPlottable(final PlainChart theChart)
+  {
+    // get centre of area
+    final WorldLocation centre = new WorldLocation(getCentre(theChart));
 
-	/**
-	 * return the name of this shape, used give the shape an initial name
-	 * 
-	 * @return the name of this type of shape, eg: rectangle
-	 */
-	abstract protected String getShapeName();
-	
-	protected Date getTimeControllerDate(Layers layers,boolean startDate) {
+    // create the shape, based on the centre
+    final PlainShape shape = getShape(centre);
+
+    // and now wrap the shape
+    final ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(),
+        shape, PlainShape.DEFAULT_COLOR, null);
+
+    return theWrapper;
+
+  }
+
+  /**
+   * produce the shape for the user
+   *
+   * @param centre
+   *          the current centre of the screen
+   * @return a shape, based on the centre
+   */
+  abstract protected PlainShape getShape(WorldLocation centre);
+
+  /**
+   * return the name of this shape, used give the shape an initial name
+   *
+   * @return the name of this type of shape, eg: rectangle
+   */
+  abstract protected String getShapeName();
+
+  protected Date getTimeControllerDate(final Layers layers,
+      final boolean startDate)
+  {
     Date timeControllerDate = null;
-    Enumeration<Editable> elements = layers.elements();
-    while(elements.hasMoreElements()) {
-      Editable elem = elements.nextElement();
-      if(elem instanceof TrackWrapper) {
-        TrackWrapper theTrack = (TrackWrapper)elem;
-        if(startDate) {
-          if(timeControllerDate == null || theTrack.getStartDTG().getDate().before(timeControllerDate)) {
+    final Enumeration<Editable> elements = layers.elements();
+    while (elements.hasMoreElements())
+    {
+      final Editable elem = elements.nextElement();
+      if (elem instanceof TrackWrapper)
+      {
+        final TrackWrapper theTrack = (TrackWrapper) elem;
+        if (startDate)
+        {
+          if (timeControllerDate == null || theTrack.getStartDTG().getDate()
+              .before(timeControllerDate))
+          {
             timeControllerDate = theTrack.getStartDTG().getDate();
           }
         }
-        else {
-          if(timeControllerDate == null || theTrack.getEndDTG().getDate().after(timeControllerDate)) {
+        else
+        {
+          if (timeControllerDate == null || theTrack.getEndDTG().getDate()
+              .after(timeControllerDate))
+          {
             timeControllerDate = theTrack.getEndDTG().getDate();
           }
         }
@@ -208,5 +221,5 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
     }
     return timeControllerDate;
   }
-	
+
 }
