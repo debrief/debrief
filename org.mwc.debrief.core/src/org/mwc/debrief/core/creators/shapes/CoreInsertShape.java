@@ -17,8 +17,6 @@ package org.mwc.debrief.core.creators.shapes;
 import java.util.Date;
 import java.util.Enumeration;
 
-import javax.swing.JOptionPane;
-
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
