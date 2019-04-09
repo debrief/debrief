@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.core.creators.shapes;
 
@@ -46,36 +46,14 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 
   /**
    * the target layer where we dump new items
-   * 
+   *
    */
   private static final String DEFAULT_TARGET_LAYER = "Misc";
 
   /**
-   * get a plottable object
-   * 
-   * @param centre
-   * @param theChart
    * @return
    */
-  protected Plottable getPlottable(final PlainChart theChart)
-  {
-    // get centre of area
-    final WorldLocation centre = new WorldLocation(getCentre(theChart));
-
-    // create the shape, based on the centre
-    final PlainShape shape = getShape(centre);
-
-    // and now wrap the shape
-    final ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(),
-        shape, PlainShape.DEFAULT_COLOR, null);
-
-    return theWrapper;
-
-  }
-
-  /**
-   * @return
-   */
+  @Override
   protected String getLayerName()
   {
     final String res;
@@ -118,7 +96,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
       final int selection = list.open();
 
       // did user say yes?
-      if (selection != ListDialog.CANCEL)
+      if (selection != Window.CANCEL)
       {
         // yup, store it's name
         final Object[] val = list.getResult();
@@ -134,7 +112,7 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
             // better create one. Ask the user
 
             // create input box dialog
-            InputDialog dlg = new InputDialog(Display.getCurrent()
+            final InputDialog dlg = new InputDialog(Display.getCurrent()
                 .getActiveShell(), "Please enter name", "New Layer", "", null);
 
             if (dlg.open() == Window.OK)
@@ -173,8 +151,32 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
   }
 
   /**
+   * get a plottable object
+   *
+   * @param centre
+   * @param theChart
+   * @return
+   */
+  @Override
+  protected Plottable getPlottable(final PlainChart theChart)
+  {
+    // get centre of area
+    final WorldLocation centre = new WorldLocation(getCentre(theChart));
+
+    // create the shape, based on the centre
+    final PlainShape shape = getShape(centre);
+
+    // and now wrap the shape
+    final ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(),
+        shape, PlainShape.DEFAULT_COLOR, null);
+
+    return theWrapper;
+
+  }
+
+  /**
    * produce the shape for the user
-   * 
+   *
    * @param centre
    *          the current centre of the screen
    * @return a shape, based on the centre
@@ -183,21 +185,22 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 
   /**
    * return the name of this shape, used give the shape an initial name
-   * 
+   *
    * @return the name of this type of shape, eg: rectangle
    */
   abstract protected String getShapeName();
 
-  protected Date getTimeControllerDate(Layers layers, boolean startDate)
+  protected Date getTimeControllerDate(final Layers layers,
+      final boolean startDate)
   {
     Date timeControllerDate = null;
-    Enumeration<Editable> elements = layers.elements();
+    final Enumeration<Editable> elements = layers.elements();
     while (elements.hasMoreElements())
     {
-      Editable elem = elements.nextElement();
+      final Editable elem = elements.nextElement();
       if (elem instanceof TrackWrapper)
       {
-        TrackWrapper theTrack = (TrackWrapper) elem;
+        final TrackWrapper theTrack = (TrackWrapper) elem;
         if (startDate)
         {
           if (timeControllerDate == null || theTrack.getStartDTG().getDate()
