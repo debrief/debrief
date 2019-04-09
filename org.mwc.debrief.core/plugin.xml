@@ -1247,14 +1247,14 @@
     <extension
          point="org.mwc.debrief.core.XMLLayerHandler">
       <helper
-            class="org.mwc.debrief.core.handlers.DynamicShapeLayerHandler">
+            class="Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler">
       </helper>
     </extension>
     
     <extension
          point="org.mwc.debrief.core.XMLLayerHandler">
       <helper
-            class="org.mwc.debrief.core.handlers.DynamicLayerHandler">
+            class="Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler">
       </helper>
     </extension>
    <extension
