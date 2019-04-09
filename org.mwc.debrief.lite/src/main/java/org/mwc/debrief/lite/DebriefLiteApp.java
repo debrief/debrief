@@ -462,6 +462,8 @@ public class DebriefLiteApp implements FileDropListener
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    app.setSession(session);
+    app.setFrame(theFrame);
 
     _stepControl.setUndoBuffer(session.getUndoBuffer());
     _stepControl.setLayers(session.getData());
