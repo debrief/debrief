@@ -193,7 +193,6 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -712,18 +711,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
           // hey, let's get recursive!
           final Layer otherLayer = (Layer) pl;
           thisL.add(makeLayer(otherLayer, theTopLayer));
-
-          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
         else
         {
           // hey, it's a leaf - just add it
           thisL.add(new PlottableNode(pl, theTopLayer));
-          ((DefaultTreeModel) _myTree.getModel()).reload();
         }
       }
     }
-
+    ((DefaultTreeModel) _myTree.getModel()).reload(thisL);
     return thisL;
   }
 
@@ -813,10 +809,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
     int cur = 0;
     TreePath selectionTreePath = _myTree.getSelectionPath();
     if (selections != null && selections.length > 0)
-    {
+    { 
       cur = _myTree.getSelectionRows()[0];
     }
-
     // get the root element
     final DefaultMutableTreeNode root = (DefaultMutableTreeNode) _myTree
         .getModel().getRoot();
@@ -879,60 +874,8 @@ public class SwingLayerManager extends SwingCustomEditor implements
 
   }
 
-  /**
-   * have a fresh pass through the data
-   */
-  public void updateData(final Layer changedLayer, final Plottable newItem)
-  {
-    _myTree.setExpandsSelectedPaths(true);
-    // find out which node is currently visible
-    if (changedLayer != null && newItem != null)
-    {
-      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        DefaultMutableTreeNode itemNode = getTreeNode(rootNode, newItem.getName(),
-            newItem);
-        if(itemNode!=null) {
-          final TreePath _treePath = new TreePath(itemNode.getPath());
-          SwingUtilities.invokeLater(new Runnable()
-          {
-
-            @Override
-            public void run()
-            {
-              _myTree.expandPath(_treePath);
-              _myTree.scrollPathToVisible(_treePath);
-              _myTree.makeVisible(_treePath);
-              _myTree.setSelectionPath(_treePath);
-            }
-          });
-        }
-      }
-    }
-    else if (changedLayer != null)
-    {
-      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        final TreePath _treePath = new TreePath(rootNode.getPath());
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            _myTree.expandPath(_treePath);
-            _myTree.scrollPathToVisible(_treePath);
-            _myTree.makeVisible(_treePath);
-            _myTree.setSelectionPath(_treePath);
-          }
-        });
-      }
-    }
-  }
-
-  private DefaultMutableTreeNode getTreeNode(
+ 
+  protected DefaultMutableTreeNode getTreeNode(
       final DefaultMutableTreeNode parent, final String nodeText,
       final Object object)
   {
@@ -972,21 +915,25 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
     else
     {
-      try
-      {
-        SwingUtilities.invokeAndWait(new Runnable()
+        try
         {
-          @Override
-          public void run()
+          SwingUtilities.invokeAndWait(new Runnable()
           {
-            updateData();
-          }
-        });
-      }
-      catch (InvocationTargetException | InterruptedException e)
-      {
-        e.printStackTrace();
-      }
+            @Override
+            public void run()
+            {
+              updateData();
+            }
+          });
+        }
+        catch (InvocationTargetException e)
+        {
+          e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
     }
   }
 

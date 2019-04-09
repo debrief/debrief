@@ -288,7 +288,8 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
                                                          this,
                                                          _theLayers,
                                                          _theToolParent,
-                                                         parentLayer);
+                                                         parentLayer,
+                                                         null);
 
       // set the name of the "build" button
       ap.setNames("Build", null, null);
@@ -325,7 +326,8 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
                                                          this,
                                                          _theLayers,
                                                          _theToolParent,
-                                                         parentLayer);
+                                                         parentLayer,
+                                                         null);
 
       thePanel = (JPanel) ap.getPanel();
       thePanel.setName(theInfo.getDisplayName());

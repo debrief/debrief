@@ -287,7 +287,11 @@ public final class StepperHandler implements GUIHandler.ComponentCreator
 
 
       details.addProperty("AutoStep", MWCXMLReader.writeThis(stepper.getAutoStep()));
-      details.addProperty("DateFormat", stepper.getDateFormat());
+      
+      // note: we trim the date format, since it may have received
+      // white padding in order that all formats consume the same
+      // screen width
+      details.addProperty("DateFormat", stepper.getDateFormat().trim());
       // the current DTG
       final HiResDate cTime = stepper.getCurrentTime();
       if (cTime != null)
