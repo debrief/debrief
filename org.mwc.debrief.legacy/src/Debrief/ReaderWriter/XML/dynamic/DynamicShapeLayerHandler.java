@@ -1,9 +1,8 @@
-package org.mwc.debrief.core.handlers;
+package Debrief.ReaderWriter.XML.dynamic;
 
-import org.eclipse.core.runtime.Status;
-import org.mwc.cmap.core.CorePlugin;
 import org.xml.sax.Attributes;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
 import Debrief.ReaderWriter.XML.Shapes.PolygonHandler;
 import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
@@ -214,7 +213,9 @@ public class DynamicShapeLayerHandler extends MWCXMLReader implements LayerHandl
 		}
 		else
 		{
-			CorePlugin.logError(Status.WARNING , "Dynamic Shape Layer received unexpected type:" + plottable.getName(), null);
+      Application.logError2(Application.WARNING,
+          "Dynamic Shape Layer received unexpected type:" + plottable.getName(),
+          null);
 			addThis(plottable);
 		}
 	}

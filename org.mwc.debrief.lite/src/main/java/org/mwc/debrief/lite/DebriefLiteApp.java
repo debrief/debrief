@@ -64,6 +64,9 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.ReaderWriter.XML.SessionHandler;
+import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
+import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
@@ -347,7 +350,21 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
     theFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    
+    loadAdditionalLayerHandlers();
+    
+    // ok, done
     theFrame.setVisible(true);
+  }
+
+  /** full Debrief allows additional layer handlers to be defined in the 
+   * plugin.xml config code. But, we can't do that in D-Lite. So,
+   * we'll load some of them manually.
+   */
+  private void loadAdditionalLayerHandlers()
+  {
+    SessionHandler.addAdditionalHandler(new DynamicShapeLayerHandler());
+    SessionHandler.addAdditionalHandler(new DynamicLayerHandler());
   }
 
   /**

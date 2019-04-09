@@ -14,6 +14,12 @@
  */
 package Debrief.ReaderWriter.XML;
 
+import java.util.ArrayList;
+
+import Debrief.GUI.Frames.Application;
+import MWC.Utilities.ReaderWriter.XML.LayerHandlerExtension;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -30,6 +36,8 @@ abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
   private final Debrief.GUI.Frames.Application _parent;
   private Debrief.GUI.Frames.Session _session;
   //  private MWC.Algorithms.PlainProjection _projection;
+  
+  private static ArrayList<LayerHandlerExtension> _additionalHandlers;
 
   public SessionHandler(final Debrief.GUI.Frames.Application theDestination,
                         final Debrief.GUI.Frames.Session theSession,
@@ -61,9 +69,46 @@ abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
     // define our handlers
     addHandler(new ProjectionHandler(_session));
     addHandler(new GUIHandler(_session));
-    addHandler(new DebriefLayersHandler(_theLayers));
+    final DebriefLayersHandler layersHandler = new DebriefLayersHandler(_theLayers);
+    
+    // see if we have any other handlers to add
+    if(_additionalHandlers != null)
+    {
+      for (LayerHandlerExtension thisE : _additionalHandlers)
+      {
+        // just double check taht it's an MWCXMLReader object
+        if (thisE instanceof MWCXMLReader)
+        {
+          // tell it about the top level layers object
+          thisE.setLayers(_theLayers);
+
+          // and remmber it
+          layersHandler.addHandler((MWCXMLReader) thisE);
+        }
+        else
+        {
+          Application.logError2(Application.ERROR,
+              "The layer handler we're read in is not of the corect type: "
+                  + thisE, null);
+        }
+      }
+    }
+    
+    
+    addHandler(layersHandler);
 
   }
+  
+  public static void addAdditionalHandler(final LayerHandlerExtension handler)
+  {
+    if(_additionalHandlers == null)
+    {
+      _additionalHandlers = new ArrayList<LayerHandlerExtension>();
+    }
+    
+    _additionalHandlers.add(handler);
+  }
+  
 
   public final void elementClosed()
   {
