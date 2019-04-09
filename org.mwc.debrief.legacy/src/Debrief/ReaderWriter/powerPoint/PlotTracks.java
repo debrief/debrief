@@ -656,8 +656,15 @@ public class PlotTracks
       temp_arrow_tag.selectFirst("a|prstGeom").attr("prst", "wedgeRectCallout");
 
       // Adding border color to marker
-      temp_arrow_tag.selectFirst("p|spPr").selectFirst("a|ln").selectFirst(
-          "a|solidFill").selectFirst("a|srgbClr").attr("val", colorHexValue);
+      final Element solidFill = temp_arrow_tag.selectFirst("p|spPr").selectFirst("a|ln").selectFirst(
+          "a|solidFill");
+      
+      // does marker have a solid fill?
+      if (solidFill != null)
+      {
+        // yes - set to the correct color
+        solidFill.selectFirst("a|srgbClr").attr("val", colorHexValue);
+      }
 
       // We will add the shape and arrow objects in arrays for now
       arrow_objs.add(temp_arrow_tag);
