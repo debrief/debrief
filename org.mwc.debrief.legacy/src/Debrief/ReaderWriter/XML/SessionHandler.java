@@ -74,7 +74,7 @@ abstract public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
     // see if we have any other handlers to add
     if(_additionalHandlers != null)
     {
-      for (LayerHandlerExtension thisE : _additionalHandlers)
+      for (final LayerHandlerExtension thisE : _additionalHandlers)
       {
         // just double check taht it's an MWCXMLReader object
         if (thisE instanceof MWCXMLReader)
