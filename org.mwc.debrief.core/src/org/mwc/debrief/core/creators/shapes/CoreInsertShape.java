@@ -19,10 +19,12 @@ import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.mwc.debrief.core.creators.chartFeatures.CoreInsertChartFeature;
@@ -133,24 +135,24 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 						// better create one. Ask the user
 
             // create input box dialog
-            final String txt = JOptionPane.showInputDialog(null,
-                "Please enter name", "New Layer", JOptionPane.QUESTION_MESSAGE);
-
-            // check there's something there
-            if (txt.length() > 0)
-            {
-              res = txt;
+					  InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(),
+					      "Please enter name", "New Layer", "", null);
+		        
+					  if ( dlg.open() == Window.OK )
+					  {
+              res = dlg.getValue();
               // create base layer
               final Layer newLayer = new BaseLayer();
               newLayer.setName(res);
 
               // add to layers object
               theLayers.addThisLayer(newLayer);
-            }
-            else
+					  }
+					  else
             {
               res = null;
             }
+					  
           }
           else
           {
