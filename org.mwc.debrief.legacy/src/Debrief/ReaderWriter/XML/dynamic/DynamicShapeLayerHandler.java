@@ -1,4 +1,4 @@
-package org.mwc.debrief.core.handlers;
+package Debrief.ReaderWriter.XML.dynamic;
 
 import org.xml.sax.Attributes;
 
