@@ -95,13 +95,13 @@ class LiteApplication extends Application implements ProvidesModeSelector
   @Override
   public void restoreCursor()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // theFrame.getContentPane().setCursor(null);
   }
 
   @Override
   public void setCursor(final int theCursor)
   {
-    throw new IllegalArgumentException("Not implemented");
+    // theFrame.getContentPane().setCursor(new Cursor(theCursor));
   }
 
   @Override
