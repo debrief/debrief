@@ -439,8 +439,7 @@ public class DebriefLiteApp implements FileDropListener
     Defaults.setProvider(new LiteProvider());
 
     // for legacy integration we need to provide a tool-parent
-    final LiteParent theParent = new LiteParent();
-    Trace.initialise(theParent);
+    Trace.initialise(app);
 
     defaultTitle = appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")";
     theFrame = new JRibbonFrame(defaultTitle);
@@ -463,6 +462,8 @@ public class DebriefLiteApp implements FileDropListener
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    app.setSession(session);
+    app.setFrame(theFrame);
 
     _stepControl.setUndoBuffer(session.getUndoBuffer());
     _stepControl.setLayers(session.getData());
