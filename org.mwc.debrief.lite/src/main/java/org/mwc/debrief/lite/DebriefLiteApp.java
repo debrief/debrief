@@ -80,6 +80,8 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Defaults;
 import MWC.GUI.Defaults.PreferenceProvider;
+import MWC.GUI.DynamicPlottable;
+import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -629,7 +631,24 @@ public class DebriefLiteApp implements FileDropListener
       dest.startDraw(gc);
       _theLayers.paint(dest);
     }
-
+    
+    // also render dynamic layers
+    // do we have time?
+    final HiResDate tNow = timeManager.getTime();
+    if(tNow != null)
+    {
+      Enumeration<Editable> lIter = _theLayers.elements();
+      while(lIter.hasMoreElements())
+      {
+        Editable next = lIter.nextElement();
+        if(next instanceof DynamicPlottable)
+        {
+          DynamicPlottable dp = (DynamicPlottable) next;
+          dp.paint(dest, tNow.getDate().getTime());
+        }
+      }
+    }
+    
     // and the time marker
     redoTimePainter(true, dest, null, null);
 
