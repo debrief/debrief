@@ -284,6 +284,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -1272,6 +1273,19 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
       final javax.swing.table.TableColumn lbls = _table.getColumn("Name");
       lbls.setCellRenderer(new myLabelRenderer());
+      lbls.setCellEditor(new DefaultCellEditor(new JTextField())
+      {
+        /**
+         *
+         */
+        private static final long serialVersionUID = 2896258093719271268L;
+
+        @Override
+        public boolean isCellEditable(final EventObject anEvent)
+        {
+          return false;
+        }
+      });
 
       final javax.swing.table.TableColumn data = _table.getColumn("Data");
       data.setCellRenderer(new dataCellRenderer());
