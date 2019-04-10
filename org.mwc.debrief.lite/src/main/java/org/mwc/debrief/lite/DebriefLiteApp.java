@@ -408,7 +408,7 @@ public class DebriefLiteApp implements FileDropListener
       return res;
     }
   };
-  
+
   private final TimeManager timeManager = new TimeManager();
 
   private final GeoToolMapRenderer geoMapRenderer;
@@ -555,7 +555,7 @@ public class DebriefLiteApp implements FileDropListener
     // tell the Session handler about the optional dynamic layer handlers
     SessionHandler.addAdditionalHandler(new DynamicLayerHandler());
     SessionHandler.addAdditionalHandler(new DynamicShapeLayerHandler());
-    
+
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
@@ -611,9 +611,9 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app,
-        geoMapRenderer, stepControl, timeManager, operation, session,
-        undoBuffer, resetAction, normalT, snailT, statusBar);
+    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
+        stepControl, timeManager, operation, session, undoBuffer, resetAction,
+        normalT, snailT, statusBar);
   }
 
   protected void doPaint(final Graphics gc)
@@ -666,13 +666,14 @@ public class DebriefLiteApp implements FileDropListener
         else
         {
           final File directory;
-          final String lastFileLocation = DebriefLiteApp.getDefault().getProperty(
-              DoSaveAs.LAST_FILE_LOCATION);
-          if(lastFileLocation!=null) 
+          final String lastFileLocation = DebriefLiteApp.getDefault()
+              .getProperty(DoSaveAs.LAST_FILE_LOCATION);
+          if (lastFileLocation != null)
           {
             directory = new File(lastFileLocation);
           }
-          else {
+          else
+          {
             directory = null;
           }
           outputFileName = DoSaveAs.showSaveDialog(directory, "DebriefPlot");
@@ -759,7 +760,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     return layerManager;
   }
-  
+
   public static ToolParent getDefault()
   {
     return app;
