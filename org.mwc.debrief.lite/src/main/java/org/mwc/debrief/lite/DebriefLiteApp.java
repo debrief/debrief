@@ -785,7 +785,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final FileNotFoundException e)
     {
-      _toolParent.logError(ToolParent.ERROR, "Failed to read DPF File", e);
+      app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Failed to read DPF File" + e.getMessage());
     }
