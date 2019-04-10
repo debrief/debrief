@@ -23,6 +23,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -38,13 +40,13 @@ import java.util.Vector;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
-import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -353,12 +355,13 @@ public class DebriefLiteApp implements FileDropListener
   private OutlinePanelView layerManager;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
+  private final JXCollapsiblePaneWithTitle graphPanel =
+      new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
-  private final DebriefLiteToolParent _toolParent = new DebriefLiteToolParent(
-      ImportReplay.IMPORT_AS_OTG, 0L);
   private GeoToolMapProjection projection;
-  private final LiteApplication app;
+  private final static LiteApplication app = new LiteApplication(
+      ImportReplay.IMPORT_AS_OTG, 0L);;
 
   private final LiteSession session;
   private final JLabel statusBar = new JLabel(
@@ -402,7 +405,7 @@ public class DebriefLiteApp implements FileDropListener
       return res;
     }
   };
-
+  
   private final TimeManager timeManager = new TimeManager();
 
   private final GeoToolMapRenderer geoMapRenderer;
@@ -436,8 +439,7 @@ public class DebriefLiteApp implements FileDropListener
     Defaults.setProvider(new LiteProvider());
 
     // for legacy integration we need to provide a tool-parent
-    final LiteParent theParent = new LiteParent();
-    Trace.initialise(theParent);
+    Trace.initialise(app);
 
     defaultTitle = appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")";
     theFrame = new JRibbonFrame(defaultTitle);
@@ -452,15 +454,16 @@ public class DebriefLiteApp implements FileDropListener
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
 
     // provide some file helpers
-    ImportReplay.initialise(new DebriefLiteToolParent(
-        ImportReplay.IMPORT_AS_OTG, 0L));
+    ImportReplay.initialise(app);
     ImportManager.addImporter(new ImportReplay());
 
     // sort out time control
-    _stepControl = new LiteStepControl(_toolParent);
+    _stepControl = new LiteStepControl(app);
 
     final Clipboard _theClipboard = new Clipboard("Debrief");
     session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    app.setSession(session);
+    app.setFrame(theFrame);
 
     _stepControl.setUndoBuffer(session.getUndoBuffer());
     _stepControl.setLayers(session.getData());
@@ -469,7 +472,6 @@ public class DebriefLiteApp implements FileDropListener
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 
     final UndoBuffer undoBuffer = session.getUndoBuffer();
-    app = new LiteApplication();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
@@ -573,10 +575,25 @@ public class DebriefLiteApp implements FileDropListener
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
 
-    theFrame.add(mapPane, BorderLayout.CENTER);
+    JPanel centerPanel = new JPanel();
+    centerPanel.setLayout(new BorderLayout());
+    mapPane.addComponentListener(new ComponentAdapter()
+    {
+      @Override
+      public void componentResized(ComponentEvent e)
+      {
+        mapPane.setVisible(false);
+        mapPane.setVisible(true);
+      }
+    });
+
+    centerPanel.add(mapPane, BorderLayout.CENTER);
+    centerPanel.add(graphPanel, BorderLayout.PAGE_END);
+
+    theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
-    addOutlineView(_toolParent, undoBuffer);
+    addOutlineView(app, undoBuffer);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -587,7 +604,7 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    new DebriefRibbon(theFrame.getRibbon(), _theLayers, _toolParent,
+    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app,
         geoMapRenderer, stepControl, timeManager, operation, session,
         undoBuffer, resetAction, normalT, snailT, statusBar);
   }
@@ -641,7 +658,17 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          outputFileName = DoSaveAs.showSaveDialog(null, "DebriefPlot");
+          final File directory;
+          final String lastFileLocation = DebriefLiteApp.getDefault().getProperty(
+              DoSaveAs.LAST_FILE_LOCATION);
+          if(lastFileLocation!=null) 
+          {
+            directory = new File(lastFileLocation);
+          }
+          else {
+            directory = null;
+          }
+          outputFileName = DoSaveAs.showSaveDialog(directory, "DebriefPlot");
         }
         if (outputFileName != null)
         {
@@ -728,6 +755,11 @@ public class DebriefLiteApp implements FileDropListener
   public OutlinePanelView getLayerManager()
   {
     return layerManager;
+  }
+  
+  public static ToolParent getDefault()
+  {
+    return app;
   }
 
   private void handleImportDPF(final File file)

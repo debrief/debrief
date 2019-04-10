@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -35,6 +34,7 @@ import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Shapes.ArcShape;
@@ -63,7 +63,7 @@ public class DebriefRibbonInsert
   protected static void addInsertTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers theLayers,
       final PropertiesPanel theProperties,
-      final DebriefLiteToolParent toolParent)
+      final ToolParent toolParent)
   {
     /**
      * some of our tools are interested in the visible data area. But, we can't determine it when
@@ -111,7 +111,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createReferenceData(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final ToolParent _toolParent, final BoundsProvider bounds,
       final Layer decs)
   {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
@@ -139,7 +139,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createShapes(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
     final CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
@@ -418,7 +418,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createDecorations(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final ToolParent _toolParent, final BoundsProvider bounds,
       final Layer decs)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);

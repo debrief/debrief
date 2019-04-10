@@ -16,7 +16,6 @@ package org.mwc.debrief.lite.menu;
 
 import javax.swing.JLabel;
 
-import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
@@ -24,6 +23,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
@@ -35,7 +35,7 @@ import MWC.TacticalData.temporal.TimeManager;
 public class DebriefRibbon
 {
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
-      final DebriefLiteToolParent parent,
+      final ToolParent parent,
       final GeoToolMapRenderer geoMapRenderer,
       final LiteStepControl stepControl, TimeManager timeManager,
       final PlotOperations operations, final Session session,

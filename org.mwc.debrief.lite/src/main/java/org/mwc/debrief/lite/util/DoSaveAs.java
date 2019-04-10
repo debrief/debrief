@@ -19,6 +19,9 @@ public class DoSaveAs extends AbstractAction
 {
 
   protected static final String DEFAULT_FILENAME = "Debrief_Plot";
+  
+  public static final String LAST_FILE_LOCATION = "last_file_location";
+  
   /**
    * 
    */
@@ -30,6 +33,11 @@ public class DoSaveAs extends AbstractAction
   {
     _session = session;
     _theFrame = frame;
+  }
+  
+  protected String getLastFileLocation()
+  {
+    return DebriefLiteApp.getDefault().getProperty(LAST_FILE_LOCATION);
   }
 
   @Override
@@ -47,7 +55,16 @@ public class DoSaveAs extends AbstractAction
     }
     else
     {
-      outputFile = showSaveDialog(null, DEFAULT_FILENAME);
+      final File directory;
+      String lastFileLocation = getLastFileLocation();
+      if(lastFileLocation!=null) 
+      {
+        directory = new File(lastFileLocation);
+      }
+      else {
+        directory = null;
+      }
+      outputFile = showSaveDialog(directory, DEFAULT_FILENAME);
     }
     if(outputFile!=null) {
       DebriefRibbonFile.saveChanges(outputFile, _session, _theFrame);
