@@ -295,6 +295,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JViewport;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -1644,6 +1645,14 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
       // update the current value
       t.setSelectedItem(current);
+    }
+    if (c instanceof JScrollPane)
+    {
+      final JScrollPane scrollPane = (JScrollPane) c;
+      JTextArea textArea = (JTextArea) ((JViewport) scrollPane.getViewport())
+          .getView();
+      textArea.setText(pe.getAsText());
+      textArea.invalidate();
     }
   }
 }
