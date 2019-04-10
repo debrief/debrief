@@ -21,6 +21,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ComponentAdapter;
@@ -92,6 +93,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GUI.Canvas.ExtendedCanvasAdapter;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
@@ -620,7 +622,15 @@ public class DebriefLiteApp implements FileDropListener
 
   protected void doPaint(final Graphics gc)
   {
-    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc, Color.red);
+    final CanvasAdaptor dest;
+    if(gc instanceof Graphics2D)
+    {
+      dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
+    }
+    else
+    {
+      dest = new CanvasAdaptor(projection, gc, Color.red);
+    }
 
     // ok, are we in snail mode?
     final String current = painterManager.getCurrentPainterObject().toString();
