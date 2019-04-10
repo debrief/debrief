@@ -71,6 +71,9 @@ import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.ReaderWriter.XML.SessionHandler;
+import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
+import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
@@ -549,6 +552,10 @@ public class DebriefLiteApp implements FileDropListener
       }
     };
 
+    // tell the Session handler about the optional dynamic layer handlers
+    SessionHandler.addAdditionalHandler(new DynamicLayerHandler());
+    SessionHandler.addAdditionalHandler(new DynamicShapeLayerHandler());
+    
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
