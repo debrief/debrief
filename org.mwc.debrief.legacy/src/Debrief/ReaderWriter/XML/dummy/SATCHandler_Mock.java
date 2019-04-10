@@ -15,12 +15,9 @@
 package Debrief.ReaderWriter.XML.dummy;
 
 import java.awt.Color;
-import java.io.CharArrayWriter;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layer;
@@ -45,18 +42,6 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 	private static final String SHOW_ALTERATIONS = "ShowAlterationBounds";
 	private static final String LIVE_RUNNING = "LiveRunning";
 
-	protected String _myContents;
-
-	private CharArrayWriter _cdataCharacters;
-
-	protected boolean _showSolutions = false;
-
-	protected boolean _showBounds = false;
-	protected boolean _showAlterations = false;
-	protected boolean _liveRunning = true;
-
-	protected boolean _onlyPlotEnds = false;
-
 	public SATCHandler_Mock()
 	{
 		this(MY_TYPE);
@@ -71,6 +56,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 		{
 			public void setValue(String name, String val)
 			{
+			  // ignore
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_BOUNDS)
@@ -78,7 +64,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_showBounds = value;
+        // ignore
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_ALTERATIONS)
@@ -86,7 +72,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_showAlterations = value;
+        // ignore
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(ONLY_ENDS)
@@ -94,7 +80,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_onlyPlotEnds = value;
+        // ignore
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(LIVE_RUNNING)
@@ -102,7 +88,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_liveRunning = value;
+        // ignore
 			}
 		});
 		addAttributeHandler(new HandleBooleanAttribute(SHOW_SOLUTIONS)
@@ -110,40 +96,19 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 			@Override
 			public void setValue(String name, boolean value)
 			{
-				_showSolutions = value;
+        // ignore
 			}
 		});
 		addHandler(new ColourHandler()
 		{
-
 			@Override
 			public void setColour(Color res)
 			{
+        // ignore
 			}
 		});
 	}
 
-	@Override
-	public void startElement(String nameSpace, String localName, String qName,
-			Attributes attributes) throws SAXException
-	{
-		super.startElement(nameSpace, localName, qName, attributes);
-
-		// clear the characters buffer
-		_cdataCharacters = new CharArrayWriter();
-	}
-
-	/**
-	 * the data is in a CDATA element. The only way to catch this is to use the
-	 * characters handler
-	 * 
-	 */
-	public void characters(char[] ch, int start, int length) throws SAXException
-	{
-		super.characters(ch, start, length);
-
-		_cdataCharacters.write(ch, start, length);
-	}
 
   public void elementClosed()
   {
@@ -154,6 +119,7 @@ public class SATCHandler_Mock extends MWCXMLReader implements LayerHandlerExtens
 	@Override
 	public void setLayers(Layers theLayers)
 	{
+    // ignore
 	}
 
 	@Override
