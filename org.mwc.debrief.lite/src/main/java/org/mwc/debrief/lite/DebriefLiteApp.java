@@ -366,7 +366,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
-  final private Layers _theLayers = new Layers();;
+  final private Layers _theLayers = new Layers();
 
   private GeoToolMapProjection projection;
   private final LiteSession session;
