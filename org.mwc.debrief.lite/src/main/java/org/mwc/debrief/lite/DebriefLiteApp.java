@@ -21,6 +21,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ComponentAdapter;
@@ -66,17 +67,24 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.ReaderWriter.XML.SessionHandler;
+import Debrief.ReaderWriter.XML.dummy.SATCHandler_Mock;
+import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
+import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
 import MWC.GUI.Defaults;
 import MWC.GUI.Defaults.PreferenceProvider;
+import MWC.GUI.DynamicPlottable;
+import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -87,6 +95,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GUI.Canvas.ExtendedCanvasAdapter;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
@@ -405,7 +414,7 @@ public class DebriefLiteApp implements FileDropListener
       return res;
     }
   };
-  
+
   private final TimeManager timeManager = new TimeManager();
 
   private final GeoToolMapRenderer geoMapRenderer;
@@ -549,6 +558,11 @@ public class DebriefLiteApp implements FileDropListener
       }
     };
 
+    // tell the Session handler about the optional dynamic layer handlers
+    SessionHandler.addAdditionalHandler(new DynamicLayerHandler());
+    SessionHandler.addAdditionalHandler(new DynamicShapeLayerHandler());
+    SessionHandler.addAdditionalHandler(new SATCHandler_Mock());
+
     _theLayers.addDataExtendedListener(_listenForMods);
     _theLayers.addDataModifiedListener(_listenForMods);
     _theLayers.addDataReformattedListener(_listenForMods);
@@ -604,14 +618,24 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app,
-        geoMapRenderer, stepControl, timeManager, operation, session,
-        undoBuffer, resetAction, normalT, snailT, statusBar);
+    new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
+        stepControl, timeManager, operation, session, undoBuffer, resetAction,
+        normalT, snailT, statusBar);
   }
 
   protected void doPaint(final Graphics gc)
   {
-    final CanvasAdaptor dest = new CanvasAdaptor(projection, gc, Color.red);
+    final CanvasAdaptor dest;
+    if(gc instanceof Graphics2D)
+    {
+      dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
+    }
+    else
+    {
+      final String s = "Lite rendering is expecting a Graphics2D object";
+      app.logError(Application.ERROR, s, null);
+      throw new IllegalArgumentException(s);
+    }
 
     // ok, are we in snail mode?
     final String current = painterManager.getCurrentPainterObject().toString();
@@ -622,7 +646,7 @@ public class DebriefLiteApp implements FileDropListener
       dest.startDraw(gc);
       _theLayers.paint(dest);
     }
-
+    
     // and the time marker
     redoTimePainter(true, dest, null, null);
 
@@ -659,13 +683,14 @@ public class DebriefLiteApp implements FileDropListener
         else
         {
           final File directory;
-          final String lastFileLocation = DebriefLiteApp.getDefault().getProperty(
-              DoSaveAs.LAST_FILE_LOCATION);
-          if(lastFileLocation!=null) 
+          final String lastFileLocation = DebriefLiteApp.getDefault()
+              .getProperty(DoSaveAs.LAST_FILE_LOCATION);
+          if (lastFileLocation != null)
           {
             directory = new File(lastFileLocation);
           }
-          else {
+          else
+          {
             directory = null;
           }
           outputFileName = DoSaveAs.showSaveDialog(directory, "DebriefPlot");
@@ -752,7 +777,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     return layerManager;
   }
-  
+
   public static ToolParent getDefault()
   {
     return app;
@@ -924,8 +949,12 @@ public class DebriefLiteApp implements FileDropListener
           (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
 
       // it must be ok
-      thisPainter.paintMe(new CanvasAdaptor(projection, dest.getGraphicsTemp(),
-          backColor));
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(),
+          backColor);
+      thisPainter.paintMe(adapter);
+      
+      // also render dynamic layers
+      paintDynamicLayers(adapter);
     }
     else
     {
@@ -935,8 +964,32 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
 
-      painterManager.newTime(oldDTG, newDTG, new CanvasAdaptor(projection,
-          graphics, backColor));
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection,
+          graphics, backColor);
+      painterManager.newTime(oldDTG, newDTG, adapter);
+      
+      // also render dynamic layers
+      paintDynamicLayers(adapter);
+    }
+  }
+
+  private void paintDynamicLayers(CanvasType dest)
+  {
+    final HiResDate tNow = timeManager.getTime();
+    // do we have time?
+    if(tNow != null)
+    {
+      final long timeVal = tNow.getDate().getTime();
+      Enumeration<Editable> lIter = _theLayers.elements();
+      while(lIter.hasMoreElements())
+      {
+        Editable next = lIter.nextElement();
+        if(next instanceof DynamicPlottable)
+        {
+          DynamicPlottable dp = (DynamicPlottable) next;
+          dp.paint(dest, timeVal);
+        }
+      }
     }
   }
 
