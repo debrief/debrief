@@ -1272,14 +1272,15 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
       final javax.swing.table.TableColumn lbls = _table.getColumn("Name");
       lbls.setCellRenderer(new myLabelRenderer());
-      lbls.setCellEditor(new DefaultCellEditor(new JTextField()) {
+      lbls.setCellEditor(new DefaultCellEditor(new JTextField())
+      {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 2896258093719271268L;
 
         @Override
-        public boolean isCellEditable(EventObject anEvent)
+        public boolean isCellEditable(final EventObject anEvent)
         {
           return false;
         }
