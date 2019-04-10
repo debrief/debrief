@@ -191,6 +191,7 @@ Export-Package:
    MWC.GUI,
    MWC.TacticalData",
  Debrief.ReaderWriter.XML.Util;uses:="MWC.Utilities.ReaderWriter.XML",
+ Debrief.ReaderWriter.XML.dynamic,
  Debrief.ReaderWriter.XML.extensions;
   uses:="Debrief.Wrappers.Extensions.Measurements,
    MWC.GUI.Properties,
