@@ -765,6 +765,8 @@ public class DebriefLiteApp implements FileDropListener
           else
           {
             Trace.trace("This file type not handled:" + suff);
+            MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+                "This file type not handled:" + suff);
           }
         }
       }
@@ -772,6 +774,8 @@ public class DebriefLiteApp implements FileDropListener
     catch (final Exception e)
     {
       Trace.trace(e);
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+          "Error Opening the file: " + e.getMessage());
     }
     finally
     {
@@ -809,6 +813,8 @@ public class DebriefLiteApp implements FileDropListener
     catch (final FileNotFoundException e)
     {
       app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+          "Failed to read DPF File" + e.getMessage());
     }
     _theLayers.fireModified(null);
   }
