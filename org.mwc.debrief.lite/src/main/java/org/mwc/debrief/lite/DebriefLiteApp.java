@@ -210,6 +210,9 @@ public class DebriefLiteApp implements FileDropListener
 
   private static String defaultTitle;
 
+  private final static LiteApplication app = new LiteApplication(
+      ImportReplay.IMPORT_AS_OTG, 0L);
+
   /**
    * creates a scroll pane with map
    *
@@ -227,6 +230,11 @@ public class DebriefLiteApp implements FileDropListener
         .build();
     dropSupport.addComponent(mapPane);
     return mapPane;
+  }
+
+  public static ToolParent getDefault()
+  {
+    return app;
   }
 
   public static DebriefLiteApp getInstance()
@@ -368,11 +376,10 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
-  private GeoToolMapProjection projection;
-  private final static LiteApplication app = new LiteApplication(
-      ImportReplay.IMPORT_AS_OTG, 0L);;
 
+  private GeoToolMapProjection projection;
   private final LiteSession session;
+
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
 
@@ -589,12 +596,12 @@ public class DebriefLiteApp implements FileDropListener
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
 
-    JPanel centerPanel = new JPanel();
+    final JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new BorderLayout());
     mapPane.addComponentListener(new ComponentAdapter()
     {
       @Override
-      public void componentResized(ComponentEvent e)
+      public void componentResized(final ComponentEvent e)
       {
         mapPane.setVisible(false);
         mapPane.setVisible(true);
@@ -776,11 +783,6 @@ public class DebriefLiteApp implements FileDropListener
   public OutlinePanelView getLayerManager()
   {
     return layerManager;
-  }
-
-  public static ToolParent getDefault()
-  {
-    return app;
   }
 
   private void handleImportDPF(final File file)
