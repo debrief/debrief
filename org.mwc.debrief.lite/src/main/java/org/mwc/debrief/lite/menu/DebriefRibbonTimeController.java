@@ -224,17 +224,17 @@ public class DebriefRibbonTimeController
         timeManager);
 
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
-        undoBuffer);
+        undoBuffer, operations);
 
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
     ribbon.addTask(timeTask);
   }
-
+  
   private static JRibbonBand createControl(final LiteStepControl stepControl,
       final TimeManager timeManager, final Layers layers,
-      final UndoBuffer undoBuffer)
+      final UndoBuffer undoBuffer, final PlotOperations operations)
   {
     final JRibbonBand control = new JRibbonBand("Control", null);
 
@@ -257,7 +257,8 @@ public class DebriefRibbonTimeController
           @Override
           public void actionPerformed(final ActionEvent e)
           {
-            timeManager.setTime(control, timeManager.getPeriod().getStartDTG(),
+            timeManager.setTime(control, HiResDate.min(operations.getPeriod().getStartDTG(),
+                timeManager.getPeriod().getStartDTG()),
                 true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to start time");
@@ -388,7 +389,8 @@ public class DebriefRibbonTimeController
           @Override
           public void actionPerformed(final ActionEvent e)
           {
-            timeManager.setTime(control, timeManager.getPeriod().getEndDTG(),
+            timeManager.setTime(control, HiResDate.max(operations.getPeriod().getEndDTG(),
+                timeManager.getPeriod().getEndDTG()),
                 true);
           }
         }, CommandButtonDisplayState.SMALL, "Move to end time");

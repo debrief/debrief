@@ -219,4 +219,39 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
   {
     return NULL_DATE.equals(date) ? null : date;
   }
+  
+
+  /**
+   * Return the min of two HiResDate
+   * @param a
+   * @param b
+   * @return min of two HiResDate
+   */
+  public static HiResDate min(final HiResDate a, final HiResDate b)
+  {
+    if ( a.compareTo(b) > 0 )
+    {
+      return a;
+    }else
+    {
+      return b;
+    }
+  }
+  
+  /**
+   * Return the max of two HiResDate
+   * @param a
+   * @param b
+   * @return Return the max of two HiResDate
+   */
+  public static HiResDate max(final HiResDate a, final HiResDate b)
+  {
+    if ( a.compareTo(b) <= 0 )
+    {
+      return a;
+    }else
+    {
+      return b;
+    }
+  }
 }
