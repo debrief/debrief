@@ -1733,6 +1733,8 @@ public class TrackWrapper_Test extends TestCase
     items2[1] = createSensorItem(tw, sw, 120000);
     items2[2] = createSensorItem(tw, sw, 130000);
     items2[3] = createSensorItem(tw, sw, 140000);
+    
+    System.err.println("gate 1");
 
     // sort out the host
     for (int i = 0; i < items2.length; i++)
@@ -1758,6 +1760,10 @@ public class TrackWrapper_Test extends TestCase
 
     // check only two tracks
     assertEquals("one tracks",  1, layers.size());
+    
+    System.err.println("gate 2");
+
+
     
     // duplicate the track
     CopyItem copier1 = new RightClickCutCopyAdaptor.CopyItem(seg1, clipboard,
@@ -1789,6 +1795,8 @@ public class TrackWrapper_Test extends TestCase
       }
     }
     
+    System.err.println("gate 3");
+
     assertNotNull("found tma track", pastedLeg);
     
     // ok, create a parent track for the segment
@@ -1809,6 +1817,8 @@ public class TrackWrapper_Test extends TestCase
     // check only two tracks
     assertEquals("three tracks",  3, layers.size());
     
+    System.err.println("gate 4");
+
     // extract the plottable
     final Plottable theData = (Plottable) tr.getTransferData(
         PlottableSelection.PlottableFlavor);
@@ -1836,6 +1846,8 @@ public class TrackWrapper_Test extends TestCase
       }
     }
     assertNotNull("Found pasted track", pastedTrack);
+    
+    System.err.println("gate 5");
     
     // ok, now shorten the TMA leg
     RelativeTMASegment seg2 = (RelativeTMASegment) pastedTrack.getSegments().elements().nextElement();
