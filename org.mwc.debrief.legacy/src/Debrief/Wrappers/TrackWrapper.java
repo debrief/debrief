@@ -65,6 +65,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.HasEditables.ProvidesContiguousElements;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -4412,7 +4413,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
   }
 
   @Override
-  public void tidyUpOnPaste()
+  public void tidyUpOnPaste(final Layers layers)
   {
     // we need to reinstate any transient objects
     if (_locationListener == null)
@@ -4431,6 +4432,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     {
       final TrackSegment ts = (TrackSegment) iter.nextElement();
       this.removeElement(ts);
+
+      if (ts instanceof NeedsToKnowAboutLayers)
+      {
+        NeedsToKnowAboutLayers nn = (NeedsToKnowAboutLayers) ts;
+        nn.setLayers(layers);
+      }
+
       this.add(ts);
     }
   }
