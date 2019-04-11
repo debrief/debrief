@@ -15,9 +15,13 @@
 package Debrief.Wrappers.Track;
 
 import java.awt.Color;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,12 +53,18 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
+import MWC.GUI.PlottableSelection;
 import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
+import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
+import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.CopyItem;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.PasteLayer;
+import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
@@ -1682,14 +1692,21 @@ public class TrackWrapper_Test extends TestCase
 
   /**
    * .
+   * @throws IOException 
+   * @throws UnsupportedFlavorException 
    */
 
-  public void testTMASegment()
+  public void testShortenCopiedTMASegment() throws UnsupportedFlavorException, IOException
   {
+    Layers layers = new Layers();
+    
     // //////////////////////////////////
     // start off building from a track
     // //////////////////////////////////
     final TrackWrapper tw = new TrackWrapper();
+    final String trackName = "TRACK";
+    tw.setName(trackName);
+    layers.addThisLayer(tw);
 
     final FixWrapper f1 = createFix2(100000, 1, 1, 4, 12);
     final FixWrapper f2 = createFix2(200000, 2, 3, 4, 12);
@@ -1702,9 +1719,6 @@ public class TrackWrapper_Test extends TestCase
     final WorldVector offset = new WorldVector(12, 12, 0);
     final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
     final double course = 33;
-
-    // check the before
-    FixWrapper firstFix = null;
 
     // ////////////////////////
     // NOW FROM A SENSOR WRAPPER
@@ -1727,110 +1741,135 @@ public class TrackWrapper_Test extends TestCase
       sensorContactWrapper.setSensor(sw);
     }
 
-    final CoreTMASegment seg1 =
-        new RelativeTMASegment(items2, offset, speed, course, null,
+    final RelativeTMASegment seg1 =
+        new RelativeTMASegment(items2, offset, speed, course, layers,
             Color.yellow);
+    seg1.setLayers(layers);
 
     // check the create worked
     assertEquals("enough points created", 4, seg1.size());
 
-    // check the before
-    firstFix = (FixWrapper) seg1.getData().iterator().next();
-    assertEquals("correct course before", 33, seg1.getCourse(), 0.001);
-    assertEquals("correct speed before", 5, seg1.getSpeed().getValueIn(
-        WorldSpeed.Kts), 0.001);
-    assertEquals("correct course before", 33, MWC.Algorithms.Conversions
-        .Rads2Degs(firstFix.getCourse()), 0.001);
-    assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-
     seg1.setCourse(35);
     seg1.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+    
+    // first, try to copy/paste the leg
+    final Clipboard clipboard = new Clipboard("Debrief");
+    final UndoBuffer buffer = new UndoBuffer();
 
-    assertEquals("correct course after", 35, seg1.getCourse(), 0.001);
-    assertEquals("correct speed after", 15, seg1.getSpeed().getValueIn(
-        WorldSpeed.Kts), 0.001);
-    assertEquals("correct course after", 35, MWC.Algorithms.Conversions
-        .Rads2Degs(firstFix.getCourse()), 0.001);
-    assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+    // check only two tracks
+    assertEquals("one tracks",  1, layers.size());
+    
+    // duplicate the track
+    CopyItem copier1 = new RightClickCutCopyAdaptor.CopyItem(seg1, clipboard,
+        null, layers, null, buffer);
+    copier1.execute();
 
-    // ///////////////////////////////////////////
-    // lastly, build from a set of sensor observations
-    // ///////////////////////////////////////////
-    final SensorContactWrapper[] items = new SensorContactWrapper[5];
-    items[0] = createSensorItem(tw, sw, 110000);
-    items[1] = createSensorItem(tw, sw, 115000);
-    items[2] = createSensorItem(tw, sw, 119000);
-    items[3] = createSensorItem(tw, sw, 141000);
-    items[4] = createSensorItem(tw, sw, 150000);
+    final Transferable tr1 = clipboard.getContents(this);
+    // see if there is currently a plottable on the clipboard
 
-    // sort out the host
-    for (int i = 0; i < items.length; i++)
+    // extract the plottable
+    final Plottable theData1 = (Plottable) tr1.getTransferData(
+        PlottableSelection.PlottableFlavor);
+    PasteLayer paster1 = new RightClickPasteAdaptor.PasteLayer( (Layer) theData1,
+        clipboard, null, layers, true);
+    paster1.execute();
+    
+    // check now two tracks
+    assertEquals("two tracks",  2, layers.size());
+    
+    // have a look at the name
+    TrackWrapper it = null;
+    Enumeration<Editable> iter = layers.elements();
+    while(iter.hasMoreElements())
     {
-      final SensorContactWrapper sensorContactWrapper = items[i];
-      sensorContactWrapper.setSensor(sw);
+      TrackWrapper next = (TrackWrapper) iter.nextElement();
+      if(!next.getName().equals(trackName))
+      {
+        it = next;
+      }
     }
+    
+    assertNotNull("found tma track", it);
+    
+    // ok, create a parent track for the segment
+    TrackWrapper tma = new TrackWrapper();
+    tma.setName("TMA");
+    tma.add(seg1);
+    
+    layers.addThisLayer(tma);
+    
+    // duplicate the track
+    CopyItem copier = new RightClickCutCopyAdaptor.CopyItem(tma, clipboard,
+        null, layers, null, buffer);
+    copier.execute();
 
-    final RelativeTMASegment seg2 =
-        new RelativeTMASegment(items, offset, speed, course, null, Color.yellow);
+    final Transferable tr = clipboard.getContents(this);
+    // see if there is currently a plottable on the clipboard
 
-    // check the create worked
-    assertEquals("enough points created", 5, seg2.size());
+    // check only two tracks
+    assertEquals("three tracks",  3, layers.size());
+    
+    // extract the plottable
+    final Plottable theData = (Plottable) tr.getTransferData(
+        PlottableSelection.PlottableFlavor);
+    PasteLayer paster = new RightClickPasteAdaptor.PasteLayer((Layer) theData,
+        clipboard, null, layers, true);
+    paster.execute();
+    
+    // check only two tracks
+    assertEquals("four tracks",  4, layers.size());
 
-    final Iterator<Editable> someIt = seg2.getData().iterator();
-    // check the before
-    firstFix = (FixWrapper) someIt.next();
-    assertEquals("correct course before", 33, seg2.getCourse(), 0.001);
-    assertEquals("correct speed before", 5, seg2.getSpeed().getValueIn(
-        WorldSpeed.Kts), 0.001);
-    assertEquals("correct course before", 33, MWC.Algorithms.Conversions
-        .Rads2Degs(firstFix.getCourse()), 0.001);
-    assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-
-    // check the next dtg
-    firstFix = (FixWrapper) someIt.next();
-    assertEquals("check dtg produced", 115000, firstFix.getDTG().getDate()
-        .getTime(), 0.001);
-    firstFix = (FixWrapper) someIt.next();
-    assertEquals("check dtg produced", 119000, firstFix.getDTG().getDate()
-        .getTime(), 0.001);
-    firstFix = (FixWrapper) someIt.next();
-    assertEquals("check dtg produced", 141000, firstFix.getDTG().getDate()
-        .getTime(), 0.001);
-    firstFix = (FixWrapper) someIt.next();
-    assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate()
-        .getTime(), 0.001);
-
-    seg2.setCourse(35);
-    seg2.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
-
-    assertEquals("correct course after", 35, seg2.getCourse(), 0.001);
-    assertEquals("correct speed after", 15, seg2.getSpeed().getValueIn(
-        WorldSpeed.Kts), 0.001);
-    assertEquals("correct course after", 35, MWC.Algorithms.Conversions
-        .Rads2Degs(firstFix.getCourse()), 0.001);
-    assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
-
-    // check that new points get added as we extend the solution
-    assertEquals("start with correct points", 5, seg2.size());
-
-    seg2.setDTG_End(new HiResDate(200000));
-    assertEquals("more points after stretch", 10, seg2.size());
-    assertEquals("new end time", 200000, seg2.getDTG_End().getDate().getTime());
-
-    // now try to stretch the start
-
-    seg2.setDTG_Start(new HiResDate(80002));
-    assertEquals("new start time", 80002, seg2.getDTG_Start().getDate()
-        .getTime());
-    assertEquals("more points after stretch", 13, seg2.size());
-
-    // have a look at the times
-    Iterator<Editable> sIter = seg2.getData().iterator();
-    while (sIter.hasNext())
+    // change the start time for the pasted leg
+    it = null;
+    Enumeration<Editable> lIter = layers.elements();
+    while(lIter.hasMoreElements())
     {
-      FixWrapper fw = (FixWrapper) sIter.next();
-      System.out.println(fw.getDTG().getDate().getTime());
+      TrackWrapper trk = (TrackWrapper) lIter.nextElement();
+      if(trk.getName().equals(TRACK_NAME))
+      {
+        continue;
+      }
+      if(trk.getName().contains("010001.50"))
+      {
+        it = trk;
+        break;
+      }
+      System.out.println(trk.getName());
     }
+    assertNotNull("Found pasted track", it);
+    
+    // ok, now shorten the TMA leg
+    RelativeTMASegment seg2 = (RelativeTMASegment) it.getSegments().elements().nextElement();
+    seg2.setDTG_Start(new HiResDate(105000));
+    it.sortOutRelativePositions();
+
+    // change the start time for the pasted leg
+    it = null;
+    lIter = layers.elements();
+    while(lIter.hasMoreElements())
+    {
+      TrackWrapper trk = (TrackWrapper) lIter.nextElement();
+      if(trk.getName().equals(TRACK_NAME))
+      {
+        continue;
+      }
+      if(trk.getName().contains("TMA 1"))
+      {
+        it = trk;
+        break;
+      }
+      System.out.println(trk.getName());
+    }
+    assertNotNull("Found pasted track", it);
+    
+    // ok, now shorten the TMA leg
+    RelativeTMASegment seg3 = (RelativeTMASegment) it.getSegments().elements().nextElement();
+    seg3.setDTG_Start(new HiResDate(105000));
+    it.sortOutRelativePositions();
+    
+
+    // check the segment doesn't have positions
+    
   }
 
   /**
@@ -3225,6 +3264,151 @@ public class TrackWrapper_Test extends TestCase
       final double thisLong = longSpline.interpolate(tNow);
       System.out.println(thisLong + ", " + thisLat + ", " + tNow);
     }
+  }
+
+  /**
+   * .
+   */
+  
+  public void testTMASegment()
+  {
+    // //////////////////////////////////
+    // start off building from a track
+    // //////////////////////////////////
+    final TrackWrapper tw = new TrackWrapper();
+  
+    final FixWrapper f1 = createFix2(100000, 1, 1, 4, 12);
+    final FixWrapper f2 = createFix2(200000, 2, 3, 4, 12);
+    tw.addFix(createFix2(80000, 3, 3, 4, 12));
+    tw.addFix(f1);
+    tw.addFix(f2);
+    tw.addFix(createFix2(300000, 3, 3, 4, 12));
+    tw.addFix(createFix2(400000, 4, 6, 4, 12));
+  
+    final WorldVector offset = new WorldVector(12, 12, 0);
+    final WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+    final double course = 33;
+  
+    // check the before
+    FixWrapper firstFix = null;
+  
+    // ////////////////////////
+    // NOW FROM A SENSOR WRAPPER
+    // /////////////////////////
+    final SensorWrapper sw = new SensorWrapper("some sensor");
+  
+    // store the sensor
+    tw.add(sw);
+  
+    final SensorContactWrapper[] items2 = new SensorContactWrapper[4];
+    items2[0] = createSensorItem(tw, sw, 110000);
+    items2[1] = createSensorItem(tw, sw, 120000);
+    items2[2] = createSensorItem(tw, sw, 130000);
+    items2[3] = createSensorItem(tw, sw, 140000);
+  
+    // sort out the host
+    for (int i = 0; i < items2.length; i++)
+    {
+      final SensorContactWrapper sensorContactWrapper = items2[i];
+      sensorContactWrapper.setSensor(sw);
+    }
+  
+    final CoreTMASegment seg1 =
+        new RelativeTMASegment(items2, offset, speed, course, null,
+            Color.yellow);
+  
+    // check the create worked
+    assertEquals("enough points created", 4, seg1.size());
+  
+    // check the before
+    firstFix = (FixWrapper) seg1.getData().iterator().next();
+    assertEquals("correct course before", 33, seg1.getCourse(), 0.001);
+    assertEquals("correct speed before", 5, seg1.getSpeed().getValueIn(
+        WorldSpeed.Kts), 0.001);
+    assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+        .Rads2Degs(firstFix.getCourse()), 0.001);
+    assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+  
+    seg1.setCourse(35);
+    seg1.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+  
+    assertEquals("correct course after", 35, seg1.getCourse(), 0.001);
+    assertEquals("correct speed after", 15, seg1.getSpeed().getValueIn(
+        WorldSpeed.Kts), 0.001);
+    assertEquals("correct course after", 35, MWC.Algorithms.Conversions
+        .Rads2Degs(firstFix.getCourse()), 0.001);
+    assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+  
+    // ///////////////////////////////////////////
+    // lastly, build from a set of sensor observations
+    // ///////////////////////////////////////////
+    final SensorContactWrapper[] items = new SensorContactWrapper[5];
+    items[0] = createSensorItem(tw, sw, 110000);
+    items[1] = createSensorItem(tw, sw, 115000);
+    items[2] = createSensorItem(tw, sw, 119000);
+    items[3] = createSensorItem(tw, sw, 141000);
+    items[4] = createSensorItem(tw, sw, 150000);
+  
+    // sort out the host
+    for (int i = 0; i < items.length; i++)
+    {
+      final SensorContactWrapper sensorContactWrapper = items[i];
+      sensorContactWrapper.setSensor(sw);
+    }
+  
+    final RelativeTMASegment seg2 =
+        new RelativeTMASegment(items, offset, speed, course, null, Color.yellow);
+  
+    // check the create worked
+    assertEquals("enough points created", 5, seg2.size());
+  
+    final Iterator<Editable> someIt = seg2.getData().iterator();
+    // check the before
+    firstFix = (FixWrapper) someIt.next();
+    assertEquals("correct course before", 33, seg2.getCourse(), 0.001);
+    assertEquals("correct speed before", 5, seg2.getSpeed().getValueIn(
+        WorldSpeed.Kts), 0.001);
+    assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+        .Rads2Degs(firstFix.getCourse()), 0.001);
+    assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+  
+    // check the next dtg
+    firstFix = (FixWrapper) someIt.next();
+    assertEquals("check dtg produced", 115000, firstFix.getDTG().getDate()
+        .getTime(), 0.001);
+    firstFix = (FixWrapper) someIt.next();
+    assertEquals("check dtg produced", 119000, firstFix.getDTG().getDate()
+        .getTime(), 0.001);
+    firstFix = (FixWrapper) someIt.next();
+    assertEquals("check dtg produced", 141000, firstFix.getDTG().getDate()
+        .getTime(), 0.001);
+    firstFix = (FixWrapper) someIt.next();
+    assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate()
+        .getTime(), 0.001);
+  
+    seg2.setCourse(35);
+    seg2.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+  
+    assertEquals("correct course after", 35, seg2.getCourse(), 0.001);
+    assertEquals("correct speed after", 15, seg2.getSpeed().getValueIn(
+        WorldSpeed.Kts), 0.001);
+    assertEquals("correct course after", 35, MWC.Algorithms.Conversions
+        .Rads2Degs(firstFix.getCourse()), 0.001);
+    assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+  
+    // check that new points get added as we extend the solution
+    assertEquals("start with correct points", 5, seg2.size());
+  
+    seg2.setDTG_End(new HiResDate(200000));
+    assertEquals("more points after stretch", 10, seg2.size());
+    assertEquals("new end time", 200000, seg2.getDTG_End().getDate().getTime());
+  
+    // now try to stretch the start
+  
+    seg2.setDTG_Start(new HiResDate(80002));
+    assertEquals("new start time", 80002, seg2.getDTG_Start().getDate()
+        .getTime());
+    assertEquals("more points after stretch", 13, seg2.size());
   }
 
 }
