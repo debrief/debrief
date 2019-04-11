@@ -398,8 +398,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
    */
   public static interface NeedsWrappingInLayerManager
   {
-
-    public Layer wrapMe();
+    public Layer wrapMe(Layers layers);
   }
 
   /**
@@ -649,7 +648,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
       // now wrap it
       final NeedsWrappingInLayerManager nl =
           (NeedsWrappingInLayerManager) layer;
-      layer = nl.wrapMe();
+      layer = nl.wrapMe(this);
     }
 
     // does it need to know about the layers, or that it has been added to the layers?

@@ -33,6 +33,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.FireExtended;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.NeedsToKnowAboutLayers;
 import MWC.GUI.PlainWrapper;
@@ -1266,8 +1267,8 @@ public class RelativeTMASegment extends CoreTMASegment implements
       }
     }
     
-    // right, we may have pruned off too far. See if we need to put a bit back
-    // in...
+    // right, we may not have had enough cuts. See if we need to insert
+    // some manual positions
     if (theNewStart.lessThan(startDTG()))
     {
       // ok, we don't have sensor. just add some at "nice" sizes
@@ -1298,6 +1299,16 @@ public class RelativeTMASegment extends CoreTMASegment implements
 
     // tell any listeners that we've changed
     super.fireAdjusted();
+  }
+
+  @Override
+  public Layer wrapMe(Layers layers)
+  {
+    // store the layers object
+    _theLayers = layers;
+    
+    // now back to the original processing
+    return super.wrapMe(layers);
   }
 
   @Override
