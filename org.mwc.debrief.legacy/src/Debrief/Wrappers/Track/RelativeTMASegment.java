@@ -1302,16 +1302,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
   }
 
   @Override
-  public Layer wrapMe(Layers layers)
-  {
-    // store the layers object
-    _theLayers = layers;
-
-    // now back to the original processing
-    return super.wrapMe(layers);
-  }
-
-  @Override
   public void setLayers(final Layers layers)
   {
     if (layers != _theLayers)
@@ -1655,5 +1645,15 @@ public class RelativeTMASegment extends CoreTMASegment implements
         thisS.setSpeed(speedValKts.doubleValue());
       }
     }
+  }
+
+  @Override
+  public Layer wrapMe(final Layers layers)
+  {
+    // store the layers object
+    _theLayers = layers;
+
+    // now back to the original processing
+    return super.wrapMe(layers);
   }
 }

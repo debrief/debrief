@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Wrappers.Track;
 
@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import Debrief.GUI.Frames.Application;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -58,12 +57,13 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import junit.framework.TestCase;
 
 /**
  * a single collection of track points
- * 
+ *
  * @author Administrator
- * 
+ *
  */
 public class TrackSegment extends BaseItemLayer implements DraggableItem,
     GriddableSeriesMarker, NeedsWrappingInLayerManager
@@ -148,18 +148,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     private TrackSegment getDummyList()
     {
       final TrackSegment ts0 = new TrackSegment(false);
-      final FixWrapper newFix1 =
-          new FixWrapper(new Fix(new HiResDate(10000), new WorldLocation(1, -1,
-              3), 1, 2));
-      final FixWrapper newFix2 =
-          new FixWrapper(new Fix(new HiResDate(20000), new WorldLocation(1, 0,
-              3), 1, 2));
-      final FixWrapper newFix3 =
-          new FixWrapper(new Fix(new HiResDate(30000), new WorldLocation(1, 1,
-              3), 1, 2));
-      final FixWrapper newFix4 =
-          new FixWrapper(new Fix(new HiResDate(40000), new WorldLocation(1, 2,
-              3), 1, 2));
+      final FixWrapper newFix1 = new FixWrapper(new Fix(new HiResDate(10000),
+          new WorldLocation(1, -1, 3), 1, 2));
+      final FixWrapper newFix2 = new FixWrapper(new Fix(new HiResDate(20000),
+          new WorldLocation(1, 0, 3), 1, 2));
+      final FixWrapper newFix3 = new FixWrapper(new Fix(new HiResDate(30000),
+          new WorldLocation(1, 1, 3), 1, 2));
+      final FixWrapper newFix4 = new FixWrapper(new Fix(new HiResDate(40000),
+          new WorldLocation(1, 2, 3), 1, 2));
       ts0.addFix(newFix1);
       ts0.addFix(newFix2);
       ts0.addFix(newFix3);
@@ -170,8 +166,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     private FixWrapper getFix(final long dtg, final double course,
         final double speed)
     {
-      final Fix theFix =
-          new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2), course, speed);
+      final Fix theFix = new Fix(new HiResDate(dtg), new WorldLocation(2, 2, 2),
+          course, speed);
       final FixWrapper res = new FixWrapper(theFix);
 
       return res;
@@ -191,8 +187,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       tw.add(getFix(240000, 2, 4));
       tw.add(getFix(300000, 2, 4));
 
-      final TrackSegment t1 =
-          (TrackSegment) tw.getSegments().elements().nextElement();
+      final TrackSegment t1 = (TrackSegment) tw.getSegments().elements()
+          .nextElement();
       assertEquals("right length", 6, t1.size());
 
       // do resample
@@ -207,10 +203,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
       Application.initialise(new MockParent(log));
 
-      final AbsoluteTMASegment as =
-          new AbsoluteTMASegment(12, new WorldSpeed(4, WorldSpeed.Kts),
-              new WorldLocation(2, 2, 2), new HiResDate(100000), new HiResDate(
-                  1000000));
+      final AbsoluteTMASegment as = new AbsoluteTMASegment(12, new WorldSpeed(4,
+          WorldSpeed.Kts), new WorldLocation(2, 2, 2), new HiResDate(100000),
+          new HiResDate(1000000));
       tw.add(as);
       assertEquals("right length", 16, as.size());
       assertEquals("empty log", 0, log.size());
@@ -225,33 +220,29 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     public void testTrim()
     {
       TrackSegment ts0 = getDummyList();
-      TimePeriod newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(30000), new HiResDate(
-              40000));
+      TimePeriod newP = new TimePeriod.BaseTimePeriod(new HiResDate(30000),
+          new HiResDate(40000));
       assertEquals("correct len", 4, ts0.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 2, ts0.size());
 
       ts0 = getDummyList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(35000), new HiResDate(
-              40000));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(35000), new HiResDate(
+          40000));
       assertEquals("correct len", 4, ts0.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 1, ts0.size());
 
       ts0 = getDummyList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(15000), new HiResDate(
-              40000));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(15000), new HiResDate(
+          40000));
       assertEquals("correct len", 4, ts0.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 3, ts0.size());
 
       ts0 = getDummyList();
-      newP =
-          new TimePeriod.BaseTimePeriod(new HiResDate(45000), new HiResDate(
-              50000));
+      newP = new TimePeriod.BaseTimePeriod(new HiResDate(45000), new HiResDate(
+          50000));
       assertEquals("correct len", 4, ts0.size());
       ts0.trimTo(newP);
       assertEquals("correct new len", 0, ts0.size());
@@ -268,7 +259,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     /**
      * constructor for this editor, takes the actual track as a parameter
-     * 
+     *
      * @param data
      *          track being edited
      */
@@ -290,8 +281,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // we now need to combine the two sets
       if (mds != null)
       {
-        final MethodDescriptor resMeds[] =
-            new MethodDescriptor[mds.length + newMeds.length];
+        final MethodDescriptor resMeds[] = new MethodDescriptor[mds.length
+            + newMeds.length];
         System.arraycopy(mds, 0, resMeds, 0, mds.length);
         System.arraycopy(newMeds, 0, resMeds, mds.length, newMeds.length);
         newMeds = resMeds;
@@ -305,14 +296,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       try
       {
         final PropertyDescriptor[] res =
-            {
-                expertProp("Visible", "whether this layer is visible", FORMAT),
-                displayExpertProp("LineStyle", "Line style",
-                    "how to plot this line", FORMAT),
-                expertProp("Name", "Name of this track segment", FORMAT),
-                displayExpertLongProp("ResampleDataAt", "Resample data at",
-                    "the data sample rate", TEMPORAL,
-                    MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
+        {expertProp("Visible", "whether this layer is visible", FORMAT),
+            displayExpertProp("LineStyle", "Line style",
+                "how to plot this line", FORMAT), expertProp("Name",
+                    "Name of this track segment", FORMAT),
+            displayExpertLongProp("ResampleDataAt", "Resample data at",
+                "the data sample rate", TEMPORAL,
+                MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
         res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
         return res;
       }
@@ -326,18 +316,24 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * someone to share life's troubles with
-   * 
+   *
    */
   protected transient static ToolParent _myParent;
 
   /**
-		 * 
-		 */
+  	 * 
+  	 */
   private static final long serialVersionUID = 1L;
+
+  public static final String TMA_LEADER = "TMA_";
+
+  public static final boolean RELATIVE = true;
+
+  public static final boolean ABSOLUTE = false;
 
   /**
    * learn about the shared trouble reporter...
-   * 
+   *
    * @param toolParent
    */
   public static void initialise(final ToolParent toolParent)
@@ -347,13 +343,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * define the length of the stalk we plot when dragging
-   * 
+   *
    */
   private final int STALK_LEN = 200;
 
   /**
    * whether to determine this track's positions using DR calculations
-   * 
+   *
    */
   final boolean _plotRelative;
 
@@ -363,16 +359,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * how to plot this line
-   * 
+   *
    */
   private int _lineStyle = CanvasType.SOLID;
-
   private HiResDate _lastDataFrequency;
-
-  public static final String TMA_LEADER = "TMA_";
-
-  public static final boolean RELATIVE = true;
-  public static final boolean ABSOLUTE = false;
 
   public TrackSegment(final boolean plotRelative)
   {
@@ -382,7 +372,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   /**
    * constructor that builds a plain track segment from a tma segment - an operation we must do when
    * we try to merge track segments
-   * 
+   *
    * @param tma
    */
   public TrackSegment(final CoreTMASegment tma)
@@ -404,7 +394,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * create a segment based on the suppplied items
-   * 
+   *
    * @param theItems
    */
   public TrackSegment(final SortedSet<Editable> theItems)
@@ -462,7 +452,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * add the elements in the indicated layer to us.
-   * 
+   *
    */
   @Override
   public void append(final Layer other)
@@ -479,19 +469,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // - sort it out
       final FixWrapper first = (FixWrapper) enumer.nextElement();
       final FixWrapper myLast = (FixWrapper) this.last();
-      final WorldVector offset =
-          first.getLocation().subtract(myLast.getLocation());
+      final WorldVector offset = first.getLocation().subtract(myLast
+          .getLocation());
 
       final double courseRads = offset.getBearing();
-      final double timeSecs =
-          (first.getTime().getDate().getTime() - myLast.getTime().getDate()
-              .getTime()) / 1000;
+      final double timeSecs = (first.getTime().getDate().getTime() - myLast
+          .getTime().getDate().getTime()) / 1000;
       // start off with the course
 
       // and now the speed
-      final double distYds =
-          new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-              .getValueIn(WorldDistance.YARDS);
+      final double distYds = new WorldDistance(offset.getRange(),
+          WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
       final double spdYps = distYds / timeSecs;
       final double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
 
@@ -511,9 +499,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
   }
 
+  @Override
+  protected String collectiveName()
+  {
+    return "positions";
+  }
+
   /**
    * sort the items in ascending order
-   * 
+   *
    */
   @Override
   public int compareTo(final Plottable arg0)
@@ -539,18 +533,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     }
     return res;
   }
-  
-  
-
-  @Override
-  protected String collectiveName()
-  {
-    return "positions";
-  }
 
   /**
    * switch the sample rate of this track to the supplied frequency
-   * 
+   *
    * @param theVal
    */
   public void decimate(final HiResDate theVal, final TrackWrapper parentTrack,
@@ -611,8 +597,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     {
       final FixWrapper currentPosition = (FixWrapper) iter.nextElement();
 
-      final long thisTime =
-          currentPosition.getDateTimeGroup().getDate().getTime();
+      final long thisTime = currentPosition.getDateTimeGroup().getDate()
+          .getTime();
 
       if (previousPosition == null)
       {
@@ -644,9 +630,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           else
           {
             // ok, we need to generate
-            newPos =
-                FixWrapper.interpolateFix(previousPosition, currentPosition,
-                    new HiResDate(requiredTime));
+            newPos = FixWrapper.interpolateFix(previousPosition,
+                currentPosition, new HiResDate(requiredTime));
           }
 
           // store the color for this item
@@ -660,16 +645,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           if (fixRelative)
           {
             // start off with the course
-            final WorldVector offset =
-                newPos.getLocation().subtract(previousPosition.getLocation());
+            final WorldVector offset = newPos.getLocation().subtract(
+                previousPosition.getLocation());
             newPos.getFix().setCourse(offset.getBearing());
 
             // and now the speed
-            final double distYds =
-                new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-                    .getValueIn(WorldDistance.YARDS);
-            final double timeSecs =
-                (requiredTime - previousPosition.getTime().getDate().getTime()) / 1000d;
+            final double distYds = new WorldDistance(offset.getRange(),
+                WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+            final double timeSecs = (requiredTime - previousPosition.getTime()
+                .getDate().getTime()) / 1000d;
             final double spdYps = distYds / timeSecs;
             newPos.getFix().setSpeed(spdYps);
           }
@@ -733,21 +717,20 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     final long startMicros = theStartTime * 1000L;
 
     // hey, it's a TMA segment - on steady course/speed. cool
-    final double courseRads =
-        MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
+    final double courseRads = MWC.Algorithms.Conversions.Degs2Rads(tma
+        .getCourse());
     final double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
 
     // find the new start location - after we've slipped
-    final WorldLocation myStartLocation =
-        new WorldLocation(tma.getTrackStart());
+    final WorldLocation myStartLocation = new WorldLocation(tma
+        .getTrackStart());
 
     // right - sort out what time period we're working through
-    for (tNow = startMicros; tNow <= endDTG().getMicros(); tNow +=
-        theVal.getMicros())
+    for (tNow = startMicros; tNow <= endDTG().getMicros(); tNow += theVal
+        .getMicros())
     {
-      final Fix theFix =
-          new Fix(new HiResDate(0, tNow), new WorldLocation(myStartLocation),
-              courseRads, speedYps);
+      final Fix theFix = new Fix(new HiResDate(0, tNow), new WorldLocation(
+          myStartLocation), courseRads, speedYps);
       final FixWrapper newFix = new FixWrapper(theFix);
       newFix.setSymbolShowing(true);
 
@@ -765,13 +748,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       final FixWrapper myStarter = (FixWrapper) tma.first();
       final FixWrapper myEnder = (FixWrapper) tma.last();
       final HiResDate startDTG = new HiResDate(0, theStartTime);
-      final FixWrapper newStarter =
-          FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
+      final FixWrapper newStarter = FixWrapper.interpolateFix(myStarter,
+          myEnder, startDTG);
       final WorldLocation newStartLoc = newStarter.getLocation();
 
       final RelativeTMASegment rel = (RelativeTMASegment) tma;
-      final Watchable[] newHost =
-          rel.getReferenceTrack().getNearestTo(startDTG);
+      final Watchable[] newHost = rel.getReferenceTrack().getNearestTo(
+          startDTG);
       if (newHost.length > 0)
       {
         final WorldLocation newOrigin = newHost[0].getLocation();
@@ -815,8 +798,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       myLen = -STALK_LEN;
     }
 
-    final Point backPoint =
-        new Point(lastPoint.x + (int) (myLen * gradient), lastPoint.y + myLen);
+    final Point backPoint = new Point(lastPoint.x + (int) (myLen * gradient),
+        lastPoint.y + myLen);
     dest.setLineStyle(2);
     dest.drawLine(lastPoint.x, lastPoint.y, backPoint.x, backPoint.y);
 
@@ -857,7 +840,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * how this line is plotted
-   * 
+   *
    * @return
    */
   public int getLineStyle()
@@ -872,7 +855,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * method to allow the setting of data sampling frequencies for the track & sensor data
-   * 
+   *
    * @return frequency to use
    */
   public final HiResDate getResampleDataAt()
@@ -894,7 +877,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * get the start of this segment (it's the location of the first point).
-   * 
+   *
    * @return
    */
   public WorldLocation getTrackStart()
@@ -1005,7 +988,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     // and let the list do its stuff
     super.removeElement(p);
-    
+
     // override the name, just in case we've deleted the first point
     sortOutDateLabel(null);
   }
@@ -1018,7 +1001,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * utility method to reveal all positions in a track
-   * 
+   *
    */
   @FireReformatted
   public void revealAllPositions()
@@ -1034,7 +1017,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * rotate this whole track around the supplied origin
-   * 
+   *
    * @param brg
    *          angle to rotate through (Radians)
    * @param origin
@@ -1056,8 +1039,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       }
       else
       {
-        final WorldLocation newLoc =
-            thisFix.getLocation().rotatePoint(origin, brg);
+        final WorldLocation newLoc = thisFix.getLocation().rotatePoint(origin,
+            brg);
         thisFix.setFixLocation(newLoc);
       }
     }
@@ -1065,7 +1048,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * specify how this line is to be plotted
-   * 
+   *
    * @param lineStyle
    */
   public void setLineStyle(final int lineStyle)
@@ -1075,7 +1058,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * set the data frequency (in seconds) for the track & sensor data
-   * 
+   *
    * @param theVal
    *          frequency to use
    */
@@ -1107,8 +1090,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
     // sort out the start time & time steps
     final long currentStartMicros = first.getTime().getMicros();
-    long startTimeMicros =
-        (currentStartMicros / intervalMicros) * intervalMicros;
+    long startTimeMicros = (currentStartMicros / intervalMicros)
+        * intervalMicros;
 
     // just check we're in the range
     if (startTimeMicros < currentStartMicros)
@@ -1154,8 +1137,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       {
         final FixWrapper fix = (FixWrapper) iterator.next();
         // now clear this property listener
-        fix.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-            _myTrack.getLocationListener());
+        fix.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _myTrack
+            .getLocationListener());
       }
     }
 
@@ -1188,8 +1171,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     {
       final FixWrapper thisFix = (FixWrapper) iterator.next();
 
-      final WorldLocation copiedLoc =
-          new WorldLocation(thisFix.getFix().getLocation());
+      final WorldLocation copiedLoc = new WorldLocation(thisFix.getFix()
+          .getLocation());
       copiedLoc.addToMe(vector);
 
       // and replace the location (this method updates all 3 location
@@ -1218,8 +1201,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       {
         final FixWrapper fw = (FixWrapper) thisO;
 
-        final WorldLocation copiedLoc =
-            new WorldLocation(fw.getFix().getLocation());
+        final WorldLocation copiedLoc = new WorldLocation(fw.getFix()
+            .getLocation());
         copiedLoc.addToMe(offset);
 
         // and replace the location (this method updates all 3 location
@@ -1248,7 +1231,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * find the start time of each segment
-   * 
+   *
    * @return
    */
   public HiResDate startDTG()
@@ -1300,8 +1283,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   @SuppressWarnings("unused")
   @Deprecated
-  /** we've deprecated this, since it gets very compuationally expensive
-   * when processing a very long track
+  /**
+   * we've deprecated this, since it gets very compuationally expensive when processing a very long
+   * track
+   * 
    * @param theVal
    * @param parentTrack
    * @param theStartTime
@@ -1317,13 +1302,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     tNow = 0;
     //
     // right - sort out what time period we're working through
-    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow +=
-        theVal.getMicros())
+    for (tNow = theStartTime; tNow <= endDTG().getMicros(); tNow += theVal
+        .getMicros())
     {
 
       // find hte new datum
-      final Watchable[] matches =
-          parentTrack.getNearestTo(new HiResDate(0, tNow));
+      final Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0,
+          tNow));
       if (matches.length > 0)
       {
         // remember the last position - we;re going to be
@@ -1337,17 +1322,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
         if (lastPositionStored != null)
         {
           // start off with the course
-          final WorldVector offset =
-              currentPosition.getLocation().subtract(
-                  lastPositionStored.getLocation());
+          final WorldVector offset = currentPosition.getLocation().subtract(
+              lastPositionStored.getLocation());
           lastPositionStored.getFix().setCourse(offset.getBearing());
 
           // and now the speed
-          final double distYds =
-              new WorldDistance(offset.getRange(), WorldDistance.DEGS)
-                  .getValueIn(WorldDistance.YARDS);
-          final double timeSecs =
-              (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+          final double distYds = new WorldDistance(offset.getRange(),
+              WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+          final double timeSecs = (tNow - lastPositionStored.getTime()
+              .getMicros()) / 1000000d;
           final double spdYps = distYds / timeSecs;
           lastPositionStored.getFix().setSpeed(spdYps);
 
@@ -1366,7 +1349,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
   /**
    * represent the named leg as a DR vector
-   * 
+   *
    * @param fw
    *          the leg we're looking at
    * @param period
@@ -1382,8 +1365,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // nope better calc it
       final double timeHrs = period / (1000d * 60d * 60d);
       final double distanceNm = speedKts * timeHrs;
-      final WorldDistance dist =
-          new WorldDistance(distanceNm, WorldDistance.NM);
+      final WorldDistance dist = new WorldDistance(distanceNm,
+          WorldDistance.NM);
       _vecTempLastVector = new WorldVector(courseRads, dist, null);
     }
 

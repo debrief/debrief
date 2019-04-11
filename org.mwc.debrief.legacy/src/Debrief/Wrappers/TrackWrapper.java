@@ -157,11 +157,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements
         final PropertyDescriptor[] _coreDescriptors = new PropertyDescriptor[]
         {displayExpertLongProp("SymbolType", "Snail symbol type",
             "the type of symbol plotted for this label", FORMAT,
-            SymbolFactoryPropertyEditor.class), 
-          displayExpertProp("SymbolColor",
-              "Symbol color", "the color of the symbol highligher", FORMAT),
-          displayExpertLongProp(
-                "LineThickness", "Line thickness",
+            SymbolFactoryPropertyEditor.class), displayExpertProp("SymbolColor",
+                "Symbol color", "the color of the symbol highligher", FORMAT),
+            displayExpertLongProp("LineThickness", "Line thickness",
                 "the width to draw this track", FORMAT,
                 LineWidthPropertyEditor.class), expertProp("Name",
                     "the track name"), displayExpertProp("InterpolatePoints",
@@ -240,8 +238,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
               new PropertyDescriptor[_coreDescriptors.length + 1];
           System.arraycopy(_coreDescriptors, 0, _coreDescriptorsWithSymbols, 1,
               _coreDescriptors.length);
-          _coreDescriptorsWithSymbols[0] = displayExpertLongProp("SnailSymbolSize",
-              "Snail symbol size", "Size of symbol", FORMAT,
+          _coreDescriptorsWithSymbols[0] = displayExpertLongProp(
+              "SnailSymbolSize", "Snail symbol size", "Size of symbol", FORMAT,
               SymbolScalePropertyEditor.class);
 
           // and now use the new value
@@ -998,36 +996,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     setLineThickness(3);
   }
 
-  public PropertyChangeListener createLocationListener()
-  {
-    return new PropertyChangeListener()
-    {
-      @Override
-      public void propertyChange(final PropertyChangeEvent arg0)
-      {
-        fixMoved();
-      }
-    };
-  }
-
-  public PropertyChangeListener crateChildTrackMovedListener()
-  {
-    return new PropertyChangeListener()
-    {
-
-      @Override
-      public void propertyChange(final PropertyChangeEvent evt)
-      {
-        // child track move. remember that we need to recalculate & redraw
-        setRelativePending();
-
-        // also share the good news
-        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
-            .currentTimeMillis());
-      }
-    };
-  }
-
   /**
    * add the indicated point to the track
    *
@@ -1094,8 +1062,9 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // just check we don't alraedy have it
       if (_myDynamicShapes.contains(swr))
       {
-        MWC.Utilities.Errors.Trace.trace("Not adding shape-set, it's already present"
-            + swr.getName(), false);
+        MWC.Utilities.Errors.Trace.trace(
+            "Not adding shape-set, it's already present" + swr.getName(),
+            false);
       }
       else
       {
@@ -1109,7 +1078,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else if (point instanceof DynamicTrackShapeWrapper)
     {
-      DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
+      final DynamicTrackShapeWrapper shape = (DynamicTrackShapeWrapper) point;
       DynamicTrackShapeSetWrapper target = null;
       final Enumeration<Editable> iter = getDynamicShapes().elements();
       if (iter != null)
@@ -1237,11 +1206,13 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else
     {
-      MessageProvider.Base.show("Paste Error", "Can't paste " + point + " into track", MessageProvider.ERROR);
+      MessageProvider.Base.show("Paste Error", "Can't paste " + point
+          + " into track", MessageProvider.ERROR);
       Trace.trace("Can't paste " + point + " into track", true);
     }
   }
 
+  @Override
   public void addFix(final FixWrapper theFix)
   {
     // do we have any track segments
@@ -1649,6 +1620,36 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
     return we;
+  }
+
+  public PropertyChangeListener crateChildTrackMovedListener()
+  {
+    return new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        // child track move. remember that we need to recalculate & redraw
+        setRelativePending();
+
+        // also share the good news
+        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
+            .currentTimeMillis());
+      }
+    };
+  }
+
+  public PropertyChangeListener createLocationListener()
+  {
+    return new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent arg0)
+      {
+        fixMoved();
+      }
+    };
   }
 
   /**
@@ -2646,6 +2647,12 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return _showPositions;
   }
 
+  public PropertyChangeListener[] getPropertyChangeListeners(
+      final String propertyName)
+  {
+    return getSupport().getPropertyChangeListeners(propertyName);
+  }
+
   /**
    * get our child segments
    *
@@ -2821,6 +2828,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    *
    * @return
    */
+  @Override
   public int numFixes()
   {
     int res = 0;
@@ -2975,6 +2983,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
   }
+
+  // ////////////////////////////////////////////////////
+  // LAYER support methods
+  // /////////////////////////////////////////////////////
 
   /**
    * paint the fixes for this track
@@ -3248,10 +3260,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return endPoints;
   }
-
-  // ////////////////////////////////////////////////////
-  // LAYER support methods
-  // /////////////////////////////////////////////////////
 
   /**
    * paint this fix, overriding the label if necessary (since the user may wish to have 6-figure
@@ -3537,6 +3545,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
   }
 
+  // ////////////////////////////////////////////////////
+  // track-shifting operation
+  // /////////////////////////////////////////////////////
+
+  // /////////////////////////////////////////////////
+  // support for dragging the track around
+  // ////////////////////////////////////////////////
+
   /**
    * return the range from the nearest corner of the track
    *
@@ -3558,14 +3574,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     return nearest;
   }
-
-  // ////////////////////////////////////////////////////
-  // track-shifting operation
-  // /////////////////////////////////////////////////////
-
-  // /////////////////////////////////////////////////
-  // support for dragging the track around
-  // ////////////////////////////////////////////////
 
   /**
    * if a track segment is going to be split (and then deleted), re-attach any infills to one of the
@@ -4301,14 +4309,14 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       if (secondLegOrigin == null)
       {
         final Watchable[] nearestF = theTMA.getReferenceTrack().getNearestTo(
-              splitTime);
+            splitTime);
         if ((nearestF != null) && (nearestF.length > 0))
         {
           final Watchable firstMatch = nearestF[0];
           secondLegOrigin = firstMatch.getLocation();
         }
       }
-      
+
       if (secondLegOrigin != null)
       {
         final WorldVector secondOffset = splitPnt.getLocation().subtract(
@@ -4342,7 +4350,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       // second part of the track
       final Watchable[] matches = this.getNearestTo(splitPnt
           .getDateTimeGroup());
-      if(matches.length > 0)
+      if (matches.length > 0)
       {
         final WorldLocation origin = matches[0].getLocation();
 
@@ -4374,7 +4382,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     // just check we're safe
     final Vector<TrackSegment> res;
-    if(ts1 != null && ts1.size() > 0 && ts2 != null && ts2.size() > 0)
+    if (ts1 != null && ts1.size() > 0 && ts2 != null && ts2.size() > 0)
     {
       // tell them who the daddy is
       ts1.setWrapper(this);
@@ -4385,7 +4393,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
       // now clear the positions
       removeElement(relevantSegment);
-      
+
       // and put back our new layers
       add(ts1);
       add(ts2);
@@ -4394,14 +4402,37 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       res = new Vector<TrackSegment>();
       res.add(ts1);
       res.add(ts2);
-    } 
+    }
     else
     {
       res = null;
     }
-    
 
     return res;
+  }
+
+  @Override
+  public void tidyUpOnPaste()
+  {
+    // we need to reinstate any transient objects
+    if (_locationListener == null)
+    {
+      _locationListener = createLocationListener();
+    }
+    if (_childTrackMovedListener == null)
+    {
+      _childTrackMovedListener = crateChildTrackMovedListener();
+    }
+
+    // ok, the TMA segments will no longer be firing adjusted events to us.
+    final SegmentList segs = this.getSegments();
+    final Enumeration<Editable> iter = segs.elements();
+    while (iter.hasMoreElements())
+    {
+      final TrackSegment ts = (TrackSegment) iter.nextElement();
+      this.removeElement(ts);
+      this.add(ts);
+    }
   }
 
   /**
@@ -4599,36 +4630,6 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
 
     return visible;
-  }
-
-  public PropertyChangeListener[] getPropertyChangeListeners(
-      final String propertyName)
-  {
-    return getSupport().getPropertyChangeListeners(propertyName);
-  }
-
-  @Override
-  public void tidyUpOnPaste()
-  {
-    // we need to reinstate any transient objects
-    if(_locationListener == null)
-    {
-      _locationListener = createLocationListener();
-    }
-    if(_childTrackMovedListener == null)
-    {
-      _childTrackMovedListener = crateChildTrackMovedListener();
-    }
-    
-    // ok, the TMA segments will no longer be firing adjusted events to us.
-    SegmentList segs = this.getSegments();
-    Enumeration<Editable> iter = segs.elements();
-    while(iter.hasMoreElements())
-    {
-      TrackSegment ts = (TrackSegment) iter.nextElement();
-      this.removeElement(ts);
-      this.add(ts);
-    }
   }
 
 }
