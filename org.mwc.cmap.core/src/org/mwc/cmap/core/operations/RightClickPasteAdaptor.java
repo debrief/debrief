@@ -44,11 +44,13 @@ import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Renamable;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
 import MWC.GenericData.WorldLocation;
 import junit.framework.TestCase;
 
 public class RightClickPasteAdaptor
 {
+
 
   private static final String DUPLICATE_PREFIX = "Copy of ";
   
@@ -349,6 +351,13 @@ public class RightClickPasteAdaptor
 
 						renameIfNecessary(editable,  _theDestination);
 						
+            // does it need tidying?
+            if (editable instanceof NeedsTidyingOnPaste)
+            {
+              NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) editable;
+              np.tidyUpOnPaste();
+            }
+						
             // add it to the target layer
 						_theDestination.add(editable);
 					}
@@ -452,8 +461,15 @@ public class RightClickPasteAdaptor
 							// add it to the top level
 							_theLayers.addThisLayer(newLayer);
 						}
-
+            
+            // does it need tidying?
+            if (thisItem instanceof NeedsTidyingOnPaste)
+            {
+              NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) thisItem;
+              np.tidyUpOnPaste();
+            }
 					}
+					
 					// inform the listeners
 					_theLayers.fireExtended();
 

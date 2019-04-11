@@ -34,9 +34,14 @@ import MWC.GUI.Tools.Chart.RightClickEdit;
 
 public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreator
 {
-  ///////////////////////////////////
-  // member variables
-  //////////////////////////////////
+  
+  public static interface NeedsTidyingOnPaste
+  {
+    // tell the object to do any internal admin that needs
+    // looking after following a paste operation
+    void tidyUpOnPaste();
+  }
+  
   private static Clipboard _clipboard;
 
 
@@ -215,6 +220,13 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
         // No, let's not bother, so that we can make multiple copies
         //		_myClipboard.setContents(null, null);
       }
+      
+      // does it need tidying?
+      if(_data instanceof NeedsTidyingOnPaste)
+      {
+        NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
+        np.tidyUpOnPaste();
+      }
 
       // inform the listeners
       _theLayers.fireExtended();
@@ -371,6 +383,13 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
           // just drop it in at the top level
           _theLayers.addThisLayerDoNotResize((Layer) _data);
         }
+      }
+      
+      // does it need tidying?
+      if(_data instanceof NeedsTidyingOnPaste)
+      {
+        NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
+        np.tidyUpOnPaste();
       }
 
       if (!_isACopy)
