@@ -40,7 +40,7 @@ public class RightClickPasteAdaptor implements
   {
     // tell the object to do any internal admin that needs
     // looking after following a paste operation
-    void tidyUpOnPaste();
+    void tidyUpOnPaste(final Layers layers);
   }
 
   public static class PasteItem extends javax.swing.JMenuItem implements Action,
@@ -100,7 +100,7 @@ public class RightClickPasteAdaptor implements
       if (_data instanceof NeedsTidyingOnPaste)
       {
         final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
-        np.tidyUpOnPaste();
+        np.tidyUpOnPaste(_theLayers);
       }
 
       // inform the listeners
@@ -169,7 +169,7 @@ public class RightClickPasteAdaptor implements
         if (_theLayers.findLayer(_data.getName()) == null)
         {
           // just add it
-          _theLayers.addThisLayerDoNotResize((Layer) _data);
+          _theLayers.addThisLayer((Layer) _data);
         }
         else
         {
@@ -209,7 +209,7 @@ public class RightClickPasteAdaptor implements
           newLayer.setName(newName);
 
           // just drop it in at the top level
-          _theLayers.addThisLayerDoNotResize((Layer) _data);
+          _theLayers.addThisLayer((Layer) _data);
         }
       }
 
@@ -217,7 +217,7 @@ public class RightClickPasteAdaptor implements
       if (_data instanceof NeedsTidyingOnPaste)
       {
         final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
-        np.tidyUpOnPaste();
+        np.tidyUpOnPaste(_theLayers);
       }
 
       if (!_isACopy)

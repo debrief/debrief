@@ -102,7 +102,7 @@ public class RightClickPasteAdaptor
             if (editable instanceof NeedsTidyingOnPaste)
             {
               final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) editable;
-              np.tidyUpOnPaste();
+              np.tidyUpOnPaste(_theLayers);
             }
 
             // add it to the target layer
@@ -204,7 +204,7 @@ public class RightClickPasteAdaptor
             if (thisItem instanceof NeedsTidyingOnPaste)
             {
               final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) thisItem;
-              np.tidyUpOnPaste();
+              np.tidyUpOnPaste(_theLayers);
             }
           }
 
