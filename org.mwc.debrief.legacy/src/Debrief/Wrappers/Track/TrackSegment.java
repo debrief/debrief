@@ -1391,7 +1391,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   }
 
   @Override
-  public Layer wrapMe()
+  public Layer wrapMe(final Layers layers)
   {
     // right, put the segment into a TrackWrapper
     final TrackWrapper newTrack = new TrackWrapper();
