@@ -59,7 +59,7 @@ import junit.framework.TestCase;
 public class RelativeTMASegment extends CoreTMASegment implements
     NeedsToKnowAboutLayers
 {
-
+  
   public static class TestMe extends TestCase
   {
     public final void testMyParams()
@@ -146,7 +146,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    *
    */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 12342L;
 
   /**
    * name of the watchable list we're going to use as our origin. We need to support storing this as

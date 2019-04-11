@@ -1696,7 +1696,7 @@ public class TrackWrapper_Test extends TestCase
    * @throws UnsupportedFlavorException 
    */
 
-  public void unTestShortenCopiedTMASegment() throws UnsupportedFlavorException, IOException
+  public void testShortenCopiedTMASegment() throws UnsupportedFlavorException, IOException
   {
     Layers layers = new Layers();
     
