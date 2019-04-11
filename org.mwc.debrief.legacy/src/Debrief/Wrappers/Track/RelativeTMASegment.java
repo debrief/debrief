@@ -151,17 +151,17 @@ public class RelativeTMASegment extends CoreTMASegment implements
   /**
    * name of the watchable list we're going to use as our origin. We need to support storing this as
    * a string so that we can defer finding the actual object pointer until after file-load is
-   * complete. It's also important that reference track and reference sensor
-   * objects are transient - so they don't get byte-by-byte duplication on 
-   * copy-item operation.  Doing this for very large blue track caused out of memory.
+   * complete. It's also important that reference track and reference sensor objects are transient -
+   * so they don't get byte-by-byte duplication on copy-item operation. Doing this for very large
+   * blue track caused out of memory.
    *
    * @return
    */
   private final String _referenceTrackName;
 
   /**
-   * name of the sensor we're going to use as our origin. See justification for this string reference
-   * in the reference track.
+   * name of the sensor we're going to use as our origin. See justification for this string
+   * reference in the reference track.
    *
    */
   private final String _referenceSensorName;
@@ -1179,7 +1179,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
     {
       theNewStart = newStart;
     }
-    
+
     // get the new start time, as a long
     final long newStartT = theNewStart.getDate().getTime();
 
@@ -1266,7 +1266,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
         }
       }
     }
-    
+
     // right, we may not have had enough cuts. See if we need to insert
     // some manual positions
     if (theNewStart.lessThan(startDTG()))
@@ -1306,7 +1306,7 @@ public class RelativeTMASegment extends CoreTMASegment implements
   {
     // store the layers object
     _theLayers = layers;
-    
+
     // now back to the original processing
     return super.wrapMe(layers);
   }
@@ -1323,36 +1323,6 @@ public class RelativeTMASegment extends CoreTMASegment implements
       identifyReferenceTrack();
     }
   }
-
-  // /**
-  // * temporarily store the hostname, until we've finished loading and we can
-  // * sort it out for real.
-  // *
-  // * @param hostName
-  // */
-  // public void setHostName(final String hostName)
-  // {
-  // // better trim what we've recived
-  // final String name = hostName.trim();
-  //
-  // // have we got meaningful data?
-  // if (name.length() > 0)
-  // {
-  // // right, see if we can find it
-  // if (_theLayers != null)
-  // {
-  // final Layer tgt = _theLayers.findLayer(name);
-  // if (tgt != null)
-  // {
-  // // clear any existing track
-  // setTrack(null);
-  //
-  // // now remember the new name
-  // _referenceTrackName = hostName;
-  // }
-  // }
-  // }
-  // }
 
   public void setOffset(final WorldVector newOffset)
   {

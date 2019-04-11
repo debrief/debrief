@@ -32,18 +32,18 @@ import MWC.GUI.PlottableSelection;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 
-public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreator
+public class RightClickPasteAdaptor implements
+    RightClickEdit.PlottableMenuCreator
 {
-  
+
   public static interface NeedsTidyingOnPaste
   {
     // tell the object to do any internal admin that needs
     // looking after following a paste operation
     void tidyUpOnPaste();
   }
-  
-  private static Clipboard _clipboard;
 
+  private static Clipboard _clipboard;
 
   ///////////////////////////////////
   // constructor
@@ -57,22 +57,10 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   {
   }
 
-
-
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
-
-
-  ///////////////////////////////////
-  // nested classes
-  //////////////////////////////////
   public void createMenu(final javax.swing.JPopupMenu menu,
-                         final Editable destination,
-                         final java.awt.Point thePoint,
-                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                         final Layer theParent,
-                         final Layers theLayers, final Layer updateLayer)
+      final Editable destination, final java.awt.Point thePoint,
+      final MWC.GUI.Properties.PropertiesPanel thePanel, final Layer theParent,
+      final Layers theLayers, final Layer updateLayer)
   {
     // is the plottable a layer
     if ((destination instanceof MWC.GUI.Layer) || (destination == null))
@@ -90,7 +78,8 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
           {
 
             // extract the plottable
-            final Plottable theData = (Plottable) tr.getTransferData(PlottableSelection.PlottableFlavor);
+            final Plottable theData = (Plottable) tr.getTransferData(
+                PlottableSelection.PlottableFlavor);
 
             PasteItem paster = null;
 
@@ -107,11 +96,8 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
                 final MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
 
                 // create the menu items
-                paster = new PasteLayer(clipLayer,
-                                        _clipboard,
-                                        (Layer) destination,
-                                        theLayers,
-                                        isCopy);
+                paster = new PasteLayer(clipLayer, _clipboard,
+                    (Layer) destination, theLayers, isCopy);
               }
               else
               {
@@ -119,14 +105,10 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
                 if (destination != null)
                 {
                   // create the menu items
-                  paster = new PasteItem(theData,
-                                         _clipboard,
-                                         (Layer) destination,
-                                         theLayers,
-                                         isCopy);
+                  paster = new PasteItem(theData, _clipboard,
+                      (Layer) destination, theLayers, isCopy);
                 }
               }
-
 
               if (paster != null)
               {
@@ -151,24 +133,22 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
     }
   }
 
-
-  public class PasteItem extends javax.swing.JMenuItem implements Action, ActionListener, ClipboardOwner
+  public class PasteItem extends javax.swing.JMenuItem implements Action,
+      ActionListener, ClipboardOwner
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		Plottable _data;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    Plottable _data;
     Clipboard _myClipboard;
     Layer _theDestination;
     Layers _theLayers;
     boolean _isACopy;
 
-    public PasteItem(final Plottable data,
-                     final Clipboard clipboard,
-                     final Layer theDestination,
-                     final Layers theLayers,
-                     final boolean isACopy)
+    public PasteItem(final Plottable data, final Clipboard clipboard,
+        final Layer theDestination, final Layers theLayers,
+        final boolean isACopy)
     {
       // formatting
       super.setText("Paste " + data.getName());
@@ -218,11 +198,11 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       {
         // clear the clipboard
         // No, let's not bother, so that we can make multiple copies
-        //		_myClipboard.setContents(null, null);
+        // _myClipboard.setContents(null, null);
       }
-      
+
       // does it need tidying?
-      if(_data instanceof NeedsTidyingOnPaste)
+      if (_data instanceof NeedsTidyingOnPaste)
       {
         NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
         np.tidyUpOnPaste();
@@ -245,7 +225,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   }
 
   //////////////////////////////////////////////
-  //	clone items, using "Serializable" interface
+  // clone items, using "Serializable" interface
   /////////////////////////////////////////////////
   static public Plottable cloneThis(final Plottable item)
   {
@@ -287,20 +267,17 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
     return res;
   }
 
-
   public class PasteLayer extends PasteItem
   {
 
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+     * 
+     */
+    private static final long serialVersionUID = 1L;
 
-		public PasteLayer(final Layer data,
-                      final Clipboard clipboard,
-                      final Layer theDestination,
-                      final Layers theLayers,
-                      final boolean isACopy)
+    public PasteLayer(final Layer data, final Clipboard clipboard,
+        final Layer theDestination, final Layers theLayers,
+        final boolean isACopy)
     {
       super(data, clipboard, theDestination, theLayers, isACopy);
     }
@@ -333,7 +310,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
     {
       // do we have a destination layer?
       if (super._theDestination != null)
-      // add it to this layer
+        // add it to this layer
         _theDestination.add(_data);
       else
       {
@@ -384,9 +361,9 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
           _theLayers.addThisLayerDoNotResize((Layer) _data);
         }
       }
-      
+
       // does it need tidying?
-      if(_data instanceof NeedsTidyingOnPaste)
+      if (_data instanceof NeedsTidyingOnPaste)
       {
         NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
         np.tidyUpOnPaste();

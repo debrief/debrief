@@ -1448,7 +1448,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
     res.add(NEW_LAYER_COMMAND);
 
     final String[] sampleArray = new String[]
-    { "aa" };
+    {"aa"};
     return res.toArray(sampleArray);
   }
 
@@ -1473,11 +1473,12 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     return getName();
   }
-  
-  public static interface OperateFunction{
+
+  public static interface OperateFunction
+  {
     void operateOn(Editable item);
   }
-  
+
   public void walkVisibleItems(final Class<?> mustMatch,
       final OperateFunction function)
   {
@@ -1533,8 +1534,7 @@ public class Layers implements Serializable, Plottable, PlottablesType
   {
     TimePeriod res = null;
 
-    for (final Enumeration<Editable> iter = elements(); iter
-        .hasMoreElements();)
+    for (final Enumeration<Editable> iter = elements(); iter.hasMoreElements();)
     {
       final Layer thisLayer = (Layer) iter.nextElement();
 
@@ -1584,7 +1584,6 @@ public class Layers implements Serializable, Plottable, PlottablesType
 
     return res;
   }
-
 
   private static TimePeriod extend(final TimePeriod period,
       final HiResDate date)
