@@ -572,7 +572,7 @@ public class DebriefLiteApp implements FileDropListener
       final UndoBuffer undoBuffer)
   {
     graphPanelView = new GraphPanelView();
-    graphPanelView.setObject(_theLayers);
+    //graphPanelView.setObject(_theLayers);
     graphPanelView.setParent(toolParent);
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
@@ -593,6 +593,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void componentResized(ComponentEvent e)
       {
+        // TODO . This must be change once we update geotools.
         mapPane.setVisible(false);
         mapPane.setVisible(true);
       }
