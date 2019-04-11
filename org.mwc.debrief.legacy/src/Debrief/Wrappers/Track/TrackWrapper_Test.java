@@ -1778,18 +1778,18 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("two tracks",  2, layers.size());
     
     // have a look at the name
-    TrackWrapper it = null;
+    TrackWrapper pastedLeg = null;
     Enumeration<Editable> iter = layers.elements();
     while(iter.hasMoreElements())
     {
       TrackWrapper next = (TrackWrapper) iter.nextElement();
       if(!next.getName().equals(trackName))
       {
-        it = next;
+        pastedLeg = next;
       }
     }
     
-    assertNotNull("found tma track", it);
+    assertNotNull("found tma track", pastedLeg);
     
     // ok, create a parent track for the segment
     TrackWrapper tma = new TrackWrapper();
@@ -1820,7 +1820,7 @@ public class TrackWrapper_Test extends TestCase
     assertEquals("four tracks",  4, layers.size());
 
     // change the start time for the pasted leg
-    it = null;
+    TrackWrapper pastedTrack = null;
     Enumeration<Editable> lIter = layers.elements();
     while(lIter.hasMoreElements())
     {
@@ -1829,21 +1829,21 @@ public class TrackWrapper_Test extends TestCase
       {
         continue;
       }
-      if(trk.getName().contains("010001.50"))
+      if(trk.getName().contains(pastedLeg.getName()))
       {
-        it = trk;
+        pastedTrack = trk;
         break;
       }
     }
-    assertNotNull("Found pasted track", it);
+    assertNotNull("Found pasted track", pastedTrack);
     
     // ok, now shorten the TMA leg
-    RelativeTMASegment seg2 = (RelativeTMASegment) it.getSegments().elements().nextElement();
+    RelativeTMASegment seg2 = (RelativeTMASegment) pastedTrack.getSegments().elements().nextElement();
     seg2.setDTG_Start(new HiResDate(105000));
-    it.sortOutRelativePositions();
+    pastedTrack.sortOutRelativePositions();
 
     // change the start time for the pasted leg
-    it = null;
+    TrackWrapper pastedTMA = null;
     lIter = layers.elements();
     while(lIter.hasMoreElements())
     {
@@ -1854,16 +1854,16 @@ public class TrackWrapper_Test extends TestCase
       }
       if(trk.getName().contains("TMA 1"))
       {
-        it = trk;
+        pastedTMA = trk;
         break;
       }
     }
-    assertNotNull("Found pasted track", it);
+    assertNotNull("Found pasted track", pastedTMA);
     
     // ok, now shorten the TMA leg
-    RelativeTMASegment seg3 = (RelativeTMASegment) it.getSegments().elements().nextElement();
+    RelativeTMASegment seg3 = (RelativeTMASegment) pastedTMA.getSegments().elements().nextElement();
     seg3.setDTG_Start(new HiResDate(105000));
-    it.sortOutRelativePositions();
+    pastedTMA.sortOutRelativePositions();
     
 
     // check the segment doesn't have positions
