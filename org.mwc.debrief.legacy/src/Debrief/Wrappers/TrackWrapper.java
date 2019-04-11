@@ -82,6 +82,7 @@ import MWC.GUI.Shapes.TextLabel;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
 import MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor;
 import MWC.GUI.Shapes.Symbols.Vessels.WorldScaledSym;
+import MWC.GUI.Tools.Operations.RightClickPasteAdaptor.NeedsTidyingOnPaste;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -103,7 +104,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class TrackWrapper extends LightweightTrackWrapper implements
     WatchableList, DraggableItem, HasDraggableComponents,
-    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable
+    ProvidesContiguousElements, ISecondaryTrack, DynamicPlottable,
+    NeedsTidyingOnPaste
 {
 
   // //////////////////////////////////////
@@ -932,7 +934,7 @@ public class TrackWrapper extends LightweightTrackWrapper implements
    */
   transient private WorldArea _myWorldArea;
 
-  transient private final PropertyChangeListener _locationListener;
+  transient private PropertyChangeListener _locationListener;
 
   transient private PropertyChangeListener _childTrackMovedListener;
 
@@ -972,28 +974,8 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     _mySolutions.setName(SOLUTIONS_LAYER_NAME);
 
     // create a property listener for when fixes are moved
-    _locationListener = new PropertyChangeListener()
-    {
-      @Override
-      public void propertyChange(final PropertyChangeEvent arg0)
-      {
-        fixMoved();
-      }
-    };
-    _childTrackMovedListener = new PropertyChangeListener()
-    {
-
-      @Override
-      public void propertyChange(final PropertyChangeEvent evt)
-      {
-        // child track move. remember that we need to recalculate & redraw
-        setRelativePending();
-
-        // also share the good news
-        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
-            .currentTimeMillis());
-      }
-    };
+    _locationListener = createLocationListener();
+    _childTrackMovedListener = crateChildTrackMovedListener();
 
     _linkPositions = true;
 
@@ -1014,6 +996,36 @@ public class TrackWrapper extends LightweightTrackWrapper implements
 
     // tracks are plotted bolder than lightweight tracks, give them some depth
     setLineThickness(3);
+  }
+
+  public PropertyChangeListener createLocationListener()
+  {
+    return new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(final PropertyChangeEvent arg0)
+      {
+        fixMoved();
+      }
+    };
+  }
+
+  public PropertyChangeListener crateChildTrackMovedListener()
+  {
+    return new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(final PropertyChangeEvent evt)
+      {
+        // child track move. remember that we need to recalculate & redraw
+        setRelativePending();
+
+        // also share the good news
+        firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, System
+            .currentTimeMillis());
+      }
+    };
   }
 
   /**
@@ -4593,6 +4605,30 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       final String propertyName)
   {
     return getSupport().getPropertyChangeListeners(propertyName);
+  }
+
+  @Override
+  public void tidyUpOnPaste()
+  {
+    // we need to reinstate any transient objects
+    if(_locationListener == null)
+    {
+      _locationListener = createLocationListener();
+    }
+    if(_childTrackMovedListener == null)
+    {
+      _childTrackMovedListener = crateChildTrackMovedListener();
+    }
+    
+    // ok, the TMA segments will no longer be firing adjusted events to us.
+    SegmentList segs = this.getSegments();
+    Enumeration<Editable> iter = segs.elements();
+    while(iter.hasMoreElements())
+    {
+      TrackSegment ts = (TrackSegment) iter.nextElement();
+      this.removeElement(ts);
+      this.add(ts);
+    }
   }
 
 }
