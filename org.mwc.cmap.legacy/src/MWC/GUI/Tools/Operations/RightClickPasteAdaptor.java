@@ -43,7 +43,7 @@ public class RightClickPasteAdaptor implements
     void tidyUpOnPaste();
   }
 
-  public class PasteItem extends javax.swing.JMenuItem implements Action,
+  public static class PasteItem extends javax.swing.JMenuItem implements Action,
       ActionListener, ClipboardOwner
   {
     /**
@@ -51,10 +51,10 @@ public class RightClickPasteAdaptor implements
      */
     private static final long serialVersionUID = 1L;
     Plottable _data;
-    Clipboard _myClipboard;
-    Layer _theDestination;
-    Layers _theLayers;
-    boolean _isACopy;
+    final protected Clipboard _myClipboard;
+    final protected Layer _theDestination;
+    final protected Layers _theLayers;
+    final protected boolean _isACopy;
 
     public PasteItem(final Plottable data, final Clipboard clipboard,
         final Layer theDestination, final Layers theLayers,
@@ -141,7 +141,7 @@ public class RightClickPasteAdaptor implements
     }
   }
 
-  public class PasteLayer extends PasteItem
+  public static class PasteLayer extends PasteItem
   {
 
     /**
