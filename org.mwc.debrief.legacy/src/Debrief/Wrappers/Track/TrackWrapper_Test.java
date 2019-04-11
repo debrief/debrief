@@ -1834,7 +1834,6 @@ public class TrackWrapper_Test extends TestCase
         it = trk;
         break;
       }
-      System.out.println(trk.getName());
     }
     assertNotNull("Found pasted track", it);
     
@@ -1858,7 +1857,6 @@ public class TrackWrapper_Test extends TestCase
         it = trk;
         break;
       }
-      System.out.println(trk.getName());
     }
     assertNotNull("Found pasted track", it);
     
