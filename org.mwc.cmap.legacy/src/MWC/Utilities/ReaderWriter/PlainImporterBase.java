@@ -219,7 +219,7 @@ public abstract class PlainImporterBase implements PlainImporter
     String res = "Problem at line " + line + " of:\n";
     res += fName + "\n";
     res += msg + ":" + thisLine;
-    DialogFactory.showMessage("Import Error", res);
+    DialogFactory.showMessage("Error in opening file", res);
   }
 
   /**

@@ -743,6 +743,8 @@ abstract public class StepControl implements Editable,
       final StepperListener next = numer.nextElement();
       next.reset();
     }
+    // clear all the participants.
+    _participants.clear();
   }
 
   public void setStartTime(final HiResDate val)

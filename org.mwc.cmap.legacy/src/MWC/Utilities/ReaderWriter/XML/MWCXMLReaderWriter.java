@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
 package MWC.Utilities.ReaderWriter.XML;
@@ -289,21 +289,73 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 	{
 
 	}
-
+  /**
+   * handle the import of XML data into an existing session
+   */
   @Override
-  public void importThis(String fName, InputStream is, Layers theData,
+  public void importThis(final String fName, final InputStream is, final Layers theData,
       MonitorProvider provider) throws DebriefXMLReaderException
   {
-   importThis(fName, is, theData);
-    
+    if (theData == null)
+    {
+      importThis(fName, is);
+    }
+    else
+    {
+      // create a handler
+      final MWCXMLReader handler = new LayersHandler(theData);
+
+      // do the import
+      importThis(fName, is, handler);
+
+      //
+      theData.fireModified(null);
+
+    }
   }
 
   @Override
+
   public void importThis(String fName, InputStream is, MonitorProvider provider)
   throws DebriefXMLReaderException
   {
     importThis(fName, is);
-    
+
+  }
+
+  /**
+   * handle the import of XML data into an existing session
+   */
+  public void importThis(final String fName, final InputStream is,
+      final MWCXMLReader reader)
+  {
+
+    // create progress monitor for this stream
+    final ProgressMonitorInputStream po =
+        new ModifiedProgressMonitorInputStream(null, "Opening " + fName, is);
+
+    // initialise cancelled flag
+    _importCancelled = false;
+
+    // import the datafile into this set of layers
+    doImport(new InputSource(po), reader);
+
+  }
+
+  /**
+   * signal problem importing data
+   */
+  @Override
+  public void readError(final String fName, final int line, final String msg,
+      final String thisLine)
+  {
+
+  }
+
+  @Override
+  public void startExport(final Plottable item)
+  {
+
   }
 
 }
