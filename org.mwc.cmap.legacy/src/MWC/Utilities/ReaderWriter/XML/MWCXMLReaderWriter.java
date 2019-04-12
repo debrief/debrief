@@ -125,7 +125,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 				final int col = se.getColumnNumber();
 				final String msg = "Trouble reading input file at line:" + line + ", column:"
 						+ col;
-				//MWC.Utilities.Errors.Trace.trace(se, msg);
+				MWC.Utilities.Errors.Trace.trace(se, msg);
 				//MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
 				throw new DebriefXMLReaderException(msg,se);
 			}

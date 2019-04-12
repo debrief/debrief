@@ -793,7 +793,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       e.printStackTrace();
       //exception will be displayed in import replay or debriefxmlreaderwriter
-     // JOptionPane.showMessageDialog(null, "Error opening DPF file:"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+     JOptionPane.showMessageDialog(null, "Error opening DPF file:"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     // update the time panel
