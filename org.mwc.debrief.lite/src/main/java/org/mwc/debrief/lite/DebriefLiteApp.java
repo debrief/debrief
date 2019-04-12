@@ -105,8 +105,8 @@ import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
-import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.ImportManager;
+import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -115,6 +115,7 @@ import MWC.Utilities.ReaderWriter.ImportManager;
 
 public class DebriefLiteApp implements FileDropListener
 {
+
   /**
    * introduce a preferences helper, particularly to give default font sizes
    *
@@ -269,17 +270,38 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  public static void openFile(final File file,boolean isRepFile)
+  public static void openPlotFile(final File file)
   {
-      if(isRepFile) {
-        _instance.handleImportRep(file);
-      }
-      else {
-        _instance.handleImportDPF(file);
-      }
-      
+    try
+    {
+      _instance.handleImportDPF(file);
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+    finally
+    {
+      resetFileName(file);
+    }
   }
 
+  public static void openRepFile(final File file)
+  {
+    try
+    {
+      _instance.handleImportRep(new File[]
+      {file});
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+    finally
+    {
+      resetFileName(file);
+    }
+  }
 
   private static void resetFileName(final File file)
   {
@@ -486,7 +508,7 @@ public class DebriefLiteApp implements FileDropListener
             (HiResDate) evt.getNewValue());
       }
     }, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-    
+
     final DataListener dListener = new DataListener()
     {
       @Override
@@ -511,6 +533,7 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
+
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
@@ -730,7 +753,9 @@ public class DebriefLiteApp implements FileDropListener
               || (suff.equalsIgnoreCase(".DTF")))
           {
             // fake wrap it
-            handleImportRep(file);
+            final File[] fList = new File[]
+            {file};
+            handleImportRep(fList);
           }
           else if (suff.equalsIgnoreCase(".XML") || suff.equalsIgnoreCase(
               ".DPF"))
@@ -764,13 +789,14 @@ public class DebriefLiteApp implements FileDropListener
     return layerManager;
   }
 
-  private void handleImportDPF(final File file) 
+  private void handleImportDPF(final File file)
   {
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
       reader.importThis(file.getName(), new FileInputStream(file), session);
-      resetFileName(file);
+
+      // update the time panel
       final TimePeriod period = _theLayers.getTimePeriod();
       _myOperations.setPeriod(period);
       timeManager.setPeriod(this, period);
@@ -784,71 +810,67 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
     }
-    catch (FileNotFoundException e)
+    catch (final FileNotFoundException e)
     {
-      e.printStackTrace();
-      JOptionPane.showMessageDialog(null, "Error opening DPF file,file was not found", "Error", JOptionPane.ERROR_MESSAGE);
+      app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+          "Failed to read DPF File" + e.getMessage());
     }
-    catch(DebriefXMLReaderException e)
-    {
-      e.printStackTrace();
-      //exception will be displayed in import replay or debriefxmlreaderwriter
-     JOptionPane.showMessageDialog(null, "Error opening DPF file:"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    // update the time panel
-    
     _theLayers.fireModified(null);
   }
 
-  private void handleImportRep(final File file) 
+  private void handleImportRep(final File[] fList)
   {
     final DebriefLiteApp source = this;
-    final ImportReplay trackImporter = new ImportReplay();
-    try
+    final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
-      trackImporter.setLayers(_theLayers);
-      trackImporter.importThis(file.getAbsolutePath(), new FileInputStream(file));
-      SwingUtilities.invokeLater(new Runnable()
+      // handle completion of the full import process
+      @Override
+      public void allFilesFinished(final File[] fNames, final Layers newData)
       {
-        @Override
-        public void run()
+        finishImport(source);
+      }
+
+      // handle the completion of each file
+      @Override
+      public void fileFinished(final File fName, final Layers newData)
+      {
+
+      }
+
+      private void finishImport(final DebriefLiteApp source)
+      {
+        SwingUtilities.invokeLater(new Runnable()
         {
-          
-          setCursor(Cursor.WAIT_CURSOR);
-          layerManager.createAndInitializeTree();
-          mapPane.repaint();
-          restoreCursor();
-          // update the time panel
-          final TimePeriod period = _theLayers.getTimePeriod();
-          _myOperations.setPeriod(period);
-          timeManager.setPeriod(source, period);
-          if (period != null)
+          @Override
+          public void run()
           {
-            timeManager.setTime(source, period.getStartDTG(), true);
+            setCursor(Cursor.WAIT_CURSOR);
+            layerManager.createAndInitializeTree();
+            mapPane.repaint();
+            restoreCursor();
+            // update the time panel
+            final TimePeriod period = _theLayers.getTimePeriod();
+            _myOperations.setPeriod(period);
+            timeManager.setPeriod(source, period);
+            if (period != null)
+            {
+              timeManager.setTime(source, period.getStartDTG(), true);
+            }
+
+            theTote.assignWatchables(true);
+
+            // and the spatial bounds
+            final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
+            fitMe.actionPerformed(null);
+
+            populateTote();
           }
-
-          theTote.assignWatchables(true);
-
-          // and the spatial bounds
-          final FitToWindow fitMe = new FitToWindow(_theLayers, mapPane);
-          fitMe.actionPerformed(null);
-
-          populateTote();
-          resetFileName(file);
-        }
-      });
-    }
-    catch (FileNotFoundException e1)
-    {
-      //_toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
-      JOptionPane.showMessageDialog(null, "Error opening REP file:"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    catch (DebriefXMLReaderException e1)
-    {
-      //_toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
-      //JOptionPane.showMessageDialog(null, "Error opening REP file:"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-    }
+        });
+      }
+    };
+    // ok, start loading
+    caller.start();
   }
 
   /**
@@ -908,6 +930,7 @@ public class DebriefLiteApp implements FileDropListener
    */
   protected void layersExtended()
   {
+
   }
 
   private void populateTote()
