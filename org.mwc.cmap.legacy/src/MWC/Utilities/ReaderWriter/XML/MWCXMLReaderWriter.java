@@ -172,23 +172,25 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 		xr.importThis(name, is, theHandler);
 	}
 
+	
 	/**
-	 * handle the import of XML data into an existing session
-	 */
-	public void importThis(final String fName, final InputStream is, final MWCXMLReader reader) throws DebriefXMLReaderException
-	{
+   * handle the import of XML data into an existing session
+   */
+  public void importThis(final String fName, final InputStream is,
+      final MWCXMLReader reader)throws DebriefXMLReaderException
+  {
 
-		// create progress monitor for this stream
-		final javax.swing.ProgressMonitorInputStream po = new ModifiedProgressMonitorInputStream(
-				null, "Opening " + fName, is);
+    // create progress monitor for this stream
+    final ProgressMonitorInputStream po =
+        new ModifiedProgressMonitorInputStream(null, "Opening " + fName, is);
 
-		// initialise cancelled flag
-		_importCancelled = false;
+    // initialise cancelled flag
+    _importCancelled = false;
 
-		// import the datafile into this set of layers
-		doImport(new InputSource(po), reader);
+    // import the datafile into this set of layers
+    doImport(new InputSource(po), reader);
 
-	}
+  }
 
 	/**
 	 * handle the import of XML data into an existing session
@@ -272,23 +274,14 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 
 	}
 
-	/**
-	 * signal problem importing data
-	 */
-	public void readError(final String fName, final int line, final String msg, final String thisLine)
-	{
-
-	}
+	
 
 	public void endExport(final Plottable item)
 	{
 
 	}
 
-	public void startExport(final Plottable item)
-	{
-
-	}
+	
   /**
    * handle the import of XML data into an existing session
    */
@@ -323,24 +316,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 
   }
 
-  /**
-   * handle the import of XML data into an existing session
-   */
-  public void importThis(final String fName, final InputStream is,
-      final MWCXMLReader reader)
-  {
-
-    // create progress monitor for this stream
-    final ProgressMonitorInputStream po =
-        new ModifiedProgressMonitorInputStream(null, "Opening " + fName, is);
-
-    // initialise cancelled flag
-    _importCancelled = false;
-
-    // import the datafile into this set of layers
-    doImport(new InputSource(po), reader);
-
-  }
+  
 
   /**
    * signal problem importing data
