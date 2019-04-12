@@ -786,12 +786,12 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (FileNotFoundException e)
     {
-      _toolParent.logError(ToolParent.ERROR, "Error opening DPF file", e);
+      e.printStackTrace();
       JOptionPane.showMessageDialog(null, "Error opening DPF file,file was not found", "Error", JOptionPane.ERROR_MESSAGE);
     }
     catch(DebriefXMLReaderException e)
     {
-      _toolParent.logError(ToolParent.ERROR, "Error opening DPF file", e);
+      e.printStackTrace();
       //exception will be displayed in import replay or debriefxmlreaderwriter
      // JOptionPane.showMessageDialog(null, "Error opening DPF file:"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -841,13 +841,13 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (FileNotFoundException e1)
     {
-      _toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
+      //_toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
       JOptionPane.showMessageDialog(null, "Error opening REP file:"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
     catch (DebriefXMLReaderException e1)
     {
-      _toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
-      JOptionPane.showMessageDialog(null, "Error opening REP file:"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+      //_toolParent.logError(ToolParent.ERROR, "Error opening REP file", e1);
+      //JOptionPane.showMessageDialog(null, "Error opening REP file:"+e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
   }
 
