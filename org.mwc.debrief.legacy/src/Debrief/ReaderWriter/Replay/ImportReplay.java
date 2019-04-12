@@ -373,18 +373,6 @@ public class ImportReplay extends PlainImporterBase
       // and start it running
       reader.start();
 
-      // wait for the results
-      while (reader.isAlive())
-      {
-        try
-        {
-          Thread.sleep(100);
-        }
-        catch (final java.lang.InterruptedException e)
-        {
-        }
-      }
-
       // check it went ok
       assertTrue("File finished received", fileFinished);
       assertTrue("All Files finished received", allFilesFinished);
