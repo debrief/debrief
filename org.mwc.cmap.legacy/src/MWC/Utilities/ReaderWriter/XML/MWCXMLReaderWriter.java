@@ -41,35 +41,40 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
  */
 public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 {
-  /**
-   * flag which gets set when the user has cancelled the import process
-   */
-  protected boolean _importCancelled;
-
-  /** Creates new XMLReaderWriter */
-  public MWCXMLReaderWriter()
+  protected class ModifiedProgressMonitorInputStream extends
+      ProgressMonitorInputStream
   {
-    super("");
-  }
+    private int override_nread = 0;
 
-  public void importThis(final String fName, final InputStream is)
-  {
-    // null implementation!
-    throw new RuntimeException("importThis method not implemented!");
-  }
+    public ModifiedProgressMonitorInputStream(final Component parentComponent,
+        final Object message, final InputStream in)
+    {
+      super(parentComponent, message, in);
+    }
 
-  @Override
-  public boolean canHandleThis(final String type)
-  {
-    // hey! we can't really handle anything!
-    return false;
+    @Override
+    public int read(final byte b[], final int off, final int len)
+        throws IOException
+    {
+      final int nr = in.read(b, off, len);
+      if (nr > 0)
+        getProgressMonitor().setProgress(override_nread += nr);
+      if (getProgressMonitor().isCanceled())
+      {
+        _importCancelled = true;
+        final InterruptedIOException exc = new InterruptedIOException(
+            "progress");
+        throw exc;
+      }
+      return nr;
+    }
   }
 
   /**
    * utility class to create & configure our SAXParser for us. We configure the parser by telling it
    * not to check against a specific DTD, since ASSET was repeatedly falling over when unable to
    * find the indicated DTD
-   * 
+   *
    * @return a configured parser
    */
   static protected SAXParser getConfiguredParser()
@@ -97,7 +102,60 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 
   }
 
-  protected void doImport(final InputSource is, final MWCXMLReader theHandler) throws PlainImporter.ImportException
+  /**
+   * do an import using the indicated handler
+   *
+   * @throws SAXException
+   */
+  static public void importThis(final MWCXMLReader theHandler,
+      final String name, final InputStream is) throws SAXException
+  {
+    final MWCXMLReaderWriter xr = new MWCXMLReaderWriter();
+
+    xr.importThis(name, is, theHandler);
+  }
+
+  /**
+   * flag which gets set when the user has cancelled the import process
+   */
+  protected boolean _importCancelled;
+
+  /** Creates new XMLReaderWriter */
+  public MWCXMLReaderWriter()
+  {
+    super("");
+  }
+
+  @Override
+  public boolean canHandleThis(final String type)
+  {
+    // hey! we can't really handle anything!
+    return false;
+  }
+
+  // ///////////////////////////////////////////////////////////////////
+  //
+  // ////////////////////////////////////////////////////////////////////
+
+  /**
+   * read in this whole file
+   */
+  @Override
+  public boolean canImportThisFile(final String theFile)
+  {
+    boolean res = false;
+    String theSuffix = null;
+    final int pos = theFile.lastIndexOf(".");
+    theSuffix = theFile.substring(pos, theFile.length()).toUpperCase();
+
+    if (theSuffix.equals(".XML") | theSuffix.equals(".DPF"))
+      res = true;
+
+    return res;
+  }
+
+  protected void doImport(final InputSource is, final MWCXMLReader theHandler)
+      throws PlainImporter.ImportException
   {
     try
     {
@@ -123,7 +181,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
         final int col = se.getColumnNumber();
         final String msg = "Trouble reading input file at line:" + line
             + ", column:" + col;
-        MWC.Utilities.Errors.Trace.trace(se, msg);
+        // MWC.Utilities.Errors.Trace.trace(se, msg);
         // MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
         throw new ImportException(msg, se);
       }
@@ -165,25 +223,100 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
     }
   }
 
-  // ///////////////////////////////////////////////////////////////////
-  //
-  // ////////////////////////////////////////////////////////////////////
+  @Override
+  public void endExport(final Plottable item)
+  {
+
+  }
 
   /**
-   * do an import using the indicated handler
-   * @throws SAXException 
+   * export this item using this format
    */
-  static public void importThis(final MWCXMLReader theHandler,
-      final String name, final InputStream is) throws SAXException
+  @Override
+  public void exportThis(final MWC.GUI.Plottable item)
   {
-    final MWCXMLReaderWriter xr = new MWCXMLReaderWriter();
+  }
 
-    xr.importThis(name, is, theHandler);
+  /**
+   * export this item using this format
+   */
+  @Override
+  public void exportThis(final String comment)
+  {
+
+  }
+
+  @Override
+  public void importThis(final String fName, final InputStream is)
+  {
+    // null implementation!
+    throw new RuntimeException("importThis method not implemented!");
   }
 
   /**
    * handle the import of XML data into an existing session
-   * @throws SAXException 
+   *
+   * @throws SAXException
+   */
+  @Override
+  public void importThis(final String fName, final InputStream is,
+      final Layers theData) throws ImportException
+  {
+    if (theData == null)
+    {
+      importThis(fName, is);
+    }
+    else
+    {
+      // create a handler
+      final MWCXMLReader handler = new LayersHandler(theData);
+
+      // do the import
+      importThis(fName, is, handler);
+
+      //
+      theData.fireModified(null);
+
+    }
+  }
+
+  /**
+   * handle the import of XML data into an existing session
+   */
+  @Override
+  public void importThis(final String fName, final InputStream is,
+      final Layers theData, final MonitorProvider provider)
+  {
+    if (theData == null)
+    {
+      importThis(fName, is);
+    }
+    else
+    {
+      // create a handler
+      final MWCXMLReader handler = new LayersHandler(theData);
+
+      // do the import
+      importThis(fName, is, handler);
+
+      //
+      theData.fireModified(null);
+
+    }
+  }
+
+  @Override
+
+  public void importThis(final String fName, final InputStream is,
+      final MonitorProvider provider)
+  {
+    importThis(fName, is);
+  }
+
+  /**
+   * handle the import of XML data into an existing session
+   *
+   * @throws SAXException
    */
   public void importThis(final String fName, final InputStream is,
       final MWCXMLReader reader) throws PlainImporter.ImportException
@@ -199,128 +332,6 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
     // import the datafile into this set of layers
     doImport(new InputSource(po), reader);
 
-  }
-
-  /**
-   * handle the import of XML data into an existing session
-   * @throws SAXException 
-   */
-  public void importThis(final String fName, final InputStream is,
-      final Layers theData) throws ImportException 
-  {
-    if (theData == null)
-    {
-      importThis(fName, is);
-    }
-    else
-    {
-      // create a handler
-      final MWCXMLReader handler = new LayersHandler(theData);
-
-      // do the import
-      importThis(fName, is, handler);
-
-      //
-      theData.fireModified(null);
-
-    }
-  }
-
-  protected class ModifiedProgressMonitorInputStream extends
-      ProgressMonitorInputStream
-  {
-    private int override_nread = 0;
-
-    public ModifiedProgressMonitorInputStream(final Component parentComponent,
-        final Object message, final InputStream in)
-    {
-      super(parentComponent, message, in);
-    }
-
-    @Override
-    public int read(final byte b[], final int off, final int len)
-        throws IOException
-    {
-      final int nr = in.read(b, off, len);
-      if (nr > 0)
-        getProgressMonitor().setProgress(override_nread += nr);
-      if (getProgressMonitor().isCanceled())
-      {
-        _importCancelled = true;
-        final InterruptedIOException exc = new InterruptedIOException(
-            "progress");
-        throw exc;
-      }
-      return nr;
-    }
-  }
-
-  /**
-   * read in this whole file
-   */
-  public boolean canImportThisFile(final String theFile)
-  {
-    boolean res = false;
-    String theSuffix = null;
-    final int pos = theFile.lastIndexOf(".");
-    theSuffix = theFile.substring(pos, theFile.length()).toUpperCase();
-
-    if (theSuffix.equals(".XML") | theSuffix.equals(".DPF"))
-      res = true;
-
-    return res;
-  }
-
-  /**
-   * export this item using this format
-   */
-  public void exportThis(final MWC.GUI.Plottable item)
-  {
-  }
-
-  /**
-   * export this item using this format
-   */
-  public void exportThis(final String comment)
-  {
-
-  }
-
-  public void endExport(final Plottable item)
-  {
-
-  }
-
-  /**
-   * handle the import of XML data into an existing session
-   */
-  @Override
-  public void importThis(final String fName, final InputStream is,
-      final Layers theData, MonitorProvider provider)
-  {
-    if (theData == null)
-    {
-      importThis(fName, is);
-    }
-    else
-    {
-      // create a handler
-      final MWCXMLReader handler = new LayersHandler(theData);
-
-      // do the import
-      importThis(fName, is, handler);
-
-      //
-      theData.fireModified(null);
-
-    }
-  }
-
-  @Override
-
-  public void importThis(String fName, InputStream is, MonitorProvider provider)
-  {
-    importThis(fName, is);
   }
 
   /**
