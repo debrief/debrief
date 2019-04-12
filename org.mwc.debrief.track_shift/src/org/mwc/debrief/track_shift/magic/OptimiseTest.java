@@ -49,6 +49,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import flanagan.math.Minimisation;
 import flanagan.math.MinimisationFunction;
 
@@ -133,7 +134,7 @@ public class OptimiseTest
 		}
 
 		// TODO FIX-TEST
-		public void testLoad() throws FileNotFoundException
+		public void testLoad() throws FileNotFoundException,DebriefXMLReaderException
 		{
 			// get some data
 			final Layers layers = getTheData();
@@ -403,7 +404,7 @@ public class OptimiseTest
 
 	}
 
-	private static Layers getTheData() throws FileNotFoundException
+	private static Layers getTheData() throws FileNotFoundException,DebriefXMLReaderException
 	{
 		final DebriefEclipseXMLReaderWriter reader = new DebriefEclipseXMLReaderWriter();
 		final Layers res = new Layers();

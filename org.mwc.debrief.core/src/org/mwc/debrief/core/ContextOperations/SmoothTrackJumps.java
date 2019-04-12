@@ -44,6 +44,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 import junit.framework.TestCase;
 
@@ -195,7 +196,7 @@ public class SmoothTrackJumps implements RightClickContextItemGenerator
       assertFalse("not on track", isOnTrackDegs(180, 0));
     }
 
-    public void testFindLegs() throws FileNotFoundException, ExecutionException
+    public void testFindLegs() throws FileNotFoundException, ExecutionException,DebriefXMLReaderException
     {
       final ImportReplay importer = new ImportReplay();
       final Layers theLayers = new Layers();

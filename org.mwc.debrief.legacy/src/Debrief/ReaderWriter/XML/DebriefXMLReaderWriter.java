@@ -29,6 +29,7 @@ import org.w3c.dom.Document;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
@@ -58,7 +59,7 @@ public final class DebriefXMLReaderWriter extends
 	 */
 	@Override
 	public final void importThis(final String fName,
-			final java.io.InputStream is, final MWC.GUI.Layers theData)
+			final java.io.InputStream is, final MWC.GUI.Layers theData) throws DebriefXMLReaderException
 	{
 		if (theData == null)
 		{
@@ -102,7 +103,7 @@ public final class DebriefXMLReaderWriter extends
 	 * handle the import of XML data, creating a new session for it
 	 */
 	@Override
-	public final void importThis(final String fName, final java.io.InputStream is)
+	public final void importThis(final String fName, final java.io.InputStream is) throws DebriefXMLReaderException
 	{
 		importThis(fName, is, (Session) null);
 	}
@@ -111,7 +112,7 @@ public final class DebriefXMLReaderWriter extends
 	 * handle the import of XML data, possible including into the existing session
 	 */
 	public void importThis(final String fName, final java.io.InputStream is,
-			final Session theSession)
+			final Session theSession) throws DebriefXMLReaderException
 	{
 		// create the handler for this type of data
 		final MWCXMLReader handler = new PlotHandler(_theApplication, theSession,
@@ -412,5 +413,4 @@ public final class DebriefXMLReaderWriter extends
 	// System.exit(0);
 	// }
 	//
-
 }

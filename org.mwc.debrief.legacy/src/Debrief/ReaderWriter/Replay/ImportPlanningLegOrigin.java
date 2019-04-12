@@ -115,6 +115,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import junit.framework.TestCase;
@@ -135,7 +136,7 @@ final public class ImportPlanningLegOrigin extends AbstractPlainLineImporter
     private final static String tracks =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/planning_tracks.rep";
 
-    public void testImport() throws FileNotFoundException
+    public void testImport() throws FileNotFoundException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 

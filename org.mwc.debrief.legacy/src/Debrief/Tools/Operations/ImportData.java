@@ -123,6 +123,7 @@ import java.io.*;
 import Debrief.GUI.Frames.*;
 import MWC.GUI.*;
 import MWC.GUI.Tools.*;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 /**
  * command to import a file (initially just Replay) into Debrief. The data used
@@ -230,6 +231,11 @@ public final class ImportData extends PlainTool
 						// add the filename to the MRU
 						Application.addToMru(fl.getAbsolutePath());
 
+					}
+					catch(DebriefXMLReaderException e)
+					{
+					  //may be display errors in a popup
+					  MWC.Utilities.Errors.Trace.trace(e);
 					}
 					catch (final java.io.FileNotFoundException e)
 					{

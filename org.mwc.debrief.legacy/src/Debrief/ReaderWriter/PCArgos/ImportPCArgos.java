@@ -86,6 +86,7 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 /** class to read in a complete PCArgos file, producing vessel fixes
  */
@@ -354,7 +355,7 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
   
   @Override
   public void importThis(String fName, InputStream is, Layers theData,
-      MonitorProvider provider)
+      MonitorProvider provider) throws DebriefXMLReaderException
   {
     importThis(fName, is, theData);
   }

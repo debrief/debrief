@@ -110,16 +110,20 @@ public interface PlainImporter
     /** general command used to import a whole file of a specific type
      */
     public void importThis(String fName,
-                           java.io.InputStream is, Layers theData);
+                           java.io.InputStream is, Layers theData)
+    throws DebriefXMLReaderException;
 
     public void importThis(String fName,
-                                       java.io.InputStream is);
+                                       java.io.InputStream is)
+                                           throws DebriefXMLReaderException;
     
     public void importThis(String fName,
-        java.io.InputStream is, Layers theData,MonitorProvider provider);
+        java.io.InputStream is, Layers theData,MonitorProvider provider)
+            throws DebriefXMLReaderException;
     
     public void importThis(String fName,
-        java.io.InputStream is,MonitorProvider provider);
+        java.io.InputStream is,MonitorProvider provider)
+            throws DebriefXMLReaderException;
 
     /** read in this whole file
      */

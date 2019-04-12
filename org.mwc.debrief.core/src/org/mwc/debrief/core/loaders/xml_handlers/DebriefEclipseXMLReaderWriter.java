@@ -32,6 +32,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
@@ -55,10 +56,11 @@ public final class DebriefEclipseXMLReaderWriter extends
 
 	/**
 	 * handle the import of XML data, creating a new session for it
+	 * @throws DebriefXMLReaderException 
 	 */
 	public final void importThis(final String fName,
 			final java.io.InputStream is, final Layers destination,
-			final IControllableViewport view, final PlotEditor plot)
+			final IControllableViewport view, final PlotEditor plot) throws DebriefXMLReaderException
 	{
 		// create the handler for this type of data
 		final MWCXMLReader handler = new PlotHandler(fName, destination, view, plot);

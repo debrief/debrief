@@ -39,6 +39,7 @@ import ASSET.Util.XML.Decisions.WaterfallHandler;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.LayersHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -87,7 +88,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		final MWCXMLReader handler = new LayersHandler(theData);
 
 		// import the datafile into this set of layers
-		doImport(new InputSource(is), handler);
+		try
+    {
+      doImport(new InputSource(is), handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+     throw new RuntimeException(e);
+    }
 
 		//
 		theData.fireModified(null);
@@ -106,7 +114,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		final MWCXMLReader handler = new ScenarioHandler(theScenario, backdropHolder);
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), handler);
+		try
+    {
+      xr.doImport(new InputSource(is), handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 
 		if (backdropHolder.size() > 0)
 		{
@@ -131,7 +146,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		final MWCXMLReader handler = new ScenarioHandler(theScenario, theLayers);
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), handler);
+		try
+    {
+      xr.doImport(new InputSource(is), handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	/**
@@ -162,7 +184,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		// import the datafile into this set of layers
 		InputSource inputStream = new InputSource(is);
 
-		xr.doImport(inputStream, handler);
+		try
+    {
+      xr.doImport(inputStream, handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 
 		ResultsContainer results = null;
 
@@ -197,7 +226,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		};
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), handler);
+		try
+    {
+      xr.doImport(new InputSource(is), handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 
 		return res;
 	}
@@ -213,7 +249,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		final MWCXMLReader handler = new MWC.Utilities.ReaderWriter.XML.LayersHandler(layers);
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), handler);
+		try
+    {
+      xr.doImport(new InputSource(is), handler);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	static protected ASSET.ParticipantType _tempPart;
@@ -291,7 +334,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		});
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), gi);
+		try
+    {
+      xr.doImport(new InputSource(is), gi);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 
 		return _tempPart;
 	}
@@ -362,7 +412,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		});
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), gi);
+		try
+    {
+      xr.doImport(new InputSource(is), gi);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	static public void importThis(final SensorList theSensorFit, String fName, final java.io.InputStream is)
@@ -482,7 +539,14 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 		});
 
 		// import the datafile into this set of layers
-		xr.doImport(new InputSource(is), gi);
+		try
+    {
+      xr.doImport(new InputSource(is), gi);
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      throw new RuntimeException(e);
+    }
 	}
 
 	static public class GeneralImporter extends MWCXMLReader

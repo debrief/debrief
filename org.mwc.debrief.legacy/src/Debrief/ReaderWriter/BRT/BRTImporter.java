@@ -44,6 +44,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import junit.framework.TestCase;
 
 public class BRTImporter
@@ -64,7 +65,7 @@ public class BRTImporter
     }
 
     private static void loadLayers(final Layers layers, final String filename,
-        final String root) throws IOException
+        final String root) throws IOException,DebriefXMLReaderException
     {
       final String fName = root + filename;
       // start off with the ownship track

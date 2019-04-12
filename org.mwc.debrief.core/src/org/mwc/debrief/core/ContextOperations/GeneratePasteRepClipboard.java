@@ -14,6 +14,8 @@
  */
 package org.mwc.debrief.core.ContextOperations;
 
+import javax.print.attribute.standard.Severity;
+
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -32,6 +34,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 /**
  * Generates a paste REP from clipboard action.
@@ -81,8 +84,16 @@ public class GeneratePasteRepClipboard implements RightClickContextItemGenerator
       final int numLines = getNumLines(_contentToImport);
       if (numLines != -1)
       {
-        tracker.importThis(_contentToImport, numLines);
-        ImportReplay.injectContent(_tempLayers, _layers, true);
+        try
+        {
+          tracker.importThis(_contentToImport, numLines);
+          ImportReplay.injectContent(_tempLayers, _layers, true);
+        }
+        catch (DebriefXMLReaderException e)
+        {
+          return new Status(Severity.ERROR.getValue(),"org.mwc.debrief.core","exception while pasting content",e);
+        }
+        
       }
 
       return Status.OK_STATUS;

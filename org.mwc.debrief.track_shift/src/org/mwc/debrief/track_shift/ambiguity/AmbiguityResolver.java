@@ -35,6 +35,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 public class AmbiguityResolver
 {
@@ -296,7 +297,7 @@ public class AmbiguityResolver
     }
 
     private static TrackWrapper getData(final String name,
-        final String trackName) throws FileNotFoundException
+        final String trackName) throws FileNotFoundException, DebriefXMLReaderException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -447,7 +448,7 @@ public class AmbiguityResolver
       assertEquals("correct value", -60, valueAt(240, curve), 0.01);
     }
 
-    public static void testHandleWiggle() throws FileNotFoundException
+    public static void testHandleWiggle() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("Ambig_tracks_hover_north.rep",
           "SENSOR");
@@ -485,7 +486,7 @@ public class AmbiguityResolver
       assertEquals("found correct number of zig cuts", 10, zigs.size());
     }
 
-    public static void testMaxLegs() throws FileNotFoundException
+    public static void testMaxLegs() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
@@ -553,7 +554,7 @@ public class AmbiguityResolver
 
     }
 
-    public static void testMaxLegsUnspecified() throws FileNotFoundException
+    public static void testMaxLegsUnspecified() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
@@ -588,7 +589,7 @@ public class AmbiguityResolver
       assertEquals("found correct number of zig cuts", 22, zigs.size());
     }
 
-    public static void testOnlyDitchVisible() throws FileNotFoundException
+    public static void testOnlyDitchVisible() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep", "SENSOR");
       assertNotNull("found track", track);
@@ -633,7 +634,7 @@ public class AmbiguityResolver
       assertEquals("found correct number of zig cuts", 16, zigs.size());
     }
 
-    public static void testOver20Legs() throws FileNotFoundException
+    public static void testOver20Legs() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("legs_20.rep", "T23");
       assertNotNull("found track", track);

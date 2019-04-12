@@ -73,6 +73,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
@@ -426,7 +427,7 @@ public class ImportReplay extends PlainImporterBase
     private final static String boat_file =
         "../org.mwc.cmap.combined.feature/root_installs/sample_data/boat1.rep";
 
-    public void testReadShapes() throws InterruptedException, IOException
+    public void testReadShapes() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -557,7 +558,7 @@ public class ImportReplay extends PlainImporterBase
 
     // verify layers get added and shapes get added on paste
     // verify that layers are removed when undone
-    public final void testPasteRepShapes()
+    public final void testPasteRepShapes() throws DebriefXMLReaderException
     {
       String textToPaste =
           ";LINE: @B 20 50 0 N 21 10 0 W 22 0 0 N 21 10 0 W test line\r\n"
@@ -594,7 +595,7 @@ public class ImportReplay extends PlainImporterBase
     }
 
     // verify dynamic layers get added on paste
-    public final void testPasteRepDynamicShapes()
+    public final void testPasteRepDynamicShapes() throws DebriefXMLReaderException
     {
       String textToPaste =
           ";DYNAMIC_RECT: @A \"Dynamic A\" 951212 051000.000 22 00 0 N 21 00 0 W 21 50 0 N 20 50 0 W dynamic A rect 1\r\n"
@@ -1555,20 +1556,20 @@ public class ImportReplay extends PlainImporterBase
     destination.fireExtended();
   }
 
-  public final void importThis(final String text, final int numLines)
+  public final void importThis(final String text, final int numLines)throws DebriefXMLReaderException
   {
     final InputStream stream = new ByteArrayInputStream(text.getBytes());
     importRep(null, stream, numLines,null);
   }
 
   @Override
-  public final void importThis(final String fName, InputStream is)
+  public final void importThis(final String fName, InputStream is)throws DebriefXMLReaderException
   {
     final int numLines = countLinesFor(fName);
     importRep(fName, is, numLines,null);
   }
   
-  public final void importThis(final String text, final int numLines,MonitorProvider provider)
+  public final void importThis(final String text, final int numLines,MonitorProvider provider)throws DebriefXMLReaderException
   {
     final InputStream stream = new ByteArrayInputStream(text.getBytes());
     importRep(null, stream, numLines,provider);
@@ -1576,7 +1577,7 @@ public class ImportReplay extends PlainImporterBase
   
   
   @Override
-  public final void importThis(final String fName, InputStream is,MonitorProvider provider)
+  public final void importThis(final String fName, InputStream is,MonitorProvider provider)throws DebriefXMLReaderException
   {
     final int numLines = countLinesFor(fName);
     importRep(fName, is, numLines,provider);
@@ -1586,7 +1587,7 @@ public class ImportReplay extends PlainImporterBase
    * import data from this stream
    */
   private final void importRep(final String fName, final InputStream is,
-      final int numLines,MonitorProvider provider)
+      final int numLines,MonitorProvider provider) throws DebriefXMLReaderException
   {
     // declare linecounter
     int lineCounter = 0;
@@ -1654,21 +1655,43 @@ public class ImportReplay extends PlainImporterBase
     }
     catch (final java.lang.NumberFormatException e)
     {
-      
+      String message = "Number format error:"+e;
+      String res = "Problem at line " + lineCounter + " of:\n";
+      res += fName + "\n";
+      res += message + ":" + thisLine;
       handleException(e,lineCounter,thisLine,fName,"Number format error:"+e);
+      throw new DebriefXMLReaderException(res,e);
+      
     }
     catch (final IOException e)
     {
+      String message = "Unknown read error:"+e;
+      String res = "Problem at line " + lineCounter + " of:\n";
+      res += fName + "\n";
+      res += message + ":" + thisLine;
       handleException(e,lineCounter,thisLine,fName,"Unknown read error:"+e);
+      throw new DebriefXMLReaderException(res,e);
+      
     }
     catch (final java.util.NoSuchElementException e)
     {
+      String message = "Missing field error:"+e;
+      String res = "Problem at line " + lineCounter + " of:\n";
+      res += fName + "\n";
+      res += message + ":" + thisLine;
+
       handleException(e,lineCounter,thisLine,fName,"Missing field error");
+      throw new DebriefXMLReaderException(res,e);
     }
     catch (final ParseException e)
     {
-      
+      String message = "Date format error:"+e;
+      String res = "Problem at line " + lineCounter + " of:\n";
+      res += fName + "\n";
+      res += message + ":" + thisLine;
       handleException(e,lineCounter,thisLine,fName,"Date format error");
+      throw new DebriefXMLReaderException(res,e);
+      
       
     }
     finally

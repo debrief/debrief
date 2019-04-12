@@ -52,6 +52,7 @@ import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 import junit.framework.TestCase;
 
@@ -71,7 +72,7 @@ public class TrackMapper implements DebriefJaxbContextAware
   public static class TestGPXExport extends TestCase
   {
     private static TrackWrapper getData(final String name)
-        throws FileNotFoundException
+        throws FileNotFoundException,DebriefXMLReaderException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -110,7 +111,7 @@ public class TrackMapper implements DebriefJaxbContextAware
       return track;
     }
 
-    public void testTrackExport() throws FileNotFoundException
+    public void testTrackExport() throws FileNotFoundException, DebriefXMLReaderException
     {
       final List<TrackWrapper> tracks = new ArrayList<TrackWrapper>();
 

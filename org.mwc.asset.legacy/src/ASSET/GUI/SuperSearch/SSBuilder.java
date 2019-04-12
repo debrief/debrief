@@ -16,6 +16,7 @@ package ASSET.GUI.SuperSearch;
 
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.*;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import java.util.Vector;
@@ -189,7 +190,7 @@ public class SSBuilder
       mxr.reportNotHandledErrors(false);
       ASSETReaderWriter.importThis(mxr, file, new java.io.FileInputStream(file));
     }
-    catch (SAXException e)
+    catch (DebriefXMLReaderException e)
     {
       e.printStackTrace();
     }

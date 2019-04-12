@@ -33,6 +33,7 @@ import ASSET.Models.Decision.Responses.Response;
 import ASSET.Util.XML.Utils.ASSETLocationHandler;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
@@ -202,7 +203,14 @@ public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.M
 				handler.reportNotHandledErrors(false);
 
 				// import the datafile into this set of layers
-				doImport(new org.xml.sax.InputSource(is), handler);
+				try
+        {
+          doImport(new org.xml.sax.InputSource(is), handler);
+        }
+        catch (DebriefXMLReaderException e)
+        {
+          throw new RuntimeException(e);
+        }
 			}
 
 			/**

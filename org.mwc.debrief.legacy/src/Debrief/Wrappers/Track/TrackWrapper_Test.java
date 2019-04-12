@@ -63,6 +63,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import flanagan.interpolation.CubicSpline;
 import junit.framework.TestCase;
@@ -218,7 +219,7 @@ public class TrackWrapper_Test extends TestCase
 
   }
 
-  public void testSetLabelFrequencyWithGap() throws FileNotFoundException
+  public void testSetLabelFrequencyWithGap() throws FileNotFoundException, DebriefXMLReaderException
   {
     final Layers tLayers = new Layers();
 

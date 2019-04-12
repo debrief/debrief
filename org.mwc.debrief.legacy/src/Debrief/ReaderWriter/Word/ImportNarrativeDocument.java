@@ -71,6 +71,7 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
@@ -807,7 +808,7 @@ public class ImportNarrativeDocument
     }
 
     public static void testAddFCSToHiddenTrack() throws InterruptedException,
-        IOException
+        IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -889,7 +890,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public static void testAddFCSToTrack() throws InterruptedException, IOException
+    public static void testAddFCSToTrack() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -1045,7 +1046,7 @@ public class ImportNarrativeDocument
       }
     };
     
-    public static void testMMSI_in_preamble() throws UnsupportedEncodingException
+    public static void testMMSI_in_preamble() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1084,7 +1085,7 @@ public class ImportNarrativeDocument
       assertEquals(4, firstWhiteSpace("1234\tsdf"));
     }
     
-    public static void testDTGZ_in_preamble() throws UnsupportedEncodingException
+    public static void testDTGZ_in_preamble() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1117,7 +1118,7 @@ public class ImportNarrativeDocument
     }
     
     
-    public static void testMissingDateMarkerInNoMetadata() throws UnsupportedEncodingException
+    public static void testMissingDateMarkerInNoMetadata() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1149,7 +1150,7 @@ public class ImportNarrativeDocument
       assertEquals("have items", 5, narrLayer.size()); // fewer than 5 - which we get without end-of marker
     }
     
-    public static void testStartOfAndEndOfPresent() throws UnsupportedEncodingException
+    public static void testStartOfAndEndOfPresent() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1182,7 +1183,7 @@ public class ImportNarrativeDocument
       assertEquals("have items", 2, narrLayer.size()); // fewer than 5 - which we get without end-of marker
     }
     
-    public static void testStartOfPresent() throws UnsupportedEncodingException
+    public static void testStartOfPresent() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1216,7 +1217,7 @@ public class ImportNarrativeDocument
     
     
     
-    public static void testStartOfNotPresent() throws UnsupportedEncodingException
+    public static void testStartOfNotPresent() throws UnsupportedEncodingException,DebriefXMLReaderException
     {
       Layers layers = new Layers();
       ImportReplay importer = new ImportReplay();
@@ -1408,7 +1409,7 @@ public class ImportNarrativeDocument
 
     }
 
-    public static void testNoMetadata1() throws InterruptedException, IOException
+    public static void testNoMetadata1() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -1432,7 +1433,7 @@ public class ImportNarrativeDocument
 
     }
     
-    public static void testNoMetadata2() throws InterruptedException, IOException
+    public static void testNoMetadata2() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -1470,7 +1471,7 @@ public class ImportNarrativeDocument
       assertEquals("Got num lines", 350, narrLayer.size());
 
     }
-    public static void testNoMetadata() throws InterruptedException, IOException
+    public static void testNoMetadata() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -1777,7 +1778,7 @@ public class ImportNarrativeDocument
       assertFalse("two track", singleTrackIn(layers));
     }
 
-    public static void testSpanningYear() throws InterruptedException, IOException
+    public static void testSpanningYear() throws InterruptedException, IOException,DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 

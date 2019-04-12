@@ -81,6 +81,7 @@ import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import junit.framework.TestCase;
 
 public class BearingResidualsView extends BaseStackedDotsView implements
@@ -649,7 +650,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
   public static class TestResiduals extends TestCase
   {
     private static TrackWrapper getData(final String name)
-        throws FileNotFoundException
+        throws FileNotFoundException, DebriefXMLReaderException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();
@@ -727,7 +728,7 @@ public class BearingResidualsView extends BaseStackedDotsView implements
 
     }
 
-    public void testDitchUsingAmbiguity() throws FileNotFoundException
+    public void testDitchUsingAmbiguity() throws FileNotFoundException,DebriefXMLReaderException
     {
       final TrackWrapper track = getData("Ambig_tracks2.rep");
       assertNotNull("found track", track);

@@ -18,6 +18,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.temporal.TimeControlPreferences;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 public class CoordinateRecorder extends CoreCoordinateRecorder
 
@@ -177,26 +178,33 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       MWC.Utilities.ReaderWriter.ImportManager.addImporter(
           new Debrief.ReaderWriter.Replay.ImportReplay());
       // add the REP importer
-      MWC.Utilities.ReaderWriter.ImportManager.importThis(testFilePath,
-          _theLayers);
+      try
+      {
+        MWC.Utilities.ReaderWriter.ImportManager.importThis(testFilePath,
+            _theLayers);
+        /*
+         * final PlainProjection projection = new org.mwc.cmap.gt2plot.proj.GtProjection();
+         */
+        final PlainProjection projection =
+            new MWC.Algorithms.Projections.FlatProjection();
+        projection.setScreenArea(new java.awt.Dimension(1443, 901));
+        projection.setDataArea(new WorldArea(new WorldLocation(22.238965795584505,
+            -21.928244631862952, 0), new WorldLocation(22.238965795584505,
+                -21.43985414608609, 0)));
 
-      /*
-       * final PlainProjection projection = new org.mwc.cmap.gt2plot.proj.GtProjection();
-       */
-      final PlainProjection projection =
-          new MWC.Algorithms.Projections.FlatProjection();
-      projection.setScreenArea(new java.awt.Dimension(1443, 901));
-      projection.setDataArea(new WorldArea(new WorldLocation(22.238965795584505,
-          -21.928244631862952, 0), new WorldLocation(22.238965795584505,
-              -21.43985414608609, 0)));
+        final org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties timePreferences =
+            new org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties();
 
-      final org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties timePreferences =
-          new org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties();
+        CoordinateRecorder recorder = new CoordinateRecorder(_theLayers,
+            projection, timePreferences);
 
-      CoordinateRecorder recorder = new CoordinateRecorder(_theLayers,
-          projection, timePreferences);
-
-      return recorder;
+        return recorder;
+      }
+      catch (DebriefXMLReaderException e)
+      {
+        CorePlugin.logError(IStatus.ERROR, e.getMessage(), e);
+        throw new RuntimeException(e);
+      }
     }
 
     /**

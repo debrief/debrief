@@ -227,7 +227,7 @@ public class ImportManager
    * @param theData the Destination for the data read in
    */
   public static void importThis(final String fName,
-                                final Layers theData)
+                                final Layers theData) throws DebriefXMLReaderException
   {
 
 
@@ -235,19 +235,22 @@ public class ImportManager
     final importThisThread it = new importThisThread(fName, theData);
 
     it.start();
-
+    
+    
+    
     // wait for the thread to finish
     while (it.isAlive())
     {
       try
       {
-        Thread.sleep(200);
+        Thread.sleep(50);
       }
       catch (final java.lang.InterruptedException e)
       {
         MWC.Utilities.Errors.Trace.trace(e);
       }
     }
+    it.checkForException();
   }
 
   /**
@@ -260,7 +263,7 @@ public class ImportManager
    */
   public static void importThese(final java.io.File[] _theFiles,
                                  final Layers theData,
-                                 final ImportCaller theCaller)
+                                 final ImportCaller theCaller) throws DebriefXMLReaderException
   {
 
     if (_theFiles == null)
@@ -292,7 +295,7 @@ public class ImportManager
             MWC.Utilities.Errors.Trace.trace(e);
           }
         }
-
+        it.checkForException();
         // ok, this one is done, now for the next!
         if (theCaller != null)
           theCaller.fileFinished(fl, theData);
@@ -312,7 +315,7 @@ public class ImportManager
   {
     protected String fName;
     protected Layers theData;
-
+    static DebriefXMLReaderException ex;
     importThisThread(final String _fName,
                      final Layers _theData)
     {
@@ -340,7 +343,14 @@ public class ImportManager
         {
           // handle the import
           
-          importThisOne(thisImporter, fName, theData);
+          try
+          {
+            importThisOne(thisImporter, fName, theData);
+          }
+          catch (DebriefXMLReaderException e)
+          {
+            ex=e;
+          }
 
           // finished, drop out of loop
           break;
@@ -352,10 +362,18 @@ public class ImportManager
       theData = null;
       fName = null;
     }
+    
+    void checkForException() throws DebriefXMLReaderException
+    {
+      if(ex!=null) {
+        throw ex;
+      }
+    }
+    
   }
 
 
-  static void importThisOne(final PlainImporter theImporter, final String fName, final Layers theData)
+  static void importThisOne(final PlainImporter theImporter, final String fName, final Layers theData) throws DebriefXMLReaderException
   {
     try
     {
@@ -453,6 +471,8 @@ public class ImportManager
    */
   static abstract public class BaseImportCaller extends Thread implements ImportCaller
   {
+    
+    DebriefXMLReaderException ex;
     /**
      * the list of files to open
      */
@@ -478,13 +498,32 @@ public class ImportManager
      */
     public void run()
     {
-      MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames,
-                                                           _theData,
-                                                           this);
-
+      try
+      {
+        MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames,
+                                                             _theData,
+                                                             this);
+      }
+      catch (DebriefXMLReaderException e)
+      {
+        ex=e;
+      }
+      
       // and clear the local data
       _theData = null;
       _fileNames = null;
+    }
+    
+    public void checkForException() throws DebriefXMLReaderException{
+      if(ex!=null) {
+        throw ex;
+      }
+    }
+    
+    public void doExecute() throws DebriefXMLReaderException{
+        MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames,
+                                                             _theData,
+                                                             this);
     }
   }
 

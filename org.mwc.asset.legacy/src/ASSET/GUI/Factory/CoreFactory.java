@@ -21,8 +21,8 @@ import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.DragDrop.FileDropSupport;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
-import org.xml.sax.SAXException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -230,13 +230,13 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
 
       MWCXMLReaderWriter.importThis(reader, file.getName(), new FileInputStream(file));
     }
-    catch (SAXException fe)
-    {
-      MWC.Utilities.Errors.Trace.trace(fe, "Loading factory observer list");
-    }
     catch (FileNotFoundException fe)
     {
       MWC.Utilities.Errors.Trace.trace(fe, "Loading factory observer list");
+    }
+    catch (DebriefXMLReaderException e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e, "Loading factory observer list"+e.getMessage());
     }
 
     // see if we now have all of our data

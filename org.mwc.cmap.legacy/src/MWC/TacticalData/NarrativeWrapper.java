@@ -135,6 +135,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter;
@@ -252,7 +253,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
      * @throws SAXException
      */
     public void testDuplicates() throws ParserConfigurationException,
-        TransformerException, SAXException
+        TransformerException, SAXException,DebriefXMLReaderException
     {
       final NarrativeWrapper narr = new NarrativeWrapper("Some title");
       assertEquals("empty", 0, narr.size());

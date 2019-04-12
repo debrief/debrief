@@ -98,6 +98,7 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
@@ -410,7 +411,7 @@ final class ImportPMRF extends PlainImporterBase
   
   @Override
   public void importThis(String fName, InputStream is, Layers theData,
-      MonitorProvider provider)
+      MonitorProvider provider)throws DebriefXMLReaderException
   {
     importThis(fName, is, theData);
   }

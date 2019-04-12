@@ -18,12 +18,16 @@ import java.io.InputStream;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.DialogFactory;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 
 /**
  * @author ian.mayo
@@ -58,7 +62,15 @@ public class XMLLoader extends CoreLoader
         IControllableViewport view = (IControllableViewport) target.getAdapter(
             IControllableViewport.class);
         PlotEditor plot = (PlotEditor) target.getAdapter(PlotEditor.class);
-        _myReader.importThis(fileName, inputStream, theLayers, view, plot);
+        try
+        {
+          _myReader.importThis(fileName, inputStream, theLayers, view, plot);
+        }
+        catch (DebriefXMLReaderException e)
+        {
+          CorePlugin.logError(IStatus.ERROR, e.getMessage(), e);
+          DialogFactory.showMessage("error while importing", e.getMessage());
+        }
       }
     };
   }

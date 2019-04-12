@@ -44,6 +44,7 @@ import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
@@ -427,7 +428,7 @@ abstract public class TMAContactHandler extends
 		}
 		
 		// TODO FIX-TEST
-		public final void NtestRead()
+		public final void NtestRead()throws DebriefXMLReaderException
 		{
 			final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(null);
 			final Layers res = new Layers();

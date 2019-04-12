@@ -82,6 +82,7 @@ import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -256,7 +257,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
       assertEquals("found track name", "HMS TORBAY", ne.getTrackName());
     }
 
-    public void testImportNarrative()
+    public void testImportNarrative() throws DebriefXMLReaderException
     {
 
       final String testFile = "../org.mwc.debrief.legacy/src" +
@@ -301,7 +302,7 @@ public final class ImportNarrative extends AbstractPlainLineImporter
    * @param args
    * @throws ParseException 
    */
-  public static void main(final String[] args) throws ParseException
+  public static void main(final String[] args) throws ParseException,DebriefXMLReaderException
   {
     final testImport ti = new testImport("tester");
     ti.testImportSingleLine();

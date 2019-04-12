@@ -60,6 +60,7 @@ import MWC.GenericData.WatchableList;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
@@ -440,7 +441,7 @@ public class ImportRiderNarrativeDocument
     }
 
     public void testImportRiderNarrative() throws InterruptedException,
-        IOException
+        IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -482,7 +483,7 @@ public class ImportRiderNarrativeDocument
     }
 
     public void testImportRiderNarrativeX() throws InterruptedException,
-        IOException
+        IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -526,9 +527,10 @@ public class ImportRiderNarrativeDocument
      * 
      * @throws InterruptedException
      * @throws IOException
+     * @throws DebriefXMLReaderException 
      */
     public void testImportRiderNarrativeOffsetDate()
-        throws InterruptedException, IOException
+        throws InterruptedException, IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -568,7 +570,7 @@ public class ImportRiderNarrativeDocument
     }
 
     public void testImportRiderNarrativeXMissingPlatformNoPrimaryTrack()
-        throws InterruptedException, IOException
+        throws InterruptedException, IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -620,7 +622,7 @@ public class ImportRiderNarrativeDocument
     }
 
     public void testImportRiderNarrativeXMissingPlatformPrimaryTrack()
-        throws InterruptedException, IOException
+        throws InterruptedException, IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -670,7 +672,7 @@ public class ImportRiderNarrativeDocument
     }
 
     public void testImportRiderNarrativeXMissingPlatformSingleTrack()
-        throws InterruptedException, IOException
+        throws InterruptedException, IOException, DebriefXMLReaderException
     {
       final Layers tLayers = new Layers();
 
@@ -851,7 +853,7 @@ public class ImportRiderNarrativeDocument
           .toGMTString());
     }
 
-    public void testWronglyNamedVersion() throws FileNotFoundException
+    public void testWronglyNamedVersion() throws FileNotFoundException, DebriefXMLReaderException
     {
       final String testFile = wrong_type_path;
       final Layers layers = new Layers();

@@ -138,7 +138,7 @@ public class DebriefRibbonFile
       {"rep"}, "Debrief replay file");
       if (fileToOpen != null)
       {
-        DebriefLiteApp.openRepFile(fileToOpen);
+        DebriefLiteApp.openFile(fileToOpen,true);
       }
     }
 
@@ -397,14 +397,7 @@ public class DebriefRibbonFile
     if (fileToOpen != null)
     {
       doReset.run();
-      if (isRepFile)
-      {
-        DebriefLiteApp.openRepFile(fileToOpen);
-      }
-      else
-      {
-        DebriefLiteApp.openPlotFile(fileToOpen);
-      }
+      DebriefLiteApp.openFile(fileToOpen,isRepFile);
     }
   }
 

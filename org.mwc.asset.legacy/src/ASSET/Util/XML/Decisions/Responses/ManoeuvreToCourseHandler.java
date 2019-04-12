@@ -32,6 +32,7 @@ import ASSET.Models.Decision.Responses.ManoeuvreToCourse;
 import ASSET.Models.Decision.Responses.Response;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 
@@ -274,7 +275,14 @@ public class ManoeuvreToCourseHandler extends MWC.Utilities.ReaderWriter.XML.MWC
 				handler.reportNotHandledErrors(false);
 
 				// import the datafile into this set of layers
-				doImport(new org.xml.sax.InputSource(is), handler);
+				try
+        {
+          doImport(new org.xml.sax.InputSource(is), handler);
+        }
+        catch (DebriefXMLReaderException e)
+        {
+          throw new RuntimeException(e);
+        }
 			}
 
 			/**

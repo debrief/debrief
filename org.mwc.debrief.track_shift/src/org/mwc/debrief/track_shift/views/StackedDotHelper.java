@@ -88,6 +88,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import junit.framework.TestCase;
 
@@ -660,7 +661,7 @@ public final class StackedDotHelper
 
     }
 
-    public void testGetMultiPrimaryTrackData() throws FileNotFoundException
+    public void testGetMultiPrimaryTrackData() throws FileNotFoundException,DebriefXMLReaderException
     {
       // get our sample data-file
       final ImportReplay importer = new ImportReplay();

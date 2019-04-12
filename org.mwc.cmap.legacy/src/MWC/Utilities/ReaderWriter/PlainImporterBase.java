@@ -128,7 +128,7 @@ public abstract class PlainImporterBase implements PlainImporter
    * general command used to import a whole file of a specific type
    */
   public void importThis(final String fName, final InputStream is,
-      final Layers theData)
+      final Layers theData) throws DebriefXMLReaderException
   {
     _theLayers = theData;
     importThis(fName, is);
@@ -136,16 +136,16 @@ public abstract class PlainImporterBase implements PlainImporter
 
   @Override
   public void importThis(String fName, InputStream is, final Layers theData,
-      final MonitorProvider provider)
+      final MonitorProvider provider) throws DebriefXMLReaderException
   {
     _theLayers = theData;
     importThis(fName, is,provider);
   }
   
-  abstract public void importThis(final String fName, final InputStream is);
+  abstract public void importThis(final String fName, final InputStream is) throws DebriefXMLReaderException;
 
   abstract public void importThis(final String fName, final InputStream is,
-      final MonitorProvider provider);
+      final MonitorProvider provider) throws DebriefXMLReaderException;
 
   /**
    * create a new layer in the data using this name

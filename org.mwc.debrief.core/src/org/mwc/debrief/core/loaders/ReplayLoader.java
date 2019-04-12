@@ -28,6 +28,7 @@ import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.DebriefXMLReaderException;
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
 /**
@@ -109,31 +110,39 @@ public class ReplayLoader extends CoreLoader
         importer.clearPendingSensorList();
 
         // and do the import...
-        importer.importThis(fileName, inputStream, theLayers, new MonitorProvider()
+        try
         {
-          
-          @Override
-          public void progress(int _progress)
+          importer.importThis(fileName, inputStream, theLayers, new MonitorProvider()
           {
-            pm.worked(_progress);
             
-          }
-          @Override
-          public void done()
-          {
-            if(!pm.isCanceled()) {
-              pm.done();
+            @Override
+            public void progress(int _progress)
+            {
+              pm.worked(_progress);
+              
             }
-          }
-          
-          @Override
-          public void init(String fileName, int length)
-          {
-            final File fl = new File(fileName);
-            pm.beginTask("Reading file:" + fl.getName(), length);
+            @Override
+            public void done()
+            {
+              if(!pm.isCanceled()) {
+                pm.done();
+              }
+            }
             
-          }
-        });
+            @Override
+            public void init(String fileName, int length)
+            {
+              final File fl = new File(fileName);
+              pm.beginTask("Reading file:" + fl.getName(), length);
+              
+            }
+          });
+        }
+        catch (DebriefXMLReaderException e)
+        {
+          DebriefPlugin.logError(Status.ERROR,
+              "Error loading file:"+fileName +":"+ e.getMessage(), null);
+        }
       }
     };
 
