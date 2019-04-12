@@ -67,7 +67,7 @@ public class XMLLoader extends CoreLoader
         catch (PlainImporter.ImportException ie)
         {
           Application.logError2(Application.ERROR, ie.getMessage(), ie);
-          DialogFactory.showMessage("Import DPF File", ie.getMessage());
+          DialogFactory.showMessage("Import Error", ie.getMessage());
         }
       }
     };
