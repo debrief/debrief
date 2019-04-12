@@ -297,7 +297,7 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  private static void resetFileName(final File file)
+  private void resetFileName(final File file)
   {
     if (DebriefLiteApp.currentFileName == null)
     {
