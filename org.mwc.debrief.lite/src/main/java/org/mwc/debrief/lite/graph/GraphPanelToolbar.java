@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.graph;
 
+import java.awt.FlowLayout;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -41,7 +42,7 @@ public class GraphPanelToolbar extends JPanel implements
 
   public GraphPanelToolbar()
   {
-    super();
+    super(new FlowLayout(FlowLayout.LEFT));
     init();
   }
 
