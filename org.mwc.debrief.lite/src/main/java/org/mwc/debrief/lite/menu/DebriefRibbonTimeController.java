@@ -232,7 +232,7 @@ public class DebriefRibbonTimeController
     private int range;
     private long origin;
     // have one minute steps
-    private final int step = 1000;
+    private final int step = 1;
 
     public int getCurrentAt(final long now)
     {
