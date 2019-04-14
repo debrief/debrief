@@ -70,8 +70,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
         currentTrack.selected = newValue;
       }
     }
-
-    if (newValue != null && oldValue != newValue)
+    
+    if (newValue != null && !oldValue.equals(newValue))
     {
       // we have the element changed.
       notifyListenersStateChanged(track, TRACK_SELECTION, oldValue, check);

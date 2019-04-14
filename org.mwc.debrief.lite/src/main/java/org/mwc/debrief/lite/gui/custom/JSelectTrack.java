@@ -1,6 +1,8 @@
 package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.TreeMap;
@@ -11,8 +13,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 
@@ -55,6 +55,12 @@ public class JSelectTrack extends JPopupMenu
           {
             component.setSelected(true);
           }
+          for (final JCheckBox checkbox : _displayComponents.values() )
+          {
+            checkbox.setEnabled(true);
+          }
+          final JCheckBox checkBoxComponent = _displayComponents.get(newPrimary);
+          checkBoxComponent.setEnabled(false);
         }
         else if (JSelectTrackModel.TRACK_SELECTION.equals(evt
             .getPropertyName()))
@@ -78,7 +84,8 @@ public class JSelectTrack extends JPopupMenu
   public void initializeComponents()
   {
     this.removeAll();
-    setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    final BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
+    setLayout(layout);
     _displayComponents.clear();
     _relatedToComponents.clear();
 
@@ -92,16 +99,20 @@ public class JSelectTrack extends JPopupMenu
     for (final TrackWrapperSelect track : _model.getTracks())
     {
       final JCheckBox displayCheckBox = new JCheckBox(track.track.getName());
-      displayCheckBox.addChangeListener(new ChangeListener()
+      displayCheckBox.addItemListener(new ItemListener()
       {
 
         @Override
-        public void stateChanged(final ChangeEvent e)
+        public void itemStateChanged(ItemEvent e)
         {
-          _model.setActiveTrack(track.track, displayCheckBox.isSelected());
+          if (e.getStateChange() == ItemEvent.SELECTED)
+          {
+            _model.setActiveTrack(track.track, displayCheckBox.isSelected());
+          }
         }
       });
       add(displayCheckBox);
+      _displayComponents.put(track.track, displayCheckBox);
     }
 
     add(_inRelationToLabel);
@@ -110,17 +121,21 @@ public class JSelectTrack extends JPopupMenu
     {
       final JRadioButton relativeToradioButton = new JRadioButton(track.track
           .getName());
-      relativeToradioButton.addChangeListener(new ChangeListener()
+      relativeToradioButton.addItemListener(new ItemListener()
       {
 
         @Override
-        public void stateChanged(final ChangeEvent e)
+        public void itemStateChanged(ItemEvent e)
         {
-          _model.setPrimaryTrack(track.track);
+          if (e.getStateChange() == ItemEvent.SELECTED)
+          {
+            _model.setPrimaryTrack(track.track);
+          }
         }
       });
       relativeToGroup.add(relativeToradioButton);
       add(relativeToradioButton);
+      _relatedToComponents.put(track.track, relativeToradioButton);
     }
   }
 

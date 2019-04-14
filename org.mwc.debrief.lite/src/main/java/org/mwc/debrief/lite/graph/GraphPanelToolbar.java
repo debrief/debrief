@@ -232,22 +232,15 @@ public class GraphPanelToolbar extends JPanel implements
         "Change editable properties for this chart", "icons/16/properties.png");
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
-    final JLabel selectTracksLabel = new JLabel("Select Tracks");
+    final JComboBox<String> selectTracksLabel = new JComboBox(new String[] {"Select Tracks"});
+    selectTrack.setEnabled(false);
     selectTracksLabel.addMouseListener(new MouseListener()
     {
 
       @Override
       public void mouseClicked(final MouseEvent e)
       {
-        // Get the event source
-        final Component component = (Component) e.getSource();
-
-        selectTrack.show(component, 0, 0);
-
-        // Get the location of the point 'on the screen'
-        final Point p = component.getLocationOnScreen();
-
-        selectTrack.setLocation(p.x, p.y + component.getHeight());
+        
       }
 
       @Override
@@ -267,8 +260,16 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void mousePressed(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
 
+        // Get the event source
+        final Component component = (Component) e.getSource();
+
+        selectTrack.show(component, 0, 0);
+
+        // Get the location of the point 'on the screen'
+        final Point p = component.getLocationOnScreen();
+
+        selectTrack.setLocation(p.x, p.y + component.getHeight());
       }
 
       @Override
