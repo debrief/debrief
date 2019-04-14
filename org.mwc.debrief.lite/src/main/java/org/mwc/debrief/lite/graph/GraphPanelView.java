@@ -5,6 +5,8 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import org.mwc.debrief.lite.gui.LiteStepControl;
+
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
 
@@ -22,12 +24,11 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
    */
   private ToolParent _theParent;
   
-  
-  public GraphPanelView()
+  public GraphPanelView(final LiteStepControl stepControl)
   {
     super();
     setLayout(new BorderLayout());
-    toolbar = new GraphPanelToolbar();
+    toolbar = new GraphPanelToolbar(stepControl);
     
     add(toolbar, BorderLayout.NORTH);
     
