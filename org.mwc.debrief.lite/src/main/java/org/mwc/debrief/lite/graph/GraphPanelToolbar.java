@@ -14,28 +14,40 @@
  */
 package org.mwc.debrief.lite.graph;
 
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
+import org.mwc.debrief.lite.gui.custom.JSelectTrack;
+import org.mwc.debrief.lite.gui.custom.JSelectTrackModel;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Properties.PlainPropertyEditor;
 
 public class GraphPanelToolbar extends JPanel implements
@@ -95,9 +107,9 @@ public class GraphPanelToolbar extends JPanel implements
   public GraphPanelToolbar(LiteStepControl stepControl)
   {
     super(new FlowLayout(FlowLayout.LEFT));
+    _stepControl = stepControl;
     init();
 
-    _stepControl = stepControl;
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
 
     setState(INACTIVE_STATE);
@@ -111,12 +123,48 @@ public class GraphPanelToolbar extends JPanel implements
         "Rel Brg", "ATB"});
     operationComboBox.setSize(50, 20);
 
-    final JComboBox<String> selectTrackComboBox = new JComboCheckBox(
-        new JCheckBox[] { new JCheckBox("Test1"), new JCheckBox("Test2") }
-        );
-        /*new JComboBox<>(new String[]
-    {"Boat 1", "Boat 2", "Boat 3", "Boat 1", "Boat 2", "Boat 3"});*/
-    // editButton.setEnabled(false);
+    final List<TrackWrapper> tracks = new ArrayList<>();
+    final JSelectTrackModel model = new JSelectTrackModel(tracks);
+    
+    if ( _stepControl != null && _stepControl.getLayers() != null )
+    {
+
+      
+      final DataListener trackChangeListener = new DataListener()
+      {
+        
+        @Override
+        public void dataReformatted(Layers theData, Layer changedLayer)
+        {
+          
+        }
+        
+        @Override
+        public void dataModified(Layers theData, Layer changedLayer)
+        {
+          final Enumeration<Editable> elem = _stepControl.getLayers().elements();
+          while (elem.hasMoreElements())
+          {
+            final Editable nextItem = elem.nextElement();
+            if ( nextItem instanceof TrackWrapper )
+            {
+              tracks.add((TrackWrapper)nextItem);
+            }
+          }
+          model.setTracks(tracks);
+        }
+        
+        @Override
+        public void dataExtended(Layers theData)
+        {
+          
+        }
+      };
+      _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
+      
+    }
+    
+    final JSelectTrack selectTrack = new JSelectTrack(model);
 
     final JButton createXYPlotButton = createCommandButton("View XY-Plot",
         "icons/16/sensor_contact.png");
@@ -156,10 +204,56 @@ public class GraphPanelToolbar extends JPanel implements
         "Change editable properties for this chart", "icons/16/properties.png");
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
+    final JLabel selectTracksLabel = new JLabel("Select Tracks");
+    selectTracksLabel.addMouseListener(new MouseListener()
+    {
+      
+      @Override
+      public void mouseReleased(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+      
+      @Override
+      public void mousePressed(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+      
+      @Override
+      public void mouseExited(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+      
+      @Override
+      public void mouseEntered(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+        
+      }
+      
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+     // Get the event source
+        final Component component = (Component) e.getSource();
+
+        selectTrack.show(component, 0, 0);
+
+        // Get the location of the point 'on the screen'
+        final Point p = component.getLocationOnScreen();
+
+        selectTrack.setLocation(p.x, p.y + component.getHeight());
+      }
+    });
 
     add(createXYPlotButton);
     add(operationComboBox);
-    add(selectTrackComboBox);
+    add(selectTracksLabel);
 
     add(fixToWindowsButton);
     add(viewGridButton);

@@ -66,6 +66,11 @@ public class LiteStepControl extends StepControl
   {
     this._layers = _layers;
   }
+  
+  public Layers getLayers()
+  {
+    return this._layers;
+  }
 
   public void setUndoBuffer(UndoBuffer _undoBuffer)
   {

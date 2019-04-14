@@ -1,11 +1,16 @@
-package org.mwc.debrief.lite.graph;
+package org.mwc.debrief.lite.gui.custom;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mwc.debrief.lite.graph.AbstractTrackConfiguration;
+
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
 
 public class JSelectTrackModel implements AbstractTrackConfiguration
 {
@@ -14,28 +19,17 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   
   private List<TrackWrapperSelect> _tracks;
   
-  private ArrayList<PropertyChangeListener> _stateListeners;
+  private ArrayList<PropertyChangeListener> _stateListeners = new ArrayList<>();;
   
   public static final String TRACK_SELECTION = "TRACK_STATE_CHANGED";
   
   public static final String PRIMARY_CHANGED = "PRIMARY_CHANGED";
   
+  public static final String TRACK_LIST_CHANGED = "TRACK_LIST_CHANGED";
+  
   public JSelectTrackModel(final List<TrackWrapper> tracks)
   {
     setTracks(tracks);
-    _stateListeners = new ArrayList<>();
-  }
-  
-  static class TrackWrapperSelect
-  {
-    public TrackWrapper track;
-    public Boolean selected;
-    public TrackWrapperSelect(final TrackWrapper track, final Boolean selected)
-    {
-      super();
-      this.track = track;
-      this.selected = selected;
-    }
   }
   
   private void notifyListenersStateChanged(final Object source,
@@ -49,29 +43,14 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   }
   
   @Override
-  public void setTracks(List<TrackWrapper> tracks)
+  public void setTracks(final List<TrackWrapper> tracks)
   {
     this._tracks = new ArrayList<>();
     for ( TrackWrapper track : tracks )
     {
       this._tracks.add(new TrackWrapperSelect(track, false));
     }
-  }
-
-  @Override
-  public List<TrackWrapper> getActiveTrack()
-  {
-    ArrayList<TrackWrapper> activeTracks = new ArrayList<TrackWrapper>();
-    
-    for ( TrackWrapperSelect track : _tracks )
-    {
-      if ( track.selected )
-      {
-        activeTracks.add(track.track);
-      }
-    }
-    
-    return activeTracks;
+    notifyListenersStateChanged(this, TRACK_LIST_CHANGED, null, tracks);
   }
 
   @Override
@@ -89,10 +68,10 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       }
     }
     
-    if ( newValue != null )
+    if ( newValue != null && oldValue != newValue )
     {
       // we have the element changed.
-      notifyListenersStateChanged(this, TRACK_SELECTION, oldValue, check);
+      notifyListenersStateChanged(track, TRACK_SELECTION, oldValue, check);
     }
   }
 
@@ -127,5 +106,11 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
         return;
       }
     }
+  }
+
+  @Override
+  public List<TrackWrapperSelect> getTracks()
+  {
+    return _tracks;
   }
 }
