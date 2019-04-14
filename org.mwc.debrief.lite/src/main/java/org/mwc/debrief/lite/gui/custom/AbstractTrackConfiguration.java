@@ -11,6 +11,7 @@ public interface AbstractTrackConfiguration
   {
     public TrackWrapper track;
     public Boolean selected;
+
     public TrackWrapperSelect(final TrackWrapper track, final Boolean selected)
     {
       super();
@@ -18,16 +19,16 @@ public interface AbstractTrackConfiguration
       this.selected = selected;
     }
   }
-  
-  public void setTracks(final List<TrackWrapper> tracks);
-  
-  public List<TrackWrapperSelect> getTracks();
-  
-  public void setActiveTrack(final TrackWrapper track, final boolean check);
-  
-  public TrackWrapper getPrimaryTrack();
-  
-  public void setPrimaryTrack(final TrackWrapper track);
-  
+
   public void addPropertyChangeListener(final PropertyChangeListener listener);
+
+  public TrackWrapper getPrimaryTrack();
+
+  public List<TrackWrapperSelect> getTracks();
+
+  public void setActiveTrack(final TrackWrapper track, final boolean check);
+
+  public void setPrimaryTrack(final TrackWrapper track);
+
+  public void setTracks(final List<TrackWrapper> tracks);
 }

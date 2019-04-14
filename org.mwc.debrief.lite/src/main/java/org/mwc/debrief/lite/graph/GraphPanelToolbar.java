@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.graph;
 
@@ -46,8 +46,8 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.ToolParent;
 import MWC.GUI.Layers.DataListener;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
 
 public class GraphPanelToolbar extends JPanel implements
@@ -55,56 +55,46 @@ public class GraphPanelToolbar extends JPanel implements
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 8529947841065977007L;
+
+  public static final String ACTIVE_STATE = "ACTIVE";
+
+  public static final String INACTIVE_STATE = "INACTIVE";
+
+  public static final String STATE_PROPERTY = "STATE";
 
   /**
    * Busy cursor
    */
   private ToolParent _theParent;
-
   private ShowTimeVariablePlot3 _xytool;
 
   private final LiteStepControl _stepControl;
 
-  public static final String ACTIVE_STATE = "ACTIVE";
-  public static final String INACTIVE_STATE = "INACTIVE";
-  
-  public static final String STATE_PROPERTY = "STATE";
+  private final List<JComponent> componentsToDisable = new ArrayList<>();
 
-  private List<JComponent> componentsToDisable = new ArrayList<>();
-  
   private String _state = INACTIVE_STATE;
 
-  private void notifyListenersStateChanged(final Object source,
-      final String property, final String oldValue, final String newValue)
-  {
-    for (final PropertyChangeListener event : stateListeners)
-    {
-      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
-          newValue));
-    }
-  }
-  
   public PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
       {
 
         @Override
-        public void propertyChange(PropertyChangeEvent event)
+        public void propertyChange(final PropertyChangeEvent event)
         {
           final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
-          for (JComponent component : componentsToDisable)
+          for (final JComponent component : componentsToDisable)
           {
             component.setEnabled(isActive);
           }
         }
       };
 
-  private ArrayList<PropertyChangeListener> stateListeners;
+  private final ArrayList<PropertyChangeListener> stateListeners;
 
-  public GraphPanelToolbar(LiteStepControl stepControl)
+  public GraphPanelToolbar(final LiteStepControl stepControl)
   {
     super(new FlowLayout(FlowLayout.LEFT));
     _stepControl = stepControl;
@@ -113,6 +103,43 @@ public class GraphPanelToolbar extends JPanel implements
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
 
     setState(INACTIVE_STATE);
+  }
+
+  private JButton createCommandButton(final String command, final String image)
+  {
+    final URL imageIcon = getClass().getClassLoader().getResource(image);
+    ImageIcon icon = null;
+    try
+    {
+      icon = new ImageIcon(imageIcon);
+    }
+    catch (final Exception e)
+    {
+      System.err.println("Failed to find icon:" + image);
+      e.printStackTrace();
+    }
+    final JButton button = new JButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
+  private JToggleButton createJToggleButton(final String command,
+      final String image)
+  {
+    final URL imageIcon = getClass().getClassLoader().getResource(image);
+    ImageIcon icon = null;
+    try
+    {
+      icon = new ImageIcon(imageIcon);
+    }
+    catch (final Exception e)
+    {
+      System.err.println("Failed to find icon:" + image);
+      e.printStackTrace();
+    }
+    final JToggleButton button = new JToggleButton(icon);
+    button.setToolTipText(command);
+    return button;
   }
 
   protected void init()
@@ -125,45 +152,46 @@ public class GraphPanelToolbar extends JPanel implements
 
     final List<TrackWrapper> tracks = new ArrayList<>();
     final JSelectTrackModel model = new JSelectTrackModel(tracks);
-    
-    if ( _stepControl != null && _stepControl.getLayers() != null )
+
+    if (_stepControl != null && _stepControl.getLayers() != null)
     {
 
-      
       final DataListener trackChangeListener = new DataListener()
       {
-        
+
         @Override
-        public void dataReformatted(Layers theData, Layer changedLayer)
+        public void dataExtended(final Layers theData)
         {
-          
+
         }
-        
+
         @Override
-        public void dataModified(Layers theData, Layer changedLayer)
+        public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          final Enumeration<Editable> elem = _stepControl.getLayers().elements();
+          final Enumeration<Editable> elem = _stepControl.getLayers()
+              .elements();
           while (elem.hasMoreElements())
           {
             final Editable nextItem = elem.nextElement();
-            if ( nextItem instanceof TrackWrapper )
+            if (nextItem instanceof TrackWrapper)
             {
-              tracks.add((TrackWrapper)nextItem);
+              tracks.add((TrackWrapper) nextItem);
             }
           }
           model.setTracks(tracks);
         }
-        
+
         @Override
-        public void dataExtended(Layers theData)
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
         {
-          
+
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
-      
+
     }
-    
+
     final JSelectTrack selectTrack = new JSelectTrack(model);
 
     final JButton createXYPlotButton = createCommandButton("View XY-Plot",
@@ -172,7 +200,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         _xytool = new ShowTimeVariablePlot3(null, _stepControl);
 
@@ -207,39 +235,11 @@ public class GraphPanelToolbar extends JPanel implements
     final JLabel selectTracksLabel = new JLabel("Select Tracks");
     selectTracksLabel.addMouseListener(new MouseListener()
     {
-      
+
       @Override
-      public void mouseReleased(MouseEvent e)
+      public void mouseClicked(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
-        
-      }
-      
-      @Override
-      public void mousePressed(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-      
-      @Override
-      public void mouseExited(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-      
-      @Override
-      public void mouseEntered(MouseEvent e)
-      {
-        // TODO Auto-generated method stub
-        
-      }
-      
-      @Override
-      public void mouseClicked(MouseEvent e)
-      {
-     // Get the event source
+        // Get the event source
         final Component component = (Component) e.getSource();
 
         selectTrack.show(component, 0, 0);
@@ -248,6 +248,34 @@ public class GraphPanelToolbar extends JPanel implements
         final Point p = component.getLocationOnScreen();
 
         selectTrack.setLocation(p.x, p.y + component.getHeight());
+      }
+
+      @Override
+      public void mouseEntered(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseExited(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mousePressed(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseReleased(final MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
       }
     });
 
@@ -272,44 +300,18 @@ public class GraphPanelToolbar extends JPanel implements
         autosyncButton}));
   }
 
-  private JToggleButton createJToggleButton(String command, String image)
+  private void notifyListenersStateChanged(final Object source,
+      final String property, final String oldValue, final String newValue)
   {
-    URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
+    for (final PropertyChangeListener event : stateListeners)
     {
-      icon = new ImageIcon(imageIcon);
+      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
+          newValue));
     }
-    catch (Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
-    final JToggleButton button = new JToggleButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }
-
-  private JButton createCommandButton(String command, String image)
-  {
-    URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
-    final JButton button = new JButton(icon);
-    button.setToolTipText(command);
-    return button;
   }
 
   @Override
-  public void setParent(ToolParent theParent)
+  public void setParent(final ToolParent theParent)
   {
     _theParent = theParent;
   }
@@ -318,7 +320,7 @@ public class GraphPanelToolbar extends JPanel implements
   {
     final String oldState = _state;
     this._state = newState;
-    
+
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 }
