@@ -14,7 +14,7 @@ import javax.swing.JRadioButton;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.mwc.debrief.lite.graph.AbstractTrackConfiguration.TrackWrapperSelect;
+import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;

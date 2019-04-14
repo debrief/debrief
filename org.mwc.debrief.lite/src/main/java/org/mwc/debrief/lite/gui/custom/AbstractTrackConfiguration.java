@@ -1,4 +1,4 @@
-package org.mwc.debrief.lite.graph;
+package org.mwc.debrief.lite.gui.custom;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
