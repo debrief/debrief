@@ -21,8 +21,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -259,6 +261,9 @@ public class RightClickPasteAdaptor implements
 
   private static Clipboard _clipboard;
 
+  
+  
+  
   //////////////////////////////////////////////
   // clone items, using "Serializable" interface
   /////////////////////////////////////////////////
@@ -267,8 +272,8 @@ public class RightClickPasteAdaptor implements
     Plottable res = null;
     try
     {
-      final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-      final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+      final ByteArrayOutputStream bas = new ByteArrayOutputStream();
+      final ObjectOutputStream oos = new ObjectOutputStream(bas);
       oos.writeObject(item);
       // get closure
       oos.close();
@@ -278,10 +283,18 @@ public class RightClickPasteAdaptor implements
       final byte[] bt = bas.toByteArray();
 
       // and read it back in as a new item
-      final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+      final ByteArrayInputStream bis = new ByteArrayInputStream(bt);
 
-      // create the reader
-      final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+      // create the reader with class loader from original ClassLoader
+      final ObjectInputStream iis = new ObjectInputStream(bis) {
+        
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc)
+            throws IOException, ClassNotFoundException
+        {
+          return item.getClass().getClassLoader().loadClass(desc.getName());
+        }
+      };
 
       // and read it in
       final Object oj = iis.readObject();
