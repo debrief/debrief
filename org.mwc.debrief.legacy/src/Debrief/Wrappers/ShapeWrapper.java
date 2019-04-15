@@ -43,6 +43,7 @@ import MWC.GUI.Renamable;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor;
 import MWC.GUI.Tools.Operations.RightClickCutCopyAdaptor.CopyItem;
@@ -384,7 +385,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	// constructor
 	// //////////////////////////////////////////////////////////
 	public ShapeWrapper(final String label,
-			final MWC.GUI.Shapes.PlainShape theShape, final java.awt.Color theColor,
+			final PlainShape theShape, final Color theColor,
 			final HiResDate theDate)
 	{
 		_theLabel = new MWC.GUI.Shapes.TextLabel(theShape, label);
@@ -500,7 +501,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	 * method to fulfil requirements of WatchableList
 	 */
 	@Override
-	public final java.awt.Color getColor()
+	public final Color getColor()
 	{
 		return super.getColor();
 	}
@@ -646,7 +647,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 		return label;
 	}
 
-	public final java.awt.Color getLabelColor()
+	public final Color getLabelColor()
 	{
 		return _theLabel.getColor();
 	}
@@ -904,7 +905,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 
 	@Override
 	@FireReformatted
-	public final void setColor(final java.awt.Color theCol)
+	public final void setColor(final Color theCol)
 	{
 		super.setColor(theCol);
 
@@ -936,7 +937,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements
 	  setLabel(val);
 	}
 
-	public final void setLabelColor(final java.awt.Color theCol)
+	public final void setLabelColor(final Color theCol)
 	{
 		_theLabel.setColor(theCol);
 	}

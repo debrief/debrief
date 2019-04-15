@@ -272,8 +272,8 @@ public class RightClickPasteAdaptor implements
     Plottable res = null;
     try
     {
-      final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-      final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+      final ByteArrayOutputStream bas = new ByteArrayOutputStream();
+      final ObjectOutputStream oos = new ObjectOutputStream(bas);
       oos.writeObject(item);
       // get closure
       oos.close();
@@ -283,10 +283,10 @@ public class RightClickPasteAdaptor implements
       final byte[] bt = bas.toByteArray();
 
       // and read it back in as a new item
-      final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+      final ByteArrayInputStream bis = new ByteArrayInputStream(bt);
 
       // create the reader with class loader from original ClassLoader
-      final java.io.ObjectInputStream iis = new ObjectInputStream(bis) {
+      final ObjectInputStream iis = new ObjectInputStream(bis) {
         
         @Override
         protected Class<?> resolveClass(ObjectStreamClass desc)
