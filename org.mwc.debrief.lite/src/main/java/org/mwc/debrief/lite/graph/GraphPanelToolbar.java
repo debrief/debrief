@@ -68,6 +68,7 @@ public class GraphPanelToolbar extends JPanel implements
    * Busy cursor
    */
   private ToolParent _theParent;
+  
   private ShowTimeVariablePlot3 _xytool;
 
   private final LiteStepControl _stepControl;
@@ -231,7 +232,7 @@ public class GraphPanelToolbar extends JPanel implements
         "Change editable properties for this chart", "icons/16/properties.png");
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
-    final JComboBox<String> selectTracksLabel = new JComboBox(new String[] {"Select Tracks"});
+    final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[] {"Select Tracks"});
     selectTrack.setEnabled(false);
     selectTracksLabel.addMouseListener(new MouseListener()
     {

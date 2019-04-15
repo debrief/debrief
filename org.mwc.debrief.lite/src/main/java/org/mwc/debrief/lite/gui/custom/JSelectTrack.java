@@ -105,10 +105,7 @@ public class JSelectTrack extends JPopupMenu
         @Override
         public void itemStateChanged(ItemEvent e)
         {
-          if (e.getStateChange() == ItemEvent.SELECTED)
-          {
-            _model.setActiveTrack(track.track, displayCheckBox.isSelected());
-          }
+          _model.setActiveTrack(track.track, displayCheckBox.isSelected());
         }
       });
       add(displayCheckBox);

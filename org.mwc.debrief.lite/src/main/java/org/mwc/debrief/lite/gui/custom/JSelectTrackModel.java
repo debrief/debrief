@@ -14,7 +14,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   public static final String PRIMARY_CHANGED = "PRIMARY_CHANGED";
 
-  public static final String TRACK_LIST_CHANGED = "TRACK_LIST_CHANGED";;
+  public static final String TRACK_LIST_CHANGED = "TRACK_LIST_CHANGED";
 
   private TrackWrapper _primaryTrack;
 
