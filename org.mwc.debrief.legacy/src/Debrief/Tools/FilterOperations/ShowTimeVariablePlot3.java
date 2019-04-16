@@ -1391,10 +1391,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     }
 
     // find out what the user wants to view
-    final CalculationHolder theHolder = _preselectedOperation;
+    CalculationHolder theHolder = _preselectedOperation;
     if (theHolder == null)
     {
-      getChoice();
+      theHolder = getChoice();
     }
 
     // check it worked
