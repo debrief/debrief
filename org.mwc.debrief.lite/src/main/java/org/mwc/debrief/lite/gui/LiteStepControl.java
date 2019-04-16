@@ -6,11 +6,14 @@ import java.util.Enumeration;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
@@ -54,12 +57,20 @@ public class LiteStepControl extends StepControl
   private Layers _layers;
   private UndoBuffer _undoBuffer;
 
-  public LiteStepControl(final ToolParent _parent)
+  private final PlainChart _xyChart;
+
+  public LiteStepControl(final ToolParent _parent, final Session _theSession)
   {
     super(_parent);
     this.parent = _parent;
     setDateFormat(timeFormat);
     _largeSteps = false;
+    _xyChart = new SwingChart(_theSession.getData());
+  }
+
+  public PlainChart getXYChart()
+  {
+    return _xyChart;
   }
 
   public void setLayers(Layers _layers)

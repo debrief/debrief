@@ -191,9 +191,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       _xyPlot.setBackgroundPaint(null);
 
       // create the metafile graphics
-      final MetafileCanvasGraphics2d mf =
-          new MetafileCanvasGraphics2d(System.getProperty("user.home"),
-              (Graphics2D) getPanel().getGraphics());
+      final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(System
+          .getProperty("user.home"), (Graphics2D) getPanel().getGraphics());
 
       // copy the projection
       final MWC.Algorithms.Projections.FlatProjection fp = new FlatProjection();
@@ -288,9 +287,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
      * @param parentIsVisible
      *          TODO
      */
-    void add(Series thisSeries, HiResDate theTime, double data,
-        Color thisColor, boolean connectToPrevious,
-        ColouredDataItem.OffsetProvider provider, boolean parentIsVisible);
+    void add(Series thisSeries, HiResDate theTime, double data, Color thisColor,
+        boolean connectToPrevious, ColouredDataItem.OffsetProvider provider,
+        boolean parentIsVisible);
 
     void addSeries(AbstractSeriesDataset collection, Series thisSeries,
         Color defaultColor);
@@ -401,8 +400,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
     boolean connectToPrev = connectToPrevious;
     // and perform the calculation
-    final double data =
-        theCalculation.calculate(thisSecondary, thisPrimary, currentTime);
+    final double data = theCalculation.calculate(thisSecondary, thisPrimary,
+        currentTime);
 
     // just check that a valid answer was returned (if we don't have data,
     // then NaN is returned
@@ -488,10 +487,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           // HI-RES NOT DONE - FixedMillisecond should be converted
           // some-how to
           // FixedMicroSecond
-          final TimeSeriesDataItem newItem =
-              new ColouredDataItem(new FixedMillisecond((long) (theTime
-                  .getMicros() / 1000d)), data, thisColor, connectToPrevious,
-                  provider1, parentIsVisible, true);
+          final TimeSeriesDataItem newItem = new ColouredDataItem(
+              new FixedMillisecond((long) (theTime.getMicros() / 1000d)), data,
+              thisColor, connectToPrevious, provider1, parentIsVisible, true);
 
           // To change body of implemented methods use File | Settings
           // | File
@@ -528,10 +526,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           // HI-RES NOT DONE - FixedMillisecond should be converted
           // some-how to
           // FixedMicroSecond
-          final ColouredDataItem newItem =
-              new ColouredDataItem(new FixedMillisecond(theTime.getDate()
-                  .getTime()), data, thisColor, connectToPrevious, provider1,
-                  parentIsVisible, true);
+          final ColouredDataItem newItem = new ColouredDataItem(
+              new FixedMillisecond(theTime.getDate().getTime()), data,
+              thisColor, connectToPrevious, provider1, parentIsVisible, true);
 
           // To change body of implemented methods use File | Settings
           // | File
@@ -565,8 +562,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         if (thisSecondaryTrack == primaryTrack)
         {
           // just double check that we have primary data
-          final Collection<Editable> ss =
-              thisSecondaryTrack.getItemsBetween(start_time, end_time);
+          final Collection<Editable> ss = thisSecondaryTrack.getItemsBetween(
+              start_time, end_time);
 
           if (ss == null)
           {
@@ -584,8 +581,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // ////////////////////////////////////////////////////
       // step through the track
       //
-      final Collection<Editable> secondaryItems =
-          thisSecondaryTrack.getItemsBetween(start_time, end_time);
+      final Collection<Editable> secondaryItems = thisSecondaryTrack
+          .getItemsBetween(start_time, end_time);
 
       // indicator for whether we join this data point to the previous one
       boolean connectToPrevious = false;
@@ -631,15 +628,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
           // data)
           final boolean secSingleton =
               (thisSecondaryTrack instanceof LightweightTrackWrapper)
-                  && (((LightweightTrackWrapper) thisSecondaryTrack).isSinglePointTrack());
+                  && (((LightweightTrackWrapper) thisSecondaryTrack)
+                      .isSinglePointTrack());
           if (thisSecondaryTrack.getStartDTG() == null || secSingleton)
           {
             // do we have any primary data to fall back on (to
             // decide the times
             // for
             // data points)
-            if (primaryTrack.getStartDTG() == null
-                || primaryTrack.getStartDTG().equals(primaryTrack.getEndDTG()))
+            if (primaryTrack.getStartDTG() == null || primaryTrack.getStartDTG()
+                .equals(primaryTrack.getEndDTG()))
             {
 
               // ////////////////////////////////////////////////
@@ -656,14 +654,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               final Watchable theSecondaryPoint = (Watchable) it.next();
 
               // get an iterator for the primary track
-              final Collection<Editable> primaryPoints =
-                  primaryTrack.getItemsBetween(start_time, end_time);
+              final Collection<Editable> primaryPoints = primaryTrack
+                  .getItemsBetween(start_time, end_time);
 
               // do we have any primary data in this period
               if (primaryPoints != null)
               {
-                final Iterator<Editable> throughPrimary =
-                    primaryPoints.iterator();
+                final Iterator<Editable> throughPrimary = primaryPoints
+                    .iterator();
                 final Watchable thisPrimary = (Watchable) throughPrimary.next();
 
                 // ok, create the series with it's two points in
@@ -686,33 +684,33 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               // the primary track
               // therefore we produce data points at the primary
               // track locations
-              final Watchable[] theSecondaryPoints =
-                  thisSecondaryTrack.getNearestTo(start_time);
+              final Watchable[] theSecondaryPoints = thisSecondaryTrack
+                  .getNearestTo(start_time);
               final Watchable theSecondaryPoint = theSecondaryPoints[0];
 
               final Color thisColor = theSecondaryPoint.getColor();
 
               // get an iterator for the primary track
-              final Collection<Editable> primaryPoints =
-                  primaryTrack.getItemsBetween(start_time, end_time);
+              final Collection<Editable> primaryPoints = primaryTrack
+                  .getItemsBetween(start_time, end_time);
 
               if (primaryPoints != null)
               {
-                final Iterator<Editable> throughPrimary =
-                    primaryPoints.iterator();
+                final Iterator<Editable> throughPrimary = primaryPoints
+                    .iterator();
                 while (throughPrimary.hasNext())
                 {
-                  final Watchable thisPrimary =
-                      (Watchable) throughPrimary.next();
+                  final Watchable thisPrimary = (Watchable) throughPrimary
+                      .next();
 
                   final HiResDate currentTime = thisPrimary.getTime();
 
                   // and add the new data point (if we have
                   // to)
-                  connectToPrevious =
-                      createDataPoint(theCalculation, thisPrimary,
-                          theSecondaryPoint, currentTime, connectToPrevious,
-                          thisColor, thisSeries, provider, theAdder);
+                  connectToPrevious = createDataPoint(theCalculation,
+                      thisPrimary, theSecondaryPoint, currentTime,
+                      connectToPrevious, thisColor, thisSeries, provider,
+                      theAdder);
 
                 } // stepping through the primary track
 
@@ -758,25 +756,25 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               // is this fix visible?
               if (thisSecondary.getVisible())
               {
-                
+
                 // if it's a fix, hide it if the parent segment is hidden
-                if(thisSecondary instanceof FixWrapper)
+                if (thisSecondary instanceof FixWrapper)
                 {
-                  final FixWrapper fw=  (FixWrapper) thisSecondary;
+                  final FixWrapper fw = (FixWrapper) thisSecondary;
                   final Editable parent = fw.getSegment();
-                  if(parent != null && parent instanceof TrackSegment)
+                  if (parent != null && parent instanceof TrackSegment)
                   {
-                    final TrackSegment ts =(TrackSegment) parent;
-                    if(!ts.getVisible())
+                    final TrackSegment ts = (TrackSegment) parent;
+                    if (!ts.getVisible())
                     {
                       connectToPrevious = false;
-                      
+
                       // ok, the parent segment is hidden, skip this point
                       continue;
                     }
                   }
-                }    
-                
+                }
+
                 // the point on the primary track we work with
                 Watchable thisPrimary = null;
 
@@ -830,9 +828,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 // ////////////////////////////////////////////////
 
                 // produce the new calculated value
-                final double thisVal =
-                    theCalculation.calculate(thisSecondary, thisPrimary,
-                        currentTime);
+                final double thisVal = theCalculation.calculate(thisSecondary,
+                    thisPrimary, currentTime);
 
                 // SPECIAL HANDLING - do we need to check if
                 // this data passes
@@ -840,11 +837,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 if (theCalculation.isWrappableData())
                 {
                   // add extra points, if we need to
-                  connectToPrevious =
-                      insertWrappingPoints(lastSecondaryValue, thisVal,
-                          lastTime, currentTime, thisColor, thisSeries,
-                          connectToPrevious, provider, theAdder,
-                          myOperation._clipMax);
+                  connectToPrevious = insertWrappingPoints(lastSecondaryValue,
+                      thisVal, lastTime, currentTime, thisColor, thisSeries,
+                      connectToPrevious, provider, theAdder,
+                      myOperation._clipMax);
                 }
                 // ////////////////////////////////////////////////
                 // THANK YOU, WE'RE PLEASED TO RETURN YOU TO
@@ -863,7 +859,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                     final TrackSegment prevSeg = prevF.getSegment();
                     // is it from a different segment?
                     if (!thisSeg.equals(prevSeg)
-                        && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
+                        && (prevSeg instanceof DynamicInfillSegment
+                            && !(thisSeg instanceof DynamicInfillSegment)))
                     {
                       // ok, use the previous color
                       thisColor = prevItem.getColor();
@@ -872,10 +869,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 }
 
                 // and add the new data point (if we have to)
-                connectToPrevious =
-                    createDataPoint(theCalculation, thisPrimary, thisSecondary,
-                        currentTime, connectToPrevious, thisColor, thisSeries,
-                        provider, theAdder);
+                connectToPrevious = createDataPoint(theCalculation, thisPrimary,
+                    thisSecondary, currentTime, connectToPrevious, thisColor,
+                    thisSeries, provider, theAdder);
 
                 lastSecondaryValue = thisVal;
                 lastTime = currentTime;
@@ -938,28 +934,28 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
             HiResDate lastTime = null;
 
             Watchable prevFix = null;
-            
+
             while (it.hasNext())
             {
               final Watchable thisSecondary = (Watchable) it.next();
-              
+
               // if it's a fix, hide it if the parent segment is hidden
-              if(thisSecondary instanceof FixWrapper)
+              if (thisSecondary instanceof FixWrapper)
               {
-                final FixWrapper fw=  (FixWrapper) thisSecondary;
+                final FixWrapper fw = (FixWrapper) thisSecondary;
                 final Editable parent = fw.getSegment();
-                if(parent != null && parent instanceof TrackSegment)
+                if (parent != null && parent instanceof TrackSegment)
                 {
-                  final TrackSegment ts =(TrackSegment) parent;
-                  if(!ts.getVisible())
+                  final TrackSegment ts = (TrackSegment) parent;
+                  if (!ts.getVisible())
                   {
                     connectToPrevious = false;
-                    
+
                     // ok, the parent segment is hidden, skip this point
                     continue;
                   }
                 }
-              }               
+              }
 
               // / get the colour
               Color thisColor = thisSecondary.getColor();
@@ -968,8 +964,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               final HiResDate currentTime = thisSecondary.getTime();
 
               // produce the new calculated value
-              final double thisVal =
-                  theCalculation.calculate(thisSecondary, null, currentTime);
+              final double thisVal = theCalculation.calculate(thisSecondary,
+                  null, currentTime);
 
               // SPECIAL HANDLING - do we need to check if this
               // data passes
@@ -977,10 +973,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
               if (theCalculation.isWrappableData())
               {
                 // add extra points, if we need to
-                connectToPrevious =
-                    insertWrappingPoints(lastSecondaryValue, thisVal, lastTime,
-                        currentTime, thisColor, thisSeries, connectToPrevious,
-                        provider, theAdder, myOperation._clipMax);
+                connectToPrevious = insertWrappingPoints(lastSecondaryValue,
+                    thisVal, lastTime, currentTime, thisColor, thisSeries,
+                    connectToPrevious, provider, theAdder,
+                    myOperation._clipMax);
               }
 
               // is this fix visible?
@@ -1003,7 +999,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                       final TrackSegment prevSeg = pFix.getSegment();
                       // is it from a different segment?
                       if (!thisSeg.equals(prevSeg)
-                          && (prevSeg instanceof DynamicInfillSegment && !(thisSeg instanceof DynamicInfillSegment)))
+                          && (prevSeg instanceof DynamicInfillSegment
+                              && !(thisSeg instanceof DynamicInfillSegment)))
                       {
                         // ok, use the previous color
                         thisColor = prevFix.getColor();
@@ -1013,10 +1010,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
                 }
 
                 // and add the new data point (if we have to)
-                connectToPrevious =
-                    createDataPoint(theCalculation, thisPrimary, thisSecondary,
-                        currentTime, connectToPrevious, thisColor, thisSeries,
-                        provider, theAdder);
+                connectToPrevious = createDataPoint(theCalculation, thisPrimary,
+                    thisSecondary, currentTime, connectToPrevious, thisColor,
+                    thisSeries, provider, theAdder);
                 lastSecondaryValue = thisVal;
                 lastTime = new HiResDate(currentTime);
 
@@ -1099,8 +1095,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     if ((!Double.isNaN(lastSecondaryValue)))
     {
 
-      final boolean beyondThreshold =
-          Math.abs(thisVal - lastSecondaryValue) > COURSE_THRESHOLD;
+      final boolean beyondThreshold = Math.abs(thisVal
+          - lastSecondaryValue) > COURSE_THRESHOLD;
 
       // how far is this from the previous value
       if (beyondThreshold)
@@ -1116,9 +1112,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
         long zeroTime;
 
-        zeroTime =
-            ShowTimeVariablePlot3.calcZeroCrossingTime(startTime, endTime,
-                startCourse, endCourse, clipMax);
+        zeroTime = ShowTimeVariablePlot3.calcZeroCrossingTime(startTime,
+            endTime, startCourse, endCourse, clipMax);
 
         // just check that zero time isn't equal to either of the ends.
         // if it
@@ -1270,6 +1265,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   private Vector<WatchableList> _theTracks = null;
 
   /**
+   * 
+   */
+  private WatchableList _preselectedPrimaryTrack;
+
+  /**
    * the panel we put our graph into
    */
   private final MWC.GUI.Properties.PropertiesPanel _thePanel;
@@ -1278,6 +1278,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    * the operations we provide
    */
   private final Vector<CalculationHolder> _theOperations;
+
+  /**
+   * Option used for Debrief Lite. User selects the option before running the XY calculation.
+   */
+  private CalculationHolder _preselectedOperation;
 
   /**
    * store a local copy of the line separator
@@ -1312,8 +1317,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
     _theOperations.addElement(new CalculationHolder(new speedCalc(), null,
         false, 0));
-    _theOperations.addElement(new CalculationHolder(new rangeCalc(), null,
-        true, 0));
+    _theOperations.addElement(new CalculationHolder(new rangeCalc(), null, true,
+        0));
     _theOperations.addElement(new CalculationHolder(new bearingCalc(), null,
         true, 180));
     _theOperations.addElement(new CalculationHolder(new bearingRateCalc(),
@@ -1335,8 +1340,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     // and add the relative bearing calcuation
     _theOperations.addElement(new CalculationHolder(new relBearingCalc(),
         theFormatter, true, 180));
-    _theOperations.addElement(new CalculationHolder(new atbCalc(),
-        theFormatter, true, 180));
+    _theOperations.addElement(new CalculationHolder(new atbCalc(), theFormatter,
+        true, 180));
   }
 
   @Override
@@ -1358,11 +1363,20 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
     final Object[] opts = new Object[_theOperations.size()];
     _theOperations.copyInto(opts);
-    final CalculationHolder res =
-        (CalculationHolder) JOptionPane.showInputDialog(null,
-            "Which operation?", "Plot time variables",
+    final CalculationHolder res = (CalculationHolder) JOptionPane
+        .showInputDialog(null, "Which operation?", "Plot time variables",
             JOptionPane.QUESTION_MESSAGE, null, opts, null);
     return res;
+  }
+
+  public void setPreselectedPrimaryTrack(WatchableList _preselectedPrimaryTrack)
+  {
+    this._preselectedPrimaryTrack = _preselectedPrimaryTrack;
+  }
+
+  public void setPreselectedOperation(CalculationHolder _preselectedOperation)
+  {
+    this._preselectedOperation = _preselectedOperation;
   }
 
   @Override
@@ -1377,7 +1391,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     }
 
     // find out what the user wants to view
-    final CalculationHolder theHolder = getChoice();
+    final CalculationHolder theHolder = _preselectedOperation;
+    if (theHolder == null)
+    {
+      getChoice();
+    }
 
     // check it worked
     if (theHolder != null)
@@ -1425,8 +1443,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       XYToolTipGenerator tooltipGenerator = null;
 
       // the y axis is common to hi & lo res. Format it here
-      final NumberAxis yAxis =
-          new NumberAxis(myOperation.getTitle() + " " + myOperation.getUnits());
+      final NumberAxis yAxis = new NumberAxis(myOperation.getTitle() + " "
+          + myOperation.getUnits());
 
       // hmm, see if we are in hi-res mode. If we are, don't use a
       // formatted
@@ -1437,8 +1455,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
         // final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
-        System.err
-            .println("XY Plot of HiRes data support is incomplete. Tick formatter (below) is missing.");
+        System.err.println(
+            "XY Plot of HiRes data support is incomplete. Tick formatter (below) is missing.");
 
         // ok, simple enough for us...
         final NumberAxis nAxis = new NumberAxis("time (secs.micros)");
@@ -1489,22 +1507,20 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         fo.format(plot);
       }
 
-      jChart =
-          new NewFormattedJFreeChart(theTitle, JFreeChart.DEFAULT_TITLE_FONT,
-              plot, true, _theStepper);
+      jChart = new NewFormattedJFreeChart(theTitle,
+          JFreeChart.DEFAULT_TITLE_FONT, plot, true, _theStepper);
 
       // ////////////////////////////////////////////////////
       // get the data
       // ////////////////////////////////////////////////////
-      final AbstractDataset theDataset =
-          getDataSeries(thePrimary, theHolder, _theTracks, _start_time,
-              _end_time, jChart.getTimeOffsetProvider());
+      final AbstractDataset theDataset = getDataSeries(thePrimary, theHolder,
+          _theTracks, _start_time, _end_time, jChart.getTimeOffsetProvider());
 
       // ////////////////////////////////////////////////
       // put the holder into one of our special items
       // ////////////////////////////////////////////////
-      final ChartPanel chartInPanel =
-          new StepperChartPanel(jChart, true, _theStepper);
+      final ChartPanel chartInPanel = new StepperChartPanel(jChart, true,
+          _theStepper);
 
       // format the chart
       chartInPanel.setName(theTitle);
@@ -1533,7 +1549,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     res.append(_theSeparator);
     res.append("4. Select which data parameter is to be plotted");
     res.append(_theSeparator);
-    res.append("5. Drag an area on the graph to zoom in, and press Fill to rescale");
+    res.append(
+        "5. Drag an area on the graph to zoom in, and press Fill to rescale");
     res.append(_theSeparator);
 
     return res.toString();
@@ -1566,13 +1583,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     {
       final Object[] opts = new Object[_theTracks.size()];
       _theTracks.copyInto(opts);
-      res =
-          (WatchableList) JOptionPane.showInputDialog(null,
-              "Which is the primary track?"
-                  + System.getProperty("line.separator")
-                  + "  (to be used as the subject of calculations)",
-              "Show Time Variable Plot", JOptionPane.QUESTION_MESSAGE, null,
-              opts, null);
+      res = (WatchableList) JOptionPane.showInputDialog(null,
+          "Which is the primary track?" + System.getProperty("line.separator")
+              + "  (to be used as the subject of calculations)",
+          "Show Time Variable Plot", JOptionPane.QUESTION_MESSAGE, null, opts,
+          null);
     }
     else
     {
@@ -1605,8 +1620,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
         final MWC.GUI.Properties.Swing.SwingPropertiesPanel sp =
             (MWC.GUI.Properties.Swing.SwingPropertiesPanel) _thePanel;
-        final SwingPlot mySwingPlot =
-            new MySwingPlot(panel, _thePanel, theXYPlot);
+        final SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
+            theXYPlot);
         sp.addThisPanel(mySwingPlot);
       }
       else

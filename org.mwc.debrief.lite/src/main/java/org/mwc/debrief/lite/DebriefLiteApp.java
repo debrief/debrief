@@ -462,10 +462,11 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new ImportReplay());
 
     // sort out time control
-    _stepControl = new LiteStepControl(app);
-
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    session = new LiteSession(_theClipboard, _theLayers);
+    
+    _stepControl = new LiteStepControl(app, session);
+    session.setStepper(_stepControl);
 
     _stepControl.setUndoBuffer(session.getUndoBuffer());
     _stepControl.setLayers(session.getData());

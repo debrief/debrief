@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -37,17 +38,35 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
+import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
+import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 import org.mwc.debrief.lite.gui.custom.JSelectTrack;
 import org.mwc.debrief.lite.gui.custom.JSelectTrackModel;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
+import Debrief.Tools.Tote.Calculations.atbCalc;
+import Debrief.Tools.Tote.Calculations.bearingCalc;
+import Debrief.Tools.Tote.Calculations.bearingRateCalc;
+import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.depthCalc;
+import Debrief.Tools.Tote.Calculations.rangeCalc;
+import Debrief.Tools.Tote.Calculations.relBearingCalc;
+import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.ToolParent;
+import MWC.GUI.JFreeChart.BearingRateFormatter;
+import MWC.GUI.JFreeChart.CourseFormatter;
+import MWC.GUI.JFreeChart.DepthFormatter;
+import MWC.GUI.JFreeChart.RelBearingFormatter;
+import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.PlainPropertyEditor;
+import MWC.GUI.Tools.Action;
+import MWC.GenericData.WatchableList;
 
 public class GraphPanelToolbar extends JPanel implements
     PlainPropertyEditor.EditorUsesToolParent
@@ -68,12 +87,14 @@ public class GraphPanelToolbar extends JPanel implements
    * Busy cursor
    */
   private ToolParent _theParent;
-  
+
   private ShowTimeVariablePlot3 _xytool;
 
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
+
+  private AbstractTrackConfiguration selectTrackModel;
 
   private String _state = INACTIVE_STATE;
 
@@ -144,14 +165,31 @@ public class GraphPanelToolbar extends JPanel implements
 
   protected void init()
   {
+    formattingOperation theFormatter = null;
+    if (relBearingCalc.useUKFormat())
+    {
+      theFormatter = new RelBearingFormatter();
+    }
+    else
+    {
+      theFormatter = null;
+    }
 
-    final JComboBox<String> operationComboBox = new JComboBox<>(new String[]
-    {"Depth", "Course", "Speed", "Range", "Bearing", "Bearing Rate Calculation",
-        "Rel Brg", "ATB"});
+    final JComboBox<CalculationHolder> operationComboBox = new JComboBox<>(
+        new CalculationHolder[]
+        {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
+            new CalculationHolder(new courseCalc(), new CourseFormatter(),
+                false, 360), new CalculationHolder(new speedCalc(), null, false,
+                    0), new CalculationHolder(new rangeCalc(), null, true, 0),
+            new CalculationHolder(new bearingCalc(), null, true, 180),
+            new CalculationHolder(new bearingRateCalc(),
+                new BearingRateFormatter(), true, 180), new CalculationHolder(
+                    new relBearingCalc(), theFormatter, true, 180),
+            new CalculationHolder(new atbCalc(), theFormatter, true, 180)});
     operationComboBox.setSize(50, 20);
 
     final List<TrackWrapper> tracks = new ArrayList<>();
-    final JSelectTrackModel model = new JSelectTrackModel(tracks);
+    selectTrackModel = new JSelectTrackModel(tracks);
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
@@ -178,7 +216,7 @@ public class GraphPanelToolbar extends JPanel implements
               tracks.add((TrackWrapper) nextItem);
             }
           }
-          model.setTracks(tracks);
+          selectTrackModel.setTracks(tracks);
         }
 
         @Override
@@ -192,7 +230,7 @@ public class GraphPanelToolbar extends JPanel implements
 
     }
 
-    final JSelectTrack selectTrack = new JSelectTrack(model);
+    final JSelectTrack selectTrack = new JSelectTrack(selectTrackModel);
 
     final JButton createXYPlotButton = createCommandButton("View XY-Plot",
         "icons/16/sensor_contact.png");
@@ -203,9 +241,36 @@ public class GraphPanelToolbar extends JPanel implements
       public void actionPerformed(final ActionEvent e)
       {
         _xytool = new ShowTimeVariablePlot3(null, _stepControl);
+        _xytool.setPreselectedOperation((CalculationHolder) operationComboBox.getSelectedItem());
 
-        setState(ACTIVE_STATE);
-        _xytool.getData();
+        Vector<WatchableList> selectedTracksByUser = null;
+
+        if (selectTrackModel != null)
+        {
+          _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
+          List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+          selectedTracksByUser = new Vector<>();
+          for (TrackWrapperSelect currentTrack : tracks)
+          {
+            if (currentTrack.selected)
+            {
+              selectedTracksByUser.add(currentTrack.track);
+            }
+          }
+
+          _xytool.setTracks(selectedTracksByUser);
+          _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+              .getEndTime());
+          // _xytool
+          _xytool.getData();
+          setState(ACTIVE_STATE);
+        }
+        else
+        {
+          // This shoudln't happen
+          // TODO message here.
+        }
+
       }
     });
 
@@ -232,15 +297,16 @@ public class GraphPanelToolbar extends JPanel implements
         "Change editable properties for this chart", "icons/16/properties.png");
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
-    final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[] {"Select Tracks"});
-    selectTrack.setEnabled(false);
+    final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
+    {"Select Tracks"});
+    selectTracksLabel.setEnabled(true);
     selectTracksLabel.addMouseListener(new MouseListener()
     {
 
       @Override
       public void mouseClicked(final MouseEvent e)
       {
-        
+
       }
 
       @Override
@@ -260,16 +326,18 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void mousePressed(final MouseEvent e)
       {
+        if ( selectTracksLabel.isEnabled() )
+        {
+          // Get the event source
+          final Component component = (Component) e.getSource();
 
-        // Get the event source
-        final Component component = (Component) e.getSource();
+          selectTrack.show(component, 0, 0);
 
-        selectTrack.show(component, 0, 0);
+          // Get the location of the point 'on the screen'
+          final Point p = component.getLocationOnScreen();
 
-        // Get the location of the point 'on the screen'
-        final Point p = component.getLocationOnScreen();
-
-        selectTrack.setLocation(p.x, p.y + component.getHeight());
+          selectTrack.setLocation(p.x, p.y + component.getHeight());
+        }
       }
 
       @Override

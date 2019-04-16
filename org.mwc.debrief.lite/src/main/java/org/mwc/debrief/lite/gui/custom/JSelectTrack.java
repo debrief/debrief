@@ -24,14 +24,15 @@ public class JSelectTrack extends JPopupMenu
    * Generated UID
    */
   private static final long serialVersionUID = -1490664356576661371L;
-  private final JSelectTrackModel _model;
+  private final AbstractTrackConfiguration _model;
   private final TreeMap<TrackWrapper, JCheckBox> _displayComponents;
   private final TreeMap<TrackWrapper, JRadioButton> _relatedToComponents;
 
   private final JLabel _displayLabel = new JLabel("Display");
   private final JLabel _inRelationToLabel = new JLabel("In Relation to");
+  
 
-  public JSelectTrack(final JSelectTrackModel model)
+  public JSelectTrack(final AbstractTrackConfiguration model)
   {
     super();
     this._model = model;

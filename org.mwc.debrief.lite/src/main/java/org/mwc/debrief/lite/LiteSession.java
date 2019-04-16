@@ -27,19 +27,22 @@ public class LiteSession extends Session
    *
    */
   private static final long serialVersionUID = 1L;
-  private final StepControl _stepper;
+  private StepControl _stepper;
 
-  public LiteSession(final Clipboard clipboard, final Layers layers,
-      final StepControl stepper)
+  public LiteSession(final Clipboard clipboard, final Layers layers)
   {
     super(clipboard, layers);
-    _stepper = stepper;
   }
 
   @Override
   public StepControl getStepControl()
   {
     return _stepper;
+  }
+
+  public void setStepper(StepControl _stepper)
+  {
+    this._stepper = _stepper;
   }
 
   @Override

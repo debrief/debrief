@@ -20,6 +20,11 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
   private final GraphPanelToolbar toolbar;
 
   /**
+   * the chart we need to update
+   */
+  final MWC.GUI.PlainChart _theChart;
+  
+  /**
    * Busy cursor
    */
   private ToolParent _theParent;
@@ -29,6 +34,7 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
     super();
     setLayout(new BorderLayout());
     toolbar = new GraphPanelToolbar(stepControl);
+    _theChart = stepControl.getXYChart();
     
     add(toolbar, BorderLayout.NORTH);
     
