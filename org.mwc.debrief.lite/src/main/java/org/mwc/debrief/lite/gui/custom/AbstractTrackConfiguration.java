@@ -3,6 +3,7 @@ package org.mwc.debrief.lite.gui.custom;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
 
 public interface AbstractTrackConfiguration
@@ -32,5 +33,7 @@ public interface AbstractTrackConfiguration
 
   public void setTracks(final List<TrackWrapper> tracks);
   
+  public void setOperation(final CalculationHolder calculation);
   
+  public CalculationHolder getOperation();
 }

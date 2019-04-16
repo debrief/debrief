@@ -1410,8 +1410,13 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // is this a relative calculation?
       if (theHolder._isRelative)
       {
-        // retrieve the necessary input data
-        thePrimary = getPrimary();
+        thePrimary = _preselectedPrimaryTrack;
+        
+        if ( thePrimary == null )
+        {
+          // retrieve the necessary input data
+          thePrimary = getPrimary();          
+        }
       }
 
       // ////////////////////////////////////////////////

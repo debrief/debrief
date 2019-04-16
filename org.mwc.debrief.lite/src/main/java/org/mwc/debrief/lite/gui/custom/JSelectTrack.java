@@ -1,11 +1,14 @@
 package org.mwc.debrief.lite.gui.custom;
 
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -16,6 +19,7 @@ import javax.swing.JRadioButton;
 
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
 
 public class JSelectTrack extends JPopupMenu
@@ -26,11 +30,11 @@ public class JSelectTrack extends JPopupMenu
   private static final long serialVersionUID = -1490664356576661371L;
   private final AbstractTrackConfiguration _model;
   private final TreeMap<TrackWrapper, JCheckBox> _displayComponents;
-  private final TreeMap<TrackWrapper, JRadioButton> _relatedToComponents;
+  private final TreeMap<TrackWrapper, JRadioButton> _relatedToComponentsMap;
+  private final HashSet<Component> _relativeToComponents;
 
   private final JLabel _displayLabel = new JLabel("Display");
   private final JLabel _inRelationToLabel = new JLabel("In Relation to");
-  
 
   public JSelectTrack(final AbstractTrackConfiguration model)
   {
@@ -38,7 +42,8 @@ public class JSelectTrack extends JPopupMenu
     this._model = model;
 
     _displayComponents = new TreeMap<>();
-    _relatedToComponents = new TreeMap<>();
+    _relatedToComponentsMap = new TreeMap<>();
+    _relativeToComponents = new HashSet<>();
 
     initializeComponents();
 
@@ -51,16 +56,18 @@ public class JSelectTrack extends JPopupMenu
         if (JSelectTrackModel.PRIMARY_CHANGED.equals(evt.getPropertyName()))
         {
           final TrackWrapper newPrimary = (TrackWrapper) evt.getNewValue();
-          final JRadioButton component = _relatedToComponents.get(newPrimary);
+          final JRadioButton component = _relatedToComponentsMap.get(
+              newPrimary);
           if (component != null)
           {
             component.setSelected(true);
           }
-          for (final JCheckBox checkbox : _displayComponents.values() )
+          for (final JCheckBox checkbox : _displayComponents.values())
           {
             checkbox.setEnabled(true);
           }
-          final JCheckBox checkBoxComponent = _displayComponents.get(newPrimary);
+          final JCheckBox checkBoxComponent = _displayComponents.get(
+              newPrimary);
           checkBoxComponent.setEnabled(false);
         }
         else if (JSelectTrackModel.TRACK_SELECTION.equals(evt
@@ -78,6 +85,15 @@ public class JSelectTrack extends JPopupMenu
         {
           initializeComponents();
         }
+        else if (JSelectTrackModel.OPERATION_CHANGED.equals(evt
+            .getPropertyName()))
+        {
+          final CalculationHolder newOperation = (CalculationHolder) evt.getNewValue();
+          for ( Component comp : _relativeToComponents)
+          {
+            comp.setVisible(newOperation.isARelativeCalculation());
+          }
+        }
       }
     });
   }
@@ -88,7 +104,7 @@ public class JSelectTrack extends JPopupMenu
     final BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
     setLayout(layout);
     _displayComponents.clear();
-    _relatedToComponents.clear();
+    _relatedToComponentsMap.clear();
 
     add(_displayLabel);
     final Font previousFont = _displayLabel.getFont();
@@ -114,6 +130,7 @@ public class JSelectTrack extends JPopupMenu
     }
 
     add(_inRelationToLabel);
+    _relativeToComponents.add(_inRelationToLabel);
     final ButtonGroup relativeToGroup = new ButtonGroup();
     for (final TrackWrapperSelect track : _model.getTracks())
     {
@@ -133,7 +150,12 @@ public class JSelectTrack extends JPopupMenu
       });
       relativeToGroup.add(relativeToradioButton);
       add(relativeToradioButton);
-      _relatedToComponents.put(track.track, relativeToradioButton);
+      _relativeToComponents.add(relativeToradioButton);
+      _relatedToComponentsMap.put(track.track, relativeToradioButton);
+    }
+    for ( Component comp : _relativeToComponents)
+    {
+      comp.setVisible(_model.getOperation().isARelativeCalculation());
     }
   }
 

@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
 
 public class JSelectTrackModel implements AbstractTrackConfiguration
@@ -21,13 +22,16 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   private TrackWrapper _primaryTrack;
 
   private List<TrackWrapperSelect> _tracks;
+  
+  private CalculationHolder _calculation;
 
   private final ArrayList<PropertyChangeListener> _stateListeners =
       new ArrayList<>();
 
-  public JSelectTrackModel(final List<TrackWrapper> tracks)
+  public JSelectTrackModel(final List<TrackWrapper> tracks, final CalculationHolder calculation)
   {
     setTracks(tracks);
+    _calculation = calculation;
   }
 
   @Override
@@ -111,5 +115,19 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       this._tracks.add(new TrackWrapperSelect(track, false));
     }
     notifyListenersStateChanged(this, TRACK_LIST_CHANGED, null, tracks);
+  }
+
+  @Override
+  public void setOperation(CalculationHolder calculation)
+  {
+    CalculationHolder oldCalculation = _calculation;
+    this._calculation = calculation;
+    notifyListenersStateChanged(this, OPERATION_CHANGED, oldCalculation, calculation);
+  }
+
+  @Override
+  public CalculationHolder getOperation()
+  {
+    return _calculation;
   }
 }

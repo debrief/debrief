@@ -19,6 +19,8 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -65,7 +67,6 @@ import MWC.GUI.JFreeChart.DepthFormatter;
 import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.PlainPropertyEditor;
-import MWC.GUI.Tools.Action;
 import MWC.GenericData.WatchableList;
 
 public class GraphPanelToolbar extends JPanel implements
@@ -187,9 +188,18 @@ public class GraphPanelToolbar extends JPanel implements
                     new relBearingCalc(), theFormatter, true, 180),
             new CalculationHolder(new atbCalc(), theFormatter, true, 180)});
     operationComboBox.setSize(50, 20);
+    operationComboBox.addItemListener(new ItemListener()
+    {
+      
+      @Override
+      public void itemStateChanged(ItemEvent event)
+      {
+        selectTrackModel.setOperation((CalculationHolder) event.getItem());
+      }
+    });
 
     final List<TrackWrapper> tracks = new ArrayList<>();
-    selectTrackModel = new JSelectTrackModel(tracks);
+    selectTrackModel = new JSelectTrackModel(tracks, (CalculationHolder) operationComboBox.getSelectedItem());
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
