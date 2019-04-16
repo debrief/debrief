@@ -323,9 +323,9 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        if(_cutContents!=null) {
+        /*if(_cutContents!=null) {
           restoreCutContents();
-        }
+        }*/
         doPaste();
 
       }
