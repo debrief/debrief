@@ -678,7 +678,7 @@ public class JXCollapsiblePane extends JXPanel
     boolean oldValue = isCollapsed();
     this.collapsed = val;
 
-    if (isAnimated() && isShowing())
+    if (isAnimated())
     {
       if (oldValue == isCollapsed())
       {

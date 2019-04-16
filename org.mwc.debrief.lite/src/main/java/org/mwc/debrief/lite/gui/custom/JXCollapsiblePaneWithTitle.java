@@ -168,6 +168,5 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
     {
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
-    
   }
 }

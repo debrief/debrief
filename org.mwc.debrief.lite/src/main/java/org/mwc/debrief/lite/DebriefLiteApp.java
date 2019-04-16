@@ -595,6 +595,7 @@ public class DebriefLiteApp implements FileDropListener
     graphPanelView = new GraphPanelView(_stepControl);
     //graphPanelView.setObject(_theLayers);
     graphPanelView.setParent(toolParent);
+    graphPanel.setCollapsed(true);
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
 
