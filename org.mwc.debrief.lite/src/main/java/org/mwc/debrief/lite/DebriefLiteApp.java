@@ -286,6 +286,11 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
+  
+  public static void openDsfFile(final File file) {
+    ImportReplay rep = new ImportReplay();
+    rep.storePendingSensors();
+  }
   public static void openRepFile(final File file)
   {
     try
@@ -749,7 +754,14 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+          if(suff.equalsIgnoreCase(".DSF")){
+            ImportReplay rep = new ImportReplay();
+            rep.setLayers(_theLayers);
+            rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+            rep.storePendingSensors();
+            _theLayers.fireExtended();
+          }
+          else if ((suff.equalsIgnoreCase(".REP"))
               || (suff.equalsIgnoreCase(".DTF")))
           {
             // fake wrap it
