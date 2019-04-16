@@ -6,6 +6,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
+import org.mwc.debrief.lite.gui.custom.SimplePropertyPanel;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
@@ -33,13 +34,14 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
   {
     super();
     setLayout(new BorderLayout());
-    toolbar = new GraphPanelToolbar(stepControl);
+    SimplePropertyPanel xyPanel = new SimplePropertyPanel();
+    toolbar = new GraphPanelToolbar(stepControl, xyPanel);
     _theChart = stepControl.getXYChart();
     
     add(toolbar, BorderLayout.NORTH);
     
     // Text component at center. We will have a map here.
-    add(new JTextArea(), BorderLayout.CENTER);
+    add(xyPanel, BorderLayout.CENTER);
   }
 
 

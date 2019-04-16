@@ -44,6 +44,7 @@ import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 import org.mwc.debrief.lite.gui.custom.JSelectTrack;
 import org.mwc.debrief.lite.gui.custom.JSelectTrackModel;
+import org.mwc.debrief.lite.gui.custom.SimplePropertyPanel;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
@@ -98,6 +99,8 @@ public class GraphPanelToolbar extends JPanel implements
   private AbstractTrackConfiguration selectTrackModel;
 
   private String _state = INACTIVE_STATE;
+  
+  final SimplePropertyPanel _xyPanel;
 
   public PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
@@ -116,10 +119,11 @@ public class GraphPanelToolbar extends JPanel implements
 
   private final ArrayList<PropertyChangeListener> stateListeners;
 
-  public GraphPanelToolbar(final LiteStepControl stepControl)
+  public GraphPanelToolbar(final LiteStepControl stepControl, final SimplePropertyPanel xyPanel)
   {
     super(new FlowLayout(FlowLayout.LEFT));
     _stepControl = stepControl;
+    _xyPanel = xyPanel;
     init();
 
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
@@ -250,7 +254,7 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        _xytool = new ShowTimeVariablePlot3(null, _stepControl);
+        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
         _xytool.setPreselectedOperation((CalculationHolder) operationComboBox.getSelectedItem());
 
         Vector<WatchableList> selectedTracksByUser = null;
