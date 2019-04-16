@@ -998,6 +998,16 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
         // so reset the value of this property editor
         final PropertyEditor pe = pei.theEditor;
+        
+        if ("Name".equals(pd.getName()))
+        {
+          _theName = pei.originalValue.toString();
+          _theInfo.setName(pei.originalValue.toString());
+          if (_propsPanel != null)
+          {
+            _propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
+          }
+        }
         pe.setValue(pei.originalValue);
         updateThis(pei.theEditorGUI, pe);
       }

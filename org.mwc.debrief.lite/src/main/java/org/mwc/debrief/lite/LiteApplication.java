@@ -14,7 +14,10 @@
  */
 package org.mwc.debrief.lite;
 
+import java.awt.Cursor;
 import java.awt.MenuShortcut;
+
+import javax.swing.JFrame;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Frames.Session;
@@ -31,6 +34,10 @@ class LiteApplication extends Application implements ProvidesModeSelector
   private final ImportSettings settings;
   
   private final Long freq;
+
+  private Session _session;
+
+  private JFrame _theFrame;
 
   public LiteApplication(final String mode, final long freq)
   {
@@ -83,7 +90,7 @@ class LiteApplication extends Application implements ProvidesModeSelector
   @Override
   public Session getCurrentSession()
   {
-    throw new IllegalArgumentException("Not implemented");
+    return _session;
   }
 
   @Override
@@ -95,13 +102,13 @@ class LiteApplication extends Application implements ProvidesModeSelector
   @Override
   public void restoreCursor()
   {
-    throw new IllegalArgumentException("Not implemented");
+    _theFrame.getContentPane().setCursor(null);
   }
 
   @Override
   public void setCursor(final int theCursor)
   {
-    throw new IllegalArgumentException("Not implemented");
+    _theFrame.getContentPane().setCursor(new Cursor(theCursor));
   }
 
   @Override
@@ -127,5 +134,15 @@ class LiteApplication extends Application implements ProvidesModeSelector
   public ImportSettings getSelectedImportMode(final String trackName)
   {
     return settings;
+  }
+
+  public void setSession(Session sessio)
+  {
+    _session = sessio;
+  }
+
+  public void setFrame(JFrame theFrame)
+  {
+    _theFrame = theFrame;
   }
 }

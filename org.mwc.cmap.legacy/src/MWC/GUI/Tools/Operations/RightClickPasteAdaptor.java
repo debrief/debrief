@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Tools.Operations;
 
@@ -21,8 +21,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -32,138 +34,33 @@ import MWC.GUI.PlottableSelection;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 
-public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreator
+public class RightClickPasteAdaptor implements
+    RightClickEdit.PlottableMenuCreator
 {
-  ///////////////////////////////////
-  // member variables
-  //////////////////////////////////
-  private static Clipboard _clipboard;
 
-
-  ///////////////////////////////////
-  // constructor
-  //////////////////////////////////
-  public RightClickPasteAdaptor(final Clipboard clipboard)
+  public static interface NeedsTidyingOnPaste
   {
-    _clipboard = clipboard;
+    // tell the object to do any internal admin that needs
+    // looking after following a paste operation
+    void tidyUpOnPaste(final Layers layers);
   }
 
-  public RightClickPasteAdaptor()
-  {
-  }
-
-
-
-  ///////////////////////////////////
-  // member functions
-  //////////////////////////////////
-
-
-  ///////////////////////////////////
-  // nested classes
-  //////////////////////////////////
-  public void createMenu(final javax.swing.JPopupMenu menu,
-                         final Editable destination,
-                         final java.awt.Point thePoint,
-                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                         final Layer theParent,
-                         final Layers theLayers, final Layer updateLayer)
-  {
-    // is the plottable a layer
-    if ((destination instanceof MWC.GUI.Layer) || (destination == null))
-    {
-
-      final Transferable tr = _clipboard.getContents(this);
-      // see if there is currently a plottable on the clipboard
-      if (tr != null)
-      {
-        if (tr.isDataFlavorSupported(PlottableSelection.PlottableFlavor))
-        {
-          // we're off!
-
-          try
-          {
-
-            // extract the plottable
-            final Plottable theData = (Plottable) tr.getTransferData(PlottableSelection.PlottableFlavor);
-
-            PasteItem paster = null;
-
-            if (tr instanceof PlottableSelection)
-            {
-              final PlottableSelection ps = (PlottableSelection) tr;
-
-              final boolean isCopy = ps.isACopy();
-
-              // see if it is a layer or not
-              if (theData instanceof MWC.GUI.Layer)
-              {
-
-                final MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
-
-                // create the menu items
-                paster = new PasteLayer(clipLayer,
-                                        _clipboard,
-                                        (Layer) destination,
-                                        theLayers,
-                                        isCopy);
-              }
-              else
-              {
-                // just check that there isn't a null destination
-                if (destination != null)
-                {
-                  // create the menu items
-                  paster = new PasteItem(theData,
-                                         _clipboard,
-                                         (Layer) destination,
-                                         theLayers,
-                                         isCopy);
-                }
-              }
-
-
-              if (paster != null)
-              {
-                // add to the menu
-                menu.addSeparator();
-                menu.add(paster);
-              }
-
-            }
-            else
-            {
-              System.err.println("WRONG TYPE OF PLOTTABLE");
-            }
-          }
-          catch (final Exception e)
-          {
-            MWC.Utilities.Errors.Trace.trace(e);
-          }
-        }
-      }
-
-    }
-  }
-
-
-  public class PasteItem extends javax.swing.JMenuItem implements Action, ActionListener, ClipboardOwner
+  public static class PasteItem extends javax.swing.JMenuItem implements Action,
+      ActionListener, ClipboardOwner
   {
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		Plottable _data;
-    Clipboard _myClipboard;
-    Layer _theDestination;
-    Layers _theLayers;
-    boolean _isACopy;
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    Plottable _data;
+    final protected Clipboard _myClipboard;
+    final protected Layer _theDestination;
+    final protected Layers _theLayers;
+    final protected boolean _isACopy;
 
-    public PasteItem(final Plottable data,
-                     final Clipboard clipboard,
-                     final Layer theDestination,
-                     final Layers theLayers,
-                     final boolean isACopy)
+    public PasteItem(final Plottable data, final Clipboard clipboard,
+        final Layer theDestination, final Layers theLayers,
+        final boolean isACopy)
     {
       // formatting
       super.setText("Paste " + data.getName());
@@ -180,29 +77,14 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       this.addActionListener(this);
     }
 
-    public boolean isUndoable()
+    @Override
+    public void actionPerformed(final ActionEvent p1)
     {
-      return true;
+      // do it
+      execute();
     }
 
-    public boolean isRedoable()
-    {
-      return true;
-    }
-
-    public String toString()
-    {
-      return "Paste " + _data.getName();
-    }
-
-    public void undo()
-    {
-      // remove the item from it's new parent
-      _theDestination.removeElement(_data);
-
-      _theLayers.fireModified((Layer) _data);
-    }
-
+    @Override
     public void execute()
     {
 
@@ -213,115 +95,75 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       {
         // clear the clipboard
         // No, let's not bother, so that we can make multiple copies
-        //		_myClipboard.setContents(null, null);
+        // _myClipboard.setContents(null, null);
+      }
+
+      // does it need tidying?
+      if (_data instanceof NeedsTidyingOnPaste)
+      {
+        final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
+        np.tidyUpOnPaste(_theLayers);
       }
 
       // inform the listeners
       _theLayers.fireExtended();
     }
 
-    public void actionPerformed(final ActionEvent p1)
+    @Override
+    public boolean isRedoable()
     {
-      // do it
-      execute();
+      return true;
     }
 
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+
+    @Override
     public void lostOwnership(final Clipboard p1, final Transferable p2)
     {
       // don't bother
     }
+
+    @Override
+    public String toString()
+    {
+      return "Paste " + _data.getName();
+    }
+
+    @Override
+    public void undo()
+    {
+      // remove the item from it's new parent
+      _theDestination.removeElement(_data);
+
+      _theLayers.fireModified((Layer) _data);
+    }
   }
 
-  //////////////////////////////////////////////
-  //	clone items, using "Serializable" interface
-  /////////////////////////////////////////////////
-  static public Plottable cloneThis(final Plottable item)
-  {
-    Plottable res = null;
-    try
-    {
-      final java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-      final java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
-      oos.writeObject(item);
-      // get closure
-      oos.close();
-      bas.close();
-
-      // now get the item
-      final byte[] bt = bas.toByteArray();
-
-      // and read it back in as a new item
-      final java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
-
-      // create the reader
-      final java.io.ObjectInputStream iis = new ObjectInputStream(bis);
-
-      // and read it in
-      final Object oj = iis.readObject();
-
-      // get more closure
-      bis.close();
-      iis.close();
-
-      if (oj instanceof Plottable)
-      {
-        res = (Plottable) oj;
-      }
-    }
-    catch (final Exception e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
-    return res;
-  }
-
-
-  public class PasteLayer extends PasteItem
+  public static class PasteLayer extends PasteItem
   {
 
     /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-		public PasteLayer(final Layer data,
-                      final Clipboard clipboard,
-                      final Layer theDestination,
-                      final Layers theLayers,
-                      final boolean isACopy)
+    public PasteLayer(final Layer data, final Clipboard clipboard,
+        final Layer theDestination, final Layers theLayers,
+        final boolean isACopy)
     {
       super(data, clipboard, theDestination, theLayers, isACopy);
     }
 
-    public String toString()
-    {
-      return "Paste Layer:" + _data.getName();
-    }
-
-    public void undo()
-    {
-      // remove the item from it's new parent
-      // do we have a destination layer?
-      if (super._theDestination != null)
-      {
-        // add it to this layer
-        _theDestination.removeElement(_data);
-        _theLayers.fireModified(_theDestination);
-      }
-      else
-      {
-        // just remove it from the top level
-        _theLayers.removeThisLayer((Layer) _data);
-        _theLayers.fireModified((Layer) _data);
-      }
-
-    }
-
+    @Override
     public void execute()
     {
       // do we have a destination layer?
       if (super._theDestination != null)
-      // add it to this layer
+        // add it to this layer
         _theDestination.add(_data);
       else
       {
@@ -329,7 +171,7 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
         if (_theLayers.findLayer(_data.getName()) == null)
         {
           // just add it
-          _theLayers.addThisLayerDoNotResize((Layer) _data);
+          _theLayers.addThisLayer((Layer) _data);
         }
         else
         {
@@ -369,8 +211,15 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
           newLayer.setName(newName);
 
           // just drop it in at the top level
-          _theLayers.addThisLayerDoNotResize((Layer) _data);
+          _theLayers.addThisLayer((Layer) _data);
         }
+      }
+
+      // does it need tidying?
+      if (_data instanceof NeedsTidyingOnPaste)
+      {
+        final NeedsTidyingOnPaste np = (NeedsTidyingOnPaste) _data;
+        np.tidyUpOnPaste(_theLayers);
       }
 
       if (!_isACopy)
@@ -382,6 +231,177 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
       _theLayers.fireModified(null);
     }
 
+    @Override
+    public String toString()
+    {
+      return "Paste Layer:" + _data.getName();
+    }
+
+    @Override
+    public void undo()
+    {
+      // remove the item from it's new parent
+      // do we have a destination layer?
+      if (super._theDestination != null)
+      {
+        // add it to this layer
+        _theDestination.removeElement(_data);
+        _theLayers.fireModified(_theDestination);
+      }
+      else
+      {
+        // just remove it from the top level
+        _theLayers.removeThisLayer((Layer) _data);
+        _theLayers.fireModified((Layer) _data);
+      }
+
+    }
+
+  }
+
+  private static Clipboard _clipboard;
+
+  
+  
+  
+  //////////////////////////////////////////////
+  // clone items, using "Serializable" interface
+  /////////////////////////////////////////////////
+  static public Plottable cloneThis(final Plottable item)
+  {
+    Plottable res = null;
+    try
+    {
+      final ByteArrayOutputStream bas = new ByteArrayOutputStream();
+      final ObjectOutputStream oos = new ObjectOutputStream(bas);
+      oos.writeObject(item);
+      // get closure
+      oos.close();
+      bas.close();
+
+      // now get the item
+      final byte[] bt = bas.toByteArray();
+
+      // and read it back in as a new item
+      final ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+
+      // create the reader with class loader from original ClassLoader
+      final ObjectInputStream iis = new ObjectInputStream(bis) {
+        
+        @Override
+        protected Class<?> resolveClass(ObjectStreamClass desc)
+            throws IOException, ClassNotFoundException
+        {
+          return item.getClass().getClassLoader().loadClass(desc.getName());
+        }
+      };
+
+      // and read it in
+      final Object oj = iis.readObject();
+
+      // get more closure
+      bis.close();
+      iis.close();
+
+      if (oj instanceof Plottable)
+      {
+        res = (Plottable) oj;
+      }
+    }
+    catch (final Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e);
+    }
+    return res;
+  }
+
+  public RightClickPasteAdaptor()
+  {
+  }
+
+  ///////////////////////////////////
+  // constructor
+  //////////////////////////////////
+  public RightClickPasteAdaptor(final Clipboard clipboard)
+  {
+    _clipboard = clipboard;
+  }
+
+  @Override
+  public void createMenu(final javax.swing.JPopupMenu menu,
+      final Editable destination, final java.awt.Point thePoint,
+      final MWC.GUI.Properties.PropertiesPanel thePanel, final Layer theParent,
+      final Layers theLayers, final Layer updateLayer)
+  {
+    // is the plottable a layer
+    if ((destination instanceof MWC.GUI.Layer) || (destination == null))
+    {
+
+      final Transferable tr = _clipboard.getContents(this);
+      // see if there is currently a plottable on the clipboard
+      if (tr != null)
+      {
+        if (tr.isDataFlavorSupported(PlottableSelection.PlottableFlavor))
+        {
+          // we're off!
+
+          try
+          {
+
+            // extract the plottable
+            final Plottable theData = (Plottable) tr.getTransferData(
+                PlottableSelection.PlottableFlavor);
+
+            PasteItem paster = null;
+
+            if (tr instanceof PlottableSelection)
+            {
+              final PlottableSelection ps = (PlottableSelection) tr;
+
+              final boolean isCopy = ps.isACopy();
+
+              // see if it is a layer or not
+              if (theData instanceof MWC.GUI.Layer)
+              {
+
+                final MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
+
+                // create the menu items
+                paster = new PasteLayer(clipLayer, _clipboard,
+                    (Layer) destination, theLayers, isCopy);
+              }
+              else
+              {
+                // just check that there isn't a null destination
+                if (destination != null)
+                {
+                  // create the menu items
+                  paster = new PasteItem(theData, _clipboard,
+                      (Layer) destination, theLayers, isCopy);
+                }
+              }
+
+              if (paster != null)
+              {
+                // add to the menu
+                menu.addSeparator();
+                menu.add(paster);
+              }
+
+            }
+            else
+            {
+              System.err.println("WRONG TYPE OF PLOTTABLE");
+            }
+          }
+          catch (final Exception e)
+          {
+            MWC.Utilities.Errors.Trace.trace(e);
+          }
+        }
+      }
+
+    }
   }
 
 }
