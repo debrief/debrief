@@ -8,7 +8,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
