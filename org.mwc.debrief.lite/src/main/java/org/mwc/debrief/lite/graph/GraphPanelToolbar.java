@@ -404,6 +404,16 @@ public class GraphPanelToolbar extends JPanel implements
     final JButton placeBitmapButton = createCommandButton(
         "Place a bitmap image of the graph on the clipboard",
         "icons/16/copy_to_clipboard.png");
+    placeBitmapButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        org.mwc.debrief.lite.util.ClipboardUtils.copyToClipboard(_xytool
+            .getGeneratedChartPanel());
+      }
+    });
     final JButton copyGraph = createCommandButton(
         "Copies the graph as a text matrix to the clipboard",
         "icons/16/export.png");
