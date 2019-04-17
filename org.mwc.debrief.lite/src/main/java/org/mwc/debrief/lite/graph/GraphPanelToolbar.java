@@ -39,6 +39,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
@@ -307,8 +309,26 @@ public class GraphPanelToolbar extends JPanel implements
       }
     });
 
-    final JButton viewGridButton = createCommandButton("Switch axes",
+    final JToggleButton switchAxesButton = createJToggleButton("Switch axes",
         "icons/16/swap_axis.png");
+    switchAxesButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        if (switchAxesButton.isSelected())
+        {
+          ((XYPlot) _xytool.getGeneratedChartPanel().getChart().getPlot())
+              .setOrientation(PlotOrientation.HORIZONTAL);
+        }
+        else
+        {
+          ((XYPlot) _xytool.getGeneratedChartPanel().getChart().getPlot())
+              .setOrientation(PlotOrientation.VERTICAL);
+        }
+      }
+    });
     final JButton viewTimeButton = createCommandButton("Show symbols",
         "icons/16/open.png");
     final JButton hideCrosshair = createCommandButton(
@@ -395,7 +415,7 @@ public class GraphPanelToolbar extends JPanel implements
     add(selectTracksLabel);
 
     add(fixToWindowsButton);
-    add(viewGridButton);
+    add(switchAxesButton);
     add(viewTimeButton);
     add(hideCrosshair);
     add(expandButton);
@@ -406,7 +426,7 @@ public class GraphPanelToolbar extends JPanel implements
     add(autosyncButton);
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {fixToWindowsButton, viewGridButton, viewTimeButton, hideCrosshair,
+    {fixToWindowsButton, switchAxesButton, viewTimeButton, hideCrosshair,
         expandButton, wmfButton, placeBitmapButton, copyGraph, propertiesButton,
         autosyncButton}));
   }
