@@ -1,5 +1,6 @@
 package org.mwc.debrief.lite.menu;
 
+import java.awt.EventQueue;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.FocusAdapter;
@@ -8,12 +9,12 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.mwc.debrief.lite.gui.DebriefLiteToolParent;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -33,6 +34,7 @@ import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Shapes.ArcShape;
@@ -61,7 +63,7 @@ public class DebriefRibbonInsert
   protected static void addInsertTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers theLayers,
       final PropertiesPanel theProperties,
-      final DebriefLiteToolParent toolParent)
+      final ToolParent toolParent)
   {
     /**
      * some of our tools are interested in the visible data area. But, we can't determine it when
@@ -109,7 +111,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createReferenceData(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final ToolParent _toolParent, final BoundsProvider bounds,
       final Layer decs)
   {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
@@ -137,7 +139,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createShapes(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand drawingMenu = new JRibbonBand("Shapes", null);
     final CreateShape ellipseShape = new CreateShape(_toolParent, _theProperties,
@@ -300,44 +302,68 @@ public class DebriefRibbonInsert
   private static JRibbonComponent addDropDown(final ItemListener actionToAdd,
       final JRibbonBand mapBand, final RibbonElementPriority priority,final Layers theLayers)
   {
-    final String[] layerItems = new String[]
-    {CoreCreateShape.USER_SELECTED_LAYER_COMMAND};
     JPanel panel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-    selectLayerCombo = new JComboBox<String>(layerItems);
+   
+    
+    final DefaultComboBoxModel<String>  selectLayerModel = new DefaultComboBoxModel<String>();
+    selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+    selectLayerCombo = new JComboBox<String>(selectLayerModel);
     selectLayerCombo.addItemListener(actionToAdd);
+   
     selectLayerCombo.addFocusListener(new FocusAdapter()
     {
+      @Override
+      public void focusLost(FocusEvent e)
+      {
+        selectLayerModel.removeAllElements();
+        selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+      }
       @Override
       public void focusGained(FocusEvent e)
       {
         if(e.getSource() instanceof JComboBox) {
-          String[] layers = theLayers.trimmedLayers();         
-          @SuppressWarnings("unchecked")
-          JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
-          String selectedItem = (String)jcombo.getSelectedItem();
-          jcombo.removeAllItems();
-
-          // start off with our custom layer modes
-          for(String otherItem: layerItems)
+          
+          EventQueue.invokeLater(new Runnable()
           {
-            jcombo.addItem(otherItem);
-          }
+            
+            @Override
+            public void run()
+            {
+              String[] layers = theLayers.trimmedLayers();         
+              @SuppressWarnings("unchecked")
+              
+              String selectedItem = (String)selectLayerCombo.getSelectedItem();
+              selectLayerModel.removeAllElements();
+
+              // start off with our custom layer modes
+              selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+              
+              // now the list of trimmed layers (which includes `Add layer`)
+              for(String layer:layers) {
+                selectLayerModel.addElement(layer);
+              }
+              
+              boolean popupVisible = selectLayerCombo.isPopupVisible();
+              selectLayerCombo.updateUI();
+              if(popupVisible && !selectLayerCombo.isPopupVisible()) {
+                selectLayerCombo.showPopup();
+              }
+              
+              //remove listener - so it doesn't get triggered when
+              // we set default value
+              selectLayerCombo.removeItemListener(selectLayerItemListener);
+              
+              // if we know selection, assign it
+              if(selectedItem!=null) {
+                selectLayerCombo.setSelectedItem(selectedItem);
+              }
+             
+              // reinstate listener
+              selectLayerCombo.addItemListener(selectLayerItemListener);
+              
+            }
+          });
           
-          // now the list of trimmed layers (which includes `Add layer`)
-          for(String layer:layers) {
-            jcombo.addItem(layer);
-          }
-          
-          //remove listener - so it doesn't get triggered when
-          // we set default value
-          jcombo.removeItemListener(selectLayerItemListener);
-          
-          // if we know selection, assign it
-          if(selectedItem!=null) {
-            jcombo.setSelectedItem(selectedItem);
-          }
-          // reinstate listener
-          jcombo.addItemListener(selectLayerItemListener);
         }
       }
     });
@@ -392,7 +418,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createDecorations(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final DebriefLiteToolParent _toolParent, final BoundsProvider bounds,
+      final ToolParent _toolParent, final BoundsProvider bounds,
       final Layer decs)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);

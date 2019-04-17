@@ -27,6 +27,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.LiteStepControl.SliderControls;
 import org.mwc.debrief.lite.gui.LiteStepControl.TimeLabel;
@@ -67,6 +68,8 @@ public class DebriefRibbonTimeController
   private static final String STOP_IMAGE = "icons/24/media_stop.png";
 
   private static final String PLAY_IMAGE = "icons/24/media_play.png";
+  
+  public static JPanel topButtonsPanel;
 
   /**
    * Class that binds the Time Filter and Time Label.
@@ -81,11 +84,16 @@ public class DebriefRibbonTimeController
     protected RangeSlider slider;
     protected TimeManager timeManager;
 
-    public void updateTimeDateFormat(final String format)
+    public void updateTimeDateFormat(final String format, boolean updateTimeLabel, boolean updateFilters)
     {
-      stepControl.setDateFormat(format);
-      timeManager.fireTimePropertyChange();
-      updateFilterDateFormat();
+      if ( updateTimeLabel )
+      {
+        stepControl.setDateFormat(format);
+      }
+      if ( updateFilters )
+      {
+        updateFilterDateFormat();
+      }
     }
     
     public String getDateFormat()
@@ -188,7 +196,7 @@ public class DebriefRibbonTimeController
   
   private static JCheckBoxMenuItem[] _menuItem;
   
-  public static void assignThisTimeFormat(String format, boolean fireUpdate)
+  public static void assignThisTimeFormat(String format, boolean updateTimeLabel, boolean updateFilters)
   {
     if ( _menuItem != null && format != null )
     {
@@ -196,20 +204,9 @@ public class DebriefRibbonTimeController
       {
         _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
       }
-      final int completeSize = 17; 
-      final int diff = completeSize - format.length();
-      
-      String newFormat = format;
-      for (int i = 0 ; i < diff / 2 ; i++)
+      if ( formatBinder != null )
       {
-        newFormat = " " + newFormat + " ";
-      }
-      if ( newFormat.length() < completeSize ) {
-        newFormat = newFormat + " ";
-      }
-      if ( fireUpdate && formatBinder != null )
-      {
-        formatBinder.updateTimeDateFormat(newFormat);        
+        formatBinder.updateTimeDateFormat(format, updateTimeLabel, updateFilters);        
       }
     }
   }
@@ -245,7 +242,7 @@ public class DebriefRibbonTimeController
     controlPanel.setLayout(new BoxLayout(controlPanel, BoxLayout.Y_AXIS));
     controlPanel.setPreferredSize(new Dimension(500, 80));
 
-    final JPanel topButtonsPanel = new JPanel();
+    topButtonsPanel = new JPanel();
     topButtonsPanel.setLayout(new BoxLayout(topButtonsPanel, BoxLayout.X_AXIS));
 
     final JCommandButton behindCommandButton = MenuUtils.addCommandButton(
@@ -429,7 +426,7 @@ public class DebriefRibbonTimeController
         "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
         CommandButtonDisplayState.SMALL, "Format time control");
 
-    final JLabel timeLabel = new JLabel("YY/MM/dd hh:mm:ss")
+    final JLabel timeLabel = new JLabel(LiteStepControl.timeFormat)
     {
       /**
        * 
@@ -444,8 +441,6 @@ public class DebriefRibbonTimeController
         super.paintComponent(g);
       }
     };
-    timeLabel.setSize(200, 60);
-    timeLabel.setPreferredSize(new Dimension(200, 60));
     timeLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 16));
 
     timeLabel.setForeground(new Color(0, 255, 0));
@@ -466,7 +461,7 @@ public class DebriefRibbonTimeController
       public void actionPerformed(ActionEvent e)
       {
         String format = e.getActionCommand();
-        assignThisTimeFormat(format, true);
+        assignThisTimeFormat(format, true, false);
       }
     };
     
@@ -504,7 +499,7 @@ public class DebriefRibbonTimeController
         timeSlider.setEnabled(true);
 
         // and we can use the buttons
-        setButtonsEnabled(topButtonsPanel, true);
+        DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
 
         converter.init(start, end);
         timeSlider.setMinimum(converter.getStart());
@@ -522,7 +517,27 @@ public class DebriefRibbonTimeController
       @Override
       public void setValue(final String text)
       {
-        timeLabel.setText(text);
+
+        final int completeSize = 17; 
+        final int diff = completeSize - text.length();
+        
+        String newText = text;
+        for (int i = 0 ; i < diff / 2 ; i++)
+        {
+          newText = " " + newText + " ";
+        }
+        if ( newText.length() < completeSize ) {
+          newText = newText + " ";
+        }
+        timeLabel.setText(newText);
+      }
+
+      @Override
+      public void setFontSize(int newSize)
+      {
+        Font originalFont = timeLabel.getFont();
+        final Font newFont = new Font(originalFont.getName(), originalFont.getStyle(), newSize);
+        timeLabel.setFont(newFont);
       }
     };
     stepControl.setTimeLabel(label);
@@ -556,7 +571,7 @@ public class DebriefRibbonTimeController
         label.setValue(LiteStepControl.timeFormat);
         
         // ok, do some disabling
-        setButtonsEnabled(topButtonsPanel, false);
+        DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
         timeSlider.setEnabled(false);
       }});
 
@@ -571,17 +586,19 @@ public class DebriefRibbonTimeController
   public static void resetDateFormat()
   {
     final String defaultFormat = LiteStepControl.timeFormat;
-    for (int i = 0 ; i < timeFormats.length; i++)
+    if ( defaultFormat != null )
     {
-      // is this the default format
-      final boolean isGood = defaultFormat != null && defaultFormat.equals(timeFormats[i]);
-      _menuItem[i].setSelected(isGood);
+      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false, false);
+      
+      formatBinder.stepControl.setDateFormat(defaultFormat);
+      formatBinder.updateFilterDateFormat();
     }
     
     if(label != null)
     {
       label.setValue(defaultFormat);
     }
+    
   }
   
 
@@ -825,7 +842,7 @@ public class DebriefRibbonTimeController
    * @param panel
    * @param enabled
    */
-  private static void setButtonsEnabled(final JPanel panel,
+  public static void setButtonsEnabled(final JPanel panel,
       final boolean enabled)
   {
     final Component[] items = panel.getComponents();

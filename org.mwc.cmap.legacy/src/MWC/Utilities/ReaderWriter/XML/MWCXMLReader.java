@@ -84,7 +84,8 @@ public class MWCXMLReader extends DefaultHandler {
 	 */
 	private boolean _reportNotHandled = true;
 
-	private static final String HANDLER_NOT_FOUND_MESSAGE = " handler not found";
+  private static final String HANDLER_NOT_FOUND_MESSAGE =
+      " handler not found.\n\nMaybe it's not a Debrief file.";
 
 	// ////////////////////////////////////////////////
 	// constructor
