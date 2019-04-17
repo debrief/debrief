@@ -42,7 +42,9 @@ import javax.swing.JToggleButton;
 
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
+import org.mwc.cmap.xyplot.views.XYPlotUtilities;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
@@ -417,6 +419,18 @@ public class GraphPanelToolbar extends JPanel implements
     final JButton copyGraph = createCommandButton(
         "Copies the graph as a text matrix to the clipboard",
         "icons/16/export.png");
+    copyGraph.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        final TimeSeriesCollection dataset = (TimeSeriesCollection) _xytool
+            .getGeneratedXYPlot().getDataset();
+        XYPlotUtilities.copyToClipboard(_xytool.getGeneratedChartPanel()
+            .getName(), dataset);
+      }
+    });
     final JButton propertiesButton = createCommandButton(
         "Change editable properties for this chart", "icons/16/properties.png");
 
