@@ -36,6 +36,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -44,15 +45,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -241,18 +246,21 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     editButton.setEnabled(false);
+    editButton.setMnemonic(KeyEvent.VK_ENTER);
     commandBar.add(editButton);
     
     final JButton cutButton =  createCommandButton("Cut",
         "icons/24/cut.png");
     _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
     cutButton.setEnabled(false);
+    cutButton.setMnemonic(KeyEvent.VK_X);
     commandBar.add(cutButton);
     
     final JButton copyButton = createCommandButton("Copy",
         "icons/24/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
     copyButton.setEnabled(false);
+    copyButton.setMnemonic(KeyEvent.VK_C);
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
@@ -262,6 +270,7 @@ public class OutlinePanelView extends SwingLayerManager implements
             selectionIsTrack, clipboardIsFixes), new And(
                 selectionIsLayer, clipboardIsShapes)))));
     pasteButton.setEnabled(false);
+    pasteButton.setMnemonic(KeyEvent.VK_V);
     commandBar.add(pasteButton);    
 
     final JButton addLayerButton = createCommandButton("Add Layer",
@@ -272,6 +281,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final JButton deleteButton = createCommandButton("Delete",
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
+    deleteButton.setMnemonic(KeyEvent.VK_DELETE);
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
@@ -318,8 +328,10 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     });
-    pasteButton.addActionListener(new ActionListener()
+    @SuppressWarnings("serial")
+    final Action pasteAction = new AbstractAction()
     {
+      
       @Override
       public void actionPerformed(ActionEvent e)
       {
@@ -327,12 +339,18 @@ public class OutlinePanelView extends SwingLayerManager implements
           restoreCutContents();
         }
         doPaste();
-
+        
       }
-    });
-    editButton.addActionListener(new ActionListener()
+    };
+    pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK),
+           "paste");
+    pasteButton.getActionMap().put("paste",pasteAction);
+    
+    @SuppressWarnings("serial")
+    final Action editAction = new AbstractAction()
     {
-
+      
       @Override
       public void actionPerformed(ActionEvent e)
       {
@@ -349,9 +367,13 @@ public class OutlinePanelView extends SwingLayerManager implements
             }
           }
         }
-
+        
       }
-    });
+    };
+    editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK),
+           "edit");
+    editButton.getActionMap().put("edit",editAction);
     addLayerButton.addActionListener(new ActionListener()
     {
 
@@ -362,7 +384,9 @@ public class OutlinePanelView extends SwingLayerManager implements
 
       }
     });
-    cutButton.addActionListener(new ActionListener()
+    
+    @SuppressWarnings("serial")
+    final Action cutAction = new AbstractAction()
     {
       
       @Override
@@ -378,8 +402,13 @@ public class OutlinePanelView extends SwingLayerManager implements
           doCut(selectionPath);
         }
       }
-    });
-    copyButton.addActionListener(new ActionListener()
+    };
+    cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK),
+           "cut");
+    cutButton.getActionMap().put("cut",cutAction);
+    @SuppressWarnings("serial")
+    final Action copyAction = new AbstractAction()
     {
 
       @Override
@@ -393,10 +422,16 @@ public class OutlinePanelView extends SwingLayerManager implements
             restoreCutContents();
           }
           doCopy(selectionPath);
+          _myTree.setSelectionPath(null);
         }
       }
-    });
-    deleteButton.addActionListener(new ActionListener()
+    };
+    copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK),
+           "copy");
+    copyButton.getActionMap().put("copy",copyAction);
+    @SuppressWarnings("serial")
+    final Action deleteAction = new AbstractAction()
     {
       
       @Override
@@ -407,8 +442,11 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
         doDelete();
       }
-    });
-
+    };
+    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
+    .put(KeyStroke.getKeyStroke("DELETE"),
+           "delete");
+    deleteButton.getActionMap().put("delete",deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
     setCellEditor(new OutlineCellEditor());
