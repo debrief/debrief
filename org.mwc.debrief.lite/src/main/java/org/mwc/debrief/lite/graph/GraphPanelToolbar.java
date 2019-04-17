@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.graph;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
@@ -39,8 +40,10 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
+import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.ui.TextAnchor;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
@@ -59,6 +62,7 @@ import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Defaults;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -319,12 +323,12 @@ public class GraphPanelToolbar extends JPanel implements
       {
         if (switchAxesButton.isSelected())
         {
-          ((XYPlot) _xytool.getGeneratedChartPanel().getChart().getPlot())
+          _xytool.getGeneratedChartPanel().getChart().getXYPlot()
               .setOrientation(PlotOrientation.HORIZONTAL);
         }
         else
         {
-          ((XYPlot) _xytool.getGeneratedChartPanel().getChart().getPlot())
+          _xytool.getGeneratedChartPanel().getChart().getXYPlot()
               .setOrientation(PlotOrientation.VERTICAL);
         }
       }
@@ -345,11 +349,42 @@ public class GraphPanelToolbar extends JPanel implements
         showSymbolsButton.setIcon(new ImageIcon(isSelected ? getClass()
             .getClassLoader().getResource(symbolOn) : getClass()
                 .getClassLoader().getResource(symbolOff)));
-        showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols" : "Show Symbols");
+        showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols"
+            : "Show Symbols");
       }
     });
-    final JButton hideCrosshair = createCommandButton(
+    final JToggleButton hideCrosshair = createJToggleButton(
         "Hide the crosshair from the graph (for printing)", "icons/16/fix.png");
+
+    final XYTextAnnotation _crosshairValueText = new XYTextAnnotation(" ", 0,
+        0);
+    _crosshairValueText.setTextAnchor(TextAnchor.TOP_LEFT);
+    _crosshairValueText.setFont(Defaults.getFont());
+    _crosshairValueText.setPaint(Color.black);
+    _crosshairValueText.setBackgroundPaint(Color.white);
+    hideCrosshair.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent arg0)
+      {
+        _xytool.getGeneratedChartPanel().getChart().getXYPlot()
+            .setDomainCrosshairVisible(hideCrosshair.isSelected());
+        _xytool.getGeneratedChartPanel().getChart().getXYPlot()
+            .setRangeCrosshairVisible(hideCrosshair.isSelected());
+
+        if (hideCrosshair.isSelected())
+        {
+          _xytool.getGeneratedJFreeChart().getXYPlot().addAnnotation(
+              _crosshairValueText);
+        }
+        else
+        {
+          _xytool.getGeneratedJFreeChart().getXYPlot().removeAnnotation(
+              _crosshairValueText);
+        }
+      }
+    });
     final JButton expandButton = createCommandButton(
         "Expand Period covered in sync with scenario time",
         "icons/16/clock.png");
