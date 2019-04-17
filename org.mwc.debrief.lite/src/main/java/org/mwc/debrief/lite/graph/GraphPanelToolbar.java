@@ -301,9 +301,6 @@ public class GraphPanelToolbar extends JPanel implements
 
     final JSelectTrack selectTrack = new JSelectTrack(selectTrackModel);
 
-    final JButton createXYPlotButton = createCommandButton("View XY-Plot",
-        "icons/16/sensor_contact.png");
-
     final JButton fixToWindowsButton = createCommandButton(
         "Scale the graph to show all data", "icons/16/fit_to_win.png");
     fixToWindowsButton.addActionListener(new ActionListener()
@@ -515,7 +512,6 @@ public class GraphPanelToolbar extends JPanel implements
       }
     });
 
-    add(createXYPlotButton);
     add(operationComboBox);
     add(selectTracksLabel);
 
