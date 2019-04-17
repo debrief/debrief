@@ -7,6 +7,7 @@ import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
@@ -300,6 +301,26 @@ public class LogicHelpers
         {
           Plottable first = sel.get(0);
           if(first instanceof BaseLayer)
+          {
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+  public static EnabledTest getIsNotChartFeaturesTest()
+  {
+    return new EnabledTest("Selection is chart features layer")
+    {
+      @Override
+      public boolean isEnabled(final Helper helper)
+      {
+        ArrayList<Plottable> sel = helper.getSelection();
+        if(sel.size() == 1)
+        {
+          Plottable first = sel.get(0);
+          if(first instanceof BaseLayer && !(first.getName().startsWith(Layers.CHART_FEATURES)))
           {
             return true;
           }

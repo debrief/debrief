@@ -330,7 +330,6 @@ public class DebriefRibbonInsert
             public void run()
             {
               String[] layers = theLayers.trimmedLayers();         
-              @SuppressWarnings("unchecked")
               
               String selectedItem = (String)selectLayerCombo.getSelectedItem();
               selectLayerModel.removeAllElements();
