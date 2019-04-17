@@ -74,6 +74,7 @@ import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 import MWC.Utilities.ReaderWriter.ExtensibleLineImporter;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.PlainLineImporter.ImportRequiresFinalisation;
@@ -372,18 +373,6 @@ public class ImportReplay extends PlainImporterBase
 
       // and start it running
       reader.start();
-
-      // wait for the results
-      while (reader.isAlive())
-      {
-        try
-        {
-          Thread.sleep(100);
-        }
-        catch (final java.lang.InterruptedException e)
-        {
-        }
-      }
 
       // check it went ok
       assertTrue("File finished received", fileFinished);
@@ -1656,20 +1645,22 @@ public class ImportReplay extends PlainImporterBase
     {
       
       handleException(e,lineCounter,thisLine,fName,"Number format error:"+e);
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final IOException e)
     {
       handleException(e,lineCounter,thisLine,fName,"Unknown read error:"+e);
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final java.util.NoSuchElementException e)
     {
       handleException(e,lineCounter,thisLine,fName,"Missing field error");
+      throw new PlainImporter.ImportException(null, null);
     }
     catch (final ParseException e)
     {
-      
       handleException(e,lineCounter,thisLine,fName,"Date format error");
-      
+      throw new PlainImporter.ImportException(null, null);
     }
     finally
     {

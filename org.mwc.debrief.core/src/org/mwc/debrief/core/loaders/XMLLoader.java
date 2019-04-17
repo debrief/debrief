@@ -23,7 +23,10 @@ import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
+import MWC.GUI.Dialogs.DialogFactory;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
  * @author ian.mayo
@@ -45,7 +48,6 @@ public class XMLLoader extends CoreLoader
     }
   }
 
-
   @Override
   protected IRunnableWithProgress getImporter(final IAdaptable target,
       final Layers theLayers, final InputStream inputStream,
@@ -58,7 +60,15 @@ public class XMLLoader extends CoreLoader
         IControllableViewport view = (IControllableViewport) target.getAdapter(
             IControllableViewport.class);
         PlotEditor plot = (PlotEditor) target.getAdapter(PlotEditor.class);
-        _myReader.importThis(fileName, inputStream, theLayers, view, plot);
+        try
+        {
+          _myReader.importThis(fileName, inputStream, theLayers, view, plot);
+        }
+        catch (PlainImporter.ImportException ie)
+        {
+          Application.logError2(Application.ERROR, ie.getMessage(), ie);
+          DialogFactory.showMessage("Import Error", ie.getMessage());
+        }
       }
     };
   }
