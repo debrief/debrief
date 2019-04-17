@@ -40,7 +40,6 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
     
     add(toolbar, BorderLayout.NORTH);
     
-    // Text component at center. We will have a map here.
     add(xyPanel, BorderLayout.CENTER);
   }
 

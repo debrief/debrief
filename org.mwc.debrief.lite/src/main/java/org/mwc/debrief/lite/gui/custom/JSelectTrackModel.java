@@ -109,12 +109,13 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   @Override
   public void setTracks(final List<TrackWrapper> tracks)
   {
+    List<TrackWrapperSelect> oldTracks = this._tracks;
     this._tracks = new ArrayList<>();
     for (final TrackWrapper track : tracks)
     {
       this._tracks.add(new TrackWrapperSelect(track, false));
     }
-    notifyListenersStateChanged(this, TRACK_LIST_CHANGED, null, tracks);
+    notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
   }
 
   @Override

@@ -99,7 +99,7 @@ public class GraphPanelToolbar extends JPanel implements
   private AbstractTrackConfiguration selectTrackModel;
 
   private String _state = INACTIVE_STATE;
-  
+
   final SimplePropertyPanel _xyPanel;
 
   public PropertyChangeListener enableDisableButtons =
@@ -119,7 +119,8 @@ public class GraphPanelToolbar extends JPanel implements
 
   private final ArrayList<PropertyChangeListener> stateListeners;
 
-  public GraphPanelToolbar(final LiteStepControl stepControl, final SimplePropertyPanel xyPanel)
+  public GraphPanelToolbar(final LiteStepControl stepControl,
+      final SimplePropertyPanel xyPanel)
   {
     super(new FlowLayout(FlowLayout.LEFT));
     _stepControl = stepControl;
@@ -194,7 +195,7 @@ public class GraphPanelToolbar extends JPanel implements
     operationComboBox.setSize(50, 20);
     operationComboBox.addItemListener(new ItemListener()
     {
-      
+
       @Override
       public void itemStateChanged(ItemEvent event)
       {
@@ -203,7 +204,52 @@ public class GraphPanelToolbar extends JPanel implements
     });
 
     final List<TrackWrapper> tracks = new ArrayList<>();
-    selectTrackModel = new JSelectTrackModel(tracks, (CalculationHolder) operationComboBox.getSelectedItem());
+    selectTrackModel = new JSelectTrackModel(tracks,
+        (CalculationHolder) operationComboBox.getSelectedItem());
+
+    // Re-renderer listener.
+    selectTrackModel.addPropertyChangeListener(new PropertyChangeListener()
+    {
+      @Override
+      public void propertyChange(PropertyChangeEvent arg0)
+      {
+        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+        CalculationHolder operation = (CalculationHolder) operationComboBox
+            .getSelectedItem();
+        _xytool.setPreselectedOperation(operation);
+
+        Vector<WatchableList> selectedTracksByUser = null;
+
+        if (selectTrackModel != null && _stepControl != null && _stepControl
+            .getStartTime() != null && _stepControl.getEndTime() != null)
+        {
+          _xytool.setPreselectedPrimaryTrack(selectTrackModel
+              .getPrimaryTrack());
+          List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+          selectedTracksByUser = new Vector<>();
+          for (TrackWrapperSelect currentTrack : tracks)
+          {
+            if (currentTrack.selected)
+            {
+              selectedTracksByUser.add(currentTrack.track);
+            }
+          }
+
+          if (!selectedTracksByUser.isEmpty() && (!operation
+              .isARelativeCalculation() || selectTrackModel
+                  .getPrimaryTrack() != null))
+          {
+            _xytool.setTracks(selectedTracksByUser);
+            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+                .getEndTime());
+
+            // _xytool
+            _xytool.getData();
+            setState(ACTIVE_STATE);
+          }
+        }
+      }
+    });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
@@ -248,45 +294,6 @@ public class GraphPanelToolbar extends JPanel implements
 
     final JButton createXYPlotButton = createCommandButton("View XY-Plot",
         "icons/16/sensor_contact.png");
-    createXYPlotButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        _xytool.setPreselectedOperation((CalculationHolder) operationComboBox.getSelectedItem());
-
-        Vector<WatchableList> selectedTracksByUser = null;
-
-        if (selectTrackModel != null)
-        {
-          _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
-          List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-          selectedTracksByUser = new Vector<>();
-          for (TrackWrapperSelect currentTrack : tracks)
-          {
-            if (currentTrack.selected)
-            {
-              selectedTracksByUser.add(currentTrack.track);
-            }
-          }
-
-          _xytool.setTracks(selectedTracksByUser);
-          _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-              .getEndTime());
-          // _xytool
-          _xytool.getData();
-          setState(ACTIVE_STATE);
-        }
-        else
-        {
-          // This shoudln't happen
-          // TODO message here.
-        }
-
-      }
-    });
 
     final JButton fixToWindowsButton = createCommandButton(
         "Scale the graph to show all data", "icons/16/fit_to_win.png");
@@ -340,7 +347,7 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void mousePressed(final MouseEvent e)
       {
-        if ( selectTracksLabel.isEnabled() )
+        if (selectTracksLabel.isEnabled())
         {
           // Get the event source
           final Component component = (Component) e.getSource();
