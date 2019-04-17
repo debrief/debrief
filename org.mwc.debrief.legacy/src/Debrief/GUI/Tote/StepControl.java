@@ -399,6 +399,7 @@ abstract public class StepControl implements Editable,
     {
       _myHighlighters = new Vector<PlotHighlighter>(0, 1);
       _myHighlighters.add(_defaultHighlighter);
+      _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.RangeHighlighter());
       _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter());
     }
 
@@ -743,8 +744,6 @@ abstract public class StepControl implements Editable,
       final StepperListener next = numer.nextElement();
       next.reset();
     }
-    // clear all the participants.
-    _participants.clear();
   }
 
   public void setStartTime(final HiResDate val)
@@ -779,7 +778,7 @@ abstract public class StepControl implements Editable,
 
   public final BoundedInteger getFontSize()
   {
-    return new BoundedInteger(_fontSize, 1, 20);
+    return new BoundedInteger(_fontSize, 1, 30);
   }
 
   public final void setFontSize(final BoundedInteger val)
@@ -831,11 +830,7 @@ abstract public class StepControl implements Editable,
   {
     if (_currentHighlighter.hasEditor())
     {
-      PropertiesPanel panel = getPropertiesPanel();
-      if ( panel != null )
-      {
-        panel.addEditor(_currentHighlighter.getInfo(), null);
-      }
+      getPropertiesPanel().addEditor(_currentHighlighter.getInfo(), null);
     }
   }
 
@@ -1326,7 +1321,17 @@ abstract public class StepControl implements Editable,
   ///////////////////////////////////////////////////////////
   public static final class MyDateEditor extends MWC.GUI.Properties.DateFormatPropertyEditor
   {
-    
+    public final String[] getTags()
+    {
+      final String[] parents = super.getTags();
+      final String[] newS = new String[parents.length + 2];
+
+      System.arraycopy(parents, 0, newS, 0, parents.length);
+      newS[parents.length] = "'T+' SSS";
+      newS[parents.length + 1] = "'T+' MM:SS";
+
+      return newS;
+    }
   }
 
   ////////////////////////////////////////////////////////////

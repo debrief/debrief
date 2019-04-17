@@ -45,7 +45,7 @@ public class LiteSession extends Session
   @Override
   public void closeGUI()
   {
-    // Nothing to do here.
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
@@ -63,8 +63,7 @@ public class LiteSession extends Session
   @Override
   protected boolean wantsToClose()
   {
-    // action handled by DebriefLiteApp class.
-    return true;
+    throw new IllegalArgumentException("Not implemented");
   }
 
 }

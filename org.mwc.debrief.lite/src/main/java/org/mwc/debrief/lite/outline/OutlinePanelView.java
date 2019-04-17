@@ -41,6 +41,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.event.TreeSelectionEvent;
@@ -78,11 +78,11 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
-import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
 import MWC.GUI.Plottables;
+import MWC.GUI.Renamable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.LayerManager.Swing.SwingLayerManager;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
@@ -96,6 +96,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     ClipboardOwner, Helper
 {
 
+  private static final String DUPLICATE_PREFIX = "Copy of ";
   /**
    * 
    */
@@ -240,19 +241,16 @@ public class OutlinePanelView extends SwingLayerManager implements
     final JButton editButton = createCommandButton("Edit",
         "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
-    editButton.setEnabled(false);
     commandBar.add(editButton);
     
     final JButton cutButton =  createCommandButton("Cut",
-        "icons/24/cut.png");
+        "icons/16/cut.png");
     _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
-    cutButton.setEnabled(false);
     commandBar.add(cutButton);
     
     final JButton copyButton = createCommandButton("Copy",
-        "icons/24/copy_to_clipboard.png");
+        "icons/16/copy_to_clipboard.png");
     _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
-    copyButton.setEnabled(false);
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
@@ -261,7 +259,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         clipboardNotEmpty, new Or(new And(
             selectionIsTrack, clipboardIsFixes), new And(
                 selectionIsLayer, clipboardIsShapes)))));
-    pasteButton.setEnabled(false);
     commandBar.add(pasteButton);    
 
     final JButton addLayerButton = createCommandButton("Add Layer",
@@ -273,7 +270,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
     _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
-    deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
 
     final JButton refreshViewButton = createCommandButton("Update View",
@@ -562,100 +558,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     ArrayList<Plottable> plottables = getClipboardContents();
     // see if there is currently a plottable on the clipboard
     // see if it is a layer or not
-    if(!plottables.isEmpty())
+    for (Plottable theData : plottables)
     {
-      for (Plottable theData : plottables)
-      {
-        addBackData(theData,destination);
-      }
-      _myData.fireExtended(plottables.get(0), (HasEditables)destination);
+      addBackData(theData,destination);
     }
     if (!_isCopy)
     {
       // clear the clipboard
       _clipboard.setContents(null, null);
     }
-    
-    
-    
+    _myData.fireModified(null);
 
   }
-  
-  /**
-   * have a fresh pass through the data
-   */
-  public void updateData(final Layer changedLayer, final Plottable newItem)
-  {
-    _myTree.setExpandsSelectedPaths(true);
-    // find out which node is currently visible
-    if (changedLayer != null && newItem != null)
-    {
-      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        final DefaultMutableTreeNode itemNode;
-        if(rootNode.getUserObject() instanceof Layer){
-          //used class name instead of instanceof as otherwise
-          //there will be cyclic dependency in eclipse manifest.
-         
-          if(newItem instanceof FixWrapper) {
-            rootNode = (DefaultMutableTreeNode)rootNode.getFirstChild();
-          }
-          itemNode = getTreeNode(rootNode, newItem.getName(),
-        
-            newItem);
-        }
-        else {
-          //if not a layer but a trackwrapper
-          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)rootNode.getFirstChild();
-          if(firstChild != null) {
-            itemNode = getTreeNode((DefaultMutableTreeNode)rootNode.getFirstChild(), newItem.getName(),
-              
-              newItem);
-          }
-          else {
-            itemNode = null;
-          }
-        }
-        if(itemNode!=null) {
-          final TreePath _treePath = new TreePath(itemNode.getPath());
-          SwingUtilities.invokeLater(new Runnable()
-          {
-
-            @Override
-            public void run()
-            {
-              _myTree.expandPath(_treePath);
-              _myTree.scrollPathToVisible(_treePath);
-              _myTree.makeVisible(_treePath);
-              _myTree.setSelectionPath(_treePath);
-            }
-          });
-        }
-      }
-    }
-    else if (changedLayer != null)
-    {
-      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if(rootNode!=null) {
-        final TreePath _treePath = new TreePath(rootNode.getPath());
-        SwingUtilities.invokeLater(new Runnable()
-        {
-
-          @Override
-          public void run()
-          {
-            _myTree.expandPath(_treePath);
-            _myTree.scrollPathToVisible(_treePath);
-            _myTree.makeVisible(_treePath);
-            _myTree.setSelectionPath(_treePath);
-          }
-        });
-      }
-    }
-  }
-
 
   private void addBackData(Plottable theData, CanEnumerate destination)
   {
@@ -676,6 +590,59 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
     
+  }
+
+  /**
+   * see if this layer contains an item with the specified name
+   * 
+   * @param name
+   *          name we're checking against.
+   * @param destination
+   *          layer we're looking at
+   * 
+   * @return
+   */
+  private static boolean containsThis(final String name,
+      final CanEnumerate destination)
+  {
+    final Enumeration<Editable> enumeration = destination.elements();
+    while (enumeration.hasMoreElements())
+    {
+      final Editable next = enumeration.nextElement();
+      if (next.getName() != null && next.getName().equals(name))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * helper method, to find if an item with this name already exists. If it does, we'll prepend the
+   * duplicate phrase
+   * 
+   * @param editable
+   *          the item we're going to add
+   * @param enumeration
+   *          the destination for the add operation
+   */
+  private static void renameIfNecessary(final Editable editable,
+      final CanEnumerate destination)
+  {
+    if (editable instanceof Renamable)
+    {
+      String hisName = editable.getName();
+      while (containsThis(hisName, destination))
+      {
+        hisName = DUPLICATE_PREFIX + hisName;
+      }
+
+      // did it change?
+      if (!hisName.equals(editable.getName()))
+      {
+        ((Renamable) editable).setName(hisName);
+      }
+    }
   }
 
   public void pasteLayer(final CanEnumerate destination, final Layer theData)

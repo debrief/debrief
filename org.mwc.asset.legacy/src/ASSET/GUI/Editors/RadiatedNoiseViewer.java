@@ -10,19 +10,9 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 package ASSET.GUI.Editors;
-
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.event.ListSelectionEvent;
 
 /**
  * Title:
@@ -37,70 +27,31 @@ import ASSET.Models.Mediums.BroadbandRadNoise;
 import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium;
-import MWC.GUI.ToolParent;
+import MWC.GUI.PlainChart;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldDistance;
 
-public class RadiatedNoiseViewer extends
-    MWC.GUI.Properties.Swing.SwingCustomEditor implements
-    MWC.GUI.Properties.NoEditorButtons,
-    PlainPropertyEditor.EditorUsesPropertyPanel,
-    PlainPropertyEditor.EditorUsesToolParent
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
+
+public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
+  implements MWC.GUI.Properties.NoEditorButtons,
+  PlainPropertyEditor.EditorUsesPropertyPanel,
+  PlainPropertyEditor.EditorUsesToolParent
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  public static class ViewerTest extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    boolean set = false;
-
-    public ViewerTest(final String val)
-    {
-      super(val);
-    }
-
-    public void testMe()
-    {
-      // create the object
-      final RadiatedNoiseViewer dv = new RadiatedNoiseViewer();
-
-      set = false;
-      final ASSET.Models.Vessels.SSN cp = new ASSET.Models.Vessels.SSN(12);
-
-      final RadiatedCharacteristics rc = new RadiatedCharacteristics();
-      rc.add(1, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
-      rc.add(3, new BroadbandRadNoise(23));
-      cp.setRadiatedChars(rc);
-
-      // store the radiated chars
-      dv.setObject(cp.getRadiatedChars());
-
-      assertEquals("our data stored", dv._chars, cp.getRadiatedChars());
-
-      // check data loaded
-      assertEquals("list shows our data", dv._chars.getMediums().size(), 2);
-
-      // check gui control created
-      assertEquals("form correctly laid out", dv._noiseList.getName(),
-          "List of noise mediums");
-
-      // close down
-      dv.doClose();
-
-    }
-  }
-
   /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
+	/**
    * the border
    */
   final BorderLayout mainBorder = new BorderLayout();
@@ -130,8 +81,10 @@ public class RadiatedNoiseViewer extends
    */
   private ToolParent _theParent;
 
+
   /**
-   * ************************************************* constructor
+   * *************************************************
+   * constructor
    * *************************************************
    */
   public RadiatedNoiseViewer()
@@ -139,14 +92,14 @@ public class RadiatedNoiseViewer extends
     initForm();
   }
 
-  /**
-   * handle close event
-   */
-  @Override
-  public void doClose()
+  public void setPanel(final PropertiesPanel thePanel)
   {
-    // do the parent bit
-    super.doClose();
+    _thePanel = thePanel;
+  }
+
+  public void setParent(final ToolParent theParent)
+  {
+    _theParent = theParent;
   }
 
   private void initForm()
@@ -170,29 +123,29 @@ public class RadiatedNoiseViewer extends
     this.add(_editors);
 
     // listen out for any change
-    _noiseList.addListSelectionListener(
-        new javax.swing.event.ListSelectionListener()
+    _noiseList.addListSelectionListener(new javax.swing.event.ListSelectionListener()
+    {
+      /**
+       * Called whenever the value of the selection changes.
+       *
+       * @param e the event that characterizes the change.
+       */
+      public void valueChanged(final ListSelectionEvent e)
+      {
+        if (!e.getValueIsAdjusting())
         {
-          /**
-           * Called whenever the value of the selection changes.
-           *
-           * @param e
-           *          the event that characterizes the change.
-           */
-          @Override
-          public void valueChanged(final ListSelectionEvent e)
-          {
-            if (!e.getValueIsAdjusting())
-            {
-              itemSelected();
-            }
-          }
-        });
+          itemSelected();
+        }
+      }
+    });
+
 
   }
 
+
   /**
-   * ************************************************* support for a noise source being selected
+   * *************************************************
+   * support for a noise source being selected
    * *************************************************
    */
   void itemSelected()
@@ -214,8 +167,7 @@ public class RadiatedNoiseViewer extends
         this.repaint();
 
         // create the new editor
-        spe = new SwingPropertyEditor2(ed.getInfo(),
-            (SwingPropertiesPanel) _thePanel, null, _theParent, null, null);
+        spe = new SwingPropertyEditor2(ed.getInfo(), (SwingPropertiesPanel) _thePanel, null, _theParent, null);
 
         // put into the panel
         _editors.add(spe.getPanel());
@@ -224,36 +176,6 @@ public class RadiatedNoiseViewer extends
         this.repaint();
       }
     }
-  }
-
-  /**
-   * ************************************************* update the object we are editing
-   * *************************************************
-   */
-  @Override
-  public void setObject(final Object data)
-  {
-    // this is our vessel, start listening to it
-    if (data instanceof RadiatedCharacteristics)
-    {
-      // store it
-      _chars = (RadiatedCharacteristics) data;
-
-      // and update it
-      updateList();
-    }
-  }
-
-  @Override
-  public void setPanel(final PropertiesPanel thePanel)
-  {
-    _thePanel = thePanel;
-  }
-
-  @Override
-  public void setParent(final ToolParent theParent)
-  {
-    _theParent = theParent;
   }
 
   /**
@@ -269,12 +191,85 @@ public class RadiatedNoiseViewer extends
       final Iterator<Medium> iter = coll.iterator();
       while (iter.hasNext())
       {
-        final RadiatedCharacteristics.Medium thisMed = iter.next();
+        final RadiatedCharacteristics.Medium thisMed =  (RadiatedCharacteristics.Medium) iter.next();
         newList.addElement(thisMed);
       }
 
       // and add to list
       _noiseList.setModel(newList);
+    }
+  }
+
+
+  /**
+   * *************************************************
+   * update the object we are editing
+   * *************************************************
+   */
+  public void setObject(final Object data)
+  {
+    // this is our vessel, start listening to it
+    if (data instanceof RadiatedCharacteristics)
+    {
+      // store it
+      _chars = (RadiatedCharacteristics) data;
+
+      // and update it
+      updateList();
+    }
+  }
+
+  /**
+   * handle close event
+   */
+  public void doClose()
+  {
+    // do the parent bit
+    super.doClose();
+  }
+
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  // testing for this class
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  public static class ViewerTest extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+    public ViewerTest(final String val)
+    {
+      super(val);
+    }
+
+    boolean set = false;
+
+    public void testMe()
+    {
+      // create the object
+      final RadiatedNoiseViewer dv = new RadiatedNoiseViewer();
+
+      set = false;
+      final ASSET.Models.Vessels.SSN cp = new ASSET.Models.Vessels.SSN(12);
+
+      RadiatedCharacteristics rc = new RadiatedCharacteristics();
+      rc.add(1, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+      rc.add(3, new BroadbandRadNoise(23));
+      cp.setRadiatedChars(rc);
+
+      // store the radiated chars
+      dv.setObject(cp.getRadiatedChars());
+
+      assertEquals("our data stored", dv._chars, cp.getRadiatedChars());
+
+      // check data loaded
+      assertEquals("list shows our data", dv._chars.getMediums().size(), 2);
+
+      // check gui control created
+      assertEquals("form correctly laid out", dv._noiseList.getName(), "List of noise mediums");
+
+      // close down
+      dv.doClose();
+
+
     }
   }
 }

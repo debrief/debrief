@@ -16,7 +16,6 @@ package org.mwc.debrief.lite.properties;
 
 import java.awt.BorderLayout;
 import java.net.URL;
-import java.util.Stack;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -41,39 +40,9 @@ import MWC.GUI.Undo.UndoBuffer;
 public class PropertiesDialog extends JDialog
 {
 
-  // in order to overwride the close method, so that the dialog is closed and disposed
-  private static class PropsEditor extends SwingPropertyEditor2
-  {
-
-    public PropsEditor(final EditorType info, final SwingPropertiesPanel parent,
-        final Layers theLayers, final ToolParent toolParent,
-        final Layer parentLayer, final SwingPropertiesPanel propsPanel)
-    {
-      super(info, parent, theLayers, toolParent, parentLayer, propsPanel);
-    }
-
-    @Override
-    public void close()
-    {
-      super.close();
-      if (!dialogs.isEmpty())
-      {
-        final PropertiesDialog lastDialog = dialogs.pop();
-        lastDialog.dispose();
-      }
-    }
-
-  }
-
-  private static Stack<PropertiesDialog> dialogs = new Stack<>();
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
-  private final Editable _editableProperty;
-
-  private final Layers _theLayers;
+  private Editable _editableProperty;
+  private Layers _theLayers;
+  private static PropertiesDialog dialog;
   /**
    * the toolparent we supply to any new panels
    */
@@ -83,19 +52,21 @@ public class PropertiesDialog extends JDialog
    * the name of the session we read from, for when the toolbar floats
    */
   private final MyMetalToolBarUI.ToolbarOwner _owner;
+  private UndoBuffer _undoBuffer;
 
-  private final UndoBuffer _undoBuffer;
-
-  public PropertiesDialog(final Editable editableProperty, final Layers layers,
-      final UndoBuffer undoBuffer, final ToolParent toolParent,
-      final ToolbarOwner owner)
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  
+  public PropertiesDialog(Editable editableProperty,Layers layers,UndoBuffer undoBuffer,ToolParent toolParent,ToolbarOwner owner)
   {
     _editableProperty = editableProperty;
     _theLayers = layers;
     _owner = owner;
     _theToolParent = toolParent;
-    _undoBuffer = undoBuffer;
-    dialogs.add(this);
+    _undoBuffer = undoBuffer;  
+    dialog=this;
     initForm();
     setModal(true);
     setTitle("Edit Properties");
@@ -108,22 +79,36 @@ public class PropertiesDialog extends JDialog
         setIconImage(myIcon.getImage());
     }
   }
-
-  protected void initForm()
-  {
-    final SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers,
-        _undoBuffer, _theToolParent, _owner);
-    propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    final PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),
-        propsPanel, _theLayers, _theToolParent, null, propsPanel);
-    final JPanel thePanel = (JPanel) ap.getPanel();
+  
+  protected void initForm() {
+    SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers, _undoBuffer, _theToolParent, _owner);
+    propsPanel.setBorder(new EmptyBorder(10,10,10,10));
+    PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),propsPanel,_theLayers,_theToolParent,null);
+    JPanel thePanel = (JPanel) ap.getPanel();
     thePanel.setName(_editableProperty.getInfo().getDisplayName());
-    // now, listen out for the name of the panel changing - we are removed as listener by the
-    // SwingPropertyEditor
+    // now, listen out for the name of the panel changing - we are removed as listener by the SwingPropertyEditor
     // in it's close operation
     _editableProperty.getInfo().addPropertyChangeListener(propsPanel);
     propsPanel.add(thePanel);
-    add(propsPanel, BorderLayout.CENTER);
+    add(propsPanel,BorderLayout.CENTER);
   }
+  
+  //in order to overwride the close method, so that the dialog is closed and disposed
+  private static class PropsEditor extends SwingPropertyEditor2{
 
+    public PropsEditor(EditorType info, SwingPropertiesPanel parent,
+        Layers theLayers, ToolParent toolParent, Layer parentLayer)
+    {
+      super(info, parent, theLayers, toolParent, parentLayer);
+    }
+    @Override
+    public void close()
+    {
+      super.close();
+      dialog.dispose();
+    }
+    
+  }
+  
 }
+

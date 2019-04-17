@@ -34,7 +34,6 @@ import org.pushingpixels.flamingo.api.common.JCommandToggleButton;
 import org.pushingpixels.flamingo.api.common.RichTooltip;
 import org.pushingpixels.flamingo.api.common.RichTooltip.RichTooltipBuilder;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
-import org.pushingpixels.flamingo.api.common.popup.PopupPanelCallback;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.resize.CoreRibbonResizePolicies;
@@ -69,9 +68,7 @@ public class MenuUtils
 
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,
-      PopupPanelCallback popupCallback
-      )
+      final JRibbonBand mapBand, final RibbonElementPriority priority)
   {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
@@ -83,20 +80,11 @@ public class MenuUtils
     final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
         .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
         .setTitleClickAction();
-    if(popupCallback != null) {
-      builder.setPopupCallback(popupCallback);
-    }
     final FlamingoCommand command = builder.build();
 
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;
-  }
-  public static FlamingoCommand addCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority)
-  {
-    return addCommand(commandName,imagePath,actionToAdd,mapBand,priority,null);
   }
 
   public static JCommandButton addCommandButton(final String commandName,
@@ -127,8 +115,6 @@ public class MenuUtils
     }
     return commandButton;
   }
-  
-  
 
   public static JCommandToggleButton addCommandToggleButton(
       final String commandName, final String imagePath,
@@ -222,5 +208,4 @@ public class MenuUtils
         ribbonBand));
     return policies;
   }
-  
 }

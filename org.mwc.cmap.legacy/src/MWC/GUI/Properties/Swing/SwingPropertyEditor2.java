@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
 // $RCSfile: SwingPropertyEditor2.java,v $
 // @author $Author: Ian.Mayo $
@@ -268,7 +268,6 @@ import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.InputEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -284,7 +283,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -296,7 +294,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -314,1359 +311,1278 @@ import MWC.GUI.Swing.MultiLineLabel;
 import MWC.GenericData.WorldDistance;
 
 /**
- * Swing implementation of a property editor. note that setRowHeight in initForm is jdk1.3 specific!
- * ===============================
+ * Swing implementation of a property editor. note that setRowHeight in initForm
+ * is jdk1.3 specific! ===============================
  */
-public class SwingPropertyEditor2 extends PlainPropertyEditor implements
-    KeyListener
+public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyListener
 {
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
-
-  // ///////////////////////////////////////////////////
-  // produce the correct component to edit this item
-  // /////////////////////////////////////////////////
-  protected class dataCellEditor implements TableCellEditor
-  {
-
-    @Override
-    public void addCellEditorListener(final CellEditorListener p1)
-    {
-    }
-
-    @Override
-    public void cancelCellEditing()
-    {
-    }
-
-    @Override
-    public Object getCellEditorValue()
-    {
-      return null;
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(final JTable p1,
-        final Object p2, final boolean p3, final int p4, final int p5)
-    {
-      return _theEditorList.get(p2);
-    }
-
-    @Override
-    public boolean isCellEditable(final EventObject p1)
-    {
-      return true;
-    }
-
-    @Override
-    public void removeCellEditorListener(final CellEditorListener p1)
-    {
-    }
-
-    @Override
-    public boolean shouldSelectCell(final EventObject p1)
-    {
-      return true;
-    }
-
-    @Override
-    public boolean stopCellEditing()
-    {
-      return true;
-    }
-  }
-
-  // ///////////////////////////////////////////////////
-  // produce the correct component to view this item
-  // /////////////////////////////////////////////////
-  protected class dataCellRenderer implements TableCellRenderer
-  {
-
-    @Override
-    public Component getTableCellRendererComponent(final JTable p1,
-        final Object p2, final boolean isSelected, final boolean hasFocus,
-        final int p5, final int p6)
-    {
-      final Component res = _theEditorList.get(p2);
-      res.setEnabled(true);
-      return res;
-    }
-  }
-
-  /**
-   * embedded class which will invode the "setter" method (as provided in constructor)
-   */
-  private class DoActionPerformed implements java.awt.event.ActionListener
-  {
-
-    private final MethodDescriptor _myMethod;
-
-    public DoActionPerformed(final MethodDescriptor method)
-    {
-      _myMethod = method;
-    }
-
-    @Override
-    public void actionPerformed(final ActionEvent e)
-    {
-      try
-      {
-        _myMethod.getMethod().invoke(_theData, (Object[]) null);
-
-        // inform the object that we've updated it.
-        _theInfo.fireChanged(this, _myMethod.getMethod().toString(), null,
-            null);
-
-        // assume we also want to update the plot
-        if (_theLayers != null)
-          _theLayers.fireModified(null);
-      }
-      catch (final Exception b)
-      {
-        MWC.Utilities.Errors.Trace.trace(b, "Assigning data value in editor");
-      }
-    }
-  }
-
-  /**
-   * embedded helper class to handle updating the text control when the users edits it
-   */
-  private static class HandleTextChange extends java.awt.event.FocusAdapter
-      implements ActionListener
-  {
-    PropertyEditor _myEditor;
-
-    public HandleTextChange(final PropertyEditor editor)
-    {
-      _myEditor = editor;
-    }
-
-    @Override
-    public void actionPerformed(final java.awt.event.ActionEvent t)
-    {
-      final JTextField td = (JTextField) t.getSource();
-      docChanged(_myEditor, td);
-    }
-
-    /**
-     * private handler to look after changes to the text box
-     */
-    private void docChanged(final PropertyEditor pt, final JTextComponent text)
-    {
-      _myEditor.setValue(text.getText());
-    }
-
-    @Override
-    public void focusLost(final java.awt.event.FocusEvent f)
-    {
-      final JTextComponent td = (JTextComponent) f.getSource();
-      docChanged(_myEditor, td);
-    }
-  }
-
-  // ///////////////////////////////////////////////////
-  // produce a JLabel component, so that we can see labels
-  // /////////////////////////////////////////////////
-  protected class myLabelRenderer implements TableCellRenderer
-  {
-
-    @Override
-    public Component getTableCellRendererComponent(final JTable p1,
-        final Object p2, final boolean p3, final boolean p4, final int p5,
-        final int p6)
-    {
-      final PropertyDescriptor pd = (PropertyDescriptor) p2;
-      final String displayName = pd.getDisplayName();
-      final String name = displayName != null ? displayName : pd.getName();
-      final JLabel res = new JLabel(name);
-      res.setPreferredSize(res.getMinimumSize());
-      final String myStr = pd.getShortDescription();
-      res.setToolTipText(myStr);
-      return res;
-    }
-  }
-
-  /**
-   * special extension of table class which stores the object being edited this was initially
-   * created to support JFCUnit editing
-   */
-  public static class MyTable extends JTable
-  {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    /**
-     * the object being edited by the table
-     */
-    private Object _subject;
-
-    /**
-     * constructor, receives the object being edited (of course)
-     */
-    public MyTable(final Object object_being_edited)
-    {
-      super();
-      _subject = object_being_edited;
-    }
-
-    /**
-     * table is being closed, forget about the subject
-     */
-    protected void closeMe()
-    {
-      _subject = null;
-    }
-
-    /**
-     * retrieve the object being edited
-     */
-    public Object getSubject()
-    {
-      return _subject;
-    }
-  }
-
-  // /////////////////////////////////////////////////////////////////
-  // embedded implementation of table cell editor
-  // /////////////////////////////////////////////////////////////////
-  protected class myTableEditor implements javax.swing.table.TableCellEditor
-  {
-    protected Component _myC;
-
-    public myTableEditor(final Component c)
-    {
-      _myC = c;
-    }
-
-    @Override
-    public void addCellEditorListener(final CellEditorListener p1)
-    {
-      // do nothing
-    }
-
-    @Override
-    public void cancelCellEditing()
-    {
-      // do nothing
-    }
-
-    @Override
-    public Object getCellEditorValue()
-    {
-      return null;
-    }
-
-    @Override
-    public Component getTableCellEditorComponent(final JTable p1,
-        final Object p2, final boolean p3, final int p4, final int p5)
-    {
-      return _myC;
-    }
-
-    @Override
-    public boolean isCellEditable(final EventObject p1)
-    {
-      return true;
-    }
-
-    @Override
-    public void removeCellEditorListener(final CellEditorListener p1)
-    {
-      // do nothing
-    }
-
-    @Override
-    public boolean shouldSelectCell(final EventObject p1)
-    {
-      return false;
-    }
-
-    @Override
-    public boolean stopCellEditing()
-    {
-      return false;
-    }
-  }
-
-  protected class paintLabel extends JPanel
-  {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    protected PropertyEditor _myEditor;
-
-    protected JLabel _myLabel;
-
-    public paintLabel(final PropertyEditor pe)
-    {
-      _myEditor = pe;
-      _myLabel = new JLabel("  ")
-      {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public void paint(final Graphics p1)
-        {
-          final Rectangle area = _myLabel.getBounds();
-
-          // and now the updated font editor
-          p1.setColor(SystemColor.controlText);
-          _myEditor.paintValue(p1, area);
-        }
-      };
-
-      final JButton edit = new JButton("Edit");
-
-      setLayout(new BorderLayout());
-      edit.addActionListener(new ActionListener()
-      {
-        @Override
-        public void actionPerformed(final ActionEvent e)
-        {
-          doClick();
-        }
-      });
-
-      add("Center", _myLabel);
-      add("East", edit);
-
-      // and minimize the size
-      setPreferredSize(getMinimumSize());
-    }
-
-    public void doClick()
-    {
-      // show the panel itself
-      final JFrame tmp = new JFrame();
-      final Dialog fr = new SwingEditFrame(tmp, _myEditor);
-      fr.setModal(true);
-      fr.setVisible(true);
-      tmp.dispose();
-      _myLabel.repaint();
-    }
-  }
-
-  /**
-   * embedded class to handle setting the value of the indicated editor
-   */
-  static private class SetThisItem implements java.awt.event.ItemListener
-  {
-    PropertyEditor _myEditor;
-
-    public SetThisItem(final PropertyEditor editor)
-    {
-      _myEditor = editor;
-    }
-
-    @Override
-    public void itemStateChanged(final ItemEvent e)
-    {
-      // see if we are being told about a new selection
-      if (e.getStateChange() == ItemEvent.SELECTED)
-      {
-        final Object val = e.getItem();
-        if (val instanceof String)
-          _myEditor.setAsText((String) e.getItem());
-        else
-          _myEditor.setValue(e.getItem());
-      }
-    }
-  }
-
-  // custom class to remember the current value, and paint the current item in
-  // RED
-  @SuppressWarnings("rawtypes")
-  public static class TickableComboBox extends JComboBox
-  {
-
-    protected class TickableComboBoxRenderer extends JLabel implements
-        javax.swing.ListCellRenderer
-    {
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      /**
-       * red border, to show the currently selected item
-       */
-
-      private final javax.swing.border.Border redBorder = BorderFactory
-          .createLineBorder(Color.red, 1);
-
-      private final javax.swing.border.Border emptyBorder = BorderFactory
-          .createEmptyBorder(1, 1, 1, 1);
-
-      @Override
-      public Component getListCellRendererComponent(final JList list,
-          final Object value, final int index, final boolean isSelected,
-          final boolean cellHasFocus)
-      {
-        // set the text
-        setText(value.toString());
-        // is this the current value?
-        if (isCurrentValue(index))
-        {
-          setForeground(Color.red);
-        }
-        else
-        {
-          setForeground(Color.black);
-        }
-
-        // draw a button around the object we are currently editing
-        if (isSelected)
-        {
-          setBorder(redBorder);
-        }
-        else
-        {
-          setBorder(emptyBorder);
-        }
-
-        return this;
-      }
-      // //////////////////////////////////////////////////////////
-      // end of renderer
-      // //////////////////////////////////////////////////////////
-    }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-
-    @SuppressWarnings("unchecked")
-    public TickableComboBox()
-    {
-      this.setRenderer(new TickableComboBoxRenderer());
-    }
-
-    /**
-     * event handler so that we are informed when the user sets a new value
-     */
-    @Override
-    public void actionPerformed(final java.awt.event.ActionEvent event)
-    {
-    }
-
-    /**
-     * accessor method to determine if this index is the current value
-     */
-    public boolean isCurrentValue(final int index)
-    {
-      return (this.getSelectedIndex() == index);
-    }
-
-    // //////////////////////////////////////////////////////////
-    // custom renderer which can call the parent object to
-    // determine the current value of the list, and which does
-    // not depend on whether the value is selected
-    // //////////////////////////////////////////////////////////
-
-    /**
-     * over-ride this method so that we can update our index of the current value
-     */
-    @Override
-    public void setSelectedItem(final Object oj)
-    {
-      super.setSelectedItem(oj);
-    }
-
-    // //////////////////////////////////////////////////////////
-    // end of custom component
-    // //////////////////////////////////////////////////////////
-
-  }
-
-  /**
-   * declare a list of Swing-specific property editors
-   */
-  public static void checkPropertyEditors()
-  {
-    // has our property manager been defined?
-    if (_myPropertyManager == null)
-    {
-      // no, create the core object
-      createCorePropertyEditors();
-
-      // now register the specific editors
-      PropertyEditorManager.registerEditor(MWC.GenericData.HiResDate.class,
-          SwingDatePropertyEditor.class);
-      PropertyEditorManager.registerEditor(MWC.GenericData.WorldLocation.class,
-          SwingWorldLocationPropertyEditor.class);
-      PropertyEditorManager.registerEditor(boolean.class,
-          SwingBooleanPropertyEditor.class);
-      PropertyEditorManager.registerEditor(SteppingBoundedInteger.class,
-          SwingSteppingBoundedIntegerEditor.class);
-      PropertyEditorManager.registerEditor(BoundedInteger.class,
-          SwingBoundedIntegerEditor.class);
-      PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistance.class,
-          SwingDistanceWithUnitsPropertyEditor.class);
-      PropertyEditorManager.registerEditor(MWC.GenericData.Duration.class,
-          SwingDurationPropertyEditor.class);
-      PropertyEditorManager.registerEditor(MWC.GenericData.WorldSpeed.class,
-          SwingWorldSpeedPropertyEditor.class);
-      PropertyEditorManager.registerEditor(
-          MWC.GenericData.WorldAcceleration.class,
-          SwingWorldAccelerationPropertyEditor.class);
-      PropertyEditorManager.registerEditor(WorldDistance.ArrayLength.class,
-          SwingDistanceWithUnitsPropertyEditor.class);
-      // we were adding the Color editor in this method - but instead
-      // we've added it in the Swing application initialisation classes
-      // so that it is also available to the right-click editing algorithms,
-      // since it implements the getTags method
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public static TickableComboBox createChoiceEditor(final PropertyEditor pe,
-      final String[] tags)
-  {
-    final TickableComboBox cl = new TickableComboBox();
-
-    final int num = tags.length;
-
-    // and set the initial value
-    final String sel = pe.getAsText();
-
-    for (int i = 0; i < num; i++)
-    {
-      final String st = tags[i];
-      cl.addItem(st);
-
-      if (st.equals(sel))
-      {
-        cl.setSelectedIndex(i);
-      }
-    }
-
-    return cl;
-  }
-
-  /**
-   * accessor to let other classes get to our property manager
-   *
-   * @return the manager containing a list of gui-independent and gui-dependent editors
-   */
-  public static PropertyEditorManager getPropertyManager()
-  {
-    checkPropertyEditors();
-    return _myPropertyManager;
-  }
-
-  // ///////////////////////////////////////////////////////////
-  // member functions
-  // //////////////////////////////////////////////////////////
-
-  /**
-   * the panel we put ourselves into
-   */
-  private SwingPropertiesPanel.CloseableJPanel _main;
-
-  /**
-   * the table we place the properties into
-   */
-  MyTable _table;
-
-  /**
-   * the model which stores the data for the table
-   */
-  private javax.swing.table.DefaultTableModel dm;
-
-  /**
-   * the list of editor components (indexed by the component itself)
-   */
-  Hashtable<Component, Component> _theEditorList;
-
-  /**
-   * our parent panel, so that we can trigger an update
-   */
-  private SwingPropertiesPanel _theParent;
-
-  /**
-   * the panel to contain the method buttons in
-   */
-  private JPanel _methodsPanel;
-
-  /**
-   * the code to keep the table sorted
-   */
-  TableSortDecorator _tableSorter;
-
-  /**
-   * the custom editor currently in use, if there is one
-   */
-  private SwingCustomEditor _theSwingCustomEditor;
-
-  /**
-   * the apply, close and reset buttons
-   */
-  private JButton _apply;
-
-  private JButton _reset;
-
-  private JButton _close;
-
-  /**
-   * the panel in which we show reports from the item being edited
-   */
-  private MultiLineLabel _reportWindow;
-
-  // ///////////////////////////////////////////////////////////
-  // constructor
-  // //////////////////////////////////////////////////////////
-  /**
-   * the constructor for our Swing property editor
-   *
-   * @param info
-   *          the object we are going to edit
-   * @param parent
-   *          the panel we are contained in
-   * @param propsPanel
-   *          JTabbedPane
-   * @param theChart
-   *          the chart we will send updates to
-   */
-  public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
-      final SwingPropertiesPanel parent, final Layers theLayers,
-      final MWC.GUI.ToolParent toolParent, final Layer parentLayer,
-      final SwingPropertiesPanel propsPanel)
-  {
-    super(info, theLayers, parent, toolParent, parentLayer, propsPanel);
-
-    // store the parent
-    _theParent = parent;
-
-  }
-
-  protected void addButton(final JButton btn)
-  {
-    _methodsPanel.add(btn);
-  }
-
-  /**
-   * stick the panel into the interface
-   */
-  private void addPanel(final Component c, final PropertyDescriptor p)
-  {
-
-    // take a copy of the component, so that we can edit
-    // it later
-    final PropertyEditorItem pei = _theEditors.get(p);
-    pei.theEditorGUI = c;
-
-    final Vector<Object> v = new Vector<Object>();
-    v.addElement(p);
-    v.addElement(c);
-
-    if (_theEditorList == null)
-      _theEditorList = new Hashtable<Component, Component>();
-
-    _theEditorList.put(c, c);
-
-    dm.addRow(v);
-
-    // and do a quick sort
-    _tableSorter.sort(0);
-
-    // add the key listeners
-    c.addKeyListener(this);
-
-  }
-
-  void apply()
-  {
-    super.doUpdate();
-    _theParent.doApply();
-  }
-
-  /**
-   * close the editor, clearing all external links
-   */
-  public void close()
-  {
-    // process the Close event
-    if (_theSwingCustomEditor != null)
-    {
-      // so, we have a custom editor, tell it the Close button has been pressed
-      _theSwingCustomEditor.doClose();
-    }
-
-    closing();
-
-    // do we have a parent?
-    if (_theParent != null)
-    {
-
-      // remove the panel using the object as the index (we used to use the
-      // panel but
-      // we can't be sure if the panel has been inserted into a toolbar or not)
-      _theParent.remove(_theData);
-
-      // stop the parent from listening to the data item (the parent listens to
-      // it in the
-      // addEditor method of SwingPropertiesPanel)
-      _theInfo.removePropertyChangeListener(_theParent);
-    }
-
-    // tell our special panel that it can now close
-    _main.doClose();
-
-    // ok, now ditch all of our local data
-    _main.removeKeyListener(this);
-    _main.removeAll();
-    _main = null;
-    dm = null;
-
-    if (_theEditorList != null)
-    {
-      _theEditorList.clear();
-    }
-
-    _theParent = null;
-    _methodsPanel = null;
-    _tableSorter = null;
-    _theSwingCustomEditor = null;
-    _apply = null;
-    _reset = null;
-    _close = null;
-
-    // check the table
-    if (_table != null)
-    {
-      _table.closeMe();
-      _table = null;
-    }
-
-    // and in the parent
-    _myPropertyManager = null;
-    _theData = null;
-    _theProperties = null;
-    _theName = null;
-    _theEditors.clear();
-    _theModifications.removeAllElements();
-    _theCustomEditor = null;
-    _thePanel = null;
-    _otherEditors = null;
-    _theMethods = null;
-    _theInfo = null;
-    _toolParent = null;
-  }
-
-  /**
-   * convenience function to find a dedicated editor and put it into it's own panel
-   *
-   * @param op
-   *          what we're editing
-   * @param thePanel
-   *          the panel to put ourselves into
-   * @param ourCustomEditorInstance
-   *          any custom editor specified by the data object
-   * @return a panel containing our editor
-   */
-  private Object createCustomEditor(final Object op,
-      final PropertiesPanel thePanel, final Object ourCustomEditorInstance)
-  {
-    SwingCustomEditor p = null;
-    JPanel jp = null;
-    Object ourCustomEditor = ourCustomEditorInstance;
-
-    if (op instanceof SwingCustomEditor)
-    {
-      p = (SwingCustomEditor) op;
-      _theSwingCustomEditor = p;
-      _main.add("Center", p);
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * the panel we put ourselves into
+	 */
+	private SwingPropertiesPanel.CloseableJPanel _main;
+
+	/**
+	 * the table we place the properties into
+	 */
+	MyTable _table;
+
+	/**
+	 * the model which stores the data for the table
+	 */
+	private javax.swing.table.DefaultTableModel dm;
+
+	/**
+	 * the list of editor components (indexed by the component itself)
+	 */
+	Hashtable<Component, Component> _theEditorList;
+
+	/**
+	 * our parent panel, so that we can trigger an update
+	 */
+	private SwingPropertiesPanel _theParent;
+
+	/**
+	 * the panel to contain the method buttons in
+	 */
+	private JPanel _methodsPanel;
+
+	/**
+	 * the code to keep the table sorted
+	 */
+	TableSortDecorator _tableSorter;
+
+	/**
+	 * the custom editor currently in use, if there is one
+	 */
+	private SwingCustomEditor _theSwingCustomEditor;
+
+	/**
+	 * the apply, close and reset buttons
+	 */
+	private JButton _apply;
+
+	private JButton _reset;
+
+	private JButton _close;
+
+	/**
+	 * the panel in which we show reports from the item being edited
+	 */
+	private MultiLineLabel _reportWindow;
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	/**
+	 * the constructor for our Swing property editor
+	 * 
+	 * @param info
+	 *          the object we are going to edit
+	 * @param parent
+	 *          the panel we are contained in
+	 * @param theChart
+	 *          the chart we will send updates to
+	 */
+	public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
+			final SwingPropertiesPanel parent, final Layers theLayers,
+			final MWC.GUI.ToolParent toolParent, final Layer parentLayer)
+	{
+		super(info, theLayers, parent, toolParent, parentLayer);
+
+		// store the parent
+		_theParent = parent;
+
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	/**
+	 * declare a list of Swing-specific property editors
+	 */
+	protected void declarePropertyEditors()
+	{
+		// check we have created them
+		checkPropertyEditors();
+	}
+
+	/**
+	 * declare a list of Swing-specific property editors
+	 */
+	public static void checkPropertyEditors()
+	{
+		// has our property manager been defined?
+		if (_myPropertyManager == null)
+		{
+			// no, create the core object
+			createCorePropertyEditors();
+
+			// now register the specific editors
+			PropertyEditorManager.registerEditor(MWC.GenericData.HiResDate.class,
+					SwingDatePropertyEditor.class);
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldLocation.class,
+					SwingWorldLocationPropertyEditor.class);
+			PropertyEditorManager.registerEditor(boolean.class, SwingBooleanPropertyEditor.class);
+			PropertyEditorManager.registerEditor(SteppingBoundedInteger.class,
+					SwingSteppingBoundedIntegerEditor.class);
+			PropertyEditorManager.registerEditor(BoundedInteger.class,
+					SwingBoundedIntegerEditor.class);
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistance.class,
+					SwingDistanceWithUnitsPropertyEditor.class);
+			PropertyEditorManager.registerEditor(MWC.GenericData.Duration.class,
+					SwingDurationPropertyEditor.class);
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldSpeed.class,
+					SwingWorldSpeedPropertyEditor.class);
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
+					SwingWorldAccelerationPropertyEditor.class);
+	    PropertyEditorManager.registerEditor(WorldDistance.ArrayLength.class, 
+	        SwingDistanceWithUnitsPropertyEditor.class);
+			// we were adding the Color editor in this method - but instead
+			// we've added it in the Swing application initialisation classes
+			// so that it is also available to the right-click editing algorithms,
+			// since it implements the getTags method
+		}
+	}
+
+	/**
+	 * accessor to let other classes get to our property manager
+	 * 
+	 * @return the manager containing a list of gui-independent and gui-dependent
+	 *         editors
+	 */
+	public static PropertyEditorManager getPropertyManager()
+	{
+		checkPropertyEditors();
+		return _myPropertyManager;
+	}
+
+	/**
+	 * layout the editors on the page
+	 * 
+	 * @param thePanel
+	 *          our parent properties panel
+	 */
+	protected void initForm(final PropertiesPanel thePanel)
+	{
+
+		// go through the editors, creating them
+		_main = new SwingPropertiesPanel.CloseableJPanel()
+		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			// somebody is telling us to close - to be added by the implementing class
+			public void triggerClose()
+			{
+				close();
+			}
+		};
+
+		_main.setLayout(new BorderLayout());
+		_main.addKeyListener(this);
+
+		// create the buttons early, so we can re-format them if we want to
+		_close = new JButton("Close");
+		_close.setName("Close");
+		_reset = new JButton("Reset");
+		_reset.setName("Reset");
+		_apply = new JButton("Apply");
+		_apply.setName("Apply");
+
+		Object ourCustomEditorInstance = null;
+
+		// try for the custom editor first
+		if (super._theCustomEditor != null)
+		{
+			try
+			{
+				final Object op = super._theCustomEditor.newInstance();
+
+				// let our support class produce the item
+				ourCustomEditorInstance = createCustomEditor(op, thePanel,
+						ourCustomEditorInstance);
+			}
+			catch (final Exception e)
+			{
+				MWC.Utilities.Errors.Trace.trace(e);
+			}
+
+		} // we have a custom editor
+		else
+		{ // a custom editor was not provided, let's resort to introspection
+
+			_table = new MyTable(super._theData);
+			_table.setName("Editor");
+			dm = new javax.swing.table.DefaultTableModel();
+			// create a sorted list around the model
+			_tableSorter = new TableSortDecorator(dm);
+			_table.setModel(_tableSorter);
+
+			// insert a handler to allow user to select which column to sort by
+			final JTableHeader hdr = _table.getTableHeader();
+			hdr.addMouseListener(new MouseAdapter()
+			{
+				public void mouseClicked(final MouseEvent e)
+				{
+					final TableColumnModel tcm = _table.getColumnModel();
+					final int vc = tcm.getColumnIndexAtX(e.getX());
+					final int mc = _table.convertColumnIndexToModel(vc);
+					_tableSorter.sort(mc);
+				}
+			});
+
+			// now put in the columns
+			dm.addColumn("Name");
+			dm.addColumn("Data");
+
+			// put the table in a scroll pane, so it can scroll
+			// if necessary
+			final JScrollPane jsp = new JScrollPane(_table);
+			_main.add("Center", jsp);
+
+			final javax.swing.table.TableColumn lbls = _table.getColumn("Name");
+			lbls.setCellRenderer(new myLabelRenderer());
+
+			final javax.swing.table.TableColumn data = _table.getColumn("Data");
+			data.setCellRenderer(new dataCellRenderer());
+			data.setCellEditor(new dataCellEditor());
+
+			// now do the column width for the name column
+			final int nameWid = lbls.getMinWidth();
+			lbls.setPreferredWidth(nameWid);
+			_table.sizeColumnsToFit(-1);
+
+			// show all of the editor entities
+			final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
+			while (enumer.hasMoreElements())
+			{
+				final PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
+				final PropertyDescriptor p = pei.theDescriptor;
+				final PropertyEditor pe = pei.theEditor;
+				if (pe != null)
+				{
+					showThis(p, pe);
+				}
+			}
+
+			// we have created our editors, now set the best height
+			int maxHt = 0;
+			for (int i = 0; i < _table.getRowCount(); i++)
+			{
+				final Component c = data.getCellRenderer().getTableCellRendererComponent(_table,
+						_table.getValueAt(i, 1), false, false, i, 1);
+				final int h = c.getMinimumSize().height;
+
+				/**
+				 * note that setRowHeight in initForm is jdk1.3 specific!
+				 */
+				_table.setRowHeight(i, h);
+				maxHt = Math.max(maxHt, h);
+			}
+
+			// JDK1.2 - set height for all rows
+			// _table.setRowHeight(maxHt);
+
+			// provide the panel for the method buttons to go in
+			_methodsPanel = new JPanel();
+			_main.add("North", _methodsPanel);
+
+		}
+
+		// create the button holder
+		final JPanel buttonHolder = new JPanel();
+		buttonHolder.setLayout(new GridLayout(1, 0));
+		final JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new BorderLayout());
+		bottomPanel.add("South", buttonHolder);
+		_main.add("South", bottomPanel);
+
+		// see if we need to display a reporting window
+		if (super._theInfo.firesReports())
+		{
+			// ok, add the reporting window
+			_reportWindow = new MultiLineLabel();
+			_reportWindow.setRows(2);
+			_reportWindow.setBorder(BorderFactory.createLoweredBevelBorder());
+			bottomPanel.add("Center", _reportWindow);
+		}
+
+		// format the buttons
+		buttonHolder.add(_close);
+		_close.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(final ActionEvent e)
+			{
+				close();
+			}
+		});
+
+		/**
+		 * check that this isn't one of our special editors which doesn't
+		 * apply/reset buttons at it's foot
+		 */
+		if (ourCustomEditorInstance != null)
+		{
+			if (ourCustomEditorInstance instanceof MWC.GUI.Properties.NoEditorButtons)
+			{
+				// let's just drop out now
+				return;
+			}
+		}
+
+		buttonHolder.add(_apply);
+		_apply.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(final ActionEvent e)
+			{
+				apply();
+			}
+		});
+
+		buttonHolder.add(_reset);
+		_reset.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(final ActionEvent e)
+			{
+				reset();
+			}
+		});
+
+	}
+
+	/**
+	 * convenience function to find a dedicated editor and put it into it's own
+	 * panel
+	 * 
+	 * @param op
+	 *          what we're editing
+	 * @param thePanel
+	 *          the panel to put ourselves into
+	 * @param ourCustomEditorInstance
+	 *          any custom editor specified by the data object
+	 * @return a panel containing our editor
+	 */
+	private Object createCustomEditor(final Object op, final PropertiesPanel thePanel,
+			final Object ourCustomEditorInstance)
+	{
+		SwingCustomEditor p = null;
+		JPanel jp = null;
+		Object ourCustomEditor = ourCustomEditorInstance;
+
+		if (op instanceof SwingCustomEditor)
+		{
+			p = (SwingCustomEditor) op;
+			_theSwingCustomEditor = p;
+			_main.add("Center", p);
 
       p.setObject(super._theData, _toolParent, _theLayers, thePanel);
 
-      ourCustomEditor = op;
-    }
-    else
-    {
-      if (op instanceof MWC.GUI.Properties.AWT.AWTCustomEditor)
-      {
-        System.err.println("found AWT Editor");
-        final MWC.GUI.Properties.AWT.AWTCustomEditor ap =
-            (MWC.GUI.Properties.AWT.AWTCustomEditor) op;
-        jp = new JPanel();
-        jp.setLayout(new BorderLayout());
-        jp.add("Center", ap);
-        _main.add("North", jp);
-        ap.setObject(super._theData, _theParent);
+			ourCustomEditor = op;
+		}
+		else
+		{
+			if (op instanceof MWC.GUI.Properties.AWT.AWTCustomEditor)
+			{
+				System.err.println("found AWT Editor");
+				final MWC.GUI.Properties.AWT.AWTCustomEditor ap = (MWC.GUI.Properties.AWT.AWTCustomEditor) op;
+				jp = new JPanel();
+				jp.setLayout(new BorderLayout());
+				jp.add("Center", ap);
+				_main.add("North", jp);
+				ap.setObject(super._theData, _theParent);
 
-        ourCustomEditor = op;
-      }
-    }
+				ourCustomEditor = op;
+			}
+		}
 
-    // see if this custom editor wants to know about the property panel
-    if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
-    {
-      final PlainPropertyEditor.EditorUsesPropertyPanel eu =
-          (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditor;
-      eu.setPanel(super._thePanel);
-    }
-
+		// see if this custom editor wants to know about the property panel
+		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
+		{
+			final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditor;
+			eu.setPanel(super._thePanel);
+		}
+		
     // see if this custom editor wants to know about the property panel
     if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesLayers)
     {
-      final PlainPropertyEditor.EditorUsesLayers eu =
-          (PlainPropertyEditor.EditorUsesLayers) ourCustomEditor;
+      final PlainPropertyEditor.EditorUsesLayers eu = (PlainPropertyEditor.EditorUsesLayers) ourCustomEditor;
       eu.setLayers(super._theLayers);
     }
-
-    // see if this custom editor wants to know about the tool parnet
-    if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesToolParent)
-    {
-      final PlainPropertyEditor.EditorUsesToolParent eu =
-          (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditor;
-      eu.setParent(super._toolParent);
-    }
-    return ourCustomEditor;
-  }
-
-  /**
-   * declare a list of Swing-specific property editors
-   */
-  @Override
-  protected void declarePropertyEditors()
-  {
-    // check we have created them
-    checkPropertyEditors();
-  }
-
-  @Override
-  public void doRefresh()
-  {
-    super.doRefresh();
-    if (_table != null)
-    {
-      _table.revalidate();
-      _table.repaint();
-    }
-
-  }
-
-  /**
-   * the object we are listening to has fired a new report. Display it in our GUI if we want to
-   *
-   * @param report
-   *          the text to show
-   */
-  @Override
-  protected void fireNewReport(final String report)
-  {
-    _reportWindow.setText(report);
-  }
-
-  @Override
-  protected MWC.GUI.Undo.UndoBuffer getBuffer()
-  {
-    return _theParent.getBuffer();
-  }
-
-  /**
-   * get the Swing panel we have been drawn into
-   *
-   * @return Swing panel
-   */
-  public Component getPanel()
-  {
-    return _main;
-  }
-
-  /**
-   * layout the editors on the page
-   *
-   * @param thePanel
-   *          our parent properties panel
-   */
-  @Override
-  protected void initForm(final PropertiesPanel thePanel)
-  {
-
-    // go through the editors, creating them
-    _main = new SwingPropertiesPanel.CloseableJPanel()
-    {
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      // somebody is telling us to close - to be added by the implementing class
-      @Override
-      public void triggerClose()
-      {
-        close();
-      }
-    };
-
-    _main.setLayout(new BorderLayout());
-    _main.addKeyListener(this);
-
-    // create the buttons early, so we can re-format them if we want to
-    _close = new JButton("Close");
-    _close.setName("Close");
-    _reset = new JButton("Reset");
-    _reset.setName("Reset");
-    _apply = new JButton("Apply");
-    _apply.setName("Apply");
-
-    Object ourCustomEditorInstance = null;
-
-    // try for the custom editor first
-    if (super._theCustomEditor != null)
-    {
-      try
-      {
-        final Object op = super._theCustomEditor.newInstance();
-
-        // let our support class produce the item
-        ourCustomEditorInstance = createCustomEditor(op, thePanel,
-            ourCustomEditorInstance);
-      }
-      catch (final Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-
-    } // we have a custom editor
-    else
-    { // a custom editor was not provided, let's resort to introspection
-
-      _table = new MyTable(super._theData);
-      _table.setName("Editor");
-      dm = new javax.swing.table.DefaultTableModel();
-      // create a sorted list around the model
-      _tableSorter = new TableSortDecorator(dm);
-      _table.setModel(_tableSorter);
-
-      // insert a handler to allow user to select which column to sort by
-      final JTableHeader hdr = _table.getTableHeader();
-      hdr.addMouseListener(new MouseAdapter()
-      {
-        @Override
-        public void mouseClicked(final MouseEvent e)
-        {
-          final TableColumnModel tcm = _table.getColumnModel();
-          final int vc = tcm.getColumnIndexAtX(e.getX());
-          final int mc = _table.convertColumnIndexToModel(vc);
-          _tableSorter.sort(mc);
-        }
-      });
-
-      // now put in the columns
-      dm.addColumn("Name");
-      dm.addColumn("Data");
-
-      // put the table in a scroll pane, so it can scroll
-      // if necessary
-      final JScrollPane jsp = new JScrollPane(_table);
-      _main.add("Center", jsp);
-
-      final javax.swing.table.TableColumn lbls = _table.getColumn("Name");
-      lbls.setCellRenderer(new myLabelRenderer());
-      lbls.setCellEditor(new DefaultCellEditor(new JTextField())
-      {
-        /**
-         *
-         */
-        private static final long serialVersionUID = 2896258093719271268L;
-
-        @Override
-        public boolean isCellEditable(final EventObject anEvent)
-        {
-          return false;
-        }
-      });
-
-      final javax.swing.table.TableColumn data = _table.getColumn("Data");
-      data.setCellRenderer(new dataCellRenderer());
-      data.setCellEditor(new dataCellEditor());
-
-      // now do the column width for the name column
-      final int nameWid = lbls.getMinWidth();
-      lbls.setPreferredWidth(nameWid);
-      _table.sizeColumnsToFit(-1);
-
-      // show all of the editor entities
-      final Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
-      while (enumer.hasMoreElements())
-      {
-        final PropertyEditorItem pei = enumer.nextElement();
-        final PropertyDescriptor p = pei.theDescriptor;
-        final PropertyEditor pe = pei.theEditor;
-        if (pe != null)
-        {
-          showThis(p, pe);
-        }
-      }
-
-      // we have created our editors, now set the best height
-      int maxHt = 0;
-      for (int i = 0; i < _table.getRowCount(); i++)
-      {
-        final Component c = data.getCellRenderer()
-            .getTableCellRendererComponent(_table, _table.getValueAt(i, 1),
-                false, false, i, 1);
-        final int h = c.getMinimumSize().height;
-
-        /**
-         * note that setRowHeight in initForm is jdk1.3 specific!
-         */
-        _table.setRowHeight(i, h);
-        maxHt = Math.max(maxHt, h);
-      }
-
-      // JDK1.2 - set height for all rows
-      // _table.setRowHeight(maxHt);
-
-      // provide the panel for the method buttons to go in
-      _methodsPanel = new JPanel();
-      _main.add("North", _methodsPanel);
-
-    }
-
-    // create the button holder
-    final JPanel buttonHolder = new JPanel();
-    buttonHolder.setLayout(new GridLayout(1, 0));
-    final JPanel bottomPanel = new JPanel();
-    bottomPanel.setLayout(new BorderLayout());
-    bottomPanel.add("South", buttonHolder);
-    _main.add("South", bottomPanel);
-
-    // see if we need to display a reporting window
-    if (super._theInfo.firesReports())
-    {
-      // ok, add the reporting window
-      _reportWindow = new MultiLineLabel();
-      _reportWindow.setRows(2);
-      _reportWindow.setBorder(BorderFactory.createLoweredBevelBorder());
-      bottomPanel.add("Center", _reportWindow);
-    }
-
-    // format the buttons
-    buttonHolder.add(_close);
-    _close.addActionListener(new ActionListener()
-    {
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        close();
-      }
-    });
-
-    /**
-     * check that this isn't one of our special editors which doesn't apply/reset buttons at it's
-     * foot
-     */
-    if (ourCustomEditorInstance != null)
-    {
-      if (ourCustomEditorInstance instanceof MWC.GUI.Properties.NoEditorButtons)
-      {
-        // let's just drop out now
-        return;
-      }
-    }
-
-    if (!_theEditors.isEmpty())
-    {
-      buttonHolder.add(_apply);
-      _apply.addActionListener(new ActionListener()
-      {
-        @Override
-        public void actionPerformed(final ActionEvent e)
-        {
-          apply();
-        }
-      });
-
-      buttonHolder.add(_reset);
-      _reset.addActionListener(new ActionListener()
-      {
-        @Override
-        public void actionPerformed(final ActionEvent e)
-        {
-          reset();
-        }
-      });
-    }
-
-  }
-
-  @Override
-  public void keyPressed(final KeyEvent p1)
-  {
-  }
-
-  @Override
-  public void keyReleased(final KeyEvent p1)
-  {
-  }
-
-  @Override
-  public void keyTyped(final KeyEvent p1)
-  {
-    final int mods = p1.getModifiers();
-    if ((mods & InputEvent.ALT_MASK) != 0)
-    {
-      // so an alt-key has been pressed
-      final char k = p1.getKeyChar();
-      if (k == 'a')
-      {
-        apply();
-      }
-    }
-  }
-
-  /**
-   * make a text box editor to edit this parameter
-   */
-  private Component makeBox(final PropertyDescriptor p, final PropertyEditor pe)
-  {
-    final String res = pe.getAsText();
-
-    final JTextArea tf = new JTextArea(res);
-    tf.setRows(3);
-
-    final JScrollPane scroller = new JScrollPane(tf);
-    scroller.setMinimumSize(new Dimension(30, 36));
-
-    /**
-     * add an action listener, to make the update when the user presses return inside the control
-     */
-    // tf.addActionListener(new HandleTextChange(pe));
-    /**
-     * add a focus listener, to update the text field as the user leaves the box
-     */
-    tf.addFocusListener(new HandleTextChange(pe));
-
-    // and put it in the panel
-    return scroller;
-  }
-
-  /**
-   * create a drop down list to edit this item
-   */
-  private Component makeChoice(final PropertyEditor pe, final String[] tags)
-  {
-    final TickableComboBox cl = createChoiceEditor(pe, tags);
-
-    // handler for new selection
-    cl.addItemListener(new SetThisItem(pe));
-    cl.setPreferredSize(cl.getMinimumSize());
-
-    return cl;
-  }
-
-  // ///////////////////////////////////////////////////
-  // support classes - label containing edit button
-  // /////////////////////////////////////////////////
-
-  /**
-   * make a panel to edit this item inside
-   */
-  private Component makePanel(final PropertyDescriptor p,
-      final PropertyEditor pe)
-  {
-    Component cp = null;
-    if (pe.isPaintable())
-    {
-      cp = new paintLabel(pe);
-
-    }
-    else
-    {
-      cp = pe.getCustomEditor();
-
-      // set the name
-      cp.setName(p.getDisplayName());
-
-      // see if this custom editor wants to know about the property panel
-      if (pe instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
-      {
-        final PlainPropertyEditor.EditorUsesPropertyPanel eu =
-            (PlainPropertyEditor.EditorUsesPropertyPanel) pe;
-        eu.setPanel(super._thePanel);
-      }
-      // see if this custom editor wants to know about the property panel
-      if (pe instanceof PlainPropertyEditor.EditorUsesLayers)
-      {
-        final PlainPropertyEditor.EditorUsesLayers eu =
-            (PlainPropertyEditor.EditorUsesLayers) pe;
-        eu.setLayers(super._theLayers);
-      }
-      // see if this custom editor wants to know about the tool parnet
-      if (pe instanceof PlainPropertyEditor.EditorUsesToolParent)
-      {
-        final PlainPropertyEditor.EditorUsesToolParent eu =
-            (PlainPropertyEditor.EditorUsesToolParent) pe;
-        eu.setParent(super._toolParent);
-      }
-
-    }
-
-    return cp;
-  }
-
-  void reset()
-  {
-    // process the RESET event
-    if (_theSwingCustomEditor != null)
-    {
-      // so, we have a custom editor, tell it the RESET button has been pressed
-      _theSwingCustomEditor.doReset();
-    }
-    else
-    {
-      // do a reset for each parameter
-      doReset();
-    }
-  }
-
-  @Override
-  public void setNames(final String apply, final String close,
-      final String reset)
-  {
-    if (apply != null)
-      _apply.setText(apply);
-    if (reset != null)
-      _reset.setText(reset);
-    if (close != null)
-      _close.setText(close);
-  }
-
-  @Override
-  protected void showMethods()
-  {
-    // just check that we've got a methods panel
-    if (_theMethods != null)
-    {
-      for (int i = 0; i < _theMethods.length; i++)
-      {
-        final MethodDescriptor md = _theMethods[i];
-        if (_methodsPanel != null)
-        {
-
-          final JButton btn = new JButton(md.getDisplayName());
-          btn.addActionListener(new DoActionPerformed(md));
-          addButton(btn);
-        }
-        else
-        {
-          MWC.Utilities.Errors.Trace.trace(
-              "Trying to show methods when we don't have a 'methods' panel to host:"
-                  + md.getDisplayName(), false);
-        }
-      }
-    }
-
-  }
-
-  /**
-   * sort out what kind of GUI component to edit this, then stick it into our panel
-   */
-  private void showThis(final PropertyDescriptor p, final PropertyEditor pe)
-  {
-    Component theComp = null;
-
-    // see if there is a custom editor
-    if (pe.supportsCustomEditor())
-    {
-      theComp = makePanel(p, pe);
-    }
-    else
-    {
-
-      // see if there is a list of values
-      final String[] tags = pe.getTags();
-      if (tags != null)
-      {
-        // create a choice item
-        theComp = makeChoice(pe, tags);
-      }
-      else
-      {
-
-        // note, we used to check that there was a string present before
-        // creating this text
-        // editor - but we want to slowly switch to allowing the user to supply
-        // null values
-        // so, temporarily still
-        theComp = makeBox(p, pe);
-      }
-    }
-
-    // did we find one?
-    if (theComp != null)
-    {
-      // todo: if this attribute is optional, wrap it in a holder containing an
-      // "ignore" checkbox
-      addPanel(theComp, p);
-    }
-    else
-    {
-      MWC.Utilities.Errors.Trace.trace("Failed to find editor for:" + p
-          .getShortDescription());
-    }
-
-  }
-
-  /**
-   * method to indicate to user that no editors were found
-   */
-  @Override
-  protected void showZeroEditorsFound()
-  {
-    _main.add("Center", new JLabel("This object has no editable properties"));
-  }
-
-  @Override
-  @SuppressWarnings("rawtypes")
-  protected void updateThis(final Component c, final PropertyEditor pe)
-  {
-    // update the gui
-    if (c instanceof JTextField)
-    {
-      final JTextField t = (JTextField) c;
-      t.setText(pe.getAsText());
-      t.invalidate();
-    }
-    if (c instanceof JCheckBox)
-    {
-      final JCheckBox t = (JCheckBox) c;
-      final Boolean val = (Boolean) pe.getValue();
-      t.setSelected(val.booleanValue());
-    }
-    if (c instanceof JComboBox)
-    {
-      final JComboBox t = (JComboBox) c;
-      // optimistically try for the text value first
-      Object current = pe.getAsText();
-
-      if (current == null)
-      {
-        // oh well, use the raw value instead
-        current = pe.getValue();
-      }
-
-      // update the current value
-      t.setSelectedItem(current);
-    }
-    if (c instanceof JScrollPane)
-    {
-      final JScrollPane scrollPane = (JScrollPane) c;
-      JTextArea textArea = (JTextArea) ((JViewport) scrollPane.getViewport())
-          .getView();
-      textArea.setText(pe.getAsText());
-      textArea.invalidate();
-    }
-  }
+    
+		// see if this custom editor wants to know about the tool parnet
+		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesToolParent)
+		{
+			final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) ourCustomEditor;
+			eu.setParent(super._toolParent);
+		}
+		return ourCustomEditor;
+	}
+
+	public void setNames(final String apply, final String close, final String reset)
+	{
+		if (apply != null)
+			_apply.setText(apply);
+		if (reset != null)
+			_reset.setText(reset);
+		if (close != null)
+			_close.setText(close);
+	}
+
+	/**
+	 * get the Swing panel we have been drawn into
+	 * 
+	 * @return Swing panel
+	 */
+	public Component getPanel()
+	{
+		return _main;
+	}
+
+	/**
+	 * sort out what kind of GUI component to edit this, then stick it into our
+	 * panel
+	 */
+	private void showThis(final PropertyDescriptor p, final PropertyEditor pe)
+	{
+		Component theComp = null;
+
+		// see if there is a custom editor
+		if (pe.supportsCustomEditor())
+		{
+			theComp = makePanel(p, pe);
+		}
+		else
+		{
+
+			// see if there is a list of values
+			final String[] tags = pe.getTags();
+			if (tags != null)
+			{
+				// create a choice item
+				theComp = makeChoice(p, pe, tags);
+			}
+			else
+			{
+
+				// note, we used to check that there was a string present before
+				// creating this text
+				// editor - but we want to slowly switch to allowing the user to supply
+				// null values
+				// so, temporarily still
+				theComp = makeBox(p, pe);
+			}
+		}
+
+		// did we find one?
+		if (theComp != null)
+		{
+			// todo: if this attribute is optional, wrap it in a holder containing an
+			// "ignore" checkbox
+			addPanel(p.getDisplayName(), theComp, p.getShortDescription(), p);
+		}
+		else
+		{
+			MWC.Utilities.Errors.Trace.trace("Failed to find editor for:"
+					+ p.getShortDescription());
+		}
+
+	}
+
+	/**
+	 * make a panel to edit this item inside
+	 */
+	private Component makePanel(final PropertyDescriptor p, final PropertyEditor pe)
+	{
+		Component cp = null;
+		if (pe.isPaintable())
+		{
+			cp = new paintLabel(pe);
+
+		}
+		else
+		{
+			cp = pe.getCustomEditor();
+
+			// set the name
+			cp.setName(p.getDisplayName());
+
+			// see if this custom editor wants to know about the property panel
+			if (pe instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
+			{
+				final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) pe;
+				eu.setPanel(super._thePanel);
+			}
+	    // see if this custom editor wants to know about the property panel
+	    if (pe instanceof PlainPropertyEditor.EditorUsesLayers)
+	    {
+	      final PlainPropertyEditor.EditorUsesLayers eu = (PlainPropertyEditor.EditorUsesLayers) pe;
+	      eu.setLayers(super._theLayers);
+	    }
+			// see if this custom editor wants to know about the tool parnet
+			if (pe instanceof PlainPropertyEditor.EditorUsesToolParent)
+			{
+				final PlainPropertyEditor.EditorUsesToolParent eu = (PlainPropertyEditor.EditorUsesToolParent) pe;
+				eu.setParent(super._toolParent);
+			}
+
+		}
+
+		return cp;
+	}
+
+	/**
+	 * method to indicate to user that no editors were found
+	 */
+	protected void showZeroEditorsFound()
+	{
+		_main.add("Center", new JLabel("This object has no editable properties"));
+	}
+
+	@SuppressWarnings("unchecked")
+	public static TickableComboBox createChoiceEditor(final PropertyEditor pe, final String[] tags)
+	{
+		final TickableComboBox cl = new TickableComboBox();
+
+		final int num = tags.length;
+
+		// and set the initial value
+		final String sel = pe.getAsText();
+
+		for (int i = 0; i < num; i++)
+		{
+			final String st = tags[i];
+			cl.addItem(st);
+
+			if (st.equals(sel))
+			{
+				cl.setSelectedIndex(i);
+			}
+		}
+
+		return cl;
+	}
+
+	/**
+	 * create a drop down list to edit this item
+	 */
+	private Component makeChoice(final PropertyDescriptor p, final PropertyEditor pe, final String[] tags)
+	{
+		final TickableComboBox cl = createChoiceEditor(pe, tags);
+
+		// handler for new selection
+		cl.addItemListener(new SetThisItem(pe));
+		cl.setPreferredSize(cl.getMinimumSize());
+
+		return cl;
+	}
+
+	/**
+	 * embedded class to handle setting the value of the indicated editor
+	 */
+	static private class SetThisItem implements java.awt.event.ItemListener
+	{
+		PropertyEditor _myEditor;
+
+		public SetThisItem(final PropertyEditor editor)
+		{
+			_myEditor = editor;
+		}
+
+		public void itemStateChanged(final ItemEvent e)
+		{
+			// see if we are being told about a new selection
+			if (e.getStateChange() == ItemEvent.SELECTED)
+			{
+				final Object val = e.getItem();
+				if (val instanceof String)
+					_myEditor.setAsText((String) e.getItem());
+				else
+					_myEditor.setValue(e.getItem());
+			}
+		}
+	}
+
+	/**
+	 * make a text box editor to edit this parameter
+	 */
+	private Component makeBox(final PropertyDescriptor p, final PropertyEditor pe)
+	{
+		final String res = pe.getAsText();
+
+		final JTextArea tf = new JTextArea(res);
+		tf.setRows(3);
+
+		final JScrollPane scroller = new JScrollPane(tf);
+		scroller.setMinimumSize(new Dimension(30, 36));
+
+		/**
+		 * add an action listener, to make the update when the user presses return
+		 * inside the control
+		 */
+		// tf.addActionListener(new HandleTextChange(pe));
+		/**
+		 * add a focus listener, to update the text field as the user leaves the box
+		 */
+		tf.addFocusListener(new HandleTextChange(pe));
+
+		// and put it in the panel
+		return scroller;
+	}
+
+	/**
+	 * embedded helper class to handle updating the text control when the users
+	 * edits it
+	 */
+	private static class HandleTextChange extends java.awt.event.FocusAdapter implements
+			java.awt.event.ActionListener
+	{
+		PropertyEditor _myEditor;
+
+		public HandleTextChange(final PropertyEditor editor)
+		{
+			_myEditor = editor;
+		}
+
+		public void actionPerformed(final java.awt.event.ActionEvent t)
+		{
+			final JTextField td = (JTextField) t.getSource();
+			docChanged(_myEditor, td);
+		}
+
+		public void focusLost(final java.awt.event.FocusEvent f)
+		{
+			final JTextComponent td = (JTextComponent) f.getSource();
+			docChanged(_myEditor, td);
+		}
+
+		/**
+		 * private handler to look after changes to the text box
+		 */
+		private void docChanged(final PropertyEditor pt, final JTextComponent text)
+		{
+			_myEditor.setValue(text.getText());
+		}
+	}
+
+	/**
+	 * stick the panel into the interface
+	 */
+	private void addPanel(final String lbl, final Component c, final String details, final PropertyDescriptor p)
+	{
+
+		// take a copy of the component, so that we can edit
+		// it later
+		final PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
+		pei.theEditorGUI = c;
+
+		final Vector<Object> v = new Vector<Object>();
+		v.addElement(p);
+		v.addElement(c);
+
+		if (_theEditorList == null)
+			_theEditorList = new Hashtable<Component, Component>();
+
+		_theEditorList.put(c, c);
+
+		dm.addRow(v);
+
+		// and do a quick sort
+		_tableSorter.sort(0);
+
+		// add the key listeners
+		c.addKeyListener(this);
+
+	}
+
+	protected void addButton(final JButton btn)
+	{
+		_methodsPanel.add(btn);
+	}
+
+	void apply()
+	{
+		super.doUpdate();
+		_theParent.doApply();
+	}
+
+	/**
+	 * close the editor, clearing all external links
+	 */
+	public void close()
+	{
+		// process the Close event
+		if (_theSwingCustomEditor != null)
+		{
+			// so, we have a custom editor, tell it the Close button has been pressed
+			_theSwingCustomEditor.doClose();
+		}
+
+		closing();
+
+		// do we have a parent?
+		if (_theParent != null)
+		{
+
+			// remove the panel using the object as the index (we used to use the
+			// panel but
+			// we can't be sure if the panel has been inserted into a toolbar or not)
+			_theParent.remove(_theData);
+
+			// stop the parent from listening to the data item (the parent listens to
+			// it in the
+			// addEditor method of SwingPropertiesPanel)
+			_theInfo.removePropertyChangeListener(_theParent);
+		}
+
+		// tell our special panel that it can now close
+		_main.doClose();
+
+		// ok, now ditch all of our local data
+		_main.removeKeyListener(this);
+		_main.removeAll();
+		_main = null;
+		dm = null;
+
+		if (_theEditorList != null)
+		{
+			_theEditorList.clear();
+		}
+
+		_theParent = null;
+		_methodsPanel = null;
+		_tableSorter = null;
+		_theSwingCustomEditor = null;
+		_apply = null;
+		_reset = null;
+		_close = null;
+
+		// check the table
+		if (_table != null)
+		{
+			_table.closeMe();
+			_table = null;
+		}
+
+		// and in the parent
+		_myPropertyManager = null;
+		_theData = null;
+		_theProperties = null;
+		_theName = null;
+		_theEditors.clear();
+		_theModifications.removeAllElements();
+		_theCustomEditor = null;
+		_thePanel = null;
+		_otherEditors = null;
+		_theMethods = null;
+		_theInfo = null;
+		_toolParent = null;
+	}
+
+	void reset()
+	{
+		// process the RESET event
+		if (_theSwingCustomEditor != null)
+		{
+			// so, we have a custom editor, tell it the RESET button has been pressed
+			_theSwingCustomEditor.doReset();
+		}
+		else
+		{
+			// do a reset for each parameter
+			doReset();
+		}
+	}
+
+	public void doRefresh()
+	{
+		super.doRefresh();
+		if (_table != null)
+		{
+			_table.revalidate();
+			_table.repaint();
+		}
+
+	}
+
+	public void keyTyped(final KeyEvent p1)
+	{
+		final int mods = p1.getModifiers();
+		if ((mods & KeyEvent.ALT_MASK) != 0)
+		{
+			// so an alt-key has been pressed
+			final char k = p1.getKeyChar();
+			if (k == 'a')
+			{
+				apply();
+			}
+		}
+	}
+
+	public void keyPressed(final KeyEvent p1)
+	{
+	}
+
+	public void keyReleased(final KeyEvent p1)
+	{
+	}
+
+	protected MWC.GUI.Undo.UndoBuffer getBuffer()
+	{
+		return _theParent.getBuffer();
+	}
+
+	@SuppressWarnings("rawtypes")
+	protected void updateThis(final Component c, final PropertyEditor pe)
+	{
+		// update the gui
+		if (c instanceof JTextField)
+		{
+			final JTextField t = (JTextField) c;
+			t.setText(pe.getAsText());
+			t.invalidate();
+		}
+		if (c instanceof JCheckBox)
+		{
+			final JCheckBox t = (JCheckBox) c;
+			final Boolean val = (Boolean) pe.getValue();
+			t.setSelected(val.booleanValue());
+		}
+		if (c instanceof JComboBox)
+		{
+			final JComboBox t = (JComboBox) c;
+			// optimistically try for the text value first
+			Object current = pe.getAsText();
+
+			if (current == null)
+			{
+				// oh well, use the raw value instead
+				current = pe.getValue();
+			}
+
+			// update the current value
+			t.setSelectedItem(current);
+		}
+	}
+
+	/**
+	 * the object we are listening to has fired a new report. Display it in our
+	 * GUI if we want to
+	 * 
+	 * @param report
+	 *          the text to show
+	 */
+	protected void fireNewReport(final String report)
+	{
+		_reportWindow.setText(report);
+	}
+
+	protected void showMethods()
+	{
+		// just check that we've got a methods panel
+		if (_theMethods != null)
+		{
+			for (int i = 0; i < _theMethods.length; i++)
+			{
+				final MethodDescriptor md = _theMethods[i];
+				if (_methodsPanel != null)
+				{
+
+					final JButton btn = new JButton(md.getDisplayName());
+					btn.addActionListener(new DoActionPerformed(md));
+					addButton(btn);
+				}
+				else
+				{
+					MWC.Utilities.Errors.Trace.trace(
+							"Trying to show methods when we don't have a 'methods' panel to host:"
+									+ md.getDisplayName(), false);
+				}
+			}
+		}
+
+	}
+
+	/**
+	 * embedded class which will invode the "setter" method (as provided in
+	 * constructor)
+	 */
+	private class DoActionPerformed implements java.awt.event.ActionListener
+	{
+
+		private final MethodDescriptor _myMethod;
+
+		public DoActionPerformed(final MethodDescriptor method)
+		{
+			_myMethod = method;
+		}
+
+		public void actionPerformed(final ActionEvent e)
+		{
+			try
+			{
+				_myMethod.getMethod().invoke(_theData,(Object[]) null);
+
+				// inform the object that we've updated it.
+				_theInfo.fireChanged(this, _myMethod.getMethod().toString(), null, null);
+
+				// assume we also want to update the plot
+				if (_theLayers != null)
+					_theLayers.fireModified(null);
+			}
+			catch (final Exception b)
+			{
+				MWC.Utilities.Errors.Trace.trace(b, "Assigning data value in editor");
+			}
+		}
+	}
+
+	// ///////////////////////////////////////////////////
+	// support classes - label containing edit button
+	// /////////////////////////////////////////////////
+
+	protected class paintLabel extends JPanel
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		protected PropertyEditor _myEditor;
+
+		protected JLabel _myLabel;
+
+		public paintLabel(final PropertyEditor pe)
+		{
+			_myEditor = pe;
+			_myLabel = new JLabel("  ")
+			{
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public void paint(final Graphics p1)
+				{
+					final Rectangle area = _myLabel.getBounds();
+
+					// and now the updated font editor
+					p1.setColor(SystemColor.controlText);
+					_myEditor.paintValue(p1, area);
+				}
+			};
+
+			final JButton edit = new JButton("Edit");
+
+			setLayout(new BorderLayout());
+			edit.addActionListener(new ActionListener()
+			{
+				public void actionPerformed(final ActionEvent e)
+				{
+					doClick();
+				}
+			});
+
+			add("Center", _myLabel);
+			add("East", edit);
+
+			// and minimize the size
+			setPreferredSize(getMinimumSize());
+		}
+
+		public void doClick()
+		{
+			// show the panel itself
+			final JFrame tmp = new JFrame();
+			final Dialog fr = new SwingEditFrame(tmp, _myEditor);
+			fr.setModal(true);
+			fr.setVisible(true);
+			tmp.dispose();
+			_myLabel.repaint();
+		}
+	}
+
+	// ///////////////////////////////////////////////////
+	// produce a JLabel component, so that we can see labels
+	// /////////////////////////////////////////////////
+	protected class myLabelRenderer implements TableCellRenderer
+	{
+
+		public Component getTableCellRendererComponent(final JTable p1, final Object p2, final boolean p3,
+				final boolean p4, final int p5, final int p6)
+		{
+			final PropertyDescriptor pd = (PropertyDescriptor) p2;
+			final String displayName = pd.getDisplayName();
+			final String name = displayName != null ? displayName : pd.getName();
+			final JLabel res = new JLabel(name);
+			res.setPreferredSize(res.getMinimumSize());
+			final String myStr = pd.getShortDescription();
+			res.setToolTipText(myStr);
+			return res;
+		}
+	}
+
+	// ///////////////////////////////////////////////////
+	// produce the correct component to view this item
+	// /////////////////////////////////////////////////
+	protected class dataCellRenderer implements TableCellRenderer
+	{
+
+		public Component getTableCellRendererComponent(final JTable p1, final Object p2,
+				final boolean isSelected, final boolean hasFocus, final int p5, final int p6)
+		{
+			final Component res = (Component) _theEditorList.get(p2);
+			res.setEnabled(true);
+			return res;
+		}
+	}
+
+	// ///////////////////////////////////////////////////
+	// produce the correct component to edit this item
+	// /////////////////////////////////////////////////
+	protected class dataCellEditor implements TableCellEditor
+	{
+
+		public Component getTableCellEditorComponent(final JTable p1, final Object p2, final boolean p3,
+				final int p4, final int p5)
+		{
+			return (Component) _theEditorList.get(p2);
+		}
+
+		public void addCellEditorListener(final CellEditorListener p1)
+		{
+		}
+
+		public void cancelCellEditing()
+		{
+		}
+
+		public Object getCellEditorValue()
+		{
+			return null;
+		}
+
+		public boolean isCellEditable(final EventObject p1)
+		{
+			return true;
+		}
+
+		public void removeCellEditorListener(final CellEditorListener p1)
+		{
+		}
+
+		public boolean shouldSelectCell(final EventObject p1)
+		{
+			return true;
+		}
+
+		public boolean stopCellEditing()
+		{
+			return true;
+		}
+	}
+
+	// /////////////////////////////////////////////////////////////////
+	// embedded implementation of table cell editor
+	// /////////////////////////////////////////////////////////////////
+	protected class myTableEditor implements javax.swing.table.TableCellEditor
+	{
+		protected Component _myC;
+
+		public myTableEditor(final Component c)
+		{
+			_myC = c;
+		}
+
+		public Component getTableCellEditorComponent(final JTable p1, final Object p2, final boolean p3,
+				final int p4, final int p5)
+		{
+			return _myC;
+		}
+
+		public void addCellEditorListener(final CellEditorListener p1)
+		{
+			// do nothing
+		}
+
+		public void cancelCellEditing()
+		{
+			// do nothing
+		}
+
+		public Object getCellEditorValue()
+		{
+			return null;
+		}
+
+		public boolean isCellEditable(final EventObject p1)
+		{
+			return true;
+		}
+
+		public void removeCellEditorListener(final CellEditorListener p1)
+		{
+			// do nothing
+		}
+
+		public boolean shouldSelectCell(final EventObject p1)
+		{
+			return false;
+		}
+
+		public boolean stopCellEditing()
+		{
+			return false;
+		}
+	}
+
+	// custom class to remember the current value, and paint the current item in
+	// RED
+	@SuppressWarnings("rawtypes")
+	public static class TickableComboBox extends JComboBox
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@SuppressWarnings("unchecked")
+		public TickableComboBox()
+		{
+			this.setRenderer(new TickableComboBoxRenderer());
+		}
+
+		/**
+		 * event handler so that we are informed when the user sets a new value
+		 */
+		public void actionPerformed(final java.awt.event.ActionEvent event)
+		{
+		}
+
+		/**
+		 * over-ride this method so that we can update our index of the current
+		 * value
+		 */
+		public void setSelectedItem(final Object oj)
+		{
+			super.setSelectedItem(oj);
+		}
+
+		/**
+		 * accessor method to determine if this index is the current value
+		 */
+		public boolean isCurrentValue(final int index)
+		{
+			return (this.getSelectedIndex() == index);
+		}
+
+		// //////////////////////////////////////////////////////////
+		// custom renderer which can call the parent object to
+		// determine the current value of the list, and which does
+		// not depend on whether the value is selected
+		// //////////////////////////////////////////////////////////
+
+		protected  class TickableComboBoxRenderer extends JLabel implements
+				javax.swing.ListCellRenderer
+		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/**
+			 * red border, to show the currently selected item
+			 */
+
+			private final javax.swing.border.Border redBorder = BorderFactory.createLineBorder(
+					Color.red, 1);
+
+			private final javax.swing.border.Border emptyBorder = BorderFactory.createEmptyBorder(1,
+					1, 1, 1);
+
+			public Component getListCellRendererComponent(final JList list, final Object value, final int index,
+					final boolean isSelected, final boolean cellHasFocus)
+			{
+				// set the text
+				setText(value.toString());
+				// is this the current value?
+				if (isCurrentValue(index))
+				{
+					setForeground(Color.red);
+				}
+				else
+				{
+					setForeground(Color.black);
+				}
+
+				// draw a button around the object we are currently editing
+				if (isSelected)
+				{
+					setBorder(redBorder);
+				}
+				else
+				{
+					setBorder(emptyBorder);
+				}
+
+				return this;
+			}
+			// //////////////////////////////////////////////////////////
+			// end of renderer
+			// //////////////////////////////////////////////////////////
+		}
+
+		// //////////////////////////////////////////////////////////
+		// end of custom component
+		// //////////////////////////////////////////////////////////
+
+	}
+
+	/**
+	 * special extension of table class which stores the object being edited this
+	 * was initially created to support JFCUnit editing
+	 */
+	public static class MyTable extends JTable
+	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
+		 * the object being edited by the table
+		 */
+		private Object _subject;
+
+		/**
+		 * constructor, receives the object being edited (of course)
+		 */
+		public MyTable(final Object object_being_edited)
+		{
+			super();
+			_subject = object_being_edited;
+		}
+
+		/**
+		 * retrieve the object being edited
+		 */
+		public Object getSubject()
+		{
+			return _subject;
+		}
+
+		/**
+		 * table is being closed, forget about the subject
+		 */
+		protected void closeMe()
+		{
+			_subject = null;
+		}
+	}
 }

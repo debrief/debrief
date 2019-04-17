@@ -104,7 +104,6 @@
 			<fileset dir="libs" includes="*.jar"/>
 		</copy>
 		<zip destfile="${dist.dir}/debrief-lite-1.0.377.zip">
-			<fileset dir="." includes="data/**/*"/>
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
 	</target>

@@ -161,7 +161,7 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
    * the currently selected format
    * 
    */
-  protected int _myFormat = 6;
+  protected int _myFormat = 4;
 
   /**
    * provide easy access to the 'first cut of the day' format
@@ -174,11 +174,6 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
    * 
    */
   public static final String TIME_FORMAT = "HHmm";
-  
-  /**
-   * default format for time label
-   */
-  public static final String DEFAULT_DATETIME_FORMAT = "yy/MM/dd hh:mm:ss";
 
   /**
    * retrieve/initialise our list of date formats
@@ -192,7 +187,7 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
       _stringTags =
           new String[]
           {"mm:ss.SSS", "HHmm.ss", TIME_FORMAT, DATE_FORMAT, "ddHHmm:ss",
-              "yy/MM/dd HH:mm", DEFAULT_DATETIME_FORMAT};
+              "yy/MM/dd HH:mm"};
     }
     return _stringTags;
   }
