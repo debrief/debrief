@@ -15,3 +15,4 @@ Bundle-ClassPath: libs/radiance-flamingo-1.0.2.jar,
  libs/radiance-substance-extras-1.0.2.jar,
  libs/radiance-trident-1.0.2.jar,
  libs/radiance-neon-1.0.2.jar
+Import-Package: org.mwc.cmap.xyplot.views
