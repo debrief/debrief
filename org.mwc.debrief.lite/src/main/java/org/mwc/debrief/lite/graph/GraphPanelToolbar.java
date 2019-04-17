@@ -297,6 +297,16 @@ public class GraphPanelToolbar extends JPanel implements
 
     final JButton fixToWindowsButton = createCommandButton(
         "Scale the graph to show all data", "icons/16/fit_to_win.png");
+    fixToWindowsButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        _xytool.getGeneratedChartPanel().getChart().getPlot().zoom(.0);
+      }
+    });
+
     final JButton viewGridButton = createCommandButton("Switch axes",
         "icons/16/swap_axis.png");
     final JButton viewTimeButton = createCommandButton("Show symbols",
@@ -316,17 +326,17 @@ public class GraphPanelToolbar extends JPanel implements
         "icons/16/export.png");
     final JButton propertiesButton = createCommandButton(
         "Change editable properties for this chart", "icons/16/properties.png");
-    
+
     propertiesButton.addActionListener(new ActionListener()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
         _xyPanel.addEditor(_xytool.getGeneratedJFreeChart().getInfo(), null);
       }
     });
-    
+
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
     final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
