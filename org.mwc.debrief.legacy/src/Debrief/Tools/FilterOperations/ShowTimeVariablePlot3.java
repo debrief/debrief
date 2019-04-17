@@ -148,7 +148,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         Editable[] subjects);
   }
 
-  static private final class MySwingPlot extends SwingPlot
+  static public final class MySwingPlot extends SwingPlot
   {
 
     /**
@@ -180,7 +180,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       super._theParent.addEditor(_xyPlot.getInfo(), null);
     }
 
-    public final void doWMF()
+    public final void doWMF(final String dir)
     {
       // TODO: reinstate this
 
@@ -191,8 +191,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       _xyPlot.setBackgroundPaint(null);
 
       // create the metafile graphics
-      final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(System
-          .getProperty("user.home"), (Graphics2D) getPanel().getGraphics());
+      final MetafileCanvasGraphics2d mf = new MetafileCanvasGraphics2d(dir,
+          (Graphics2D) getPanel().getGraphics());
 
       // copy the projection
       final MWC.Algorithms.Projections.FlatProjection fp = new FlatProjection();
@@ -214,6 +214,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // and restore the background colour
       _xyPlot.setBackgroundPaint(oldColor);
 
+    }
+
+    public final void doWMF()
+    {
+      doWMF(System.getProperty("user.home"));
     }
 
     private StepperChartPanel getPanel()
@@ -1294,12 +1299,14 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    * the step control we want the plot to listen to
    */
   protected final Debrief.GUI.Tote.StepControl _theStepper;
-  
+
   private StepperChartPanel _generatedChartPanel;
-  
+
   private NewFormattedJFreeChart _generatedJFreeChart;
-  
+
   private StepperXYPlot _generatedXYPlot;
+
+  private MySwingPlot _generatedSwingPlot;
 
   // /////////////////////////////////////////////////
   // constructor
@@ -1400,6 +1407,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     return _generatedXYPlot;
   }
 
+  public MySwingPlot getGeneratedSwingPlot()
+  {
+    return _generatedSwingPlot;
+  }
+
   @Override
   public final MWC.GUI.Tools.Action getData()
   {
@@ -1432,11 +1444,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       if (theHolder._isRelative)
       {
         thePrimary = _preselectedPrimaryTrack;
-        
-        if ( thePrimary == null )
+
+        if (thePrimary == null)
         {
           // retrieve the necessary input data
-          thePrimary = getPrimary();          
+          thePrimary = getPrimary();
         }
       }
 
@@ -1548,7 +1560,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // ////////////////////////////////////////////////
       final ChartPanel chartInPanel = new StepperChartPanel(jChart, true,
           _theStepper);
-      
+
       _generatedChartPanel = (StepperChartPanel) chartInPanel;
 
       // format the chart
@@ -1640,6 +1652,9 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     // create the panel we are using
     if (_thePanel != null)
     {
+      final SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
+          theXYPlot);
+      _generatedSwingPlot = (MySwingPlot) mySwingPlot;
       if (_thePanel instanceof MWC.GUI.Properties.Swing.SwingPropertiesPanel)
       {
         // just check if we are using one of our Swing-aware properties
@@ -1649,8 +1664,6 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
         final MWC.GUI.Properties.Swing.SwingPropertiesPanel sp =
             (MWC.GUI.Properties.Swing.SwingPropertiesPanel) _thePanel;
-        final SwingPlot mySwingPlot = new MySwingPlot(panel, _thePanel,
-            theXYPlot);
         sp.addThisPanel(mySwingPlot);
       }
       else

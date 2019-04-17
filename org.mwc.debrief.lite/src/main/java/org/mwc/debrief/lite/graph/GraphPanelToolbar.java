@@ -26,6 +26,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +38,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
@@ -403,6 +405,22 @@ public class GraphPanelToolbar extends JPanel implements
     });
     final JButton wmfButton = createCommandButton(
         "Produce a WMF file of the graph", "icons/16/ex_2word_256_1.png");
+    wmfButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent arg0)
+      {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
+        {
+          final File dir = fileChooser.getSelectedFile();
+          
+          _xytool.getGeneratedSwingPlot().doWMF(dir.getPath());
+        }
+      }
+    });
     final JButton placeBitmapButton = createCommandButton(
         "Place a bitmap image of the graph on the clipboard",
         "icons/16/copy_to_clipboard.png");
