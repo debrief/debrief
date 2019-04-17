@@ -42,7 +42,6 @@ import javax.swing.JToggleButton;
 
 import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
 import org.jfree.ui.TextAnchor;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
@@ -383,11 +382,23 @@ public class GraphPanelToolbar extends JPanel implements
           _xytool.getGeneratedJFreeChart().getXYPlot().removeAnnotation(
               _crosshairValueText);
         }
+
+        _xytool.getGeneratedChartPanel().invalidate();
       }
     });
-    final JButton expandButton = createCommandButton(
+    final JToggleButton expandButton = createJToggleButton(
         "Expand Period covered in sync with scenario time",
         "icons/16/clock.png");
+    expandButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        _xytool.getGeneratedXYPlot().setGrowWithTime(expandButton.isSelected());
+        _xytool.getGeneratedChartPanel().invalidate();
+      }
+    });
     final JButton wmfButton = createCommandButton(
         "Produce a WMF file of the graph", "icons/16/ex_2word_256_1.png");
     final JButton placeBitmapButton = createCommandButton(

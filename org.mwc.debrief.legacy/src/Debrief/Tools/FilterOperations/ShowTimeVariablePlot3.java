@@ -1295,9 +1295,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    */
   protected final Debrief.GUI.Tote.StepControl _theStepper;
   
-  private StepperChartPanel generatedChartPanel;
+  private StepperChartPanel _generatedChartPanel;
   
-  private NewFormattedJFreeChart generatedJFreeChart;
+  private NewFormattedJFreeChart _generatedJFreeChart;
+  
+  private StepperXYPlot _generatedXYPlot;
 
   // /////////////////////////////////////////////////
   // constructor
@@ -1385,12 +1387,17 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   public StepperChartPanel getGeneratedChartPanel()
   {
-    return generatedChartPanel;
+    return _generatedChartPanel;
   }
 
   public NewFormattedJFreeChart getGeneratedJFreeChart()
   {
-    return generatedJFreeChart;
+    return _generatedJFreeChart;
+  }
+
+  public StepperXYPlot getGeneratedXYPlot()
+  {
+    return _generatedXYPlot;
   }
 
   @Override
@@ -1517,6 +1524,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       final ColourStandardXYItemRenderer renderer =
           new ColourStandardXYItemRenderer(tooltipGenerator, null, null);
       plot = getPlot((RelativeDateAxis) xAxis, yAxis, _theStepper, renderer);
+      _generatedXYPlot = (StepperXYPlot) plot;
       renderer.setPlot(plot);
 
       // apply any formatting for this choice
@@ -1526,7 +1534,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         fo.format(plot);
       }
 
-      generatedJFreeChart = jChart = new NewFormattedJFreeChart(theTitle,
+      _generatedJFreeChart = jChart = new NewFormattedJFreeChart(theTitle,
           JFreeChart.DEFAULT_TITLE_FONT, plot, true, _theStepper);
 
       // ////////////////////////////////////////////////////
@@ -1541,7 +1549,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       final ChartPanel chartInPanel = new StepperChartPanel(jChart, true,
           _theStepper);
       
-      generatedChartPanel = (StepperChartPanel) chartInPanel;
+      _generatedChartPanel = (StepperChartPanel) chartInPanel;
 
       // format the chart
       chartInPanel.setName(theTitle);
