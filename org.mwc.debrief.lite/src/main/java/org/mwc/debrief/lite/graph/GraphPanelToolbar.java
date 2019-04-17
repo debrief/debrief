@@ -329,16 +329,23 @@ public class GraphPanelToolbar extends JPanel implements
         }
       }
     });
-    final JToggleButton showSymbolsButton = createJToggleButton("Show symbols",
-        "icons/16/open.png");
+
+    final String symbolOn = "icons/16/symbol_on.png";
+    final String symbolOff = "icons/16/symbol_off.png";
+    final JToggleButton showSymbolsButton = createJToggleButton("Show Symbols",
+        symbolOff);
     showSymbolsButton.addActionListener(new ActionListener()
     {
 
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        _xytool.getGeneratedJFreeChart().setShowSymbols(showSymbolsButton
-            .isSelected());
+        final boolean isSelected = showSymbolsButton.isSelected();
+        _xytool.getGeneratedJFreeChart().setShowSymbols(isSelected);
+        showSymbolsButton.setIcon(new ImageIcon(isSelected ? getClass()
+            .getClassLoader().getResource(symbolOn) : getClass()
+                .getClassLoader().getResource(symbolOff)));
+        showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols" : "Show Symbols");
       }
     });
     final JButton hideCrosshair = createCommandButton(
