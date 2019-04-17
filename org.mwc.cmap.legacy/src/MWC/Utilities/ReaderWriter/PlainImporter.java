@@ -106,6 +106,21 @@ import MWC.GUI.Plottable;
 
 public interface PlainImporter
 {
+  
+  public static class ImportException extends RuntimeException
+  {
+
+    public ImportException(String msg, Exception se)
+    {
+      super(msg, se);
+    }
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+  }
 
     /** general command used to import a whole file of a specific type
      */
