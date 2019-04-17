@@ -329,8 +329,18 @@ public class GraphPanelToolbar extends JPanel implements
         }
       }
     });
-    final JButton viewTimeButton = createCommandButton("Show symbols",
+    final JToggleButton showSymbolsButton = createJToggleButton("Show symbols",
         "icons/16/open.png");
+    showSymbolsButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        _xytool.getGeneratedJFreeChart().setShowSymbols(showSymbolsButton
+            .isSelected());
+      }
+    });
     final JButton hideCrosshair = createCommandButton(
         "Hide the crosshair from the graph (for printing)", "icons/16/fix.png");
     final JButton expandButton = createCommandButton(
@@ -416,7 +426,7 @@ public class GraphPanelToolbar extends JPanel implements
 
     add(fixToWindowsButton);
     add(switchAxesButton);
-    add(viewTimeButton);
+    add(showSymbolsButton);
     add(hideCrosshair);
     add(expandButton);
     add(wmfButton);
@@ -426,7 +436,7 @@ public class GraphPanelToolbar extends JPanel implements
     add(autosyncButton);
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {fixToWindowsButton, switchAxesButton, viewTimeButton, hideCrosshair,
+    {fixToWindowsButton, switchAxesButton, showSymbolsButton, hideCrosshair,
         expandButton, wmfButton, placeBitmapButton, copyGraph, propertiesButton,
         autosyncButton}));
   }
