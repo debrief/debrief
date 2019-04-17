@@ -17,7 +17,7 @@ public class SimplePropertyPanel extends JPanel implements PropertiesPanel
   public SimplePropertyPanel()
   {
     super();
-    setLayout(new FlowLayout());
+    setLayout(new BorderLayout());
   }
   
   @Override
@@ -44,7 +44,12 @@ public class SimplePropertyPanel extends JPanel implements PropertiesPanel
   @Override
   public Component add(Component thePanel)
   {
-    return super.add(thePanel);
+    super.removeAll();
+    super.add(thePanel, BorderLayout.CENTER);
+    
+    super.revalidate();
+    super.repaint();
+    return thePanel;
   }
 
   @Override
