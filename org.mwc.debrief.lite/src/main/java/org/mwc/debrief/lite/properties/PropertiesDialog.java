@@ -71,7 +71,7 @@ public class PropertiesDialog extends JDialog
    */
   private static final long serialVersionUID = 1L;
 
-  private final Editable _editableProperty;
+  private final EditorType _editableProperty;
 
   private final Layers _theLayers;
   /**
@@ -86,7 +86,7 @@ public class PropertiesDialog extends JDialog
 
   private final UndoBuffer _undoBuffer;
 
-  public PropertiesDialog(final Editable editableProperty, final Layers layers,
+  public PropertiesDialog(final EditorType editableProperty, final Layers layers,
       final UndoBuffer undoBuffer, final ToolParent toolParent,
       final ToolbarOwner owner)
   {
@@ -114,14 +114,14 @@ public class PropertiesDialog extends JDialog
     final SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers,
         _undoBuffer, _theToolParent, _owner);
     propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    final PropsEditor ap = new PropsEditor(_editableProperty.getInfo(),
+    final PropsEditor ap = new PropsEditor(_editableProperty,
         propsPanel, _theLayers, _theToolParent, null, propsPanel);
     final JPanel thePanel = (JPanel) ap.getPanel();
-    thePanel.setName(_editableProperty.getInfo().getDisplayName());
+    thePanel.setName(_editableProperty.getDisplayName());
     // now, listen out for the name of the panel changing - we are removed as listener by the
     // SwingPropertyEditor
     // in it's close operation
-    _editableProperty.getInfo().addPropertyChangeListener(propsPanel);
+    _editableProperty.addPropertyChangeListener(propsPanel);
     propsPanel.add(thePanel);
     add(propsPanel, BorderLayout.CENTER);
   }

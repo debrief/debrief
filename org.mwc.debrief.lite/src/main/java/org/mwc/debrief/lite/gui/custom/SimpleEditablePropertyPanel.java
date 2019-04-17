@@ -2,19 +2,31 @@ package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.FlowLayout;
 
 import javax.swing.JPanel;
 
+import org.mwc.debrief.lite.properties.PropertiesDialog;
+
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layer;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 
-public class SimplePropertyPanel extends JPanel implements PropertiesPanel
+/**
+ * Simple Panel. 
+ *
+ */
+public class SimpleEditablePropertyPanel extends JPanel implements PropertiesPanel
 {
-
-  public SimplePropertyPanel()
+  
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5170000978012001387L;
+  
+  public SimpleEditablePropertyPanel()
   {
     super();
     setLayout(new BorderLayout());
@@ -23,8 +35,20 @@ public class SimplePropertyPanel extends JPanel implements PropertiesPanel
   @Override
   public void addEditor(EditorType info, Layer parentLayer)
   {
-    // TODO Auto-generated method stub
+    ToolbarOwner owner = null;
+    ToolParent parent = null;
+    
+    /*ToolParent parent = parentLayer;
+    if (parent instanceof ToolbarOwner)
+    {
+      owner = (ToolbarOwner) parent;
+    }*/
 
+    PropertiesDialog dialog = new PropertiesDialog(info, null,
+        null, parent, owner);
+    dialog.setSize(400, 500);
+    dialog.setLocationRelativeTo(null);
+    dialog.setVisible(true);
   }
 
   @Override
@@ -45,7 +69,11 @@ public class SimplePropertyPanel extends JPanel implements PropertiesPanel
   public Component add(Component thePanel)
   {
     super.removeAll();
-    super.add(thePanel, BorderLayout.CENTER);
+    
+    if ( thePanel != null )
+    {
+      super.add(thePanel, BorderLayout.CENTER);
+    }
     
     super.revalidate();
     super.repaint();

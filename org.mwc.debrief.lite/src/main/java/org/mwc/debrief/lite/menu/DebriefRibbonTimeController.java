@@ -411,7 +411,7 @@ public class DebriefRibbonTimeController
               owner = (ToolbarOwner) parent;
             }
 
-            PropertiesDialog dialog = new PropertiesDialog(stepControl, layers,
+            PropertiesDialog dialog = new PropertiesDialog(stepControl.getInfo(), layers,
                 undoBuffer, parent, owner);
             dialog.setSize(400, 500);
             dialog.setLocationRelativeTo(null);

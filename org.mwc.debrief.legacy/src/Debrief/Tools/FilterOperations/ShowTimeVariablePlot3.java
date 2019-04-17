@@ -1294,6 +1294,10 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    * the step control we want the plot to listen to
    */
   protected final Debrief.GUI.Tote.StepControl _theStepper;
+  
+  private StepperChartPanel generatedChartPanel;
+  
+  private NewFormattedJFreeChart generatedJFreeChart;
 
   // /////////////////////////////////////////////////
   // constructor
@@ -1377,6 +1381,16 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   public void setPreselectedOperation(CalculationHolder _preselectedOperation)
   {
     this._preselectedOperation = _preselectedOperation;
+  }
+
+  public StepperChartPanel getGeneratedChartPanel()
+  {
+    return generatedChartPanel;
+  }
+
+  public NewFormattedJFreeChart getGeneratedJFreeChart()
+  {
+    return generatedJFreeChart;
   }
 
   @Override
@@ -1512,7 +1526,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         fo.format(plot);
       }
 
-      jChart = new NewFormattedJFreeChart(theTitle,
+      generatedJFreeChart = jChart = new NewFormattedJFreeChart(theTitle,
           JFreeChart.DEFAULT_TITLE_FONT, plot, true, _theStepper);
 
       // ////////////////////////////////////////////////////
@@ -1526,6 +1540,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // ////////////////////////////////////////////////
       final ChartPanel chartInPanel = new StepperChartPanel(jChart, true,
           _theStepper);
+      
+      generatedChartPanel = (StepperChartPanel) chartInPanel;
 
       // format the chart
       chartInPanel.setName(theTitle);

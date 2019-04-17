@@ -3,10 +3,9 @@ package org.mwc.debrief.lite.graph;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
-import org.mwc.debrief.lite.gui.custom.SimplePropertyPanel;
+import org.mwc.debrief.lite.gui.custom.SimpleEditablePropertyPanel;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
@@ -34,7 +33,7 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
   {
     super();
     setLayout(new BorderLayout());
-    SimplePropertyPanel xyPanel = new SimplePropertyPanel();
+    SimpleEditablePropertyPanel xyPanel = new SimpleEditablePropertyPanel();
     toolbar = new GraphPanelToolbar(stepControl, xyPanel);
     _theChart = stepControl.getXYChart();
     

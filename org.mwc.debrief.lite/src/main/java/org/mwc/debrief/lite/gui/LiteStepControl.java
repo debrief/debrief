@@ -53,7 +53,8 @@ public class LiteStepControl extends StepControl
 
   private SliderControls _slider;
   private TimeLabel _timeLabel;
-  public static final String timeFormat = DateFormatPropertyEditor.DEFAULT_DATETIME_FORMAT;
+  public static final String timeFormat =
+      DateFormatPropertyEditor.DEFAULT_DATETIME_FORMAT;
   private Layers _layers;
   private UndoBuffer _undoBuffer;
 
@@ -77,7 +78,7 @@ public class LiteStepControl extends StepControl
   {
     this._layers = _layers;
   }
-  
+
   public Layers getLayers()
   {
     return this._layers;
@@ -101,8 +102,8 @@ public class LiteStepControl extends StepControl
         owner = (ToolbarOwner) parent;
       }
 
-      PropertiesDialog dialog = new PropertiesDialog((Editable) painter,
-          _layers, _undoBuffer, parent, owner);
+      PropertiesDialog dialog = new PropertiesDialog(((Editable) painter)
+          .getInfo(), _layers, _undoBuffer, parent, owner);
       dialog.setSize(400, 500);
       dialog.setLocationRelativeTo(null);
       dialog.setVisible(true);
@@ -130,8 +131,8 @@ public class LiteStepControl extends StepControl
       owner = (ToolbarOwner) parent;
     }
 
-    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter(),
-        _layers, _undoBuffer, parent, owner);
+    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter()
+        .getInfo(), _layers, _undoBuffer, parent, owner);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);
@@ -163,10 +164,11 @@ public class LiteStepControl extends StepControl
   @Override
   protected void initForm()
   {
-    /* This is not needed, because the implementation of the form initialization
-     * has been done in the Ribbon.
+    /*
+     * This is not needed, because the implementation of the form initialization has been done in
+     * the Ribbon.
      */
-    
+
   }
 
   @Override
@@ -264,7 +266,8 @@ public class LiteStepControl extends StepControl
     final String str = _dateFormatter.format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
-    DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(), false, true);
+    DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(),
+        false, true);
   }
 
   public ToolParent getParent()

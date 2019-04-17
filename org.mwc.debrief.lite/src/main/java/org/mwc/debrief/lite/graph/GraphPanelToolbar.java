@@ -44,7 +44,7 @@ import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
 import org.mwc.debrief.lite.gui.custom.JSelectTrack;
 import org.mwc.debrief.lite.gui.custom.JSelectTrackModel;
-import org.mwc.debrief.lite.gui.custom.SimplePropertyPanel;
+import org.mwc.debrief.lite.gui.custom.SimpleEditablePropertyPanel;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
@@ -100,7 +100,7 @@ public class GraphPanelToolbar extends JPanel implements
 
   private String _state = INACTIVE_STATE;
 
-  final SimplePropertyPanel _xyPanel;
+  final SimpleEditablePropertyPanel _xyPanel;
 
   public PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
@@ -120,7 +120,7 @@ public class GraphPanelToolbar extends JPanel implements
   private final ArrayList<PropertyChangeListener> stateListeners;
 
   public GraphPanelToolbar(final LiteStepControl stepControl,
-      final SimplePropertyPanel xyPanel)
+      final SimpleEditablePropertyPanel xyPanel)
   {
     super(new FlowLayout(FlowLayout.LEFT));
     _stepControl = stepControl;
@@ -316,6 +316,17 @@ public class GraphPanelToolbar extends JPanel implements
         "icons/16/export.png");
     final JButton propertiesButton = createCommandButton(
         "Change editable properties for this chart", "icons/16/properties.png");
+    
+    propertiesButton.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        _xyPanel.addEditor(_xytool.getGeneratedJFreeChart().getInfo(), null);
+      }
+    });
+    
     final JToggleButton autosyncButton = createJToggleButton(
         "Auto-sync with calculated track data", "icons/16/direction.png");
     final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
