@@ -30,6 +30,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.FontMetrics;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
@@ -343,7 +344,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK),
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
            "paste");
     pasteButton.getActionMap().put("paste",pasteAction);
     
@@ -371,7 +372,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.CTRL_DOWN_MASK),
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
            "edit");
     editButton.getActionMap().put("edit",editAction);
     addLayerButton.addActionListener(new ActionListener()
@@ -404,7 +405,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK),
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
            "cut");
     cutButton.getActionMap().put("cut",cutAction);
     @SuppressWarnings("serial")
@@ -427,7 +428,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     };
     copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK),
+    .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
            "copy");
     copyButton.getActionMap().put("copy",copyAction);
     @SuppressWarnings("serial")
