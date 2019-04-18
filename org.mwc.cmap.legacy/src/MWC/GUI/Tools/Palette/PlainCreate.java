@@ -116,8 +116,8 @@ abstract public class PlainCreate extends PlainTool
 	 * @param theData
 	 *          the layer we are adding the item to
 	 */
-	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layer theLayer,
-			final Layers theData, final BoundsProvider boundsProvider, final String theName, final String theImage)
+	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final BoundsProvider boundsProvider, final String theName, final String theImage)
 	{
 		super(theParent, theName, theImage);
 
@@ -130,6 +130,10 @@ abstract public class PlainCreate extends PlainTool
 	// member functions
 	// //////////////////////////////////////////////////////////
 	
+	/** Get the chart features layer,creating if necessary
+	 * 
+	 * @return Chart Features layer
+	 */
 	 private Layer getDestinationLayer()
 	  {
 	    Layer layer = _theData.findLayer(Layers.CHART_FEATURES);

@@ -317,7 +317,6 @@ import Debrief.Tools.Operations.SavePlotXML;
 import Debrief.Tools.Palette.CreateLabel;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.StatusBar;
@@ -623,20 +622,19 @@ abstract public class AnalysisView extends PlainView implements
 		// now the decorations
 		// //////////////////////////////////////////////////////////
 		// find the decorations layer
-		final Layer decs = _theSession.getData().findLayer(Layers.CHART_FEATURES);
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Scale", new CreateScale(_theParent, _theProperties, decs,
+				"Create Scale", new CreateScale(_theParent, _theProperties, 
 						_theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Grid", new CreateGrid(_theParent, _theProperties, decs,
+				"Create Grid", new CreateGrid(_theParent, _theProperties,
 						_theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create Local Grid", new CreateLocalGrid(_theParent, _theProperties,
-						decs, _theSession.getData(), bounds), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
-				"Create Coast", new CreateCoast(_theParent, _theProperties, decs,
+				"Create Coast", new CreateCoast(_theParent, _theProperties,
 						_theSession.getData(), bounds), null, ' '));
 		// let's not read in the VPF reference layer, since we can't get OpenMap
 		// code to read
@@ -648,7 +646,7 @@ abstract public class AnalysisView extends PlainView implements
 		 */
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create VPF Layers", new CreateVPFLayers(_theParent, _theProperties,
-						decs, _theSession.getData(), bounds), null, ' '));
+						_theSession.getData(), bounds), null, ' '));
 		_theTools.addElement(new MenuItemInfo(Layers.CHART_FEATURES, null,
 				"Create ETOPO Bathy", new CreateTOPO(_theParent, _theProperties,
 						_theSession.getData(), bounds), null, ' '));
