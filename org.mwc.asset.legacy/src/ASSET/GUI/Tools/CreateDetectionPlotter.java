@@ -66,11 +66,10 @@ public class CreateDetectionPlotter extends PlainCreate
 	public CreateDetectionPlotter(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
                     final ASSET.ScenarioType theScenario,
-										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
 										final BoundsProvider theChart)
 	{
-		super(theParent, thePanel, null, theData, theChart, "Detection Painter", "images/noise_excess.gif");
+		super(theParent, thePanel, theData, theChart, "Detection Painter", "images/noise_excess.gif");
     _theScenario = theScenario;
 	}
 

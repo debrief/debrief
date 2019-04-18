@@ -64,11 +64,10 @@ public class CreateCoast extends PlainCreate
 {
 	public CreateCoast(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
                     final BoundsProvider bounds)
 	{
-		super(theParent, thePanel, theLayer, theData, bounds, "Coast", "images/coast_add.png");
+		super(theParent, thePanel, theData, bounds, "Coast", "images/coast_add.png");
 	}
 
 	protected MWC.GUI.Plottable createItem()

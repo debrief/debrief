@@ -320,32 +320,27 @@ abstract public class CoreGUI
     // now the decorations
     ////////////////////////////////////////////////////////////
     // find the decorations layer
-    final Layer decs = _theData.findLayer("Chart Features");
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create Scale",
                                           new CreateScale(_theParent, _theProperties,
-                                                          decs,
                                                           _theData,
                                                           bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create Grid",
                                           new CreateGrid(_theParent, _theProperties,
-                                                         decs,
                                                          _theData,
                                                          bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create VPF Layers",
                                           new CreateVPFLayers(_theParent, _theProperties,
-                                                              decs,
                                                               _theData,
                                                               bounds), null, ' '));
 
     _theTools.addElement(new MenuItemInfo("Chart Features", null,
                                           "Create World Coastline",
                                           new CreateCoast(_theParent, _theProperties,
-                                                          decs,
                                                           _theData,
                                                           bounds), null, ' '));
 
