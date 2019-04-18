@@ -107,6 +107,31 @@ public class JSelectTrack extends JPopupMenu
           {
             comp.setVisible(newOperation.isARelativeCalculation());
           }
+          if (!newOperation.isARelativeCalculation())
+          {
+            TrackWrapper primary = model.getPrimaryTrack();
+            //System.out.println("Seleccionando ")
+            if (primary != null)
+            {
+              _displayComponents.get(primary).setEnabled(true);
+            }
+            else
+            {
+              // We don't have a primary track selected. Maybe it is not really needed
+              for (final JCheckBox checkbox : _displayComponents.values())
+              {
+                checkbox.setEnabled(true);
+              }
+            }
+          }
+          else
+          {
+            TrackWrapper primary = model.getPrimaryTrack();
+            if (primary != null)
+            {
+              _displayComponents.get(primary).setEnabled(false);
+            }
+          }
         }
       }
     });
