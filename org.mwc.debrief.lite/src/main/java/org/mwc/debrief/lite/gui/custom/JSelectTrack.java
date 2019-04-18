@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.gui.custom;
 
 import java.awt.Component;
@@ -87,8 +101,9 @@ public class JSelectTrack extends JPopupMenu
         else if (JSelectTrackModel.OPERATION_CHANGED.equals(evt
             .getPropertyName()))
         {
-          final CalculationHolder newOperation = (CalculationHolder) evt.getNewValue();
-          for ( Component comp : _relativeToComponents)
+          final CalculationHolder newOperation = (CalculationHolder) evt
+              .getNewValue();
+          for (final Component comp : _relativeToComponents)
           {
             comp.setVisible(newOperation.isARelativeCalculation());
           }
@@ -119,7 +134,7 @@ public class JSelectTrack extends JPopupMenu
       {
 
         @Override
-        public void itemStateChanged(ItemEvent e)
+        public void itemStateChanged(final ItemEvent e)
         {
           _model.setActiveTrack(track.track, displayCheckBox.isSelected());
         }
@@ -139,7 +154,7 @@ public class JSelectTrack extends JPopupMenu
       {
 
         @Override
-        public void itemStateChanged(ItemEvent e)
+        public void itemStateChanged(final ItemEvent e)
         {
           if (e.getStateChange() == ItemEvent.SELECTED)
           {
@@ -152,7 +167,7 @@ public class JSelectTrack extends JPopupMenu
       _relativeToComponents.add(relativeToradioButton);
       _relatedToComponentsMap.put(track.track, relativeToradioButton);
     }
-    for ( Component comp : _relativeToComponents)
+    for (final Component comp : _relativeToComponents)
     {
       comp.setVisible(_model.getOperation().isARelativeCalculation());
     }

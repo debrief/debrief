@@ -23,7 +23,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import MWC.GUI.Editable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -86,9 +85,9 @@ public class PropertiesDialog extends JDialog
 
   private final UndoBuffer _undoBuffer;
 
-  public PropertiesDialog(final EditorType editableProperty, final Layers layers,
-      final UndoBuffer undoBuffer, final ToolParent toolParent,
-      final ToolbarOwner owner)
+  public PropertiesDialog(final EditorType editableProperty,
+      final Layers layers, final UndoBuffer undoBuffer,
+      final ToolParent toolParent, final ToolbarOwner owner)
   {
     _editableProperty = editableProperty;
     _theLayers = layers;
@@ -114,8 +113,8 @@ public class PropertiesDialog extends JDialog
     final SwingPropertiesPanel propsPanel = new SwingPropertiesPanel(_theLayers,
         _undoBuffer, _theToolParent, _owner);
     propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-    final PropsEditor ap = new PropsEditor(_editableProperty,
-        propsPanel, _theLayers, _theToolParent, null, propsPanel);
+    final PropsEditor ap = new PropsEditor(_editableProperty, propsPanel,
+        _theLayers, _theToolParent, null, propsPanel);
     final JPanel thePanel = (JPanel) ap.getPanel();
     thePanel.setName(_editableProperty.getDisplayName());
     // now, listen out for the name of the panel changing - we are removed as listener by the

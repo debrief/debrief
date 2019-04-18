@@ -206,7 +206,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void itemStateChanged(ItemEvent event)
+      public void itemStateChanged(final ItemEvent event)
       {
         selectTrackModel.setOperation((CalculationHolder) event.getItem());
       }
@@ -220,11 +220,11 @@ public class GraphPanelToolbar extends JPanel implements
     selectTrackModel.addPropertyChangeListener(new PropertyChangeListener()
     {
       @Override
-      public void propertyChange(PropertyChangeEvent arg0)
+      public void propertyChange(final PropertyChangeEvent arg0)
       {
         _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        CalculationHolder operation = (CalculationHolder) operationComboBox
-            .getSelectedItem();
+        final CalculationHolder operation =
+            (CalculationHolder) operationComboBox.getSelectedItem();
         _xytool.setPreselectedOperation(operation);
 
         Vector<WatchableList> selectedTracksByUser = null;
@@ -234,9 +234,9 @@ public class GraphPanelToolbar extends JPanel implements
         {
           _xytool.setPreselectedPrimaryTrack(selectTrackModel
               .getPrimaryTrack());
-          List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
           selectedTracksByUser = new Vector<>();
-          for (TrackWrapperSelect currentTrack : tracks)
+          for (final TrackWrapperSelect currentTrack : tracks)
           {
             if (currentTrack.selected)
             {
@@ -307,7 +307,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         _xytool.getGeneratedChartPanel().getChart().getPlot().zoom(.0);
       }
@@ -319,7 +319,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         if (switchAxesButton.isSelected())
         {
@@ -342,7 +342,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         final boolean isSelected = showSymbolsButton.isSelected();
         _xytool.getGeneratedJFreeChart().setShowSymbols(isSelected);
@@ -366,7 +366,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent arg0)
+      public void actionPerformed(final ActionEvent arg0)
       {
         _xytool.getGeneratedChartPanel().getChart().getXYPlot()
             .setDomainCrosshairVisible(hideCrosshair.isSelected());
@@ -394,7 +394,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         _xytool.getGeneratedXYPlot().setGrowWithTime(expandButton.isSelected());
         _xytool.getGeneratedChartPanel().invalidate();
@@ -406,14 +406,14 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent arg0)
+      public void actionPerformed(final ActionEvent arg0)
       {
-        JFileChooser fileChooser = new JFileChooser();
+        final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION)
         {
           final File dir = fileChooser.getSelectedFile();
-          
+
           _xytool.getGeneratedSwingPlot().doWMF(dir.getPath());
         }
       }
@@ -425,7 +425,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         org.mwc.debrief.lite.util.ClipboardUtils.copyToClipboard(_xytool
             .getGeneratedChartPanel());
@@ -438,7 +438,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         final TimeSeriesCollection dataset = (TimeSeriesCollection) _xytool
             .getGeneratedXYPlot().getDataset();
@@ -453,7 +453,7 @@ public class GraphPanelToolbar extends JPanel implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         _xyPanel.addEditor(_xytool.getGeneratedJFreeChart().getInfo(), null);
       }
@@ -525,7 +525,8 @@ public class GraphPanelToolbar extends JPanel implements
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
     {fixToWindowsButton, switchAxesButton, showSymbolsButton, hideCrosshair,
-        expandButton, wmfButton, placeBitmapButton, copyGraph, propertiesButton}));
+        expandButton, wmfButton, placeBitmapButton, copyGraph,
+        propertiesButton}));
   }
 
   private void notifyListenersStateChanged(final Object source,

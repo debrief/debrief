@@ -35,20 +35,15 @@ public class LiteSession extends Session
   }
 
   @Override
-  public StepControl getStepControl()
-  {
-    return _stepper;
-  }
-
-  public void setStepper(StepControl _stepper)
-  {
-    this._stepper = _stepper;
-  }
-
-  @Override
   public void closeGUI()
   {
     // Nothing to do here.
+  }
+
+  @Override
+  public StepControl getStepControl()
+  {
+    return _stepper;
   }
 
   @Override
@@ -61,6 +56,11 @@ public class LiteSession extends Session
   public void repaint()
   {
     throw new IllegalArgumentException("Not implemented");
+  }
+
+  public void setStepper(final StepControl _stepper)
+  {
+    this._stepper = _stepper;
   }
 
   @Override

@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.util;
 
 import java.awt.Graphics;
@@ -8,14 +22,13 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.image.BufferedImage;
-
 import java.io.IOException;
 
 import javax.swing.JComponent;
 
 public class ClipboardUtils
 {
-  public static void copyToClipboard(JComponent component)
+  public static void copyToClipboard(final JComponent component)
   {
     final BufferedImage img = new BufferedImage(component.getWidth(), component
         .getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -59,14 +72,15 @@ public class ClipboardUtils
       final ClipboardOwner co = new ClipboardOwner()
       {
         @Override
-        public void lostOwnership(java.awt.datatransfer.Clipboard clipboard,
-            Transferable contents)
+        public void lostOwnership(
+            final java.awt.datatransfer.Clipboard clipboard,
+            final Transferable contents)
         {
           System.out.println("Copy to PNG: Lost Ownership");
         }
 
       };
-      
+
       final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
       cb.setContents(t, co);
     }

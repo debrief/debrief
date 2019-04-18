@@ -68,7 +68,6 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
@@ -298,15 +297,6 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  private void resetFileName(final File file)
-  {
-    if (DebriefLiteApp.currentFileName == null)
-    {
-      DebriefLiteApp.currentFileName = file.getAbsolutePath();
-      DebriefLiteApp.setTitle(file.getName());
-    }
-  }
-
   public static void setDirty(final boolean b)
   {
 
@@ -364,6 +354,7 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   protected DataListener2 _listenForMods;
+
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
@@ -372,10 +363,9 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
-
   private GeoToolMapProjection projection;
-  private final LiteSession session;
 
+  private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
 
@@ -574,6 +564,16 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
+  private void addGraphView(final ToolParent toolParent,
+      final UndoBuffer undoBuffer)
+  {
+    graphPanelView = new GraphPanelView(_stepControl);
+    // graphPanelView.setObject(_theLayers);
+    graphPanelView.setParent(toolParent);
+    graphPanel.setCollapsed(true);
+    graphPanel.add(graphPanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -581,16 +581,6 @@ public class DebriefLiteApp implements FileDropListener
     layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
-  }
-
-  private void addGraphView(final ToolParent toolParent,
-      final UndoBuffer undoBuffer)
-  {
-    graphPanelView = new GraphPanelView(_stepControl);
-    //graphPanelView.setObject(_theLayers);
-    graphPanelView.setParent(toolParent);
-    graphPanel.setCollapsed(true);
-    graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
 
   private void createAppPanels(final GeoToolMapRenderer geoMapRenderer,
@@ -648,7 +638,7 @@ public class DebriefLiteApp implements FileDropListener
     else
     {
       final String s = "Lite rendering is expecting a Graphics2D object";
-      app.logError(Application.ERROR, s, null);
+      app.logError(ToolParent.ERROR, s, null);
       throw new IllegalArgumentException(s);
     }
 
@@ -891,7 +881,7 @@ public class DebriefLiteApp implements FileDropListener
       // ok, start loading
       caller.start();
     }
-    catch (PlainImporter.ImportException ie)
+    catch (final PlainImporter.ImportException ie)
     {
       success = false;
     }
@@ -962,6 +952,26 @@ public class DebriefLiteApp implements FileDropListener
 
   }
 
+  private void paintDynamicLayers(final CanvasType dest)
+  {
+    final HiResDate tNow = timeManager.getTime();
+    // do we have time?
+    if (tNow != null)
+    {
+      final long timeVal = tNow.getDate().getTime();
+      final Enumeration<Editable> lIter = _theLayers.elements();
+      while (lIter.hasMoreElements())
+      {
+        final Editable next = lIter.nextElement();
+        if (next instanceof DynamicPlottable)
+        {
+          final DynamicPlottable dp = (DynamicPlottable) next;
+          dp.paint(dest, timeVal);
+        }
+      }
+    }
+  }
+
   private void populateTote()
   {
 
@@ -1010,23 +1020,12 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
-  private void paintDynamicLayers(CanvasType dest)
+  private void resetFileName(final File file)
   {
-    final HiResDate tNow = timeManager.getTime();
-    // do we have time?
-    if (tNow != null)
+    if (DebriefLiteApp.currentFileName == null)
     {
-      final long timeVal = tNow.getDate().getTime();
-      Enumeration<Editable> lIter = _theLayers.elements();
-      while (lIter.hasMoreElements())
-      {
-        Editable next = lIter.nextElement();
-        if (next instanceof DynamicPlottable)
-        {
-          DynamicPlottable dp = (DynamicPlottable) next;
-          dp.paint(dest, timeVal);
-        }
-      }
+      DebriefLiteApp.currentFileName = file.getAbsolutePath();
+      DebriefLiteApp.setTitle(file.getName());
     }
   }
 

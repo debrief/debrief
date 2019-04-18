@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.graph;
 
 import java.awt.BorderLayout;
@@ -14,7 +28,7 @@ public class GraphPanelView extends JPanel implements
     PlainPropertyEditor.EditorUsesToolParent
 {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 5203809173295266164L;
 
@@ -34,7 +48,8 @@ public class GraphPanelView extends JPanel implements
   {
     super();
     setLayout(new BorderLayout());
-    SimpleEditablePropertyPanel xyPanel = new SimpleEditablePropertyPanel();
+    final SimpleEditablePropertyPanel xyPanel =
+        new SimpleEditablePropertyPanel();
     toolbar = new GraphPanelToolbar(stepControl, xyPanel);
     _theChart = stepControl.getXYChart();
 
@@ -43,7 +58,7 @@ public class GraphPanelView extends JPanel implements
   }
 
   @Override
-  public void setParent(ToolParent theParent)
+  public void setParent(final ToolParent theParent)
   {
     this._theParent = theParent;
     toolbar.setParent(theParent);
