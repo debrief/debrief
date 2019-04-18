@@ -65,7 +65,6 @@ public class SimpleEditablePropertyPanel extends JPanel implements
   @Override
   public void addConstructor(final EditorType info, final Layer parentLayer)
   {
-    // TODO Auto-generated method stub
 
   }
 
@@ -74,11 +73,6 @@ public class SimpleEditablePropertyPanel extends JPanel implements
   {
     final ToolbarOwner owner = null;
     final ToolParent parent = null;
-
-    /*
-     * ToolParent parent = parentLayer; if (parent instanceof ToolbarOwner) { owner = (ToolbarOwner)
-     * parent; }
-     */
 
     final PropertiesDialog dialog = new PropertiesDialog(info, null, null,
         parent, owner);
@@ -90,21 +84,18 @@ public class SimpleEditablePropertyPanel extends JPanel implements
   @Override
   public UndoBuffer getBuffer()
   {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void remove(final Component theComponent)
   {
-    // TODO Auto-generated method stub
 
   }
 
   @Override
   public void remove(final Object theObject)
   {
-    // TODO Auto-generated method stub
 
   }
 

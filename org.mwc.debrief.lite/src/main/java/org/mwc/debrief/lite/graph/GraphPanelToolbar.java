@@ -474,15 +474,13 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void mouseEntered(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
-
+        
       }
 
       @Override
       public void mouseExited(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
-
+        
       }
 
       @Override
@@ -505,8 +503,7 @@ public class GraphPanelToolbar extends JPanel implements
       @Override
       public void mouseReleased(final MouseEvent e)
       {
-        // TODO Auto-generated method stub
-
+        
       }
     });
 
