@@ -481,7 +481,6 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _theTools.addElement(new MenuItemInfo("Noise", null, "Noise Levels",
                                           new ASSET.GUI.Tools.CreateNoiseLevel(_theParent,
                                                                                _theProperties,
-                                                                               null,
                                                                                _theData,
                                                                                bounds,
                                                                                _theScenario.getEnvironment(),
@@ -492,7 +491,6 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _theTools.addElement(new MenuItemInfo("Noise", null, "Noise Source",
                                           new ASSET.GUI.Tools.CreateNoiseSource(_theParent,
                                                                                 _theProperties,
-                                                                                null,
                                                                                 _theData,
                                                                                 bounds,
                                                                                 _theScenario.getEnvironment(),
@@ -502,7 +500,6 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _theTools.addElement(new MenuItemInfo("Noise", null, "Noise Excess",
                                           new ASSET.GUI.Tools.CreateNoiseExcess(_theParent,
                                                                                 _theProperties,
-                                                                                null,
                                                                                 _theData,
                                                                                 bounds)
                                           , null, 'A'));

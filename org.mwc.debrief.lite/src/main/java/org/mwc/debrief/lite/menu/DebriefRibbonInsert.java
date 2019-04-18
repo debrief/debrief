@@ -92,12 +92,11 @@ public class DebriefRibbonInsert
       }
     };
 
-    final Layer decs = theLayers.findLayer(Layers.CHART_FEATURES);
     final JRibbonBand chartfeaturesMenu = createDecorations(theLayers,
-        theProperties, toolParent, bounds, decs);
+        theProperties, toolParent, bounds);
     
     final JRibbonBand referenceDataMenu = createReferenceData(theLayers,
-        theProperties, toolParent, bounds, decs);
+        theProperties, toolParent, bounds);
 
     final JRibbonBand layersMenu = createLayerMenu(theLayers);
     
@@ -111,20 +110,19 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createReferenceData(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final ToolParent _toolParent, final BoundsProvider bounds,
-      final Layer decs)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
         null);
     @SuppressWarnings("unused")
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
         "icons/24/coast_add.png", new CreateCoast(_toolParent, _theProperties,
-            decs, _theLayers, bounds), referenceDataMenu,
+             _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
         "Natural Earth", "icons/24/NaturalEarth.png", new CreateCoast(_toolParent,
-            _theProperties, decs, _theLayers, bounds), referenceDataMenu,
+            _theProperties, _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     referenceDataMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(referenceDataMenu));
@@ -417,18 +415,17 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createDecorations(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final ToolParent _toolParent, final BoundsProvider bounds,
-      final Layer decs)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     @SuppressWarnings("unused")
     final FlamingoCommand scaleCmd = MenuUtils.addCommand("Scale",
         "icons/24/scale_add.png", new CreateScale(_toolParent, _theProperties,
-            decs, _theLayers, bounds), chartfeaturesMenu, null);
+            _theLayers, bounds), chartfeaturesMenu, null);
     @SuppressWarnings("unused")
     final FlamingoCommand gridCmd = MenuUtils.addCommand("Grid",
         "icons/24/grid_add.png", new CreateGrid(_toolParent, _theProperties,
-            decs, _theLayers, bounds), chartfeaturesMenu, null);
+            _theLayers, bounds), chartfeaturesMenu, null);
     
     chartfeaturesMenu.setResizePolicies(MenuUtils
         .getStandardRestrictivePolicies(chartfeaturesMenu));

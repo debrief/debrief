@@ -92,11 +92,6 @@ abstract public class PlainCreate extends PlainTool
 {
 
 	/**
-	 * the layer we are dumping this item into
-	 */
-  private final Layer _theLayer;
-
-	/**
 	 * the panel used to edit this item
 	 */
 	private final PropertiesPanel _thePanel;
@@ -121,13 +116,12 @@ abstract public class PlainCreate extends PlainTool
 	 * @param theData
 	 *          the layer we are adding the item to
 	 */
-	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layer theLayer,
-			final Layers theData, final BoundsProvider boundsProvider, final String theName, final String theImage)
+	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
+			final BoundsProvider boundsProvider, final String theName, final String theImage)
 	{
 		super(theParent, theName, theImage);
 
 		_thePanel = thePanel;
-		_theLayer = theLayer;
 		_theData = theData;
 		_boundsProvider = boundsProvider;
 	}
@@ -135,6 +129,21 @@ abstract public class PlainCreate extends PlainTool
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
+	
+	/** Get the chart features layer,creating if necessary
+	 * 
+	 * @return Chart Features layer
+	 */
+	 private Layer getDestinationLayer()
+	  {
+	    Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+	    if(layer == null) {
+	     layer = new BaseLayer();
+	     layer.setName(Layers.CHART_FEATURES);
+	     _theData.addThisLayer(layer);
+	    }
+	    return layer;
+	  }
 	
 	/**
 	 * accessor to retrieve the layered data
@@ -153,7 +162,7 @@ abstract public class PlainCreate extends PlainTool
 
 	public Action getData()
 	{
-		Action res = null;
+		final Action res;
 
 		// ask the child class to create itself
 		final Plottable pl = createItem();
@@ -161,9 +170,13 @@ abstract public class PlainCreate extends PlainTool
 		// did it work?
 		if (pl != null)
 		{
-		  final Layer destinationLayer = getDestinationLayer();
-			// wrap it up in an action
-			res = new CreateLabelAction(_thePanel, destinationLayer, _theData, pl);
+      final Layer theLayer = getDestinationLayer();
+      // wrap it up in an action
+      res = new CreateLabelAction(_thePanel, theLayer, _theData, pl);
+		}
+		else
+		{
+		  res = null;
 		}
 
 		return res;
