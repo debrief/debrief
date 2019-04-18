@@ -28,10 +28,6 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
    */
   private static final long serialVersionUID = 1L;
 
-  // ////////////////////////////////////////////////
-  // member variables
-  // ////////////////////////////////////////////////
-
   public static final String HI_RES_PROPERTY_NAME = "MWC_HI_RES";
 
   /**
@@ -69,6 +65,44 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
   // HI-RES NOT DONE
 
   /**
+   * Return the max of two HiResDate
+   * 
+   * @param a
+   * @param b
+   * @return Return the max of two HiResDate
+   */
+  public static HiResDate max(final HiResDate a, final HiResDate b)
+  {
+    if (a.compareTo(b) <= 0)
+    {
+      return a;
+    }
+    else
+    {
+      return b;
+    }
+  }
+
+  /**
+   * Return the min of two HiResDate
+   * 
+   * @param a
+   * @param b
+   * @return min of two HiResDate
+   */
+  public static HiResDate min(final HiResDate a, final HiResDate b)
+  {
+    if (a.compareTo(b) > 0)
+    {
+      return a;
+    }
+    else
+    {
+      return b;
+    }
+  }
+
+  /**
    * convert NULL_DATE object back to null value, which we use in property editors
    * 
    * @param date
@@ -96,6 +130,10 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
    */
   long _micros;
 
+  // ////////////////////////////////////////////////
+  // member methods
+  // ////////////////////////////////////////////////
+
   public HiResDate()
   {
     this(new Date().getTime());
@@ -105,10 +143,6 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
   {
     this(val.getTime());
   }
-
-  // ////////////////////////////////////////////////
-  // member methods
-  // ////////////////////////////////////////////////
 
   public HiResDate(final HiResDate other)
   {
