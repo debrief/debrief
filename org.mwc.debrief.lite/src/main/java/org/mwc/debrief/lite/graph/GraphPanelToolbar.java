@@ -46,7 +46,6 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
-import org.mwc.cmap.xyplot.views.XYPlotUtilities;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
 import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
@@ -76,6 +75,7 @@ import MWC.GUI.JFreeChart.DepthFormatter;
 import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.WatchableList;
+import MWC.Utilities.XYPlot.XYPlotUtilities;
 
 public class GraphPanelToolbar extends JPanel
 {

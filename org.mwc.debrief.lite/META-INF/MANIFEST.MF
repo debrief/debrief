@@ -8,8 +8,7 @@ Export-Package: org.mwc.debrief.lite,
  org.mwc.debrief.lite.map
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.263",
  org.mwc.debrief.legacy;bundle-version="1.0.388",
- org.geotools;bundle-version="1.0.7",
- org.mwc.cmap.xyplot
+ org.geotools;bundle-version="1.0.7"
 Bundle-Vendor: Deep Blue C Ltd
 Bundle-ClassPath: libs/radiance-flamingo-1.0.2.jar,
  libs/radiance-substance-1.0.2.jar,
