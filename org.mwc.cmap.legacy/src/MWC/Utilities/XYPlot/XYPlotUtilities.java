@@ -32,13 +32,13 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class XYPlotUtilities 
 {
 	
-	final static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
+	final private static DateFormat df = new GMTDateFormat("dd/MMM/yyyy HH:mm");
 	
 	public static void copyToClipboard(final String plotTitle,
 			final TimeSeriesCollection dataset)
 	{		
 		final String dataStr = textMatrix(plotTitle, dataset);
-		new TextTransfer().setClipboardContents(dataStr.toString());		
+		new TextTransfer().setClipboardContents(dataStr);		
 	}
 	
 	private synchronized static String textMatrix(final String plotTitle,

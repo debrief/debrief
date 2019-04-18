@@ -407,7 +407,6 @@ public class DebriefLiteApp implements FileDropListener
   protected DataListener2 _listenForMods;
 
   private OutlinePanelView layerManager;
-  private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
@@ -615,10 +614,9 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
-  private void addGraphView(final ToolParent toolParent,
-      final UndoBuffer undoBuffer)
+  private void addGraphView()
   {
-    graphPanelView = new GraphPanelView(_stepControl);
+    GraphPanelView graphPanelView = new GraphPanelView(_stepControl);
     graphPanel.setCollapsed(true);
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
@@ -661,7 +659,7 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
-    addGraphView(app, undoBuffer);
+    addGraphView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()

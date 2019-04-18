@@ -73,7 +73,7 @@ public class ClipboardUtils
       {
         @Override
         public void lostOwnership(
-            final java.awt.datatransfer.Clipboard clipboard,
+            final Clipboard clipboard,
             final Transferable contents)
         {
           System.out.println("Copy to PNG: Lost Ownership");

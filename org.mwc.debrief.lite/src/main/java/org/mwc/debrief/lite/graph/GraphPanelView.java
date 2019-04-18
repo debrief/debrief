@@ -30,10 +30,6 @@ public class GraphPanelView extends JPanel
 
   private final GraphPanelToolbar toolbar;
 
-  /**
-   * the chart we need to update
-   */
-  final MWC.GUI.PlainChart _theChart;
 
   public GraphPanelView(final LiteStepControl stepControl)
   {
@@ -42,7 +38,6 @@ public class GraphPanelView extends JPanel
     final SimpleEditablePropertyPanel xyPanel =
         new SimpleEditablePropertyPanel();
     toolbar = new GraphPanelToolbar(stepControl, xyPanel);
-    _theChart = stepControl.getXYChart();
 
     add(toolbar, BorderLayout.NORTH);
     add(xyPanel, BorderLayout.CENTER);

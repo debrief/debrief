@@ -101,7 +101,7 @@ public class GraphPanelToolbar extends JPanel
 
   private String _state = INACTIVE_STATE;
 
-  final SimpleEditablePropertyPanel _xyPanel;
+  private final SimpleEditablePropertyPanel _xyPanel;
 
   public PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
