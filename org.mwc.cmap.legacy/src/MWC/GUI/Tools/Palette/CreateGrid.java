@@ -61,11 +61,10 @@ public class CreateGrid extends PlainCreate
 {
 	public CreateGrid(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
 										final BoundsProvider theBounds)
 	{
-		super(theParent, thePanel, theLayer, theData, theBounds, "Grid", "images/grid_add.png");
+		super(theParent, thePanel, theData, theBounds, "Grid", "images/grid_add.png");
 	}
 
 	protected MWC.GUI.Plottable createItem()

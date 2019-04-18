@@ -88,11 +88,10 @@ public class CreateVPFLayers extends PlainCreate
 
 	public CreateVPFLayers(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										final MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
 										final BoundsProvider bounds)
 	{
-		super(theParent, thePanel, theLayer, theData, bounds, "VPF Layers", "images/vpf.png");
+		super(theParent, thePanel, theData, bounds, "VPF Layers", "images/vpf.png");
 		
 		// are we getting our toolparent initialised?
 		if(theParent != null)

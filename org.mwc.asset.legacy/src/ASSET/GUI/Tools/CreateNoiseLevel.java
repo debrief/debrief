@@ -79,14 +79,13 @@ public class CreateNoiseLevel extends PlainCreate
 
 	public CreateNoiseLevel(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
 										final BoundsProvider theChart,
                     final EnvironmentType theEnv,
                     final ScenarioNoiseLevelPainter.StatusProvider provider,
                     final int medium)
 	{
-		super(theParent, thePanel, null, theData, theChart, "Scenario Noise", "images/noise_level.gif");
+		super(theParent, thePanel, theData, theChart, "Scenario Noise", "images/noise_level.gif");
     _theEnv = theEnv;
     _provider = provider;
     _medium = medium;

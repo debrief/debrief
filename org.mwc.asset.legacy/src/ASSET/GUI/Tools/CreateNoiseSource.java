@@ -59,13 +59,12 @@ public class CreateNoiseSource extends PlainCreate
 
 	public CreateNoiseSource(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
 										final BoundsProvider theChart,
                     final EnvironmentType theEnv,
                     final int medium)
 	{
-		super(theParent, thePanel, null, theData, theChart, "Scenario Noise Source", "images/noise_source.gif");
+		super(theParent, thePanel, theData, theChart, "Scenario Noise Source", "images/noise_source.gif");
     _theEnv = theEnv;
     _medium = medium;
 	}
