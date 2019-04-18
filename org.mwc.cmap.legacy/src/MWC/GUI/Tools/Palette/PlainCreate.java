@@ -182,17 +182,6 @@ abstract public class PlainCreate extends PlainTool
 		return res;
 	}
 
-	private Layer getDestinationLayer()
-  {
-	  Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
-	  if(layer == null) {
-	   layer = new BaseLayer();
-	   layer.setName(Layers.CHART_FEATURES);
-	   _theData.addThisLayer(layer);
-	  }
-    return layer;
-  }
-
   // /////////////////////////////////////////////////////
 	// store action information
 	// /////////////////////////////////////////////////////
