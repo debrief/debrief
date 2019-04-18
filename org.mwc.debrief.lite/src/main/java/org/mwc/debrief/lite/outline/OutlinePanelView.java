@@ -406,6 +406,7 @@ public class OutlinePanelView extends SwingLayerManager implements
           restoreCutContents();
         }
         doDelete();
+        _myTree.setSelectionPath(null);
       }
     });
 
