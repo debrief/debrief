@@ -10,7 +10,8 @@ import org.mwc.debrief.lite.gui.custom.SimpleEditablePropertyPanel;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PlainPropertyEditor;
 
-public class GraphPanelView extends JPanel implements PlainPropertyEditor.EditorUsesToolParent
+public class GraphPanelView extends JPanel implements
+    PlainPropertyEditor.EditorUsesToolParent
 {
   /**
    * 
@@ -23,12 +24,12 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
    * the chart we need to update
    */
   final MWC.GUI.PlainChart _theChart;
-  
+
   /**
    * Busy cursor
    */
   private ToolParent _theParent;
-  
+
   public GraphPanelView(final LiteStepControl stepControl)
   {
     super();
@@ -36,12 +37,10 @@ public class GraphPanelView extends JPanel implements PlainPropertyEditor.Editor
     SimpleEditablePropertyPanel xyPanel = new SimpleEditablePropertyPanel();
     toolbar = new GraphPanelToolbar(stepControl, xyPanel);
     _theChart = stepControl.getXYChart();
-    
+
     add(toolbar, BorderLayout.NORTH);
-    
     add(xyPanel, BorderLayout.CENTER);
   }
-
 
   @Override
   public void setParent(ToolParent theParent)
