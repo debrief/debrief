@@ -79,6 +79,7 @@
 
 package MWC.GUI.Tools.Palette;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -89,11 +90,6 @@ import MWC.GUI.Tools.PlainTool;
 
 abstract public class PlainCreate extends PlainTool
 {
-
-	/**
-	 * the layer we are dumping this item into
-	 */
-  private final Layer _theLayer;
 
 	/**
 	 * the panel used to edit this item
@@ -126,7 +122,6 @@ abstract public class PlainCreate extends PlainTool
 		super(theParent, theName, theImage);
 
 		_thePanel = thePanel;
-		_theLayer = theLayer;
 		_theData = theData;
 		_boundsProvider = boundsProvider;
 	}
@@ -134,6 +129,17 @@ abstract public class PlainCreate extends PlainTool
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
+	
+	 private Layer getDestinationLayer()
+	  {
+	    Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+	    if(layer == null) {
+	     layer = new BaseLayer();
+	     layer.setName(Layers.CHART_FEATURES);
+	     _theData.addThisLayer(layer);
+	    }
+	    return layer;
+	  }
 	
 	/**
 	 * accessor to retrieve the layered data
@@ -152,7 +158,7 @@ abstract public class PlainCreate extends PlainTool
 
 	public Action getData()
 	{
-		Action res = null;
+		final Action res;
 
 		// ask the child class to create itself
 		final Plottable pl = createItem();
@@ -160,8 +166,13 @@ abstract public class PlainCreate extends PlainTool
 		// did it work?
 		if (pl != null)
 		{
-			// wrap it up in an action
-			res = new CreateLabelAction(_thePanel, _theLayer, _theData, pl);
+      final Layer theLayer = getDestinationLayer();
+      // wrap it up in an action
+      res = new CreateLabelAction(_thePanel, theLayer, _theData, pl);
+		}
+		else
+		{
+		  res = null;
 		}
 
 		return res;
