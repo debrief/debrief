@@ -111,7 +111,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   private Clipboard _clipboard;
   private ArrayList<ButtonEnabler> _enablers = new ArrayList<ButtonEnabler>();
   private Transferable _cutContents;
-  private TreePath _theCutParent; 
+  private TreePath _theCutParent;
 
   private static class ButtonEnabler
   {
@@ -119,30 +119,31 @@ public class OutlinePanelView extends SwingLayerManager implements
     private final EnabledTest _test;
     private final String _title;
 
-    private ButtonEnabler(final String title, final Component button, final EnabledTest test)
+    private ButtonEnabler(final String title, final Component button,
+        final EnabledTest test)
     {
       _title = title;
       _button = button;
       _test = test;
     }
-    
+
     private ButtonEnabler(final JButton button, final EnabledTest test)
     {
       this(button.getToolTipText(), button, test);
     }
-    
+
     @Override
     public String toString()
     {
       return _title;
     }
-    
+
     private void refresh(final Helper helper)
     {
       _button.setEnabled(_test.isEnabled(helper));
     }
   }
-  
+
   public OutlinePanelView(UndoBuffer undoBuffer, Clipboard clipboard)
   {
     _undoBuffer = undoBuffer;
@@ -184,7 +185,8 @@ public class OutlinePanelView extends SwingLayerManager implements
         return helper.getSelection().size() == 1;
       }
     };
-    Helper helper1 = new Helper() {
+    Helper helper1 = new Helper()
+    {
 
       @Override
       public ArrayList<Plottable> getSelection()
@@ -198,24 +200,27 @@ public class OutlinePanelView extends SwingLayerManager implements
       public ArrayList<Plottable> getClipboardContents()
       {
         return new ArrayList<Plottable>();
-      }};
+      }
+    };
 
-      Helper helper2 = new Helper() {
+    Helper helper2 = new Helper()
+    {
 
-        @Override
-        public ArrayList<Plottable> getSelection()
-        {
-          ArrayList<Plottable> res = new ArrayList<Plottable>();
-          res.add(new BaseLayer());
-          res.add(new BaseLayer());
-          return res;
-        }
+      @Override
+      public ArrayList<Plottable> getSelection()
+      {
+        ArrayList<Plottable> res = new ArrayList<Plottable>();
+        res.add(new BaseLayer());
+        res.add(new BaseLayer());
+        return res;
+      }
 
-        @Override
-        public ArrayList<Plottable> getClipboardContents()
-        {
-          return new ArrayList<Plottable>();
-        }};
+      @Override
+      public ArrayList<Plottable> getClipboardContents()
+      {
+        return new ArrayList<Plottable>();
+      }
+    };
 
     System.out.println(new And(hasData, isEmpty).isEnabled(helper1));
     System.out.println(new Or(hasData, isEmpty).isEnabled(helper1));
@@ -230,7 +235,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     JPanel commandBar = new JPanel();
     commandBar.setBackground(Color.LIGHT_GRAY);
     commandBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
-    
+
     // sort out the logical tests
     final EnabledTest notEmpty = getNotEmptyTest();
     final EnabledTest onlyOne = getOnlyOneTest();
@@ -242,37 +247,36 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest isEmpty = getSelectionEmptyTest();
     final EnabledTest notNarrative = getNotNarrativeTest();
     final EnabledTest notIsLayer = getNotLayerTest();
-        
-    final JButton editButton = createCommandButton("Edit",
-        "icons/24/edit.png");
+
+    final JButton editButton = createCommandButton("Edit", "icons/24/edit.png");
     _enablers.add(new ButtonEnabler(editButton, new And(notEmpty, onlyOne)));
     editButton.setEnabled(false);
     editButton.setMnemonic(KeyEvent.VK_ENTER);
     commandBar.add(editButton);
-    
-    final JButton cutButton =  createCommandButton("Cut",
-        "icons/24/cut.png");
-    _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,notIsLayer)));
+
+    final JButton cutButton = createCommandButton("Cut", "icons/24/cut.png");
+    _enablers.add(new ButtonEnabler(cutButton, new And(notEmpty, notNarrative,
+        notIsLayer)));
     cutButton.setEnabled(false);
     cutButton.setMnemonic(KeyEvent.VK_X);
     commandBar.add(cutButton);
-    
+
     final JButton copyButton = createCommandButton("Copy",
         "icons/24/copy_to_clipboard.png");
-    _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,notIsLayer)));
+    _enablers.add(new ButtonEnabler(copyButton, new And(notEmpty, notNarrative,
+        notIsLayer)));
     copyButton.setEnabled(false);
     copyButton.setMnemonic(KeyEvent.VK_C);
     commandBar.add(copyButton);
 
     final JButton pasteButton = createCommandButton("Paste",
         "icons/24/paste.png");
-    _enablers.add(new ButtonEnabler(pasteButton, new And(
-        clipboardNotEmpty, new Or(new And(
-            selectionIsTrack, clipboardIsFixes), new And(
-                selectionIsLayer, clipboardIsShapes)))));
+    _enablers.add(new ButtonEnabler(pasteButton, new And(clipboardNotEmpty,
+        new Or(new And(selectionIsTrack, clipboardIsFixes), new And(
+            selectionIsLayer, clipboardIsShapes)))));
     pasteButton.setEnabled(false);
     pasteButton.setMnemonic(KeyEvent.VK_V);
-    commandBar.add(pasteButton);    
+    commandBar.add(pasteButton);
 
     final JButton addLayerButton = createCommandButton("Add Layer",
         "icons/24/add.png");
@@ -322,8 +326,8 @@ public class OutlinePanelView extends SwingLayerManager implements
             return clip;
           }
         };
-        
-        for(final ButtonEnabler t: _enablers)
+
+        for (final ButtonEnabler t : _enablers)
         {
           t.refresh(helper);
         }
@@ -332,26 +336,27 @@ public class OutlinePanelView extends SwingLayerManager implements
     @SuppressWarnings("serial")
     final Action pasteAction = new AbstractAction()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        if(_cutContents!=null) {
+        if (_cutContents != null)
+        {
           restoreCutContents();
         }
         doPaste();
-        
+
       }
     };
-    pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-           "paste");
-    pasteButton.getActionMap().put("paste",pasteAction);
-    
+    pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "paste");
+    pasteButton.getActionMap().put("paste", pasteAction);
+
     @SuppressWarnings("serial")
     final Action editAction = new AbstractAction()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
@@ -368,13 +373,13 @@ public class OutlinePanelView extends SwingLayerManager implements
             }
           }
         }
-        
+
       }
     };
-    editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-           "edit");
-    editButton.getActionMap().put("edit",editAction);
+    editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "edit");
+    editButton.getActionMap().put("edit", editAction);
     addLayerButton.addActionListener(new ActionListener()
     {
 
@@ -385,11 +390,11 @@ public class OutlinePanelView extends SwingLayerManager implements
 
       }
     });
-    
+
     @SuppressWarnings("serial")
     final Action cutAction = new AbstractAction()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
@@ -397,17 +402,18 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if(_cutContents!=null) {
+          if (_cutContents != null)
+          {
             restoreCutContents();
           }
           doCut(selectionPath);
         }
       }
     };
-    cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-           "cut");
-    cutButton.getActionMap().put("cut",cutAction);
+    cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "cut");
+    cutButton.getActionMap().put("cut", cutAction);
     @SuppressWarnings("serial")
     final Action copyAction = new AbstractAction()
     {
@@ -419,7 +425,8 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if(_cutContents!=null) {
+          if (_cutContents != null)
+          {
             restoreCutContents();
           }
           doCopy(selectionPath);
@@ -427,27 +434,27 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     };
-    copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()),
-           "copy");
-    copyButton.getActionMap().put("copy",copyAction);
+    copyButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit()
+            .getMenuShortcutKeyMask()), "copy");
+    copyButton.getActionMap().put("copy", copyAction);
     @SuppressWarnings("serial")
     final Action deleteAction = new AbstractAction()
     {
-      
+
       @Override
       public void actionPerformed(ActionEvent e)
       {
-        if(_cutContents!=null) {
+        if (_cutContents != null)
+        {
           restoreCutContents();
         }
         doDelete();
       }
     };
-    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW)
-    .put(KeyStroke.getKeyStroke("DELETE"),
-           "delete");
-    deleteButton.getActionMap().put("delete",deleteAction);
+    deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
+        .getKeyStroke("DELETE"), "delete");
+    deleteButton.getActionMap().put("delete", deleteAction);
     deleteButton.addActionListener(deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
@@ -499,14 +506,14 @@ public class OutlinePanelView extends SwingLayerManager implements
         {
           PlottableNode node = (PlottableNode) component;
           Object object = node.getUserObject();
-          if(object instanceof Plottable)
+          if (object instanceof Plottable)
           {
             int pathCount = item.getPathCount();
             // ok, delete it, get the parent
             DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) _myTree
                 .getSelectionPath().getPathComponent(pathCount - 2);
             Object parent = parentNode.getUserObject();
-            if(parent instanceof Layer)
+            if (parent instanceof Layer)
             {
               Layer layer = (Layer) parent;
               layer.removeElement((Editable) object);
@@ -524,7 +531,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
 
-    if(modified)
+    if (modified)
     {
       doReset();
     }
@@ -533,39 +540,45 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   protected void doCut(TreePath[] selectionPaths)
   {
-    //restore any contents that were cut 
-    //previously before starting the new one.
+    // restore any contents that were cut
+    // previously before starting the new one.
     doCopy(selectionPaths);
-    //parent object is the destination
+    // parent object is the destination
     rememberCutContents();
     doDelete();
-    //if the next action is not paste then undo delete
+    // if the next action is not paste then undo delete
   }
 
-  private void restoreCutContents() {
+  private void restoreCutContents()
+  {
     Transferable tr = _cutContents;
     ArrayList<Plottable> plottables = getContentsFromTransferable(tr);
     final CanEnumerate destination;
-    if(_theCutParent!=null && plottables!=null && !plottables.isEmpty()) {
-      Object obj = ((DefaultMutableTreeNode)_theCutParent.getLastPathComponent()).getUserObject();
-      if(obj instanceof String) {
+    if (_theCutParent != null && plottables != null && !plottables.isEmpty())
+    {
+      Object obj = ((DefaultMutableTreeNode) _theCutParent
+          .getLastPathComponent()).getUserObject();
+      if (obj instanceof String)
+      {
         destination = null;
       }
-      else {
-        destination = (CanEnumerate)obj;
+      else
+      {
+        destination = (CanEnumerate) obj;
       }
     }
-    else {
+    else
+    {
       destination = null;
     }
-    for(Plottable theData:plottables) {
-      addBackData(theData,destination);
+    for (Plottable theData : plottables)
+    {
+      addBackData(theData, destination);
     }
     _cutContents = null;
     _theCutParent = null;
     _myData.fireModified(null);
-}
-
+  }
 
   private void rememberCutContents()
   {
@@ -602,25 +615,22 @@ public class OutlinePanelView extends SwingLayerManager implements
     ArrayList<Plottable> plottables = getClipboardContents();
     // see if there is currently a plottable on the clipboard
     // see if it is a layer or not
-    if(!plottables.isEmpty())
+    if (!plottables.isEmpty())
     {
       for (Plottable theData : plottables)
       {
-        addBackData(theData,destination);
+        addBackData(theData, destination);
       }
-      _myData.fireExtended(plottables.get(0), (HasEditables)destination);
+      _myData.fireExtended(plottables.get(0), (HasEditables) destination);
     }
     if (!_isCopy)
     {
       // clear the clipboard
       _clipboard.setContents(null, null);
     }
-    
-    
-    
 
   }
-  
+
   /**
    * have a fresh pass through the data
    */
@@ -632,32 +642,41 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
       DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
-      if(rootNode!=null) {
+      if (rootNode != null)
+      {
         final DefaultMutableTreeNode itemNode;
-        if(rootNode.getUserObject() instanceof Layer){
-          //used class name instead of instanceof as otherwise
-          //there will be cyclic dependency in eclipse manifest.
-         
-          if(newItem instanceof FixWrapper) {
-            rootNode = (DefaultMutableTreeNode)rootNode.getFirstChild();
+        if (rootNode.getUserObject() instanceof Layer)
+        {
+          // used class name instead of instanceof as otherwise
+          // there will be cyclic dependency in eclipse manifest.
+
+          if (newItem instanceof FixWrapper)
+          {
+            rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
           }
           itemNode = getTreeNode(rootNode, newItem.getName(),
-        
-            newItem);
-        }
-        else {
-          //if not a layer but a trackwrapper
-          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode)rootNode.getFirstChild();
-          if(firstChild != null) {
-            itemNode = getTreeNode((DefaultMutableTreeNode)rootNode.getFirstChild(), newItem.getName(),
-              
+
               newItem);
+        }
+        else
+        {
+          // if not a layer but a trackwrapper
+          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode) rootNode
+              .getFirstChild();
+          if (firstChild != null)
+          {
+            itemNode = getTreeNode((DefaultMutableTreeNode) rootNode
+                .getFirstChild(), newItem.getName(),
+
+                newItem);
           }
-          else {
+          else
+          {
             itemNode = null;
           }
         }
-        if(itemNode!=null) {
+        if (itemNode != null)
+        {
           final TreePath _treePath = new TreePath(itemNode.getPath());
           SwingUtilities.invokeLater(new Runnable()
           {
@@ -678,7 +697,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
       final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
-      if(rootNode!=null) {
+      if (rootNode != null)
+      {
         final TreePath _treePath = new TreePath(rootNode.getPath());
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -696,7 +716,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
-
   private void addBackData(Plottable theData, CanEnumerate destination)
   {
     if (theData instanceof Layer)
@@ -705,7 +724,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
     else
     {
-      //renameIfNecessary((Editable)theData, destination);
+      // renameIfNecessary((Editable)theData, destination);
       if (destination instanceof Layer)
       {
         ((Layer) destination).add(theData);
@@ -715,7 +734,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         ((TrackWrapper) destination).add(theData);
       }
     }
-    
+
   }
 
   public void pasteLayer(final CanEnumerate destination, final Layer theData)
@@ -1019,7 +1038,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         {
           PlottableNode node = (PlottableNode) component;
           Object object = node.getUserObject();
-          if(object instanceof Plottable)
+          if (object instanceof Plottable)
           {
             res.add((Plottable) object);
           }
@@ -1029,7 +1048,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     return res;
   }
 
-  public ArrayList<Plottable> getContentsFromTransferable(final Transferable tr){
+  public ArrayList<Plottable> getContentsFromTransferable(final Transferable tr)
+  {
     final ArrayList<Plottable> res = new ArrayList<Plottable>();
     if (tr != null && tr.isDataFlavorSupported(
         PlottableSelection.PlottableFlavor))
@@ -1075,11 +1095,11 @@ public class OutlinePanelView extends SwingLayerManager implements
     return res;
 
   }
-  
+
   @Override
   public ArrayList<Plottable> getClipboardContents()
   {
-    
+
     Transferable tr = _clipboard.getContents(this);
     // see if there is currently a plottable on the clipboard
     return getContentsFromTransferable(tr);
