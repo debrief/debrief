@@ -102,22 +102,16 @@ public class OutlinePanelView extends SwingLayerManager implements
     ClipboardOwner, Helper
 {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-
-  private UndoBuffer _undoBuffer;
-  private Clipboard _clipboard;
-  private ArrayList<ButtonEnabler> _enablers = new ArrayList<ButtonEnabler>();
-  private Transferable _cutContents;
-  private TreePath _theCutParent;
-
   private static class ButtonEnabler
   {
     private final Component _button;
     private final EnabledTest _test;
     private final String _title;
+
+    private ButtonEnabler(final JButton button, final EnabledTest test)
+    {
+      this(button.getToolTipText(), button, test);
+    }
 
     private ButtonEnabler(final String title, final Component button,
         final EnabledTest test)
@@ -127,9 +121,9 @@ public class OutlinePanelView extends SwingLayerManager implements
       _test = test;
     }
 
-    private ButtonEnabler(final JButton button, final EnabledTest test)
+    private void refresh(final Helper helper)
     {
-      this(button.getToolTipText(), button, test);
+      _button.setEnabled(_test.isEnabled(helper));
     }
 
     @Override
@@ -137,20 +131,197 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
       return _title;
     }
-
-    private void refresh(final Helper helper)
-    {
-      _button.setEnabled(_test.isEnabled(helper));
-    }
   }
 
-  public OutlinePanelView(UndoBuffer undoBuffer, Clipboard clipboard)
+  private class OutlineCellEditor extends AbstractCellEditor implements
+      TreeCellEditor
   {
-    _undoBuffer = undoBuffer;
-    _clipboard = clipboard;
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private final JLabel visibilityLabel;
+    private final OutlineRenderer renderer;
+    private DefaultMutableTreeNode lastEditedNode;
+
+    public OutlineCellEditor()
+    {
+      renderer = new OutlineRenderer();
+      visibilityLabel = renderer.getVisibilityLabel();
+
+      visibilityLabel.addMouseListener(new MouseAdapter()
+      {
+        @Override
+        public void mousePressed(final MouseEvent e)
+        {
+          final Plottable pl = (Plottable) lastEditedNode.getUserObject();
+          final PlottableNode pln = (PlottableNode) lastEditedNode;
+          final boolean newVisibility = !pl.getVisible();
+          changeVisOfThisElement(pl, newVisibility, pln.getParentLayer());
+          pln.setSelected(newVisibility);
+          renderer.setVisibility(newVisibility);
+          stopCellEditing();
+        }
+      });
+    }
+
+    @Override
+    public Object getCellEditorValue()
+    {
+      return lastEditedNode.getUserObject();
+    }
+
+    @Override
+    public Component getTreeCellEditorComponent(final JTree tree,
+        final Object value, final boolean selected, final boolean expanded,
+        final boolean leaf, final int row)
+    {
+      lastEditedNode = (DefaultMutableTreeNode) value;
+
+      return renderer.getTreeCellRendererComponent(tree, value, selected,
+          expanded, leaf, row, true); // hasFocus ignored
+    }
+
   }
 
-  public static void main(String[] args)
+  private class OutlineRenderer extends DefaultTreeCellRenderer
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private final Icon visibilityIconEnabled;
+    private final Icon visibilityIconDisabled;
+    @SuppressWarnings("unused")
+    private int _xOffset = 0;
+    private final Component strut = Box.createHorizontalStrut(5);
+    private final JPanel panel = new JPanel();
+    private final JLabel visibility = new JLabel();
+    private final Border border = BorderFactory.createEmptyBorder(4, 2, 2, 4);
+    private final Map<String, ImageIcon> iconMap =
+        new HashMap<String, ImageIcon>();
+
+    public OutlineRenderer()
+    {
+      panel.setBackground(UIManager.getColor("Tree.textBackground"));
+      setOpaque(false);
+      panel.setOpaque(false);
+      panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
+
+      visibility.setOpaque(false);
+      visibilityIconEnabled = new ImageIcon(getClass().getClassLoader()
+          .getResource("icons/16/visible-eye.png"));
+      visibilityIconDisabled = new ImageIcon(getClass().getClassLoader()
+          .getResource("icons/16/invisible-eye.png"));
+      panel.add(visibility);
+      panel.add(strut);
+      panel.add(this);
+      panel.setBorder(border);
+    }
+
+    @Override
+    public Component getTreeCellRendererComponent(final JTree tree,
+        final Object node, final boolean selected, final boolean expanded,
+        final boolean leaf, final int row, final boolean hasFocus)
+    {
+      super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf,
+          row, hasFocus);
+      if (node instanceof DefaultMutableTreeNode)
+      {
+        final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+        final Object data = tn.getUserObject();
+        if (data instanceof Plottable)
+        {
+          final Plottable pl = (Plottable) tn.getUserObject();
+          final DebriefImageHelper helper = new DebriefImageHelper();
+          String icon = helper.getImageFor(pl);
+          if (icon == null)
+          {
+            final String imageKey = CoreImageHelper.getImageKeyFor(pl);
+            icon = "icons/16/" + imageKey;
+          }
+          if (icon != null)
+          {
+            // do we have this image in the cache?
+            ImageIcon match = iconMap.get(icon);
+            if (match == null)
+            {
+              // ok, we'll have to create it
+              final URL iconURL = DebriefImageHelper.class.getClassLoader()
+                  .getResource(icon);
+              if (iconURL == null)
+              {
+                System.err.println("Can't find icon:" + icon);
+              }
+              else
+              {
+                match = new ImageIcon(iconURL);
+                iconMap.put(icon, match);
+              }
+            }
+
+            // have we generated one?
+            if (match != null)
+            {
+              // ok, use it
+              setIcon(match);
+            }
+
+          }
+          setVisibility(pl.getVisible());
+        }
+      }
+
+      panel.doLayout();
+      return panel;
+    }
+
+    public JLabel getVisibilityLabel()
+    {
+      return visibility;
+    }
+
+    @Override
+    public void paint(final java.awt.Graphics g)
+    {
+      super.paint(g);
+
+      // get the location of the check box, to check our ticking
+      if (g != null)
+      {
+        try
+        {
+          final FontMetrics fm = g.getFontMetrics();
+          _xOffset = fm.stringWidth(getText()) + strut.getPreferredSize().width;
+        }
+        finally
+        {
+          // g.dispose();
+        }
+      }
+    }
+
+    private void setVisibility(final boolean visible)
+    {
+      if (visible)
+      {
+        visibility.setIcon(visibilityIconEnabled);
+      }
+      else
+      {
+        visibility.setIcon(visibilityIconDisabled);
+      }
+    }
+
+  }
+
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
+
+  public static void main(final String[] args)
   {
     final EnabledTest hasData = new EnabledTest("Has data")
     {
@@ -185,40 +356,40 @@ public class OutlinePanelView extends SwingLayerManager implements
         return helper.getSelection().size() == 1;
       }
     };
-    Helper helper1 = new Helper()
+    final Helper helper1 = new Helper()
     {
-
-      @Override
-      public ArrayList<Plottable> getSelection()
-      {
-        ArrayList<Plottable> res = new ArrayList<Plottable>();
-        res.add(new BaseLayer());
-        return res;
-      }
 
       @Override
       public ArrayList<Plottable> getClipboardContents()
       {
         return new ArrayList<Plottable>();
+      }
+
+      @Override
+      public ArrayList<Plottable> getSelection()
+      {
+        final ArrayList<Plottable> res = new ArrayList<Plottable>();
+        res.add(new BaseLayer());
+        return res;
       }
     };
 
-    Helper helper2 = new Helper()
+    final Helper helper2 = new Helper()
     {
-
-      @Override
-      public ArrayList<Plottable> getSelection()
-      {
-        ArrayList<Plottable> res = new ArrayList<Plottable>();
-        res.add(new BaseLayer());
-        res.add(new BaseLayer());
-        return res;
-      }
 
       @Override
       public ArrayList<Plottable> getClipboardContents()
       {
         return new ArrayList<Plottable>();
+      }
+
+      @Override
+      public ArrayList<Plottable> getSelection()
+      {
+        final ArrayList<Plottable> res = new ArrayList<Plottable>();
+        res.add(new BaseLayer());
+        res.add(new BaseLayer());
+        return res;
       }
     };
 
@@ -228,11 +399,308 @@ public class OutlinePanelView extends SwingLayerManager implements
     System.out.println(new And(notEmpty, onlyOne).isEnabled(helper2));
   }
 
+  private final UndoBuffer _undoBuffer;
+
+  private final Clipboard _clipboard;
+
+  private final ArrayList<ButtonEnabler> _enablers =
+      new ArrayList<ButtonEnabler>();
+
+  private Transferable _cutContents;
+
+  private TreePath _theCutParent;
+
+  public OutlinePanelView(final UndoBuffer undoBuffer,
+      final Clipboard clipboard)
+  {
+    _undoBuffer = undoBuffer;
+    _clipboard = clipboard;
+  }
+
+  private void addBackData(final Plottable theData,
+      final CanEnumerate destination)
+  {
+    if (theData instanceof Layer)
+    {
+      pasteLayer(destination, (Layer) theData);
+    }
+    else
+    {
+      // renameIfNecessary((Editable)theData, destination);
+      if (destination instanceof Layer)
+      {
+        ((Layer) destination).add(theData);
+      }
+      else
+      {
+        ((TrackWrapper) destination).add(theData);
+      }
+    }
+
+  }
+
+  private JButton createCommandButton(final String command, final String image)
+  {
+    final URL imageIcon = getClass().getClassLoader().getResource(image);
+    ImageIcon icon = null;
+    try
+    {
+      icon = new ImageIcon(imageIcon);
+    }
+    catch (final Exception e)
+    {
+      System.err.println("Failed to find icon:" + image);
+      e.printStackTrace();
+    }
+    final JButton button = new JButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
+  protected void doCopy(final TreePath[] selectionPaths)
+  {
+    final Plottable[] plottables = new Plottable[selectionPaths.length];
+    int i = 0;
+    for (final TreePath path : selectionPaths)
+    {
+      plottables[i++] = (Plottable) ((DefaultMutableTreeNode) path
+          .getLastPathComponent()).getUserObject();
+    }
+    final OutlineViewSelection selection = new OutlineViewSelection(plottables,
+        true);
+    _clipboard.setContents(selection, this);
+
+  }
+
+  protected void doCut(final TreePath[] selectionPaths)
+  {
+    // restore any contents that were cut
+    // previously before starting the new one.
+    doCopy(selectionPaths);
+    // parent object is the destination
+    rememberCutContents();
+    doDelete();
+    // if the next action is not paste then undo delete
+  }
+
+  protected void doDelete()
+  {
+    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+    boolean modified = false;
+    if (selectionPaths != null)
+    {
+      for (final TreePath item : selectionPaths)
+      {
+        final Object component = item.getLastPathComponent();
+        if (component instanceof PlottableNode)
+        {
+          final PlottableNode node = (PlottableNode) component;
+          final Object object = node.getUserObject();
+          if (object instanceof Plottable)
+          {
+            final int pathCount = item.getPathCount();
+            // ok, delete it, get the parent
+            final DefaultMutableTreeNode parentNode =
+                (DefaultMutableTreeNode) _myTree.getSelectionPath()
+                    .getPathComponent(pathCount - 2);
+            final Object parent = parentNode.getUserObject();
+            if (parent instanceof Layer)
+            {
+              final Layer layer = (Layer) parent;
+              layer.removeElement((Editable) object);
+              modified = true;
+            }
+            else
+            {
+              // ok, the parent isn't a layer. In that case this must
+              // be a top level layer
+              getData().removeThisLayer((Layer) object);
+              modified = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (modified)
+    {
+      doReset();
+    }
+
+  }
+
+  protected void doPaste()
+  {
+    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree
+        .getSelectionPath().getLastPathComponent();
+    final Editable editable = (Editable) node.getUserObject();
+    final CanEnumerate destination;
+    if (editable instanceof BaseLayer)
+    {
+      destination = (BaseLayer) editable;
+    }
+    else if (editable instanceof TrackWrapper)
+    {
+      destination = (TrackWrapper) editable;
+    }
+    else
+    {
+      destination = null;
+    }
+
+    final Transferable tr = _clipboard.getContents(this);
+    final OutlineViewSelection os = (OutlineViewSelection) tr;
+    final boolean _isCopy = os.isACopy();
+    final ArrayList<Plottable> plottables = getClipboardContents();
+    // see if there is currently a plottable on the clipboard
+    // see if it is a layer or not
+    if (!plottables.isEmpty())
+    {
+      for (final Plottable theData : plottables)
+      {
+        addBackData(theData, destination);
+      }
+      _myData.fireExtended(plottables.get(0), (HasEditables) destination);
+    }
+    if (!_isCopy)
+    {
+      // clear the clipboard
+      _clipboard.setContents(null, null);
+    }
+
+  }
+
+  @Override
+  protected void editThis(final TreeNode node)
+  {
+    System.out.println("Editing...");
+    if (node instanceof DefaultMutableTreeNode)
+    {
+      final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
+      final Object data = tn.getUserObject();
+      if (data instanceof MWC.GUI.Editable)
+      {
+        final Editable editable = (Editable) data;
+        if (editable.hasEditor())
+        {
+          // get the toolparent object
+          final ToolParent tp = getToolParent();
+
+          // did we get a valid toolparent?
+          if (tp != null)
+          {
+            // set it to busy
+            tp.setCursor(java.awt.Cursor.WAIT_CURSOR);
+          }
+          final DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tn
+              .getParent();
+          final Object parentData = parent.getUserObject();
+          ToolbarOwner owner = null;
+          if (parentData instanceof ToolbarOwner)
+          {
+            owner = (ToolbarOwner) parentData;
+          }
+          final PropertiesDialog dialog = new PropertiesDialog(editable,
+              _myData, _undoBuffer, tp, owner);
+          dialog.setSize(400, 500);
+          dialog.setLocationRelativeTo(null);
+          dialog.setVisible(true);
+          if (tp != null)
+          {
+            tp.restoreCursor();
+          }
+        }
+      }
+    }
+
+  }
+
+  @Override
+  public ArrayList<Plottable> getClipboardContents()
+  {
+
+    final Transferable tr = _clipboard.getContents(this);
+    // see if there is currently a plottable on the clipboard
+    return getContentsFromTransferable(tr);
+  }
+
+  public ArrayList<Plottable> getContentsFromTransferable(final Transferable tr)
+  {
+    final ArrayList<Plottable> res = new ArrayList<Plottable>();
+    if (tr != null && tr.isDataFlavorSupported(
+        PlottableSelection.PlottableFlavor))
+    {
+      if (tr instanceof OutlineViewSelection)
+      {
+        // extract the plottable
+        Object objectToPaste = null;
+        try
+        {
+          objectToPaste = tr.getTransferData(
+              PlottableSelection.PlottableFlavor);
+        }
+        catch (final UnsupportedFlavorException e)
+        {
+          e.printStackTrace();
+        }
+        catch (final IOException e)
+        {
+          e.printStackTrace();
+        }
+
+        final Plottable[] plottables;
+        if (objectToPaste != null)
+        {
+          if (objectToPaste instanceof Plottable[])
+          {
+            plottables = (Plottable[]) objectToPaste;
+          }
+          else
+          {
+            plottables = new Plottables[1];
+            plottables[0] = (Plottable) objectToPaste;
+          }
+          // get the contents
+          for (final Plottable theData : plottables)
+          {
+            res.add(theData);
+          }
+        }
+      }
+    }
+    return res;
+
+  }
+
+  @Override
+  public ArrayList<Plottable> getSelection()
+  {
+    final ArrayList<Plottable> res = new ArrayList<Plottable>();
+    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+    if (selectionPaths != null)
+    {
+      for (final TreePath item : selectionPaths)
+      {
+        final Object component = item.getLastPathComponent();
+        if (component instanceof PlottableNode)
+        {
+          final PlottableNode node = (PlottableNode) component;
+          final Object object = node.getUserObject();
+          if (object instanceof Plottable)
+          {
+            res.add((Plottable) object);
+          }
+        }
+      }
+    }
+    return res;
+  }
+
   @Override
   protected void initForm()
   {
     super.initForm(true);
-    JPanel commandBar = new JPanel();
+    final JPanel commandBar = new JPanel();
     commandBar.setBackground(Color.LIGHT_GRAY);
     commandBar.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
@@ -298,7 +766,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         doReset();
       }
@@ -308,22 +776,22 @@ public class OutlinePanelView extends SwingLayerManager implements
     _myTree.addTreeSelectionListener(new TreeSelectionListener()
     {
       @Override
-      public void valueChanged(TreeSelectionEvent e)
+      public void valueChanged(final TreeSelectionEvent e)
       {
         final ArrayList<Plottable> sel = me.getSelection();
         final ArrayList<Plottable> clip = me.getClipboardContents();
-        Helper helper = new Helper()
+        final Helper helper = new Helper()
         {
-          @Override
-          public ArrayList<Plottable> getSelection()
-          {
-            return sel;
-          }
-
           @Override
           public ArrayList<Plottable> getClipboardContents()
           {
             return clip;
+          }
+
+          @Override
+          public ArrayList<Plottable> getSelection()
+          {
+            return sel;
           }
         };
 
@@ -337,8 +805,13 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Action pasteAction = new AbstractAction()
     {
 
+      /**
+       *
+       */
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         if (_cutContents != null)
         {
@@ -357,16 +830,21 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Action editAction = new AbstractAction()
     {
 
+      /**
+       *
+       */
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
-        int selectionCount = _myTree.getSelectionCount();
+        final int selectionCount = _myTree.getSelectionCount();
         if (selectionCount == 1)
         {
-          TreePath selectionPath = _myTree.getSelectionPath();
+          final TreePath selectionPath = _myTree.getSelectionPath();
           if (selectionPath != null)
           {
-            Object node = selectionPath.getLastPathComponent();
+            final Object node = selectionPath.getLastPathComponent();
             if (node instanceof DefaultMutableTreeNode)
             {
               editThis((DefaultMutableTreeNode) node);
@@ -384,7 +862,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
 
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         addLayer();
 
@@ -395,13 +873,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Action cutAction = new AbstractAction()
     {
 
+      /**
+       *
+       */
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
-        int selectionCount = _myTree.getSelectionCount();
+        final int selectionCount = _myTree.getSelectionCount();
         if (selectionCount > 0)
         {
-          TreePath selectionPath[] = _myTree.getSelectionPaths();
+          final TreePath selectionPath[] = _myTree.getSelectionPaths();
           if (_cutContents != null)
           {
             restoreCutContents();
@@ -418,13 +901,18 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Action copyAction = new AbstractAction()
     {
 
+      /**
+       *
+       */
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
-        int selectionCount = _myTree.getSelectionCount();
+        final int selectionCount = _myTree.getSelectionCount();
         if (selectionCount > 0)
         {
-          TreePath selectionPath[] = _myTree.getSelectionPaths();
+          final TreePath selectionPath[] = _myTree.getSelectionPaths();
           if (_cutContents != null)
           {
             restoreCutContents();
@@ -442,8 +930,13 @@ public class OutlinePanelView extends SwingLayerManager implements
     final Action deleteAction = new AbstractAction()
     {
 
+      /**
+       *
+       */
+      private static final long serialVersionUID = 1L;
+
       @Override
-      public void actionPerformed(ActionEvent e)
+      public void actionPerformed(final ActionEvent e)
       {
         if (_cutContents != null)
         {
@@ -461,102 +954,90 @@ public class OutlinePanelView extends SwingLayerManager implements
     setCellEditor(new OutlineCellEditor());
   }
 
-  private JButton createCommandButton(String command, String image)
+  @Override
+  public void lostOwnership(final Clipboard clipboard,
+      final Transferable contents)
   {
-    URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
-    final JButton button = new JButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }
-
-  protected void doCopy(TreePath[] selectionPaths)
-  {
-    Plottable[] plottables = new Plottable[selectionPaths.length];
-    int i = 0;
-    for (TreePath path : selectionPaths)
-    {
-      plottables[i++] = (Plottable) ((DefaultMutableTreeNode) path
-          .getLastPathComponent()).getUserObject();
-    }
-    OutlineViewSelection selection = new OutlineViewSelection(plottables, true);
-    _clipboard.setContents(selection, this);
+    // do nothing
 
   }
 
-  protected void doDelete()
+  public void pasteLayer(final CanEnumerate destination, final Layer theData)
   {
-    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-    boolean modified = false;
-    if (selectionPaths != null)
+    if (destination instanceof BaseLayer)
     {
-      for (final TreePath item : selectionPaths)
+      ((Layer) destination).add(theData);
+    }
+    else
+    {
+      if (_myData.findLayer(theData.getName()) == null)
       {
-        Object component = item.getLastPathComponent();
-        if (component instanceof PlottableNode)
+        // just add it
+        if (theData instanceof FixWrapper)
+          _myData.addThisLayerDoNotResize(theData);
+      }
+      else
+      {
+        // adjust the name
+        final Layer newLayer = theData;
+
+        final String theName = newLayer.getName();
+
+        // does the layer end in a digit?
+        final char id = theName.charAt(theName.length() - 1);
+        final String idStr = new String("" + id);
+        int val = 1;
+
+        String newName = null;
+        try
         {
-          PlottableNode node = (PlottableNode) component;
-          Object object = node.getUserObject();
-          if (object instanceof Plottable)
+          val = Integer.parseInt(idStr);
+          newName = theName.substring(0, theName.length() - 2) + " " + val;
+
+          while (_myData.findLayer(newName) != null)
           {
-            int pathCount = item.getPathCount();
-            // ok, delete it, get the parent
-            DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) _myTree
-                .getSelectionPath().getPathComponent(pathCount - 2);
-            Object parent = parentNode.getUserObject();
-            if (parent instanceof Layer)
-            {
-              Layer layer = (Layer) parent;
-              layer.removeElement((Editable) object);
-              modified = true;
-            }
-            else
-            {
-              // ok, the parent isn't a layer. In that case this must
-              // be a top level layer
-              getData().removeThisLayer((Layer) object);
-              modified = true;
-            }
+            val++;
+            newName = theName.substring(0, theName.length() - 2) + " " + val;
           }
         }
+        catch (final java.lang.NumberFormatException f)
+        {
+          newName = theName + " " + val;
+          while (_myData.findLayer(newName) != null)
+          {
+            val++;
+            newName = theName + " " + val;
+          }
+        }
+
+        // ignore, there isn't a number, just add a 1
+        newLayer.setName(newName);
+
+        // just drop it in at the top level
+        _myData.addThisLayerDoNotResize(theData);
       }
     }
 
-    if (modified)
-    {
-      doReset();
-    }
-
   }
 
-  protected void doCut(TreePath[] selectionPaths)
+  private void rememberCutContents()
   {
-    // restore any contents that were cut
-    // previously before starting the new one.
-    doCopy(selectionPaths);
-    // parent object is the destination
-    rememberCutContents();
-    doDelete();
-    // if the next action is not paste then undo delete
+    if (_clipboard != null)
+    {
+      // copy in the new data
+      _cutContents = _clipboard.getContents(this);
+      _theCutParent = _myTree.getSelectionPath().getParentPath();
+    }
   }
 
   private void restoreCutContents()
   {
-    Transferable tr = _cutContents;
-    ArrayList<Plottable> plottables = getContentsFromTransferable(tr);
+    final Transferable tr = _cutContents;
+    final ArrayList<Plottable> plottables = getContentsFromTransferable(tr);
     final CanEnumerate destination;
     if (_theCutParent != null && plottables != null && !plottables.isEmpty())
     {
-      Object obj = ((DefaultMutableTreeNode) _theCutParent
+      final Object obj = ((DefaultMutableTreeNode) _theCutParent
           .getLastPathComponent()).getUserObject();
       if (obj instanceof String)
       {
@@ -571,64 +1052,13 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
       destination = null;
     }
-    for (Plottable theData : plottables)
+    for (final Plottable theData : plottables)
     {
       addBackData(theData, destination);
     }
     _cutContents = null;
     _theCutParent = null;
     _myData.fireModified(null);
-  }
-
-  private void rememberCutContents()
-  {
-    if (_clipboard != null)
-    {
-      // copy in the new data
-      _cutContents = _clipboard.getContents(this);
-      _theCutParent = _myTree.getSelectionPath().getParentPath();
-    }
-  }
-
-  protected void doPaste()
-  {
-    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree
-        .getSelectionPath().getLastPathComponent();
-    final Editable editable = (Editable) node.getUserObject();
-    final CanEnumerate destination;
-    if (editable instanceof BaseLayer)
-    {
-      destination = (BaseLayer) editable;
-    }
-    else if (editable instanceof TrackWrapper)
-    {
-      destination = (TrackWrapper) editable;
-    }
-    else
-    {
-      destination = null;
-    }
-
-    final Transferable tr = _clipboard.getContents(this);
-    final OutlineViewSelection os = (OutlineViewSelection) tr;
-    final boolean _isCopy = os.isACopy();
-    ArrayList<Plottable> plottables = getClipboardContents();
-    // see if there is currently a plottable on the clipboard
-    // see if it is a layer or not
-    if (!plottables.isEmpty())
-    {
-      for (Plottable theData : plottables)
-      {
-        addBackData(theData, destination);
-      }
-      _myData.fireExtended(plottables.get(0), (HasEditables) destination);
-    }
-    if (!_isCopy)
-    {
-      // clear the clipboard
-      _clipboard.setContents(null, null);
-    }
-
   }
 
   /**
@@ -661,8 +1091,8 @@ public class OutlinePanelView extends SwingLayerManager implements
         else
         {
           // if not a layer but a trackwrapper
-          DefaultMutableTreeNode firstChild = (DefaultMutableTreeNode) rootNode
-              .getFirstChild();
+          final DefaultMutableTreeNode firstChild =
+              (DefaultMutableTreeNode) rootNode.getFirstChild();
           if (firstChild != null)
           {
             itemNode = getTreeNode((DefaultMutableTreeNode) rootNode
@@ -714,394 +1144,5 @@ public class OutlinePanelView extends SwingLayerManager implements
         });
       }
     }
-  }
-
-  private void addBackData(Plottable theData, CanEnumerate destination)
-  {
-    if (theData instanceof Layer)
-    {
-      pasteLayer(destination, (Layer) theData);
-    }
-    else
-    {
-      // renameIfNecessary((Editable)theData, destination);
-      if (destination instanceof Layer)
-      {
-        ((Layer) destination).add(theData);
-      }
-      else
-      {
-        ((TrackWrapper) destination).add(theData);
-      }
-    }
-
-  }
-
-  public void pasteLayer(final CanEnumerate destination, final Layer theData)
-  {
-    if (destination instanceof BaseLayer)
-    {
-      ((Layer) destination).add(theData);
-    }
-    else
-    {
-      if (_myData.findLayer(theData.getName()) == null)
-      {
-        // just add it
-        if (theData instanceof FixWrapper)
-          _myData.addThisLayerDoNotResize((Layer) theData);
-      }
-      else
-      {
-        // adjust the name
-        final Layer newLayer = (Layer) theData;
-
-        final String theName = newLayer.getName();
-
-        // does the layer end in a digit?
-        final char id = theName.charAt(theName.length() - 1);
-        final String idStr = new String("" + id);
-        int val = 1;
-
-        String newName = null;
-        try
-        {
-          val = Integer.parseInt(idStr);
-          newName = theName.substring(0, theName.length() - 2) + " " + val;
-
-          while (_myData.findLayer(newName) != null)
-          {
-            val++;
-            newName = theName.substring(0, theName.length() - 2) + " " + val;
-          }
-        }
-        catch (final java.lang.NumberFormatException f)
-        {
-          newName = theName + " " + val;
-          while (_myData.findLayer(newName) != null)
-          {
-            val++;
-            newName = theName + " " + val;
-          }
-        }
-
-        // ignore, there isn't a number, just add a 1
-        newLayer.setName(newName);
-
-        // just drop it in at the top level
-        _myData.addThisLayerDoNotResize((Layer) theData);
-      }
-    }
-
-  }
-
-  private class OutlineRenderer extends DefaultTreeCellRenderer
-  {
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    private Icon visibilityIconEnabled;
-    private Icon visibilityIconDisabled;
-    @SuppressWarnings("unused")
-    private int _xOffset = 0;
-    private final Component strut = Box.createHorizontalStrut(5);
-    private final JPanel panel = new JPanel();
-    private JLabel visibility = new JLabel();
-    private Border border = BorderFactory.createEmptyBorder(4, 2, 2, 4);
-    private Map<String, ImageIcon> iconMap = new HashMap<String, ImageIcon>();
-
-    public OutlineRenderer()
-    {
-      panel.setBackground(UIManager.getColor("Tree.textBackground"));
-      setOpaque(false);
-      panel.setOpaque(false);
-      panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-
-      visibility.setOpaque(false);
-      visibilityIconEnabled = new ImageIcon(getClass().getClassLoader()
-          .getResource("icons/16/visible-eye.png"));
-      visibilityIconDisabled = new ImageIcon(getClass().getClassLoader()
-          .getResource("icons/16/invisible-eye.png"));
-      panel.add(visibility);
-      panel.add(strut);
-      panel.add(this);
-      panel.setBorder(border);
-    }
-
-    public JLabel getVisibilityLabel()
-    {
-      return visibility;
-    }
-
-    @Override
-    public Component getTreeCellRendererComponent(JTree tree, Object node,
-        boolean selected, boolean expanded, boolean leaf, int row,
-        boolean hasFocus)
-    {
-      super.getTreeCellRendererComponent(tree, node, selected, expanded, leaf,
-          row, hasFocus);
-      if (node instanceof DefaultMutableTreeNode)
-      {
-        final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
-        final Object data = tn.getUserObject();
-        if (data instanceof Plottable)
-        {
-          final Plottable pl = (Plottable) tn.getUserObject();
-          DebriefImageHelper helper = new DebriefImageHelper();
-          String icon = helper.getImageFor(pl);
-          if (icon == null)
-          {
-            String imageKey = CoreImageHelper.getImageKeyFor(pl);
-            icon = "icons/16/" + imageKey;
-          }
-          if (icon != null)
-          {
-            // do we have this image in the cache?
-            ImageIcon match = iconMap.get(icon);
-            if (match == null)
-            {
-              // ok, we'll have to create it
-              URL iconURL = DebriefImageHelper.class.getClassLoader()
-                  .getResource(icon);
-              if (iconURL == null)
-              {
-                System.err.println("Can't find icon:" + icon);
-              }
-              else
-              {
-                match = new ImageIcon(iconURL);
-                iconMap.put(icon, match);
-              }
-            }
-
-            // have we generated one?
-            if (match != null)
-            {
-              // ok, use it
-              setIcon(match);
-            }
-
-          }
-          setVisibility(pl.getVisible());
-        }
-      }
-
-      panel.doLayout();
-      return panel;
-    }
-
-    public void paint(final java.awt.Graphics g)
-    {
-      super.paint(g);
-
-      // get the location of the check box, to check our ticking
-      if (g != null)
-      {
-        try
-        {
-          final FontMetrics fm = g.getFontMetrics();
-          _xOffset = fm.stringWidth(getText()) + strut.getPreferredSize().width;
-        }
-        finally
-        {
-          // g.dispose();
-        }
-      }
-    }
-
-    private void setVisibility(boolean visible)
-    {
-      if (visible)
-      {
-        visibility.setIcon(visibilityIconEnabled);
-      }
-      else
-      {
-        visibility.setIcon(visibilityIconDisabled);
-      }
-    }
-
-  }
-
-  private class OutlineCellEditor extends AbstractCellEditor implements
-      TreeCellEditor
-  {
-
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    private JLabel visibilityLabel;
-    private OutlineRenderer renderer;
-    private DefaultMutableTreeNode lastEditedNode;
-
-    public OutlineCellEditor()
-    {
-      renderer = new OutlineRenderer();
-      visibilityLabel = renderer.getVisibilityLabel();
-
-      visibilityLabel.addMouseListener(new MouseAdapter()
-      {
-        public void mousePressed(final MouseEvent e)
-        {
-          final Plottable pl = (Plottable) lastEditedNode.getUserObject();
-          final PlottableNode pln = (PlottableNode) lastEditedNode;
-          boolean newVisibility = !pl.getVisible();
-          changeVisOfThisElement(pl, newVisibility, pln.getParentLayer());
-          pln.setSelected(newVisibility);
-          renderer.setVisibility(newVisibility);
-          stopCellEditing();
-        }
-      });
-    }
-
-    public Component getTreeCellEditorComponent(final JTree tree,
-        final Object value, final boolean selected, final boolean expanded,
-        final boolean leaf, final int row)
-    {
-      lastEditedNode = (DefaultMutableTreeNode) value;
-
-      return renderer.getTreeCellRendererComponent(tree, value, selected,
-          expanded, leaf, row, true); // hasFocus ignored
-    }
-
-    public Object getCellEditorValue()
-    {
-      return lastEditedNode.getUserObject();
-    }
-
-  }
-
-  protected void editThis(final TreeNode node)
-  {
-    System.out.println("Editing...");
-    if (node instanceof DefaultMutableTreeNode)
-    {
-      final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
-      final Object data = tn.getUserObject();
-      if (data instanceof MWC.GUI.Editable)
-      {
-        final Editable editable = (Editable) data;
-        if (editable.hasEditor())
-        {
-          // get the toolparent object
-          final ToolParent tp = getToolParent();
-
-          // did we get a valid toolparent?
-          if (tp != null)
-          {
-            // set it to busy
-            tp.setCursor(java.awt.Cursor.WAIT_CURSOR);
-          }
-          DefaultMutableTreeNode parent = (DefaultMutableTreeNode) tn
-              .getParent();
-          final Object parentData = parent.getUserObject();
-          ToolbarOwner owner = null;
-          if (parentData instanceof ToolbarOwner)
-          {
-            owner = (ToolbarOwner) parentData;
-          }
-          PropertiesDialog dialog = new PropertiesDialog(editable, _myData,
-              _undoBuffer, tp, owner);
-          dialog.setSize(400, 500);
-          dialog.setLocationRelativeTo(null);
-          dialog.setVisible(true);
-          if (tp != null)
-          {
-            tp.restoreCursor();
-          }
-        }
-      }
-    }
-
-  }
-
-  @Override
-  public void lostOwnership(Clipboard clipboard, Transferable contents)
-  {
-    // do nothing
-
-  }
-
-  @Override
-  public ArrayList<Plottable> getSelection()
-  {
-    final ArrayList<Plottable> res = new ArrayList<Plottable>();
-    final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-    if (selectionPaths != null)
-    {
-      for (final TreePath item : selectionPaths)
-      {
-        Object component = item.getLastPathComponent();
-        if (component instanceof PlottableNode)
-        {
-          PlottableNode node = (PlottableNode) component;
-          Object object = node.getUserObject();
-          if (object instanceof Plottable)
-          {
-            res.add((Plottable) object);
-          }
-        }
-      }
-    }
-    return res;
-  }
-
-  public ArrayList<Plottable> getContentsFromTransferable(final Transferable tr)
-  {
-    final ArrayList<Plottable> res = new ArrayList<Plottable>();
-    if (tr != null && tr.isDataFlavorSupported(
-        PlottableSelection.PlottableFlavor))
-    {
-      if (tr instanceof OutlineViewSelection)
-      {
-        // extract the plottable
-        Object objectToPaste = null;
-        try
-        {
-          objectToPaste = tr.getTransferData(
-              PlottableSelection.PlottableFlavor);
-        }
-        catch (UnsupportedFlavorException e)
-        {
-          e.printStackTrace();
-        }
-        catch (IOException e)
-        {
-          e.printStackTrace();
-        }
-
-        final Plottable[] plottables;
-        if (objectToPaste != null)
-        {
-          if (objectToPaste instanceof Plottable[])
-          {
-            plottables = (Plottable[]) objectToPaste;
-          }
-          else
-          {
-            plottables = new Plottables[1];
-            plottables[0] = (Plottable) objectToPaste;
-          }
-          // get the contents
-          for (Plottable theData : plottables)
-          {
-            res.add(theData);
-          }
-        }
-      }
-    }
-    return res;
-
-  }
-
-  @Override
-  public ArrayList<Plottable> getClipboardContents()
-  {
-
-    Transferable tr = _clipboard.getContents(this);
-    // see if there is currently a plottable on the clipboard
-    return getContentsFromTransferable(tr);
   }
 }
