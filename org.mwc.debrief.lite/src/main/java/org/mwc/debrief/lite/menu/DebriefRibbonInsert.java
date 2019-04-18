@@ -92,12 +92,11 @@ public class DebriefRibbonInsert
       }
     };
 
-    final Layer decs = theLayers.findLayer(Layers.CHART_FEATURES);
     final JRibbonBand chartfeaturesMenu = createDecorations(theLayers,
-        theProperties, toolParent, bounds, decs);
+        theProperties, toolParent, bounds);
     
     final JRibbonBand referenceDataMenu = createReferenceData(theLayers,
-        theProperties, toolParent, bounds, decs);
+        theProperties, toolParent, bounds);
 
     final JRibbonBand layersMenu = createLayerMenu(theLayers);
     
@@ -111,15 +110,14 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createReferenceData(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final ToolParent _toolParent, final BoundsProvider bounds,
-      final Layer decs)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand referenceDataMenu = new JRibbonBand("Reference Data",
         null);
     @SuppressWarnings("unused")
     final FlamingoCommand coastlineCmd = MenuUtils.addCommand("Coastline",
         "icons/24/coast_add.png", new CreateCoast(_toolParent, _theProperties,
-           _theLayers, bounds), referenceDataMenu,
+             _theLayers, bounds), referenceDataMenu,
         RibbonElementPriority.TOP);
     @SuppressWarnings("unused")
     final FlamingoCommand naturalEarthCmd = MenuUtils.addCommand(
@@ -418,8 +416,7 @@ public class DebriefRibbonInsert
 
   private static JRibbonBand createDecorations(final Layers _theLayers,
       final PropertiesPanel _theProperties,
-      final ToolParent _toolParent, final BoundsProvider bounds,
-      final Layer decs)
+      final ToolParent _toolParent, final BoundsProvider bounds)
   {
     final JRibbonBand chartfeaturesMenu = new JRibbonBand("Decorations", null);
     @SuppressWarnings("unused")
