@@ -433,7 +433,11 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
       else
       {
-        ((TrackWrapper) destination).add(theData);
+        if(_cutContents!=null) {
+          restoreCutContents();
+        }
+        doDelete();
+        _myTree.setSelectionPath(null);
       }
     }
 
