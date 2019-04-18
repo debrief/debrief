@@ -805,7 +805,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     });
-    @SuppressWarnings("serial")
     final Action pasteAction = new AbstractAction()
     {
 
@@ -829,8 +828,8 @@ public class OutlinePanelView extends SwingLayerManager implements
         .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "paste");
     pasteButton.getActionMap().put("paste", pasteAction);
+    pasteButton.addActionListener(pasteAction);
 
-    @SuppressWarnings("serial")
     final Action editAction = new AbstractAction()
     {
 
@@ -862,6 +861,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         .getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "edit");
     editButton.getActionMap().put("edit", editAction);
+    editButton.addActionListener(editAction);
     addLayerButton.addActionListener(new ActionListener()
     {
 
@@ -873,7 +873,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     });
 
-    @SuppressWarnings("serial")
     final Action cutAction = new AbstractAction()
     {
 
@@ -901,7 +900,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "cut");
     cutButton.getActionMap().put("cut", cutAction);
-    @SuppressWarnings("serial")
+    cutButton.addActionListener(cutAction);
     final Action copyAction = new AbstractAction()
     {
 
@@ -930,7 +929,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         .getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "copy");
     copyButton.getActionMap().put("copy", copyAction);
-    @SuppressWarnings("serial")
+    copyButton.addActionListener(copyAction);
     final Action deleteAction = new AbstractAction()
     {
 
