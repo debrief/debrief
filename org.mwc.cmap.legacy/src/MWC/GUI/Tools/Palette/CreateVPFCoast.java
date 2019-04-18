@@ -65,22 +65,20 @@ public class CreateVPFCoast extends PlainCreate
 
   public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layer theLayer,
                         final MWC.GUI.Layers theData,
                         final BoundsProvider theChart,
                         final String theName,
                         final String thePath)
   {
-    super(theParent, thePanel, theLayer, theData, theChart, theName, thePath);
+    super(theParent, thePanel, theData, theChart, theName, thePath);
   }
 
 	public CreateVPFCoast(final MWC.GUI.ToolParent theParent,
                         final MWC.GUI.Properties.PropertiesPanel thePanel,
-                        final MWC.GUI.Layer theLayer,
                         final MWC.GUI.Layers theData,
                         final BoundsProvider theChart)
 	{
-		this(theParent, thePanel, theLayer, theData, theChart, "Coast", "images/coast.png");
+		this(theParent, thePanel, theData, theChart, "Coast", "images/coast.png");
 	}
 
   protected String getMyPath()

@@ -97,6 +97,7 @@ import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.ExtendedCanvasAdapter;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
@@ -108,6 +109,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -281,10 +283,6 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
-    finally
-    {
-      resetFileName(file);
-    }
   }
 
   public static void openRepFile(final File file)
@@ -298,13 +296,9 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
-    finally
-    {
-      resetFileName(file);
-    }
   }
 
-  private static void resetFileName(final File file)
+  private void resetFileName(final File file)
   {
     if (DebriefLiteApp.currentFileName == null)
     {
@@ -647,7 +641,7 @@ public class DebriefLiteApp implements FileDropListener
   protected void doPaint(final Graphics gc)
   {
     final CanvasAdaptor dest;
-    if(gc instanceof Graphics2D)
+    if (gc instanceof Graphics2D)
     {
       dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
     }
@@ -667,7 +661,7 @@ public class DebriefLiteApp implements FileDropListener
       dest.startDraw(gc);
       _theLayers.paint(dest);
     }
-    
+
     // and the time marker
     redoTimePainter(true, dest, null, null);
 
@@ -791,10 +785,6 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
-    finally
-    {
-      resetFileName(file);
-    }
     restoreCursor();
   }
 
@@ -805,6 +795,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
+    boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
@@ -823,19 +814,31 @@ public class DebriefLiteApp implements FileDropListener
         DebriefRibbonTimeController.assignThisTimeFormat(_stepControl
             .getDateFormat(), true, true);
       }
+      _theLayers.fireModified(null);
     }
     catch (final FileNotFoundException e)
     {
       app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Failed to read DPF File" + e.getMessage());
+      success = false;
     }
-    _theLayers.fireModified(null);
+    catch (final PlainImporter.ImportException ie)
+    {
+      DialogFactory.showMessage("Import Error", ie.getMessage());
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(file);
+    }
   }
 
   private void handleImportRep(final File[] fList)
   {
     final DebriefLiteApp source = this;
+    boolean success = true;
     final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
       // handle completion of the full import process
@@ -883,8 +886,20 @@ public class DebriefLiteApp implements FileDropListener
         });
       }
     };
-    // ok, start loading
-    caller.start();
+    try
+    {
+      // ok, start loading
+      caller.start();
+    }
+    catch (PlainImporter.ImportException ie)
+    {
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(fList[0]);
+    }
   }
 
   /**
@@ -971,10 +986,10 @@ public class DebriefLiteApp implements FileDropListener
           (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
 
       // it must be ok
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(),
-          backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest
+          .getGraphicsTemp(), backColor);
       thisPainter.paintMe(adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
@@ -986,10 +1001,10 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
 
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection,
-          graphics, backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
+          backColor);
       painterManager.newTime(oldDTG, newDTG, adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
@@ -999,14 +1014,14 @@ public class DebriefLiteApp implements FileDropListener
   {
     final HiResDate tNow = timeManager.getTime();
     // do we have time?
-    if(tNow != null)
+    if (tNow != null)
     {
       final long timeVal = tNow.getDate().getTime();
       Enumeration<Editable> lIter = _theLayers.elements();
-      while(lIter.hasMoreElements())
+      while (lIter.hasMoreElements())
       {
         Editable next = lIter.nextElement();
-        if(next instanceof DynamicPlottable)
+        if (next instanceof DynamicPlottable)
         {
           DynamicPlottable dp = (DynamicPlottable) next;
           dp.paint(dest, timeVal);
