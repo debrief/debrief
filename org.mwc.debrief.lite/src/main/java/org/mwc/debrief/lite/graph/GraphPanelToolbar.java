@@ -70,17 +70,14 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.ToolParent;
 import MWC.GUI.JFreeChart.BearingRateFormatter;
 import MWC.GUI.JFreeChart.CourseFormatter;
 import MWC.GUI.JFreeChart.DepthFormatter;
 import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
-import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GenericData.WatchableList;
 
-public class GraphPanelToolbar extends JPanel implements
-    PlainPropertyEditor.EditorUsesToolParent
+public class GraphPanelToolbar extends JPanel
 {
 
   /**
@@ -93,11 +90,6 @@ public class GraphPanelToolbar extends JPanel implements
   public static final String INACTIVE_STATE = "INACTIVE";
 
   public static final String STATE_PROPERTY = "STATE";
-
-  /**
-   * Busy cursor
-   */
-  private ToolParent _theParent;
 
   private ShowTimeVariablePlot3 _xytool;
 
@@ -534,12 +526,6 @@ public class GraphPanelToolbar extends JPanel implements
       event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
           newValue));
     }
-  }
-
-  @Override
-  public void setParent(final ToolParent theParent)
-  {
-    _theParent = theParent;
   }
 
   public void setState(final String newState)

@@ -21,11 +21,7 @@ import javax.swing.JPanel;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.SimpleEditablePropertyPanel;
 
-import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.PlainPropertyEditor;
-
-public class GraphPanelView extends JPanel implements
-    PlainPropertyEditor.EditorUsesToolParent
+public class GraphPanelView extends JPanel
 {
   /**
    *
@@ -39,11 +35,6 @@ public class GraphPanelView extends JPanel implements
    */
   final MWC.GUI.PlainChart _theChart;
 
-  /**
-   * Busy cursor
-   */
-  private ToolParent _theParent;
-
   public GraphPanelView(final LiteStepControl stepControl)
   {
     super();
@@ -55,12 +46,5 @@ public class GraphPanelView extends JPanel implements
 
     add(toolbar, BorderLayout.NORTH);
     add(xyPanel, BorderLayout.CENTER);
-  }
-
-  @Override
-  public void setParent(final ToolParent theParent)
-  {
-    this._theParent = theParent;
-    toolbar.setParent(theParent);
   }
 }
