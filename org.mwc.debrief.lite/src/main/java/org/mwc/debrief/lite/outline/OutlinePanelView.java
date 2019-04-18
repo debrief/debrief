@@ -24,7 +24,7 @@ import static Debrief.GUI.Views.LogicHelpers.getNotLayerTest;
 import static Debrief.GUI.Views.LogicHelpers.getNotNarrativeTest;
 import static Debrief.GUI.Views.LogicHelpers.getOnlyOneTest;
 import static Debrief.GUI.Views.LogicHelpers.getSelectionEmptyTest;
-import static Debrief.GUI.Views.LogicHelpers.getIsNotChartFeaturesTest;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -231,7 +231,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest clipboardNotEmpty = getClipboardNotEmptyTest();
     final EnabledTest selectionIsTrack = getIsTrackTest();
     final EnabledTest selectionIsLayer = getIsLayerTest();
-    final EnabledTest notChartFeaturesLayer = getIsNotChartFeaturesTest();
     final EnabledTest clipboardIsFixes = getIsFixesTest();
     final EnabledTest clipboardIsShapes = getIsShapesTest();
     final EnabledTest isEmpty = getSelectionEmptyTest();
@@ -273,7 +272,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final JButton deleteButton = createCommandButton("Delete",
         "icons/24/remove.png");
     deleteButton.setToolTipText("Delete");
-    _enablers.add(new ButtonEnabler(deleteButton, new And(notEmpty,notChartFeaturesLayer)));
+    _enablers.add(new ButtonEnabler(deleteButton, notEmpty));
     deleteButton.setEnabled(false);
     commandBar.add(deleteButton);
 

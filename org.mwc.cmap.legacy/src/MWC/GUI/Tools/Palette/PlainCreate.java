@@ -79,6 +79,7 @@
 
 package MWC.GUI.Tools.Palette;
 
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -160,14 +161,26 @@ abstract public class PlainCreate extends PlainTool
 		// did it work?
 		if (pl != null)
 		{
+		  final Layer destinationLayer = getDestinationLayer();
 			// wrap it up in an action
-			res = new CreateLabelAction(_thePanel, _theLayer, _theData, pl);
+			res = new CreateLabelAction(_thePanel, destinationLayer, _theData, pl);
 		}
 
 		return res;
 	}
 
-	// /////////////////////////////////////////////////////
+	private Layer getDestinationLayer()
+  {
+	  Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+	  if(layer == null) {
+	   layer = new BaseLayer();
+	   layer.setName(Layers.CHART_FEATURES);
+	   _theData.addThisLayer(layer);
+	  }
+    return layer;
+  }
+
+  // /////////////////////////////////////////////////////
 	// store action information
 	// /////////////////////////////////////////////////////
 	public static class CreateLabelAction implements Action
