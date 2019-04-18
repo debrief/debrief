@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package Debrief.Tools.FilterOperations;
 
@@ -127,7 +127,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
      * method to indicate whether this calculation uses relative data - in which case we do not need
      * to plot the primary track, but we only plot calculated data where both primary and secondary
      * data are present
-     * 
+     *
      * @return yes/no
      */
     public boolean isARelativeCalculation()
@@ -152,7 +152,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
     /**
@@ -162,7 +162,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
     /*
      * @param thePlot
-     * 
+     *
      * @param theParent
      */
     public MySwingPlot(final JPanel thePlot, final PropertiesPanel theParent,
@@ -178,6 +178,11 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     public final void doEdit()
     {
       super._theParent.addEditor(_xyPlot.getInfo(), null);
+    }
+
+    public final void doWMF()
+    {
+      doWMF(System.getProperty("user.home"));
     }
 
     public final void doWMF(final String dir)
@@ -214,11 +219,6 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
       // and restore the background colour
       _xyPlot.setBackgroundPaint(oldColor);
 
-    }
-
-    public final void doWMF()
-    {
-      doWMF(System.getProperty("user.home"));
     }
 
     private StepperChartPanel getPanel()
@@ -267,7 +267,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   /**
    * worker bee type class which allows us polymorphically to add either a number x-y pair to an x-y
    * series, or to add a TimePeriod value to a BasicTimeSeries
-   * 
+   *
    * @see BasicTimeSeries
    * @see XYSeries
    */
@@ -276,7 +276,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
     /**
      * add this data point to the supplied series
-     * 
+     *
      * @param thisSeries
      *          ther destination for the point
      * @param theTime
@@ -307,7 +307,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   /**
    * interpolate to determine the time at which the course would pass through zero degrees
-   * 
+   *
    * @param last_time
    *          the time of the previous course value
    * @param current_time
@@ -444,7 +444,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   /**
    * Collate the data points to plot
-   * 
+   *
    * @param primaryTrack
    *          the primary track
    * @param myOperation
@@ -1068,7 +1068,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   /**
    * method to decide if we need to insert extra (non-joined) points to reflect fact that data wraps
    * through 360 degs
-   * 
+   *
    * @param lastSecondaryValue
    *          the last value calculated
    * @param thisVal
@@ -1085,7 +1085,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
    * @param clipMax
    * @param connectToPrev
    *          whether the next data point should connect to these
-   * 
+   *
    * @return whether the next line segment should connect to this one
    */
   private static boolean insertWrappingPoints(final double lastSecondaryValue,
@@ -1224,7 +1224,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   /**
    * create a simple series using the two data points
-   * 
+   *
    * @param theCalculation
    * @param thisPrimary
    * @param thisSecondary
@@ -1270,7 +1270,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   private Vector<WatchableList> _theTracks = null;
 
   /**
-   * 
+   *
    */
   private WatchableList _preselectedPrimaryTrack;
 
@@ -1380,36 +1380,6 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
         .showInputDialog(null, "Which operation?", "Plot time variables",
             JOptionPane.QUESTION_MESSAGE, null, opts, null);
     return res;
-  }
-
-  public void setPreselectedPrimaryTrack(WatchableList _preselectedPrimaryTrack)
-  {
-    this._preselectedPrimaryTrack = _preselectedPrimaryTrack;
-  }
-
-  public void setPreselectedOperation(CalculationHolder _preselectedOperation)
-  {
-    this._preselectedOperation = _preselectedOperation;
-  }
-
-  public StepperChartPanel getGeneratedChartPanel()
-  {
-    return _generatedChartPanel;
-  }
-
-  public NewFormattedJFreeChart getGeneratedJFreeChart()
-  {
-    return _generatedJFreeChart;
-  }
-
-  public StepperXYPlot getGeneratedXYPlot()
-  {
-    return _generatedXYPlot;
-  }
-
-  public MySwingPlot getGeneratedSwingPlot()
-  {
-    return _generatedSwingPlot;
   }
 
   @Override
@@ -1597,6 +1567,26 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
     return res.toString();
   }
 
+  public StepperChartPanel getGeneratedChartPanel()
+  {
+    return _generatedChartPanel;
+  }
+
+  public NewFormattedJFreeChart getGeneratedJFreeChart()
+  {
+    return _generatedJFreeChart;
+  }
+
+  public MySwingPlot getGeneratedSwingPlot()
+  {
+    return _generatedSwingPlot;
+  }
+
+  public StepperXYPlot getGeneratedXYPlot()
+  {
+    return _generatedXYPlot;
+  }
+
   @Override
   public final String getImage()
   {
@@ -1640,7 +1630,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   /**
    * create a properties panel and insert it
-   * 
+   *
    * @param panel
    *          the panel containing the plot
    * @param theXYPlot
@@ -1675,7 +1665,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
   /**
    * the user has pressed RESET whilst this button is pressed
-   * 
+   *
    * @param startTime
    *          the new start time
    * @param endTime
@@ -1692,6 +1682,18 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
     _start_time = startDTG;
     _end_time = finishDTG;
+  }
+
+  public void setPreselectedOperation(
+      final CalculationHolder _preselectedOperation)
+  {
+    this._preselectedOperation = _preselectedOperation;
+  }
+
+  public void setPreselectedPrimaryTrack(
+      final WatchableList _preselectedPrimaryTrack)
+  {
+    this._preselectedPrimaryTrack = _preselectedPrimaryTrack;
   }
 
   @Override
