@@ -459,8 +459,6 @@ public class GraphPanelToolbar extends JPanel implements
       }
     });
 
-    final JToggleButton autosyncButton = createJToggleButton(
-        "Auto-sync with calculated track data", "icons/16/direction.png");
     final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
     {"Select Tracks"});
     selectTracksLabel.setEnabled(true);
@@ -524,12 +522,10 @@ public class GraphPanelToolbar extends JPanel implements
     add(placeBitmapButton);
     add(copyGraph);
     add(propertiesButton);
-    add(autosyncButton);
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
     {fixToWindowsButton, switchAxesButton, showSymbolsButton, hideCrosshair,
-        expandButton, wmfButton, placeBitmapButton, copyGraph, propertiesButton,
-        autosyncButton}));
+        expandButton, wmfButton, placeBitmapButton, copyGraph, propertiesButton}));
   }
 
   private void notifyListenersStateChanged(final Object source,
