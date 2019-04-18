@@ -28,10 +28,6 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
    */
   private static final long serialVersionUID = 1L;
 
-  // ////////////////////////////////////////////////
-  // member variables
-  // ////////////////////////////////////////////////
-
   public static final String HI_RES_PROPERTY_NAME = "MWC_HI_RES";
 
   /**
