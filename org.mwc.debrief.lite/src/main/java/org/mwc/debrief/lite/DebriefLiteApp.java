@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -78,6 +79,8 @@ import Debrief.ReaderWriter.XML.dummy.SATCHandler_Mock;
 import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
 import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
@@ -284,6 +287,54 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
+  
+  public static void openDsfFile(final File file)throws FileNotFoundException {
+    ImportReplay rep = new ImportReplay();
+    rep.storePendingSensors();
+    
+    final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+    // see if there are any sensors awaiting a host
+    if (sensors.size() >= 1)
+    {
+      final Iterator<SensorWrapper> sIter = sensors.iterator();
+      while (sIter.hasNext())
+      {
+        final SensorWrapper sensor = sIter.next();
+        if (sensor.getHost() == null)
+        {
+          // have we sorted out the hosts?
+           List<TrackWrapper> candidateHosts = determineCandidateHosts();
+
+          if (candidateHosts.size() == 0)
+          {
+            JOptionPane.showMessageDialog(null,
+                "Sensor data can only be loaded after tracks","Loading sensor data",JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+
+        }
+      }
+    }
+    rep.storePendingSensors();
+  }
+    
+    private static List<TrackWrapper> determineCandidateHosts()
+    {
+      final List<TrackWrapper> res = new ArrayList<TrackWrapper>();
+
+      final Enumeration<Editable> iter = _instance._theLayers.elements();
+      while (iter.hasMoreElements())
+      {
+        final Editable editable = iter.nextElement();
+        if (editable instanceof TrackWrapper)
+        {
+          res.add((TrackWrapper) editable);
+        }
+      }
+
+      return res;
+    }
   public static void openRepFile(final File file)
   {
     try
@@ -727,6 +778,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     setCursor(Cursor.WAIT_CURSOR);
     File file = null;
+    boolean renameFile=true;
     try
     {
       final Enumeration<File> iter = files.elements();
@@ -743,7 +795,44 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+          if(suff.equalsIgnoreCase(".DSF")){
+            ImportReplay rep = new ImportReplay();
+            rep.setLayers(_theLayers);
+            rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+            final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+            // see if there are any sensors awaiting a host
+            if (sensors.size() >= 1)
+            {
+              final Iterator<SensorWrapper> sIter = sensors.iterator();
+              while (sIter.hasNext())
+              {
+                final SensorWrapper sensor = sIter.next();
+                if (sensor.getHost() == null)
+                {
+                  // have we sorted out the hosts?
+                   List<TrackWrapper> candidateHosts = determineCandidateHosts();
+
+                  if (candidateHosts.size() == 0)
+                  {
+                    renameFile=false;
+                    JOptionPane.showMessageDialog(null,
+                        "Sensor data can only be loaded after tracks","Loading sensor data",JOptionPane.ERROR_MESSAGE);
+                    break;
+                  }
+
+                }
+              }
+            }
+            if(renameFile) {
+              rep.storePendingSensors();
+              _theLayers.fireExtended();
+              JOptionPane.showMessageDialog(null,
+                  "Finished loading sensor data from the file","Loading sensor data",JOptionPane.INFORMATION_MESSAGE);
+              
+            }
+          }
+          else if ((suff.equalsIgnoreCase(".REP"))
               || (suff.equalsIgnoreCase(".DTF")))
           {
             // fake wrap it
