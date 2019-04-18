@@ -433,7 +433,8 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
       else
       {
-        if(_cutContents!=null) {
+        if (_cutContents != null)
+        {
           restoreCutContents();
         }
         doDelete();
