@@ -447,6 +447,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     .put(KeyStroke.getKeyStroke("DELETE"),
            "delete");
     deleteButton.getActionMap().put("delete",deleteAction);
+    deleteButton.addActionListener(deleteAction);
     add(commandBar, BorderLayout.NORTH);
     setCellRenderer(new OutlineRenderer());
     setCellEditor(new OutlineCellEditor());
