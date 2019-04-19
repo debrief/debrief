@@ -379,19 +379,19 @@ public class GraphPanelToolbar extends JPanel
         _xytool.getGeneratedChartPanel().invalidate();
       }
     });
-    final JToggleButton expandButton = createJToggleButton(
-        "Expand Period covered in sync with scenario time",
-        "icons/16/clock.png");
-    expandButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        _xytool.getGeneratedXYPlot().setGrowWithTime(expandButton.isSelected());
-        _xytool.getGeneratedChartPanel().invalidate();
-      }
-    });
+    // final JToggleButton expandButton = createJToggleButton(
+    // "Expand Period covered in sync with scenario time",
+    // "icons/16/clock.png");
+    // expandButton.addActionListener(new ActionListener()
+    // {
+    //
+    // @Override
+    // public void actionPerformed(final ActionEvent e)
+    // {
+    // _xytool.getGeneratedXYPlot().setGrowWithTime(expandButton.isSelected());
+    // _xytool.getGeneratedChartPanel().invalidate();
+    // }
+    // });
     final JButton wmfButton = createCommandButton(
         "Produce a WMF file of the graph", "icons/16/ex_2word_256_1.png");
     wmfButton.addActionListener(new ActionListener()
@@ -466,13 +466,13 @@ public class GraphPanelToolbar extends JPanel
       @Override
       public void mouseEntered(final MouseEvent e)
       {
-        
+
       }
 
       @Override
       public void mouseExited(final MouseEvent e)
       {
-        
+
       }
 
       @Override
@@ -495,7 +495,7 @@ public class GraphPanelToolbar extends JPanel
       @Override
       public void mouseReleased(final MouseEvent e)
       {
-        
+
       }
     });
 
@@ -506,7 +506,6 @@ public class GraphPanelToolbar extends JPanel
     add(switchAxesButton);
     add(showSymbolsButton);
     add(hideCrosshair);
-    add(expandButton);
     add(wmfButton);
     add(placeBitmapButton);
     add(copyGraph);
@@ -514,8 +513,7 @@ public class GraphPanelToolbar extends JPanel
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
     {fixToWindowsButton, switchAxesButton, showSymbolsButton, hideCrosshair,
-        expandButton, wmfButton, placeBitmapButton, copyGraph,
-        propertiesButton}));
+        wmfButton, placeBitmapButton, copyGraph, propertiesButton}));
   }
 
   private void notifyListenersStateChanged(final Object source,
