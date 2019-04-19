@@ -562,9 +562,11 @@ public class ConvertAbsoluteTmaToRelative implements
       tw.add(sw);
       tw.add(sw2);
 
+      TrackWrapper tw2 = getLongerTrack();
+      tw2.setName("target track");
+
       ConvertAbsoluteTmaToRelative op = new ConvertAbsoluteTmaToRelative()
       {
-
         @Override
         protected IUndoableOperation getOperation(Layers theLayers,
             List<SuitableSegment> suitableSegments, TrackWrapper parent)
@@ -575,7 +577,6 @@ public class ConvertAbsoluteTmaToRelative implements
 
       final MenuManager menu = new MenuManager("some name")
       {
-
         @Override
         public void add(IAction action)
         {
@@ -586,6 +587,7 @@ public class ConvertAbsoluteTmaToRelative implements
 
       Layers theLayers = new Layers();
       theLayers.addThisLayer(tw);
+      theLayers.addThisLayer(tw2);
       Editable[] subjects = new Editable[]
       {tw, sw};
       op.generate(menu, theLayers, null, subjects);
@@ -594,6 +596,15 @@ public class ConvertAbsoluteTmaToRelative implements
 
       WorldSpeed a1Speed = new WorldSpeed(12, WorldSpeed.Kts);
 
+      WorldLocation a1Origin1 = new WorldLocation(12, 12, 0);
+      HiResDate a1Start1 =
+          new HiResDate(new Date(2016, 1, 14, 12, 30, 0).getTime());
+      HiResDate a1end1 =
+          new HiResDate(new Date(2016, 1, 14, 12, 40, 0).getTime());
+      AbsoluteTMASegment a11 =
+          new AbsoluteTMASegment(12, a1Speed, a1Origin1, a1Start1, a1end1);
+      a11.setWrapper(tw);
+
       WorldLocation a1Origin = new WorldLocation(12, 12, 0);
       HiResDate a1Start =
           new HiResDate(new Date(2016, 1, 14, 12, 30, 0).getTime());
@@ -601,7 +612,7 @@ public class ConvertAbsoluteTmaToRelative implements
           new HiResDate(new Date(2016, 1, 14, 12, 40, 0).getTime());
       AbsoluteTMASegment a1 =
           new AbsoluteTMASegment(12, a1Speed, a1Origin, a1Start, a1end);
-      a1.setWrapper(tw);
+      a1.setWrapper(tw2);
 
       subjects = new Editable[]
       {a1};
@@ -659,8 +670,8 @@ public class ConvertAbsoluteTmaToRelative implements
       }
       r2.setLayers(theLayers);
 
-      tw.removeElement(r1);
-      tw.add(r2);
+   //   tw.removeElement(r1);
+      tw2.add(r2);
 
       System.out.println("r1 ends at:" + r2.getDTG_End() + " a1 starts at:"
           + a1.getDTG_Start());
