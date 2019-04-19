@@ -169,5 +169,9 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
 
   }
 
-  
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 }

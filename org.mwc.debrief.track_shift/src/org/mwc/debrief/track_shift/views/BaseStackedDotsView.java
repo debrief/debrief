@@ -27,6 +27,7 @@ import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.FieldPosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1307,6 +1308,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     setZoneChartsVisible(_showZones.isChecked());
   }
 
+  @SuppressWarnings("static-method")
   protected Runnable getDeleteAmbiguousCutsOperation()
   {
     // ditch, let the child class(es) override it
@@ -1581,12 +1583,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
             }
             else
             {
-              System.err.println("Couldn't find:" + targetSeries);
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find series:" + targetSeries, null);
               nearest = null;
             }
 
             // did we find one?
-            if (nearest != null)
+            if (nearest == null)
+            {
+              CorePlugin.logError(Status.WARNING,
+                  "Failed to find match in series:" + targetSeries + " at time:"
+                      + newDate, null);
+            }
+            else
             {
               // ok, get the editor
               final IWorkbench wb = PlatformUI.getWorkbench();
@@ -1674,7 +1683,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           {
 
             // ok, it wasn't an item that was clicked. Shall we find the nearest item?
-            final boolean findNearest = false;
+            final boolean findNearest = true;
 
             if (findNearest)
             {
@@ -1685,25 +1694,47 @@ abstract public class BaseStackedDotsView extends ViewPart implements
               // what's the y value at this time?
               final CombinedDomainXYPlot dPlot = (CombinedDomainXYPlot) arg0
                   .getChart().getPlot();
-              final ValueAxis dateRange = dPlot.getDomainAxis();
+              final ValueAxis dateAxis = dPlot.getDomainAxis();
 
               // and the data value
               final XYPlot selectedPlot = findSelectedPlot(arg0.getChart(), arg0
                   .getTrigger(), arg0.getEntity());
-              final ValueAxis valueRange = selectedPlot.getRangeAxis();
+              final ValueAxis valueAxis = selectedPlot.getRangeAxis();
 
               final org.eclipse.swt.graphics.Rectangle area = _holder
                   .getScreenDataArea(screenClick.x, screenClick.y);
               final Rectangle jRect = new Rectangle(area.width, area.height);
               jRect.setLocation(area.x, area.y);
-              final double dateVal = dateRange.java2DToValue(p.getY(), jRect,
+              final double dateVal = dateAxis.java2DToValue(p.getY(), jRect,
                   RectangleEdge.LEFT);
               final long dateMillis = (long) dateVal;
 
-              final double valueVal = valueRange.java2DToValue(p.getX(), jRect,
+              final double valueVal = valueAxis.java2DToValue(p.getX(), jRect,
                   RectangleEdge.TOP);
-              // and try to put cross-hairs on sensor
-              highlightDataItemNearest(dateMillis, valueVal, seriesName);
+
+              // special case - if we are in the outer third of the plot, we don't get all hits
+              // don't find the nearest manually if we're within 60% of the origin
+              double delta = Math.abs(valueAxis.getRange().getCentralValue()
+                  - valueVal);
+              double range = valueAxis.getRange().getUpperBound() - valueAxis
+                  .getRange().getLowerBound();
+
+              double factor = 0.7;
+              if (delta > (range / 2d) * factor)
+              {
+                // and try to put cross-hairs on sensor
+                highlightDataItemNearest(dateMillis, valueVal, seriesName);
+              }
+              else
+              {
+                DecimalFormat df = new DecimalFormat("0.000");
+                CorePlugin.logError(Status.INFO,
+                    "Not selecting cut, not far out enough. delta:" + df.format(
+                        delta) + ", range:" + df.format((range / 2d))
+                        + ", centre:" + df.format(valueAxis.getRange()
+                            .getCentralValue()) + " proportion:" + df.format(
+                                (delta / (range / 2d))), null);
+              }
             }
           }
         }
@@ -1883,16 +1914,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           {
             final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES)
                 ? _linePlot : _dotPlot;
-
+            
             // remember we need to select a new item
             _seriesToSearch = seriesName;
 
             // ok, show the hightlight
             plotToUse.setDomainCrosshairVisible(true);
             plotToUse.setRangeCrosshairVisible(true);
-
-            plotToUse.setDomainCrosshairValue(dateMillis);
-            plotToUse.setRangeCrosshairValue(dateMillis);
           }
         }
       }
@@ -2289,6 +2317,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
+  @SuppressWarnings("static-method")
   protected Runnable getDeleteCutsOperation()
   {
     return null;
@@ -2320,6 +2349,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
    *
    * @return
    */
+  @SuppressWarnings("static-method")
   protected Runnable getResolveAmbiguityOperation()
   {
     return null;
@@ -2560,7 +2590,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
     operationHistory.setLimit(undoContext, 100);
   }
 
-  protected List<Zone> legsFromZigs(final long startTime, final long endTime,
+  protected static List<Zone> legsFromZigs(final long startTime, final long endTime,
       final List<Zone> zigs, final ColorProvider randomProv)
   {
     final List<Zone> legs = new ArrayList<Zone>();

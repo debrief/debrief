@@ -38,6 +38,7 @@ public final class DatedToolTipGenerator extends StandardXYToolTipGenerator
    *
    * @return the tool tip text.
    */
+  @SuppressWarnings("unused")
   public String generateToolTip(final XYDataset data, final int series, final int item)
   {
     String result = "|" + data.getSeriesKey(series) + " | ";

@@ -215,6 +215,8 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 	 * 
 	 */
 	private boolean _myVectorLabelVisible = true;
+	
+	private String _parentName = null;
 
 	/**
 	 * copy constructor
@@ -248,6 +250,16 @@ public class PlanningSegment extends TrackSegment implements Cloneable,
 		this.setSpeedSilent(worldSpeed);
 		this.setDistanceSilent(worldDistance);
 		this.recalc();
+	}
+	
+	public void setParentName(final String val)
+	{
+	  _parentName = val;
+	}
+	
+	public String getParentName()
+	{
+	  return _parentName;
 	}
 
 	public WorldDistance getDepth()

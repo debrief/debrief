@@ -475,6 +475,12 @@ abstract public class AnalysisTote implements Pane,
   {
     // not really interested, to be honest
   }
+  
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 
   public final void newTime(final HiResDate oldDTG, final HiResDate newDTG, final CanvasType canvas)
   {
@@ -506,6 +512,11 @@ abstract public class AnalysisTote implements Pane,
     return _theCurrentTime;
   }
 
+  
+  public Layers getData()
+  {
+    return _theData;
+  }
 
   /**
    * @param list             the list of items to process
@@ -640,6 +651,13 @@ abstract public class AnalysisTote implements Pane,
     _thePrimary = null;
     _theSecondary.clear();
     _theStepper = null;
+  }
+  
+  public void clear()
+  {
+    _thePrimary = null;
+    _theSecondary.clear();
+    updateToteMembers();
   }
 
   /////////////////////////////////////////////////////////////////

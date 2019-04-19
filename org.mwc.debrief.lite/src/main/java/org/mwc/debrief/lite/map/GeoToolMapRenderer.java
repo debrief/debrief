@@ -14,13 +14,13 @@
  */
 package org.mwc.debrief.lite.map;
 
-import java.awt.Dimension;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Graphics;
 import java.io.File;
 import java.io.IOException;
-
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JSplitPane;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
@@ -28,92 +28,131 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
+import org.geotools.referencing.CRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.MapLayerTable;
-import org.geotools.swing.action.InfoAction;
-import org.geotools.swing.action.NoToolAction;
-import org.geotools.swing.action.PanAction;
-import org.geotools.swing.action.ResetAction;
-import org.geotools.swing.action.ZoomInAction;
-import org.geotools.swing.action.ZoomOutAction;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.geotools.swing.tool.CursorTool;
+import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
-
-import MWC.GUI.Tools.Swing.SwingToolbar;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 /**
  *
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer extends MapRenderer
+public class GeoToolMapRenderer implements BaseMap
 {
+
+  public static interface MapRenderer
+  {
+    public void paint(final Graphics gc);
+  }
 
   private JMapPane mapPane;
   private MapContent mapComponent;
 
-  @Override
-  public void addMapTool(final SwingToolbar theToolbar)
+  private Graphics graphics;
+
+  private SimpleFeatureSource featureSource;
+
+  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+
+  public void addRenderer(final MapRenderer renderer)
+  {
+    _myRenderers.add(renderer);
+  }
+  
+  private static class CustomMapPane extends JMapPane
   {
 
-    JButton btn;
-    final ButtonGroup cursorToolGrp = new ButtonGroup();
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    
+    private final MouseDragLine dragLine;
 
-    // mapPane.addMouseListener(new ScrollWheelTool(mapPane));
+    private final GeoToolMapRenderer _renderer;
 
-    ///// no action
-    btn = new JButton(new NoToolAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
+    {
+      super();
+      _renderer = geoToolMapRenderer;
+      
+      dragLine = new MouseDragLine(this);
+      addMouseListener(dragLine);
+      addMouseMotionListener(dragLine);
+    }
 
-    ////// zoom in
-    btn = new JButton(new ZoomInAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+    @Override
+    protected void paintComponent(final Graphics arg0)
+    {
+      super.paintComponent(arg0);
+      _renderer.paintEvent(arg0);
+    }
+    
+    @Override
+    public void setCursorTool(CursorTool tool) {
+        paramsLock.writeLock().lock();
+        try {
+            if (currentCursorTool != null) {
+                mouseEventDispatcher.removeMouseListener(currentCursorTool);
+            }
 
-    ////// zoom out
-    btn = new JButton(new ZoomOutAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+            currentCursorTool = tool;
 
-    theToolbar.addSeparator();
+            if (currentCursorTool == null) {
+                setCursor(Cursor.getDefaultCursor());
+                dragBox.setEnabled(false);
+                dragLine.setEnabled(false);
+            } else {
+                setCursor(currentCursorTool.getCursor());
+                dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
+                dragBox.setEnabled(currentCursorTool.drawDragBox());
+                currentCursorTool.setMapPane(this);
+                mouseEventDispatcher.addMouseListener(currentCursorTool);
+            }
 
-    //// pan action
-    btn = new JButton(new PanAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
-
-    //// info action
-    btn = new JButton(new InfoAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
-
-    //// reset action
-    btn = new JButton(new ResetAction(mapPane));
-    cursorToolGrp.add(btn);
-    theToolbar.add(btn);
+        } finally {
+            paramsLock.writeLock().unlock();
+        }
+    }
   }
 
   @Override
   public void createMapLayout()
   {
-    mapPane = new JMapPane();
-    mapPane.setRenderer(new StreamingRenderer());
-    mapPane.setMapContent(mapComponent);
+    mapPane = new CustomMapPane(this);
 
-    final MapLayerTable mapLayerTable = new MapLayerTable(mapPane);
-    mapLayerTable.setVisible(false);
-    mapLayerTable.setPreferredSize(new Dimension(200, 400));
-    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, false,
-        mapLayerTable, mapPane);
+    final StreamingRenderer streamer = new StreamingRenderer();
+    mapPane.setRenderer(streamer);
+    mapPane.setMapContent(mapComponent);
+  }
+
+  /**
+   * returns java.awt.Graphics object
+   *
+   * @return
+   */
+  public Graphics getGraphicsContext()
+  {
+    return graphics;
+  }
+
+  public Component getMap()
+  {
+    return mapPane;
   }
 
   /**
    * return map component
-   * 
+   *
    * @return
    */
   public MapContent getMapComponent()
@@ -121,17 +160,56 @@ public class GeoToolMapRenderer extends MapRenderer
     return mapComponent;
   }
 
+  /**
+   * gets a MathTransform object
+   *
+   * @return MathTransform
+   */
+  public MathTransform getTransformObject()
+  {
+    final SimpleFeatureType schema = featureSource.getSchema();
+    final CoordinateReferenceSystem dataCRS = schema
+        .getCoordinateReferenceSystem();
+    final CoordinateReferenceSystem worldCRS = mapComponent
+        .getCoordinateReferenceSystem();
+    MathTransform transform = null;
+    try
+    {
+      transform = CRS.findMathTransform(dataCRS, worldCRS);
+    }
+    catch (final FactoryException e)
+    {
+      e.printStackTrace();
+    }
+    return transform;
+  }
+
   @Override
   public void loadMapContent()
   {
-    final File file = JFileDataStoreChooser.showOpenFile("shp", null);
+    
+    //this is for dev
+    
+    String shape_path =
+        "../org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+    
+    File file = new File(shape_path);
+    if (!file.exists())
+    {
+      shape_path = "org.mwc.cmap.NaturalEarth/data/ne_110m_admin_0_countries_89S/ne_110m_admin_0_countries_89S.shp";
+      file = new File(shape_path);
+      if (!file.exists())
+      {
+          file = JFileDataStoreChooser.showOpenFile("shp", null);
+      }
+    }
     if (file == null)
     {
       return;
     }
 
     FileDataStore store;
-    SimpleFeatureSource featureSource = null;
+    featureSource = null;
     try
     {
       store = FileDataStoreFinder.getDataStore(file);
@@ -152,4 +230,11 @@ public class GeoToolMapRenderer extends MapRenderer
 
   }
 
+  private void paintEvent(final Graphics arg0)
+  {
+    for (final MapRenderer r : _myRenderers)
+    {
+      r.paint(arg0);
+    }
+  }
 }

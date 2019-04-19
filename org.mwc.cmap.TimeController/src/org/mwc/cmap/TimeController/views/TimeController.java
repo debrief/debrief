@@ -82,12 +82,7 @@ import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
 import org.mwc.cmap.TimeController.recorders.CoordinateRecorder;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation;
 import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -108,6 +103,11 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.TrackDataProvider;
+import MWC.TacticalData.temporal.ControllablePeriod;
+import MWC.TacticalData.temporal.ControllableTime;
+import MWC.TacticalData.temporal.SteppableTime;
+import MWC.TacticalData.temporal.TimeControlPreferences;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import MWC.Utilities.Timer.TimerListener;
 import junit.framework.TestCase;
@@ -3136,6 +3136,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
         {
           _playButton.setToolTipText(PLAY_TEXT);
           _playButton.setImage(TimeControllerPlugin.getImage(ICON_MEDIA_PLAY));
+          _playButton.setSelection(false);
 
           // and update the VCR buttons
           setVCREnabled(true);

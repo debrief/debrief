@@ -45,7 +45,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.data.general.AbstractSeriesDataset;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 import org.mwc.cmap.xyplot.views.XYPlotView.DatasetProvider;
@@ -77,6 +76,7 @@ import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WatchableList;
+import MWC.TacticalData.temporal.TimeProvider;
 
 /**
  * embedded class to generate menu-items for creating tactical plot

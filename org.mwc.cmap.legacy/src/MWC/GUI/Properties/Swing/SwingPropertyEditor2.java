@@ -302,11 +302,13 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.text.JTextComponent;
 
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.SteppingBoundedInteger;
 import MWC.GUI.Swing.MultiLineLabel;
+import MWC.GenericData.WorldDistance;
 
 /**
  * Swing implementation of a property editor. note that setRowHeight in initForm
@@ -386,10 +388,10 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 *          the chart we will send updates to
 	 */
 	public SwingPropertyEditor2(final MWC.GUI.Editable.EditorType info,
-			final SwingPropertiesPanel parent, final MWC.GUI.PlainChart theChart,
+			final SwingPropertiesPanel parent, final Layers theLayers,
 			final MWC.GUI.ToolParent toolParent, final Layer parentLayer)
 	{
-		super(info, theChart, parent, toolParent, parentLayer);
+		super(info, theLayers, parent, toolParent, parentLayer);
 
 		// store the parent
 		_theParent = parent;
@@ -438,8 +440,8 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 					SwingWorldSpeedPropertyEditor.class);
 			PropertyEditorManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
 					SwingWorldAccelerationPropertyEditor.class);
-			PropertyEditorManager.registerEditor(MWC.GenericData.WorldPath.class,
-					MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor.class);
+	    PropertyEditorManager.registerEditor(WorldDistance.ArrayLength.class, 
+	        SwingDistanceWithUnitsPropertyEditor.class);
 			// we were adding the Color editor in this method - but instead
 			// we've added it in the Swing application initialisation classes
 			// so that it is also available to the right-click editing algorithms,
@@ -680,7 +682,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_theSwingCustomEditor = p;
 			_main.add("Center", p);
 
-			p.setObject(super._theData, _theChart, _toolParent, thePanel);
+      p.setObject(super._theData, _toolParent, _theLayers, thePanel);
 
 			ourCustomEditor = op;
 		}
@@ -694,24 +696,26 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				jp.setLayout(new BorderLayout());
 				jp.add("Center", ap);
 				_main.add("North", jp);
-				ap.setObject(super._theData, _theChart, _theParent);
+				ap.setObject(super._theData, _theParent);
 
 				ourCustomEditor = op;
 			}
 		}
 
-		// see if this custom editor wants to know about the chart
-		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesChart)
-		{
-			final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) ourCustomEditor;
-			eu.setChart(super._theChart);
-		}
 		// see if this custom editor wants to know about the property panel
 		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
 		{
 			final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) ourCustomEditor;
 			eu.setPanel(super._thePanel);
 		}
+		
+    // see if this custom editor wants to know about the property panel
+    if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesLayers)
+    {
+      final PlainPropertyEditor.EditorUsesLayers eu = (PlainPropertyEditor.EditorUsesLayers) ourCustomEditor;
+      eu.setLayers(super._theLayers);
+    }
+    
 		// see if this custom editor wants to know about the tool parnet
 		if (ourCustomEditor instanceof PlainPropertyEditor.EditorUsesToolParent)
 		{
@@ -809,18 +813,18 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			// set the name
 			cp.setName(p.getDisplayName());
 
-			// see if this custom editor wants to know about the chart
-			if (pe instanceof PlainPropertyEditor.EditorUsesChart)
-			{
-				final PlainPropertyEditor.EditorUsesChart eu = (PlainPropertyEditor.EditorUsesChart) pe;
-				eu.setChart(super._theChart);
-			}
 			// see if this custom editor wants to know about the property panel
 			if (pe instanceof PlainPropertyEditor.EditorUsesPropertyPanel)
 			{
 				final PlainPropertyEditor.EditorUsesPropertyPanel eu = (PlainPropertyEditor.EditorUsesPropertyPanel) pe;
 				eu.setPanel(super._thePanel);
 			}
+	    // see if this custom editor wants to know about the property panel
+	    if (pe instanceof PlainPropertyEditor.EditorUsesLayers)
+	    {
+	      final PlainPropertyEditor.EditorUsesLayers eu = (PlainPropertyEditor.EditorUsesLayers) pe;
+	      eu.setLayers(super._theLayers);
+	    }
 			// see if this custom editor wants to know about the tool parnet
 			if (pe instanceof PlainPropertyEditor.EditorUsesToolParent)
 			{
@@ -1073,7 +1077,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		_theName = null;
 		_theEditors.clear();
 		_theModifications.removeAllElements();
-		_theChart = null;
 		_theCustomEditor = null;
 		_thePanel = null;
 		_otherEditors = null;
@@ -1191,7 +1194,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				if (_methodsPanel != null)
 				{
 
-					final JButton btn = new JButton(md.getName());
+					final JButton btn = new JButton(md.getDisplayName());
 					btn.addActionListener(new DoActionPerformed(md));
 					addButton(btn);
 				}
@@ -1199,7 +1202,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				{
 					MWC.Utilities.Errors.Trace.trace(
 							"Trying to show methods when we don't have a 'methods' panel to host:"
-									+ md.getName(), false);
+									+ md.getDisplayName(), false);
 				}
 			}
 		}
@@ -1220,7 +1223,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_myMethod = method;
 		}
 
-		@SuppressWarnings("synthetic-access")
 		public void actionPerformed(final ActionEvent e)
 		{
 			try
@@ -1231,8 +1233,8 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				_theInfo.fireChanged(this, _myMethod.getMethod().toString(), null, null);
 
 				// assume we also want to update the plot
-				if (_theChart != null)
-					_theChart.update();
+				if (_theLayers != null)
+					_theLayers.fireModified(null);
 			}
 			catch (final Exception b)
 			{
@@ -1316,7 +1318,9 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 				final boolean p4, final int p5, final int p6)
 		{
 			final PropertyDescriptor pd = (PropertyDescriptor) p2;
-			final JLabel res = new JLabel(pd.getName());
+			final String displayName = pd.getDisplayName();
+			final String name = displayName != null ? displayName : pd.getName();
+			final JLabel res = new JLabel(name);
 			res.setPreferredSize(res.getMinimumSize());
 			final String myStr = pd.getShortDescription();
 			res.setToolTipText(myStr);

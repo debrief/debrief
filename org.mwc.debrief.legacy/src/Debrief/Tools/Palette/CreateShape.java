@@ -82,13 +82,17 @@
 
 package Debrief.Tools.Palette;
 
+import Debrief.Tools.Palette.CreateLabel.GetAction;
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
-import MWC.GenericData.*;
+import MWC.GUI.Tools.Action;
+import MWC.GenericData.WorldLocation;
 
-abstract public class CreateShape extends PlainTool
+abstract public class CreateShape extends CoreCreateShape
 {
 
   /////////////////////////////////////////////////////////////
@@ -98,29 +102,18 @@ abstract public class CreateShape extends PlainTool
    */
   private PropertiesPanel _thePanel;
 
-  /** the layers we are going to drop this shape into
-   */
-  private Layers _theData;
-
-  /** the chart we are using (since want our 'duff' item to appear in the middle)
-   */
-  private MWC.GUI.PlainChart _theChart;
-
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
   public CreateShape(final ToolParent theParent,
-                     final PropertiesPanel thePanel,
-                     final Layers theData,
-                     final MWC.GUI.PlainChart theChart,
-                     final String theName,
-                     final String theImage)
+      final PropertiesPanel thePanel,
+      final Layers theData,
+      final String theName,
+      final String theImage, BoundsProvider bounds)
   {
-    super(theParent, theName, theImage);
-
+    super(theParent, theName, theImage,theData,bounds);
     _thePanel = thePanel;
-    _theData = theData;
-    _theChart = theChart;
+
   }
 
 
@@ -130,41 +123,24 @@ abstract public class CreateShape extends PlainTool
 
   public final Action getData()
   {
-    Action res = null;
-    final WorldArea wa = _theChart.getDataArea();
+    final GetAction getAction = new GetAction() {
 
-    // see if we have an area defined
-    if(wa != null)
-    {
-
-      // get centre of area (at zero depth)
-      final WorldLocation centre = new WorldLocation(wa.getCentreAtSurface());
-
-      final ShapeWrapper theWrapper = getShape(centre);
-
-      Layer theLayer = _theData.findLayer("Misc");
-      if(theLayer == null)
+      @Override
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
       {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
+        return new CreateShapeAction(_thePanel, theLayer,
+            (ShapeWrapper) theItem, _theData);
       }
 
-       res =  new CreateShapeAction(_thePanel,
-                                     theLayer,
-                                     theWrapper,
-                                     _theData);
-    }
-    else
-    {
-      // we haven't got an area, inform the user
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-    "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-    }
-
-    return res;
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return getShape(centre);
+      }};
+    return commonGetData(getAction, _thePanel);
   }
-
+  
   /** get the actual instance of the shape we are creating
    * @return ShapeWrapper containing an instance of the new shape
    * @param centre the current centre of the screen, where the shape should be centred
@@ -186,9 +162,9 @@ abstract public class CreateShape extends PlainTool
 
 
     public CreateShapeAction(final PropertiesPanel thePanel,
-                               final Layer theLayer,
-                               final ShapeWrapper theShape,
-                               final Layers theLayers)
+        final Layer theLayer,
+        final ShapeWrapper theShape,
+        final Layers theLayers)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;
@@ -226,9 +202,9 @@ abstract public class CreateShape extends PlainTool
       // add the Shape to the layer, and put it
       // in the property editor
       _theLayer.add(_theShape);
-      
+
       if(_thePanel != null)
-      	_thePanel.addEditor(_theShape.getInfo(), _theLayer);
+        _thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
       // and fire the extended event
       _theLayers.fireExtended(_theShape, _theLayer);
@@ -242,7 +218,5 @@ abstract public class CreateShape extends PlainTool
 
     // remove our local references
     _thePanel = null;
-    _theData = null;
-    _theChart = null;
   }
 }

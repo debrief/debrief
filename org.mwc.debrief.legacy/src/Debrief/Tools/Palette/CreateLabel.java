@@ -74,12 +74,15 @@
 package Debrief.Tools.Palette;
 
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
-import MWC.GenericData.*;
+import MWC.GUI.Tools.Action;
+import MWC.GenericData.WorldLocation;
 
-public final class CreateLabel extends PlainTool
+public final class CreateLabel extends CoreCreateShape
 {
 
   /////////////////////////////////////////////////////////////
@@ -87,15 +90,8 @@ public final class CreateLabel extends PlainTool
   ////////////////////////////////////////////////////////////
   /** the properties panel
    */
-  private final PropertiesPanel _thePanel;
+  private PropertiesPanel _thePanel;
 
-  /** the layers we are going to drop this shape into
-   */
-  private final Layers _theData;
-
-  /** the chart we are using (since want our 'duff' item to appear in the middle)
-   */
-  private final MWC.GUI.PlainChart _theChart;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -105,65 +101,68 @@ public final class CreateLabel extends PlainTool
    * @param thePanel panel
    */
   public CreateLabel(final ToolParent theParent,
-                     final PropertiesPanel thePanel,
-                     final Layers theData,
-                     final MWC.GUI.PlainChart theChart,
-                     final String theName,
-                     final String theImage)
+      final PropertiesPanel thePanel,
+      final Layers theData,
+      final BoundsProvider bounds,
+      final String theName,
+      final String theImage)
   {
-    super(theParent, theName, theImage);
+    super(theParent, theName, theImage,theData,bounds);
 
     _thePanel = thePanel;
-    _theData = theData;
-    _theChart = theChart;
   }
+  
 
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+  /** helper class, to allow common code to be used for both shapes & labels
+   * 
+   * @author ian
+   *
+   */
+  public static interface GetAction
+  {
+    /** create the action that puts the item into a layer
+     * 
+     * @param thePanel
+     * @param theLayer
+     * @param theItem
+     * @param theData
+     * @return
+     */
+    Action createLabelAction(final PropertiesPanel thePanel,
+        final Layer theLayer,
+        final PlainWrapper theItem,
+        final Layers theData);
+    
+    /** create a new instance of the correct type
+     * 
+     * @param centre
+     * @return
+     */
+    PlainWrapper getItem(final WorldLocation centre);
+  }
+  
+ 
 
   public final Action getData()
   {
+    final GetAction getAction = new GetAction() {
 
-    final WorldArea wa = _theChart.getDataArea();
-    if(wa != null)
-    {
-      // put the label in the centre of the plot (at the surface)
-      final WorldLocation centre = wa.getCentreAtSurface();
-
-      final LabelWrapper theWrapper = new LabelWrapper("blank label",
-                                                 centre,
-                                                  MWC.GUI.Properties.DebriefColors.ORANGE);
-
-      Layer theLayer = _theData.findLayer("Misc");
-      if(theLayer == null)
+      @Override
+      public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
+          final PlainWrapper theItem, final Layers theData)
       {
-        theLayer = new BaseLayer();
-        theLayer.setName("Misc");
-        _theData.addThisLayer(theLayer);
+        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
       }
 
-      return new CreateLabelAction(_thePanel,
-                                     theLayer,
-                                     theWrapper,
-                                     _theData);
-    }
-    else
-    {
-        // we haven't got an area, inform the user
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Create Feature",
-          "Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
-          return null;
-    }
+      @Override
+      public PlainWrapper getItem(final WorldLocation centre)
+      {
+        return  new LabelWrapper("blank label",
+            centre,
+            MWC.GUI.Properties.DebriefColors.ORANGE);
+      }};
+    return commonGetData(getAction, _thePanel);
   }
-
-  /** get the actual instance of the shape we are creating
-   * @return LabelWrapper containing an instance of the new shape
-   * @param centre the current centre of the screen, where the shape should be centred
-   */
- // abstract protected LabelWrapper getShape(WorldLocation centre);
-
 
   ///////////////////////////////////////////////////////
   // store action information
@@ -175,13 +174,13 @@ public final class CreateLabel extends PlainTool
     final PropertiesPanel _thePanel;
     final Layer _theLayer;
     final Debrief.Wrappers.LabelWrapper _theShape;
-		final private Layers _theData;
+    final private Layers _theData;
 
 
     public CreateLabelAction(final PropertiesPanel thePanel,
-                               final Layer theLayer,
-                               final LabelWrapper theShape,
-                               final Layers theData)
+        final Layer theLayer,
+        final LabelWrapper theShape,
+        final Layers theData)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;
@@ -228,12 +227,12 @@ public final class CreateLabel extends PlainTool
       // add the Shape to the layer, and put it
       // in the property editor
       _theLayer.add(_theShape);
-      
+
       if(_thePanel != null)
-      	_thePanel.addEditor(_theShape.getInfo(), _theLayer);
+        _thePanel.addEditor(_theShape.getInfo(), _theLayer);
 
       // and fire the extended event
-      _theData.fireExtended();
+      _theData.fireExtended(_theShape, _theLayer);
     }
   }
 

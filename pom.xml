@@ -27,6 +27,14 @@
   </properties>
 
   <modules>
+
+
+    <module>org.freehep</module>
+    <module>info.limpet</module>
+    <module>info.limpet.libs</module>
+    <module>info.limpet.stackedcharts.model</module>
+    <module>info.limpet.stackedcharts.ui</module>
+
     <module>org.mwc.asset.NetAsset2</module>
     <module>org.mwc.asset.NetCore</module>
     <module>org.mwc.asset.ScenarioController2</module>
@@ -73,6 +81,7 @@
     <module>org.mwc.debrief.data_feed</module>
     <module>org.mwc.debrief.data_feed_dummy</module>
     <module>org.mwc.debrief.legacy</module>
+    <module>org.mwc.debrief.lite</module>
     <module>org.mwc.debrief.multipath2</module>
     <module>org.mwc.debrief.track_shift</module>
     <module>org.mwc.gnd.demonstrator</module>

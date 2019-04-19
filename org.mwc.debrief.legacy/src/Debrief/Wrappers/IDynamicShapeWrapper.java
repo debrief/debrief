@@ -14,6 +14,8 @@
  */
 package Debrief.Wrappers;
 
+import java.awt.Color;
+
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 
@@ -28,4 +30,7 @@ public interface IDynamicShapeWrapper extends Plottable
   public String getTrackName();
   public void setEndDTG(HiResDate date);
   public void setStartDTG(HiResDate date);
+  public HiResDate getStartDTG();
+  public HiResDate getEndDTG();
+  public Color getColor();
 }

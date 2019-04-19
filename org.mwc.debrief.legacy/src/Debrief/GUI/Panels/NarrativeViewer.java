@@ -222,6 +222,12 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
     initForm();
 
   }
+  
+  @Override
+  public void reset()
+  {
+    // don't worry about it, ignore
+  }
 
   /**
    * initForm

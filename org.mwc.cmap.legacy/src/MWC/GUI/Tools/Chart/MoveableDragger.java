@@ -146,15 +146,6 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
     _theChart = theChart;
   }
 
-  //  /**
-  //   *  do we really need this?
-  //   */
-  //  public MoveableDragger()
-  //  {
-  //    // default constructor, used for serialisation
-  //    super();
-  //  }
-
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////

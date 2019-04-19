@@ -143,7 +143,7 @@ abstract public class Loader extends SwingCustomEditor
 		};
 
 		// tell our parent object about the important stuff
-		setObject(null, theChart, theParent, theProperties);
+		setObject(null, theParent, _theLayers, theProperties);
 
 		// build the form
 		initForm();
@@ -168,7 +168,7 @@ abstract public class Loader extends SwingCustomEditor
 
 	public void suspendUpdates(boolean override)
 	{
-		super.getChart().setSuspendUpdates(override);
+	  _theLayers.suspendFiringExtended(override);
 	}
 
 	/**
@@ -200,8 +200,7 @@ abstract public class Loader extends SwingCustomEditor
 				suspendUpdates(false);
 
 				// and rebuild the plot
-				getChart().update();
-
+				_theLayers.fireExtended();
 			}
 		};
 

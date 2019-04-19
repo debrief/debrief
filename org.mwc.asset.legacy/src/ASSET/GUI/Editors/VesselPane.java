@@ -154,8 +154,8 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
     SwingPropertiesPanel pp = (SwingPropertiesPanel)this.getPanel();
 
     // produce the panel
-    _myPanel = new SwingPropertiesPanel( this.getChart(), pp.getBuffer(),
-        pp.getToolParent(), this);
+    _myPanel = new SwingPropertiesPanel(_theLayers, pp.getBuffer(), pp
+        .getToolParent(), this);
 
     _myPanel.setBorder(BorderFactory.createMatteBorder(3,3,3,3, Color.darkGray));
 

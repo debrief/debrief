@@ -106,6 +106,21 @@ import MWC.GUI.Plottable;
 
 public interface PlainImporter
 {
+  
+  public static class ImportException extends RuntimeException
+  {
+
+    public ImportException(String msg, Exception se)
+    {
+      super(msg, se);
+    }
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+  }
 
     /** general command used to import a whole file of a specific type
      */
@@ -114,6 +129,12 @@ public interface PlainImporter
 
     public void importThis(String fName,
                                        java.io.InputStream is);
+    
+    public void importThis(String fName,
+        java.io.InputStream is, Layers theData,MonitorProvider provider);
+    
+    public void importThis(String fName,
+        java.io.InputStream is,MonitorProvider provider);
 
     /** read in this whole file
      */
@@ -142,6 +163,18 @@ public interface PlainImporter
      * @param item identifier for this sequence
 		 */
 		public void endExport(Plottable item);
+		
+		
+		public static interface MonitorProvider
+	  {
+
+	    public void init(final String fileName, final int length);
+
+	    public void progress(int _progress);
+	    
+	    void done();
+
+	  }
 
 
 }

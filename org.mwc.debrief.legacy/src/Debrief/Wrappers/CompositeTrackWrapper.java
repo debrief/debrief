@@ -27,6 +27,7 @@ import Debrief.Wrappers.Track.PlanningSegment;
 import Debrief.Wrappers.Track.PlanningSegment.ClosingSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
+import MWC.GUI.ExportLayerAsSingleItem;
 import MWC.GUI.FireExtended;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
@@ -51,7 +52,7 @@ import MWC.TacticalData.Fix;
  * 
  */
 public class CompositeTrackWrapper extends TrackWrapper implements
-    GriddableSeriesMarker, NeedsToKnowAboutLayers
+    GriddableSeriesMarker, NeedsToKnowAboutLayers, ExportLayerAsSingleItem
 {
 
   public static interface GiveMeALeg
@@ -85,11 +86,11 @@ public class CompositeTrackWrapper extends TrackWrapper implements
 
       final MethodDescriptor[] mds =
           {
-              method(c, "addLeg", null, "Add new leg"),
-              method(c, "addClosingLeg", null, "Add closing leg"),
+              method(c, "addLeg", null, "Add New Leg"),
+              method(c, "addClosingLeg", null, "Add Closing Leg"),
               method(c, "exportThis", null, "Export Shape"),
               method(c, "appendReverse", null,
-                  "Append reverse version of segments"),};
+                  "Append reversed segments"),};
 
       return mds;
     }

@@ -240,12 +240,11 @@ import java.beans.PropertyEditorManager;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Vector;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.PlainChart;
+import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.hasPropertyListeners;
 import MWC.GUI.Tools.Action;
@@ -293,11 +292,6 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   protected Vector<PropertyChangeItem> _theModifications;
 
   /**
-   * our chart, so that we can do an update
-   */
-  protected PlainChart _theChart;
-
-  /**
    * the custom editor, if there is one
    */
   protected Class<?> _theCustomEditor;
@@ -337,11 +331,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
    */
   private PropertyChangeListener _reportListener;
 
+  protected final Layers _theLayers;
+
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
   public PlainPropertyEditor(final MWC.GUI.Editable.EditorType theInfo,
-                             final PlainChart theChart,
+                             final Layers theLayers,
                              final PropertiesPanel thePanel,
                              final MWC.GUI.ToolParent toolParent,
                              final Layer parentLayer)
@@ -388,7 +384,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     _theName = theInfo.getName();
 
     // store the chart
-    _theChart = theChart;
+    _theLayers = theLayers;
 
     // assign the editors
     assignEditors();
@@ -629,7 +625,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       {
         final Object val = getValueFor(data, p);
         res.setValue(val);
-        _theEditors.put(p, new PropertyEditorItem(p, res, data, res, editor));
+        if(!p.isExpert())
+        {
+          _theEditors.put(p, new PropertyEditorItem(p, res, data, val, editor));
+        }
       }
       else
       {
@@ -738,7 +737,9 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
       // find out if the value for this parameter is different to the
       // original one (has it been modified?)
-      if (!res.equals(pei.originalValue))
+      final Object orig = pei.originalValue;
+      
+      if (!res.equals(orig))
       {
         _someChanged = true;
 
@@ -747,7 +748,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
         try
         {
-          final Object[] params = {pei.originalValue};
+          final Object[] params = {orig};
           write.invoke(pei.theData, params);
         }
         catch (final Exception e)
@@ -764,7 +765,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
     // and trigger an update
     if (_someChanged)
-      _theChart.update();
+      _theLayers.fireModified(null);
 
   }
 
@@ -793,18 +794,6 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         et.removePropertyChangeListener(this);
       }
     }
-
-    // pass through and see if any editors need closing
-    final Iterator<PropertyEditorItem> it = _theEditors.values().iterator();
-    while (it.hasNext())
-    {
-      final PropertyEditorItem pei = (PropertyEditorItem) it.next();
-      if (pei.theEditor instanceof EditorUsesChart)
-      {
-        final EditorUsesChart ec = (EditorUsesChart) pei.theEditor;
-        ec.doClose();
-      }
-    }
   }
 
   /////////////////////////////////////////////////////
@@ -814,11 +803,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   ////////////////////////////////////////////////////
   public static class PropertyEditorItem
   {
-    public PropertyDescriptor theDescriptor;
+    public final PropertyDescriptor theDescriptor;
     public Component theEditorGUI;
-    public PropertyEditor theEditor;
-    public Object theData;
-    public Object originalValue;
+    public final PropertyEditor theEditor;
+    public final Object theData;
+    public final Object originalValue;
     transient public Editable.EditorType theEditableInfo;
 
     public PropertyEditorItem(final PropertyDescriptor propVal,
@@ -959,10 +948,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         it.editorInfo.fireChanged(this, it.propertyName, it.newValue, it.oldValue);
       }
 
-      _theChart.getLayers().fireModified(_parentLayer);
-
-      //      _theChart.update();
-
+      _theLayers.fireModified(_parentLayer);
     }
 
     public void execute()
@@ -979,11 +965,8 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       }
 
       // try to update just the layer
-      if (_theChart != null)
-        _theChart.getLayers().fireModified(_parentLayer);
-
-      // perform the screen update here, so that it is caught up in the undo/redo sequence
-      //      _theChart.update();
+      if (_theLayers != null)
+        _theLayers.fireModified(_parentLayer);
     }
 
     /**
@@ -1057,18 +1040,6 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
   }
 
-
-  //////////////////////////////////////////////////
-  // nested interface for custom editors which want
-  // to know about the chart
-  //////////////////////////////////////////////////
-  static public interface EditorUsesChart
-  {
-    public void setChart(PlainChart theChart);
-
-    public void doClose();
-  }
-
   //////////////////////////////////////////////////
   // nested interface for custom editors which want
   // to know about the properties window
@@ -1083,6 +1054,19 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     public void setPanel(PropertiesPanel thePanel);
   }
 
+  //////////////////////////////////////////////////
+  // nested interface for custom editors which want
+  // to know about the layers object
+  //////////////////////////////////////////////////
+  static public interface EditorUsesLayers
+  {
+    /**
+     * this is the internal layers object
+     *
+     * @param theLayers the layers object
+     */
+    public void setLayers(Layers theLayers);
+  }
   //////////////////////////////////////////////////
   // nested interface for custom editors which want
   // to know about the tool parent

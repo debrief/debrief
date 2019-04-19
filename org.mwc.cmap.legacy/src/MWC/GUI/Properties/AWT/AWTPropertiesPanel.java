@@ -102,7 +102,7 @@ import java.awt.Panel;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
-import MWC.GUI.PlainChart;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.TabPanel.AWTTabPanel;
 import MWC.GUI.Undo.UndoBuffer;
@@ -116,7 +116,7 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
 	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  PlainChart _myChart;
+  Layers _theLayers;
   UndoBuffer _theBuffer;
 
   /** the toolparent we supply to any new panels
@@ -127,11 +127,9 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public AWTPropertiesPanel(final PlainChart theChart,
-                            final UndoBuffer theUndoBuffer,
+  public AWTPropertiesPanel(final UndoBuffer theUndoBuffer,
                             final MWC.GUI.ToolParent theToolParent){
     super();
-    _myChart = theChart;
     _theBuffer = theUndoBuffer;
     _theToolParent = theToolParent;
   }
@@ -167,7 +165,7 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   public void addConstructor(final Editable.EditorType theInfo, final Layer parentLayer){
     final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
                                                  this,
-                                                 _myChart,
+                                                 _theLayers,
                                                  _theToolParent,
                                                  parentLayer);
     ap.setNames("Build", null, null);
@@ -183,7 +181,7 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   public void addEditor(final Editable.EditorType theInfo, final Layer parentLayer){
     final AWTPropertyEditor ap = new AWTPropertyEditor(theInfo,
                                                  this,
-                                                 _myChart,
+                                                 _theLayers,
                                                  _theToolParent, parentLayer);
     final int index = addTabPanel(theInfo.getName(), true, ap.getPanel());
     try{
@@ -195,7 +193,7 @@ public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
   }
 
   public void doApply(){
-    _myChart.update();
+    _theLayers.fireModified(null);
   }
 
   public UndoBuffer getBuffer(){

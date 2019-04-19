@@ -17,6 +17,7 @@ package org.mwc.cmap.naturalearth.ui;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -33,36 +34,43 @@ import MWC.GUI.Layers;
 public class InsertNaturalEarth extends AbstractHandler
 {
 
-	public Layers getLayers()
-	{
-		// nope, better generate it
-		final IWorkbench wb = PlatformUI.getWorkbench();
-		final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		final IWorkbenchPage page = win.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-		return (Layers) editor.getAdapter(Layers.class);
-	}
+  public Layers getLayers()
+  {
+    final Layers[] answer = new Layers[1];
+    Display.getDefault().syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        // nope, better generate it
+        final IWorkbench wb = PlatformUI.getWorkbench();
+        final IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+        final IWorkbenchPage page = win.getActivePage();
+        IEditorPart editor = page.getActiveEditor();
+        answer[0] = (Layers) editor.getAdapter(Layers.class);
+      }
+    });
+    return answer[0];
+  }
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException
-	{
-		// check if we have a data path, and check it exists
-		if (!NELayer.hasGoodPath())
-		{
-			System.err.println("Don't have good path assigned");
-		}
-		else
-		{
-			Layers layers = getLayers();
-			if (layers != null)
-			{
-				//
-				NELayer ne = new NELayer(Activator.getDefault().getDefaultStyleSet());
-				layers.addThisLayer(ne);
-			}
-		}
-
-		return null;
-	}
-
+  @Override
+  public Object execute(ExecutionEvent event) throws ExecutionException
+  {
+    // check if we have a data path, and check it exists
+    if (!NELayer.hasGoodPath())
+    {
+      System.err.println("Don't have good path assigned");
+    }
+    else
+    {
+      Layers layers = getLayers();
+      if (layers != null)
+      {
+        //
+        NELayer ne = new NELayer(Activator.getDefault().getDefaultStyleSet());
+        layers.addThisLayer(ne);
+      }
+    }
+    return null;
+  }
 }

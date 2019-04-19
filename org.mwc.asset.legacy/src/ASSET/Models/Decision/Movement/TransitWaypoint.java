@@ -34,9 +34,9 @@ import ASSET.Participants.Category;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.Observers.TrackPlotObserver;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
-import ASSET.Scenario.Observers.TrackPlotObserver;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
@@ -381,13 +381,11 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       try
       {
         final java.beans.PropertyDescriptor[] res = {
-          prop("Destinations", "the list of destinations we follow"),
           prop("Loop", "whether we loop back to the first point"),
           prop("Reverse", "when we loop, whether we follow the points in reverse order"),
           prop("Speed", "the speed we transit at (kts)"),
           prop("Name", "the name of this transit model"),
         };
-        res[0].setPropertyEditorClass(MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor.class);
 
         return res;
       }
@@ -730,16 +728,6 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
 
       super.endRecording(cs);
       super.outputTheseToRep("testShortLoopRoute_pts.rep", wp);
-
-      // ok - check where we are
-      WorldLocation finalLocation = helo.getStatus().getLocation();
-      WorldLocation targetLocation = createLocation(4861, 4772);
-      double range_offset = MWC.Algorithms.Conversions.Degs2m(finalLocation.rangeFrom(targetLocation));
-      outputLocation(finalLocation);
-
-      //  todo  find out why we're looping around again at point 6'
-  //    assertTrue("near target - range:" + range_offset, range_offset < 11);
-
     }
 
 

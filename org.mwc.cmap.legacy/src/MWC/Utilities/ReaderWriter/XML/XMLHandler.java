@@ -18,7 +18,6 @@ package MWC.Utilities.ReaderWriter.XML;
 import java.io.CharArrayWriter;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.TimeZone;
 import java.util.Vector;
 
 import org.xml.sax.AttributeList;

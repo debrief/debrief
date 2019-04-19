@@ -80,8 +80,7 @@ import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldLocation;
 
 abstract public class WorldLocationPropertyEditor extends 
-           PropertyEditorSupport implements ActionListener, 
-                                            PlainPropertyEditor.EditorUsesChart,
+           PropertyEditorSupport implements ActionListener,
                                             PlainChart.ChartDoubleClickListener
 {
   /////////////////////////////////////////////////////////////
@@ -136,12 +135,6 @@ abstract public class WorldLocationPropertyEditor extends
   {
     return _myVal;
   }
-
-	public void setChart(final MWC.GUI.PlainChart theChart)
-  {
-    _theChart = theChart;
-  }
-
 
   abstract public void cursorDblClicked(PlainChart theChart,
                                WorldLocation theLocation, 

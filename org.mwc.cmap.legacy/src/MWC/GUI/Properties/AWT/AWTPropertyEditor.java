@@ -146,6 +146,7 @@ import java.beans.PropertyEditorManager;
 import java.util.Enumeration;
 
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 
@@ -191,14 +192,15 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
    * @param theChart    the chart we're looking at
    * @param theParent   the application we're contained in
    * @param parentLayer the layer above us, to be updated on completion
+   * @param theLayers 
    */
   public AWTPropertyEditor(final MWC.GUI.Editable.EditorType info,
                            final AWTPropertiesPanel parent,
-                           final MWC.GUI.PlainChart theChart,
+                           final Layers theLayers,
                            final MWC.GUI.ToolParent theParent,
                            final Layer parentLayer)
   {
-    super(info, theChart, parent, theParent, parentLayer);
+    super(info, theLayers, parent, theParent, parentLayer);
 
     _theParent = parent;
   }
@@ -234,7 +236,6 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
       {
         final AWTCustomEditor p = (AWTCustomEditor) super._theCustomEditor.newInstance();
         p.setObject(super._theData,
-          _theChart,
           _theParent);
         host.add((Panel) p);
         host.doLayout();
@@ -365,15 +366,6 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     else
     {
       cp = pe.getCustomEditor();
-
-      // see if this custom editor wants to know about the chart
-      if (pe instanceof PlainPropertyEditor.EditorUsesChart)
-      {
-        final PlainPropertyEditor.EditorUsesChart eu =
-          (PlainPropertyEditor.EditorUsesChart) pe;
-        eu.setChart(super._theChart);
-      }
-
     }
     addPanel(p.getDisplayName(), cp, p.getShortDescription(), p);
   }

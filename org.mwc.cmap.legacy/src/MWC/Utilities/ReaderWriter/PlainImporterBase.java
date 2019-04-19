@@ -71,8 +71,13 @@
 package MWC.Utilities.ReaderWriter;
 
 import java.awt.Toolkit;
+import java.awt.datatransfer.StringSelection;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,6 +85,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.GUI.Dialogs.DialogFactory;
 
 /**
  * class to provide general (non file-type specific) for importing a whole file. The class performs
@@ -121,17 +127,25 @@ public abstract class PlainImporterBase implements PlainImporter
   /**
    * general command used to import a whole file of a specific type
    */
-  public void importThis(final String fName, final java.io.InputStream is,
+  public void importThis(final String fName, final InputStream is,
       final Layers theData)
   {
     _theLayers = theData;
     importThis(fName, is);
-
-    // ok, forget about the layers object now that we're finished
-    _theLayers = null;
   }
 
-  abstract public void importThis(String fName, java.io.InputStream is);
+  @Override
+  public void importThis(String fName, InputStream is, final Layers theData,
+      final MonitorProvider provider)
+  {
+    _theLayers = theData;
+    importThis(fName, is,provider);
+  }
+  
+  abstract public void importThis(final String fName, final InputStream is);
+
+  abstract public void importThis(final String fName, final InputStream is,
+      final MonitorProvider provider);
 
   /**
    * create a new layer in the data using this name
@@ -179,8 +193,6 @@ public abstract class PlainImporterBase implements PlainImporter
       final Layer theLayer = _theLayers.findLayer(theName);
       return theLayer;
     }
-    
-    
   }
 
   /**
@@ -207,7 +219,7 @@ public abstract class PlainImporterBase implements PlainImporter
     String res = "Problem at line " + line + " of:\n";
     res += fName + "\n";
     res += msg + ":" + thisLine;
-    MWC.GUI.Dialogs.DialogFactory.showMessage("Import Error", res);
+    DialogFactory.showMessage("Import Error", res);
   }
 
   /**
@@ -229,25 +241,28 @@ public abstract class PlainImporterBase implements PlainImporter
   public int countLinesFor(final String fName)
   {
     int counter = 0;
-    try
+    if (fName != null)
     {
+      try
+      {
 
-      // see if we can find the required file
-      final File findIt = new File(fName);
-      if (findIt.exists())
-      {
-        final java.io.InputStream is = new java.io.FileInputStream(fName);
-        counter = countLinesInStream(is);
-        is.close();
+        // see if we can find the required file
+        final File findIt = new File(fName);
+        if (findIt.exists())
+        {
+          final InputStream is = new FileInputStream(fName);
+          counter = countLinesInStream(is);
+          is.close();
+        }
+        else
+        {
+          System.err.println("Can't find input file:" + fName);
+        }
       }
-      else
+      catch (final Exception e)
       {
-        System.err.println("Can't find input file:" + fName);
+        e.printStackTrace();
       }
-    }
-    catch (final Exception e)
-    {
-      e.printStackTrace();
     }
     return counter;
   }
@@ -257,12 +272,12 @@ public abstract class PlainImporterBase implements PlainImporter
    * @return
    * @throws IOException
    */
-  public int countLinesInStream(final java.io.InputStream is)
+  public int countLinesInStream(final InputStream is)
       throws IOException
   {
     int counter = 0;
-    final java.io.InputStreamReader ir = new java.io.InputStreamReader(is);
-    final java.io.BufferedReader br = new java.io.BufferedReader(ir);
+    final InputStreamReader ir = new InputStreamReader(is);
+    final BufferedReader br = new BufferedReader(ir);
     String line = br.readLine();
     while (line != null)
     {
@@ -289,6 +304,11 @@ public abstract class PlainImporterBase implements PlainImporter
   {
     _beingExported = null;
   }
+  
+  public StringBuffer getBuffer()
+  {
+    return _beingExported;
+  }
 
   /**
    * ok, we've build up our string to export. put it on the clipboard
@@ -306,8 +326,8 @@ public abstract class PlainImporterBase implements PlainImporter
           Toolkit.getDefaultToolkit().getSystemClipboard();
 
       // create the string to write
-      final java.awt.datatransfer.StringSelection ss =
-          new java.awt.datatransfer.StringSelection(_beingExported.toString());
+      final StringSelection ss =
+          new StringSelection(_beingExported.toString());
 
       // dump it on there.
       cl.setContents(ss, ss);

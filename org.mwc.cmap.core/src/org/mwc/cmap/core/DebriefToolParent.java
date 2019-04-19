@@ -186,7 +186,14 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
               }
               catch (PartInitException e1)
               {
-                e1.printStackTrace();
+                if(e1.getMessage().contains("Could not create view: org.eclipse.pde.runtime.LogView"))
+                {
+                  // it's ok, we're probably running JUnit test
+                }
+                else
+                {
+                  e1.printStackTrace();
+                }
               }
             }
           }

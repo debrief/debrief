@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySheetEntry;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
@@ -308,6 +309,19 @@ public class DebriefProperty implements IPropertyDescriptor, IDebriefProperty
   @Override
   public String[] getFilterFlags()
   {
+    @SuppressWarnings("unused")
+    final String[] res;
+    // if it's an expert property, pass this on as a filter flag
+    if (_thisProp.isExpert())
+    {
+      res = new String[]
+      {IPropertySheetEntry.FILTER_ID_EXPERT};
+    }
+    else
+    {
+      res = null;
+    }
+    // note: returning the above flags was breaking UI tests
     return null;
   }
 

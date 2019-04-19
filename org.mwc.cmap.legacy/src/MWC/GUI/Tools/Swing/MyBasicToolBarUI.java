@@ -749,8 +749,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  @SuppressWarnings("synthetic-access")
-	static class RightAction extends KeyAction {
+  static class RightAction extends KeyAction {
     /**
 		 * 
 		 */
@@ -763,8 +762,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  @SuppressWarnings("synthetic-access")
-	static class LeftAction extends KeyAction {
+  static class LeftAction extends KeyAction {
     /**
 		 * 
 		 */
@@ -777,8 +775,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  @SuppressWarnings("synthetic-access")
-	static class UpAction extends KeyAction {
+  static class UpAction extends KeyAction {
     /**
 		 * 
 		 */
@@ -791,8 +788,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
     }
   }
 
-  @SuppressWarnings("synthetic-access")
-	static class DownAction extends KeyAction {
+  static class DownAction extends KeyAction {
     /**
 		 * 
 		 */

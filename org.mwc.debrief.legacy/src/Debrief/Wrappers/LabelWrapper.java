@@ -1046,7 +1046,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
             displayProp("SymbolVisible", "Symbol visible",
                 "whether a symbol is plotted", FORMAT), displayProp(
                     "LabelLocation", "Label location",
-                    "the relative location of the label", FORMAT), prop(
+                    "the relative location of the label", FORMAT), expertProp(
                         "Location", "the location of the origin of the label",
                         SPATIAL), displayProp("SymbolType", "Symbol type",
                             "the type of symbol plotted for this label",
@@ -1192,7 +1192,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements
     jf.getContentPane().setLayout(new BorderLayout());
     jf.getContentPane().add("Center", sc.getPanel());
 
-    final SwingPropertiesPanel props = new SwingPropertiesPanel(sc, null, null,
+    final SwingPropertiesPanel props = new SwingPropertiesPanel(theData, null, null,
         null);
     props.addEditor(lw.getInfo(), misc);
     jf.getContentPane().add("West", props);

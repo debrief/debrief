@@ -1236,8 +1236,11 @@ public class ZoneChart extends Composite
     }
 
     final TimeSeriesCollection dataset = new TimeSeriesCollection();
-    dataset.addSeries(xySeries);
-
+    if(xySeries != null)
+    {
+      dataset.addSeries(xySeries);
+    }
+    
     final JFreeChart xylineChart = ChartFactory.createTimeSeriesChart(
         config._chartTitle, // String
         "Time", // String timeAxisLabel
@@ -1645,6 +1648,7 @@ public class ZoneChart extends Composite
     this.deleteNotInLegEvent = deleteEvent;
     this.resolveAmbiguityEvent = resolveAmbiguityOperation;
     this.deleteAmbiguousCutsEvent = deleteAmbiguousCutsEvent;
+    this.zoneSlicer = zoneSlicer;
     buildUI(xylineChart, goingHolistic);
 
     /**
@@ -1655,7 +1659,6 @@ public class ZoneChart extends Composite
     this.zoneMarkers.clear();
     xylineChart.setAntiAlias(false);
     this.colorProvider = colorProvider;
-    this.zoneSlicer = zoneSlicer;
     this.xySeries = xySeries;
 
     final XYPlot plot = (XYPlot) xylineChart.getPlot();
@@ -1773,7 +1776,7 @@ public class ZoneChart extends Composite
           }
         });
 
-    if (needSlicing)
+    if (needSlicing && zoneSlicer != null)
     {
       // ok, now the clear buttons
       createButton(col1, SWT.PUSH, clearZones24, "Clear zones",

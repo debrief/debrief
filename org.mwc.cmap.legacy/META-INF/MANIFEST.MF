@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Legacy Algorithms Plug-in
 Bundle-SymbolicName: org.mwc.cmap.legacy;singleton:=true
-Bundle-Version: 1.0.263
+Bundle-Version: 1.0.273
 Bundle-ClassPath: cmap_legacy.jar,
  libs/openmap.jar,
  libs/jmf.jar,
@@ -222,6 +222,7 @@ Export-Package:
    MWC.TacticalData,
    org.codehaus.jackson,
    MWC.GUI",
+ MWC.TacticalData.temporal,
  MWC.Utilities.Errors;uses:="MWC.GUI",
  MWC.Utilities.Errors.Testing;uses:="junit.framework",
  MWC.Utilities.ReaderWriter;uses:="javax.swing,MWC.GUI",

@@ -339,8 +339,6 @@ public final class ImportSensor2 extends AbstractPlainLineImporter
       }
       catch (ParseException e)
       {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
       }
       assertNull("should have failed", resA);
     }

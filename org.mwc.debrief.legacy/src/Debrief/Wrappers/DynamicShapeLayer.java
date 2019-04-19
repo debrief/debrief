@@ -219,7 +219,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		if (!isEmpty())
 		{
 			Editable first = this.elements().nextElement();
-			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first;
+			IDynamicShapeWrapper dsw = (IDynamicShapeWrapper) first;
 			res = dsw.getColor();
 		}
 		return res;
@@ -232,7 +232,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		// just return the color of the first item
     if (!isEmpty())
 		{
-			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
+      IDynamicShapeWrapper dsw = (IDynamicShapeWrapper) first();
 			res = dsw.getStartDTG();
 		}
 		return res;
@@ -245,7 +245,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		// just return the color of the first item
     if (!isEmpty())
 		{
-			DynamicShapeWrapper dsw = (DynamicShapeWrapper) first();
+      IDynamicShapeWrapper dsw = (IDynamicShapeWrapper) first();
 			res = dsw.getEndDTG();
 		}
 		return res;
@@ -291,12 +291,12 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 					while (ele.hasMoreElements())
 					{
 						Editable editable = (Editable) ele.nextElement();
-						DynamicShapeWrapper dsw = (DynamicShapeWrapper) editable;
+						IDynamicShapeWrapper dsw = (IDynamicShapeWrapper) editable;
 						if (dsw.getVisible())
 						{
 							if (dsw.getStartDTG().greaterThanOrEqualTo(DTG))
 							{
-								res = new Watchable[] { dsw };
+								res = new Watchable[] { (ShapeWrapper) editable };
 								break;
 							}
 						}
@@ -317,7 +317,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 		Enumeration<Editable> ele = this.elements();
 		while (ele.hasMoreElements())
 		{
-			DynamicShapeWrapper wrapper = (DynamicShapeWrapper) ele.nextElement();
+		  IDynamicShapeWrapper wrapper = (IDynamicShapeWrapper) ele.nextElement();
 			if (list.contains(wrapper))
 			{
 				wrapper.setVisible(true);
@@ -367,7 +367,7 @@ public class DynamicShapeLayer extends BaseLayer implements DynamicPlottable,
 					while (ele.hasMoreElements())
 					{
 						Editable editable = (Editable) ele.nextElement();
-						DynamicShapeWrapper dsw = (DynamicShapeWrapper) editable;
+						IDynamicShapeWrapper dsw = (IDynamicShapeWrapper) editable;
 						if (dsw.getStartDTG().greaterThan(start))
 						{
 							boolean itemInRange = false;

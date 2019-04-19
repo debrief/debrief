@@ -14,8 +14,6 @@
  */
 package org.mwc.debrief.lite.map;
 
-import MWC.GUI.Tools.Swing.SwingToolbar;
-
 /**
  *
  * @author Unni Mana <unnivm@gmail.com>
@@ -27,15 +25,9 @@ import MWC.GUI.Tools.Swing.SwingToolbar;
  */
 public interface BaseMap
 {
-
-  /**
-   * adds a map control tool
-   */
-  public void addMapTool(SwingToolbar toolbar);
-
   /**
    * creates a JSplitPane from the given map content.
-   * 
+   *
    * @return
    */
   public void createMapLayout();

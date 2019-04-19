@@ -24,25 +24,22 @@ import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Util.SupportTesting;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Ian.Mayo
- * Date: 12-Aug-2004
- * Time: 08:39:25
- * To change this template use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: Ian.Mayo Date: 12-Aug-2004 Time: 08:39:25 To change this template
+ * use File | Settings | File Templates.
  */
-public abstract class ContinuousRecordToFileObserver extends RecordToFileObserverType
+public abstract class ContinuousRecordToFileObserver extends
+    RecordToFileObserverType
 {
   /**
    * the stream we are currently outputting to
    */
   protected java.io.FileWriter _os;
 
-
   //////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
-  public ContinuousRecordToFileObserver(final String directoryName, final String fileName, final String observerName,
-                                        boolean isActive)
+  public ContinuousRecordToFileObserver(final String directoryName,
+      final String fileName, final String observerName, boolean isActive)
   {
     super(directoryName, fileName, observerName, isActive);
   }
@@ -52,22 +49,23 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
   //////////////////////////////////////////////////
 
   /**
-   * we're getting up and running.  The observers have been created and we've remembered
-   * the scenario
+   * we're getting up and running. The observers have been created and we've remembered the scenario
    *
-   * @param scenario the new scenario we're looking at
+   * @param scenario
+   *          the new scenario we're looking at
    */
   protected void performSetupProcessing(ScenarioType scenario)
   {
     // ok, we don't create the output file here,
-  	// we defer output file creation until the first step
+    // we defer output file creation until the first step
   }
 
   /**
-   * right, the scenario is about to close.  We haven't removed the listeners
-   * or forgotten the scenario (yet).
+   * right, the scenario is about to close. We haven't removed the listeners or forgotten the
+   * scenario (yet).
    *
-   * @param scenario the scenario we're closing from
+   * @param scenario
+   *          the scenario we're closing from
    */
   protected void performCloseProcessing(ScenarioType scenario)
   {
@@ -97,31 +95,39 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     }
     catch (FileNotFoundException fe)
     {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Record to File", "Sorry, unable to create file at:" + getDirectory() + "\\" + getFileName());
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Record to File",
+          "Sorry, unable to create file at:" + getDirectory() + "\\"
+              + getFileName());
       fe.printStackTrace();
     }
     catch (IOException e)
     {
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Record to File", "Sorry, unable to create file at:" + getDirectory() + "\\" + getFileName());
+      MWC.GUI.Dialogs.DialogFactory.showMessage("Record to File",
+          "Sorry, unable to create file at:" + getDirectory() + "\\"
+              + getFileName());
       e.printStackTrace();
     }
   }
 
-
   /**
    * the file has been opened, write the header details to it
    *
-   * @param destination the file to write to
-   * @param fileName    the filename of the file
+   * @param destination
+   *          the file to write to
+   * @param fileName
+   *          the filename of the file
    * @throws IOException
    */
-  abstract protected void writeFileHeaderInformation(FileWriter destination, String fileName) throws IOException;
+  abstract protected void writeFileHeaderInformation(FileWriter destination,
+      String fileName) throws IOException;
 
   /**
    * ok, close the stream
    */
   protected void closeTheFile()
   {
+    writeTheFooter();
+
     if (_os != null)
     {
       try
@@ -139,6 +145,14 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     _os = null;
   }
 
+  /**
+   * write any extra detail to the file
+   * 
+   */
+  protected void writeTheFooter()
+  {
+
+  }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
@@ -150,8 +164,8 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     boolean _closeProcessingPerformed = false;
     boolean _setupProcessingPerformed = false;
     boolean _headerInfoSent = false;
-//    private boolean _newNameCalled;
-//    private boolean _getSuffixCalled;
+    // private boolean _newNameCalled;
+    // private boolean _getSuffixCalled;
 
     public RecToFileTest(final String val)
     {
@@ -161,7 +175,7 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     public final void testInActiveRecorder()
     {
 
-//      File theOutputFile = null;
+      // File theOutputFile = null;
 
       ContinuousRecordToFileObserver observer = getObserver(false);
       assertNotNull("observer wasn't created", observer);
@@ -176,8 +190,8 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       _setupProcessingPerformed = false;
       _closeProcessingPerformed = false;
       _headerInfoSent = false;
-//      _newNameCalled = false;
-//      _getSuffixCalled = false;
+      // _newNameCalled = false;
+      // _getSuffixCalled = false;
 
       // and do the setup
       observer.setup(cs);
@@ -196,7 +210,6 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       assertFalse("post-processing conducetd", _closeProcessingPerformed);
       assertNull("output stream close", observer._os);
 
-
     }
 
     public final void testActiveRecorder()
@@ -214,16 +227,14 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       _setupProcessingPerformed = false;
       _closeProcessingPerformed = false;
       _headerInfoSent = false;
-//      _newNameCalled = false;
-//      _getSuffixCalled = false;
-
+      // _newNameCalled = false;
+      // _getSuffixCalled = false;
 
       // and do the setup
       observer.setup(cs);
-      
+
       // sort out the data file
       observer.createOutputFile();
-  
 
       assertTrue("listeners weren't added", _listenersAdded);
       assertNotNull("output file wasn't created", observer._os);
@@ -239,7 +250,6 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       assertTrue("post-processing conducetd", _closeProcessingPerformed);
       assertNull("output stream close", observer._os);
 
-
     }
 
     protected String dir_name = "test_reports";
@@ -250,9 +260,11 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     //////////////////////////////////////////////////
     protected ContinuousRecordToFileObserver getObserver(boolean isActive)
     {
-      return new ContinuousRecordToFileObserver(dir_name, file_name, "cont observer", isActive)
+      return new ContinuousRecordToFileObserver(dir_name, file_name,
+          "cont observer", isActive)
       {
-        protected void writeFileHeaderInformation(FileWriter destination, String fileName) throws IOException
+        protected void writeFileHeaderInformation(FileWriter destination,
+            String fileName) throws IOException
         {
 
           _headerInfoSent = true;
@@ -260,19 +272,22 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
 
         protected EditorType createEditor()
         {
-          return null;  //To change body of implemented methods use File | Settings | File Templates.
+          return null; // To change body of implemented methods use File | Settings | File
+                       // Templates.
         }
 
         protected String getMySuffix()
         {
-//          _getSuffixCalled = true;
-          return "tmp";  //To change body of implemented methods use File | Settings | File Templates.
+          // _getSuffixCalled = true;
+          return "tmp"; // To change body of implemented methods use File | Settings | File
+                        // Templates.
         }
 
         protected String newName(String name)
         {
-//          _newNameCalled = true;
-          return "new_name";  //To change body of implemented methods use File | Settings | File Templates.
+          // _newNameCalled = true;
+          return "new_name"; // To change body of implemented methods use File | Settings | File
+                             // Templates.
         }
 
         protected void addListeners(ScenarioType scenario)
@@ -287,14 +302,16 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
 
         protected void performSetupProcessing(ScenarioType scenario)
         {
-          super.performSetupProcessing(scenario);    //To change body of overridden methods use File | Settings | File Templates.
+          super.performSetupProcessing(scenario); // To change body of overridden methods use File |
+                                                  // Settings | File Templates.
 
           _setupProcessingPerformed = true;
         }
 
         protected void performCloseProcessing(ScenarioType scenario)
         {
-          super.performCloseProcessing(scenario);    //To change body of overridden methods use File | Settings | File Templates.
+          super.performCloseProcessing(scenario); // To change body of overridden methods use File |
+                                                  // Settings | File Templates.
 
           _closeProcessingPerformed = true;
         }

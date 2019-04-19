@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="20_Legs/Results"
+	xmlns="http://www.mwc.org/asset">
+	<ScenarioGenerator>
+	</ScenarioGenerator>
+	<ObserverList>
+		<TimeObserver Name="Doomsday Timer" Active="true">
+			<Duration Value="36" Units="hours" />
+		</TimeObserver>
+		<TrackPlotObserver Active="false" Name="TrackPlot"
+			show_positions="true">
+			<GridDelta Value="4" Units="nm"></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks"
+			record_detections="true" record_positions="true" Active="true"
+			record_decisions="false" file_name="legs_20">
+		</DebriefReplayObserver>
+		<RemoveDetectedObserver PlotTheDead="true"
+			Name="Red detections" Active="false">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver>
+		<PlotSensorObserver Name="Show Blue Range" Active="true" ShadeCircle="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+				<PlotSensorObserver Name="Show Red sensor range" Active="false">
+			<Target>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="RED" />
+				</TargetType>
+			</Watch>
+		</PlotSensorObserver>
+	</ObserverList>
+</ScenarioController>

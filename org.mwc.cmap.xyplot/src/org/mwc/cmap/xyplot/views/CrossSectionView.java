@@ -40,7 +40,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.xyplot.views.providers.CrossSectionDatasetProvider;
@@ -58,6 +57,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.TimeProvider;
 
 public class CrossSectionView extends ViewPart implements
     ISnailPeriodChangedListener

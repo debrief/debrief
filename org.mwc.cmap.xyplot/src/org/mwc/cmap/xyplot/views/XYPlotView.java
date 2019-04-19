@@ -92,7 +92,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.jfree.ui.TextAnchor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.preferences.SelectionHelper;
 import org.mwc.cmap.core.preferences.WMFExportPrefsPage.PreferenceConstants;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -124,6 +123,7 @@ import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 
 public class XYPlotView extends ViewPart

@@ -186,8 +186,7 @@ public final class AWTAnalysisView extends AnalysisView {
     // create the main components of the panel
     final AWTChart _theChart = new AWTChart(theSession.getData());
     final AWTToolbar _theToolbar1 = new AWTToolbar(AWTToolbar.VERTICAL);
-    final AWTPropertiesPanel _theProperties1 = new AWTPropertiesPanel(_theChart,
-                                                               theSession.getUndoBuffer(),
+    final AWTPropertiesPanel _theProperties1 = new AWTPropertiesPanel(theSession.getUndoBuffer(),
                                                                super.getParent());
     final Debrief.GUI.Tote.AWT.AWTTote _theTote = new
        Debrief.GUI.Tote.AWT.AWTTote(_theProperties1, theSession.getData(), getParent());

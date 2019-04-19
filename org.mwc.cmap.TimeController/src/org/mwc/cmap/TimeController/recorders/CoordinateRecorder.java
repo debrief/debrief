@@ -1,6 +1,8 @@
 package org.mwc.cmap.TimeController.recorders;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -9,15 +11,16 @@ import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.TimeController.wizards.ExportPPTDialog;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Views.CoreCoordinateRecorder;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.temporal.TimeControlPreferences;
 
 public class CoordinateRecorder extends CoreCoordinateRecorder
 
@@ -174,12 +177,18 @@ public class CoordinateRecorder extends CoreCoordinateRecorder
       // ok, now try to read it in
       final Layers _theLayers = new Layers();
 
-      MWC.Utilities.ReaderWriter.ImportManager.addImporter(
-          new Debrief.ReaderWriter.Replay.ImportReplay());
-      // add the REP importer
-      MWC.Utilities.ReaderWriter.ImportManager.importThis(testFilePath,
-          _theLayers);
+      ImportReplay importer = new ImportReplay();
+      try
+      {
+        importer.importThis(testFilePath, new FileInputStream(testFilePath), _theLayers);
+      }
+      catch (FileNotFoundException e)
+      {
+        e.printStackTrace();
+      }
 
+      assertTrue("found data", _theLayers.size() > 0);
+      
       /*
        * final PlainProjection projection = new org.mwc.cmap.gt2plot.proj.GtProjection();
        */

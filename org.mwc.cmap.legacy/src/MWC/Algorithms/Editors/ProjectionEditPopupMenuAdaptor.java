@@ -115,7 +115,7 @@ public class ProjectionEditPopupMenuAdaptor extends RightClickEdit.BaseMenuCreat
       menu.add(mi);
 
       // finally add the other editors
-      super.createAdditionalItems(menu, theCanvas, thePanel, (Editable)et.getData(), theData);
+      super.createAdditionalItems(menu, thePanel, (Editable)et.getData(), theData);
     }
 	}
 }

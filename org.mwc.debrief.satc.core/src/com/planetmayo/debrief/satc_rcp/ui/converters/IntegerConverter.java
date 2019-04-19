@@ -22,7 +22,7 @@ public class IntegerConverter implements IConverter
 	@Override
 	public Object convert(Object obj)
 	{
-		return ((Number) obj).intValue();
+		return obj == null ? null : ((Number) obj).intValue();
 	}
 
 	@Override

@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.core.wizards.NewNarrativeEntryWizard;
 
@@ -39,6 +38,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 
 /**

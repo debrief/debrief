@@ -511,10 +511,8 @@ public class SwingAnalysisView extends AnalysisView
     _toolbarHolder = new MyToolbarHolder();
 
     // the properties panel
-    _theProperties = new SwingPropertiesPanel(_theChart,
-                                              theSession.getUndoBuffer(),
-                                              super.getParent(),
-                                              (SwingSession) theSession);
+    _theProperties = new SwingPropertiesPanel(theSession.getData(), theSession
+        .getUndoBuffer(), super.getParent(), (SwingSession) theSession);
 
     // the tote itself (part of the properties panel)
     final Debrief.GUI.Tote.Swing.SwingTote _theTote = new

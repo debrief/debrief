@@ -3,13 +3,12 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>info.limpet</groupId>
+    <groupId>org.mwc.debrief</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0.6-SNAPSHOT</version>
-    <relativePath>../</relativePath>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <groupId>info.limpet</groupId>
+  <groupId>org.mwc.debrief</groupId>
   <artifactId>info.limpet.libs</artifactId>
   <packaging>eclipse-plugin</packaging>
-  <version>1.0.6-SNAPSHOT</version>
+  <version>1.0.7</version>
 </project>

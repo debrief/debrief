@@ -59,20 +59,19 @@ public class CreateNoiseSource extends PlainCreate
 
 	public CreateNoiseSource(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,
-										MWC.GUI.Layer theLayer,
 										final MWC.GUI.Layers theData,
-										final MWC.GUI.PlainChart theChart,
+										final BoundsProvider theChart,
                     final EnvironmentType theEnv,
                     final int medium)
 	{
-		super(theParent, thePanel, null, theData, theChart, "Scenario Noise Source", "images/noise_source.gif");
+		super(theParent, thePanel, theData, theChart, "Scenario Noise Source", "images/noise_source.gif");
     _theEnv = theEnv;
     _medium = medium;
 	}
 
-	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
+	protected MWC.GUI.Plottable createItem()
 	{
-    final WorldLocation origin = new WorldLocation(0,0,0);
+    final WorldLocation origin = getBounds().getViewport().getCentreAtSurface();
     return new NoiseSourcePainter(origin, 180, _theEnv, EnvironmentType.BROADBAND_PASSIVE);
 	}
 }

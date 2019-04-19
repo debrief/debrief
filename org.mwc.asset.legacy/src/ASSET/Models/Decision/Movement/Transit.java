@@ -680,13 +680,11 @@ public class Transit extends CoreDecision implements java.io.Serializable
       try
       {
         final java.beans.PropertyDescriptor[] res = {
-          prop("Destinations", "the list of destinations we follow"),
           prop("Loop", "whether we loop back to the first point"),
           prop("Reverse", "when we loop, whether we follow the points in reverse order"),
           prop("Speed", "the speed we transit at (kts)"),
           prop("Name", "the name of this transit model"),
         };
-        res[0].setPropertyEditorClass(MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor.class);
 
         return res;
       }

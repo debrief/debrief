@@ -140,7 +140,7 @@ public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCre
           menu.add(pmi);
 
           // finally add the other editors
-          super.createAdditionalItems(menu, theCanvas, thePanel, (Editable) ped.getData(), theData);
+          super.createAdditionalItems(menu, thePanel, (Editable) ped.getData(), theData);
 
         }
       }

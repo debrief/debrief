@@ -110,6 +110,8 @@ import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 
@@ -216,38 +218,6 @@ public class ImportManager
 
   }
 
-
-  /**
-   * import the specified file into the data structure passed
-   *
-   * @param fName   the name of the file, we are to
-   *                determine the type from the suffix
-   * @param theData the Destination for the data read in
-   */
-  public static void importThis(final String fName,
-                                final Layers theData)
-  {
-
-
-    System.out.println("importing: " + fName);
-    final importThisThread it = new importThisThread(fName, theData);
-
-    it.start();
-
-    // wait for the thread to finish
-    while (it.isAlive())
-    {
-      try
-      {
-        Thread.sleep(200);
-      }
-      catch (final java.lang.InterruptedException e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-      }
-    }
-  }
-
   /**
    * import the specified file into the data structure passed
    *
@@ -274,22 +244,9 @@ public class ImportManager
       if ((fl != null) &&
         (!fl.getName().equals("nullnull")))
       {
-        final importThisThread it = new importThisThread(fl.getPath(), theData);
+        final Importer it = new Importer(fl.getPath(), theData);
 
-        it.start();
-
-        // wait for the thread to finish
-        while (it.isAlive())
-        {
-          try
-          {
-            Thread.sleep(200);
-          }
-          catch (final java.lang.InterruptedException e)
-          {
-            MWC.Utilities.Errors.Trace.trace(e);
-          }
-        }
+        it.run();
 
         // ok, this one is done, now for the next!
         if (theCaller != null)
@@ -306,12 +263,12 @@ public class ImportManager
   }
 
 
-  protected static class importThisThread extends Thread
+  private static class Importer
   {
     protected String fName;
     protected Layers theData;
 
-    importThisThread(final String _fName,
+    Importer(final String _fName,
                      final Layers _theData)
     {
       fName = _fName;
@@ -337,6 +294,7 @@ public class ImportManager
         if (thisImporter.canImportThisFile(fName))
         {
           // handle the import
+          
           importThisOne(thisImporter, fName, theData);
 
           // finished, drop out of loop
@@ -365,14 +323,32 @@ public class ImportManager
         // first check if the file exists
         if(!theFile.exists())
         {
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file cannot be found. It may have been deleted.");
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file cannot be found. It may have been deleted.");    
+            }
+          });
+          
           return;
         }
 
         // is it there?
         if (theFile.length() == 0)
         {
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file does not contain any data (zero size)");
+          SwingUtilities.invokeLater(new Runnable()
+          {
+            
+            @Override
+            public void run()
+            {
+              MWC.GUI.Dialogs.DialogFactory.showMessage("Read file", "This file does not contain any data (zero size)");    
+            }
+          });
+          
           return;
         }
 
@@ -430,7 +406,7 @@ public class ImportManager
    * default implementation import caller object - it's an abstract class just begging
    * to be completed by a child class
    */
-  static abstract public class BaseImportCaller extends Thread implements ImportCaller
+  static abstract public class BaseImportCaller implements ImportCaller
   {
     /**
      * the list of files to open
@@ -455,7 +431,7 @@ public class ImportManager
     /**
      * ok, thread has been constructed, etc. we must now be ready to go for it
      */
-    public void run()
+    public void start()
     {
       MWC.Utilities.ReaderWriter.ImportManager.importThese(_fileNames,
                                                            _theData,

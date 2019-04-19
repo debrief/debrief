@@ -66,12 +66,21 @@ public class LocationRange extends BaseRange<LocationRange>
 	@Override
 	public void constrainTo(LocationRange sTwo) throws IncompatibleStateException
 	{
-		Geometry intersection = _myArea.intersection(sTwo._myArea);
-		if (intersection.isEmpty()) 
-		{
-			throw new IncompatibleStateException("location ranges don't intersect", this, sTwo);
-		}
-		_myArea = intersection;
+    if (_myArea != null)
+    {
+      // check he hasn't got multiple geometries, because we can't do an intersection
+      // of that
+      if (sTwo != null && sTwo._myArea.getNumGeometries() == 1)
+      {
+        Geometry intersection = _myArea.intersection(sTwo._myArea);
+        if (intersection.isEmpty())
+        {
+          throw new IncompatibleStateException(
+              "location ranges don't intersect", this, sTwo);
+        }
+        _myArea = intersection;
+      }
+    }
 	}
 
 	public Geometry getGeometry()

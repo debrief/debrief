@@ -60,7 +60,6 @@ import java.awt.Panel;
 import java.beans.Customizer;
 import java.beans.PropertyChangeListener;
 
-import MWC.GUI.PlainChart;
 import MWC.GUI.Properties.PropertiesPanel;
 
 abstract public class AWTCustomEditor extends Panel implements Customizer
@@ -72,7 +71,6 @@ abstract public class AWTCustomEditor extends Panel implements Customizer
 	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  protected PlainChart _theChart;
   protected PropertiesPanel _thePanel;
   
   /////////////////////////////////////////////////////////////
@@ -83,12 +81,9 @@ abstract public class AWTCustomEditor extends Panel implements Customizer
   // member functions
   ////////////////////////////////////////////////////////////
   public void setObject(final Object data, 
-                        final PlainChart theChart,
                         final PropertiesPanel thePanel)
   {
-    _theChart = theChart;
     _thePanel = thePanel;
-    
     setObject(data);    
   }
   

@@ -51,12 +51,13 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
+import Debrief.ReaderWriter.Replay.ImportReplay.Runner;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.temporal.ControllableTime;
 import MWC.Utilities.Errors.Trace;
 
 /**
@@ -124,8 +125,8 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	 * The constructor.
 	 */
 	public DataFeed()
-	{
-		_importer = new ImportReplay();
+	{  
+		_importer = new ImportReplay(getSWTRunner());
 
 	//	_provider = new DummyDataProvider();
 
@@ -171,6 +172,23 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		CorePlugin.logError(Status.INFO, "Finished loading data providers", null);
 	}
 
+
+	/** copy of implementation in DebriefPlugin
+	 * 
+	 * @return
+	 */
+  public static Runner getSWTRunner()
+  {
+    return new ImportReplay.Runner()
+    {
+      @Override
+      public void run(Runnable runnable)
+      {
+        Display.getDefault().asyncExec(runnable);
+      }
+    };
+  }
+  
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
