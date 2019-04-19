@@ -3,7 +3,7 @@ package org.mwc.debrief.track_shift.zig_detector.ownship.alternate;
 
 public class Tote {
 
-  int index;                      // index of tote in vector. (start with 1; the index of first one is 1)
+  public int index;                      // index of tote in vector. (start with 1; the index of first one is 1)
   
   public String sdate;
   public String stime;

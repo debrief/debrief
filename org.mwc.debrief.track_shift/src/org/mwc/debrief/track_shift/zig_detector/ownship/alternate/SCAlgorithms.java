@@ -31,7 +31,7 @@ public class SCAlgorithms {
      * in allowed limits if standard deviation is less then this predefined argument
      * @return boolean - true if we can consider that the deviations are within the allowed limits
      */
-    static boolean areDeviationsInAllowedLimits(double[] values, int istart, int iend, double steady_stdev) {
+    static private boolean areDeviationsInAllowedLimits(double[] values, int istart, int iend, double steady_stdev) {
 
         final double dstdev = SCStatistics.stdev(values, istart, iend);
         if (dstdev < steady_stdev) // Preventing devzero errors
@@ -62,7 +62,7 @@ public class SCAlgorithms {
      * in allowed limits if standard deviation is less then this predefined argument
      * @return boolean - true if we can consider that the deviations are within the allowed limits
      */
-    static boolean areDeviationsInAllowedLimits(int numelements, double dmax, double dmin, double dmean, double dstdev, double steady_stdev) {
+    static private boolean areDeviationsInAllowedLimits(int numelements, double dmax, double dmin, double dmean, double dstdev, double steady_stdev) {
 
         if (dstdev < steady_stdev) // Preventing devzero errors
             return true;
@@ -85,7 +85,7 @@ public class SCAlgorithms {
      * in allowed limits if standard deviation is less then this predefined argument
      * @return boolean - true if maximal range is in the allowed limits
      */
-    static boolean isMaxRangeInAllowedLimits(double[] values, int istart, int iend, double steady_stdev) {
+    static private boolean isMaxRangeInAllowedLimits(double[] values, int istart, int iend, double steady_stdev) {
 
         final double dstdev = SCStatistics.stdev(values, istart, iend);
         if (dstdev < steady_stdev) // Preventing devzero errors
@@ -112,7 +112,7 @@ public class SCAlgorithms {
      * @param  steady_range the regression line will be considered horizontal if it cannot grow more than this predefined argument
      * @return boolean - true if we can consider regression line horizontal
      */
-    static boolean isRegressionLineHorizontal(double[] times, double[] values, int istart, int iend, double steady_range) {
+    static private boolean isRegressionLineHorizontal(double[] times, double[] values, int istart, int iend, double steady_range) {
         SCStatistics.RegrResults res = SCStatistics.lregression(times, values, istart, iend);
         final int numelements = iend - istart;
         final double regression_grow = Math.abs(res.a * (times[iend-1] - times[istart]));
@@ -408,12 +408,11 @@ public class SCAlgorithms {
 
                 // If an interval has just been found and if it is the best one, so far - remember it 
                 // (the optimization - the best interval (i.e. stdev = min) is being searched)
-                if(bcond) {
-                    if (stdev_for < stdevmin) {
-                        stdevmin = stdev_for;
-                        nsp.first = ii;
-                        nsp.second = jj;
-                    }                    
+                if(bcond && stdev_for < stdevmin) 
+                {
+                  stdevmin = stdev_for;
+                  nsp.first = ii;
+                  nsp.second = jj;
                 }
 
                 // update sum_for, sumqv_for, mean_for, stdev_for, min_for, max_for for the next for-loop

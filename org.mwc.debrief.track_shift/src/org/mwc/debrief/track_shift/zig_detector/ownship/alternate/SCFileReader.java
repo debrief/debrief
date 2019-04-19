@@ -72,7 +72,7 @@ public class SCFileReader {
         return arrayl_totes;
     }
     
-    static int global_index = 0;
+    static protected int global_index = 0;
 
     //-------------------------------------------------------------------------
     /**

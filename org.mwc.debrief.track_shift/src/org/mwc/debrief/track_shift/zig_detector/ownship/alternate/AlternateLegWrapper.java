@@ -91,7 +91,7 @@ public class AlternateLegWrapper implements IOwnshipLegDetector
   }
 
   // -------------------------------------------------------------------------
-  static void printIntervals(List<SCAlgorithms.SpanPair> intervals,
+  static private void printIntervals(List<SCAlgorithms.SpanPair> intervals,
       List<Tote> totes)
   /* throws IOException */ {
     Iterator<SCAlgorithms.SpanPair> iter = intervals.iterator();
