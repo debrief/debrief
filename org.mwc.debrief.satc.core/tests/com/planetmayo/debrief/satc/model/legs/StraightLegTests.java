@@ -14,7 +14,12 @@
  */
 package com.planetmayo.debrief.satc.model.legs;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,10 +29,10 @@ import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import com.planetmayo.debrief.satc.model.GeoPoint;
 import com.planetmayo.debrief.satc.model.ModelTestBase;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.states.BoundedState;
 import com.planetmayo.debrief.satc.model.states.LocationRange;
 import com.planetmayo.debrief.satc.model.states.SpeedRange;

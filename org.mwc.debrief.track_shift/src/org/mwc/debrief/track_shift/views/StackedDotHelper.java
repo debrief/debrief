@@ -1843,14 +1843,14 @@ public final class StackedDotHelper
   {
     // make a decision on which ownship slicer to use
     final IOwnshipLegDetector detector;
-    final boolean useAlternate = false;
-    if(useAlternate)
-    {
-      detector = new AlternateLegWrapper();
-    }
-    else if (containsIdenticalValues(osCourse, null))
+    final boolean useAlternate = true;
+    if (containsIdenticalValues(osCourse, null))
     {
       detector = new ArtificalLegDetector();
+    }
+    else if(useAlternate)
+    {
+      detector = new AlternateLegWrapper();
     }
     else
     {

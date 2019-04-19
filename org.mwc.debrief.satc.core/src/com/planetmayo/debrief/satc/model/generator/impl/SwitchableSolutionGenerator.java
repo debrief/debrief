@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.planetmayo.debrief.satc.model.Precision;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
+
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;

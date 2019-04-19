@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Status;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.ModelObject;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IBoundsManager;
