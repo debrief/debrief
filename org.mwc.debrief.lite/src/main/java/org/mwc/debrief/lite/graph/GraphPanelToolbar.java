@@ -43,7 +43,6 @@ import javax.swing.JPanel;
 import javax.swing.JToggleButton;
 
 import org.jfree.chart.annotations.XYTextAnnotation;
-import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -511,8 +510,8 @@ public class GraphPanelToolbar extends JPanel
     add(propertiesButton);
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {fixToWindowsButton, showSymbolsButton, hideCrosshair,
-        wmfButton, placeBitmapButton, copyGraph, propertiesButton}));
+    {fixToWindowsButton, showSymbolsButton, hideCrosshair, wmfButton,
+        placeBitmapButton, copyGraph, propertiesButton}));
   }
 
   private void notifyListenersStateChanged(final Object source,
