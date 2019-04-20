@@ -305,26 +305,26 @@ public class GraphPanelToolbar extends JPanel
       }
     });
 
-    final JToggleButton switchAxesButton = createJToggleButton("Switch axes",
-        "icons/16/swap_axis.png");
-    switchAxesButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        if (switchAxesButton.isSelected())
-        {
-          _xytool.getGeneratedChartPanel().getChart().getXYPlot()
-              .setOrientation(PlotOrientation.HORIZONTAL);
-        }
-        else
-        {
-          _xytool.getGeneratedChartPanel().getChart().getXYPlot()
-              .setOrientation(PlotOrientation.VERTICAL);
-        }
-      }
-    });
+    // final JToggleButton switchAxesButton = createJToggleButton("Switch axes",
+    // "icons/16/swap_axis.png");
+    // switchAxesButton.addActionListener(new ActionListener()
+    // {
+    //
+    // @Override
+    // public void actionPerformed(final ActionEvent e)
+    // {
+    // if (switchAxesButton.isSelected())
+    // {
+    // _xytool.getGeneratedChartPanel().getChart().getXYPlot()
+    // .setOrientation(PlotOrientation.HORIZONTAL);
+    // }
+    // else
+    // {
+    // _xytool.getGeneratedChartPanel().getChart().getXYPlot()
+    // .setOrientation(PlotOrientation.VERTICAL);
+    // }
+    // }
+    // });
 
     final String symbolOn = "icons/16/symbol_on.png";
     final String symbolOff = "icons/16/symbol_off.png";
@@ -503,7 +503,6 @@ public class GraphPanelToolbar extends JPanel
     add(selectTracksLabel);
 
     add(fixToWindowsButton);
-    add(switchAxesButton);
     add(showSymbolsButton);
     add(hideCrosshair);
     add(wmfButton);
@@ -512,7 +511,7 @@ public class GraphPanelToolbar extends JPanel
     add(propertiesButton);
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {fixToWindowsButton, switchAxesButton, showSymbolsButton, hideCrosshair,
+    {fixToWindowsButton, showSymbolsButton, hideCrosshair,
         wmfButton, placeBitmapButton, copyGraph, propertiesButton}));
   }
 
