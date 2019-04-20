@@ -281,9 +281,9 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 		else
 		{
 			// draw the line
-			g2.drawLine((int) dataArea.getY() + 1,(int) linePosition - 1, 
-					 (int) dataArea.getY()
-							+ (int) dataArea.getHeight() - 1, (int) linePosition - 1);
+			g2.drawLine((int) dataArea.getX() + 1,(int) linePosition - 1, 
+					 (int) dataArea.getX()
+							+ (int) dataArea.getWidth() - 1, (int) linePosition - 1);
 			
 		}
 
