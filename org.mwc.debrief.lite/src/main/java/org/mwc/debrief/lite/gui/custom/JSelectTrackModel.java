@@ -110,8 +110,11 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   {
     final CalculationHolder oldCalculation = _calculation;
     this._calculation = calculation;
-    notifyListenersStateChanged(this, OPERATION_CHANGED, oldCalculation,
-        calculation);
+    if ( calculation != null && !calculation.equals(oldCalculation) )
+    {
+      notifyListenersStateChanged(this, OPERATION_CHANGED, oldCalculation,
+          calculation);
+    }
   }
 
   @Override
