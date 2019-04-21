@@ -24,10 +24,8 @@ import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
-import MWC.GUI.PlainChart;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
@@ -72,15 +70,12 @@ public class LiteStepControl extends StepControl
   private Layers _layers;
   private UndoBuffer _undoBuffer;
 
-  private final PlainChart _xyChart;
-
   public LiteStepControl(final ToolParent _parent, final Session _theSession)
   {
     super(_parent);
     this.parent = _parent;
     setDateFormat(timeFormat);
     _largeSteps = false;
-    _xyChart = new SwingChart(_theSession.getData());
   }
 
   @Override
@@ -154,11 +149,6 @@ public class LiteStepControl extends StepControl
   public HiResDate getToolboxStartTime()
   {
     return _slider.getToolboxStartTime();
-  }
-
-  public PlainChart getXYChart()
-  {
-    return _xyChart;
   }
 
   @Override
