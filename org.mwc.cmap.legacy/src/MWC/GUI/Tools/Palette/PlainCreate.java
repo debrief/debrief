@@ -91,309 +91,314 @@ import MWC.GUI.Tools.PlainTool;
 abstract public class PlainCreate extends PlainTool
 {
 
-	/**
-	 * the panel used to edit this item
-	 */
-	private final PropertiesPanel _thePanel;
+  /**
+   * the panel used to edit this item
+   */
+  private final PropertiesPanel _thePanel;
 
-	/**
-	 * the Layers object, which we need in order to fire data extended event
-	 */
-	private final Layers _theData;
+  /**
+   * the Layers object, which we need in order to fire data extended event
+   */
+  private final Layers _theData;
 
   private final BoundsProvider _boundsProvider;
 
-	// ///////////////////////////////////////////////////////////
-	// constructor
-	// //////////////////////////////////////////////////////////
-	/**
-	 * constructor for label
-	 * 
-	 * @param theParent
-	 *          parent where we can change cursor
-	 * @param thePanel
-	 *          panel
-	 * @param theData
-	 *          the layer we are adding the item to
-	 */
-	public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel, final Layers theData,
-			final BoundsProvider boundsProvider, final String theName, final String theImage)
-	{
-		super(theParent, theName, theImage);
+  // ///////////////////////////////////////////////////////////
+  // constructor
+  // //////////////////////////////////////////////////////////
+  /**
+   * constructor for label
+   * 
+   * @param theParent
+   *          parent where we can change cursor
+   * @param thePanel
+   *          panel
+   * @param theData
+   *          the layer we are adding the item to
+   */
+  public PlainCreate(final ToolParent theParent, final PropertiesPanel thePanel,
+      final Layers theData, final BoundsProvider boundsProvider,
+      final String theName, final String theImage)
+  {
+    super(theParent, theName, theImage);
 
-		_thePanel = thePanel;
-		_theData = theData;
-		_boundsProvider = boundsProvider;
-	}
+    _thePanel = thePanel;
+    _theData = theData;
+    _boundsProvider = boundsProvider;
+  }
 
-	// ///////////////////////////////////////////////////////////
-	// member functions
-	// //////////////////////////////////////////////////////////
-	
-	/** Get the chart features layer,creating if necessary
-	 * 
-	 * @return Chart Features layer
-	 */
-	 private Layer getDestinationLayer()
-	  {
-	    Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
-	    if(layer == null) {
-	     layer = new BaseLayer();
-	     layer.setName(Layers.CHART_FEATURES);
-	     _theData.addThisLayer(layer);
-	    }
-	    return layer;
-	  }
-	
-	/**
-	 * accessor to retrieve the layered data
-	 */
-	public Layers getLayers()
-	{
-		return _theData;
-	}
-	
-	protected BoundsProvider getBounds() 
-	{
-	  return _boundsProvider;
-	}
+  // ///////////////////////////////////////////////////////////
+  // member functions
+  // //////////////////////////////////////////////////////////
 
-	protected abstract Plottable createItem();
+  /**
+   * Get the chart features layer,creating if necessary
+   * 
+   * @return Chart Features layer
+   */
+  private Layer getDestinationLayer()
+  {
+    Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
+    if (layer == null)
+    {
+      layer = new BaseLayer();
+      layer.setName(Layers.CHART_FEATURES);
+      _theData.addThisLayer(layer);
+    }
+    return layer;
+  }
 
-	public Action getData()
-	{
-		final Action res;
+  /**
+   * accessor to retrieve the layered data
+   */
+  public Layers getLayers()
+  {
+    return _theData;
+  }
 
-		// ask the child class to create itself
-		final Plottable pl = createItem();
+  protected BoundsProvider getBounds()
+  {
+    return _boundsProvider;
+  }
 
-		// did it work?
-		if (pl != null)
-		{
+  protected abstract Plottable createItem();
+
+  public Action getData()
+  {
+    final Action res;
+
+    // ask the child class to create itself
+    final Plottable pl = createItem();
+
+    // did it work?
+    if (pl != null)
+    {
       final Layer theLayer = getDestinationLayer();
       // wrap it up in an action
       res = new CreateLabelAction(_thePanel, theLayer, _theData, pl);
-		}
-		else
-		{
-		  res = null;
-		}
+    }
+    else
+    {
+      res = null;
+    }
 
-		return res;
-	}
+    return res;
+  }
 
   // /////////////////////////////////////////////////////
-	// store action information
-	// /////////////////////////////////////////////////////
-	public static class CreateLabelAction implements Action
-	{
-		/**
-		 * the panel we are going to show the initial editor in
-		 */
-		final protected PropertiesPanel _thePanel;
+  // store action information
+  // /////////////////////////////////////////////////////
+  public static class CreateLabelAction implements Action
+  {
+    /**
+     * the panel we are going to show the initial editor in
+     */
+    final protected PropertiesPanel _thePanel;
 
-		final protected Layer _theLayer;
+    final protected Layer _theLayer;
 
-		protected Plottable _theShape;
+    protected Plottable _theShape;
 
-		final protected Layers _myData;
+    final protected Layers _myData;
 
-		public CreateLabelAction(final PropertiesPanel thePanel, final Layer theLayer, final Layers theData,
-				final Plottable theShape)
-		{
-			_thePanel = thePanel;
-			_theLayer = theLayer;
-			_theShape = theShape;
-			_myData = theData;
-		}
+    public CreateLabelAction(final PropertiesPanel thePanel,
+        final Layer theLayer, final Layers theData, final Plottable theShape)
+    {
+      _thePanel = thePanel;
+      _theLayer = theLayer;
+      _theShape = theShape;
+      _myData = theData;
+    }
 
-		public Layers getLayers()
-		{
-			return _myData;
-		}
-		
-		public Layer getLayer()
-		{
-			return _theLayer;
-		}
-		
-		public Plottable getNewFeature()
-		{
-			return _theShape;
-		}
-		
-		/**
-		 * specify is this is an operation which can be undone
-		 */
-		public boolean isUndoable()
-		{
-			return true;
-		}
+    public Layers getLayers()
+    {
+      return _myData;
+    }
 
-		/**
-		 * specify is this is an operation which can be redone
-		 */
-		public boolean isRedoable()
-		{
-			return true;
-		}
+    public Layer getLayer()
+    {
+      return _theLayer;
+    }
 
-		/**
-		 * return string describing this operation
-		 * 
-		 * @return String describing this operation
-		 */
-		public String toString()
-		{
-			return "New grid:" + _theShape.getName();
-		}
+    public Plottable getNewFeature()
+    {
+      return _theShape;
+    }
 
-		/**
-		 * take the shape away from the layer
-		 */
-		public void undo()
-		{
-			if (_theLayer != null)
-			{
-				_theLayer.removeElement(_theShape);
-			}
-			else
-			{
-				if (_theShape instanceof Layer)
-				{
-					_myData.removeThisLayer((Layer) _theShape);
-				}
-				else
-					MWC.Utilities.Errors.Trace.trace("Missing layer data in undo operation");
-			}
+    /**
+     * specify is this is an operation which can be undone
+     */
+    public boolean isUndoable()
+    {
+      return true;
+    }
 
-			_myData.fireExtended();
-		}
+    /**
+     * specify is this is an operation which can be redone
+     */
+    public boolean isRedoable()
+    {
+      return true;
+    }
 
-		/**
-		 * make it so!
-		 */
-		public void execute()
-		{
-			// check that the creation worked
-			if (_theShape != null)
-			{
-				if (_theLayer != null)
-				{
+    /**
+     * return string describing this operation
+     * 
+     * @return String describing this operation
+     */
+    public String toString()
+    {
+      return "New grid:" + _theShape.getName();
+    }
 
-					// add the Shape to the layer, and put it
-					// in the property editor
-					_theLayer.add(_theShape);
-					if (_thePanel != null)
-						_thePanel.addEditor(_theShape.getInfo(), _theLayer);
-					_myData.fireExtended(_theShape, _theLayer);
-				}
-				else
-				{
-					// no layer provided, stick into the top level
-					if (_theShape instanceof Layer)
-					{
-						// ahh, just check we don't have one already
-						final Layer newLayer = (Layer) _theShape;
-						final Layer sameLayer = _myData.findLayer(newLayer.getName());
-						if (sameLayer == null)
-						{
-							// no, we don't already store it.  add it.
-							_myData.addThisLayer((Layer) _theShape);
-							if (_thePanel != null)
-								_thePanel.addEditor(_theShape.getInfo(), newLayer);
-							// no need to fire-extended, "add this layer" will have done it for us
-//							_myData.fireExtended(_theShape, newLayer);
-						}
-						else
-						{
-							// ok - just display the same layer
-							if (_thePanel != null)
-								_thePanel.addEditor(_theShape.getInfo(), sameLayer);
-							
-							// and store the existing layer as the new item
-							_theShape = sameLayer;
-						}
-					}
-					else
-						MWC.Utilities.Errors.Trace.trace("Failed to add new layer");
-				}
-			}
-		}
-	}
+    /**
+     * take the shape away from the layer
+     */
+    public void undo()
+    {
+      if (_theLayer != null)
+      {
+        _theLayer.removeElement(_theShape);
+      }
+      else
+      {
+        if (_theShape instanceof Layer)
+        {
+          _myData.removeThisLayer((Layer) _theShape);
+        }
+        else
+          MWC.Utilities.Errors.Trace.trace(
+              "Missing layer data in undo operation");
+      }
 
-	// /////////////////////////////////////////////////////
-	// store action information
-	// /////////////////////////////////////////////////////
-	public static class CreateLayerAction implements Action
-	{
-		/**
-		 * the panel we are going to show the initial editor in
-		 */
-		final protected PropertiesPanel _thePanel;
+      _myData.fireExtended();
+    }
 
-		final protected Layer _theLayer;
+    /**
+     * make it so!
+     */
+    public void execute()
+    {
+      // check that the creation worked
+      if (_theShape != null)
+      {
+        if (_theLayer != null)
+        {
 
-		final protected Layers _myData;
+          // add the Shape to the layer, and put it
+          // in the property editor
+          _theLayer.add(_theShape);
+          if (_thePanel != null)
+            _thePanel.addEditor(_theShape.getInfo(), _theLayer);
+          _myData.fireExtended(_theShape, _theLayer);
+        }
+        else
+        {
+          // no layer provided, stick into the top level
+          if (_theShape instanceof Layer)
+          {
+            // ahh, just check we don't have one already
+            final Layer newLayer = (Layer) _theShape;
+            final Layer sameLayer = _myData.findLayer(newLayer.getName());
+            if (sameLayer == null)
+            {
+              // no, we don't already store it. add it.
+              _myData.addThisLayer((Layer) _theShape);
+              if (_thePanel != null)
+                _thePanel.addEditor(_theShape.getInfo(), newLayer);
+              // no need to fire-extended, "add this layer" will have done it for us
+              // _myData.fireExtended(_theShape, newLayer);
+            }
+            else
+            {
+              // ok - just display the same layer
+              if (_thePanel != null)
+                _thePanel.addEditor(_theShape.getInfo(), sameLayer);
 
-		public CreateLayerAction(final PropertiesPanel thePanel, final Layer theLayer, final Layers theData)
-		{
-			_thePanel = thePanel;
-			_theLayer = theLayer;
-			_myData = theData;
-		}
+              // and store the existing layer as the new item
+              _theShape = sameLayer;
+            }
+          }
+          else
+            MWC.Utilities.Errors.Trace.trace("Failed to add new layer");
+        }
+      }
+    }
+  }
 
-		/**
-		 * specify is this is an operation which can be undone
-		 */
-		public boolean isUndoable()
-		{
-			return true;
-		}
+  // /////////////////////////////////////////////////////
+  // store action information
+  // /////////////////////////////////////////////////////
+  public static class CreateLayerAction implements Action
+  {
+    /**
+     * the panel we are going to show the initial editor in
+     */
+    final protected PropertiesPanel _thePanel;
 
-		/**
-		 * specify is this is an operation which can be redone
-		 */
-		public boolean isRedoable()
-		{
-			return true;
-		}
+    final protected Layer _theLayer;
 
-		/**
-		 * return string describing this operation
-		 * 
-		 * @return String describing this operation
-		 */
-		public String toString()
-		{
-			return "New layer:" + _theLayer.getName();
-		}
+    final protected Layers _myData;
 
-		/**
-		 * take the shape away from the layer
-		 */
-		public void undo()
-		{
-			if (_theLayer != null)
-			{
-				_myData.removeThisLayer(_theLayer);
-			}
+    public CreateLayerAction(final PropertiesPanel thePanel,
+        final Layer theLayer, final Layers theData)
+    {
+      _thePanel = thePanel;
+      _theLayer = theLayer;
+      _myData = theData;
+    }
 
-			_myData.fireExtended();
-		}
+    /**
+     * specify is this is an operation which can be undone
+     */
+    public boolean isUndoable()
+    {
+      return true;
+    }
 
-		/**
-		 * make it so!
-		 */
-		public void execute()
-		{
-			// add our new layer, and put it
-			// in the property editor
-			_myData.addThisLayer(_theLayer);
+    /**
+     * specify is this is an operation which can be redone
+     */
+    public boolean isRedoable()
+    {
+      return true;
+    }
 
-			if (_thePanel != null)
-				_thePanel.addEditor(_theLayer.getInfo(), _theLayer);
-			_myData.fireExtended();
-		}
-	}
+    /**
+     * return string describing this operation
+     * 
+     * @return String describing this operation
+     */
+    public String toString()
+    {
+      return "New layer:" + _theLayer.getName();
+    }
+
+    /**
+     * take the shape away from the layer
+     */
+    public void undo()
+    {
+      if (_theLayer != null)
+      {
+        _myData.removeThisLayer(_theLayer);
+      }
+
+      _myData.fireExtended();
+    }
+
+    /**
+     * make it so!
+     */
+    public void execute()
+    {
+      // add our new layer, and put it
+      // in the property editor
+      _myData.addThisLayer(_theLayer);
+
+      if (_thePanel != null)
+        _thePanel.addEditor(_theLayer.getInfo(), _theLayer);
+      _myData.fireExtended();
+    }
+  }
 }
