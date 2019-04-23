@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.JFreeChart;
 
@@ -45,7 +45,7 @@ import MWC.GenericData.HiResDate;
 public class StepperXYPlot extends XYPlot implements StepperListener
 {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -61,19 +61,19 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 
   /**
    * whether to grow the axis with time
-   * 
+   *
    */
   protected boolean _growWithTime = false;
 
   /**
    * flag for if we need to reset the axes, after a grow setting
-   * 
+   *
    */
   private boolean _resetAxes = false;
 
   /**
    * whether to actually show the line
-   * 
+   *
    */
   private boolean _showLine = true;
 
@@ -85,7 +85,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 
   /**
    * Constructs an XYPlot with the specified axes (other attributes take default values).
-   * 
+   *
    * @param data
    *          The dataset.
    * @param domainAxis
@@ -112,23 +112,6 @@ public class StepperXYPlot extends XYPlot implements StepperListener
   // over-ride painting support
   // ////////////////////////////////////////////////
 
-  public boolean isGrowWithTime()
-  {
-    return _growWithTime;
-  }
-
-  public void setGrowWithTime(final boolean growWithTime)
-  {
-    // do we need to reset the bounds?
-    if (!growWithTime && isGrowWithTime())
-    {
-      _resetAxes = true;
-    }
-
-    this._growWithTime = growWithTime;
-
-  }
-
   /**
    * Draws the XY plot on a Java 2D graphics device (such as the screen or a printer), together with
    * a current time marker
@@ -138,7 +121,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener
    * <P>
    * The optional info argument collects information about the rendering of the plot (dimensions,
    * tooltip information etc). Just pass in null if you do not need this information.
-   * 
+   *
    * @param g2
    *          The graphics device.
    * @param plotArea
@@ -146,6 +129,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener
    * @param info
    *          Collects chart drawing information (null permitted).
    */
+  @Override
   public final void draw(final Graphics2D g2, final Rectangle2D plotArea,
       final Point2D anchor, final PlotState state, final PlotRenderingInfo info)
   {
@@ -248,9 +232,29 @@ public class StepperXYPlot extends XYPlot implements StepperListener
     }
   }
 
+  public Duration getFixedDuration()
+  {
+    return _fixedDuration;
+  }
+
+  public boolean isGrowWithTime()
+  {
+    return _growWithTime;
+  }
+
+  /**
+   * the current time has changed
+   */
+  @Override
+  public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
+      final CanvasType canvas)
+  {
+    _currentTime = newDTG;
+  }
+
   /**
    * draw the new stepper line into the plot
-   * 
+   *
    * @param g2
    * @param linePosition
    * @param dataArea
@@ -286,38 +290,6 @@ public class StepperXYPlot extends XYPlot implements StepperListener
     g2.setPaintMode();
   }
 
-  /**
-   * the current time has changed
-   */
-  public final void newTime(final HiResDate oldDTG, final HiResDate newDTG,
-      final CanvasType canvas)
-  {
-    _currentTime = newDTG;
-  }
-
-  @Override
-  public void zoom(final double percent)
-  {
-    this.getDomainAxis().setAutoRange(true);
-    this.getRangeAxis().setAutoRange(true);
-  }
-
-  /**
-   * the mode for stepping has changed
-   */
-  public final void steppingModeChanged(final boolean on)
-  {
-  }
-
-  /**
-   * @param line
-   *          whether to actually show the line
-   */
-  public void setShowLine(final boolean line)
-  {
-    _showLine = line;
-  }
-
   @Override
   public void reset()
   {
@@ -333,9 +305,40 @@ public class StepperXYPlot extends XYPlot implements StepperListener
       _resetAxes = true;
   }
 
-  public Duration getFixedDuration()
+  public void setGrowWithTime(final boolean growWithTime)
   {
-    return _fixedDuration;
+    // do we need to reset the bounds?
+    if (!growWithTime && isGrowWithTime())
+    {
+      _resetAxes = true;
+    }
+
+    this._growWithTime = growWithTime;
+
+  }
+
+  /**
+   * @param line
+   *          whether to actually show the line
+   */
+  public void setShowLine(final boolean line)
+  {
+    _showLine = line;
+  }
+
+  /**
+   * the mode for stepping has changed
+   */
+  @Override
+  public final void steppingModeChanged(final boolean on)
+  {
+  }
+
+  @Override
+  public void zoom(final double percent)
+  {
+    this.getDomainAxis().setAutoRange(true);
+    this.getRangeAxis().setAutoRange(true);
   }
 
 }
