@@ -1,3 +1,17 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.gui;
 
 import java.beans.PropertyChangeEvent;
@@ -6,6 +20,7 @@ import java.util.Enumeration;
 import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Tote.StepControl;
 import MWC.GUI.Editable;
 import MWC.GUI.Layers;
@@ -22,54 +37,45 @@ import MWC.TacticalData.temporal.TimeProvider;
 public class LiteStepControl extends StepControl
 {
 
-  private final ToolParent parent;
-
   public static interface SliderControls
   {
     public HiResDate getToolboxEndTime();
 
     public HiResDate getToolboxStartTime();
 
+    public void setEnabled(final boolean enabled);
+
     public void setToolboxEndTime(final HiResDate val);
 
     public void setToolboxStartTime(final HiResDate val);
-
-    public void setEnabled(final boolean enabled);
   }
 
   public static interface TimeLabel
   {
+    void setFontSize(int newSize);
+
     void setRange(long start, long end);
 
     void setValue(long time);
 
     void setValue(String text);
-
-    void setFontSize(int newSize);
   }
 
+  public static final String timeFormat =
+      DateFormatPropertyEditor.DEFAULT_DATETIME_FORMAT;
+
+  private final ToolParent parent;
   private SliderControls _slider;
   private TimeLabel _timeLabel;
-  public static final String timeFormat = DateFormatPropertyEditor.DEFAULT_DATETIME_FORMAT;
   private Layers _layers;
   private UndoBuffer _undoBuffer;
 
-  public LiteStepControl(final ToolParent _parent)
+  public LiteStepControl(final ToolParent _parent, final Session _theSession)
   {
     super(_parent);
     this.parent = _parent;
     setDateFormat(timeFormat);
     _largeSteps = false;
-  }
-
-  public void setLayers(Layers _layers)
-  {
-    this._layers = _layers;
-  }
-
-  public void setUndoBuffer(UndoBuffer _undoBuffer)
-  {
-    this._undoBuffer = _undoBuffer;
   }
 
   @Override
@@ -79,14 +85,14 @@ public class LiteStepControl extends StepControl
     if (painter instanceof Editable)
     {
       ToolbarOwner owner = null;
-      ToolParent parent = getParent();
+      final ToolParent parent = getParent();
       if (parent instanceof ToolbarOwner)
       {
         owner = (ToolbarOwner) parent;
       }
 
-      PropertiesDialog dialog = new PropertiesDialog((Editable) painter,
-          _layers, _undoBuffer, parent, owner);
+      final PropertiesDialog dialog = new PropertiesDialog(((Editable) painter)
+          .getInfo(), _layers, _undoBuffer, parent, owner);
       dialog.setSize(400, 500);
       dialog.setLocationRelativeTo(null);
       dialog.setVisible(true);
@@ -104,18 +110,29 @@ public class LiteStepControl extends StepControl
     _timeLabel.setFontSize(_fontSize);
   }
 
+  public Layers getLayers()
+  {
+    return this._layers;
+  }
+
+  public ToolParent getParent()
+  {
+    return parent;
+  }
+
   @Override
   protected PropertiesPanel getPropertiesPanel()
   {
     ToolbarOwner owner = null;
-    ToolParent parent = getParent();
+    final ToolParent parent = getParent();
     if (parent instanceof ToolbarOwner)
     {
       owner = (ToolbarOwner) parent;
     }
 
-    PropertiesDialog dialog = new PropertiesDialog(this.getDefaultHighlighter(),
-        _layers, _undoBuffer, parent, owner);
+    final PropertiesDialog dialog = new PropertiesDialog(this
+        .getDefaultHighlighter().getInfo(), _layers, _undoBuffer, parent,
+        owner);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);
@@ -135,22 +152,13 @@ public class LiteStepControl extends StepControl
   }
 
   @Override
-  public void reset()
-  {
-    // let the parent do it's stuff
-    super.reset();
-
-    _slider.setEnabled(false);
-    _timeLabel.setValue(timeFormat);
-  }
-
-  @Override
   protected void initForm()
   {
-    /* This is not needed, because the implementation of the form initialization
-     * has been done in the Ribbon.
+    /*
+     * This is not needed, because the implementation of the form initialization has been done in
+     * the Ribbon.
      */
-    
+
   }
 
   @Override
@@ -200,6 +208,21 @@ public class LiteStepControl extends StepControl
     }
   }
 
+  @Override
+  public void reset()
+  {
+    // let the parent do it's stuff
+    super.reset();
+
+    _slider.setEnabled(false);
+    _timeLabel.setValue(timeFormat);
+  }
+
+  public void setLayers(final Layers _layers)
+  {
+    this._layers = _layers;
+  }
+
   public void setSliderControls(final SliderControls slider)
   {
     _slider = slider;
@@ -220,6 +243,11 @@ public class LiteStepControl extends StepControl
   public void setToolboxStartTime(final HiResDate val)
   {
     _slider.setToolboxStartTime(val);
+  }
+
+  public void setUndoBuffer(final UndoBuffer _undoBuffer)
+  {
+    this._undoBuffer = _undoBuffer;
   }
 
   public void startStepping(final boolean go)
@@ -248,11 +276,7 @@ public class LiteStepControl extends StepControl
     final String str = _dateFormatter.format(DTG.getDate().getTime());
     _timeLabel.setValue(str);
     _timeLabel.setValue(DTG.getDate().getTime());
-    DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(), false, true);
-  }
-
-  public ToolParent getParent()
-  {
-    return parent;
+    DebriefRibbonTimeController.assignThisTimeFormat(_dateFormatter.toPattern(),
+        false, true);
   }
 }

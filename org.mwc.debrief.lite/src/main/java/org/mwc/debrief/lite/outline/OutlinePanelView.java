@@ -605,8 +605,8 @@ public class OutlinePanelView extends SwingLayerManager implements
           {
             owner = (ToolbarOwner) parentData;
           }
-          final PropertiesDialog dialog = new PropertiesDialog(editable,
-              _myData, _undoBuffer, tp, owner);
+          final PropertiesDialog dialog = new PropertiesDialog(editable
+              .getInfo(), _myData, _undoBuffer, tp, owner);
           dialog.setSize(400, 500);
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -873,7 +873,7 @@ public class OutlinePanelView extends SwingLayerManager implements
 
       }
     });
-
+    
     final Action cutAction = new AbstractAction()
     {
 
@@ -881,7 +881,7 @@ public class OutlinePanelView extends SwingLayerManager implements
        *
        */
       private static final long serialVersionUID = 1L;
-
+      
       @Override
       public void actionPerformed(final ActionEvent e)
       {

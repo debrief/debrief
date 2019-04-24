@@ -1,16 +1,22 @@
+/*
+ *    Debrief - the Open Source Maritime Analysis Application
+ *    http://debrief.info
+ *
+ *    (C) 2000-2018, Deep Blue C Technology Ltd
+ *
+ *    This library is free software; you can redistribute it and/or
+ *    modify it under the terms of the Eclipse Public License v1.0
+ *    (http://www.eclipse.org/legal/epl-v10.html)
+ *
+ *    This library is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ */
 package org.mwc.debrief.lite.menu;
 
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.ClipboardOwner;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -48,9 +54,7 @@ import MWC.GUI.ToolParent;
 
 public class DebriefRibbonFile
 {
-  
-  private static final String LAST_FILE_OPEN_LOCATION = "last_fileopen_location";
-  
+
   private static class CopyPlotAsPNG extends AbstractAction
   {
     /**
@@ -69,59 +73,7 @@ public class DebriefRibbonFile
     public void actionPerformed(final ActionEvent e)
     {
       final JMapPane map = (JMapPane) mapRenderer.getMap();
-      final BufferedImage img = new BufferedImage(map.getWidth(), map
-          .getHeight(), BufferedImage.TYPE_INT_ARGB);
-      final Graphics g = img.getGraphics();
-      map.paint(g);
-      g.dispose();
-
-      if (img != null)
-      {
-        final Transferable t = new Transferable()
-        {
-
-          @Override
-          public Object getTransferData(final DataFlavor flavor)
-              throws UnsupportedFlavorException, IOException
-          {
-            if (isDataFlavorSupported(flavor))
-            {
-              return img;
-            }
-            return null;
-          }
-
-          @Override
-          public DataFlavor[] getTransferDataFlavors()
-          {
-            return new DataFlavor[]
-            {DataFlavor.imageFlavor};
-          }
-
-          @Override
-          public boolean isDataFlavorSupported(final DataFlavor flavor)
-          {
-            if (flavor == DataFlavor.imageFlavor)
-              return true;
-            return false;
-          }
-
-        };
-
-        final ClipboardOwner co = new ClipboardOwner()
-        {
-
-          @Override
-          public void lostOwnership(final Clipboard clipboard,
-              final Transferable contents)
-          {
-            System.out.println("Copy to PNG: Lost Ownership");
-          }
-
-        };
-        final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-        cb.setContents(t, co);
-      }
+      org.mwc.debrief.lite.util.ClipboardUtils.copyToClipboard(map);
     }
   }
 
@@ -139,7 +91,7 @@ public class DebriefRibbonFile
     {
       final String initialFileLocation = DebriefLiteApp.getDefault()
           .getProperty(LAST_FILE_OPEN_LOCATION);
-      final File fileToOpen = showOpenDialog(initialFileLocation,new String[]
+      final File fileToOpen = showOpenDialog(initialFileLocation, new String[]
       {"rep"}, "Debrief replay file");
       if (fileToOpen != null)
       {
@@ -340,6 +292,9 @@ public class DebriefRibbonFile
     }
   }
 
+  private static final String LAST_FILE_OPEN_LOCATION =
+      "last_fileopen_location";
+
   public static FlamingoCommand closeButton;
 
   private static RibbonTask fileTask;
@@ -400,7 +355,8 @@ public class DebriefRibbonFile
     // load the new selected file
     final String initialFileLocation = DebriefLiteApp.getDefault().getProperty(
         LAST_FILE_OPEN_LOCATION);
-    final File fileToOpen = showOpenDialog(initialFileLocation,fileTypes, descr);
+    final File fileToOpen = showOpenDialog(initialFileLocation, fileTypes,
+        descr);
     if (fileToOpen != null)
     {
       doReset.run();
@@ -463,12 +419,12 @@ public class DebriefRibbonFile
 
   }
 
-  public static File showOpenDialog(final String openDir,final String[] fileTypes,
-      final String descr)
+  public static File showOpenDialog(final String openDir,
+      final String[] fileTypes, final String descr)
   {
-    
+
     final JFileChooser fileChooser = new JFileChooser();
-    if(openDir!=null)
+    if (openDir != null)
     {
       fileChooser.setCurrentDirectory(new File(openDir));
     }

@@ -1701,4 +1701,4 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
   {
     _theTracks = selectedTracks;
   }
-}
+ }
