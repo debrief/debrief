@@ -57,6 +57,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -427,19 +428,25 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
     else
     {
-      // renameIfNecessary((Editable)theData, destination);
-      if (destination instanceof Layer)
-      {
-        ((Layer) destination).add(theData);
-      }
-      else
-      {
-        if (_cutContents != null)
+      try {
+        if (destination instanceof Layer)
         {
-          restoreCutContents();
+          ((Layer) destination).add(theData);
         }
-        doDelete();
-        _myTree.setSelectionPath(null);
+        else
+        {
+          if (_cutContents != null)
+          {
+            restoreCutContents();
+          }
+          doDelete();
+          _myTree.setSelectionPath(null);
+        }
+      }catch(Exception e) {
+        System.err.println("Error occured while pasting:"+e.getMessage());
+        if(e instanceof RuntimeException) {
+          JOptionPane.showMessageDialog(null, e.getMessage(), "Error while pasting", JOptionPane.ERROR_MESSAGE);
+        }
       }
     }
 
