@@ -578,29 +578,30 @@ public class OutlinePanelView extends SwingLayerManager implements
     if (!_isCopy)
     {
       // clear the clipboard
-      _clipboard.setContents(new Transferable() {
-        public DataFlavor[] getTransferDataFlavors() {
+      _clipboard.setContents(new Transferable()
+      {
+        public DataFlavor[] getTransferDataFlavors()
+        {
           return new DataFlavor[0];
         }
 
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
+        public boolean isDataFlavorSupported(DataFlavor flavor)
+        {
           return false;
         }
 
-        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        public Object getTransferData(DataFlavor flavor)
+            throws UnsupportedFlavorException
+        {
           throw new UnsupportedFlavorException(flavor);
         }
-      },this);
-      //_clipboard.setContents(null, this);
-
+      }, this);
     }
-
   }
 
   @Override
   protected void editThis(final TreeNode node)
   {
-    System.out.println("Editing...");
     if (node instanceof DefaultMutableTreeNode)
     {
       final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
@@ -639,13 +640,11 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     }
-
   }
 
   @Override
   public ArrayList<Plottable> getClipboardContents()
   {
-
     final Transferable tr = _clipboard.getContents(this);
     // see if there is currently a plottable on the clipboard
     return getContentsFromTransferable(tr);
@@ -1095,7 +1094,6 @@ public class OutlinePanelView extends SwingLayerManager implements
             rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
           }
           itemNode = getTreeNode(rootNode, newItem.getName(),
-
               newItem);
         }
         else
@@ -1120,7 +1118,6 @@ public class OutlinePanelView extends SwingLayerManager implements
           final TreePath _treePath = new TreePath(itemNode.getPath());
           SwingUtilities.invokeLater(new Runnable()
           {
-
             @Override
             public void run()
             {
@@ -1142,7 +1139,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         final TreePath _treePath = new TreePath(rootNode.getPath());
         SwingUtilities.invokeLater(new Runnable()
         {
-
           @Override
           public void run()
           {
