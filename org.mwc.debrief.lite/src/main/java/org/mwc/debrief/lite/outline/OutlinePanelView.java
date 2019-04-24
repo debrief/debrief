@@ -832,10 +832,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        /*if (_cutContents != null)
-        {
-          restoreCutContents();
-        }*/
         doPaste();
 
       }
@@ -904,10 +900,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           final TreePath selectionPath[] = _myTree.getSelectionPaths();
-          /*if (_cutContents != null)
-          {
-            restoreCutContents();
-          }*/
           doCut(selectionPath);
         }
       }
@@ -932,10 +924,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           final TreePath selectionPath[] = _myTree.getSelectionPaths();
-          /*if (_cutContents != null)
-          {
-            restoreCutContents();
-          }*/
           doCopy(selectionPath);
           _myTree.setSelectionPath(null);
         }
@@ -957,10 +945,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        /*if (_cutContents != null)
-        {
-          restoreCutContents();
-        }*/
         doDelete();
       }
     };
