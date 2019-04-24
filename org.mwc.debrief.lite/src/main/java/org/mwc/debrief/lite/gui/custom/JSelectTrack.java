@@ -110,7 +110,6 @@ public class JSelectTrack extends JPopupMenu
           if (!newOperation.isARelativeCalculation())
           {
             TrackWrapper primary = model.getPrimaryTrack();
-            //System.out.println("Seleccionando ")
             if (primary != null)
             {
               _displayComponents.get(primary).setEnabled(true);

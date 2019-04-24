@@ -250,6 +250,63 @@ public class GraphPanelToolbar extends JPanel
         }
       }
     });
+    
+    _stepControl.getLayers().addDataExtendedListener(new DataListener()
+    {
+      
+      @Override
+      public void dataReformatted(Layers theData, Layer changedLayer)
+      {
+        System.out.println("Called dataReformatted");
+      }
+      
+      @Override
+      public void dataModified(Layers theData, Layer changedLayer)
+      {
+        System.out.println("Called dataModified");
+        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+        final CalculationHolder operation =
+            (CalculationHolder) operationComboBox.getSelectedItem();
+        _xytool.setPreselectedOperation(operation);
+
+        Vector<WatchableList> selectedTracksByUser = null;
+
+        if (selectTrackModel != null && _stepControl != null && _stepControl
+            .getStartTime() != null && _stepControl.getEndTime() != null)
+        {
+          _xytool.setPreselectedPrimaryTrack(selectTrackModel
+              .getPrimaryTrack());
+          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+          selectedTracksByUser = new Vector<>();
+          for (final TrackWrapperSelect currentTrack : tracks)
+          {
+            if (currentTrack.selected)
+            {
+              selectedTracksByUser.add(currentTrack.track);
+            }
+          }
+
+          if (!selectedTracksByUser.isEmpty() && (!operation
+              .isARelativeCalculation() || selectTrackModel
+                  .getPrimaryTrack() != null))
+          {
+            _xytool.setTracks(selectedTracksByUser);
+            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+                .getEndTime());
+
+            // _xytool
+            _xytool.getData();
+            setState(ACTIVE_STATE);
+          }
+        }
+      }
+      
+      @Override
+      public void dataExtended(Layers theData)
+      {
+        System.out.println("Called dataExtended");
+      }
+    });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {

@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.AbstractCellEditor;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractCellEditor;
 import javax.swing.Action;
@@ -55,9 +54,6 @@ import javax.swing.Box;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTree;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -861,7 +857,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
 
       }
-    });
+    };
     editButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_ENTER, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "edit");
@@ -952,7 +948,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
         doDelete();
       }
-    });
+    };
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke("DELETE"), "delete");
     deleteButton.getActionMap().put("delete", deleteAction);
