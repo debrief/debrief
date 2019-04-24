@@ -558,7 +558,6 @@ public class DataSupport
       _sw1.add(scwa1);
       _sw1.add(scwa2);
       _sw1.add(scwa3);
-      tw.add(_sw1);
       _sw2a = new SensorWrapper("title two");
       _sw2a.setVisible(true);
       final SensorContactWrapper scw1 =
@@ -577,14 +576,14 @@ public class DataSupport
       _sw2b = new SensorWrapper("title three");
       _sw2b.setVisible(true);
       final SensorContactWrapper scw1b =
-          new SensorContactWrapper("ddd", new HiResDate(760, 0), null, null,
+          new SensorContactWrapper("ddd", new HiResDate(760, 0), null, new Double(150),
               null, null, null, 0, null);
       final SensorContactWrapper scw2b =
-          new SensorContactWrapper("eee", new HiResDate(880, 0), null, null,
+          new SensorContactWrapper("eee", new HiResDate(880, 0), null, new Double(150),
               null, null, null, 0, null);
       // this time is greater than the primary track finish period
       final SensorContactWrapper scw3b =
-          new SensorContactWrapper("fff", new HiResDate(950, 0), null, null,
+          new SensorContactWrapper("fff", new HiResDate(950, 0), null, new Double(150),
               null, null, null, 0, null);
       _sw2b.add(scw1b);
       _sw2b.add(scw2b);
@@ -660,7 +659,7 @@ public class DataSupport
       assertTrue(_sw2a.getVisible());
       ArrayList<SensorWrapper> res =
           DataSupport.trimToSensorNearSubjectTracks(_primary, secondaries);
-      assertEquals("contains sensors", 2, res.size());
+      assertEquals("contains single sensor", 1, res.size());
     }
   }
 

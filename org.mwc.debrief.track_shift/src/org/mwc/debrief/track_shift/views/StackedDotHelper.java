@@ -56,6 +56,7 @@ import org.mwc.debrief.track_shift.zig_detector.IOwnshipLegDetector;
 import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.mwc.debrief.track_shift.zig_detector.ownship.LegOfData;
 import org.mwc.debrief.track_shift.zig_detector.ownship.PeakTrackingOwnshipLegDetector;
+import org.mwc.debrief.track_shift.zig_detector.ownship.alternate.AlternateLegWrapper;
 
 import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -1842,9 +1843,14 @@ public final class StackedDotHelper
   {
     // make a decision on which ownship slicer to use
     final IOwnshipLegDetector detector;
+    final boolean useAlternate = true;
     if (containsIdenticalValues(osCourse, null))
     {
       detector = new ArtificalLegDetector();
+    }
+    else if(useAlternate)
+    {
+      detector = new AlternateLegWrapper();
     }
     else
     {

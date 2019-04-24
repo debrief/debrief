@@ -20,13 +20,13 @@ import java.util.Random;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.uncommons.maths.random.MersenneTwisterRNG;
 import org.uncommons.watchmaker.framework.PopulationData;
 import org.uncommons.watchmaker.framework.TerminationCondition;
 import org.uncommons.watchmaker.framework.termination.ElapsedTime;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;
