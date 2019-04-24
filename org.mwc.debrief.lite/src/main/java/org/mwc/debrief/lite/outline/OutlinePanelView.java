@@ -32,6 +32,7 @@ import java.awt.FlowLayout;
 import java.awt.FontMetrics;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
@@ -372,9 +373,9 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if(_cutContents!=null) {
+          /*if(_cutContents!=null) {
             restoreCutContents();
-          }
+          }*/
           doCut(selectionPath);
         }
       }
@@ -389,10 +390,10 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if(_cutContents!=null) {
+          /*if(_cutContents!=null) {
             restoreCutContents();
-          }
-          doCopy(selectionPath);
+          }*/
+          doCopy(selectionPath,true);
         }
       }
     });
@@ -432,7 +433,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     return button;
   }
 
-  protected void doCopy(TreePath[] selectionPaths)
+  protected void doCopy(TreePath[] selectionPaths,boolean isCopy)
   {
     Plottable[] plottables = new Plottable[selectionPaths.length];
     int i = 0;
@@ -441,7 +442,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       plottables[i++] = (Plottable) ((DefaultMutableTreeNode) path
           .getLastPathComponent()).getUserObject();
     }
-    OutlineViewSelection selection = new OutlineViewSelection(plottables, true);
+    OutlineViewSelection selection = new OutlineViewSelection(plottables, isCopy);
     _clipboard.setContents(selection, this);
 
   }
@@ -495,7 +496,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   {
     //restore any contents that were cut 
     //previously before starting the new one.
-    doCopy(selectionPaths);
+    doCopy(selectionPaths,false);
     //parent object is the destination
     rememberCutContents();
     doDelete();
@@ -573,7 +574,20 @@ public class OutlinePanelView extends SwingLayerManager implements
     if (!_isCopy)
     {
       // clear the clipboard
-      _clipboard.setContents(null, null);
+      _clipboard.setContents(new Transferable() {
+        public DataFlavor[] getTransferDataFlavors() {
+          return new DataFlavor[0];
+        }
+
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+          return false;
+        }
+
+        public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+          throw new UnsupportedFlavorException(flavor);
+        }
+      },this);
+      //_clipboard.setContents(null, this);
     }
     
     
