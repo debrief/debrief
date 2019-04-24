@@ -130,18 +130,19 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
             deltaMultiplier *= -1;
           }
           final Rectangle bounds = collapsiblePaneInstance.getBounds();
-          if ( direction.isVertical() )
+          if (direction.isVertical())
           {
             final int newDimension = (int) (collapsiblePaneInstance
-                .getContentPane().getHeight() + event.getPoint().getY() * deltaMultiplier
-                + dragLocation.getY());
+                .getContentPane().getHeight() + event.getPoint().getY()
+                    * deltaMultiplier + dragLocation.getY());
 
             bounds.height = Math.max(newDimension, getMinimunAnimationSize());
-          }else
+          }
+          else
           {
             final int newDimension = (int) (collapsiblePaneInstance
-                .getContentPane().getWidth() + event.getPoint().getX() * deltaMultiplier
-                - dragLocation.getX());
+                .getContentPane().getWidth() + event.getPoint().getX()
+                    * deltaMultiplier - dragLocation.getX());
 
             bounds.width = Math.max(newDimension, getMinimunAnimationSize());
           }
@@ -149,6 +150,10 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
           collapsiblePaneInstance.setPreferredSize(new Dimension(bounds.width,
               bounds.height));
 
+          if (collapsiblePaneInstance.isCollapsed())
+          {
+            collapsiblePaneInstance.setCollapsed(false);
+          }
           collapsiblePaneInstance.validate();
         }
       }
@@ -160,14 +165,15 @@ public class JXCollapsiblePaneWithTitle extends JXCollapsiblePane
         System.out.print("");
       }
     });
-    
-    if ( collapsiblePaneInstance.getDirection().isVertical() )
+
+    if (collapsiblePaneInstance.getDirection().isVertical())
     {
-      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));      
-    }else
+      titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+    }
+    else
     {
       titleLabel.setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
     }
-    
+
   }
 }
