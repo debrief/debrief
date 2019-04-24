@@ -753,7 +753,7 @@ public class OutlinePanelView extends SwingLayerManager implements
 
     final JButton addLayerButton = createCommandButton("Add Layer",
         "icons/24/add.png");
-    _enablers.add(new ButtonEnabler(addLayerButton, isEmpty));
+    //_enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
 
     final JButton deleteButton = createCommandButton("Delete",
@@ -949,6 +949,11 @@ public class OutlinePanelView extends SwingLayerManager implements
         doDelete();
       }
     };
+    copyButton.setEnabled(false);
+    deleteButton.setEnabled(false);
+    pasteButton.setEnabled(false);
+    editButton.setEnabled(false);
+    cutButton.setEnabled(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke("DELETE"), "delete");
     deleteButton.getActionMap().put("delete", deleteAction);
