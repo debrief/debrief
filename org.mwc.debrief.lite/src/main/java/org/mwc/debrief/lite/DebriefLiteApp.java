@@ -900,7 +900,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final PlainImporter.ImportException ie)
     {
-      DialogFactory.showMessage("Import Error", ie.getMessage());
+      DialogFactory.showMessage("Error in opening file", ie.getMessage());
       success = false;
     }
 
