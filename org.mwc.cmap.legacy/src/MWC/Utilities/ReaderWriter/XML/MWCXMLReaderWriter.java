@@ -74,7 +74,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
    * utility class to create & configure our SAXParser for us. We configure the parser by telling it
    * not to check against a specific DTD, since ASSET was repeatedly falling over when unable to
    * find the indicated DTD
-   * 
+   *
    * @return a configured parser
    */
   static protected SAXParser getConfiguredParser()
@@ -104,6 +104,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 
   /**
    * do an import using the indicated handler
+   *
+   * @throws SAXException
    */
   static public void importThis(final MWCXMLReader theHandler,
       final String name, final InputStream is) throws SAXException
@@ -153,8 +155,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
   }
 
   protected void doImport(final InputSource is, final MWCXMLReader theHandler)
+      throws PlainImporter.ImportException
   {
-
     try
     {
 
@@ -179,8 +181,9 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
         final int col = se.getColumnNumber();
         final String msg = "Trouble reading input file at line:" + line
             + ", column:" + col;
-        MWC.Utilities.Errors.Trace.trace(se, msg);
-        MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
+        // MWC.Utilities.Errors.Trace.trace(se, msg);
+        // MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
+        throw new ImportException(msg, se);
       }
     }
     catch (final SAXNotRecognizedException sre)
@@ -188,26 +191,35 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
       MWC.Utilities.Errors.Trace.trace(sre,
           "Unknown trouble with SAX parsing (not recognised):" + sre
               .getMessage());
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
-          "Unknown trouble with SAX parsing (not recognised):" + sre
-              .getMessage());
+      throw new ImportException(
+          "Unknown trouble with SAX parsing (not recognised): " + sre
+              .getMessage(), sre);
     }
     catch (final SAXNotSupportedException spe)
     {
       MWC.Utilities.Errors.Trace.trace(spe,
           "Unknown trouble with SAX parsing (not supported)");
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
-          "Unknown trouble with SAX parsing (not supported)");
+      throw new ImportException(
+          "Unknown trouble with SAX parsing (not supported): " + spe
+              .getMessage(), spe);
     }
-    catch (final SAXException se)
+    catch (final SAXException spe)
     {
-      throw new RuntimeException(se.getMessage(), se);
+      MWC.Utilities.Errors.Trace.trace(spe,
+          "Unknown trouble with SAX parsing (not supported)");
+      throw new ImportException(
+          "Unknown trouble with SAX parsing (not supported): " + spe
+              .getMessage(), spe);
     }
     catch (final IOException e)
     {
       MWC.Utilities.Errors.Trace.trace(e, "Errors parsing XML document");
-      MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
-          "Errors parsing XML document");
+      throw new ImportException("Parse Error: " + e.getMessage(), e);
+    }
+    catch (final RuntimeException e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e, "Errors parsing XML document");
+      throw new ImportException("Parse Error: " + e.getMessage(), e);
     }
   }
 
@@ -243,10 +255,37 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
 
   /**
    * handle the import of XML data into an existing session
+   *
+   * @throws SAXException
    */
   @Override
   public void importThis(final String fName, final InputStream is,
-      final Layers theData)
+      final Layers theData) throws ImportException
+  {
+    if (theData == null)
+    {
+      importThis(fName, is);
+    }
+    else
+    {
+      // create a handler
+      final MWCXMLReader handler = new LayersHandler(theData);
+
+      // do the import
+      importThis(fName, is, handler);
+
+      //
+      theData.fireModified(null);
+
+    }
+  }
+
+  /**
+   * handle the import of XML data into an existing session
+   */
+  @Override
+  public void importThis(final String fName, final InputStream is,
+      final Layers theData, final MonitorProvider provider)
   {
     if (theData == null)
     {
@@ -267,26 +306,20 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements PlainImporter
   }
 
   @Override
-  public void importThis(final String fName, final InputStream is,
-      final Layers theData, final MonitorProvider provider)
-  {
-    importThis(fName, is, theData);
 
-  }
-
-  @Override
   public void importThis(final String fName, final InputStream is,
       final MonitorProvider provider)
   {
     importThis(fName, is);
-
   }
 
   /**
    * handle the import of XML data into an existing session
+   *
+   * @throws SAXException
    */
   public void importThis(final String fName, final InputStream is,
-      final MWCXMLReader reader)
+      final MWCXMLReader reader) throws PlainImporter.ImportException
   {
 
     // create progress monitor for this stream

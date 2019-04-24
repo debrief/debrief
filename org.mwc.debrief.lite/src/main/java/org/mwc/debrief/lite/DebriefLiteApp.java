@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -78,6 +79,8 @@ import Debrief.ReaderWriter.XML.dummy.SATCHandler_Mock;
 import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
 import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
@@ -96,6 +99,7 @@ import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.ExtendedCanvasAdapter;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
@@ -107,6 +111,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -280,12 +285,56 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
-    finally
-    {
-      resetFileName(file);
-    }
   }
 
+  
+  public static void openDsfFile(final File file)throws FileNotFoundException {
+    ImportReplay rep = new ImportReplay();
+    rep.storePendingSensors();
+    
+    final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+    // see if there are any sensors awaiting a host
+    if (sensors.size() >= 1)
+    {
+      final Iterator<SensorWrapper> sIter = sensors.iterator();
+      while (sIter.hasNext())
+      {
+        final SensorWrapper sensor = sIter.next();
+        if (sensor.getHost() == null)
+        {
+          // have we sorted out the hosts?
+           List<TrackWrapper> candidateHosts = determineCandidateHosts();
+
+          if (candidateHosts.size() == 0)
+          {
+            JOptionPane.showMessageDialog(null,
+                "Sensor data can only be loaded after tracks","Loading sensor data",JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+
+        }
+      }
+    }
+    rep.storePendingSensors();
+  }
+    
+    private static List<TrackWrapper> determineCandidateHosts()
+    {
+      final List<TrackWrapper> res = new ArrayList<TrackWrapper>();
+
+      final Enumeration<Editable> iter = _instance._theLayers.elements();
+      while (iter.hasMoreElements())
+      {
+        final Editable editable = iter.nextElement();
+        if (editable instanceof TrackWrapper)
+        {
+          res.add((TrackWrapper) editable);
+        }
+      }
+
+      return res;
+    }
   public static void openRepFile(final File file)
   {
     try
@@ -297,13 +346,9 @@ public class DebriefLiteApp implements FileDropListener
     {
       Trace.trace(e);
     }
-    finally
-    {
-      resetFileName(file);
-    }
   }
 
-  private static void resetFileName(final File file)
+  private void resetFileName(final File file)
   {
     if (DebriefLiteApp.currentFileName == null)
     {
@@ -633,7 +678,7 @@ public class DebriefLiteApp implements FileDropListener
   protected void doPaint(final Graphics gc)
   {
     final CanvasAdaptor dest;
-    if(gc instanceof Graphics2D)
+    if (gc instanceof Graphics2D)
     {
       dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
     }
@@ -653,7 +698,7 @@ public class DebriefLiteApp implements FileDropListener
       dest.startDraw(gc);
       _theLayers.paint(dest);
     }
-    
+
     // and the time marker
     redoTimePainter(true, dest, null, null);
 
@@ -733,6 +778,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     setCursor(Cursor.WAIT_CURSOR);
     File file = null;
+    boolean renameFile=true;
     try
     {
       final Enumeration<File> iter = files.elements();
@@ -749,7 +795,44 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
+          if(suff.equalsIgnoreCase(".DSF")){
+            ImportReplay rep = new ImportReplay();
+            rep.setLayers(_theLayers);
+            rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+            final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+            // see if there are any sensors awaiting a host
+            if (sensors.size() >= 1)
+            {
+              final Iterator<SensorWrapper> sIter = sensors.iterator();
+              while (sIter.hasNext())
+              {
+                final SensorWrapper sensor = sIter.next();
+                if (sensor.getHost() == null)
+                {
+                  // have we sorted out the hosts?
+                   List<TrackWrapper> candidateHosts = determineCandidateHosts();
+
+                  if (candidateHosts.size() == 0)
+                  {
+                    renameFile=false;
+                    JOptionPane.showMessageDialog(null,
+                        "Sensor data can only be loaded after tracks","Loading sensor data",JOptionPane.ERROR_MESSAGE);
+                    break;
+                  }
+
+                }
+              }
+            }
+            if(renameFile) {
+              rep.storePendingSensors();
+              _theLayers.fireExtended();
+              JOptionPane.showMessageDialog(null,
+                  "Finished loading sensor data from the file","Loading sensor data",JOptionPane.INFORMATION_MESSAGE);
+              
+            }
+          }
+          else if ((suff.equalsIgnoreCase(".REP"))
               || (suff.equalsIgnoreCase(".DTF")))
           {
             // fake wrap it
@@ -777,10 +860,6 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
-    finally
-    {
-      resetFileName(file);
-    }
     restoreCursor();
   }
 
@@ -791,6 +870,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
+    boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
@@ -809,19 +889,31 @@ public class DebriefLiteApp implements FileDropListener
         DebriefRibbonTimeController.assignThisTimeFormat(_stepControl
             .getDateFormat(), true, true);
       }
+      _theLayers.fireModified(null);
     }
     catch (final FileNotFoundException e)
     {
       app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Failed to read DPF File" + e.getMessage());
+      success = false;
     }
-    _theLayers.fireModified(null);
+    catch (final PlainImporter.ImportException ie)
+    {
+      DialogFactory.showMessage("Import Error", ie.getMessage());
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(file);
+    }
   }
 
   private void handleImportRep(final File[] fList)
   {
     final DebriefLiteApp source = this;
+    boolean success = true;
     final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
       // handle completion of the full import process
@@ -869,8 +961,20 @@ public class DebriefLiteApp implements FileDropListener
         });
       }
     };
-    // ok, start loading
-    caller.start();
+    try
+    {
+      // ok, start loading
+      caller.start();
+    }
+    catch (PlainImporter.ImportException ie)
+    {
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(fList[0]);
+    }
   }
 
   /**
@@ -957,10 +1061,10 @@ public class DebriefLiteApp implements FileDropListener
           (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
 
       // it must be ok
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(),
-          backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest
+          .getGraphicsTemp(), backColor);
       thisPainter.paintMe(adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
@@ -972,10 +1076,10 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
 
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection,
-          graphics, backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
+          backColor);
       painterManager.newTime(oldDTG, newDTG, adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
@@ -985,14 +1089,14 @@ public class DebriefLiteApp implements FileDropListener
   {
     final HiResDate tNow = timeManager.getTime();
     // do we have time?
-    if(tNow != null)
+    if (tNow != null)
     {
       final long timeVal = tNow.getDate().getTime();
       Enumeration<Editable> lIter = _theLayers.elements();
-      while(lIter.hasMoreElements())
+      while (lIter.hasMoreElements())
       {
         Editable next = lIter.nextElement();
-        if(next instanceof DynamicPlottable)
+        if (next instanceof DynamicPlottable)
         {
           DynamicPlottable dp = (DynamicPlottable) next;
           dp.paint(dest, timeVal);
