@@ -73,6 +73,18 @@ public class MenuUtils
       PopupPanelCallback popupCallback
       )
   {
+    final FlamingoCommand command = createCommand(commandName,imagePath,actionToAdd,priority,popupCallback);
+
+    mapBand.addRibbonCommand(command, priority == null
+        ? RibbonElementPriority.TOP : priority);
+    return command;
+  }
+  
+  public static FlamingoCommand createCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final RibbonElementPriority priority,
+      PopupPanelCallback popupCallback)
+  {
     ImageWrapperResizableIcon imageIcon = null;
     if (imagePath != null)
     {
@@ -87,11 +99,18 @@ public class MenuUtils
       builder.setPopupCallback(popupCallback);
     }
     final FlamingoCommand command = builder.build();
-
-    mapBand.addRibbonCommand(command, priority == null
-        ? RibbonElementPriority.TOP : priority);
     return command;
   }
+  
+  public static FlamingoCommand createCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final RibbonElementPriority priority
+      )
+  {
+    FlamingoCommand command =  createCommand(commandName,imagePath,actionToAdd,priority,null);
+    return command;
+  }
+  
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
       final JRibbonBand mapBand, final RibbonElementPriority priority)

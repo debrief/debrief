@@ -15,9 +15,13 @@
 package org.mwc.debrief.lite.menu;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import javax.swing.AbstractAction;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.mwc.debrief.lite.undo.RedoAction;
+import org.mwc.debrief.lite.undo.UndoAction;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
 import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
@@ -31,20 +35,37 @@ import Debrief.GUI.Frames.Session;
  */
 public class DebriefRibbonLite
 {
-  private static class ExitLiteApp implements ActionListener
+  
+  private static class ExitLiteApp extends AbstractAction
   {
 
+   
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     @Override
     public void actionPerformed(ActionEvent e)
     {
       DebriefLiteApp.getInstance().exit();
     }
-
     
   }
-  private static class HelpAction implements ActionListener
+  private static class HelpAction extends AbstractAction
   {
 
+
+    public HelpAction()
+    {
+      super();
+    }
+
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+   
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -61,6 +82,14 @@ public class DebriefRibbonLite
       final Session session, final Runnable resetAction)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
+    liteMenu.startGroup();
+    FlamingoCommand undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png", new UndoAction(),
+        RibbonElementPriority.TOP);
+    ribbon.addTaskbarCommand(undoCommand);
+    FlamingoCommand redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png", 
+        new RedoAction(),
+        RibbonElementPriority.TOP);
+    ribbon.addTaskbarCommand(redoCommand);
     liteMenu.startGroup();
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(), liteMenu,
         RibbonElementPriority.TOP);

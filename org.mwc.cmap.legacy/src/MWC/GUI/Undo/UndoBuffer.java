@@ -179,6 +179,10 @@ public class UndoBuffer extends Observable
       }
     }
   }
+  
+  public boolean containsActions() {
+    return !theActions.isEmpty();
+  }
 
   /** get a label describing the next thing which may be undone
    * @return a String describing the next thing which may be undone

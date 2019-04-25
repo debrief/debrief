@@ -246,6 +246,12 @@ public class DebriefLiteApp implements FileDropListener
   {
     return _instance;
   }
+  
+  public UndoBuffer getUndoBuffer()
+  {
+    return _undoBuffer;
+  }
+  
 
   public static boolean isDirty()
   {
@@ -478,6 +484,7 @@ public class DebriefLiteApp implements FileDropListener
   private final LiteStepControl _stepControl;
 
   private final Layer safeChartFeatures;
+  private final UndoBuffer _undoBuffer;
 
   public DebriefLiteApp()
   {
@@ -532,7 +539,7 @@ public class DebriefLiteApp implements FileDropListener
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
 
-    final UndoBuffer undoBuffer = session.getUndoBuffer();
+    _undoBuffer = session.getUndoBuffer();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
@@ -592,7 +599,7 @@ public class DebriefLiteApp implements FileDropListener
 
     // create the components
     initForm();
-    createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
+    createAppPanels(geoMapRenderer, _undoBuffer, dropSupport, mapPane,
         _stepControl, timeManager, _myOperations, normalT, snailT, statusBar);
     _listenForMods = new DataListenerAdaptor()
     {
