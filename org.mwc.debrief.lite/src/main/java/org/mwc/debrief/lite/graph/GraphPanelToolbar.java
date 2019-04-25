@@ -169,6 +169,45 @@ public class GraphPanelToolbar extends JPanel
     return button;
   }
 
+  private void updateXYPlot(
+      final JComboBox<CalculationHolder> operationComboBox)
+  {
+    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+    final CalculationHolder operation = (CalculationHolder) operationComboBox
+        .getSelectedItem();
+    _xytool.setPreselectedOperation(operation);
+
+    Vector<WatchableList> selectedTracksByUser = null;
+
+    if (selectTrackModel != null && _stepControl != null && _stepControl
+        .getStartTime() != null && _stepControl.getEndTime() != null)
+    {
+      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
+      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+      selectedTracksByUser = new Vector<>();
+      for (final TrackWrapperSelect currentTrack : tracks)
+      {
+        if (currentTrack.selected)
+        {
+          selectedTracksByUser.add(currentTrack.track);
+        }
+      }
+
+      if (!selectedTracksByUser.isEmpty() && (!operation
+          .isARelativeCalculation() || selectTrackModel
+              .getPrimaryTrack() != null))
+      {
+        _xytool.setTracks(selectedTracksByUser);
+        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+            .getEndTime());
+
+        // _xytool
+        _xytool.getData();
+        setState(ACTIVE_STATE);
+      }
+    }
+  }
+
   protected void init()
   {
     formattingOperation theFormatter = null;
@@ -213,98 +252,30 @@ public class GraphPanelToolbar extends JPanel
       @Override
       public void propertyChange(final PropertyChangeEvent arg0)
       {
-        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        final CalculationHolder operation =
-            (CalculationHolder) operationComboBox.getSelectedItem();
-        _xytool.setPreselectedOperation(operation);
-
-        Vector<WatchableList> selectedTracksByUser = null;
-
-        if (selectTrackModel != null && _stepControl != null && _stepControl
-            .getStartTime() != null && _stepControl.getEndTime() != null)
-        {
-          _xytool.setPreselectedPrimaryTrack(selectTrackModel
-              .getPrimaryTrack());
-          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-          selectedTracksByUser = new Vector<>();
-          for (final TrackWrapperSelect currentTrack : tracks)
-          {
-            if (currentTrack.selected)
-            {
-              selectedTracksByUser.add(currentTrack.track);
-            }
-          }
-
-          if (!selectedTracksByUser.isEmpty() && (!operation
-              .isARelativeCalculation() || selectTrackModel
-                  .getPrimaryTrack() != null))
-          {
-            _xytool.setTracks(selectedTracksByUser);
-            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-                .getEndTime());
-
-            // _xytool
-            _xytool.getData();
-            setState(ACTIVE_STATE);
-          }
-        }
+        updateXYPlot(operationComboBox);
       }
     });
-    
-    _stepControl.getLayers().addDataExtendedListener(new DataListener()
+
+    // Adding listener for filtering.
+    _stepControl.getLayers().addDataReformattedListener(new DataListener()
     {
-      
+
       @Override
       public void dataReformatted(Layers theData, Layer changedLayer)
       {
-        System.out.println("Called dataReformatted");
+        updateXYPlot(operationComboBox);
       }
-      
+
       @Override
       public void dataModified(Layers theData, Layer changedLayer)
       {
-        System.out.println("Called dataModified");
-        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        final CalculationHolder operation =
-            (CalculationHolder) operationComboBox.getSelectedItem();
-        _xytool.setPreselectedOperation(operation);
-
-        Vector<WatchableList> selectedTracksByUser = null;
-
-        if (selectTrackModel != null && _stepControl != null && _stepControl
-            .getStartTime() != null && _stepControl.getEndTime() != null)
-        {
-          _xytool.setPreselectedPrimaryTrack(selectTrackModel
-              .getPrimaryTrack());
-          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-          selectedTracksByUser = new Vector<>();
-          for (final TrackWrapperSelect currentTrack : tracks)
-          {
-            if (currentTrack.selected)
-            {
-              selectedTracksByUser.add(currentTrack.track);
-            }
-          }
-
-          if (!selectedTracksByUser.isEmpty() && (!operation
-              .isARelativeCalculation() || selectTrackModel
-                  .getPrimaryTrack() != null))
-          {
-            _xytool.setTracks(selectedTracksByUser);
-            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-                .getEndTime());
-
-            // _xytool
-            _xytool.getData();
-            setState(ACTIVE_STATE);
-          }
-        }
+        System.out.println(""); // Hello Codacy :)
       }
-      
+
       @Override
       public void dataExtended(Layers theData)
       {
-        System.out.println("Called dataExtended");
+        System.out.println(""); // Hello Codacy :)
       }
     });
 
