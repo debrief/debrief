@@ -70,6 +70,7 @@
 								<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86.zip" tofile="${project.build.directory}/products/DebriefNG-Windows32Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/products/DebriefNG-win32.win32.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-Windows64Bit.zip" verbose="yes"/>
 								<copy file="${project.build.directory}/products/DebriefNG-macosx.cocoa.x86_64.zip" tofile="${project.build.directory}/products/DebriefNG-MacOSX64Bit.zip" verbose="yes"/>
+								<copy file="${project.build.directory}/product-0.0.1-SNAPSHOT.zip" tofile="${project.build.directory}/products/P2_Repository.zip" verbose="yes"/>
 							</target>
 						</configuration>
 						<goals>
