@@ -323,6 +323,7 @@ public class GraphPanelToolbar extends JPanel
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
+          tracks.clear();
           final Enumeration<Editable> elem = _stepControl.getLayers()
               .elements();
           while (elem.hasMoreElements())
