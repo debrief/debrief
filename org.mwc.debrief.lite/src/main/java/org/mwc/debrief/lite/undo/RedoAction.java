@@ -29,72 +29,76 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class RedoAction extends AbstractAction implements Action,Observer
+public class RedoAction extends AbstractAction implements Action, Observer
 {
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
   private FlamingoCommand actionCommand;
   private final UndoBuffer _buffer;
+
   public RedoAction(final UndoBuffer undoBuffer)
   {
     _buffer = undoBuffer;
   }
-  
-  public void setActionCommand(FlamingoCommand command)
+
+  @Override
+  public void actionPerformed(final ActionEvent e)
   {
-    actionCommand = command;
+    execute();
+
   }
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
-
-  
   @Override
   public void execute()
   {
-    if(_buffer!=null) {
+    if (_buffer != null)
+    {
       _buffer.redo();
-      //_theParent.getCurrentSession().repaint();
+      // _theParent.getCurrentSession().repaint();
     }
   }
 
-  @Override
-  public void actionPerformed(ActionEvent e)
-  {
-    execute();
-    
-  }
   @Override
   public boolean isRedoable()
   {
     return false;
   }
+
   @Override
   public boolean isUndoable()
   {
     return false;
   }
-  
+
+  public void setActionCommand(final FlamingoCommand command)
+  {
+    actionCommand = command;
+  }
 
   @Override
   public void undo()
   {
-    
+
   }
 
   @Override
-  public void update(Observable o, Object arg)
+  public void update(final Observable o, final Object arg)
   {
-    if(o instanceof UndoBuffer && actionCommand!=null) {
-      final UndoBuffer undoBuff = (UndoBuffer)o;
-      if(undoBuff.canRedo()) {
+    if (o instanceof UndoBuffer && actionCommand != null)
+    {
+      final UndoBuffer undoBuff = (UndoBuffer) o;
+      if (undoBuff.canRedo())
+      {
         actionCommand.setEnabled(true);
       }
-      else {
+      else
+      {
         actionCommand.setEnabled(false);
       }
     }
-    
+
   }
 
 }

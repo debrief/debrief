@@ -29,57 +29,37 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class UndoAction extends AbstractAction implements Action,Observer
+public class UndoAction extends AbstractAction implements Action, Observer
 {
-  private FlamingoCommand actionCommand;
-  private final UndoBuffer _buffer;
-  
-  public UndoAction(final UndoBuffer undoBuffer){
-    _buffer = undoBuffer;
-  }
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
+  private FlamingoCommand actionCommand;
 
-  
+  private final UndoBuffer _buffer;
+
+  public UndoAction(final UndoBuffer undoBuffer)
+  {
+    _buffer = undoBuffer;
+  }
+
+  @Override
+  public void actionPerformed(final ActionEvent e)
+  {
+    execute();
+
+  }
+
   @Override
   public void execute()
   {
-    if(_buffer!=null) {
+    if (_buffer != null)
+    {
       _buffer.undo();
     }
-    
+
   }
-  
-  public void setActionCommand(FlamingoCommand command) {
-    this.actionCommand = command;
-  }
-
-  @Override
-  public void undo()
-  {
-    
-  }
-
-
-
-  @Override
-  public void actionPerformed(ActionEvent e)
-  {
-    execute();
-    
-  }
-
-
-
-  @Override
-  public boolean isUndoable()
-  {
-    return false;
-  }
-
-
 
   @Override
   public boolean isRedoable()
@@ -88,19 +68,38 @@ public class UndoAction extends AbstractAction implements Action,Observer
   }
 
   @Override
-  public void update(Observable o, Object arg)
+  public boolean isUndoable()
   {
-    if(o instanceof UndoBuffer && actionCommand!=null) {
-      final UndoBuffer undoBuff = (UndoBuffer)o;
-      if(undoBuff.canUndo()) {
+    return false;
+  }
+
+  public void setActionCommand(final FlamingoCommand command)
+  {
+    this.actionCommand = command;
+  }
+
+  @Override
+  public void undo()
+  {
+
+  }
+
+  @Override
+  public void update(final Observable o, final Object arg)
+  {
+    if (o instanceof UndoBuffer && actionCommand != null)
+    {
+      final UndoBuffer undoBuff = (UndoBuffer) o;
+      if (undoBuff.canUndo())
+      {
         actionCommand.setEnabled(true);
       }
-      else {
+      else
+      {
         actionCommand.setEnabled(false);
       }
     }
-    
+
   }
 
-  
 }

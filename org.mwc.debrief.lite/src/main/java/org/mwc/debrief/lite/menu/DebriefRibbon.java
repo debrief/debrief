@@ -33,12 +33,11 @@ import MWC.TacticalData.temporal.TimeManager;
 public class DebriefRibbon
 {
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
-      final ToolParent parent,
-      final GeoToolMapRenderer geoMapRenderer,
-      final LiteStepControl stepControl, TimeManager timeManager,
+      final ToolParent parent, final GeoToolMapRenderer geoMapRenderer,
+      final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Session session,
       final Runnable resetAction, final Runnable normalPainter,
-      final Runnable snailPainter, JLabel statusBar)
+      final Runnable snailPainter, final JLabel statusBar)
   {
     // add menus here
     DebriefRibbonLite.addLiteTab(ribbon, session, resetAction);

@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Undo;
 
@@ -84,26 +84,51 @@ import MWC.GUI.Tools.Action;
 
 public final class UndoBuffer extends Observable
 {
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
-  private final Vector<Action> theActions;
-  private int presentAction;
   static protected final int undo = 1;
   static protected final int redo = 2;
+  private final Vector<Action> theActions;
+  private int presentAction;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public UndoBuffer(){
+  public UndoBuffer()
+  {
     theActions = new Vector<Action>(0, 1);
   }
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+  /**
+   * add a new action to the buffer
+   */
+  public void add(final Action newAction)
+  {
+    if (newAction != null)
 
-  /** close, and clear the buffer
+      // see if it is worth adding, (is it undoable)
+      if (newAction.isUndoable())
+      {
+
+        theActions.addElement(newAction);
+        presentAction = theActions.indexOf(newAction);
+        bufferChanged();
+      }
+  }
+
+  private void bufferChanged()
+  {
+    setChanged();
+    notifyObservers();
+  }
+
+  public boolean canRedo()
+  {
+    return presentAction < theActions.size() - 1;
+  }
+
+  public boolean canUndo()
+  {
+    return presentAction >= 0;
+  }
+
+  /**
+   * close, and clear the buffer
    *
    */
   public void close()
@@ -112,51 +137,95 @@ public final class UndoBuffer extends Observable
     theActions.removeAllElements();
   }
 
-  public boolean canUndo()
+  public boolean containsActions()
   {
-    return presentAction >= 0;
+    return !theActions.isEmpty();
   }
 
-  public boolean canRedo()
-  {
-    return presentAction < theActions.size() - 1;
-  }
-  /** add a new action to the buffer
+  /**
+   * get the name of the next operation
+   *
+   * @param source
+   * @param data
+   * @return
    */
-  public void add(final Action newAction)
+  public String getText(final Observable source, final int type)
   {
-    if(newAction != null)
+    String res = null;
 
-      // see if it is worth adding, (is it undoable)
-      if(newAction.isUndoable()){
+    // find out whether this is undo or redo
+    switch (type)
+    {
+      case undo:
+        res = undoLabel();
+        break;
+      case redo:
+        res = redoLabel();
+        break;
+    }
 
-        theActions.addElement(newAction);
-        presentAction = theActions.indexOf(newAction);
-        bufferChanged();
+    return res;
+  }
+
+  /**
+   * redo the last operation 'undone'
+   */
+  public void redo()
+  {
+    // check that we are not at the start of the list
+    if (presentAction < theActions.size() - 1)
+    {
+      final Action act = theActions.elementAt(presentAction + 1);
+
+      // check we have found it correctly
+      if (act != null)
+      {
+        if (act.isRedoable())
+        {
+          // do the undo
+          act.execute();
+          // and move left right
+          presentAction += 1;
+
+          bufferChanged();
+        }
       }
+    }
   }
 
-  private void bufferChanged(){
-    setChanged();
-    notifyObservers();
-  }
-
-  /** do the next undo we need
+  /**
+   * get a label describing the next thing which may be redone
+   * 
+   * @return a String describing the next thing which may be redone
    */
-  public void undo(){
+  public final String redoLabel()
+  {
+    final String res = null;
+
+    return res;
+  }
+
+  /**
+   * do the next undo we need
+   */
+  public void undo()
+  {
 
     // check that we have some actions at all
-    if(theActions.size() == 0)
+    if (theActions.size() == 0)
       return;
 
     // check that we are not at the start of the list
-    if(presentAction >= 0){
+    if (presentAction >= 0)
+    {
       final Action act = theActions.elementAt(presentAction);
 
       // check we have found it correctly
-      if(act != null){
+      if (act != null)
+      {
 
-        if(act.isUndoable()){
+        if (act.isUndoable())
+        {
           // do the undo
           act.undo();
           // and move left one
@@ -168,69 +237,14 @@ public final class UndoBuffer extends Observable
     }
   }
 
-  /** redo the last operation 'undone'
-   */
-  public void redo(){
-    // check that we are not at the start of the list
-    if(presentAction < theActions.size()-1){
-      final Action act = theActions.elementAt(presentAction+1);
-
-      // check we have found it correctly
-      if(act != null){
-        if(act.isRedoable()){
-          // do the undo
-          act.execute();
-          // and move left right
-          presentAction += 1;
-
-          bufferChanged();
-        }
-      }
-    }
-  }
-  
-  public boolean containsActions() {
-    return !theActions.isEmpty();
-  }
-
-  /** get a label describing the next thing which may be undone
+  /**
+   * get a label describing the next thing which may be undone
+   * 
    * @return a String describing the next thing which may be undone
    */
-  public final String undoLabel(){
-    final String res=null;
-
-    return res;
-  }
-
-  /** get a label describing the next thing which may be redone
-   * @return a String describing the next thing which may be redone
-   */
-  public final String redoLabel(){
-    final String res=null;
-
-    return res;
-  }
-
-
-  /** get the name of the next operation
-   * 
-   * @param source
-   * @param data
-   * @return
-   */
-  public String getText(final Observable source, final int type)
+  public final String undoLabel()
   {
-    String res=null;
-
-    // find out whether this is undo or redo
-    switch(type){
-    case undo:
-      res = undoLabel();
-      break;
-    case redo:
-      res = redoLabel();
-      break;
-    }
+    final String res = null;
 
     return res;
   }

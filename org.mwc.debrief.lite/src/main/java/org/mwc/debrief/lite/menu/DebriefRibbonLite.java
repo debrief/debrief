@@ -35,70 +35,69 @@ import Debrief.GUI.Frames.Session;
  */
 public class DebriefRibbonLite
 {
-  
+
   private static class ExitLiteApp extends AbstractAction
   {
 
-   
     /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    @Override
-    public void actionPerformed(ActionEvent e)
-    {
-      DebriefLiteApp.getInstance().exit();
-    }
-    
-  }
-  private static class HelpAction extends AbstractAction
-  {
-    /**
-     * 
+     *
      */
     private static final long serialVersionUID = 1L;
 
-   
     @Override
-    public void actionPerformed(ActionEvent e)
+    public void actionPerformed(final ActionEvent e)
+    {
+      DebriefLiteApp.getInstance().exit();
+    }
+
+  }
+
+  private static class HelpAction extends AbstractAction
+  {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void actionPerformed(final ActionEvent e)
     {
       System.out.println("Not implemented yet");
     }
 
   }
 
-  protected static void addLiteTab(final JRibbon ribbon,
-      final Session session, final Runnable resetAction)
+  protected static void addLiteTab(final JRibbon ribbon, final Session session,
+      final Runnable resetAction)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
-    UndoAction undoAction = new UndoAction(session.getUndoBuffer());
-    FlamingoCommand undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png", undoAction,
-        RibbonElementPriority.TOP);
-    //so that action has the command it has to enable/disable
+    final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
+    final FlamingoCommand undoCommand = MenuUtils.createCommand("Undo",
+        "icons/24/undo.png", undoAction, RibbonElementPriority.TOP);
+    // so that action has the command it has to enable/disable
     undoAction.setActionCommand(undoCommand);
     undoCommand.setEnabled(false);
-    //add the undoaction as observer for undobuffer
+    // add the undoaction as observer for undobuffer
     session.getUndoBuffer().addObserver(undoAction);
     ribbon.addTaskbarCommand(undoCommand);
-    RedoAction redoAction = new RedoAction(session.getUndoBuffer());
-    FlamingoCommand redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png", 
-        redoAction,
-        RibbonElementPriority.TOP);
-    //so that action has the command it has to enable/disable
+    final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
+    final FlamingoCommand redoCommand = MenuUtils.createCommand("Redo",
+        "icons/24/redo.png", redoAction, RibbonElementPriority.TOP);
+    // so that action has the command it has to enable/disable
     redoAction.setActionCommand(redoCommand);
     redoCommand.setEnabled(false);
     ribbon.addTaskbarCommand(redoCommand);
-    //add the action as observer of undobuffer
+    // add the action as observer of undobuffer
     session.getUndoBuffer().addObserver(redoAction);
     liteMenu.startGroup();
-    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(), liteMenu,
-        RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/24/exit.png", 
-        new ExitLiteApp(),
+    MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(),
         liteMenu, RibbonElementPriority.TOP);
-    
-    liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(liteMenu));
+    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(),
+        liteMenu, RibbonElementPriority.TOP);
+
+    liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
+        liteMenu));
     final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
     ribbon.addTask(liteTask);
   }
