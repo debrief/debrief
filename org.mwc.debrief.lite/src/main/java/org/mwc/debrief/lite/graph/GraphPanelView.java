@@ -28,16 +28,26 @@ public class GraphPanelView extends JPanel
    */
   private static final long serialVersionUID = 5203809173295266164L;
 
+  final SimpleEditablePropertyPanel _xyPanel;
+  
+  final GraphPanelToolbar _toolbar;
+
   public GraphPanelView(final LiteStepControl stepControl)
   {
     super();
     setLayout(new BorderLayout());
-    final SimpleEditablePropertyPanel xyPanel =
-        new SimpleEditablePropertyPanel();
-    final GraphPanelToolbar toolbar = new GraphPanelToolbar(stepControl,
-        xyPanel);
+    _xyPanel = new SimpleEditablePropertyPanel();
+    _toolbar = new GraphPanelToolbar(stepControl,
+        _xyPanel);
 
-    add(toolbar, BorderLayout.NORTH);
-    add(xyPanel, BorderLayout.CENTER);
+    add(_toolbar, BorderLayout.NORTH);
+    add(_xyPanel, BorderLayout.CENTER);
+  }
+
+  public void reset()
+  {
+    _xyPanel.reset();
+    
+    _toolbar.setState(GraphPanelToolbar.INACTIVE_STATE);
   }
 }

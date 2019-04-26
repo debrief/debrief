@@ -407,6 +407,7 @@ public class DebriefLiteApp implements FileDropListener
   protected DataListener2 _listenForMods;
 
   private OutlinePanelView layerManager;
+  private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
@@ -616,7 +617,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void addGraphView()
   {
-    GraphPanelView graphPanelView = new GraphPanelView(_stepControl);
+    graphPanelView = new GraphPanelView(_stepControl);
     graphPanel.setCollapsed(true);
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
@@ -1157,6 +1158,9 @@ public class DebriefLiteApp implements FileDropListener
     // reset the map
     final ResetAction resetMap = new ResetAction(_instance.mapPane);
     resetMap.actionPerformed(null);
+    
+    graphPanelView.reset();
+    graphPanel.setCollapsed(true);
   }
 
   public final void restoreCursor()
