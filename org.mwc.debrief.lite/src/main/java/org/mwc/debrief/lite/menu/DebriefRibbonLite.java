@@ -83,13 +83,25 @@ public class DebriefRibbonLite
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
-    FlamingoCommand undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png", new UndoAction(),
+    UndoAction undoAction = new UndoAction();
+    FlamingoCommand undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png", undoAction,
         RibbonElementPriority.TOP);
+    //so that action has the command it has to enable/disable
+    undoAction.setActionCommand(undoCommand);
+    undoCommand.setEnabled(false);
+    //add the undoaction as observer for undobuffer
+    session.getUndoBuffer().addObserver(undoAction);
     ribbon.addTaskbarCommand(undoCommand);
+    RedoAction redoAction = new RedoAction();
     FlamingoCommand redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png", 
-        new RedoAction(),
+        redoAction,
         RibbonElementPriority.TOP);
+    //so that action has the command it has to enable/disable
+    redoAction.setActionCommand(redoCommand);
+    redoCommand.setEnabled(false);
     ribbon.addTaskbarCommand(redoCommand);
+    //add the action as observer of undobuffer
+    session.getUndoBuffer().addObserver(redoAction);
     liteMenu.startGroup();
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(), liteMenu,
         RibbonElementPriority.TOP);
@@ -101,6 +113,8 @@ public class DebriefRibbonLite
     liteTask = new RibbonTask("Lite", liteMenu);
     ribbon.addTask(liteTask);
   }
+  
+  
 
 
   public static RibbonTask getLiteTask()

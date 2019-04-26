@@ -15,10 +15,13 @@
 package org.mwc.debrief.lite.undo;
 
 import java.awt.event.ActionEvent;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.AbstractAction;
 
 import org.mwc.debrief.lite.DebriefLiteApp;
+import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Undo.UndoBuffer;
@@ -27,9 +30,9 @@ import MWC.GUI.Undo.UndoBuffer;
  * @author Ayesha <ayesha.ma@gmail.com>
  *
  */
-public class UndoAction extends AbstractAction implements Action
+public class UndoAction extends AbstractAction implements Action,Observer
 {
-  
+  private FlamingoCommand actionCommand;
   public UndoAction(){
   }
   /**
@@ -48,15 +51,10 @@ public class UndoAction extends AbstractAction implements Action
     }
     
   }
-
-  @Override
-  public boolean isEnabled()
-  {
-    final UndoBuffer undoBuffer = DebriefLiteApp.getInstance().getUndoBuffer();
-    return undoBuffer!=null && undoBuffer.hasChanged() && undoBuffer.containsActions();
-
-  }
   
+  public void setActionCommand(FlamingoCommand command) {
+    this.actionCommand = command;
+  }
 
   @Override
   public void undo()
@@ -87,6 +85,21 @@ public class UndoAction extends AbstractAction implements Action
   public boolean isRedoable()
   {
     return false;
+  }
+
+  @Override
+  public void update(Observable o, Object arg)
+  {
+    if(o instanceof UndoBuffer && actionCommand!=null) {
+      final UndoBuffer undoBuff = (UndoBuffer)o;
+      if(undoBuff.canUndo()) {
+        actionCommand.setEnabled(true);
+      }
+      else {
+        actionCommand.setEnabled(false);
+      }
+    }
+    
   }
 
   

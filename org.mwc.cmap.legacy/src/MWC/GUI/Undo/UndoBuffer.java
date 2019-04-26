@@ -112,6 +112,14 @@ public class UndoBuffer extends Observable
     theActions.removeAllElements();
   }
 
+  public boolean canUndo()
+  {
+    return presentAction>=0;
+  }
+  public boolean canRedo()
+  {
+    return presentAction<theActions.size()-1;
+  }
   /** add a new action to the buffer
    */
   public void add(final Action newAction)
