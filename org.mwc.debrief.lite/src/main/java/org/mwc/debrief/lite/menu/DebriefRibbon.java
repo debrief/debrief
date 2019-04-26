@@ -37,10 +37,10 @@ public class DebriefRibbon
       final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Session session,
       final Runnable resetAction, final Runnable normalPainter,
-      final Runnable snailPainter, final JLabel statusBar)
+      final Runnable snailPainter, final JLabel statusBar, final Runnable exitAction)
   {
     // add menus here
-    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction);
+    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,

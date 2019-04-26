@@ -18,7 +18,6 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.undo.RedoAction;
 import org.mwc.debrief.lite.undo.UndoAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -43,11 +42,17 @@ public class DebriefRibbonLite
      *
      */
     private static final long serialVersionUID = 1L;
+    private final Runnable _action;
+
+    public ExitLiteApp(Runnable exitAction)
+    {
+      _action = exitAction;
+    }
 
     @Override
     public void actionPerformed(final ActionEvent e)
     {
-      DebriefLiteApp.getInstance().exit();
+      _action.run();
     }
 
   }
@@ -68,7 +73,7 @@ public class DebriefRibbonLite
   }
 
   protected static void addLiteTab(final JRibbon ribbon, final Session session,
-      final Runnable resetAction)
+      final Runnable resetAction, final Runnable exitAction)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
@@ -93,7 +98,7 @@ public class DebriefRibbonLite
     liteMenu.startGroup();
     MenuUtils.addCommand("Help", "icons/24/help.png", new HelpAction(),
         liteMenu, RibbonElementPriority.TOP);
-    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(),
+    MenuUtils.addCommand("Exit", "icons/24/exit.png", new ExitLiteApp(exitAction),
         liteMenu, RibbonElementPriority.TOP);
 
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(

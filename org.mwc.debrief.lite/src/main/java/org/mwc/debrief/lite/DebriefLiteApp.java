@@ -661,9 +661,17 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
+    Runnable exitAction = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        exit();
+      }
+    };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar);
+        snailT, statusBar, exitAction);
   }
 
   protected void doPaint(final Graphics gc)
@@ -1151,7 +1159,7 @@ public class DebriefLiteApp implements FileDropListener
     _stepControl.reset();
 
     // reset the map
-    final ResetAction resetMap = new ResetAction(_instance.mapPane);
+    final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
   }
 
@@ -1173,6 +1181,6 @@ public class DebriefLiteApp implements FileDropListener
   protected void update(final Layers theData, final Plottable newItem,
       final HasEditables theLayer)
   {
-    _instance.getLayerManager().updateData((Layer) theLayer, newItem);
+    getLayerManager().updateData((Layer) theLayer, newItem);
   }
 }
