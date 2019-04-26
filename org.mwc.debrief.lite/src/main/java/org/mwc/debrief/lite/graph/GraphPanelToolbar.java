@@ -246,6 +246,9 @@ public class GraphPanelToolbar extends JPanel
             // _xytool
             _xytool.getData();
             setState(ACTIVE_STATE);
+          }else
+          {
+            _xyPanel.reset();
           }
         }
       }
