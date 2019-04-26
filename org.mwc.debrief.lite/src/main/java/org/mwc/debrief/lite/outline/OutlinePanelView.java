@@ -442,11 +442,15 @@ public class OutlinePanelView extends SwingLayerManager implements
           doDelete();
           _myTree.setSelectionPath(null);
         }
-      }catch(Exception e) {
-        System.err.println("Error occured while pasting:"+e.getMessage());
-        if(e instanceof RuntimeException) {
-          JOptionPane.showMessageDialog(null, e.getMessage(), "Error while pasting", JOptionPane.ERROR_MESSAGE);
-        }
+      }
+      catch (RuntimeException re)
+      {
+        JOptionPane.showMessageDialog(null, re.getMessage(),
+            "Error while pasting", JOptionPane.ERROR_MESSAGE);
+      }
+      catch (Exception e)
+      {
+        System.err.println("Error occured while pasting:" + e.getMessage());
       }
     }
 
