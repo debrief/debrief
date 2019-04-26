@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;

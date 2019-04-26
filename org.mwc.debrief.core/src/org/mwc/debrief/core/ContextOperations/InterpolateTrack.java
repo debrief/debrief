@@ -213,7 +213,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
       }
 
       // check we've got the right number of fixes
-      assertEquals("right num of fixes generated", track.numFixes(), 11);
+      assertEquals("right num of fixes generated", 9, track.numFixes());
 
     }
   }

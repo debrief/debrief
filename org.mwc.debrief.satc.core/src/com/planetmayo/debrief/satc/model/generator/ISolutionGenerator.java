@@ -14,7 +14,8 @@
  */
 package com.planetmayo.debrief.satc.model.generator;
 
-import com.planetmayo.debrief.satc.model.Precision;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
+
 import com.planetmayo.debrief.satc.model.states.SafeProblemSpace;
 
 /**

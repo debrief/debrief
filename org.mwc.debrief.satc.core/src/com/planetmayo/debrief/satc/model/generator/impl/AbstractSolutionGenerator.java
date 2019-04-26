@@ -26,9 +26,9 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.model.generator.IGenerateSolutionsListener;
 import com.planetmayo.debrief.satc.model.generator.IJobsManager;

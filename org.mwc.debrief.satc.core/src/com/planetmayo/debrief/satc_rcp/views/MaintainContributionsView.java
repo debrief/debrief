@@ -75,6 +75,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 import org.mwc.debrief.track_shift.controls.ZoneChart;
 import org.mwc.debrief.track_shift.controls.ZoneChart.Zone;
 import org.mwc.debrief.track_shift.controls.ZoneChart.ZoneChartConfig;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IBarSeries;
@@ -82,7 +83,6 @@ import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
