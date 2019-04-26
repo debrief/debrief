@@ -169,15 +169,6 @@ public class MenuUtils
 
   public static FlamingoCommand createCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final RibbonElementPriority priority)
-  {
-    final FlamingoCommand command = createCommand(commandName, imagePath,
-        actionToAdd, priority, null);
-    return command;
-  }
-
-  public static FlamingoCommand createCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
       final RibbonElementPriority priority,
       final PopupPanelCallback popupCallback)
   {

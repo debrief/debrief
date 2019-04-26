@@ -79,7 +79,7 @@ public class DebriefRibbonLite
     liteMenu.startGroup();
     final UndoAction undoAction = new UndoAction(session.getUndoBuffer());
     final FlamingoCommand undoCommand = MenuUtils.createCommand("Undo",
-        "icons/24/undo.png", undoAction, RibbonElementPriority.TOP);
+        "icons/24/undo.png", undoAction, RibbonElementPriority.TOP, null);
     // so that action has the command it has to enable/disable
     undoAction.setActionCommand(undoCommand);
     undoCommand.setEnabled(false);
@@ -88,7 +88,7 @@ public class DebriefRibbonLite
     ribbon.addTaskbarCommand(undoCommand);
     final RedoAction redoAction = new RedoAction(session.getUndoBuffer());
     final FlamingoCommand redoCommand = MenuUtils.createCommand("Redo",
-        "icons/24/redo.png", redoAction, RibbonElementPriority.TOP);
+        "icons/24/redo.png", redoAction, RibbonElementPriority.TOP, null);
     // so that action has the command it has to enable/disable
     redoAction.setActionCommand(redoCommand);
     redoCommand.setEnabled(false);
