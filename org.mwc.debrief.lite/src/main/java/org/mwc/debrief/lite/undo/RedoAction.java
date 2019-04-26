@@ -20,7 +20,6 @@ import java.util.Observer;
 
 import javax.swing.AbstractAction;
 
-import org.mwc.debrief.lite.DebriefLiteApp;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
 
 import MWC.GUI.Tools.Action;
@@ -33,8 +32,10 @@ import MWC.GUI.Undo.UndoBuffer;
 public class RedoAction extends AbstractAction implements Action,Observer
 {
   private FlamingoCommand actionCommand;
-  public RedoAction()
+  private final UndoBuffer _buffer;
+  public RedoAction(final UndoBuffer undoBuffer)
   {
+    _buffer = undoBuffer;
   }
   
   public void setActionCommand(FlamingoCommand command)
@@ -51,9 +52,8 @@ public class RedoAction extends AbstractAction implements Action,Observer
   @Override
   public void execute()
   {
-    final UndoBuffer undoBuffer = DebriefLiteApp.getInstance().getUndoBuffer();
-    if(undoBuffer!=null) {
-      undoBuffer.redo();
+    if(_buffer!=null) {
+      _buffer.redo();
       //_theParent.getCurrentSession().repaint();
     }
   }

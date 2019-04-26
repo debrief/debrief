@@ -53,13 +53,6 @@ public class DebriefRibbonLite
   }
   private static class HelpAction extends AbstractAction
   {
-
-
-    public HelpAction()
-    {
-      super();
-    }
-
     /**
      * 
      */
@@ -74,16 +67,12 @@ public class DebriefRibbonLite
 
   }
 
-
-  private static RibbonTask liteTask;
-  
-
   protected static void addLiteTab(final JRibbon ribbon,
       final Session session, final Runnable resetAction)
   {
     final JRibbonBand liteMenu = new JRibbonBand("Lite", null);
     liteMenu.startGroup();
-    UndoAction undoAction = new UndoAction();
+    UndoAction undoAction = new UndoAction(session.getUndoBuffer());
     FlamingoCommand undoCommand = MenuUtils.createCommand("Undo", "icons/24/undo.png", undoAction,
         RibbonElementPriority.TOP);
     //so that action has the command it has to enable/disable
@@ -92,7 +81,7 @@ public class DebriefRibbonLite
     //add the undoaction as observer for undobuffer
     session.getUndoBuffer().addObserver(undoAction);
     ribbon.addTaskbarCommand(undoCommand);
-    RedoAction redoAction = new RedoAction();
+    RedoAction redoAction = new RedoAction(session.getUndoBuffer());
     FlamingoCommand redoCommand = MenuUtils.createCommand("Redo", "icons/24/redo.png", 
         redoAction,
         RibbonElementPriority.TOP);
@@ -110,15 +99,7 @@ public class DebriefRibbonLite
         liteMenu, RibbonElementPriority.TOP);
     
     liteMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(liteMenu));
-    liteTask = new RibbonTask("Lite", liteMenu);
+    final RibbonTask liteTask = new RibbonTask("Lite", liteMenu);
     ribbon.addTask(liteTask);
-  }
-  
-  
-
-
-  public static RibbonTask getLiteTask()
-  {
-    return liteTask;
   }
 }

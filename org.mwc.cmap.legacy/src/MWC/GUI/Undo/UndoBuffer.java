@@ -82,7 +82,7 @@ import java.util.Vector;
 
 import MWC.GUI.Tools.Action;
 
-public class UndoBuffer extends Observable
+public final class UndoBuffer extends Observable
 {
   /////////////////////////////////////////////////////////////
   // member variables
@@ -114,11 +114,12 @@ public class UndoBuffer extends Observable
 
   public boolean canUndo()
   {
-    return presentAction>=0;
+    return presentAction >= 0;
   }
+
   public boolean canRedo()
   {
-    return presentAction<theActions.size()-1;
+    return presentAction < theActions.size() - 1;
   }
   /** add a new action to the buffer
    */
@@ -195,7 +196,7 @@ public class UndoBuffer extends Observable
   /** get a label describing the next thing which may be undone
    * @return a String describing the next thing which may be undone
    */
-  public String undoLabel(){
+  public final String undoLabel(){
     final String res=null;
 
     return res;
@@ -204,20 +205,24 @@ public class UndoBuffer extends Observable
   /** get a label describing the next thing which may be redone
    * @return a String describing the next thing which may be redone
    */
-  public String redoLabel(){
+  public final String redoLabel(){
     final String res=null;
 
     return res;
   }
 
 
-  public String getText(final Observable source, final Object data)
+  /** get the name of the next operation
+   * 
+   * @param source
+   * @param data
+   * @return
+   */
+  public String getText(final Observable source, final int type)
   {
     String res=null;
 
     // find out whether this is undo or redo
-    final Integer val = (Integer)data;
-    final int type = val.intValue();
     switch(type){
     case undo:
       res = undoLabel();
