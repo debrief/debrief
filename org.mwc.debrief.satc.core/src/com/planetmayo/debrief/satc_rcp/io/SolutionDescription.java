@@ -16,7 +16,8 @@ package com.planetmayo.debrief.satc_rcp.io;
 
 import java.util.List;
 
-import com.planetmayo.debrief.satc.model.Precision;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
+
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;
 import com.thoughtworks.xstream.annotations.XStreamAlias;

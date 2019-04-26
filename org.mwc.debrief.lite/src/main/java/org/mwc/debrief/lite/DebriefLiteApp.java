@@ -49,6 +49,7 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -511,10 +512,10 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new ImportReplay());
 
     // sort out time control
-    _stepControl = new LiteStepControl(app);
-
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    session = new LiteSession(_theClipboard, _theLayers);
+    _stepControl = new LiteStepControl(app, session);
+    session.setStepper(_stepControl);
     app.setSession(session);
     app.setFrame(theFrame);
 
@@ -614,6 +615,13 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
+  private void addGraphView()
+  {
+    GraphPanelView graphPanelView = new GraphPanelView(_stepControl);
+    graphPanel.setCollapsed(true);
+    graphPanel.add(graphPanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -639,6 +647,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void componentResized(final ComponentEvent e)
       {
+        // TODO . This must be change once we update geotools.
         mapPane.setVisible(false);
         mapPane.setVisible(true);
       }
@@ -651,6 +660,7 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
+    addGraphView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -904,7 +914,7 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (final PlainImporter.ImportException ie)
     {
-      DialogFactory.showMessage("Import Error", ie.getMessage());
+      DialogFactory.showMessage("Error in opening file", ie.getMessage());
       success = false;
     }
 

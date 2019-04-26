@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.track_shift.magic;
 
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -202,7 +203,7 @@ public class OptimiseTest
 		{
 
 			final SensorWrapper sensor = new SensorWrapper("nane");
-			final SensorContactWrapper sensorCut = new SensorContactWrapper("name", null,
+			final SensorContactWrapper sensorCut = new SensorContactWrapper("name", new HiResDate(1000),
 					null, 100d, new WorldLocation(1d, 1d, 1d), null, null, 1, null);
 			sensor.add(sensorCut);
 			final TrackSegment parent = null;
@@ -297,7 +298,10 @@ public class OptimiseTest
 
 		public void testShiftSingle() throws FileNotFoundException
 		{
-			final SensorContactWrapper sensor = null;
+			final SensorContactWrapper sensor = new SensorContactWrapper("track", new HiResDate(1100), 
+          null, 100d, null, null, null, Color.RED, "label", 1, "Some name");
+			SensorWrapper sensorW = new SensorWrapper("sensor");
+			sensorW.add(sensor);
 			final TrackSegment parent = null;
 			final FixWrapper hostFix = null;
 			final WorldLocation theLoc = new WorldLocation(0, 0, 0);
@@ -339,7 +343,10 @@ public class OptimiseTest
 
 		public void testShiftMultiple() throws FileNotFoundException
 		{
-			final SensorContactWrapper sensor = null;
+      final SensorContactWrapper sensor = new SensorContactWrapper("name", new HiResDate(1000),
+          null, 100d, new WorldLocation(1d, 1d, 1d), null, null, 1, null);
+      final SensorWrapper sw = new SensorWrapper("sensor");
+      sw.add(sensor);
 			final TrackSegment parent = null;
 			final FixWrapper hostFix1 = new FixWrapper(new Fix(new HiResDate(1000), null,
 					0, 0));

@@ -341,4 +341,8 @@ public class StepperXYPlot extends XYPlot implements StepperListener
     this.getRangeAxis().setAutoRange(true);
   }
 
+	public HiResDate getTimeZero()
+	{
+	  return _myStepper.getTimeZero();
+	}
 }
