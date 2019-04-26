@@ -19,12 +19,10 @@ import javax.swing.JLabel;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
-import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import Debrief.GUI.Frames.Session;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
-import MWC.GUI.Undo.UndoBuffer;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 
@@ -35,24 +33,20 @@ import MWC.TacticalData.temporal.TimeManager;
 public class DebriefRibbon
 {
   public DebriefRibbon(final JRibbon ribbon, final Layers layers,
-      final ToolParent parent,
-      final GeoToolMapRenderer geoMapRenderer,
-      final LiteStepControl stepControl, TimeManager timeManager,
+      final ToolParent parent, final GeoToolMapRenderer geoMapRenderer,
+      final LiteStepControl stepControl, final TimeManager timeManager,
       final PlotOperations operations, final Session session,
-      final UndoBuffer undoBuffer, final Runnable resetAction,
-      final Runnable normalPainter, final Runnable snailPainter, JLabel statusBar)
+      final Runnable resetAction, final Runnable normalPainter,
+      final Runnable snailPainter, final JLabel statusBar, final Runnable exitAction)
   {
     // add menus here
-    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction);
+    DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,
-        stepControl, timeManager, operations, layers, undoBuffer, normalPainter, snailPainter);
-  }
-  
-  public static RibbonTask getLiteTask() {
-    return DebriefRibbonLite.getLiteTask();
+        stepControl, timeManager, operations, layers, session.getUndoBuffer(),
+        normalPainter, snailPainter);
   }
 }
