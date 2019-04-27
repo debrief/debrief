@@ -69,34 +69,23 @@ public class MenuUtils
 
   public static FlamingoCommand addCommand(final String commandName,
       final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority,
-      PopupPanelCallback popupCallback
-      )
+      final JRibbonBand mapBand, final RibbonElementPriority priority)
   {
-    ImageWrapperResizableIcon imageIcon = null;
-    if (imagePath != null)
-    {
-      final Image zoominImage = createImage(imagePath);
-      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
-          16, 16));
-    }
-    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
-        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
-        .setTitleClickAction();
-    if(popupCallback != null) {
-      builder.setPopupCallback(popupCallback);
-    }
-    final FlamingoCommand command = builder.build();
+    return addCommand(commandName, imagePath, actionToAdd, mapBand, priority,
+        null);
+  }
+
+  public static FlamingoCommand addCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final JRibbonBand mapBand, final RibbonElementPriority priority,
+      final PopupPanelCallback popupCallback)
+  {
+    final FlamingoCommand command = createCommand(commandName, imagePath,
+        actionToAdd, priority, popupCallback);
 
     mapBand.addRibbonCommand(command, priority == null
         ? RibbonElementPriority.TOP : priority);
     return command;
-  }
-  public static FlamingoCommand addCommand(final String commandName,
-      final String imagePath, final ActionListener actionToAdd,
-      final JRibbonBand mapBand, final RibbonElementPriority priority)
-  {
-    return addCommand(commandName,imagePath,actionToAdd,mapBand,priority,null);
   }
 
   public static JCommandButton addCommandButton(final String commandName,
@@ -127,8 +116,6 @@ public class MenuUtils
     }
     return commandButton;
   }
-  
-  
 
   public static JCommandToggleButton addCommandToggleButton(
       final String commandName, final String imagePath,
@@ -180,6 +167,29 @@ public class MenuUtils
     return command;
   }
 
+  public static FlamingoCommand createCommand(final String commandName,
+      final String imagePath, final ActionListener actionToAdd,
+      final RibbonElementPriority priority,
+      final PopupPanelCallback popupCallback)
+  {
+    ImageWrapperResizableIcon imageIcon = null;
+    if (imagePath != null)
+    {
+      final Image zoominImage = createImage(imagePath);
+      imageIcon = ImageWrapperResizableIcon.getIcon(zoominImage, new Dimension(
+          16, 16));
+    }
+    final FlamingoCommandBuilder builder = new FlamingoCommandBuilder()
+        .setTitle(commandName).setIcon(imageIcon).setAction(actionToAdd)
+        .setTitleClickAction();
+    if (popupCallback != null)
+    {
+      builder.setPopupCallback(popupCallback);
+    }
+    final FlamingoCommand command = builder.build();
+    return command;
+  }
+
   public static Image createImage(final String imageName)
   {
     final URL iconURL = MenuUtils.class.getClassLoader().getResource(imageName);
@@ -222,5 +232,5 @@ public class MenuUtils
         ribbonBand));
     return policies;
   }
-  
+
 }

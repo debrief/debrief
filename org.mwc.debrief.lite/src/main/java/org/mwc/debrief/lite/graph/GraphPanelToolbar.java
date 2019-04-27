@@ -342,7 +342,7 @@ public class GraphPanelToolbar extends JPanel
       }
     });
     final JToggleButton hideCrosshair = createJToggleButton(
-        "Hide the crosshair from the graph (for printing)", "icons/16/fix.png");
+        "Show the crosshair from the graph (for printing)", "icons/16/fix.png");
 
     final XYTextAnnotation _crosshairValueText = new XYTextAnnotation(" ", 0,
         0);
@@ -365,11 +365,13 @@ public class GraphPanelToolbar extends JPanel
         {
           _xytool.getGeneratedJFreeChart().getXYPlot().addAnnotation(
               _crosshairValueText);
+          hideCrosshair.setToolTipText("Hide the crosshair from the graph (for printing)");
         }
         else
         {
           _xytool.getGeneratedJFreeChart().getXYPlot().removeAnnotation(
               _crosshairValueText);
+          hideCrosshair.setToolTipText("Show the crosshair from the graph (for printing)");
         }
 
         _xytool.getGeneratedChartPanel().invalidate();
@@ -435,7 +437,7 @@ public class GraphPanelToolbar extends JPanel
       }
     });
     final JButton propertiesButton = createCommandButton(
-        "Change editable properties for this chart", "icons/16/properties.png");
+        "Edit Chart Properties", "icons/16/properties.png");
 
     propertiesButton.addActionListener(new ActionListener()
     {

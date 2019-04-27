@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 import org.uncommons.watchmaker.framework.CandidateFactory;
 
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.legs.LegType;
 import com.planetmayo.debrief.satc.model.legs.StraightLeg;
 import com.planetmayo.debrief.satc.model.legs.StraightRoute;
