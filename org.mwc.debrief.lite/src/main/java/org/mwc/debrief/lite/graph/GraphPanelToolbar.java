@@ -265,20 +265,20 @@ public class GraphPanelToolbar extends JPanel
         @Override
         public void dataExtended(final Layers theData)
         {
-          assignTraks(tracks);
+          assignTraks(theData);
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          assignTraks(tracks);
+          assignTraks(theData);
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-          assignTraks(tracks);
+          assignTraks(theData);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
@@ -531,10 +531,11 @@ public class GraphPanelToolbar extends JPanel
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 
-  private void assignTraks(final List<TrackWrapper> tracks)
+  private void assignTraks(final Layers layers)
   {
-    final Enumeration<Editable> elem = _stepControl.getLayers()
+    final Enumeration<Editable> elem = layers
         .elements();
+    List<TrackWrapper> tracks = new ArrayList<>();
     while (elem.hasMoreElements())
     {
       final Editable nextItem = elem.nextElement();
