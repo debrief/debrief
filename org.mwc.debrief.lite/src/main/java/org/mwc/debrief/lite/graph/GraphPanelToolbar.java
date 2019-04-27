@@ -255,66 +255,35 @@ public class GraphPanelToolbar extends JPanel
         updateXYPlot(operationComboBox);
       }
     });
-
-    // Adding listener for filtering.
-    _stepControl.getLayers().addDataReformattedListener(new DataListener()
-    {
-
-      @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
-      {
-        updateXYPlot(operationComboBox);
-      }
-
-      @Override
-      public void dataModified(Layers theData, Layer changedLayer)
-      {
-        System.out.println(""); // Hello Codacy :)
-      }
-
-      @Override
-      public void dataExtended(Layers theData)
-      {
-        System.out.println(""); // Hello Codacy :)
-      }
-    });
+    
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
-
       final DataListener trackChangeListener = new DataListener()
       {
 
         @Override
         public void dataExtended(final Layers theData)
         {
-
+          assignTraks(tracks);
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          final Enumeration<Editable> elem = _stepControl.getLayers()
-              .elements();
-          while (elem.hasMoreElements())
-          {
-            final Editable nextItem = elem.nextElement();
-            if (nextItem instanceof TrackWrapper)
-            {
-              tracks.add((TrackWrapper) nextItem);
-            }
-          }
-          selectTrackModel.setTracks(tracks);
+          assignTraks(tracks);
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-
+          assignTraks(tracks);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
+      _stepControl.getLayers().addDataExtendedListener(trackChangeListener);
+      _stepControl.getLayers().addDataReformattedListener(trackChangeListener);
 
     }
 
@@ -558,5 +527,20 @@ public class GraphPanelToolbar extends JPanel
     this._state = newState;
 
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+  }
+
+  private void assignTraks(final List<TrackWrapper> tracks)
+  {
+    final Enumeration<Editable> elem = _stepControl.getLayers()
+        .elements();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof TrackWrapper)
+      {
+        tracks.add((TrackWrapper) nextItem);
+      }
+    }
+    selectTrackModel.setTracks(tracks);
   }
 }
