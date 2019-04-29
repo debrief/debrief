@@ -237,7 +237,7 @@ public class DebriefRibbonTimeController
 
     public int getCurrentAt(final long now)
     {
-      return (int) Math.round((double)(now - origin) / step);
+      return (int) Math.round((double) (now - origin) / step);
     }
 
     public int getEnd()
@@ -261,14 +261,14 @@ public class DebriefRibbonTimeController
       range = (int) ((end - start) / step);
     }
   }
-  
+
   public static class SliderConverterTest extends TestCase
   {
     public void testConverter()
     {
       final SliderConverter test = new SliderConverter();
       test.init(1240423198490L, 1240427422390L);
-      
+
       final int originalStep = 21;
       final long originalTime = test.getTimeAt(originalStep);
       final long roundedTime = originalTime / 1000L * 1000L;
