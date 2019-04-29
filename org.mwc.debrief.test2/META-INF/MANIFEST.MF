@@ -5,9 +5,30 @@ Bundle-SymbolicName: org.mwc.debrief.test2
 Bundle-Version: 1.0.23
 Bundle-Vendor: MWC
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Require-Bundle: org.mwc.cmap.TimeController,
+Require-Bundle: org.junit,
+ org.mwc.cmap.LiveDataMonitor,
+ org.mwc.cmap.NarrativeViewer,
+ org.mwc.cmap.TimeController,
  org.mwc.cmap.core,
+ org.mwc.cmap.grideditor,
+ org.mwc.cmap.gt2Plot,
+ org.mwc.cmap.jfreechart,
  org.mwc.cmap.legacy,
+ org.mwc.cmap.overview,
+ org.mwc.cmap.plotViewer,
+ org.mwc.cmap.tote,
+ org.mwc.cmap.xyplot,
+ org.mwc.debrief.SensorFusion,
  org.mwc.debrief.core,
+ org.mwc.debrief.data_feed,
+ org.mwc.debrief.data_feed_dummy,
+ org.mwc.debrief.help,
  org.mwc.debrief.legacy,
- org.mwc.debrief.track_shift
+ org.mwc.debrief.multipath2,
+ org.mwc.debrief.track_shift,
+ org.mwc.gnd.demonstrator,
+ org.eclipse.equinox.console,
+ org.apache.felix.gogo.command,
+ org.apache.felix.gogo.runtime,
+ org.apache.felix.gogo.shell,
+org.mwc.debrief.lite

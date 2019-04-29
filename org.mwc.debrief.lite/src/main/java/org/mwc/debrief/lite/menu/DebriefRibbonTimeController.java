@@ -71,6 +71,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
+import junit.framework.TestCase;
 
 public class DebriefRibbonTimeController
 {
@@ -232,7 +233,7 @@ public class DebriefRibbonTimeController
     private int range;
     private long origin;
     // have one minute steps
-    private final int step = 10;
+    private final int step = 1000;
 
     public int getCurrentAt(final long now)
     {
@@ -258,6 +259,21 @@ public class DebriefRibbonTimeController
     {
       origin = start;
       range = (int) ((end - start) / step);
+    }
+  }
+  
+  public static class SliderConverterTest extends TestCase
+  {
+    public void testConverter()
+    {
+      final SliderConverter test = new SliderConverter();
+      test.init(1240423198490L, 1240427422390L);
+      
+      final int originalStep = 21;
+      final long originalTime = test.getTimeAt(originalStep);
+      final long roundedTime = originalTime / 1000L * 1000L;
+      final int newStep = test.getCurrentAt(roundedTime);
+      assertEquals("Rounding slider converter", originalStep, newStep);
     }
   }
 
