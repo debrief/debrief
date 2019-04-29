@@ -313,7 +313,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
   private static TimePeriod getPeriodFor(final Layers theData)
   {
-    return theData.getTimePeriod();
+    return theData != null ? theData.getTimePeriod() : null;
   }
 
   private static boolean hasFrequencyData(final SensorWrapper thisS)

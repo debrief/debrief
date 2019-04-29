@@ -24,10 +24,10 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
+import org.mwc.debrief.track_shift.zig_detector.Precision;
 
 import com.planetmayo.debrief.satc.log.LogFactory;
 import com.planetmayo.debrief.satc.model.GeoPoint;
-import com.planetmayo.debrief.satc.model.Precision;
 import com.planetmayo.debrief.satc.model.VehicleType;
 import com.planetmayo.debrief.satc.model.contributions.ATBForecastContribution;
 import com.planetmayo.debrief.satc.model.contributions.BaseContribution;

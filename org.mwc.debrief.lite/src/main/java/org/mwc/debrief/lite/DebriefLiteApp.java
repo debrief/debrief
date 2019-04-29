@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JFrame;
@@ -48,6 +49,7 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
@@ -67,7 +69,6 @@ import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
 import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 
-import Debrief.GUI.Frames.Application;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
@@ -78,6 +79,8 @@ import Debrief.ReaderWriter.XML.dummy.SATCHandler_Mock;
 import Debrief.ReaderWriter.XML.dynamic.DynamicLayerHandler;
 import Debrief.ReaderWriter.XML.dynamic.DynamicShapeLayerHandler;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DataListenerAdaptor;
@@ -96,6 +99,7 @@ import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.ExtendedCanvasAdapter;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
@@ -107,6 +111,7 @@ import MWC.TacticalData.temporal.TimeProvider;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.ReaderWriter.ImportManager;
 import MWC.Utilities.ReaderWriter.ImportManager.BaseImportCaller;
+import MWC.Utilities.ReaderWriter.PlainImporter;
 
 /**
  * @author Ayesha <ayesha.ma@gmail.com>
@@ -232,6 +237,23 @@ public class DebriefLiteApp implements FileDropListener
     return mapPane;
   }
 
+  private static List<TrackWrapper> determineCandidateHosts()
+  {
+    final List<TrackWrapper> res = new ArrayList<TrackWrapper>();
+
+    final Enumeration<Editable> iter = _instance._theLayers.elements();
+    while (iter.hasMoreElements())
+    {
+      final Editable editable = iter.nextElement();
+      if (editable instanceof TrackWrapper)
+      {
+        res.add((TrackWrapper) editable);
+      }
+    }
+
+    return res;
+  }
+
   public static ToolParent getDefault()
   {
     return app;
@@ -270,6 +292,39 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
+  public static void openDsfFile(final File file) throws FileNotFoundException
+  {
+    final ImportReplay rep = new ImportReplay();
+    rep.storePendingSensors();
+
+    final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+    // see if there are any sensors awaiting a host
+    if (sensors.size() >= 1)
+    {
+      final Iterator<SensorWrapper> sIter = sensors.iterator();
+      while (sIter.hasNext())
+      {
+        final SensorWrapper sensor = sIter.next();
+        if (sensor.getHost() == null)
+        {
+          // have we sorted out the hosts?
+          final List<TrackWrapper> candidateHosts = determineCandidateHosts();
+
+          if (candidateHosts.size() == 0)
+          {
+            JOptionPane.showMessageDialog(null,
+                "Sensor data can only be loaded after tracks",
+                "Loading sensor data", JOptionPane.ERROR_MESSAGE);
+            return;
+          }
+
+        }
+      }
+    }
+    rep.storePendingSensors();
+  }
+
   public static void openPlotFile(final File file)
   {
     try
@@ -279,10 +334,6 @@ public class DebriefLiteApp implements FileDropListener
     catch (final Exception e)
     {
       Trace.trace(e);
-    }
-    finally
-    {
-      resetFileName(file);
     }
   }
 
@@ -296,19 +347,6 @@ public class DebriefLiteApp implements FileDropListener
     catch (final Exception e)
     {
       Trace.trace(e);
-    }
-    finally
-    {
-      resetFileName(file);
-    }
-  }
-
-  private static void resetFileName(final File file)
-  {
-    if (DebriefLiteApp.currentFileName == null)
-    {
-      DebriefLiteApp.currentFileName = file.getAbsolutePath();
-      DebriefLiteApp.setTitle(file.getName());
     }
   }
 
@@ -369,6 +407,7 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   protected DataListener2 _listenForMods;
+
   private OutlinePanelView layerManager;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
@@ -376,10 +415,9 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
-
   private GeoToolMapProjection projection;
-  private final LiteSession session;
 
+  private final LiteSession session;
   private final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
 
@@ -474,10 +512,10 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new ImportReplay());
 
     // sort out time control
-    _stepControl = new LiteStepControl(app);
-
     final Clipboard _theClipboard = new Clipboard("Debrief");
-    session = new LiteSession(_theClipboard, _theLayers, _stepControl);
+    session = new LiteSession(_theClipboard, _theLayers);
+    _stepControl = new LiteStepControl(app, session);
+    session.setStepper(_stepControl);
     app.setSession(session);
     app.setFrame(theFrame);
 
@@ -486,8 +524,6 @@ public class DebriefLiteApp implements FileDropListener
 
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
-
-    final UndoBuffer undoBuffer = session.getUndoBuffer();
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
@@ -547,8 +583,9 @@ public class DebriefLiteApp implements FileDropListener
 
     // create the components
     initForm();
-    createAppPanels(geoMapRenderer, undoBuffer, dropSupport, mapPane,
-        _stepControl, timeManager, _myOperations, normalT, snailT, statusBar);
+    createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
+        mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
+        statusBar);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -578,6 +615,13 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.getRibbon().setSelectedTask(DebriefRibbonFile.getFileTask());
   }
 
+  private void addGraphView()
+  {
+    GraphPanelView graphPanelView = new GraphPanelView(_stepControl);
+    graphPanel.setCollapsed(true);
+    graphPanel.add(graphPanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -603,6 +647,7 @@ public class DebriefLiteApp implements FileDropListener
       @Override
       public void componentResized(final ComponentEvent e)
       {
+        // TODO . This must be change once we update geotools.
         mapPane.setVisible(false);
         mapPane.setVisible(true);
       }
@@ -615,6 +660,7 @@ public class DebriefLiteApp implements FileDropListener
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
+    addGraphView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
@@ -625,22 +671,30 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
+    Runnable exitAction = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        exit();
+      }
+    };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
-        stepControl, timeManager, operation, session, undoBuffer, resetAction,
-        normalT, snailT, statusBar);
+        stepControl, timeManager, operation, session, resetAction, normalT,
+        snailT, statusBar, exitAction);
   }
 
   protected void doPaint(final Graphics gc)
   {
     final CanvasAdaptor dest;
-    if(gc instanceof Graphics2D)
+    if (gc instanceof Graphics2D)
     {
       dest = new ExtendedCanvasAdapter(projection, gc, Color.red);
     }
     else
     {
       final String s = "Lite rendering is expecting a Graphics2D object";
-      app.logError(Application.ERROR, s, null);
+      app.logError(ToolParent.ERROR, s, null);
       throw new IllegalArgumentException(s);
     }
 
@@ -653,7 +707,7 @@ public class DebriefLiteApp implements FileDropListener
       dest.startDraw(gc);
       _theLayers.paint(dest);
     }
-    
+
     // and the time marker
     redoTimePainter(true, dest, null, null);
 
@@ -733,6 +787,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     setCursor(Cursor.WAIT_CURSOR);
     File file = null;
+    boolean renameFile = true;
     try
     {
       final Enumeration<File> iter = files.elements();
@@ -749,8 +804,50 @@ public class DebriefLiteApp implements FileDropListener
         }
         else
         {
-          if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(".DSF"))
-              || (suff.equalsIgnoreCase(".DTF")))
+          if (suff.equalsIgnoreCase(".DSF"))
+          {
+            final ImportReplay rep = new ImportReplay();
+            rep.setLayers(_theLayers);
+            rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
+            final Vector<SensorWrapper> sensors = rep.getPendingSensors();
+
+            // see if there are any sensors awaiting a host
+            if (sensors.size() >= 1)
+            {
+              final Iterator<SensorWrapper> sIter = sensors.iterator();
+              while (sIter.hasNext())
+              {
+                final SensorWrapper sensor = sIter.next();
+                if (sensor.getHost() == null)
+                {
+                  // have we sorted out the hosts?
+                  final List<TrackWrapper> candidateHosts =
+                      determineCandidateHosts();
+
+                  if (candidateHosts.size() == 0)
+                  {
+                    renameFile = false;
+                    JOptionPane.showMessageDialog(null,
+                        "Sensor data can only be loaded after tracks",
+                        "Loading sensor data", JOptionPane.ERROR_MESSAGE);
+                    break;
+                  }
+
+                }
+              }
+            }
+            if (renameFile)
+            {
+              rep.storePendingSensors();
+              _theLayers.fireExtended();
+              JOptionPane.showMessageDialog(null,
+                  "Finished loading sensor data from the file",
+                  "Loading sensor data", JOptionPane.INFORMATION_MESSAGE);
+
+            }
+          }
+          else if ((suff.equalsIgnoreCase(".REP")) || (suff.equalsIgnoreCase(
+              ".DTF")))
           {
             // fake wrap it
             final File[] fList = new File[]
@@ -777,10 +874,6 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
-    finally
-    {
-      resetFileName(file);
-    }
     restoreCursor();
   }
 
@@ -791,6 +884,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
+    boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
     {
@@ -809,19 +903,31 @@ public class DebriefLiteApp implements FileDropListener
         DebriefRibbonTimeController.assignThisTimeFormat(_stepControl
             .getDateFormat(), true, true);
       }
+      _theLayers.fireModified(null);
     }
     catch (final FileNotFoundException e)
     {
       app.logError(ToolParent.ERROR, "Failed to read DPF File", e);
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Failed to read DPF File" + e.getMessage());
+      success = false;
     }
-    _theLayers.fireModified(null);
+    catch (final PlainImporter.ImportException ie)
+    {
+      DialogFactory.showMessage("Error in opening file", ie.getMessage());
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(file);
+    }
   }
 
   private void handleImportRep(final File[] fList)
   {
     final DebriefLiteApp source = this;
+    boolean success = true;
     final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
     {
       // handle completion of the full import process
@@ -869,8 +975,20 @@ public class DebriefLiteApp implements FileDropListener
         });
       }
     };
-    // ok, start loading
-    caller.start();
+    try
+    {
+      // ok, start loading
+      caller.start();
+    }
+    catch (final PlainImporter.ImportException ie)
+    {
+      success = false;
+    }
+
+    if (success)
+    {
+      resetFileName(fList[0]);
+    }
   }
 
   /**
@@ -933,6 +1051,26 @@ public class DebriefLiteApp implements FileDropListener
 
   }
 
+  private void paintDynamicLayers(final CanvasType dest)
+  {
+    final HiResDate tNow = timeManager.getTime();
+    // do we have time?
+    if (tNow != null)
+    {
+      final long timeVal = tNow.getDate().getTime();
+      final Enumeration<Editable> lIter = _theLayers.elements();
+      while (lIter.hasMoreElements())
+      {
+        final Editable next = lIter.nextElement();
+        if (next instanceof DynamicPlottable)
+        {
+          final DynamicPlottable dp = (DynamicPlottable) next;
+          dp.paint(dest, timeVal);
+        }
+      }
+    }
+  }
+
   private void populateTote()
   {
 
@@ -957,10 +1095,10 @@ public class DebriefLiteApp implements FileDropListener
           (CanvasType.PaintListener) painterManager.getCurrentPainterObject();
 
       // it must be ok
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest.getGraphicsTemp(),
-          backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, dest
+          .getGraphicsTemp(), backColor);
       thisPainter.paintMe(adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
@@ -972,32 +1110,21 @@ public class DebriefLiteApp implements FileDropListener
         snail.setVectorStretch(1d);
       }
 
-      final CanvasAdaptor adapter = new CanvasAdaptor(projection,
-          graphics, backColor);
+      final CanvasAdaptor adapter = new CanvasAdaptor(projection, graphics,
+          backColor);
       painterManager.newTime(oldDTG, newDTG, adapter);
-      
+
       // also render dynamic layers
       paintDynamicLayers(adapter);
     }
   }
 
-  private void paintDynamicLayers(CanvasType dest)
+  private void resetFileName(final File file)
   {
-    final HiResDate tNow = timeManager.getTime();
-    // do we have time?
-    if(tNow != null)
+    if (DebriefLiteApp.currentFileName == null)
     {
-      final long timeVal = tNow.getDate().getTime();
-      Enumeration<Editable> lIter = _theLayers.elements();
-      while(lIter.hasMoreElements())
-      {
-        Editable next = lIter.nextElement();
-        if(next instanceof DynamicPlottable)
-        {
-          DynamicPlottable dp = (DynamicPlottable) next;
-          dp.paint(dest, timeVal);
-        }
-      }
+      DebriefLiteApp.currentFileName = file.getAbsolutePath();
+      DebriefLiteApp.setTitle(file.getName());
     }
   }
 
@@ -1042,7 +1169,7 @@ public class DebriefLiteApp implements FileDropListener
     _stepControl.reset();
 
     // reset the map
-    final ResetAction resetMap = new ResetAction(_instance.mapPane);
+    final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
   }
 
@@ -1064,6 +1191,6 @@ public class DebriefLiteApp implements FileDropListener
   protected void update(final Layers theData, final Plottable newItem,
       final HasEditables theLayer)
   {
-    _instance.getLayerManager().updateData((Layer) theLayer, newItem);
+    getLayerManager().updateData((Layer) theLayer, newItem);
   }
 }

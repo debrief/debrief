@@ -14,8 +14,9 @@
  */
 package com.planetmayo.debrief.satc.model.generator.impl.ga;
 
+import org.mwc.debrief.track_shift.zig_detector.Precision;
+
 import com.planetmayo.debrief.satc.model.ModelObject;
-import com.planetmayo.debrief.satc.model.Precision;
 
 public class GAParameters extends ModelObject
 {

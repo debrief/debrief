@@ -25,6 +25,6 @@ import org.junit.runner.RunWith;
 @SuiteTypes({org.junit.extensions.cpsuite.SuiteType.JUNIT38_TEST_CLASSES, 
 	org.junit.extensions.cpsuite.SuiteType.TEST_CLASSES})
 @ClassnameFilters({"ASSET.*", "Debrief.*", "MWC.*", "org.mwc.asset.*", "org.mwc.cmap.core.*", 
-	"org.mwc.cmap.g*", "org.mwc.cmap.p*", "org.mwc.cmap.debrief.*"})
+	"org.mwc.cmap.g*", "org.mwc.cmap.p*", "org.mwc.debrief.*"})
 
 public class AllTests {}

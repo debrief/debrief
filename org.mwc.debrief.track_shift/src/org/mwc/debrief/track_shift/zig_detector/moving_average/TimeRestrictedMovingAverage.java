@@ -90,7 +90,7 @@ public class TimeRestrictedMovingAverage
 
       avg.add(600, 50);
       assertEquals("correct average", 35d, avg.getAverage(), 0.0001);
-      assertTrue(avg.isPopulated());
+      assertFalse(avg.isPopulated());
     }
   }
   

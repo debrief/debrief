@@ -99,6 +99,8 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   public final class PlotInfo extends Editable.EditorType
   {
 
+    private final NewFormattedJFreeChart _data;
+
     /**
      * constructor for this editor, takes the actual track as a parameter
      *
@@ -108,6 +110,24 @@ public class NewFormattedJFreeChart extends JFreeChart implements
     public PlotInfo(final NewFormattedJFreeChart data)
     {
       super(data, data.getName(), "");
+      this._data = data;
+    }
+
+    private boolean isRelative()
+    {
+
+      final Plot plot = _data.getPlot();
+      if (plot != null && plot instanceof StepperXYPlot)
+      {
+        final StepperXYPlot xyPlot = (StepperXYPlot) plot;
+
+        if (xyPlot.getTimeZero() != null)
+        {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     @Override
@@ -127,9 +147,9 @@ public class NewFormattedJFreeChart extends JFreeChart implements
                 EditorType.TEMPORAL), displayProp("X_AxisTitle", "X axis title",
                     "the x axis title of this plot"), displayProp("Y_AxisTitle",
                         "Y axis title", "the y axis title of this plot"),
-            displayProp("RelativeTimes", "Relative times",
+            isRelative() ? displayProp("RelativeTimes", "Relative times",
                 "whether to plot times relative to an anchor value (tZero)",
-                EditorType.TEMPORAL),
+                EditorType.TEMPORAL) : null,
 
             displayProp("ShowSymbols", "Show symbols",
                 "whether to show symbols at the data points",
