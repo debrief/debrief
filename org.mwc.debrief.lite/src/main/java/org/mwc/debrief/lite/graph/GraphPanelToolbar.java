@@ -134,24 +134,13 @@ public class GraphPanelToolbar extends JPanel
 
   private JButton createCommandButton(final String command, final String image)
   {
-    final URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (final Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
+    final ImageIcon icon = getIcon(image);
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
   }
 
-  private JToggleButton createJToggleButton(final String command,
-      final String image)
+  private ImageIcon getIcon(final String image)
   {
     final URL imageIcon = getClass().getClassLoader().getResource(image);
     ImageIcon icon = null;
@@ -161,9 +150,15 @@ public class GraphPanelToolbar extends JPanel
     }
     catch (final Exception e)
     {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
+      throw new IllegalArgumentException("Icon missing:" + image);
     }
+    return icon;
+  }
+
+  private JToggleButton createJToggleButton(final String command,
+      final String image)
+  {
+    final ImageIcon icon = getIcon(image);
     final JToggleButton button = new JToggleButton(icon);
     button.setToolTipText(command);
     return button;
