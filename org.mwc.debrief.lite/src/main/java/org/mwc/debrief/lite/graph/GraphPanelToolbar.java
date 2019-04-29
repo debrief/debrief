@@ -269,13 +269,13 @@ public class GraphPanelToolbar extends JPanel
       @Override
       public void dataModified(Layers theData, Layer changedLayer)
       {
-        System.out.println(""); // Hello Codacy :)
+        // not implemented
       }
 
       @Override
       public void dataExtended(Layers theData)
       {
-        System.out.println(""); // Hello Codacy :)
+        // not implemented
       }
     });
 
