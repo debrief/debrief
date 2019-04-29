@@ -237,7 +237,7 @@ public class DebriefRibbonTimeController
 
     public int getCurrentAt(final long now)
     {
-      return (int) ((now - origin) / step);
+      return (int) Math.round((double)(now - origin) / step);
     }
 
     public int getEnd()
