@@ -167,7 +167,6 @@ public class LiteStepControl extends StepControl
     if (evt.getPropertyName().equals(TimeProvider.TIME_CHANGED_PROPERTY_NAME))
     {
       final HiResDate dtg = (HiResDate) evt.getNewValue();
-      updateForm(dtg);
 
       // hey, have we been set?
       changeTime(dtg);
