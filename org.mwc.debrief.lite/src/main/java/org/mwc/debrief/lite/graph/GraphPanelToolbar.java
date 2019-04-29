@@ -143,17 +143,7 @@ public class GraphPanelToolbar extends JPanel
 
   private JButton createCommandButton(final String command, final String image)
   {
-    final URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (final Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
+    final ImageIcon icon = getIcon(image);
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
@@ -161,6 +151,14 @@ public class GraphPanelToolbar extends JPanel
 
   private JToggleButton createJToggleButton(final String command,
       final String image)
+  {
+    final ImageIcon icon = getIcon(image);
+    final JToggleButton button = new JToggleButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
+  private ImageIcon getIcon(final String image)
   {
     final URL imageIcon = getClass().getClassLoader().getResource(image);
     ImageIcon icon = null;
@@ -170,12 +168,9 @@ public class GraphPanelToolbar extends JPanel
     }
     catch (final Exception e)
     {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
+      throw new IllegalArgumentException("Icon missing:" + image);
     }
-    final JToggleButton button = new JToggleButton(icon);
-    button.setToolTipText(command);
-    return button;
+    return icon;
   }
 
   protected void init()
@@ -222,136 +217,34 @@ public class GraphPanelToolbar extends JPanel
       @Override
       public void propertyChange(final PropertyChangeEvent arg0)
       {
-        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        final CalculationHolder operation =
-            (CalculationHolder) operationComboBox.getSelectedItem();
-        _xytool.setPreselectedOperation(operation);
-
-        Vector<WatchableList> selectedTracksByUser = null;
-
-        if (selectTrackModel != null && _stepControl != null && _stepControl
-            .getStartTime() != null && _stepControl.getEndTime() != null)
-        {
-          _xytool.setPreselectedPrimaryTrack(selectTrackModel
-              .getPrimaryTrack());
-          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-          selectedTracksByUser = new Vector<>();
-          for (final TrackWrapperSelect currentTrack : tracks)
-          {
-            if (currentTrack.selected)
-            {
-              selectedTracksByUser.add(currentTrack.track);
-            }
-          }
-
-          if (!selectedTracksByUser.isEmpty() && (!operation
-              .isARelativeCalculation() || selectTrackModel
-                  .getPrimaryTrack() != null))
-          {
-            _xytool.setTracks(selectedTracksByUser);
-            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-                .getEndTime());
-
-            // _xytool
-            _xytool.getData();
-            
-            _xytool.getGeneratedJFreeChart().addPropertyChangeListener(
-                new PropertyChangeListener()
-                {
-
-                  @Override
-                  public void propertyChange(PropertyChangeEvent evt)
-                  {
-                    if (NewFormattedJFreeChart.SYMBOL_PROPERTY.equals(evt
-                        .getPropertyName()))
-                    {
-                      updateSymbolButton(symbolOn, symbolOff, showSymbolsButton,
-                          evt.getNewValue().equals(true));
-                    }
-                  }
-                });
-            
-            setState(ACTIVE_STATE);
-          }
-        }
-      }
-    });
-
-    _stepControl.getLayers().addDataExtendedListener(new DataListener()
-    {
-
-      @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
-      {
-        System.out.println("Called dataReformatted");
-      }
-
-      @Override
-      public void dataModified(Layers theData, Layer changedLayer)
-      {
-        System.out.println("Called dataModified");
-        _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-        final CalculationHolder operation =
-            (CalculationHolder) operationComboBox.getSelectedItem();
-        _xytool.setPreselectedOperation(operation);
-
-        Vector<WatchableList> selectedTracksByUser = null;
-
-        if (selectTrackModel != null && _stepControl != null && _stepControl
-            .getStartTime() != null && _stepControl.getEndTime() != null)
-        {
-          _xytool.setPreselectedPrimaryTrack(selectTrackModel
-              .getPrimaryTrack());
-          final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-          selectedTracksByUser = new Vector<>();
-          for (final TrackWrapperSelect currentTrack : tracks)
-          {
-            if (currentTrack.selected)
-            {
-              selectedTracksByUser.add(currentTrack.track);
-            }
-          }
-
-          if (!selectedTracksByUser.isEmpty() && (!operation
-              .isARelativeCalculation() || selectTrackModel
-                  .getPrimaryTrack() != null))
-          {
-            _xytool.setTracks(selectedTracksByUser);
-            _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-                .getEndTime());
-
-            // _xytool
-            _xytool.getData();
-
-            _xytool.getGeneratedJFreeChart().addPropertyChangeListener(
-                new PropertyChangeListener()
-                {
-
-                  @Override
-                  public void propertyChange(PropertyChangeEvent evt)
-                  {
-                    if (NewFormattedJFreeChart.SYMBOL_PROPERTY.equals(evt
-                        .getPropertyName()))
-                    {
-                      updateSymbolButton(symbolOn, symbolOff, showSymbolsButton,
-                          evt.getNewValue().equals(true));
-                    }
-                  }
-                });
-            setState(ACTIVE_STATE);
-          }
-        }
-      }
-
-      @Override
-      public void dataExtended(Layers theData)
-      {
-        System.out.println("Called dataExtended");
+        updateXYPlot(operationComboBox);
       }
     });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
+
+      _stepControl.getLayers().addDataExtendedListener(new DataListener()
+      {
+        
+        @Override
+        public void dataReformatted(Layers theData, Layer changedLayer)
+        {
+          // not implemented
+        }
+        
+        @Override
+        public void dataModified(Layers theData, Layer changedLayer)
+        {
+          updateXYPlot(operationComboBox);
+        }
+        
+        @Override
+        public void dataExtended(Layers theData)
+        {
+          // not implemented
+        }
+      });
 
       final DataListener trackChangeListener = new DataListener()
       {
@@ -627,6 +520,7 @@ public class GraphPanelToolbar extends JPanel
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 
+
   private void updateSymbolButton(final String symbolOn, final String symbolOff,
       final JToggleButton showSymbolsButton, final boolean isSelected)
   {
@@ -639,6 +533,62 @@ public class GraphPanelToolbar extends JPanel
     if ( isSelected != showSymbolsButton.isSelected() )
     {
       showSymbolsButton.setSelected(isSelected);
+    }
+  }
+  
+  private void updateXYPlot(
+      final JComboBox<CalculationHolder> operationComboBox)
+  {
+    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+    final CalculationHolder operation = (CalculationHolder) operationComboBox
+        .getSelectedItem();
+    _xytool.setPreselectedOperation(operation);
+
+    Vector<WatchableList> selectedTracksByUser = null;
+
+    if (selectTrackModel != null && _stepControl != null && _stepControl
+        .getStartTime() != null && _stepControl.getEndTime() != null)
+    {
+      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
+      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+      selectedTracksByUser = new Vector<>();
+      for (final TrackWrapperSelect currentTrack : tracks)
+      {
+        if (currentTrack.selected)
+        {
+          selectedTracksByUser.add(currentTrack.track);
+        }
+      }
+
+      if (!selectedTracksByUser.isEmpty() && (!operation
+          .isARelativeCalculation() || selectTrackModel
+              .getPrimaryTrack() != null))
+      {
+        _xytool.setTracks(selectedTracksByUser);
+        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+            .getEndTime());
+
+        // _xytool
+        _xytool.getData();
+        
+        _xytool.getGeneratedJFreeChart().addPropertyChangeListener(
+            new PropertyChangeListener()
+            {
+
+              @Override
+              public void propertyChange(PropertyChangeEvent evt)
+              {
+                if (NewFormattedJFreeChart.SYMBOL_PROPERTY.equals(evt
+                    .getPropertyName()))
+                {
+                  updateSymbolButton(symbolOn, symbolOff, showSymbolsButton,
+                      evt.getNewValue().equals(true));
+                }
+              }
+            });
+
+        setState(ACTIVE_STATE);
+      }
     }
   }
 }
