@@ -69,12 +69,11 @@ public class DebriefRibbonTimeController
   private static final String STOP_IMAGE = "icons/24/media_stop.png";
 
   private static final String PLAY_IMAGE = "icons/24/media_play.png";
-  
+
   public static JPanel topButtonsPanel;
 
   /**
-   * Class that binds the Time Filter and Time Label.
-   * It is used to update the date formatting.
+   * Class that binds the Time Filter and Time Label. It is used to update the date formatting.
    *
    */
   protected static class DateFormatBinder
@@ -85,18 +84,19 @@ public class DebriefRibbonTimeController
     protected RangeSlider slider;
     protected TimeManager timeManager;
 
-    public void updateTimeDateFormat(final String format, boolean updateTimeLabel, boolean updateFilters)
+    public void updateTimeDateFormat(final String format,
+        boolean updateTimeLabel, boolean updateFilters)
     {
-      if ( updateTimeLabel )
+      if (updateTimeLabel)
       {
         stepControl.setDateFormat(format);
       }
-      if ( updateFilters )
+      if (updateFilters)
       {
         updateFilterDateFormat();
       }
     }
-    
+
     public String getDateFormat()
     {
       return stepControl.getDateFormat();
@@ -123,12 +123,12 @@ public class DebriefRibbonTimeController
      */
     private static final long serialVersionUID = 1L;
     private final JPopupMenu menu;
-    
+
     private ShowFormatAction(final JPopupMenu theMenu)
     {
       this.menu = theMenu;
     }
-    
+
     @Override
     public void actionPerformed(final ActionEvent e)
     {
@@ -159,7 +159,7 @@ public class DebriefRibbonTimeController
 
     public int getCurrentAt(final long now)
     {
-      return (int) Math.round((double)(now - origin) / step);
+      return (int) Math.round((double) (now - origin) / step);
     }
 
     public int getEnd()
@@ -183,14 +183,14 @@ public class DebriefRibbonTimeController
       range = (int) ((end - start) / step);
     }
   }
-  
+
   public static class SliderConverterTest extends TestCase
   {
     public void testConverter()
     {
       final SliderConverter test = new SliderConverter();
       test.init(1240423198490L, 1240427422390L);
-      
+
       final int originalStep = 21;
       final long originalTime = test.getTimeAt(originalStep);
       final long roundedTime = originalTime / 1000L * 1000L;
@@ -200,28 +200,29 @@ public class DebriefRibbonTimeController
   }
 
   private static final String[] timeFormats = new String[]
-  {"mm:ss.SSS", "HHmm.ss", "HHmm",
-      "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
+  {"mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm:ss", "yy/MM/dd HH:mm",
       "yy/MM/dd hh:mm:ss"};
 
   private static SliderConverter converter = new SliderConverter();
 
   private static DateFormatBinder formatBinder = new DateFormatBinder();
   private static TimeLabel label;
-  
+
   private static JCheckBoxMenuItem[] _menuItem;
-  
-  public static void assignThisTimeFormat(String format, boolean updateTimeLabel, boolean updateFilters)
+
+  public static void assignThisTimeFormat(String format,
+      boolean updateTimeLabel, boolean updateFilters)
   {
-    if ( _menuItem != null && format != null )
+    if (_menuItem != null && format != null)
     {
-      for ( int i = 0 ; i < _menuItem.length ; i++ )
+      for (int i = 0; i < _menuItem.length; i++)
       {
         _menuItem[i].setSelected(format.equals(_menuItem[i].getText()));
       }
-      if ( formatBinder != null )
+      if (formatBinder != null)
       {
-        formatBinder.updateTimeDateFormat(format, updateTimeLabel, updateFilters);        
+        formatBinder.updateTimeDateFormat(format, updateTimeLabel,
+            updateFilters);
       }
     }
   }
@@ -233,14 +234,14 @@ public class DebriefRibbonTimeController
       final UndoBuffer undoBuffer, final Runnable normalPainter,
       final Runnable snailPainter)
   {
-    final JRibbonBand displayMode = createDisplayMode(normalPainter, snailPainter);
+    final JRibbonBand displayMode = createDisplayMode(normalPainter,
+        snailPainter);
 
     final JRibbonBand filterToTime = createFilterToTime(stepControl, operations,
         timeManager);
 
     final JRibbonBand control = createControl(stepControl, timeManager, layers,
         undoBuffer);
-
 
     final RibbonTask timeTask = new RibbonTask("Time", displayMode, control,
         filterToTime);
@@ -335,7 +336,7 @@ public class DebriefRibbonTimeController
         final boolean isPlaying = stepControl.isPlaying();
 
         stepControl.startStepping(!isPlaying);
-        
+
         // now update the play button UI
         updatePlayBtnUI(playCommandButton, isPlaying);
       }
@@ -435,7 +436,7 @@ public class DebriefRibbonTimeController
         }, CommandButtonDisplayState.SMALL, "Edit time-step properties");
 
     // we need to give the menu to the command popup
-    final JPopupMenu menu =  new JPopupMenu();
+    final JPopupMenu menu = new JPopupMenu();
 
     final JCommandButton formatCommandButton = MenuUtils.addCommandButton(
         "Format", "icons/24/gears_view.png", new ShowFormatAction(menu),
@@ -460,16 +461,14 @@ public class DebriefRibbonTimeController
 
     timeLabel.setForeground(new Color(0, 255, 0));
 
-
-    
     _menuItem = new JCheckBoxMenuItem[timeFormats.length];
-    for (int i = 0 ; i < timeFormats.length; i++)
+    for (int i = 0; i < timeFormats.length; i++)
     {
       _menuItem[i] = new JCheckBoxMenuItem(timeFormats[i]);
     }
-    
+
     resetDateFormat();
-    
+
     final ActionListener selfAssignFormat = new ActionListener()
     {
       @Override
@@ -479,8 +478,8 @@ public class DebriefRibbonTimeController
         assignThisTimeFormat(format, true, false);
       }
     };
-    
-    for(int i = 0 ; i < timeFormats.length; i++)
+
+    for (int i = 0; i < timeFormats.length; i++)
     {
       _menuItem[i].addActionListener(selfAssignFormat);
       menu.add(_menuItem[i]);
@@ -533,15 +532,16 @@ public class DebriefRibbonTimeController
       public void setValue(final String text)
       {
 
-        final int completeSize = 17; 
+        final int completeSize = 17;
         final int diff = completeSize - text.length();
-        
+
         String newText = text;
-        for (int i = 0 ; i < diff / 2 ; i++)
+        for (int i = 0; i < diff / 2; i++)
         {
           newText = " " + newText + " ";
         }
-        if ( newText.length() < completeSize ) {
+        if (newText.length() < completeSize)
+        {
           newText = newText + " ";
         }
         timeLabel.setText(newText);
@@ -551,7 +551,8 @@ public class DebriefRibbonTimeController
       public void setFontSize(int newSize)
       {
         Font originalFont = timeLabel.getFont();
-        final Font newFont = new Font(originalFont.getName(), originalFont.getStyle(), newSize);
+        final Font newFont = new Font(originalFont.getName(), originalFont
+            .getStyle(), newSize);
         timeLabel.setFont(newFont);
       }
     };
@@ -565,7 +566,8 @@ public class DebriefRibbonTimeController
       {
         final int pos = timeSlider.getValue();
         final long time = converter.getTimeAt(pos);
-        if(timeManager.getTime() == null || timeManager.getTime().getDate().getTime() != time)
+        if (timeManager.getTime() == null || timeManager.getTime().getDate()
+            .getTime() != time)
         {
           timeManager.setTime(timeSlider, new HiResDate(time), true);
         }
@@ -574,9 +576,10 @@ public class DebriefRibbonTimeController
 
     // ok, start off with the buttons disabled
     setButtonsEnabled(topButtonsPanel, false);
-    
+
     // we also need to listen out for the stepper control mode changing
-    stepControl.addStepperListener(new LiteStepperListener(playCommandButton) {
+    stepControl.addStepperListener(new LiteStepperListener(playCommandButton)
+    {
 
       @Override
       public void reset()
@@ -584,11 +587,12 @@ public class DebriefRibbonTimeController
         // move the slider to the start
         timeSlider.setValue(0);
         label.setValue(LiteStepControl.timeFormat);
-        
+
         // ok, do some disabling
         DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
         timeSlider.setEnabled(false);
-      }});
+      }
+    });
 
     control.addRibbonComponent(new JRibbonComponent(topButtonsPanel));
     control.addRibbonComponent(new JRibbonComponent(timeSlider));
@@ -601,21 +605,21 @@ public class DebriefRibbonTimeController
   public static void resetDateFormat()
   {
     final String defaultFormat = LiteStepControl.timeFormat;
-    if ( defaultFormat != null )
+    if (defaultFormat != null)
     {
-      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false, false);
-      
+      DebriefRibbonTimeController.assignThisTimeFormat(defaultFormat, false,
+          false);
+
       formatBinder.stepControl.setDateFormat(defaultFormat);
       formatBinder.updateFilterDateFormat();
     }
-    
-    if(label != null)
+
+    if (label != null)
     {
       label.setValue(defaultFormat);
     }
-    
+
   }
-  
 
   public static void updatePlayBtnUI(final JCommandButton playCommandButton,
       final boolean isPlaying)
@@ -629,20 +633,20 @@ public class DebriefRibbonTimeController
     final String tooltip = isPlaying ? STOP_TEXT : START_TEXT;
 
     RichTooltipBuilder builder = new RichTooltipBuilder();
-    RichTooltip richTooltip = builder.setTitle("Timer")
-        .addDescriptionSection(tooltip).build();
+    RichTooltip richTooltip = builder.setTitle("Timer").addDescriptionSection(
+        tooltip).build();
     playCommandButton.setActionRichTooltip(richTooltip);
 
     // switch the icon
     final Image playStopinImage = MenuUtils.createImage(image);
     final ImageWrapperResizableIcon imageIcon = ImageWrapperResizableIcon
         .getIcon(playStopinImage, MenuUtils.ICON_SIZE_16);
-    
+
     playCommandButton.setExtraText(tooltip);
 
     playCommandButton.setIcon(imageIcon);
   }
-  
+
   private static abstract class LiteStepperListener implements StepperListener
   {
     private JCommandButton _playBtn;
@@ -675,32 +679,36 @@ public class DebriefRibbonTimeController
     final FlamingoCommandToggleGroup displayModeGroup =
         new FlamingoCommandToggleGroup();
     MenuUtils.addCommandToggleButton("Normal", "icons/48/normal.png",
-        new AbstractAction() {
+        new AbstractAction()
+        {
           private static final long serialVersionUID = 1L;
 
           @Override
           public void actionPerformed(ActionEvent e)
           {
             normalPainter.run();
-          }}, displayMode, RibbonElementPriority.TOP,
-        true, displayModeGroup, true);
+          }
+        }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
+        true);
     MenuUtils.addCommandToggleButton("Snail", "icons/48/snail.png",
-        new AbstractAction() {
+        new AbstractAction()
+        {
           private static final long serialVersionUID = 1L;
 
           @Override
           public void actionPerformed(ActionEvent e)
           {
             snailPainter.run();
-          }}, displayMode, RibbonElementPriority.TOP,
-        true, displayModeGroup, false);
+          }
+        }, displayMode, RibbonElementPriority.TOP, true, displayModeGroup,
+        false);
 
     displayMode.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         displayMode));
 
     return displayMode;
   }
-  
+
   private static class SliderListener implements ChangeListener
   {
     final private PlotOperations operations;
@@ -712,7 +720,7 @@ public class DebriefRibbonTimeController
       this.operations = operations;
       timeManager = time;
     }
-    
+
     @Override
     public void stateChanged(final ChangeEvent e)
     {
@@ -724,32 +732,34 @@ public class DebriefRibbonTimeController
 
       operations.setPeriod(new TimePeriod.BaseTimePeriod(new HiResDate(low),
           new HiResDate(high)));
-      
-      HiResDate currentTime = timeManager.getTime(); 
-      if ( currentTime != null )
+
+      HiResDate currentTime = timeManager.getTime();
+      if (currentTime != null)
       {
         Date oldTime = currentTime.getDate();
-        if ( oldTime.before(low) ) {
+        if (oldTime.before(low))
+        {
           oldTime = low;
         }
-        if ( oldTime.after(high) ) {
+        if (oldTime.after(high))
+        {
           oldTime = high;
         }
         label.setRange(low.getTime(), high.getTime());
         label.setValue(oldTime.getTime());
-        
+
         // and enable those buttons
       }
-      
+
       operations.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
     }
   }
-  
+
   private static class LiteSliderControls implements SliderControls
   {
     private final RangeSlider slider;
 
-    private  LiteSliderControls(RangeSlider slider)
+    private LiteSliderControls(RangeSlider slider)
     {
       this.slider = slider;
     }
@@ -836,17 +846,19 @@ public class DebriefRibbonTimeController
     // tie in to the stepper
     final SliderControls iSlider = new LiteSliderControls(slider);
     stepControl.setSliderControls(iSlider);
-    
+
     // listen out for time being reset
     // we also need to listen out for the stepper control mode changing
-    stepControl.addStepperListener(new LiteStepperListener(null) {
+    stepControl.addStepperListener(new LiteStepperListener(null)
+    {
 
       @Override
       public void reset()
       {
         minimumValue.setText(" ");
         maximumValue.setText(" ");
-      }});
+      }
+    });
 
     return timePeriod;
   }
