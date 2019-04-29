@@ -226,21 +226,22 @@ public class GraphPanelToolbar extends JPanel
 
       _stepControl.getLayers().addDataExtendedListener(new DataListener()
       {
-        
+
         @Override
-        public void dataReformatted(Layers theData, Layer changedLayer)
+        public void dataExtended(final Layers theData)
         {
           // not implemented
         }
-        
+
         @Override
-        public void dataModified(Layers theData, Layer changedLayer)
+        public void dataModified(final Layers theData, final Layer changedLayer)
         {
           updateXYPlot(operationComboBox);
         }
-        
+
         @Override
-        public void dataExtended(Layers theData)
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
         {
           // not implemented
         }
@@ -520,7 +521,6 @@ public class GraphPanelToolbar extends JPanel
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 
-
   private void updateSymbolButton(final String symbolOn, final String symbolOff,
       final JToggleButton showSymbolsButton, final boolean isSelected)
   {
@@ -529,13 +529,13 @@ public class GraphPanelToolbar extends JPanel
             .getResource(symbolOff)));
     showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols"
         : "Show Symbols");
-    
-    if ( isSelected != showSymbolsButton.isSelected() )
+
+    if (isSelected != showSymbolsButton.isSelected())
     {
       showSymbolsButton.setSelected(isSelected);
     }
   }
-  
+
   private void updateXYPlot(
       final JComboBox<CalculationHolder> operationComboBox)
   {
@@ -570,19 +570,19 @@ public class GraphPanelToolbar extends JPanel
 
         // _xytool
         _xytool.getData();
-        
+
         _xytool.getGeneratedJFreeChart().addPropertyChangeListener(
             new PropertyChangeListener()
             {
 
               @Override
-              public void propertyChange(PropertyChangeEvent evt)
+              public void propertyChange(final PropertyChangeEvent evt)
               {
                 if (NewFormattedJFreeChart.SYMBOL_PROPERTY.equals(evt
                     .getPropertyName()))
                 {
-                  updateSymbolButton(symbolOn, symbolOff, showSymbolsButton,
-                      evt.getNewValue().equals(true));
+                  updateSymbolButton(symbolOn, symbolOff, showSymbolsButton, evt
+                      .getNewValue().equals(true));
                 }
               }
             });
