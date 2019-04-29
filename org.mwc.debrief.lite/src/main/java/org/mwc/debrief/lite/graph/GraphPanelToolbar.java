@@ -140,6 +140,15 @@ public class GraphPanelToolbar extends JPanel
     return button;
   }
 
+  private JToggleButton createJToggleButton(final String command,
+      final String image)
+  {
+    final ImageIcon icon = getIcon(image);
+    final JToggleButton button = new JToggleButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
   private ImageIcon getIcon(final String image)
   {
     final URL imageIcon = getClass().getClassLoader().getResource(image);
@@ -153,54 +162,6 @@ public class GraphPanelToolbar extends JPanel
       throw new IllegalArgumentException("Icon missing:" + image);
     }
     return icon;
-  }
-
-  private JToggleButton createJToggleButton(final String command,
-      final String image)
-  {
-    final ImageIcon icon = getIcon(image);
-    final JToggleButton button = new JToggleButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }
-
-  private void updateXYPlot(
-      final JComboBox<CalculationHolder> operationComboBox)
-  {
-    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-    final CalculationHolder operation = (CalculationHolder) operationComboBox
-        .getSelectedItem();
-    _xytool.setPreselectedOperation(operation);
-
-    Vector<WatchableList> selectedTracksByUser = null;
-
-    if (selectTrackModel != null && _stepControl != null && _stepControl
-        .getStartTime() != null && _stepControl.getEndTime() != null)
-    {
-      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
-      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-      selectedTracksByUser = new Vector<>();
-      for (final TrackWrapperSelect currentTrack : tracks)
-      {
-        if (currentTrack.selected)
-        {
-          selectedTracksByUser.add(currentTrack.track);
-        }
-      }
-
-      if (!selectedTracksByUser.isEmpty() && (!operation
-          .isARelativeCalculation() || selectTrackModel
-              .getPrimaryTrack() != null))
-      {
-        _xytool.setTracks(selectedTracksByUser);
-        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-            .getEndTime());
-
-        // _xytool
-        _xytool.getData();
-        setState(ACTIVE_STATE);
-      }
-    }
   }
 
   protected void init()
@@ -256,21 +217,22 @@ public class GraphPanelToolbar extends JPanel
     {
 
       @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
+      public void dataExtended(final Layers theData)
+      {
+        // not implemented
+      }
+
+      @Override
+      public void dataModified(final Layers theData, final Layer changedLayer)
+      {
+        // not implemented
+      }
+
+      @Override
+      public void dataReformatted(final Layers theData,
+          final Layer changedLayer)
       {
         updateXYPlot(operationComboBox);
-      }
-
-      @Override
-      public void dataModified(Layers theData, Layer changedLayer)
-      {
-        // not implemented
-      }
-
-      @Override
-      public void dataExtended(Layers theData)
-      {
-        // not implemented
       }
     });
 
@@ -553,5 +515,44 @@ public class GraphPanelToolbar extends JPanel
     this._state = newState;
 
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+  }
+
+  private void updateXYPlot(
+      final JComboBox<CalculationHolder> operationComboBox)
+  {
+    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+    final CalculationHolder operation = (CalculationHolder) operationComboBox
+        .getSelectedItem();
+    _xytool.setPreselectedOperation(operation);
+
+    Vector<WatchableList> selectedTracksByUser = null;
+
+    if (selectTrackModel != null && _stepControl != null && _stepControl
+        .getStartTime() != null && _stepControl.getEndTime() != null)
+    {
+      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
+      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+      selectedTracksByUser = new Vector<>();
+      for (final TrackWrapperSelect currentTrack : tracks)
+      {
+        if (currentTrack.selected)
+        {
+          selectedTracksByUser.add(currentTrack.track);
+        }
+      }
+
+      if (!selectedTracksByUser.isEmpty() && (!operation
+          .isARelativeCalculation() || selectTrackModel
+              .getPrimaryTrack() != null))
+      {
+        _xytool.setTracks(selectedTracksByUser);
+        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+            .getEndTime());
+
+        // _xytool
+        _xytool.getData();
+        setState(ACTIVE_STATE);
+      }
+    }
   }
 }
