@@ -21,8 +21,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Stroke;
 import java.beans.IntrospectionException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.text.DateFormat;
+import java.util.ArrayList;
 
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
@@ -54,6 +57,30 @@ import MWC.Utilities.TextFormatting.GMTDateFormat;
 public class NewFormattedJFreeChart extends JFreeChart implements
     MWC.GUI.Editable
 {
+  public static String SYMBOL_PROPERTY = "SYMBOL_PROPERTY";
+  
+  private final ArrayList<PropertyChangeListener> _stateListeners =
+      new ArrayList<>();
+
+  public void addPropertyChangeListener(final PropertyChangeListener listener)
+  {
+    this._stateListeners.add(listener);
+  }
+
+  private void notifyListenersStateChanged(final Object source,
+      final String property, final Object oldValue, final Object newValue)
+  {
+    for (final PropertyChangeListener event : _stateListeners)
+    {
+      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
+          newValue));
+    }
+  }
+  
+  public boolean removePropertyChangeListener(final PropertyChangeListener listener)
+  {
+    return this._stateListeners.remove(listener);
+  }
 
   public static class ChartDateFormatPropertyEditor extends
       MWC.GUI.Properties.DateFormatPropertyEditor
@@ -740,9 +767,14 @@ public class NewFormattedJFreeChart extends JFreeChart implements
   {
     final DefaultXYItemRenderer sx = (DefaultXYItemRenderer) getXYPlot()
         .getRenderer();
-    sx.setBaseShapesVisible(showSymbols);
+    boolean oldValue = sx.getBaseShapesVisible();
+    if ( oldValue != showSymbols )
+    {
+      sx.setBaseShapesVisible(showSymbols);
 
-    this.fireChartChanged();
+      this.fireChartChanged();
+      notifyListenersStateChanged(this, SYMBOL_PROPERTY, oldValue, showSymbols);
+    }
   }
 
   public void setSymbolSize(final double size)

@@ -71,6 +71,7 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.JFreeChart.BearingRateFormatter;
 import MWC.GUI.JFreeChart.CourseFormatter;
 import MWC.GUI.JFreeChart.DepthFormatter;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.WatchableList;
@@ -102,6 +103,12 @@ public class GraphPanelToolbar extends JPanel
 
   private final SimpleEditablePropertyPanel _xyPanel;
 
+  private final String symbolOn = "icons/16/symbol_on.png";
+
+  private final String symbolOff = "icons/16/symbol_off.png";
+
+  private final JToggleButton showSymbolsButton;
+
   public PropertyChangeListener enableDisableButtons =
       new PropertyChangeListener()
       {
@@ -125,6 +132,8 @@ public class GraphPanelToolbar extends JPanel
     super(new FlowLayout(FlowLayout.LEFT));
     _stepControl = stepControl;
     _xyPanel = xyPanel;
+
+    showSymbolsButton = createJToggleButton("Show Symbols", symbolOff);
     init();
 
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
@@ -276,11 +285,6 @@ public class GraphPanelToolbar extends JPanel
     // }
     // }
     // });
-
-    final String symbolOn = "icons/16/symbol_on.png";
-    final String symbolOff = "icons/16/symbol_off.png";
-    final JToggleButton showSymbolsButton = createJToggleButton("Show Symbols",
-        symbolOff);
     showSymbolsButton.addActionListener(new ActionListener()
     {
 
@@ -289,11 +293,7 @@ public class GraphPanelToolbar extends JPanel
       {
         final boolean isSelected = showSymbolsButton.isSelected();
         _xytool.getGeneratedJFreeChart().setShowSymbols(isSelected);
-        showSymbolsButton.setIcon(new ImageIcon(isSelected ? getClass()
-            .getClassLoader().getResource(symbolOn) : getClass()
-                .getClassLoader().getResource(symbolOff)));
-        showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols"
-            : "Show Symbols");
+        updateSymbolButton(symbolOn, symbolOff, showSymbolsButton, isSelected);
       }
     });
     final JToggleButton hideCrosshair = createJToggleButton(
@@ -488,6 +488,21 @@ public class GraphPanelToolbar extends JPanel
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 
+  private void updateSymbolButton(final String symbolOn, final String symbolOff,
+      final JToggleButton showSymbolsButton, final boolean isSelected)
+  {
+    showSymbolsButton.setIcon(new ImageIcon(isSelected ? getClass()
+        .getClassLoader().getResource(symbolOn) : getClass().getClassLoader()
+            .getResource(symbolOff)));
+    showSymbolsButton.setToolTipText(isSelected ? "Hide Symbols"
+        : "Show Symbols");
+
+    if (isSelected != showSymbolsButton.isSelected())
+    {
+      showSymbolsButton.setSelected(isSelected);
+    }
+  }
+
   private void assignTracks(final Layers layers)
   {
     final Enumeration<Editable> elem = layers
@@ -538,6 +553,23 @@ public class GraphPanelToolbar extends JPanel
 
         // _xytool
         _xytool.getData();
+
+        _xytool.getGeneratedJFreeChart().addPropertyChangeListener(
+            new PropertyChangeListener()
+            {
+
+              @Override
+              public void propertyChange(final PropertyChangeEvent evt)
+              {
+                if (NewFormattedJFreeChart.SYMBOL_PROPERTY.equals(evt
+                    .getPropertyName()))
+                {
+                  updateSymbolButton(symbolOn, symbolOff, showSymbolsButton, evt
+                      .getNewValue().equals(true));
+                }
+              }
+            });
+
         setState(ACTIVE_STATE);
       }
       else
