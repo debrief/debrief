@@ -31,4 +31,4 @@ Require-Bundle: org.junit,
  org.apache.felix.gogo.command,
  org.apache.felix.gogo.runtime,
  org.apache.felix.gogo.shell,
-org.mwc.debrief.lite
+ org.mwc.debrief.lite
