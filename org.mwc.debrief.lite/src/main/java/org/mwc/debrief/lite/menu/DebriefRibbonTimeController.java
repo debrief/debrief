@@ -68,6 +68,7 @@ import MWC.GUI.Tools.Swing.MyMetalToolBarUI.ToolbarOwner;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.TacticalData.SliderConverter;
 import MWC.TacticalData.temporal.ControllablePeriod;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
@@ -218,46 +219,6 @@ public class DebriefRibbonTimeController
       final Point p = component.getLocationOnScreen();
 
       menu.setLocation(p.x, p.y + component.getHeight());
-    }
-  }
-
-  /**
-   * utility class to handle converting between slider range and time values
-   *
-   * @author ian
-   *
-   */
-  private static class SliderConverter
-  {
-    private int range;
-    private long origin;
-    // have one minute steps
-    private final int step = 1000;
-
-    public int getCurrentAt(final long now)
-    {
-      return (int) ((now - origin) / step);
-    }
-
-    public int getEnd()
-    {
-      return range;
-    }
-
-    public int getStart()
-    {
-      return 0;
-    }
-
-    public long getTimeAt(final int position)
-    {
-      return origin + (position * step);
-    }
-
-    public void init(final long start, final long end)
-    {
-      origin = start;
-      range = (int) ((end - start) / step);
     }
   }
 
