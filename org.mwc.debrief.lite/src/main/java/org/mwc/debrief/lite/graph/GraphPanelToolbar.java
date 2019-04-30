@@ -320,13 +320,15 @@ public class GraphPanelToolbar extends JPanel
         {
           _xytool.getGeneratedJFreeChart().getXYPlot().addAnnotation(
               _crosshairValueText);
-          hideCrosshair.setToolTipText("Hide the crosshair from the graph (for printing)");
+          hideCrosshair.setToolTipText(
+              "Hide the crosshair from the graph (for printing)");
         }
         else
         {
           _xytool.getGeneratedJFreeChart().getXYPlot().removeAnnotation(
               _crosshairValueText);
-          hideCrosshair.setToolTipText("Show the crosshair from the graph (for printing)");
+          hideCrosshair.setToolTipText(
+              "Show the crosshair from the graph (for printing)");
         }
 
         _xytool.getGeneratedChartPanel().invalidate();
@@ -537,6 +539,10 @@ public class GraphPanelToolbar extends JPanel
         // _xytool
         _xytool.getData();
         setState(ACTIVE_STATE);
+      }
+      else
+      {
+        _xyPanel.reset();
       }
     }
   }
