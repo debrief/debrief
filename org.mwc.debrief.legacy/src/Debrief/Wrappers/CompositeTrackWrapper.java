@@ -445,21 +445,21 @@ public class CompositeTrackWrapper extends TrackWrapper implements
     else
     {
       throw new RuntimeException(
-          "can't add this type to a composite track wrapper");
+          "You can't add this type to a composite track wrapper");
     }
   }
 
   @Override
   public void addFix(final FixWrapper theFix)
   {
-    throw new RuntimeException("can't add a fix to this composite track");
+    throw new RuntimeException("You can't add a fix to this composite track");
   }
 
   @Override
   public void append(final Layer other)
   {
     throw new RuntimeException(
-        "can't add another layer to this composite track");
+        "You can't add another layer to this composite track");
   }
 
   public void recalculate()

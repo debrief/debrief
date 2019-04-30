@@ -33,6 +33,7 @@ import java.awt.FontMetrics;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
@@ -56,6 +57,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
@@ -426,19 +428,29 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
     else
     {
-      // renameIfNecessary((Editable)theData, destination);
-      if (destination instanceof Layer)
-      {
-        ((Layer) destination).add(theData);
-      }
-      else
-      {
-        if (_cutContents != null)
+      try {
+        if (destination instanceof Layer)
         {
-          restoreCutContents();
+          ((Layer) destination).add(theData);
         }
-        doDelete();
-        _myTree.setSelectionPath(null);
+        else
+        {
+          if (_cutContents != null)
+          {
+            restoreCutContents();
+          }
+          doDelete();
+          _myTree.setSelectionPath(null);
+        }
+      }
+      catch (RuntimeException re)
+      {
+        JOptionPane.showMessageDialog(null, re.getMessage(),
+            "Error while pasting", JOptionPane.ERROR_MESSAGE);
+      }
+      catch (Exception e)
+      {
+        System.err.println("Error occured while pasting:" + e.getMessage());
       }
     }
 
@@ -570,15 +582,30 @@ public class OutlinePanelView extends SwingLayerManager implements
     if (!_isCopy)
     {
       // clear the clipboard
-      _clipboard.setContents(null, null);
-    }
+      _clipboard.setContents(new Transferable()
+      {
+        public DataFlavor[] getTransferDataFlavors()
+        {
+          return new DataFlavor[0];
+        }
 
+        public boolean isDataFlavorSupported(DataFlavor flavor)
+        {
+          return false;
+        }
+
+        public Object getTransferData(DataFlavor flavor)
+            throws UnsupportedFlavorException
+        {
+          throw new UnsupportedFlavorException(flavor);
+        }
+      }, this);
+    }
   }
 
   @Override
   protected void editThis(final TreeNode node)
   {
-    System.out.println("Editing...");
     if (node instanceof DefaultMutableTreeNode)
     {
       final DefaultMutableTreeNode tn = (DefaultMutableTreeNode) node;
@@ -617,13 +644,11 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     }
-
   }
 
   @Override
   public ArrayList<Plottable> getClipboardContents()
   {
-
     final Transferable tr = _clipboard.getContents(this);
     // see if there is currently a plottable on the clipboard
     return getContentsFromTransferable(tr);
@@ -817,10 +842,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        if (_cutContents != null)
-        {
-          restoreCutContents();
-        }
         doPaste();
 
       }
@@ -889,10 +910,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           final TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if (_cutContents != null)
-          {
-            restoreCutContents();
-          }
           doCut(selectionPath);
         }
       }
@@ -917,10 +934,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (selectionCount > 0)
         {
           final TreePath selectionPath[] = _myTree.getSelectionPaths();
-          if (_cutContents != null)
-          {
-            restoreCutContents();
-          }
           doCopy(selectionPath);
           _myTree.setSelectionPath(null);
         }
@@ -942,10 +955,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        if (_cutContents != null)
-        {
-          restoreCutContents();
-        }
         doDelete();
       }
     };
@@ -1089,7 +1098,6 @@ public class OutlinePanelView extends SwingLayerManager implements
             rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
           }
           itemNode = getTreeNode(rootNode, newItem.getName(),
-
               newItem);
         }
         else
@@ -1114,7 +1122,6 @@ public class OutlinePanelView extends SwingLayerManager implements
           final TreePath _treePath = new TreePath(itemNode.getPath());
           SwingUtilities.invokeLater(new Runnable()
           {
-
             @Override
             public void run()
             {
@@ -1136,7 +1143,6 @@ public class OutlinePanelView extends SwingLayerManager implements
         final TreePath _treePath = new TreePath(rootNode.getPath());
         SwingUtilities.invokeLater(new Runnable()
         {
-
           @Override
           public void run()
           {

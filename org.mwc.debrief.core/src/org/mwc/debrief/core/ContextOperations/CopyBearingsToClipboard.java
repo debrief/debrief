@@ -469,7 +469,7 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
 
     @SuppressWarnings("deprecation")
     private void doTestPasteBearings(final int startIndex, final int endIndex,
-        final int numPoints, final Object menuItems)
+        final int numPoints, final int menuItems)
     {
       final Layers layers = new Layers();
       final TrackWrapper host = new TrackWrapper();
@@ -555,19 +555,19 @@ public class CopyBearingsToClipboard implements RightClickContextItemGenerator
     public void testCopyPaste() throws ExecutionException
     {
       doTestCopyBearings(0, 60);
-      doTestPasteBearings(0, 60, 56, 2);
+      doTestPasteBearings(0, 60, 56, 3);
     }
 
     public void testCopyTrackEarly() throws ExecutionException
     {
       doTestCopyBearings(10, 69);
-      doTestPasteBearings(5, 55, 44, 2);
+      doTestPasteBearings(5, 55, 44, 3);
     }
 
     public void testCopyTrackLate() throws ExecutionException
     {
       doTestCopyBearings(0, 60);
-      doTestPasteBearings(5, 70, 52, 2);
+      doTestPasteBearings(5, 70, 52, 3);
     }
 
     public void testCopyTrackNoOverlap() throws ExecutionException
