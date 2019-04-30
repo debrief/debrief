@@ -134,17 +134,7 @@ public class GraphPanelToolbar extends JPanel
 
   private JButton createCommandButton(final String command, final String image)
   {
-    final URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (final Exception e)
-    {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
-    }
+    final ImageIcon icon = getIcon(image);
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
@@ -153,6 +143,14 @@ public class GraphPanelToolbar extends JPanel
   private JToggleButton createJToggleButton(final String command,
       final String image)
   {
+    final ImageIcon icon = getIcon(image);
+    final JToggleButton button = new JToggleButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
+  private ImageIcon getIcon(final String image)
+  {
     final URL imageIcon = getClass().getClassLoader().getResource(image);
     ImageIcon icon = null;
     try
@@ -161,51 +159,9 @@ public class GraphPanelToolbar extends JPanel
     }
     catch (final Exception e)
     {
-      System.err.println("Failed to find icon:" + image);
-      e.printStackTrace();
+      throw new IllegalArgumentException("Icon missing:" + image);
     }
-    final JToggleButton button = new JToggleButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }
-
-  private void updateXYPlot(
-      final JComboBox<CalculationHolder> operationComboBox)
-  {
-    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
-    final CalculationHolder operation = (CalculationHolder) operationComboBox
-        .getSelectedItem();
-    _xytool.setPreselectedOperation(operation);
-
-    Vector<WatchableList> selectedTracksByUser = null;
-
-    if (selectTrackModel != null && _stepControl != null && _stepControl
-        .getStartTime() != null && _stepControl.getEndTime() != null)
-    {
-      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
-      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
-      selectedTracksByUser = new Vector<>();
-      for (final TrackWrapperSelect currentTrack : tracks)
-      {
-        if (currentTrack.selected)
-        {
-          selectedTracksByUser.add(currentTrack.track);
-        }
-      }
-
-      if (!selectedTracksByUser.isEmpty() && (!operation
-          .isARelativeCalculation() || selectTrackModel
-              .getPrimaryTrack() != null))
-      {
-        _xytool.setTracks(selectedTracksByUser);
-        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
-            .getEndTime());
-
-        // _xytool
-        _xytool.getData();
-        setState(ACTIVE_STATE);
-      }
-    }
+    return icon;
   }
 
   protected void init()
@@ -255,30 +211,29 @@ public class GraphPanelToolbar extends JPanel
         updateXYPlot(operationComboBox);
       }
     });
-    
 
     if (_stepControl != null && _stepControl.getLayers() != null)
-    {
+    { 
       final DataListener trackChangeListener = new DataListener()
       {
 
         @Override
         public void dataExtended(final Layers theData)
         {
-          assignTraks(theData);
+          assignTracks(theData);
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          assignTraks(theData);
+          assignTracks(theData);
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-          assignTraks(theData);
+          assignTracks(theData);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
@@ -531,7 +486,7 @@ public class GraphPanelToolbar extends JPanel
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
 
-  private void assignTraks(final Layers layers)
+  private void assignTracks(final Layers layers)
   {
     final Enumeration<Editable> elem = layers
         .elements();
@@ -545,5 +500,44 @@ public class GraphPanelToolbar extends JPanel
       }
     }
     selectTrackModel.setTracks(tracks);
+  }
+
+  private void updateXYPlot(
+      final JComboBox<CalculationHolder> operationComboBox)
+  {
+    _xytool = new ShowTimeVariablePlot3(_xyPanel, _stepControl);
+    final CalculationHolder operation = (CalculationHolder) operationComboBox
+        .getSelectedItem();
+    _xytool.setPreselectedOperation(operation);
+
+    Vector<WatchableList> selectedTracksByUser = null;
+
+    if (selectTrackModel != null && _stepControl != null && _stepControl
+        .getStartTime() != null && _stepControl.getEndTime() != null)
+    {
+      _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
+      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+      selectedTracksByUser = new Vector<>();
+      for (final TrackWrapperSelect currentTrack : tracks)
+      {
+        if (currentTrack.selected)
+        {
+          selectedTracksByUser.add(currentTrack.track);
+        }
+      }
+
+      if (!selectedTracksByUser.isEmpty() && (!operation
+          .isARelativeCalculation() || selectTrackModel
+              .getPrimaryTrack() != null))
+      {
+        _xytool.setTracks(selectedTracksByUser);
+        _xytool.setPeriod(_stepControl.getStartTime(), _stepControl
+            .getEndTime());
+
+        // _xytool
+        _xytool.getData();
+        setState(ACTIVE_STATE);
+      }
+    }
   }
 }

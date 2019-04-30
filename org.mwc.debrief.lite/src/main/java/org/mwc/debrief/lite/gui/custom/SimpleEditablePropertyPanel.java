@@ -99,4 +99,11 @@ public class SimpleEditablePropertyPanel extends JPanel implements
     System.out.print(""); // Hello Codacy :)
   }
 
+  public void reset()
+  {
+    super.removeAll();
+
+    super.revalidate();
+    super.repaint();
+  }
 }
