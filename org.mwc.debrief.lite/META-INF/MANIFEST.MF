@@ -5,8 +5,7 @@ Bundle-SymbolicName: org.mwc.debrief.lite;singleton:=true
 Bundle-Version: 1.0.392
 Export-Package: org.mwc.debrief.lite,
  org.mwc.debrief.lite.custom,
- org.mwc.debrief.lite.map,
- org.mwc.debrief.lite.menu
+ org.mwc.debrief.lite.map
 Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.263",
  org.mwc.debrief.legacy;bundle-version="1.0.388",
  org.geotools;bundle-version="1.0.7"
