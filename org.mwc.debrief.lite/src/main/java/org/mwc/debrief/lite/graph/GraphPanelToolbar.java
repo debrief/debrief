@@ -222,65 +222,32 @@ public class GraphPanelToolbar extends JPanel
     });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
-    {
-
-      _stepControl.getLayers().addDataExtendedListener(new DataListener()
-      {
-
-        @Override
-        public void dataExtended(final Layers theData)
-        {
-          // not implemented
-        }
-
-        @Override
-        public void dataModified(final Layers theData, final Layer changedLayer)
-        {
-          updateXYPlot(operationComboBox);
-        }
-
-        @Override
-        public void dataReformatted(final Layers theData,
-            final Layer changedLayer)
-        {
-          // not implemented
-        }
-      });
-
+    { 
       final DataListener trackChangeListener = new DataListener()
       {
 
         @Override
         public void dataExtended(final Layers theData)
         {
-
+          assignTracks(theData);
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          tracks.clear();
-          final Enumeration<Editable> elem = _stepControl.getLayers()
-              .elements();
-          while (elem.hasMoreElements())
-          {
-            final Editable nextItem = elem.nextElement();
-            if (nextItem instanceof TrackWrapper)
-            {
-              tracks.add((TrackWrapper) nextItem);
-            }
-          }
-          selectTrackModel.setTracks(tracks);
+          assignTracks(theData);
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-
+          assignTracks(theData);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
+      _stepControl.getLayers().addDataExtendedListener(trackChangeListener);
+      _stepControl.getLayers().addDataReformattedListener(trackChangeListener);
 
     }
 
@@ -536,6 +503,22 @@ public class GraphPanelToolbar extends JPanel
     }
   }
 
+  private void assignTracks(final Layers layers)
+  {
+    final Enumeration<Editable> elem = layers
+        .elements();
+    List<TrackWrapper> tracks = new ArrayList<>();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof TrackWrapper)
+      {
+        tracks.add((TrackWrapper) nextItem);
+      }
+    }
+    selectTrackModel.setTracks(tracks);
+  }
+
   private void updateXYPlot(
       final JComboBox<CalculationHolder> operationComboBox)
   {
@@ -588,6 +571,10 @@ public class GraphPanelToolbar extends JPanel
             });
 
         setState(ACTIVE_STATE);
+      }
+      else
+      {
+        _xyPanel.reset();
       }
     }
   }
