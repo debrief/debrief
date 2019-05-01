@@ -489,21 +489,9 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   }
 
-  protected void doCut(final TreePath[] selectionPaths)
-  {
-    // restore any contents that were cut
-    // previously before starting the new one.
-    doCopy(selectionPaths);
-    // parent object is the destination
-    rememberCutContents();
-    doDelete();
-    // if the next action is not paste then undo delete
-  }
-
   protected void doDelete()
   {
     final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-    boolean modified = false;
     if (selectionPaths != null)
     {
       for (final TreePath item : selectionPaths)
@@ -525,84 +513,19 @@ public class OutlinePanelView extends SwingLayerManager implements
             {
               final Layer layer = (Layer) parent;
               layer.removeElement((Editable) object);
-              modified = true;
             }
             else
             {
               // ok, the parent isn't a layer. In that case this must
               // be a top level layer
               getData().removeThisLayer((Layer) object);
-              modified = true;
             }
           }
         }
       }
     }
-
-    if (modified)
-    {
-      doReset();
-    }
-
   }
-
-  protected void doPaste()
-  {
-    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree
-        .getSelectionPath().getLastPathComponent();
-    final Editable editable = (Editable) node.getUserObject();
-    final CanEnumerate destination;
-    if (editable instanceof BaseLayer)
-    {
-      destination = (BaseLayer) editable;
-    }
-    else if (editable instanceof TrackWrapper)
-    {
-      destination = (TrackWrapper) editable;
-    }
-    else
-    {
-      destination = null;
-    }
-
-    final Transferable tr = _clipboard.getContents(this);
-    final OutlineViewSelection os = (OutlineViewSelection) tr;
-    final boolean _isCopy = os.isACopy();
-    final ArrayList<Plottable> plottables = getClipboardContents();
-    // see if there is currently a plottable on the clipboard
-    // see if it is a layer or not
-    if (!plottables.isEmpty())
-    {
-      for (final Plottable theData : plottables)
-      {
-        addBackData(theData, destination);
-      }
-      _myData.fireExtended(plottables.get(0), (HasEditables) destination);
-    }
-    if (!_isCopy)
-    {
-      // clear the clipboard
-      _clipboard.setContents(new Transferable()
-      {
-        public DataFlavor[] getTransferDataFlavors()
-        {
-          return new DataFlavor[0];
-        }
-
-        public boolean isDataFlavorSupported(DataFlavor flavor)
-        {
-          return false;
-        }
-
-        public Object getTransferData(DataFlavor flavor)
-            throws UnsupportedFlavorException
-        {
-          throw new UnsupportedFlavorException(flavor);
-        }
-      }, this);
-    }
-  }
-
+  
   @Override
   protected void editThis(final TreeNode node)
   {
@@ -831,21 +754,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     });
-    final Action pasteAction = new AbstractAction()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        doPaste();
-
-      }
-    };
+    final Action pasteAction = new PasteAction();
     pasteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "paste");
@@ -884,36 +793,9 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "edit");
     editButton.getActionMap().put("edit", editAction);
     editButton.addActionListener(editAction);
-    addLayerButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        addLayer();
-
-      }
-    });
-    
-    final Action cutAction = new AbstractAction()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-      
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        final int selectionCount = _myTree.getSelectionCount();
-        if (selectionCount > 0)
-        {
-          final TreePath selectionPath[] = _myTree.getSelectionPaths();
-          doCut(selectionPath);
-        }
-      }
-    };
+    final MWC.GUI.Tools.Action addLayerAction = new AddLayerAction();
+    addLayerButton.addActionListener((ActionListener)addLayerAction);
+    final Action cutAction = new DeleteAction(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
             .getMenuShortcutKeyMask()), "cut");
@@ -944,20 +826,7 @@ public class OutlinePanelView extends SwingLayerManager implements
             .getMenuShortcutKeyMask()), "copy");
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
-    final Action deleteAction = new AbstractAction()
-    {
-
-      /**
-       *
-       */
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        doDelete();
-      }
-    };
+    Action deleteAction = new DeleteAction(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke("DELETE"), "delete");
     deleteButton.getActionMap().put("delete", deleteAction);
@@ -1031,16 +900,6 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
 
-  }
-
-  private void rememberCutContents()
-  {
-    if (_clipboard != null)
-    {
-      // copy in the new data
-      _cutContents = _clipboard.getContents(this);
-      _theCutParent = _myTree.getSelectionPath().getParentPath();
-    }
   }
 
   private void restoreCutContents()
@@ -1155,4 +1014,274 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
   }
+  @SuppressWarnings("serial")
+  final class AddLayerAction extends AbstractAction implements MWC.GUI.Tools.Action
+  {
+    private Layer oldLayer;
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      execute();
+      _undoBuffer.add(this);
+    }
+    @Override
+    public void undo()
+    {
+      _myData.removeThisLayer(oldLayer);
+    }
+    
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+    
+    @Override
+    public boolean isRedoable()
+    {
+      return true;
+    }
+    
+    @Override
+    public void execute()
+    {
+      oldLayer = addLayer();
+    }
+  };
+  @SuppressWarnings("serial")
+  final class DeleteAction extends AbstractAction implements MWC.GUI.Tools.Action,ClipboardOwner
+  {
+    private Plottable itemToDelete;
+    private Layer parentItem;
+    private Plottable[] data;
+    private Transferable _oldData;
+    boolean _isCut;
+    DeleteAction(boolean isCut){
+      _isCut = isCut;
+    }
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+      if(_isCut)
+      {
+        final Plottable[] plottables = new Plottable[selectionPaths.length];
+        int i = 0;
+        for (final TreePath path : selectionPaths)
+        {
+          plottables[i++] = (Plottable) ((DefaultMutableTreeNode) path
+              .getLastPathComponent()).getUserObject();
+        }
+        data = plottables;
+      }
+      
+      if (selectionPaths != null)
+      {
+        
+        for (final TreePath item : selectionPaths)
+        {
+          final Object component = item.getLastPathComponent();
+          if (component instanceof PlottableNode)
+          {
+            final PlottableNode node = (PlottableNode) component;
+            final Object object = node.getUserObject();
+            if (object instanceof Plottable)
+            {
+              final int pathCount = item.getPathCount();
+              // ok, delete it, get the parent
+              final DefaultMutableTreeNode parentNode =
+                  (DefaultMutableTreeNode) _myTree.getSelectionPath()
+                  .getPathComponent(pathCount - 2);
+              final Object parent = parentNode.getUserObject();
+
+              if (parent instanceof Layer)
+              {
+                final Layer layer = (Layer) parent;
+                parentItem = layer;
+                itemToDelete = (Plottable)object;
+              }
+              else
+              {
+                // ok, the parent isn't a layer. In that case this must
+                // be a top level layer
+                parentItem = null;
+                itemToDelete = (Plottable)object;
+              }
+              execute();
+              _undoBuffer.add(this);
+            }
+          }
+        }
+      }
+    }
+
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents)
+    {
+      //do nothing
+      
+    }
+
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isRedoable()
+    {
+      return true;
+    }
+
+    @Override
+    public void undo()
+    {
+      if(parentItem!=null) {
+        parentItem.add(itemToDelete);
+        _myData.fireExtended(itemToDelete,parentItem);
+      }
+      else {
+        if(itemToDelete instanceof Layer) {
+          _myData.addThisLayer((Layer)itemToDelete);
+          _myData.fireExtended();
+        }
+      }
+      if(_isCut) {
+        restoreOld();
+      }
+      
+    }
+
+    @Override
+    public void execute()
+    {
+      if(_isCut) {
+       storeOld();
+        _clipboard.setContents(new OutlineViewSelection(data,true), this);
+      }
+      if(parentItem!=null) {
+        parentItem.removeElement((Editable) itemToDelete);
+        _myData.fireModified(parentItem);
+      }
+      else {
+        getData().removeThisLayer((Layer) itemToDelete);
+        _myData.fireExtended();
+      }
+      
+      
+    }
+    private void restoreOld() {
+      _clipboard.setContents(_oldData, this);
+    }
+    private void storeOld()
+    {
+      _oldData = _clipboard.getContents(this);
+    }
+  }
+  @SuppressWarnings("serial")
+  final class PasteAction extends AbstractAction implements MWC.GUI.Tools.Action,ClipboardOwner
+  {
+    private ArrayList<Plottable> lastPastedItems = new ArrayList<>();
+    private Layer destination;
+    private boolean _isCopy;
+
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+      final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree
+          .getSelectionPath().getLastPathComponent();
+      final Editable editable = (Editable) node.getUserObject();
+      if (editable instanceof BaseLayer)
+      {
+        destination = (BaseLayer) editable;
+      }
+      else if (editable instanceof TrackWrapper)
+      {
+        destination = (TrackWrapper) editable;
+      }
+      else
+      {
+        destination = null;
+      }
+
+      final Transferable tr = _clipboard.getContents(this);
+      final OutlineViewSelection os = (OutlineViewSelection) tr;
+      _isCopy = os.isACopy();
+      final ArrayList<Plottable> plottables = getClipboardContents();
+      lastPastedItems = plottables;
+      execute();
+      _undoBuffer.add(this);
+    }
+    @Override
+    public void undo()
+    {
+      for(Plottable item:lastPastedItems) {
+        destination.removeElement(item);
+      }
+      _myData.fireExtended(lastPastedItems.get(0), (HasEditables) destination);
+    }
+    
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+    
+    @Override
+    public boolean isRedoable()
+    {
+      return true;
+    }
+    @Override
+    public void execute()
+    {
+      doPaste();
+    }
+    @Override
+    public void lostOwnership(Clipboard clipboard, Transferable contents)
+    {
+     //do nothing 
+    }
+    protected void doPaste()
+    {
+      // see if there is currently a plottable on the clipboard
+      // see if it is a layer or not
+      if (!lastPastedItems.isEmpty())
+      {
+        for (final Plottable theData : lastPastedItems)
+        {
+          addBackData(theData, (CanEnumerate)destination);
+        }
+        
+        _myData.fireExtended(lastPastedItems.get(0), (HasEditables) destination);
+      }
+      if (!_isCopy)
+      {
+        // clear the clipboard
+        _clipboard.setContents(new Transferable()
+        {
+          public DataFlavor[] getTransferDataFlavors()
+          {
+            return new DataFlavor[0];
+          }
+
+          public boolean isDataFlavorSupported(DataFlavor flavor)
+          {
+            return false;
+          }
+
+          public Object getTransferData(DataFlavor flavor)
+              throws UnsupportedFlavorException
+          {
+            throw new UnsupportedFlavorException(flavor);
+          }
+        }, this);
+      }
+    }
+  };
+  
+
+    
+  
 }

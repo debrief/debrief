@@ -966,8 +966,9 @@ public class SwingLayerManager extends SwingCustomEditor implements
   /**
    * create a fresh (base) layer, for any old tat
    */
-  protected void addLayer()
+  protected Layer addLayer()
   {
+    final Layer ly;
     // get the name from the user
     final String s = javax.swing.JOptionPane.showInputDialog(_myTree,
         "Please enter name", "New Layer",
@@ -976,16 +977,20 @@ public class SwingLayerManager extends SwingCustomEditor implements
     if (s != null && !s.isEmpty())
     {
       // create the layer
-      final Layer ly = new BaseLayer();
+      ly = new BaseLayer();
       ly.setName(s);
 
       // add to the data
       _myData.addThisLayer(ly);
 
       // the layers object should inform us of any update, anyway
-
+      
     }
-
+    else {
+      ly=null;
+    }
+    return ly;
+    
   }
 
   /**
