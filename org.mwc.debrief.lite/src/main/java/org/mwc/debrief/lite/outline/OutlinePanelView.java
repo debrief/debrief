@@ -1017,17 +1017,17 @@ public class OutlinePanelView extends SwingLayerManager implements
   @SuppressWarnings("serial")
   final class AddLayerAction extends AbstractAction implements MWC.GUI.Tools.Action
   {
-    private Layer oldLayer;
+    private Layer layerToAdd;
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      execute();
+      layerToAdd = addLayer();
       _undoBuffer.add(this);
     }
     @Override
     public void undo()
     {
-      _myData.removeThisLayer(oldLayer);
+      _myData.removeThisLayer(layerToAdd);
     }
     
     @Override
@@ -1045,7 +1045,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void execute()
     {
-      oldLayer = addLayer();
+      _myData.addThisLayer(layerToAdd);
     }
   };
   @SuppressWarnings("serial")
