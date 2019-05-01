@@ -25,6 +25,7 @@
 	<property name="webhelp.indexer.language" value="en" />
 	<property name="validate-against-dtd" value="false" />
 	<property name="output-dir" value="${webhelpOutput}" />
+	<property name="lib-dir" value="lib" />
 
 
 	<import file="${contribDir}/docbook-xsl-1.78.1/webhelp/build.xml" />
@@ -35,7 +36,7 @@
 
 	<target name="docbook_to_eclipse" description="Generate html from docbook">
 		<!-- clear the output directories -->
-		<antcall target="clear_output"/>
+		<antcall target="clear_output" />
 
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
@@ -142,18 +143,13 @@
 		<!-- note, the ftp task relies on an Apache Commons jar.  It's in the lib
 		     folder in the help project.  Tell Ant all about it using Ant/Runtime
 			     preferences page -->
-	    <!-- note 2 we had to switch passive mode on, after server
+		<!-- note 2 we had to switch passive mode on, after server
 	    replied with 502 PORT COMMAND NOT SUPPORTED -->
-		<ftp password="${ftpPassword}" verbose="no" port="21" depends="yes"
-			server="debrief.info" passive="true" userid="${ftpUsername}" remotedir="${destination}">
+		<ftp password="${ftpPassword}" verbose="no" port="21" depends="yes" server="debrief.info" passive="true" userid="${ftpUsername}" remotedir="${destination}">
 			<fileset dir="html/legacy" />
 		</ftp>
-	
-		<ftp
-			description="overwrite the default index page, so it redirects to the site's home page"
-			password="${ftpPassword}" passive="true"  server="debrief.info"
-			userid="${ftpUsername}"
-			remotedir="${destination}">
+
+		<ftp description="overwrite the default index page, so it redirects to the site's home page" password="${ftpPassword}" passive="true" server="debrief.info" userid="${ftpUsername}" remotedir="${destination}">
 			<fileset file="lib/index.html" />
 		</ftp>
 
@@ -300,6 +296,39 @@
 					deploy/cvs/statcvs.xml 
 				    ${rootDir}" />
 		</java>
+	</target>
+
+	<target name="javadoc" depends="ease_javadoc, debrief_javadoc" />
+
+	<target name="ease_javadoc">
+		<delete dir="../org.mwc.debrief.scripting/help" />
+        <exec executable="javadoc">
+            <arg value="-d"/>
+            <arg value="javadoc"/>
+            <arg value="-classpath"/>
+            <arg value="/usr/share/ant/lib/ant-launcher.jar:/usr/share/ant/lib/ant-apache-bcel.jar:/usr/share/ant/lib/ant-antlr.jar:/usr/share/ant/lib/ant-junit.jar:/usr/share/ant/lib/ant-junit4.jar:/usr/share/ant/lib/ant-swing.jar:/usr/share/ant/lib/ant-junitlauncher.jar:/usr/share/ant/lib/ant-jsch.jar:/usr/share/ant/lib/ant-javamail.jar:/usr/share/ant/lib/ant-jai.jar:/usr/share/ant/lib/ant-netrexx.jar:/usr/share/ant/lib/ant-commons-logging.jar:/usr/share/ant/lib/ant-commons-net.jar:/usr/share/ant/lib/ant-apache-xalan2.jar:/usr/share/ant/lib/ant-apache-bsf.jar:/usr/share/ant/lib/ant-apache-log4j.jar:/usr/share/ant/lib/ant-apache-resolver.jar:/usr/share/ant/lib/ant-jmf.jar:/usr/share/ant/lib/ant-jdepend.jar:/usr/share/ant/lib/ant.jar:/usr/share/ant/lib/ant-testutil.jar:/usr/share/ant/lib/ant-xz.jar:/usr/share/ant/lib/ant-apache-oro.jar:/usr/share/ant/lib/ant-apache-regexp.jar:/usr/lib/jvm/java-8-openjdk/lib/tools.jar"/>
+            <arg value="-sourcepath"/>
+            <arg value="../org.mwc.debrief.scripting/src:../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src"/>
+            <arg value="-doclet"/>
+            <arg value="org.eclipse.ease.helpgenerator.ModuleDoclet"/>
+            <arg value="-docletpath"/>
+            <arg value="${lib-dir}/easedoclet.jar"/>
+            <arg value="-root"/>
+            <arg value="../org.mwc.debrief.scripting"/>
+            <arg value="-failOnMissingDocs"/>
+            <arg value="false"/>
+            <arg value="-failOnHTMLError"/>
+            <arg value="false"/>
+            <arg value="-subpackages"/>
+            <arg value="."/>
+        </exec>
+	</target>
+
+	<target name="debrief_javadoc">
+		<delete dir="javadoc"/>
+		<javadoc destdir="javadoc"  sourcepath="../org.mwc.cmap.legacy/src:../org.mwc.debrief.legacy/src" >
+			<arg value="-notimestamp" />
+		</javadoc>
 	</target>
 
 </project>

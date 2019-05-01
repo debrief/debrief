@@ -71,6 +71,7 @@ public class InsertNaturalEarth extends AbstractHandler
         layers.addThisLayer(ne);
       }
     }
+
     return null;
   }
 }

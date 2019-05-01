@@ -10,6 +10,15 @@
             primary="true">
       </toc>
    </extension>
+
+   <extension
+         id="org.mwc.debrief.javadoc"
+         point="org.eclipse.help.toc">
+      <toc
+            file="javadoc_toc.xml"
+            primary="true">
+      </toc>
+   </extension>
    
    <extension
          point="org.eclipse.help.contexts">
