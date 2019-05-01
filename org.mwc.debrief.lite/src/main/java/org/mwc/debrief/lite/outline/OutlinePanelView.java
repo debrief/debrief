@@ -525,8 +525,9 @@ public class OutlinePanelView extends SwingLayerManager implements
           }
         }
       }
+      _myTree.setSelectionPath(null);
     }
-
+    
     if (modified)
     {
       doReset();
