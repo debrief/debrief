@@ -313,8 +313,7 @@ public class DebriefRibbonInsert
       @Override
       public void focusLost(FocusEvent e)
       {
-        selectLayerModel.removeAllElements();
-        selectLayerModel.addElement(CoreCreateShape.USER_SELECTED_LAYER_COMMAND);
+       //do nothing, or the previous selections will be lost.
       }
       @Override
       public void focusGained(FocusEvent e)

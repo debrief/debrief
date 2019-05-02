@@ -23,6 +23,7 @@
             <configuration>
                 <target>
                   <ant target="docbook_to_eclipse" antfile="collate_docbook.xml" />
+                  <ant target="javadoc" antfile="collate_docbook.xml" />
 <!-- See https://github.com/debrief/debrief/issues/1343 -->
 <!-- 		  <exec dir="${basedir}" executable="chmod" osfamily="unix"> -->
 <!--                     <arg value="0775"/> -->

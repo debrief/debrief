@@ -523,6 +523,68 @@ public class OutlinePanelView extends SwingLayerManager implements
           }
         }
       }
+      _myTree.setSelectionPath(null);
+    }   
+    if (modified)
+    {
+      doReset();
+    }
+  }
+
+  protected void doPaste()
+  {
+    final DefaultMutableTreeNode node = (DefaultMutableTreeNode) _myTree
+        .getSelectionPath().getLastPathComponent();
+    final Editable editable = (Editable) node.getUserObject();
+    final CanEnumerate destination;
+    if (editable instanceof BaseLayer)
+    {
+      destination = (BaseLayer) editable;
+    }
+    else if (editable instanceof TrackWrapper)
+    {
+      destination = (TrackWrapper) editable;
+    }
+    else
+    {
+      destination = null;
+    }
+
+    final Transferable tr = _clipboard.getContents(this);
+    final OutlineViewSelection os = (OutlineViewSelection) tr;
+    final boolean _isCopy = os.isACopy();
+    final ArrayList<Plottable> plottables = getClipboardContents();
+    // see if there is currently a plottable on the clipboard
+    // see if it is a layer or not
+    if (!plottables.isEmpty())
+    {
+      for (final Plottable theData : plottables)
+      {
+        addBackData(theData, destination);
+      }
+      _myData.fireExtended(plottables.get(0), (HasEditables) destination);
+    }
+    if (!_isCopy)
+    {
+      // clear the clipboard
+      _clipboard.setContents(new Transferable()
+      {
+        public DataFlavor[] getTransferDataFlavors()
+        {
+          return new DataFlavor[0];
+        }
+
+        public boolean isDataFlavorSupported(DataFlavor flavor)
+        {
+          return false;
+        }
+
+        public Object getTransferData(DataFlavor flavor)
+            throws UnsupportedFlavorException
+        {
+          throw new UnsupportedFlavorException(flavor);
+        }
+      }, this);
     }
   }
   
@@ -701,7 +763,7 @@ public class OutlinePanelView extends SwingLayerManager implements
 
     final JButton addLayerButton = createCommandButton("Add Layer",
         "icons/24/add.png");
-    _enablers.add(new ButtonEnabler(addLayerButton, isEmpty));
+    //_enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
 
     final JButton deleteButton = createCommandButton("Delete",
@@ -827,6 +889,11 @@ public class OutlinePanelView extends SwingLayerManager implements
     copyButton.getActionMap().put("copy", copyAction);
     copyButton.addActionListener(copyAction);
     Action deleteAction = new DeleteAction(false);
+    copyButton.setEnabled(false);
+    deleteButton.setEnabled(false);
+    pasteButton.setEnabled(false);
+    editButton.setEnabled(false);
+    cutButton.setEnabled(false);
     deleteButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke("DELETE"), "delete");
     deleteButton.getActionMap().put("delete", deleteAction);

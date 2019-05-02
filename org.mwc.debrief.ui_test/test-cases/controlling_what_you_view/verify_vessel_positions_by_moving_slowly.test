@@ -6,7 +6,7 @@ Element-Version: 3.0
 External-Reference: 
 Id: _qJ_jAMGCEeitrdPUr06k7w
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 10/30/18 10:12 PM
+Save-Time: 2/7/19 12:04 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -74,6 +74,6 @@ let [val display[get-view "Time Controller" | get-label "95/12/12 05:00"]] {
 //close opened sample.dpf file
 get-menu -path "File/Close" | click
 try {
-get-window "Save Resource" | get-button No | click
+get-window "Save Resource" | get-button "Don't Save"  | click
 }-catch {}
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
