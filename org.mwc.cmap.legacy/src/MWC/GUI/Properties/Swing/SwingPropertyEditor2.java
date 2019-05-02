@@ -264,6 +264,7 @@ import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.SystemColor;
 import java.awt.event.ActionEvent;
@@ -312,6 +313,7 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Properties.SteppingBoundedInteger;
 import MWC.GUI.Swing.MultiLineLabel;
 import MWC.GenericData.WorldDistance;
+import MWC.TacticalData.NarrativeEntry;
 
 /**
  * Swing implementation of a property editor. note that setRowHeight in initForm is jdk1.3 specific!
@@ -356,6 +358,28 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     @Override
     public boolean isCellEditable(final EventObject p1)
     {
+      
+      if(p1.getSource() instanceof MyTable && 
+          ((MyTable)p1.getSource())._subject instanceof NarrativeEntry)
+      {
+        MyTable myTable = (MyTable)p1.getSource();
+        int row,column;
+        if(p1 instanceof MouseEvent)
+        {
+          MouseEvent event = (MouseEvent) p1;
+          Point p=event.getPoint();
+          column= myTable.columnAtPoint(p);
+          row=myTable.rowAtPoint(p);
+        }
+        else
+        {
+          row = myTable.getSelectedRow();
+          column=myTable.getSelectedColumn();
+        }
+        if(column==1 && row==2) {
+          return false;
+        }
+      }
       return true;
     }
 
