@@ -492,6 +492,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   protected void doDelete()
   {
     final TreePath[] selectionPaths = _myTree.getSelectionPaths();
+    boolean modified = false;
     if (selectionPaths != null)
     {
       for (final TreePath item : selectionPaths)
@@ -520,6 +521,7 @@ public class OutlinePanelView extends SwingLayerManager implements
               // be a top level layer
               getData().removeThisLayer((Layer) object);
             }
+            modified = true;
           }
         }
       }
