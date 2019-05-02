@@ -151,7 +151,7 @@ public final class CreateLabel extends CoreCreateShape
       public Action createLabelAction(final PropertiesPanel thePanel, final Layer theLayer,
           final PlainWrapper theItem, final Layers theData)
       {
-        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData);
+        return new CreateLabelAction(_thePanel, theLayer, (LabelWrapper) theItem, _theData,addedLayer);
       }
 
       @Override
@@ -175,17 +175,18 @@ public final class CreateLabel extends CoreCreateShape
     final Layer _theLayer;
     final Debrief.Wrappers.LabelWrapper _theShape;
     final private Layers _theData;
-
+    final private Layer addedLayer;
 
     public CreateLabelAction(final PropertiesPanel thePanel,
         final Layer theLayer,
         final LabelWrapper theShape,
-        final Layers theData)
+        final Layers theData,final Layer newLayer)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;
       _theShape = theShape;
       _theData = theData;
+      addedLayer = newLayer;
     }
 
     /** specify is this is an operation which can be undone
@@ -214,8 +215,13 @@ public final class CreateLabel extends CoreCreateShape
      */
     public final void undo()
     {
-      _theLayer.removeElement(_theShape);
-
+      if(addedLayer!=null) {
+      _theData.removeThisLayer(addedLayer);
+      }
+      else
+      {
+        _theLayer.removeElement(_theShape);
+      }
       // and fire the extended event
       _theData.fireExtended();
     }
@@ -224,6 +230,9 @@ public final class CreateLabel extends CoreCreateShape
      */
     public final void execute()
     {
+      if(addedLayer!=null) {
+        _theData.addThisLayer(addedLayer);
+      }
       // add the Shape to the layer, and put it
       // in the property editor
       _theLayer.add(_theShape);

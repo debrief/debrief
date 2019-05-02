@@ -101,6 +101,7 @@ abstract public class CreateShape extends CoreCreateShape
   /** the properties panel
    */
   private PropertiesPanel _thePanel;
+  
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -130,7 +131,7 @@ abstract public class CreateShape extends CoreCreateShape
           final PlainWrapper theItem, final Layers theData)
       {
         return new CreateShapeAction(_thePanel, theLayer,
-            (ShapeWrapper) theItem, _theData);
+            (ShapeWrapper) theItem, _theData,addedLayer);
       }
 
       @Override
@@ -159,17 +160,19 @@ abstract public class CreateShape extends CoreCreateShape
     final protected Layer _theLayer;
     final protected Debrief.Wrappers.ShapeWrapper _theShape;
     final protected Layers _theLayers;
+    final Layer addedLayer;
 
 
     public CreateShapeAction(final PropertiesPanel thePanel,
         final Layer theLayer,
         final ShapeWrapper theShape,
-        final Layers theLayers)
+        final Layers theLayers,final Layer newLayer)
     {
       _thePanel = thePanel;
       _theLayer = theLayer;
       _theShape = theShape;
       _theLayers = theLayers;
+      addedLayer = newLayer;
     }
 
     public final boolean isUndoable()
@@ -191,7 +194,13 @@ abstract public class CreateShape extends CoreCreateShape
      */
     public final void undo()
     {
-      _theLayer.removeElement(_theShape);
+      if(addedLayer!=null) {
+        _theLayers.removeThisLayer(addedLayer);
+      }
+      else{
+        _theLayer.removeElement(_theShape);  
+      }
+      
 
       // and fire the extended event
       _theLayers.fireExtended();
@@ -199,6 +208,9 @@ abstract public class CreateShape extends CoreCreateShape
 
     public void execute()
     {
+      if(addedLayer!=null) {
+        _theLayers.addThisLayer(addedLayer);
+      }
       // add the Shape to the layer, and put it
       // in the property editor
       _theLayer.add(_theShape);

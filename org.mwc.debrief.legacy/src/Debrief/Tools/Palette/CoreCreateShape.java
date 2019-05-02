@@ -38,6 +38,7 @@ public abstract class CoreCreateShape extends PlainTool
 
   public static final String USER_SELECTED_LAYER_COMMAND =
       "User-selected Layer";
+  protected Layer addedLayer;
 
   /**
    * the layers we are going to drop this shape into
@@ -138,6 +139,7 @@ public abstract class CoreCreateShape extends PlainTool
 
             // add to layers object
             _theData.addThisLayer(newLayer);
+            addedLayer = _theData.findLayer(layerToAddTo);
           }
         }      
       }
@@ -225,6 +227,7 @@ public abstract class CoreCreateShape extends PlainTool
           newLayer.setName(res);
           // add to layers object
           theLayers.addThisLayer(newLayer);
+          addedLayer = theLayers.findLayer(txt);
         }
         else
         {
