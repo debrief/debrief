@@ -27,25 +27,23 @@ public class LiteSession extends Session
    *
    */
   private static final long serialVersionUID = 1L;
-  private final StepControl _stepper;
+  private StepControl _stepper;
 
-  public LiteSession(final Clipboard clipboard, final Layers layers,
-      final StepControl stepper)
+  public LiteSession(final Clipboard clipboard, final Layers layers)
   {
     super(clipboard, layers);
-    _stepper = stepper;
+  }
+
+  @Override
+  public void closeGUI()
+  {
+    // Nothing to do here.
   }
 
   @Override
   public StepControl getStepControl()
   {
     return _stepper;
-  }
-
-  @Override
-  public void closeGUI()
-  {
-    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
@@ -60,10 +58,16 @@ public class LiteSession extends Session
     throw new IllegalArgumentException("Not implemented");
   }
 
+  public void setStepper(final StepControl _stepper)
+  {
+    this._stepper = _stepper;
+  }
+
   @Override
   protected boolean wantsToClose()
   {
-    throw new IllegalArgumentException("Not implemented");
+    // action handled by DebriefLiteApp class.
+    return true;
   }
 
 }
