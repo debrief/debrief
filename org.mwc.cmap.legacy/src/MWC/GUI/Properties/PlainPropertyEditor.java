@@ -1014,7 +1014,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
 
     // and trigger an update
-    if (_someChanged)
+    if (_someChanged && _theLayers != null)
       _theLayers.fireModified(null);
 
   }
