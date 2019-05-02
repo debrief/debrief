@@ -222,27 +222,33 @@ public class GraphPanelToolbar extends JPanel
     });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
-    { 
+    {
       final DataListener trackChangeListener = new DataListener()
       {
 
         @Override
         public void dataExtended(final Layers theData)
         {
-          assignTracks(theData);
+          if (!assignTracks(theData))
+          {
+            updateXYPlot(operationComboBox);
+          }
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          assignTracks(theData);
+          if (!assignTracks(theData))
+          {
+            updateXYPlot(operationComboBox);
+          }
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-          assignTracks(theData);
+          updateXYPlot(operationComboBox);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
@@ -503,10 +509,9 @@ public class GraphPanelToolbar extends JPanel
     }
   }
 
-  private void assignTracks(final Layers layers)
+  private boolean assignTracks(final Layers layers)
   {
-    final Enumeration<Editable> elem = layers
-        .elements();
+    final Enumeration<Editable> elem = layers.elements();
     List<TrackWrapper> tracks = new ArrayList<>();
     while (elem.hasMoreElements())
     {
@@ -516,7 +521,7 @@ public class GraphPanelToolbar extends JPanel
         tracks.add((TrackWrapper) nextItem);
       }
     }
-    selectTrackModel.setTracks(tracks);
+    return selectTrackModel.setTracks(tracks);
   }
 
   private void updateXYPlot(

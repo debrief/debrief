@@ -17,6 +17,7 @@ package org.mwc.debrief.lite.gui.custom;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
@@ -31,11 +32,11 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   public static final String TRACK_LIST_CHANGED = "TRACK_LIST_CHANGED";
 
-  public static final String OPERATION_CHANGED = "OPERATION CHANGE";
+  public static final String OPERATION_CHANGED = "OPERATION CHANGED";
 
   private TrackWrapper _primaryTrack;
 
-  private List<TrackWrapperSelect> _tracks;
+  private List<TrackWrapperSelect> _tracks = new ArrayList<>();
 
   private CalculationHolder _calculation;
 
@@ -110,7 +111,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   {
     final CalculationHolder oldCalculation = _calculation;
     this._calculation = calculation;
-    if ( calculation != null && !calculation.equals(oldCalculation) )
+    if (calculation != null && !calculation.equals(oldCalculation))
     {
       notifyListenersStateChanged(this, OPERATION_CHANGED, oldCalculation,
           calculation);
@@ -140,14 +141,29 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
   }
 
   @Override
-  public void setTracks(final List<TrackWrapper> tracks)
+  public boolean setTracks(final List<TrackWrapper> tracks)
   {
+    boolean isDifferent = false;
     final List<TrackWrapperSelect> oldTracks = this._tracks;
-    this._tracks = new ArrayList<>();
+    final List<TrackWrapperSelect> newTracks = new ArrayList<>();
+    final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
+    if (oldTracks != null)
+    {
+      for (TrackWrapperSelect oldTrack : oldTracks)
+      {
+        oldTracksSet.add(oldTrack.track);
+      }
+    }
     for (final TrackWrapper track : tracks)
     {
-      this._tracks.add(new TrackWrapperSelect(track, false));
+      newTracks.add(new TrackWrapperSelect(track, false));
+      isDifferent |= !oldTracksSet.contains(track);
     }
-    notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
+    if (isDifferent)
+    {
+      this._tracks = newTracks;
+      notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
+    }
+    return isDifferent;
   }
 }
