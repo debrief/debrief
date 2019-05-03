@@ -584,13 +584,23 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     decimatePointsTrack(theVal, parentTrack, startTime, newItems, false);
   }
 
-  private void decimatePointsTrack(final HiResDate theVal,
-      final TrackWrapper parentTrack, final long theStartTime,
+  public static void decimatePointsTrack(final HiResDate theVal,
+      final LightweightTrackWrapper parentTrack, final long theStartTime,
       final Vector<FixWrapper> newItems, final boolean fixRelative)
   {
     long requiredTime = theStartTime;
     final long interval = theVal.getDate().getTime();
     FixWrapper previousPosition = null;
+    
+    // just double-check we have some data
+    if(!parentTrack.getPositionIterator().hasMoreElements())
+    {
+      Application.logError2(Application.INFO, "Can't resample empty track",
+          null);
+      return;
+    }
+    
+    final FixWrapper firstFix = (FixWrapper) parentTrack.getPositionIterator().nextElement();
 
     final Enumeration<Editable> iter = parentTrack.getPositionIterator();
     while (iter.hasMoreElements())
@@ -610,6 +620,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
           // we should also store this, as the first position
           final FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
+          
+          // and format it
+          storeMe.setSymbolShowing(firstFix.getSymbolShowing());
+          storeMe.setLabelShowing(firstFix.getLabelShowing());
+          storeMe.setLabelFormatSilent(firstFix.getLabelFormat());
+          storeMe.resetName();
 
           // and add it
           newItems.add(storeMe);
@@ -626,6 +642,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           {
             // ok, we can just use this one
             newPos = new FixWrapper(currentPosition.getFix());
+            newPos.resetName();
           }
           else
           {
@@ -633,6 +650,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
             newPos = FixWrapper.interpolateFix(previousPosition,
                 currentPosition, new HiResDate(requiredTime));
           }
+          
+          // and format it
+          newPos.setSymbolShowing(firstFix.getSymbolShowing());
+          newPos.setLabelShowing(firstFix.getLabelShowing());
+          newPos.setLabelFormatSilent(firstFix.getLabelFormat());
+          newPos.resetName();
+
 
           // store the color for this item
           final Color hisColor = currentPosition.getActualColor();
