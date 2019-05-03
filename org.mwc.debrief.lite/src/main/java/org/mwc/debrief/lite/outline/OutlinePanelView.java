@@ -1055,7 +1055,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     private Layer parentItem;
     private Plottable[] data;
     private Transferable _oldData;
-    boolean _isCut;
+    private boolean _isCut;
     DeleteAction(boolean isCut){
       _isCut = isCut;
     }

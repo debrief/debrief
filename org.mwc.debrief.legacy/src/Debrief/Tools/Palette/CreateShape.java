@@ -160,7 +160,7 @@ abstract public class CreateShape extends CoreCreateShape
     final protected Layer _theLayer;
     final protected Debrief.Wrappers.ShapeWrapper _theShape;
     final protected Layers _theLayers;
-    final Layer addedLayer;
+    final private Layer addedLayer;
 
 
     public CreateShapeAction(final PropertiesPanel thePanel,
