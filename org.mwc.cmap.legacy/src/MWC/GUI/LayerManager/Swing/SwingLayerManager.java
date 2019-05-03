@@ -686,7 +686,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     _myData.fireReformatted(parentLayer);
 
     // add it to the undo buffer
-    _myParent.addActionToBuffer(new ChangeVis(pl, isVisible));
+    _myParent.addActionToBuffer(new ChangeVis(pl, isVisible, parentLayer));
   }
 
   /**
@@ -1323,13 +1323,16 @@ public class SwingLayerManager extends SwingCustomEditor implements
      */
     private final boolean _isVis;
 
+    private final Layer _parent;
+
     // ////////////////////////////////////////////////
     // constructor
     // ////////////////////////////////////////////////
-    public ChangeVis(final Plottable myPlottable, final boolean isVis)
+    public ChangeVis(final Plottable myPlottable, final boolean isVis, final Layer parentLayer)
     {
       _isVis = isVis;
       _myPlottable = myPlottable;
+      _parent = parentLayer;
     }
 
     // ////////////////////////////////////////////////
@@ -1342,6 +1345,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
     public void execute()
     {
       _myPlottable.setVisible(_isVis);
+      fireReformatted();
     }
 
     /**
@@ -1366,6 +1370,13 @@ public class SwingLayerManager extends SwingCustomEditor implements
     public void undo()
     {
       _myPlottable.setVisible(!_isVis);
+      fireReformatted();
+    }
+    
+    private void fireReformatted()
+    {
+      // tell the parent that something has been modified
+      _myData.fireReformatted(_parent);
     }
   }
 

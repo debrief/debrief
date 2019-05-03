@@ -275,5 +275,5 @@ Export-Package:
    org.apache.commons.math3.complex,
    org.eclipse.january.io",
  org.eclipse.january.metadata;uses:="org.eclipse.january.dataset,org.eclipse.january.io"
-Require-Bundle: org.mwc.cmap.legacy;bundle-version="1.0.165"
+Require-Bundle: org.mwc.cmap.legacy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

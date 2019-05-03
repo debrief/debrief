@@ -1,0 +1,109 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" type="text/css" href="../../org.eclipse.ease.help/help/css/modules_reference.css" />
+</head>
+<body>
+	<div class="module" title="Annotations Module">
+		<h1>Annotations Module</h1>
+		<p class="description">labels that can be added to a plot</p>
+
+	</div>
+
+	<h2>Constants</h2>
+	<table class="constants">
+		<tr>
+			<th>Constant</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a id="LABEL_LOCATION_BOTTOM">LABEL_LOCATION_BOTTOM</a></td>
+			<td class="description" data-field="LABEL_LOCATION_BOTTOM">Label location constant for BOTTOM</td>
+		</tr>
+		<tr>
+			<td><a id="LABEL_LOCATION_CENTRE">LABEL_LOCATION_CENTRE</a></td>
+			<td class="description" data-field="LABEL_LOCATION_CENTRE">Label location constant for CENTRE</td>
+		</tr>
+		<tr>
+			<td><a id="LABEL_LOCATION_LEFT">LABEL_LOCATION_LEFT</a></td>
+			<td class="description" data-field="LABEL_LOCATION_LEFT">Label location constant for LEFT</td>
+		</tr>
+		<tr>
+			<td><a id="LABEL_LOCATION_RIGHT">LABEL_LOCATION_RIGHT</a></td>
+			<td class="description" data-field="LABEL_LOCATION_RIGHT">Label location constant for RIGHT</td>
+		</tr>
+		<tr>
+			<td><a id="LABEL_LOCATION_TOP">LABEL_LOCATION_TOP</a></td>
+			<td class="description" data-field="LABEL_LOCATION_TOP">Label location constant for TOP</td>
+		</tr>
+	</table>
+
+
+	<h2>Method Overview</h2>
+	<table class="functions">
+		<tr>
+			<th>Method</th>
+			<th>Description</th>
+		</tr>
+		<tr>
+			<td><a href="#createLabel">createLabel</a>()</td>
+			<td>Creates a label given its name, location and color</td>
+		</tr>
+		<tr>
+			<td><a href="#createLabelDate">createLabelDate</a>()</td>
+			<td>Creates a label given its name, location and color, start and end time</td>
+		</tr>
+	</table>
+
+
+	<h2>Methods</h2>
+	<div class="command" data-method="createLabel">
+		<h3><a id="createLabel">createLabel</a></h3>
+		<p class="synopsis">Debrief.Wrappers.LabelWrapper createLabel(java.lang.String name, MWC.GenericData.WorldLocation location, java.awt.Color theColor)</p>
+
+		<p class="description">Creates a label given its name, location and color</p>
+
+		<dl class="parameters">
+			<dt>name</dt>
+			<dd class="description" data-parameter="name">Text to display</dd>
+			<dt>location</dt>
+			<dd class="description" data-parameter="location">Location of the label</dd>
+			<dt>theColor</dt>
+			<dd class="description" data-parameter="theColor">Color of the label</dd>
+		</dl>
+
+		<p class="return">the new label. <br />
+         For autocomplete, use the following type <br />
+         // @type Debrief.Wrappers.LabelWrapper</p>
+
+
+
+	</div>
+	<div class="command" data-method="createLabelDate">
+		<h3><a id="createLabelDate">createLabelDate</a></h3>
+		<p class="synopsis">Debrief.Wrappers.LabelWrapper createLabelDate(java.lang.String label, MWC.GenericData.WorldLocation location, java.awt.Color theColor, MWC.GenericData.HiResDate startDTG, MWC.GenericData.HiResDate endDTG)</p>
+
+		<p class="description">Creates a label given its name, location and color, start and end time</p>
+
+		<dl class="parameters">
+			<dt>label</dt>
+			<dd class="description" data-parameter="label">the text to display</dd>
+			<dt>location</dt>
+			<dd class="description" data-parameter="location">the location to centre the label on</dd>
+			<dt>theColor</dt>
+			<dd class="description" data-parameter="theColor">the colour to plot the text</dd>
+			<dt>startDTG</dt>
+			<dd class="description" data-parameter="startDTG">the start (or centre) time of the label</dd>
+			<dt>endDTG</dt>
+			<dd class="description" data-parameter="endDTG">the end time, or null if single date value</dd>
+		</dl>
+
+		<p class="return">the new dated label <br />
+         // @type Debrief.Wrappers.LabelWrapper</p>
+
+
+
+	</div>
+
+</body>
+</html>

@@ -4640,4 +4640,23 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     return visible;
   }
 
+
+
+  public FixWrapper[] getFixes()
+  {
+    ArrayList<FixWrapper> fixes = new ArrayList<>();
+    Enumeration<Editable> iterator = getPositionIterator(); // to loop through positions
+    while (iterator.hasMoreElements()) // while there are more elements
+    {
+        // @type Debrief.Wrappers.FixWrapper
+        Editable fix = iterator.nextElement(); // get the next element
+        fixes.add((FixWrapper) fix);
+    }
+    return fixes.toArray(new FixWrapper[0]);
+  }
+  
+  public void removeFix(FixWrapper fixToRemove)
+  {
+    removeElement(fixToRemove);
+  }
 }
