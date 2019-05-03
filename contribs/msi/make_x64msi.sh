@@ -27,7 +27,7 @@ wget -O jre.zip ${JRE_URL}
 unzip jre.zip -d ${SOURCEDIR}
 mv ${SOURCEDIR}jdk* ${SOURCEDIR}jre
 rm jre.zip
-exho "Done."
+echo "Done."
 
 echo "Copying Debrief sources to the wixl harvest folder."
 cp -r ${DEBRIEFDIR}* ${SOURCEDIR}
@@ -44,7 +44,7 @@ echo "Creating the wixl harvest file."
 find ${SOURCEDIR} | ${WIXLDIR}wixl-heat --var var.SourceDir -p ${SOURCEDIR} --component-group main --directory-ref INSTALLDIR > ${WORKDIR}harvest.wxs
 echo "Done."
 
-cat ${WORKDIR}harvest.wxs
+# cat ${WORKDIR}harvest.wxs
 
 echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -a x64 -v ${WORKDIR}Debrief64.wxs ${WORKDIR}harvest.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
