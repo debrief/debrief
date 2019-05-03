@@ -219,7 +219,7 @@ public class ImportAIS
 
   }
 
-  private final static String LAYER_NAME = "WECDIS Tracks";
+  private final static String LAYER_NAME = "AIS Tracks";
 
   /**
    * keep a tally of vessel names against MMSI numbers. We keep it as static so that it stays alive
