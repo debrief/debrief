@@ -49,5 +49,11 @@ public interface AbstractTrackConfiguration
 
   public void setPrimaryTrack(final TrackWrapper track);
 
-  public void setTracks(final List<TrackWrapper> tracks);
+  /**
+   * 
+   * @param tracks
+   *          Tracks to assign
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
+  public boolean setTracks(final List<TrackWrapper> tracks);
 }

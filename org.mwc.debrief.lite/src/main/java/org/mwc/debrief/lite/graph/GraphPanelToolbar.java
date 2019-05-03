@@ -222,27 +222,33 @@ public class GraphPanelToolbar extends JPanel
     });
 
     if (_stepControl != null && _stepControl.getLayers() != null)
-    { 
+    {
       final DataListener trackChangeListener = new DataListener()
       {
 
         @Override
         public void dataExtended(final Layers theData)
         {
-          assignTracks(theData);
+          if (!assignTracks(theData))
+          {
+            updateXYPlot(operationComboBox);
+          }
         }
 
         @Override
         public void dataModified(final Layers theData, final Layer changedLayer)
         {
-          assignTracks(theData);
+          if (!assignTracks(theData))
+          {
+            updateXYPlot(operationComboBox);
+          }
         }
 
         @Override
         public void dataReformatted(final Layers theData,
             final Layer changedLayer)
         {
-          assignTracks(theData);
+          updateXYPlot(operationComboBox);
         }
       };
       _stepControl.getLayers().addDataModifiedListener(trackChangeListener);
@@ -503,10 +509,17 @@ public class GraphPanelToolbar extends JPanel
     }
   }
 
-  private void assignTracks(final Layers layers)
+  /**
+   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
+   * values, it is not assigned and returns false. True when it is assigned.
+   * 
+   * @param layers
+   *          Layers of the session. We are extracting Tracks from it.
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
+  private boolean assignTracks(final Layers layers)
   {
-    final Enumeration<Editable> elem = layers
-        .elements();
+    final Enumeration<Editable> elem = layers.elements();
     List<TrackWrapper> tracks = new ArrayList<>();
     while (elem.hasMoreElements())
     {
@@ -516,7 +529,7 @@ public class GraphPanelToolbar extends JPanel
         tracks.add((TrackWrapper) nextItem);
       }
     }
-    selectTrackModel.setTracks(tracks);
+    return selectTrackModel.setTracks(tracks);
   }
 
   private void updateXYPlot(
