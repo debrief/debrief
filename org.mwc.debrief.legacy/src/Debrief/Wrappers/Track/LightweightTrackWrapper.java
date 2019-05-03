@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
@@ -210,11 +209,18 @@ public class LightweightTrackWrapper extends PlainWrapper implements
       return track;
     }
 
-    public void testResample()
+    public void testResampleUp()
     {
       LightweightTrackWrapper track = getTrack();
       track.setResampleDataAt(new HiResDate(20000));
       assertEquals("correct size", 5, track._thePositions.size());
+    }
+
+    public void testResampleDown()
+    {
+      LightweightTrackWrapper track = getTrack();
+      track.setResampleDataAt(new HiResDate(5000));
+      assertEquals("correct size", 19, track._thePositions.size());
     }
 
     public void testSetFreq()
@@ -1412,9 +1418,6 @@ public class LightweightTrackWrapper extends PlainWrapper implements
   {
     this._lastDataFrequency = theVal;
 
-    // have a go at trimming the start time to a whole number of intervals
-    final long interval = theVal.getMicros();
-
     // do we have a start time (we may just be being tested...)
     if (this.getStartDTG() == null)
     {
@@ -1428,26 +1431,19 @@ public class LightweightTrackWrapper extends PlainWrapper implements
     }
     else
     {
-      final List<Editable> newItems = new ArrayList<Editable>();
-
-      final Enumeration<Editable> pIter = getPositionIterator();
-      long nextTime = getStartDTG().getMicros();
-      while (pIter.hasMoreElements())
-      {
-        final FixWrapper next = (FixWrapper) pIter.nextElement();
-        final long thisTime = next.getDateTimeGroup().getMicros();
-
-        if (thisTime >= nextTime)
-        {
-          newItems.add(next);
-          nextTime += interval;
-        }
-      }
+      final Vector<FixWrapper> newItems = new Vector<FixWrapper>();
+      TrackSegment.decimatePointsTrack(theVal, this, this.getStartDTG()
+          .getDate().getTime(), newItems, false);
 
       // ok, clear existing items
       _thePositions.removeAllElements();
 
-      // and store the new ones
+      // tell them who's the daddy
+      for(FixWrapper t: newItems)
+      {
+        t.setTrackWrapper(this);
+      }
+      // now silently add them
       _thePositions.getData().addAll(newItems);
 
       // ok, we have to clear the bounds

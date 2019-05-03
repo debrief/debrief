@@ -905,6 +905,9 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
+      
+      // and the spatial bounds
+      new FitToWindow(_theLayers, mapPane).actionPerformed(null);
     }
     catch (final FileNotFoundException e)
     {
