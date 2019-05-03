@@ -84,6 +84,8 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Chart.Painters.GridPainter;
+import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool;
@@ -139,12 +141,6 @@ abstract public class PlainCreate extends PlainTool
   private Layer getDestinationLayer()
   {
     Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
-    if (layer == null)
-    {
-      layer = new BaseLayer();
-      layer.setName(Layers.CHART_FEATURES);
-      _theData.addThisLayer(layer);
-    }
     return layer;
   }
 
@@ -196,6 +192,7 @@ abstract public class PlainCreate extends PlainTool
     final protected PropertiesPanel _thePanel;
 
     final protected Layer _theLayer;
+    protected Layer _addedLayer;
 
     protected Plottable _theShape;
 
@@ -266,6 +263,9 @@ abstract public class PlainCreate extends PlainTool
         {
           _myData.removeThisLayer((Layer) _theShape);
         }
+        else if(_addedLayer!=null) {
+          _myData.removeThisLayer(_addedLayer);
+        }
         else
           MWC.Utilities.Errors.Trace.trace(
               "Missing layer data in undo operation");
@@ -294,8 +294,18 @@ abstract public class PlainCreate extends PlainTool
         }
         else
         {
+          if(_theShape instanceof ScalePainter || _theShape instanceof GridPainter) {
+            //for scale and grid, add the shape after adding chart_features layer, if it doesnt already exist
+            _addedLayer = new BaseLayer();
+            _addedLayer.setName(Layers.CHART_FEATURES);
+            getLayers().addThisLayer(_addedLayer);
+            _addedLayer.add(_theShape);
+            if (_thePanel != null)
+              _thePanel.addEditor(_theShape.getInfo(), _addedLayer);
+            _myData.fireExtended(_theShape, _addedLayer);
+          }
           // no layer provided, stick into the top level
-          if (_theShape instanceof Layer)
+          else if (_theShape instanceof Layer)
           {
             // ahh, just check we don't have one already
             final Layer newLayer = (Layer) _theShape;
