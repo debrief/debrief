@@ -36,7 +36,7 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
 
   private TrackWrapper _primaryTrack;
 
-  private List<TrackWrapperSelect> _tracks = new ArrayList<>();
+  private final List<TrackWrapperSelect> _tracks = new ArrayList<>();
 
   private CalculationHolder _calculation;
 
@@ -140,11 +140,17 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     }
   }
 
+  /**
+   * 
+   * @param tracks
+   *          Tracks to assign
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
   @Override
   public boolean setTracks(final List<TrackWrapper> tracks)
   {
     boolean isDifferent = false;
-    final List<TrackWrapperSelect> oldTracks = this._tracks;
+    final List<TrackWrapperSelect> oldTracks = new ArrayList<>(this._tracks);
     final List<TrackWrapperSelect> newTracks = new ArrayList<>();
     final HashSet<TrackWrapper> oldTracksSet = new HashSet<>();
     if (oldTracks != null)
@@ -161,7 +167,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     }
     if (isDifferent)
     {
-      this._tracks = newTracks;
+      this._tracks.clear();
+      this._tracks.addAll(newTracks);
       notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
     }
     return isDifferent;

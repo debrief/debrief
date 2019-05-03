@@ -509,6 +509,14 @@ public class GraphPanelToolbar extends JPanel
     }
   }
 
+  /**
+   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
+   * values, it is not assigned and returns false. True when it is assigned.
+   * 
+   * @param layers
+   *          Layers of the session. We are extracting Tracks from it.
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
   private boolean assignTracks(final Layers layers)
   {
     final Enumeration<Editable> elem = layers.elements();
