@@ -19,6 +19,7 @@ import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -79,9 +80,11 @@ public class ImportAIS
       while (fixes.hasMoreElements())
       {
         final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
-            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
-                .getSpeed());
+        SubjectAction[] actions = thisF.getInfo().getUndoableActions();
+        assertNull("should not return actions", actions);
+//        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
+//            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
+//                .getSpeed());
 
       }
 
@@ -209,10 +212,11 @@ public class ImportAIS
       while (fixes.hasMoreElements())
       {
         final FixWrapper thisF = (FixWrapper) fixes.nextElement();
-        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
-            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
-                .getSpeed() + " loc:" + thisF.getLocation());
-
+        SubjectAction[] actions = thisF.getInfo().getUndoableActions();
+        assertNull("should not return actions", actions);
+//        System.out.println(thisF.getDateTimeGroup().getDate() + " COG:"
+//            + (int) Math.toDegrees(thisF.getCourse()) + " SOG:" + (int) thisF
+//                .getSpeed() + " loc:" + thisF.getLocation());
       }
 
     }
