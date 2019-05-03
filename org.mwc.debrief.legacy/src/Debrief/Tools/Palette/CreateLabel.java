@@ -215,7 +215,8 @@ public final class CreateLabel extends CoreCreateShape
      */
     public final void undo()
     {
-      if(addedLayer!=null) {
+      if(addedLayer!=null) 
+      {
       _theData.removeThisLayer(addedLayer);
       }
       else
@@ -231,7 +232,12 @@ public final class CreateLabel extends CoreCreateShape
     public final void execute()
     {
       if(addedLayer!=null) {
-        _theData.addThisLayer(addedLayer);
+        final Layer layer = _theData.findLayer(addedLayer.getName());
+        if(layer == null)
+        {
+          _theData.addThisLayer(addedLayer);  
+        }
+        
       }
       // add the Shape to the layer, and put it
       // in the property editor
