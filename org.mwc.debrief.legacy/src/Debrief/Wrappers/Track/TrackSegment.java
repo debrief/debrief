@@ -622,10 +622,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           final FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
           
           // and format it
-          storeMe.setSymbolShowing(firstFix.getSymbolShowing());
-          storeMe.setLabelShowing(firstFix.getLabelShowing());
-          storeMe.setLabelFormatSilent(firstFix.getLabelFormat());
-          storeMe.resetName();
+          copyFormattingFrom(firstFix, storeMe);
 
           // and add it
           newItems.add(storeMe);
@@ -652,11 +649,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
           }
           
           // and format it
-          newPos.setSymbolShowing(firstFix.getSymbolShowing());
-          newPos.setLabelShowing(firstFix.getLabelShowing());
-          newPos.setLabelFormatSilent(firstFix.getLabelFormat());
-          newPos.resetName();
-
+          copyFormattingFrom(firstFix, newPos);
 
           // store the color for this item
           final Color hisColor = currentPosition.getActualColor();
@@ -700,6 +693,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
       // and move our marker forward
       previousPosition = currentPosition;
     }
+  }
+
+  private static void copyFormattingFrom(FixWrapper firstFix,
+      FixWrapper storeMe)
+  {
+    storeMe.setSymbolShowing(firstFix.getSymbolShowing());
+    storeMe.setLabelShowing(firstFix.getLabelShowing());
+    storeMe.setLabelFormatSilent(firstFix.getLabelFormat());
+    storeMe.resetName();    
   }
 
   private void decimateRelative(final HiResDate theVal,
