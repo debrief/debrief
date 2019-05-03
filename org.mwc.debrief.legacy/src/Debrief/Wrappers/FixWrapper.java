@@ -12,7 +12,229 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-
+// $RCSfile: FixWrapper.java,v $
+// @author $Author: ian.mayo $
+// @version $Revision: 1.14 $
+// $Log: FixWrapper.java,v $
+// Revision 1.14  2007/03/12 11:40:24  ian.mayo
+// Change default font size to 9px
+//
+// Revision 1.13  2007/01/22 09:52:51  ian.mayo
+// Better maths
+//
+// Revision 1.12  2006/11/28 10:55:12  Ian.Mayo
+// Add offset to label to allow for fix symbol
+//
+// Revision 1.11  2006/01/18 15:02:54  Ian.Mayo
+// Improve how we do interpolated points
+//
+// Revision 1.10  2005/12/12 12:40:14  Ian.Mayo
+// Don't do the hard-work ourselves
+//
+// Revision 1.9  2005/12/02 10:56:31  Ian.Mayo
+// Correct use of N/A in date formats
+//
+// Revision 1.8  2005/09/23 14:56:05  Ian.Mayo
+// Support generation of interpolated fixes
+//
+// Revision 1.7  2005/01/28 09:32:11  Ian.Mayo
+// Categorise editable properties
+//
+// Revision 1.5  2005/01/19 14:31:13  Ian.Mayo
+// Make the top-level Visible property available to property editor
+//
+// Revision 1.4  2004/12/02 11:37:49  Ian.Mayo
+// Optimise fix comparison
+//
+// Revision 1.3  2004/11/29 15:44:46  Ian.Mayo
+// Only reset name when we have valid time
+//
+// Revision 1.2  2004/11/25 10:24:45  Ian.Mayo
+// Switch to Hi Res dates
+//
+// Revision 1.1.1.2  2003/07/21 14:49:21  Ian.Mayo
+// Re-import Java files to keep correct line spacing
+//
+// Revision 1.16  2003-07-04 10:59:19+01  ian_mayo
+// reflect name change in parent testing class
+//
+// Revision 1.15  2003-07-01 14:56:16+01  ian_mayo
+// Refactor out painting the labels
+//
+// Revision 1.14  2003-06-25 15:39:56+01  ian_mayo
+// Improve formatting of multi-line tooltip
+//
+// Revision 1.13  2003-06-25 08:42:21+01  ian_mayo
+// Switch to multi-line labels
+//
+// Revision 1.12  2003-06-10 15:39:21+01  ian_mayo
+// Re-instate getFixLocation, since we use it for property editor
+//
+// Revision 1.11  2003-06-10 14:34:17+01  ian_mayo
+// Remove confusing method (we should access the fix location via the fix)
+//
+// Revision 1.10  2003-05-09 12:27:14+01  ian_mayo
+// Handle instance where parent track isn't set (we only want the name anyway)
+//
+// Revision 1.9  2003-04-01 15:50:20+01  ian_mayo
+// Correctly manage the label format - so it doesn't look like a change has been made each time the user saves his properties
+//
+// Revision 1.8  2003-03-24 11:05:27+00  ian_mayo
+// Make correct parameter public again
+//
+// Revision 1.7  2003-03-19 15:36:50+00  ian_mayo
+// improvements according to IntelliJ inspector
+//
+// Revision 1.6  2003-03-14 16:02:36+00  ian_mayo
+// Use static instance of Font, to save object creation
+//
+// Revision 1.5  2002-11-01 14:44:44+00  ian_mayo
+// Minor tidying, shorten displayed name of fix
+//
+// Revision 1.4  2002-10-30 16:27:57+00  ian_mayo
+// correct visibility of getDisplayName implementation
+//
+// Revision 1.3  2002-10-01 15:41:45+01  ian_mayo
+// make final methods & classes final (following IDEA analysis)
+//
+// Revision 1.2  2002-05-28 09:25:13+01  ian_mayo
+// after switch to new system
+//
+// Revision 1.1  2002-05-28 09:11:40+01  ian_mayo
+// Initial revision
+//
+// Revision 1.1  2002-04-23 12:28:22+01  ian_mayo
+// Initial revision
+//
+// Revision 1.8  2001-09-14 09:43:09+01  administrator
+// Remember to set the time zone
+//
+// Revision 1.7  2001-08-29 19:19:17+01  administrator
+// Reflect package change of PlainWrapper, and remove Contacts
+//
+// Revision 1.6  2001-08-21 12:14:39+01  administrator
+// Improve editing of label format
+//
+// Revision 1.5  2001-08-20 10:29:00+01  administrator
+// For editting format of date text, return "N/A", not null
+//
+// Revision 1.4  2001-08-14 14:08:01+01  administrator
+// Correct the "Compare" method to put us AFTER any others, not before
+//
+// Revision 1.3  2001-08-13 12:53:55+01  administrator
+// use the PlainWrapper colour support, and implement Comparable support
+//
+// Revision 1.2  2001-08-01 20:08:37+01  administrator
+// Added methods & editor class necessary to all user to specify date formatting to be used for text label
+//
+// Revision 1.1  2001-07-23 11:53:54+01  administrator
+// tidy up
+//
+// Revision 1.0  2001-07-17 08:41:08+01  administrator
+// Initial revision
+//
+// Revision 1.3  2001-01-22 12:30:02+00  novatech
+// added JUnit testing code
+//
+// Revision 1.2  2001-01-09 10:25:57+00  novatech
+// allow setting of symbol size
+//
+// Revision 1.1  2001-01-03 13:40:22+00  novatech
+// Initial revision
+//
+// Revision 1.1.1.1  2000/12/12 20:49:14  ianmayo
+// initial import of files
+//
+// Revision 1.27  2000-11-22 10:51:56+00  ian_mayo
+// provide better colour accessors, so that a null value is return if this fix doesn't have a colour set - not the track colour
+//
+// Revision 1.26  2000-11-17 09:11:42+00  ian_mayo
+// tidily handle missing location for Tactical fix
+//
+// Revision 1.25  2000-10-03 14:15:50+01  ian_mayo
+// white space
+//
+// Revision 1.24  2000-09-21 09:05:24+01  ian_mayo
+// make Editable.EditorType a transient parameter, to save it being written to file
+//
+// Revision 1.23  2000-08-18 10:09:00+01  ian_mayo
+// Before we make all editables listenable - that is the property editor is listening out for changes to it's editable and updates it accordingly
+//
+// Revision 1.22  2000-08-16 14:12:05+01  ian_mayo
+// take track name from TrackWrapper outside BeanInfo
+//
+// Revision 1.21  2000-08-15 15:28:46+01  ian_mayo
+// Bean parameter change
+//
+// Revision 1.20  2000-08-14 11:00:28+01  ian_mayo
+// switch getSpeed to correct units
+//
+// Revision 1.19  2000-08-11 08:40:51+01  ian_mayo
+// tidy beaninfo
+//
+// Revision 1.18  2000-08-09 16:04:02+01  ian_mayo
+// remove stray semi-colons
+//
+// Revision 1.17  2000-05-23 13:42:01+01  ian_mayo
+// fill in the square symbol when the label is visible
+//
+// Revision 1.16  2000-04-03 10:41:02+01  ian_mayo
+// handle Label visibility at this level, not in the parent
+//
+// Revision 1.15  2000-03-27 14:41:12+01  ian_mayo
+// remove showLabel dependency on parent
+//
+// Revision 1.14  2000-03-08 16:24:45+00  ian_mayo
+// add myArea initialisation to getBounds method (used following deserialisation)
+//
+// Revision 1.13  2000-03-07 14:48:18+00  ian_mayo
+// optimised algorithms
+//
+// Revision 1.12  2000-03-07 10:07:59+00  ian_mayo
+// Optimisation, keep local copy of area covered by fix
+//
+// Revision 1.11  2000-02-22 13:48:32+00  ian_mayo
+// exportShape name changed to exportThis
+//
+// Revision 1.10  2000-02-18 11:06:21+00  ian_mayo
+// added Label/Symbol visiblility getter/setter methods
+//
+// Revision 1.9  2000-02-14 16:48:16+00  ian_mayo
+// Corrected label displayed in editor
+//
+// Revision 1.8  2000-02-04 15:51:42+00  ian_mayo
+// Allowed user to modify position of fix
+//
+// Revision 1.7  2000-01-18 15:04:32+00  ian_mayo
+// changed UI name from Fix to Location
+//
+// Revision 1.6  2000-01-13 15:32:05+00  ian_mayo
+// moved paint control to Track
+//
+// Revision 1.5  2000-01-12 15:40:18+00  ian_mayo
+// added concept of contacts
+//
+// Revision 1.4  1999-11-26 15:50:16+00  ian_mayo
+// adding toString methods
+//
+// Revision 1.3  1999-11-12 14:35:40+00  ian_mayo
+// part way through getting them to export themselves
+//
+// Revision 1.2  1999-11-11 18:24:03+00  ian_mayo
+// changed name of Line object
+//
+// Revision 1.1  1999-10-12 15:33:40+01  ian_mayo
+// Initial revision
+//
+// Revision 1.7  1999-08-04 14:04:36+01  administrator
+// make show-label flag inherit from track
+//
+// Revision 1.6  1999-08-04 09:45:30+01  administrator
+// minor mods, tidying up
+//
+// Revision 1.5  1999-07-27 09:24:19+01  administrator
+// added BeanInfo editing
+//
 // Revision 1.4  1999-07-19 12:40:32+01  administrator
 // added storage of sub-second time data (Switched to storing as Long rather than java.utils.Date)
 //
@@ -284,64 +506,70 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       final FixWrapper fw = (FixWrapper) getData();
       final String lbl = fw.getLabel();
-      
+
       final SubjectAction beforeA;
       final SubjectAction afterA;
-      
-      final TrackSegment parent = fw.getSegment();
-      // find our index
-      int ctr = 0;
-      final Enumeration<Editable> numer = parent.elements();
-      final int len = parent.size();
-      while(numer.hasMoreElements())
-      {
-        final FixWrapper thisF = (FixWrapper) numer.nextElement();
-        if(thisF.equals(fw))
-        {
-          break;
-        }
-        ctr++;
-      }
-           
-      final String beforeLabel = "Split track before " + lbl;
-      final SplitTrack goodBefore = new SplitTrack(true, beforeLabel);
-      final String afterLabel = "Split track after " + lbl;
-      final SplitTrack goodAfter = new SplitTrack(false, afterLabel);
 
-      
-      if(ctr == 0)
+      final TrackSegment parent = fw.getSegment();
+
+      if (parent == null)
       {
-        beforeA = new CantDoIt(beforeLabel + " - invalid");
-        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
-      }
-      else if(ctr == 1)
-      {
-        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
-        afterA = goodAfter;
-        
-      }
-      else if(ctr == len - 2)
-      {
-        beforeA = goodBefore;
-        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
-      }
-      else if(ctr == len - 1)
-      {
-        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
-        afterA = new CantDoIt(afterLabel + " - invalid");
+        // note: lightweight tracks may not have segment parent
+        return null;
       }
       else
       {
-        beforeA = goodBefore;
-        afterA = goodAfter;
-      }
-      
-      final SubjectAction[] res =
-          new SubjectAction[]
-          {beforeA, afterA};
-      return res;
-    }
+        // find our index
+        int ctr = 0;
+        final Enumeration<Editable> numer = parent.elements();
+        final int len = parent.size();
+        while (numer.hasMoreElements())
+        {
+          final FixWrapper thisF = (FixWrapper) numer.nextElement();
+          if (thisF.equals(fw))
+          {
+            break;
+          }
+          ctr++;
+        }
 
+        final String beforeLabel = "Split track before " + lbl;
+        final SplitTrack goodBefore = new SplitTrack(true, beforeLabel);
+        final String afterLabel = "Split track after " + lbl;
+        final SplitTrack goodAfter = new SplitTrack(false, afterLabel);
+
+        if (ctr == 0)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - invalid");
+          afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+        }
+        else if (ctr == 1)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+          afterA = goodAfter;
+
+        }
+        else if (ctr == len - 2)
+        {
+          beforeA = goodBefore;
+          afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+        }
+        else if (ctr == len - 1)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+          afterA = new CantDoIt(afterLabel + " - invalid");
+        }
+        else
+        {
+          beforeA = goodBefore;
+          afterA = goodAfter;
+        }
+
+        final SubjectAction[] res = new SubjectAction[]
+        {beforeA, afterA};
+        return res;
+      }
+    }
   }
 
   // //////////////////////////////////////////////////////////////
