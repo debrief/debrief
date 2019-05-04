@@ -506,64 +506,70 @@ public class FixWrapper extends PlainWrapper implements Watchable,
 
       final FixWrapper fw = (FixWrapper) getData();
       final String lbl = fw.getLabel();
-      
+
       final SubjectAction beforeA;
       final SubjectAction afterA;
-      
-      final TrackSegment parent = fw.getSegment();
-      // find our index
-      int ctr = 0;
-      final Enumeration<Editable> numer = parent.elements();
-      final int len = parent.size();
-      while(numer.hasMoreElements())
-      {
-        final FixWrapper thisF = (FixWrapper) numer.nextElement();
-        if(thisF.equals(fw))
-        {
-          break;
-        }
-        ctr++;
-      }
-           
-      final String beforeLabel = "Split track before " + lbl;
-      final SplitTrack goodBefore = new SplitTrack(true, beforeLabel);
-      final String afterLabel = "Split track after " + lbl;
-      final SplitTrack goodAfter = new SplitTrack(false, afterLabel);
 
-      
-      if(ctr == 0)
+      final TrackSegment parent = fw.getSegment();
+
+      if (parent == null)
       {
-        beforeA = new CantDoIt(beforeLabel + " - invalid");
-        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
-      }
-      else if(ctr == 1)
-      {
-        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
-        afterA = goodAfter;
-        
-      }
-      else if(ctr == len - 2)
-      {
-        beforeA = goodBefore;
-        afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
-      }
-      else if(ctr == len - 1)
-      {
-        beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
-        afterA = new CantDoIt(afterLabel + " - invalid");
+        // note: lightweight tracks may not have segment parent
+        return null;
       }
       else
       {
-        beforeA = goodBefore;
-        afterA = goodAfter;
-      }
-      
-      final SubjectAction[] res =
-          new SubjectAction[]
-          {beforeA, afterA};
-      return res;
-    }
+        // find our index
+        int ctr = 0;
+        final Enumeration<Editable> numer = parent.elements();
+        final int len = parent.size();
+        while (numer.hasMoreElements())
+        {
+          final FixWrapper thisF = (FixWrapper) numer.nextElement();
+          if (thisF.equals(fw))
+          {
+            break;
+          }
+          ctr++;
+        }
 
+        final String beforeLabel = "Split track before " + lbl;
+        final SplitTrack goodBefore = new SplitTrack(true, beforeLabel);
+        final String afterLabel = "Split track after " + lbl;
+        final SplitTrack goodAfter = new SplitTrack(false, afterLabel);
+
+        if (ctr == 0)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - invalid");
+          afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+        }
+        else if (ctr == 1)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+          afterA = goodAfter;
+
+        }
+        else if (ctr == len - 2)
+        {
+          beforeA = goodBefore;
+          afterA = new CantDoIt(afterLabel + " - can't create one-point leg");
+        }
+        else if (ctr == len - 1)
+        {
+          beforeA = new CantDoIt(beforeLabel + " - can't create one-point leg");
+          afterA = new CantDoIt(afterLabel + " - invalid");
+        }
+        else
+        {
+          beforeA = goodBefore;
+          afterA = goodAfter;
+        }
+
+        final SubjectAction[] res = new SubjectAction[]
+        {beforeA, afterA};
+        return res;
+      }
+    }
   }
 
   // //////////////////////////////////////////////////////////////

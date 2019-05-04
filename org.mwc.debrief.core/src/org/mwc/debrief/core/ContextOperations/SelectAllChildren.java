@@ -169,14 +169,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper thisList = new EditableWrapper(wrap, track,
             _theLayers);
 
-        res = new ArrayList<EditableWrapper>();
-
-        final Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          final Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
       }
       else if (parent instanceof BaseLayer)
       {
@@ -186,14 +180,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper thisList = new EditableWrapper(wrap, track,
             _theLayers);
 
-        res = new ArrayList<EditableWrapper>();
-
-        final Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          final Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
       }
       else if (parent instanceof TrackSegment)
       {
@@ -203,14 +191,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper thisList = new EditableWrapper(wrap, track,
             _theLayers);
 
-        res = new ArrayList<EditableWrapper>();
-
-        final Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          final Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
       }
       else if (parent instanceof SegmentList)
       {
@@ -222,14 +204,8 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper thisList = new EditableWrapper(wrap, segList,
             _theLayers);
 
-        res = new ArrayList<EditableWrapper>();
-
-        final Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          final Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
       }
       else if (parent instanceof NarrativeWrapper)
       {
@@ -239,19 +215,39 @@ public class SelectAllChildren implements RightClickContextItemGenerator
         final EditableWrapper thisList = new EditableWrapper(wrap, track,
             _theLayers);
 
-        res = new ArrayList<EditableWrapper>();
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
+      }
+      else if (parent instanceof Layer)
+      {
+        // we've handled all of the specific ones, we can
+        // afford to be a bit more relaxed now.
+        final Layer wrap = (Layer) parent;
+        final EditableWrapper track = new EditableWrapper(wrap, null,
+            _theLayers);
+        final EditableWrapper thisList = new EditableWrapper(wrap, track,
+            _theLayers);
 
-        final Enumeration<Editable> items = wrap.elements();
-        while (items.hasMoreElements())
-        {
-          final Editable item = items.nextElement();
-          res.add(new EditableWrapper(item, thisList, _theLayers));
-        }
+        // and remember them
+        res = storeThese(wrap, thisList, _theLayers);
       }
       else
       {
         System.out.println("not handling:" + parent.getClass());
         res = null;
+      }
+      return res;
+    }
+
+    private final static List<EditableWrapper> storeThese(final Layer wrap,
+        final EditableWrapper thisList, final Layers theLayers)
+    {
+      final List<EditableWrapper> res = new ArrayList<EditableWrapper>();
+      final Enumeration<Editable> items = wrap.elements();
+      while (items.hasMoreElements())
+      {
+        final Editable item = items.nextElement();
+        res.add(new EditableWrapper(item, thisList, theLayers));
       }
       return res;
     }
