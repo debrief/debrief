@@ -24,7 +24,7 @@ echo "Done."
 
 echo "Downloading JRE"
 wget -O jre.zip ${JRE_URL}
-unzip jre.zip -d ${SOURCEDIR}
+unzip -q jre.zip -d ${SOURCEDIR}
 mv ${SOURCEDIR}jdk* ${SOURCEDIR}jre
 rm jre.zip
 echo "Done."
