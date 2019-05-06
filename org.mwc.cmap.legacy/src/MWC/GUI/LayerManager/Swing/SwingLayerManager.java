@@ -807,7 +807,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
     // find out which node is currently visible
     final int[] selections = _myTree.getSelectionRows();
     int cur = 0;
-    TreePath selectionTreePath = _myTree.getSelectionPath();
     if (selections != null && selections.length > 0)
     { 
       cur = _myTree.getSelectionRows()[0];
@@ -859,14 +858,6 @@ public class SwingLayerManager extends SwingCustomEditor implements
       }
       // reload the tree
       ((DefaultTreeModel) _myTree.getModel()).reload(root);
-    }
-
-    // create a new tree based on this data
-    if (selectionTreePath != null)
-    {
-      _myTree.expandPath(selectionTreePath);
-      _myTree.scrollPathToVisible(selectionTreePath);
-      _myTree.setSelectionPath(selectionTreePath);
     }
 
     // trigger a repaint
