@@ -200,6 +200,7 @@ public abstract class CoreCreateShape extends PlainTool
   final protected String getLayerName()
   {
     String res = null;
+    addedLayer = null;
     // get the non-track layers
     final Layers theLayers = _theData;
     final String[] ourLayers = theLayers.trimmedLayers();
