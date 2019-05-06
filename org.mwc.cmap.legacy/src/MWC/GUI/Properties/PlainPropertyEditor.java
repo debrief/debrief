@@ -430,7 +430,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
         if ("Name".equals(it.propertyName))
         {
           _theName = it.newValue.toString();
-          _theInfo.setName(it.newValue.toString());
+          it.editorInfo.setName(_theName);
           if (_propsPanel != null)
           {
             _propsPanel.setTitleAt(_propsPanel.getSelectedIndex(), _theName);
