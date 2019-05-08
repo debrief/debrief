@@ -186,6 +186,9 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 			wmf.writeWMF(fo);
 			// wmf.writePlaceableWMF(fo, 5, 5, 200, 200, 200);
 			fo.close();
+
+      MWC.GUI.Dialogs.DialogFactory.showMessage("WMF Export successful",
+          "WMF Export has been successful in the following directory: " + _directory);
 		}
 		catch (final FileNotFoundException f)
 		{
