@@ -21,6 +21,7 @@ import static MWC.GUI.Properties.LabelLocationPropertyEditor.RIGHT;
 import static MWC.GUI.Properties.LabelLocationPropertyEditor.TOP;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -386,8 +387,8 @@ public class FurthestOnCircleShape extends PlainShape implements Editable
 					.getValueIn(WorldDistance.NM) * i);
 			final String thisLabel = nf.format(thisWidthNM);
 
-			final int strWidth = dest.getStringWidth(null, thisLabel);
-			final int strHeight = dest.getStringHeight(null);
+			final int strWidth = dest.getStringWidth(getFont(), thisLabel);
+			final int strHeight = dest.getStringHeight(getFont());
 
 			if ((lLoc == ALL) || (lLoc == TOP))
 				dest.drawText(thisLabel, (int) (centre.x - strWidth / 2.3),
