@@ -21,7 +21,6 @@ import static MWC.GUI.Properties.LabelLocationPropertyEditor.RIGHT;
 import static MWC.GUI.Properties.LabelLocationPropertyEditor.TOP;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
