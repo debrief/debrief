@@ -883,7 +883,7 @@ public class XYPlotView extends ViewPart
             PreferenceConstants.WMF_DIRECTORY);
 
     // did we find the preference for the WMF location?
-    if (tmpDir != null)
+    if (tmpDir != null && !tmpDir.isEmpty())
     {
       dir = tmpDir;
     }
