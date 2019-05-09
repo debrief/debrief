@@ -78,9 +78,15 @@ public class DebriefRibbonFile
   }
 
   @SuppressWarnings("unused")
-  private static class ImportReplayAction extends AbstractAction
+  private static class ImportFileAction extends AbstractAction
   {
 
+    private static final String TYPE_REP="rep";
+    
+    private String importFileType;
+    protected ImportFileAction(String type) {
+      importFileType = type;
+    }
     /**
      *
      */
@@ -91,11 +97,23 @@ public class DebriefRibbonFile
     {
       final String initialFileLocation = DebriefLiteApp.getDefault()
           .getProperty(LAST_FILE_OPEN_LOCATION);
-      final File fileToOpen = showOpenDialog(initialFileLocation, new String[]
-      {"rep"}, "Debrief replay file");
+      final File fileToOpen ;
+      if(TYPE_REP.equals(importFileType)) {
+        fileToOpen = showOpenDialog(initialFileLocation, new String[]
+            {"rep"}, "Debrief replay file");
+      }
+      else {
+        fileToOpen = showOpenDialog(initialFileLocation, new String[]
+            {"dpf"}, "Debrief plot file");
+      }
       if (fileToOpen != null)
       {
+        if(TYPE_REP.equalsIgnoreCase(importFileType)) {
         DebriefLiteApp.openRepFile(fileToOpen);
+        }
+        else {
+          DebriefLiteApp.openPlotFile(fileToOpen);
+        }
         DebriefLiteApp.getDefault().setProperty(LAST_FILE_OPEN_LOCATION,
             fileToOpen.getParentFile().getAbsolutePath());
       }
@@ -332,7 +350,10 @@ public class DebriefRibbonFile
 
     final JRibbonBand importMenu = new JRibbonBand("Import", null);
     MenuUtils.addCommand("Replay", "icons/24/import.png",
-        new ImportReplayAction(), importMenu, RibbonElementPriority.TOP);
+        new ImportFileAction(ImportFileAction.TYPE_REP), importMenu, RibbonElementPriority.TOP);
+    MenuUtils.addCommand("Plot", "icons/24/plot_file.png",
+        new ImportFileAction(".dpf"), importMenu, RibbonElementPriority.TOP);
+    
     importMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         importMenu));
 
