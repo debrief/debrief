@@ -133,6 +133,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Properties.PlainPropertyEditor.PropertyChangeAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.Utilities.ReaderWriter.ImportManager;
@@ -427,10 +428,13 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
         if (evt.getPropertyName().equals(NarrativeEntry.DTG))
         {
           // ok, remove this entry
-          _myEntries.remove(evt.getSource());
+          final PropertyChangeAction pcs = (PropertyChangeAction) evt
+              .getSource();
+          final NarrativeEntry entry = (NarrativeEntry) pcs.getData();
+          _myEntries.remove(entry);
 
-          // and replace it
-          _myEntries.add((Editable) evt.getSource());
+          // and replace it (which re-sort them)
+          _myEntries.add((Editable) entry);
         }
       }
     };
