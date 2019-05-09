@@ -24,7 +24,7 @@
 			<Component Id='Tutorials' Guid='3849BE2E-A6BB-4655-89E6-5963FCE68DD8'>
               <File Id='DebriefNGpdf' Name='DebriefNG.pdf' DiskId='1' Source='$(var.ResourcesDir)DebriefNG.pdf' KeyPath='yes'/>
 			  <File Id='DebriefNG_TMA_Tutorial' Name='DebriefNG_TMA_Tutorial.pdf' DiskId='1' Source='$(var.ResourcesDir)DebriefNG_TMA_Tutorial.pdf'/>
-			  <File Id='IntroductionToDebrief_1-3' Name='IntroductionToDebrief_1-3.pdf' DiskId='1' Source='$(var.ResourcesDir)IntroductionToDebrief_1-3.pdf'/>
+			  <File Id='DebriefNGTutorial' Name='DebriefNGTutorial.pdf' DiskId='1' Source='$(var.ResourcesDir)DebriefNGTutorial.pdf'/>
             </Component>
 			<Directory Id='SampleData' Name='sample_data'>
 			</Directory>

@@ -28,7 +28,7 @@ echo "Moving required files to the Resources folder."
 mv -f ${SOURCEDIR}DebriefNG.exe ${RESOURCESDIR}
 mv -f ${SOURCEDIR}DebriefNG.pdf ${RESOURCESDIR}
 mv -f ${SOURCEDIR}DebriefNG_TMA_Tutorial.pdf ${RESOURCESDIR}
-mv -f ${SOURCEDIR}IntroductionToDebrief_1-3.pdf ${RESOURCESDIR}
+mv -f ${SOURCEDIR}DebriefNGTutorial.pdf ${RESOURCESDIR}
 echo "Done."
 
 echo "Creating the wixl harvest file."
