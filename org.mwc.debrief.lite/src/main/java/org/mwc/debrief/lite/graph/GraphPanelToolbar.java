@@ -91,7 +91,7 @@ public class GraphPanelToolbar extends JPanel
   public static final String INACTIVE_STATE = "INACTIVE";
 
   public static final String STATE_PROPERTY = "STATE";
-  
+
   public static final String TRACKS_PROPERTY = "TRACKS";
 
   private ShowTimeVariablePlot3 _xytool;
@@ -114,19 +114,20 @@ public class GraphPanelToolbar extends JPanel
 
   private final DefaultComboBoxModel<CalculationHolder> operationComboModel =
       new DefaultComboBoxModel<CalculationHolder>();
-  
-  private final formattingOperation theFormatter = relBearingCalc.useUKFormat() ? new RelBearingFormatter() : null;
-  
+
+  private final formattingOperation theFormatter = relBearingCalc.useUKFormat()
+      ? new RelBearingFormatter() : null;
+
   private final CalculationHolder[] operations = new CalculationHolder[]
-      {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
-          new CalculationHolder(new courseCalc(), new CourseFormatter(),
-              false, 360), new CalculationHolder(new speedCalc(), null, false,
-                  0), new CalculationHolder(new rangeCalc(), null, true, 0),
-          new CalculationHolder(new bearingCalc(), null, true, 180),
-          new CalculationHolder(new bearingRateCalc(),
-              new BearingRateFormatter(), true, 180), new CalculationHolder(
-                  new relBearingCalc(), theFormatter, true, 180),
-          new CalculationHolder(new atbCalc(), theFormatter, true, 180)};
+  {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
+      new CalculationHolder(new courseCalc(), new CourseFormatter(), false,
+          360), new CalculationHolder(new speedCalc(), null, false, 0),
+      new CalculationHolder(new rangeCalc(), null, true, 0),
+      new CalculationHolder(new bearingCalc(), null, true, 180),
+      new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(),
+          true, 180), new CalculationHolder(new relBearingCalc(), theFormatter,
+              true, 180), new CalculationHolder(new atbCalc(), theFormatter,
+                  true, 180)};
 
   public final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
@@ -135,7 +136,7 @@ public class GraphPanelToolbar extends JPanel
         @Override
         public void propertyChange(final PropertyChangeEvent event)
         {
-          if ( STATE_PROPERTY.equals(event.getPropertyName()) )
+          if (STATE_PROPERTY.equals(event.getPropertyName()))
           {
             final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
             for (final JComponent component : componentsToDisable)
@@ -145,29 +146,32 @@ public class GraphPanelToolbar extends JPanel
           }
         }
       };
-      
-  public final PropertyChangeListener tracksChangedListeners = new PropertyChangeListener()
-  {
-    
-    @Override
-    public void propertyChange(PropertyChangeEvent evt)
-    {
-      if ( TRACKS_PROPERTY.equals(evt.getPropertyName()) )
+
+  public final PropertyChangeListener tracksChangedListeners =
+      new PropertyChangeListener()
       {
-        boolean isRelative = selectTrackModel.isRelativeEnabled();
-        for ( CalculationHolder operation : operations )
+
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
         {
-          if ( isRelative && operationComboModel.getIndexOf(operation) < 0 )
+          if (TRACKS_PROPERTY.equals(evt.getPropertyName()))
           {
-            operationComboModel.addElement(operation);
-          }else if ( !isRelative && operation.isARelativeCalculation() && operationComboModel.getIndexOf(operation) >= 0 )
-          {
-            operationComboModel.removeElement(operation);
+            final boolean isRelative = selectTrackModel.isRelativeEnabled();
+            for (final CalculationHolder operation : operations)
+            {
+              if (isRelative && operationComboModel.getIndexOf(operation) < 0)
+              {
+                operationComboModel.addElement(operation);
+              }
+              else if (!isRelative && operation.isARelativeCalculation()
+                  && operationComboModel.getIndexOf(operation) >= 0)
+              {
+                operationComboModel.removeElement(operation);
+              }
+            }
           }
         }
-      }
-    }
-  };
+      };
 
   private final ArrayList<PropertyChangeListener> stateListeners;
 
@@ -181,9 +185,41 @@ public class GraphPanelToolbar extends JPanel
     showSymbolsButton = createJToggleButton("Show Symbols", symbolOff);
     init();
 
-    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener));
+    stateListeners = new ArrayList<>(Arrays.asList(
+        enableDisableButtonsListener));
 
     setState(INACTIVE_STATE);
+  }
+
+  /**
+   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
+   * values, it is not assigned and returns false. True when it is assigned.
+   *
+   * @param layers
+   *          Layers of the session. We are extracting Tracks from it.
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
+  private boolean assignTracks(final Layers layers)
+  {
+    final Enumeration<Editable> elem = layers.elements();
+    final List<TrackWrapper> tracks = new ArrayList<>();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof TrackWrapper)
+      {
+        tracks.add((TrackWrapper) nextItem);
+      }
+    }
+
+    final boolean assigned = selectTrackModel.setTracks(tracks);
+
+    if (assigned)
+    {
+      notifyListenersStateChanged(this, TRACKS_PROPERTY, null, tracks);
+    }
+
+    return assigned;
   }
 
   private JButton createCommandButton(final String command, final String image)
@@ -220,8 +256,9 @@ public class GraphPanelToolbar extends JPanel
 
   protected void init()
   {
-    operationComboModel.addElement(new CalculationHolder(new bearingCalc(), null, true, 180));
-    
+    operationComboModel.addElement(new CalculationHolder(new bearingCalc(),
+        null, true, 180));
+
     final JComboBox<CalculationHolder> operationComboBox = new JComboBox<>(
         operationComboModel);
     operationComboBox.setSize(50, 20);
@@ -535,37 +572,6 @@ public class GraphPanelToolbar extends JPanel
     {
       showSymbolsButton.setSelected(isSelected);
     }
-  }
-
-  /**
-   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
-   * values, it is not assigned and returns false. True when it is assigned.
-   * 
-   * @param layers
-   *          Layers of the session. We are extracting Tracks from it.
-   * @return true if it was actually assigned. If they are the same, they are not assigned.
-   */
-  private boolean assignTracks(final Layers layers)
-  {
-    final Enumeration<Editable> elem = layers.elements();
-    List<TrackWrapper> tracks = new ArrayList<>();
-    while (elem.hasMoreElements())
-    {
-      final Editable nextItem = elem.nextElement();
-      if (nextItem instanceof TrackWrapper)
-      {
-        tracks.add((TrackWrapper) nextItem);
-      }
-    }
-    
-    boolean assigned = selectTrackModel.setTracks(tracks);
-
-    if ( assigned )
-    {
-      notifyListenersStateChanged(this, TRACKS_PROPERTY, null, tracks);      
-    }
-    
-    return assigned;
   }
 
   private void updateXYPlot(
