@@ -430,6 +430,14 @@ public class TrackWrapper_Support
     {
       return new SegmentInfo(this);
     }
+    
+    
+
+    @Override
+    public boolean hasEditor()
+    {
+      return true;
+    }
 
     /**
      * utility method to reveal all positions in a track

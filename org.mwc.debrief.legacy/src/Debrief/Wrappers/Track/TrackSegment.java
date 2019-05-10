@@ -864,6 +864,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     return new TrackSegmentInfo(this);
   }
+  
+  
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
 
   /**
    * how this line is plotted
