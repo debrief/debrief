@@ -100,11 +100,12 @@ public class DebriefRibbonFile
       final File fileToOpen ;
       if(TYPE_REP.equals(importFileType)) {
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
-            {"rep"}, "Debrief replay file");
+        {"rep"}, "Debrief replay file (*.rep, *.dsf, *.dtf)");
       }
-      else {
+      else
+      {
         fileToOpen = showOpenDialog(initialFileLocation, new String[]
-            {"dpf"}, "Debrief plot file");
+        {"dpf"}, "Debrief plot file (*.dpf)");
       }
       if (fileToOpen != null)
       {
