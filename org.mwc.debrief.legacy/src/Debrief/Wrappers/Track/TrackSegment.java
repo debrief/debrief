@@ -864,14 +864,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     return new TrackSegmentInfo(this);
   }
-  
-  
-
-  @Override
-  public boolean hasEditor()
-  {
-    return true;
-  }
 
   /**
    * how this line is plotted
@@ -919,6 +911,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   {
     final FixWrapper firstW = (FixWrapper) getData().iterator().next();
     return firstW.getFixLocation();
+  }
+
+  @Override
+  public boolean hasEditor()
+  {
+    return true;
   }
 
   @Override
