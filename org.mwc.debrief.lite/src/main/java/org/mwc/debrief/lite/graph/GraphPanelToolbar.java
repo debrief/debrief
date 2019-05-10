@@ -34,6 +34,8 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -90,6 +92,8 @@ public class GraphPanelToolbar extends JPanel
   public static final String INACTIVE_STATE = "INACTIVE";
 
   public static final String STATE_PROPERTY = "STATE";
+  
+  public static final String TRACKS_PROPERTY = "TRACKS";
 
   private ShowTimeVariablePlot3 _xytool;
 
@@ -109,20 +113,62 @@ public class GraphPanelToolbar extends JPanel
 
   private final JToggleButton showSymbolsButton;
 
-  public PropertyChangeListener enableDisableButtons =
+  private final DefaultComboBoxModel<CalculationHolder> operationComboModel =
+      new DefaultComboBoxModel<CalculationHolder>();
+  
+  private final formattingOperation theFormatter = relBearingCalc.useUKFormat() ? new RelBearingFormatter() : null;
+  
+  private final CalculationHolder[] operations = new CalculationHolder[]
+      {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
+          new CalculationHolder(new courseCalc(), new CourseFormatter(),
+              false, 360), new CalculationHolder(new speedCalc(), null, false,
+                  0), new CalculationHolder(new rangeCalc(), null, true, 0),
+          new CalculationHolder(new bearingCalc(), null, true, 180),
+          new CalculationHolder(new bearingRateCalc(),
+              new BearingRateFormatter(), true, 180), new CalculationHolder(
+                  new relBearingCalc(), theFormatter, true, 180),
+          new CalculationHolder(new atbCalc(), theFormatter, true, 180)};
+
+  public final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
       {
 
         @Override
         public void propertyChange(final PropertyChangeEvent event)
         {
-          final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
-          for (final JComponent component : componentsToDisable)
+          if ( STATE_PROPERTY.equals(event.getPropertyName()) )
           {
-            component.setEnabled(isActive);
+            final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
+            for (final JComponent component : componentsToDisable)
+            {
+              component.setEnabled(isActive);
+            }
           }
         }
       };
+      
+  public final PropertyChangeListener tracksChangedListeners = new PropertyChangeListener()
+  {
+    
+    @Override
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+      if ( TRACKS_PROPERTY.equals(evt.getPropertyName()) )
+      {
+        boolean isRelative = selectTrackModel.isRelativeEnabled();
+        for ( CalculationHolder operation : operations )
+        {
+          if ( isRelative && operationComboModel.getIndexOf(operation) < 0 )
+          {
+            operationComboModel.addElement(operation);
+          }else if ( !isRelative && operation.isARelativeCalculation() && operationComboModel.getIndexOf(operation) >= 0 )
+          {
+            operationComboModel.removeElement(operation);
+          }
+        }
+      }
+    }
+  };
 
   private final ArrayList<PropertyChangeListener> stateListeners;
 
@@ -136,7 +182,7 @@ public class GraphPanelToolbar extends JPanel
     showSymbolsButton = createJToggleButton("Show Symbols", symbolOff);
     init();
 
-    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
+    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener));
 
     setState(INACTIVE_STATE);
   }
@@ -175,27 +221,10 @@ public class GraphPanelToolbar extends JPanel
 
   protected void init()
   {
-    formattingOperation theFormatter = null;
-    if (relBearingCalc.useUKFormat())
-    {
-      theFormatter = new RelBearingFormatter();
-    }
-    else
-    {
-      theFormatter = null;
-    }
-
+    operationComboModel.addElement(new CalculationHolder(new bearingCalc(), null, true, 180));
+    
     final JComboBox<CalculationHolder> operationComboBox = new JComboBox<>(
-        new CalculationHolder[]
-        {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
-            new CalculationHolder(new courseCalc(), new CourseFormatter(),
-                false, 360), new CalculationHolder(new speedCalc(), null, false,
-                    0), new CalculationHolder(new rangeCalc(), null, true, 0),
-            new CalculationHolder(new bearingCalc(), null, true, 180),
-            new CalculationHolder(new bearingRateCalc(),
-                new BearingRateFormatter(), true, 180), new CalculationHolder(
-                    new relBearingCalc(), theFormatter, true, 180),
-            new CalculationHolder(new atbCalc(), theFormatter, true, 180)});
+        operationComboModel);
     operationComboBox.setSize(50, 20);
     operationComboBox.addItemListener(new ItemListener()
     {
@@ -477,7 +506,7 @@ public class GraphPanelToolbar extends JPanel
   }
 
   private void notifyListenersStateChanged(final Object source,
-      final String property, final String oldValue, final String newValue)
+      final String property, final Object oldValue, final Object newValue)
   {
     for (final PropertyChangeListener event : stateListeners)
     {
@@ -529,7 +558,15 @@ public class GraphPanelToolbar extends JPanel
         tracks.add((TrackWrapper) nextItem);
       }
     }
-    return selectTrackModel.setTracks(tracks);
+    
+    boolean assigned = selectTrackModel.setTracks(tracks);
+
+    if ( assigned )
+    {
+      notifyListenersStateChanged(this, TRACKS_PROPERTY, null, tracks);      
+    }
+    
+    return assigned;
   }
 
   private void updateXYPlot(

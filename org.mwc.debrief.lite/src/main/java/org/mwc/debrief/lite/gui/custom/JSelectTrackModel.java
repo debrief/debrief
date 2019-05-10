@@ -173,4 +173,10 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     }
     return isDifferent;
   }
+
+  @Override
+  public boolean isRelativeEnabled()
+  {
+    return this._tracks.size() > 1;
+  }
 }
