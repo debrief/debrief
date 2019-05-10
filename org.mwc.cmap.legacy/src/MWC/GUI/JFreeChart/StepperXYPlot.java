@@ -343,6 +343,10 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 
 	public HiResDate getTimeZero()
 	{
+	  if ( _myStepper == null )
+	  {
+	    return null;
+	  }
 	  return _myStepper.getTimeZero();
 	}
 }

@@ -139,12 +139,6 @@ abstract public class PlainCreate extends PlainTool
   private Layer getDestinationLayer()
   {
     Layer layer = _theData.findLayer(Layers.CHART_FEATURES);
-    if (layer == null)
-    {
-      layer = new BaseLayer();
-      layer.setName(Layers.CHART_FEATURES);
-      _theData.addThisLayer(layer);
-    }
     return layer;
   }
 
@@ -196,6 +190,8 @@ abstract public class PlainCreate extends PlainTool
     final protected PropertiesPanel _thePanel;
 
     final protected Layer _theLayer;
+    
+    protected Layer _addedLayer;
 
     protected Plottable _theShape;
 
@@ -266,6 +262,9 @@ abstract public class PlainCreate extends PlainTool
         {
           _myData.removeThisLayer((Layer) _theShape);
         }
+        else if(_addedLayer!=null) {
+          _myData.removeThisLayer(_addedLayer);
+        }
         else
           MWC.Utilities.Errors.Trace.trace(
               "Missing layer data in undo operation");
@@ -294,9 +293,11 @@ abstract public class PlainCreate extends PlainTool
         }
         else
         {
-          // no layer provided, stick into the top level
+          // no parent layer
           if (_theShape instanceof Layer)
           {
+            // ok, we're adding a layer
+            
             // ahh, just check we don't have one already
             final Layer newLayer = (Layer) _theShape;
             final Layer sameLayer = _myData.findLayer(newLayer.getName());
@@ -320,7 +321,25 @@ abstract public class PlainCreate extends PlainTool
             }
           }
           else
-            MWC.Utilities.Errors.Trace.trace("Failed to add new layer");
+          {
+            // ok, the parent layer is missing. Let's drop it into the Chart Features layer (if
+            // present), since that's the default behaviour for PlainCreate
+            Layer chartF = getLayers().findLayer(Layers.CHART_FEATURES);
+            if(chartF == null)
+            {
+              // ok, create the chart features
+              _addedLayer = new BaseLayer();
+              _addedLayer.setName(Layers.CHART_FEATURES);
+              chartF = _addedLayer;
+              getLayers().addThisLayer(_addedLayer);
+            }
+            
+            // now we've got somewhere to add the shape to
+            chartF.add(_theShape);
+            if (_thePanel != null)
+              _thePanel.addEditor(_theShape.getInfo(), _addedLayer);
+            _myData.fireExtended(_theShape, _addedLayer);
+          }
         }
       }
     }
