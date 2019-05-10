@@ -34,7 +34,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
