@@ -1098,6 +1098,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   @FireExtended
   public final void setResampleDataAt(final HiResDate theVal)
   {
+    if(theVal == null)
+    {
+      return;
+    }
+    
     this._lastDataFrequency = theVal;
 
     // just check that we're not a TMA segment. We can't do TMA tracks from here
