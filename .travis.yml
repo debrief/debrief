@@ -26,7 +26,6 @@ before_script:
 script: mvn clean verify -U -B -fae
 after_success:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
-- ./contribs/msi/make_x32msi.sh
 - ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
@@ -42,7 +41,6 @@ deploy:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/P2_Repository.zip.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar
     - /home/travis/build/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true
