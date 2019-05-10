@@ -19,8 +19,6 @@ addons:
     - msitools
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
-before_script:
-- ./install-openjdk8.sh
 script: mvn clean verify -U -B -fae
 after_success:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
