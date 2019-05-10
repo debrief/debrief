@@ -43,7 +43,7 @@ FILE=${WORKDIR}Debrief64.msi
 if [ -f "$FILE" ]; then
     echo "$FILE successfully created"
 else 
-    echo "$FILE not created, exiting"
+    echo "PROBLEM: $FILE not created, exiting"
     exit $?
 fi
 
