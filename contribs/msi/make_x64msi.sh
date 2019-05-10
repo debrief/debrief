@@ -37,7 +37,17 @@ echo "Done."
 
 echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -a x64 -v ${WORKDIR}Debrief64.wxs ${WORKDIR}harvest.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
+echo "Done."
 
+FILE=${WORKDIR}Debrief64.msi
+if [ -f "$FILE" ]; then
+    echo "$FILE successfully created"
+else 
+    echo "PROBLEM: $FILE not created, exiting"
+    exit $?
+fi
+
+echo "Moving the msi file"
 mv contribs/msi/Debrief64.msi org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
 echo "Done."
 echo "MSI 64 bits has been created successfully."
