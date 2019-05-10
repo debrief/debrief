@@ -16,10 +16,10 @@ addons:
     - libglib2.0-dev
     - libxml2-dev
     - pdftk
+    - msitools
 notifications:
   slack: debrief-devs:GF1nQSqn2eozH3wQtyuPLAlG
 before_script:
-- ./install-msitools.sh
 - ./install-openjdk8.sh
 script: mvn clean verify -U -B -fae
 after_success:

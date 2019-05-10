@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ex
 
-sudo add-apt-repository ppa:openjdk-r/ppa
+sudo add-apt-repository ppa:openjdk-r/ppa -y
 
-sudo apt-get update
-sudo apt-get install openjdk-8-jdk
+sudo apt-get -y update
+sudo apt-get -y install openjdk-8-jdk
