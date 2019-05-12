@@ -1330,6 +1330,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
       // provide the panel for the method buttons to go in
       _methodsPanel = new JPanel();
+      _methodsPanel.setLayout(new GridLayout());
       _main.add("North", _methodsPanel);
 
     }
