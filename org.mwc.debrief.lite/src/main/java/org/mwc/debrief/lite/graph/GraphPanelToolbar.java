@@ -156,10 +156,19 @@ public class GraphPanelToolbar extends JPanel
         {
           if (TRACKS_PROPERTY.equals(evt.getPropertyName()))
           {
+            /**
+             * We are dealing with track list modifications. We need to show here
+             * only the options that make sense, deactivating the relative menu when
+             * we only have 1 track. 
+             */
             final boolean isRelative = selectTrackModel.isRelativeEnabled();
             for (final CalculationHolder operation : operations)
             {
-              if (isRelative && operationComboModel.getIndexOf(operation) < 0)
+              if ( !isRelative && !operation.isARelativeCalculation() && operationComboModel.getIndexOf(operation) < 0 )
+              {
+                operationComboModel.addElement(operation);
+              }
+              else if (isRelative && operationComboModel.getIndexOf(operation) < 0)
               {
                 operationComboModel.addElement(operation);
               }
@@ -186,7 +195,7 @@ public class GraphPanelToolbar extends JPanel
     init();
 
     stateListeners = new ArrayList<>(Arrays.asList(
-        enableDisableButtonsListener));
+        enableDisableButtonsListener, tracksChangedListeners));
 
     setState(INACTIVE_STATE);
   }
@@ -256,8 +265,6 @@ public class GraphPanelToolbar extends JPanel
 
   protected void init()
   {
-    operationComboModel.addElement(new CalculationHolder(new bearingCalc(),
-        null, true, 180));
 
     final JComboBox<CalculationHolder> operationComboBox = new JComboBox<>(
         operationComboModel);
