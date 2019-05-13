@@ -23,9 +23,13 @@ before_script:
 - sleep 3
 - ./install-msitools.sh
 script: mvn clean verify -U -B -fae
-after_success:
+after_failure:
+- ls org.mwc.debrief.ui_test
+- ls org.mwc.debrief.ui_test/target
+- zip -r org.mwc.debrief.ui_test/target/results.zip org.mwc.debrief.ui_test/target/results
+- curl -u ianmayo:chunkchunk -T org.mwc.debrief.ui_test/target/results.zip chunk.io
+before_deploy:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
-# - ./contribs/msi/make_x32msi.sh
 - ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
