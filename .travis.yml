@@ -23,9 +23,8 @@ before_script:
 - sleep 3
 - ./install-msitools.sh
 script: mvn clean verify -U -B -fae
-after_success:
+before_deploy:
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
-# - ./contribs/msi/make_x32msi.sh
 - ./contribs/msi/make_x64msi.sh
 deploy:
   provider: releases
