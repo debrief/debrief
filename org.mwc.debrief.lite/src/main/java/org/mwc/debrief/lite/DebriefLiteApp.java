@@ -327,6 +327,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void openPlotFile(final File file)
   {
+    
     try
     {
       _instance.handleImportDPF(file);
@@ -885,6 +886,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
+    long startTime = System.currentTimeMillis();
+    System.out.println("Started loading file");
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
@@ -926,10 +929,14 @@ public class DebriefLiteApp implements FileDropListener
     {
       resetFileName(file);
     }
+    long endTime = System.currentTimeMillis();
+    long timeElapsed = endTime-startTime;
+    System.out.println("Time taken:"+timeElapsed);
   }
 
   private void handleImportRep(final File[] fList)
   {
+    
     final DebriefLiteApp source = this;
     boolean success = true;
     final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
@@ -983,6 +990,7 @@ public class DebriefLiteApp implements FileDropListener
     {
       // ok, start loading
       caller.start();
+      System.out.println("started reading file");
     }
     catch (final PlainImporter.ImportException ie)
     {
