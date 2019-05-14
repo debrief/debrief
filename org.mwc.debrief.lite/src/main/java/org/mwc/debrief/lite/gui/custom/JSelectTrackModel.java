@@ -165,6 +165,10 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       newTracks.add(new TrackWrapperSelect(track, false));
       isDifferent |= !oldTracksSet.contains(track);
     }
+    for (TrackWrapper oldTrackItem : oldTracksSet)
+    {
+      isDifferent |= !tracks.contains(oldTrackItem);
+    }
     if (isDifferent)
     {
       this._tracks.clear();
