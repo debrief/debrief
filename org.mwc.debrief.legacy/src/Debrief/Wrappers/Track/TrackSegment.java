@@ -321,7 +321,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   protected transient static ToolParent _myParent;
 
   /**
-  	 * 
+  	 *
   	 */
   private static final long serialVersionUID = 1L;
 
@@ -330,6 +330,127 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   public static final boolean RELATIVE = true;
 
   public static final boolean ABSOLUTE = false;
+
+  private static void copyFormattingFrom(final FixWrapper firstFix,
+      final FixWrapper storeMe)
+  {
+    storeMe.setSymbolShowing(firstFix.getSymbolShowing());
+    storeMe.setLabelShowing(firstFix.getLabelShowing());
+    storeMe.setLabelFormatSilent(firstFix.getLabelFormat());
+    storeMe.resetName();
+  }
+
+  public static void decimatePointsTrack(final HiResDate theVal,
+      final LightweightTrackWrapper parentTrack, final long theStartTime,
+      final Vector<FixWrapper> newItems, final boolean fixRelative)
+  {
+    long requiredTime = theStartTime;
+    final long interval = theVal.getDate().getTime();
+    FixWrapper previousPosition = null;
+
+    // just double-check we have some data
+    if (!parentTrack.getPositionIterator().hasMoreElements())
+    {
+      Application.logError2(ToolParent.INFO, "Can't resample empty track",
+          null);
+      return;
+    }
+
+    final FixWrapper firstFix = (FixWrapper) parentTrack.getPositionIterator()
+        .nextElement();
+
+    final Enumeration<Editable> iter = parentTrack.getPositionIterator();
+    while (iter.hasMoreElements())
+    {
+      final FixWrapper currentPosition = (FixWrapper) iter.nextElement();
+
+      final long thisTime = currentPosition.getDateTimeGroup().getDate()
+          .getTime();
+
+      if (previousPosition == null)
+      {
+        // if this is on or after our time, we should use it
+        if (thisTime >= requiredTime)
+        {
+          // and move forwards
+          requiredTime += interval;
+
+          // we should also store this, as the first position
+          final FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
+
+          // and format it
+          copyFormattingFrom(firstFix, storeMe);
+
+          // and add it
+          newItems.add(storeMe);
+        }
+      }
+      else
+      {
+        // ok, we've got a before. Generate points while we're after the required time
+        while (thisTime >= requiredTime)
+        {
+          // ok, we need to generate a position at the new time
+          final FixWrapper newPos;
+          if (thisTime == requiredTime)
+          {
+            // ok, we can just use this one
+            newPos = new FixWrapper(currentPosition.getFix());
+            newPos.resetName();
+          }
+          else
+          {
+            // ok, we need to generate
+            newPos = FixWrapper.interpolateFix(previousPosition,
+                currentPosition, new HiResDate(requiredTime));
+          }
+
+          // and format it
+          copyFormattingFrom(firstFix, newPos);
+
+          // store the color for this item
+          final Color hisColor = currentPosition.getActualColor();
+          if (hisColor != null)
+          {
+            newPos.setColor(hisColor);
+          }
+
+          // do we need to fix the track to ensure a DR reconstruction
+          if (fixRelative)
+          {
+            // start off with the course
+            final WorldVector offset = newPos.getLocation().subtract(
+                previousPosition.getLocation());
+            newPos.getFix().setCourse(offset.getBearing());
+
+            // and now the speed
+            final double distYds = new WorldDistance(offset.getRange(),
+                WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+            final double timeSecs = (requiredTime - previousPosition.getTime()
+                .getDate().getTime()) / 1000d;
+            final double spdYps = distYds / timeSecs;
+            newPos.getFix().setSpeed(spdYps);
+          }
+
+          // do we correct the name?
+          if (newPos.getName().equals(FixWrapper.INTERPOLATED_FIX))
+          {
+            // reset the name
+            newPos.resetName();
+          }
+
+          // add to our working list
+          newItems.add(newPos);
+
+          // and move fowards
+          requiredTime += interval;
+        }
+
+      }
+      // and move our marker forward
+      previousPosition = currentPosition;
+    }
+  }
 
   /**
    * learn about the shared trouble reporter...
@@ -354,7 +475,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   final boolean _plotRelative;
 
   private transient WorldVector _vecTempLastVector = null;
-
   protected long _vecTempLastDTG = -2;
 
   /**
@@ -362,6 +482,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
    *
    */
   private int _lineStyle = CanvasType.SOLID;
+
   private HiResDate _lastDataFrequency;
 
   public TrackSegment(final boolean plotRelative)
@@ -584,124 +705,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
     decimatePointsTrack(theVal, parentTrack, startTime, newItems, false);
   }
 
-  public static void decimatePointsTrack(final HiResDate theVal,
-      final LightweightTrackWrapper parentTrack, final long theStartTime,
-      final Vector<FixWrapper> newItems, final boolean fixRelative)
-  {
-    long requiredTime = theStartTime;
-    final long interval = theVal.getDate().getTime();
-    FixWrapper previousPosition = null;
-    
-    // just double-check we have some data
-    if(!parentTrack.getPositionIterator().hasMoreElements())
-    {
-      Application.logError2(Application.INFO, "Can't resample empty track",
-          null);
-      return;
-    }
-    
-    final FixWrapper firstFix = (FixWrapper) parentTrack.getPositionIterator().nextElement();
-
-    final Enumeration<Editable> iter = parentTrack.getPositionIterator();
-    while (iter.hasMoreElements())
-    {
-      final FixWrapper currentPosition = (FixWrapper) iter.nextElement();
-
-      final long thisTime = currentPosition.getDateTimeGroup().getDate()
-          .getTime();
-
-      if (previousPosition == null)
-      {
-        // if this is on or after our time, we should use it
-        if (thisTime >= requiredTime)
-        {
-          // and move forwards
-          requiredTime += interval;
-
-          // we should also store this, as the first position
-          final FixWrapper storeMe = new FixWrapper(currentPosition.getFix());
-          
-          // and format it
-          storeMe.setSymbolShowing(firstFix.getSymbolShowing());
-          storeMe.setLabelShowing(firstFix.getLabelShowing());
-          storeMe.setLabelFormatSilent(firstFix.getLabelFormat());
-          storeMe.resetName();
-
-          // and add it
-          newItems.add(storeMe);
-        }
-      }
-      else
-      {
-        // ok, we've got a before. Generate points while we're after the required time
-        while (thisTime >= requiredTime)
-        {
-          // ok, we need to generate a position at the new time
-          final FixWrapper newPos;
-          if (thisTime == requiredTime)
-          {
-            // ok, we can just use this one
-            newPos = new FixWrapper(currentPosition.getFix());
-            newPos.resetName();
-          }
-          else
-          {
-            // ok, we need to generate
-            newPos = FixWrapper.interpolateFix(previousPosition,
-                currentPosition, new HiResDate(requiredTime));
-          }
-          
-          // and format it
-          newPos.setSymbolShowing(firstFix.getSymbolShowing());
-          newPos.setLabelShowing(firstFix.getLabelShowing());
-          newPos.setLabelFormatSilent(firstFix.getLabelFormat());
-          newPos.resetName();
-
-
-          // store the color for this item
-          final Color hisColor = currentPosition.getActualColor();
-          if (hisColor != null)
-          {
-            newPos.setColor(hisColor);
-          }
-
-          // do we need to fix the track to ensure a DR reconstruction
-          if (fixRelative)
-          {
-            // start off with the course
-            final WorldVector offset = newPos.getLocation().subtract(
-                previousPosition.getLocation());
-            newPos.getFix().setCourse(offset.getBearing());
-
-            // and now the speed
-            final double distYds = new WorldDistance(offset.getRange(),
-                WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-            final double timeSecs = (requiredTime - previousPosition.getTime()
-                .getDate().getTime()) / 1000d;
-            final double spdYps = distYds / timeSecs;
-            newPos.getFix().setSpeed(spdYps);
-          }
-
-          // do we correct the name?
-          if (newPos.getName().equals(FixWrapper.INTERPOLATED_FIX))
-          {
-            // reset the name
-            newPos.resetName();
-          }
-
-          // add to our working list
-          newItems.add(newPos);
-
-          // and move fowards
-          requiredTime += interval;
-        }
-
-      }
-      // and move our marker forward
-      previousPosition = currentPosition;
-    }
-  }
-
   private void decimateRelative(final HiResDate theVal,
       final TrackWrapper parentTrack, final long startTime,
       final Vector<FixWrapper> newItems)
@@ -911,6 +914,12 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   }
 
   @Override
+  public boolean hasEditor()
+  {
+    return true;
+  }
+
+  @Override
   public TimeStampedDataItem makeCopy(final TimeStampedDataItem item)
   {
     if (false == item instanceof FixWrapper)
@@ -1089,6 +1098,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   @FireExtended
   public final void setResampleDataAt(final HiResDate theVal)
   {
+    if(theVal == null)
+    {
+      return;
+    }
+    
     this._lastDataFrequency = theVal;
 
     // just check that we're not a TMA segment. We can't do TMA tracks from here
@@ -1310,7 +1324,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
   /**
    * we've deprecated this, since it gets very compuationally expensive when processing a very long
    * track
-   * 
+   *
    * @param theVal
    * @param parentTrack
    * @param theStartTime

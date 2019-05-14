@@ -581,7 +581,7 @@ public class EditableWrapper implements IPropertySource
         {
           // right, just give it a stiff ignoring, it's deprecated
         }
-        else
+        else if (thisProp != null)
         {
           // ok, wrap it, and add it to our list.
           final IPropertyDescriptor newProp =
