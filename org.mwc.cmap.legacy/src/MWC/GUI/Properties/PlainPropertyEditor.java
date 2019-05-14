@@ -978,7 +978,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       // original one (has it been modified?)
       final Object orig = pei.originalValue;
 
-      if (!res.equals(orig))
+      if (res!=null && !res.equals(orig))
       {
         _someChanged = true;
 
