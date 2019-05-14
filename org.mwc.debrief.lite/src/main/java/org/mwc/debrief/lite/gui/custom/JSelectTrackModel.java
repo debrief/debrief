@@ -138,6 +138,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
         return;
       }
     }
+    // New primary track is null or not present in the options.
+    _primaryTrack = null;
   }
 
   /**
@@ -173,6 +175,10 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
     {
       this._tracks.clear();
       this._tracks.addAll(newTracks);
+      if ( _primaryTrack != null && !tracks.contains(_primaryTrack) )
+      {
+        setPrimaryTrack(null);
+      }
       notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
     }
     return isDifferent;
