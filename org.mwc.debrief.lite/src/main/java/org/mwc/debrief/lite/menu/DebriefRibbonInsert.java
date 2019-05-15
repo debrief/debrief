@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.pushingpixels.flamingo.api.common.CommandButtonDisplayState;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand;
@@ -45,6 +46,7 @@ import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.PolygonShape;
 import MWC.GUI.Shapes.PolygonShape.PolygonNode;
 import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainTool.BoundsProvider;
 import MWC.GUI.Tools.Palette.CreateCoast;
 import MWC.GUI.Tools.Palette.CreateGrid;
@@ -263,10 +265,9 @@ public class DebriefRibbonInsert
           JComboBox<String> jcombo = (JComboBox<String>)e.getSource();
           if(jcombo.getSelectedItem().equals(Layers.NEW_LAYER_COMMAND)) {
             //popup list layers dialog
-            String res = getLayerName(_theLayers);
-            if(res == null) {
-              jcombo.setSelectedItem(previousSelection);
-            }
+            AddLayerAction addLayerAction = new AddLayerAction(_theLayers);
+            addLayerAction.execute();
+            DebriefLiteApp.getInstance().getUndoBuffer().add(addLayerAction);
           }
           else {
             selectedLayer = (String)jcombo.getSelectedItem();
@@ -375,6 +376,51 @@ public class DebriefRibbonInsert
   }
   
   public void setShapesEnabled(boolean enable) {
+  }
+  
+  private static class AddLayerAction implements Action
+  {
+    private String layerName;
+    private Layers _theLayers;
+    
+    public AddLayerAction(Layers theLayers)
+    {
+      _theLayers = theLayers;
+    }
+    @Override
+    public boolean isUndoable()
+    {
+      return true;
+    }
+
+    @Override
+    public boolean isRedoable()
+    {
+      return true;
+    }
+
+    @Override
+    public void undo()
+    {
+      Layer theLayer = _theLayers.findLayer(layerName);
+      _theLayers.removeThisLayer(theLayer);
+      
+    }
+
+    @Override
+    public void execute()
+    {
+      if(layerName == null) {
+        layerName = getLayerName(_theLayers);
+      }
+      else {
+        Layer layer = new BaseLayer();
+        layer.setName(layerName);
+        _theLayers.addThisLayer(layer);
+      }
+      
+    }
+    
   }
   
   private static String getLayerName(Layers theLayers) {
