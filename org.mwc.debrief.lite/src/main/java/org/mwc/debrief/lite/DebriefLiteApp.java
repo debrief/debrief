@@ -799,7 +799,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     setCursor(Cursor.WAIT_CURSOR);
     File file = null;
-    boolean renameFile = true;
     try
     {
       final Enumeration<File> iter = files.elements();
