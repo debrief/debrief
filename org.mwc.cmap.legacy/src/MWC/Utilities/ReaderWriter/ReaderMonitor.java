@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.io.Reader;
 
 import javax.swing.ProgressMonitor;
-import javax.swing.SwingUtilities;
 
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
@@ -79,7 +78,6 @@ public class ReaderMonitor extends BufferedReader
   public String readLine() throws IOException
   {
     _counter++;
-
     if(_provider!=null)
       _provider.progress(_counter);
     return super.readLine();
@@ -138,35 +136,26 @@ public class ReaderMonitor extends BufferedReader
         final java.io.File fl = new java.io.File(_name);
         _pm = new ProgressMonitor(null, "Reading file:" + fl.getName(), "blank",
             0, _length - 1);
-        _pm.setMillisToPopup(200);
+        _pm.setMillisToPopup(0);
+        _pm.setMillisToDecideToPopup(0);
       }
     }
 
     @Override
     public void progress(final int progress)
     {
-      SwingUtilities.invokeLater(new Runnable()
+      if (_pm != null)
       {
-
-        @Override
-        public void run()
+        try
         {
-          if (_pm != null)
-          {
-            try
-            {
-              _pm.setNote("" + (progress * 100 / _length) + "% complete");
-              _pm.setProgress(progress);
-            }
-            catch (Exception e)
-            {
-              // This shouldn't happen. Let's leave it just in case.
-            }
-
-          }
+          _pm.setNote("" + (progress * 100 / _length) + "% complete");
+          _pm.setProgress(progress);
         }
-      });
-
+        catch (Exception e)
+        {
+          // This shouldn't happen. Let's leave it just in case.
+        }
+      }
     }
     
     @Override
