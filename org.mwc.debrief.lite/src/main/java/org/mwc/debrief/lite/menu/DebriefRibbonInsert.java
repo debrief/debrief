@@ -375,17 +375,14 @@ public class DebriefRibbonInsert
     component.setDisplayPriority(priority);
     mapBand.addRibbonComponent(component);
     return component;
-    
+
   }
-  
-  public void setShapesEnabled(boolean enable) {
-  }
-  
+
   private static class AddLayerAction implements Action
   {
     private final String _layerName;
     private final Layers _theLayers;
-    
+
     public AddLayerAction(final Layers theLayers, final String layerName)
     {
       _theLayers = theLayers;
