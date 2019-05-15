@@ -263,9 +263,6 @@ public class DebriefLiteApp implements FileDropListener
   {
     return _instance;
   }
-  public UndoBuffer getUndoBuffer() {
-    return session.getUndoBuffer();
-  }
 
   public static boolean isDirty()
   {
