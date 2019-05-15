@@ -22,8 +22,8 @@ before_script:
 - sh -e /etc/init.d/xvfb start
 - sleep 3
 - ./install-msitools.sh
-script: mvn clean verify -U -B -fae
-after_success:
+script:
+- mvn clean verify -U -B -fae
 - ls /home/travis/build/debrief/debrief/org.mwc.cmap.combined.feature/root_installs
 - sh ./contribs/msi/make_x64msi.sh
 deploy:
