@@ -621,7 +621,7 @@ public class OutlinePanelView extends SwingLayerManager implements
           }
           final PropertiesDialog dialog = new PropertiesDialog(editable
               .getInfo(), _myData, _undoBuffer, tp, owner);
-          dialog.setSize(400, 500);
+          dialog.setSize(500, 500);
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
           if (tp != null)
