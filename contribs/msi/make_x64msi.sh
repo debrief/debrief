@@ -42,12 +42,15 @@ echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -v -a x64 ${WORKDIR}harvest.wxs ${WORKDIR}Debrief64.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
 echo "Done."
 
+echo "Forcing exit failure"
+exit 1
+
 FILE=${WORKDIR}Debrief64.msi
 if [ -f "$FILE" ]; then
     echo "$FILE successfully created"
-else 
+else
     echo "PROBLEM: $FILE not created, exiting"
-    exit $?
+    exit 1
 fi
 
 echo "Moving the msi file"
