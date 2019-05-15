@@ -40,7 +40,7 @@ echo "Done."
 
 echo "Creating the x64 Debrief MSI file."
 ${WIXLDIR}wixl -v -a x64 ${WORKDIR}harvest.wxs ${WORKDIR}Debrief64.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
-echo "Done."
+echo "Done. wixl status was ${$?}" 
 
 FILE=${WORKDIR}Debrief64.msi
 if [ -f "$FILE" ]; then
