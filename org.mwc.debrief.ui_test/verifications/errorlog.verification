@@ -5,7 +5,7 @@ Element-Type: verification
 Element-Version: 2.0
 Id: _taSwUFH0EemXV9ocSHlENA
 Runtime-Version: 2.3.0.201806262310
-Save-Time: 3/29/19 1:05 PM
+Save-Time: 5/4/19 9:02 PM
 Verification-Type: org.eclipse.rcptt.verifications.log
 
 ------=_.errorlog.verification-3ceb5b18-8b7c-3939-9191-416e6e78eb57
@@ -14,6 +14,6 @@ Entry-Name: .errorlog.verification
 
 INCLUDE CONTEXTS: true
 DENIED:
-4 0 .* Message:.*
+4 0 org.mwc.* Message:.*
 
 ------=_.errorlog.verification-3ceb5b18-8b7c-3939-9191-416e6e78eb57--

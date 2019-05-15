@@ -19,6 +19,8 @@
    <vmArgs> 
     <vmArg>-Xmx1024m</vmArg>  
     <vmArg>-XX:MaxPermSize=512m</vmArg>
+    
+    
   </vmArgs> 
 </aut>
 <runner>
@@ -28,6 +30,7 @@
       <vmArg>-Xmx1024m</vmArg>
       <vmArg>-XX:MaxPermSize=256m</vmArg>
    </vmArgs>
+   
 </runner>
 <suites>
   <suite>TEST_SAMPLE_DATA</suite>
@@ -40,7 +43,7 @@
   
 <testOptions>
     <execTimeout>2000</execTimeout>
-    <testExecTimeout>100</testExecTimeout>
+    <testExecTimeout>1000</testExecTimeout>
 </testOptions>
 </configuration>
 

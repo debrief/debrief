@@ -5,8 +5,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _gtVz0LzLEeiO58lDElrrcw
-Runtime-Version: 2.3.0.201806262310
-Save-Time: 2/7/19 2:08 PM
+Runtime-Version: 2.3.0.201803122312
+Save-Time: 5/14/19 9:01 PM
 Testcase-Type: ecl
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
@@ -55,11 +55,11 @@ with [get-window -class WizardDialog] {
 }
 with [get-view Outline | get-tree] {
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 2 0 | click
+    select "Chart Features \\(3 items\\)/Grid"
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 3 0 | click
+    select "Chart Features \\(3 items\\)/Scale"
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 2 0 | click
+    select "Chart Features \\(3 items\\)/Grid"
 }
 with [get-view Outline | get-tree] {
     get-item -path "Chart Features \\(3 items\\)" | get-property caption | equals "Chart Features (3 items)"
@@ -74,7 +74,7 @@ with [get-view Outline | get-tree] {
 }
 with [get-view Outline | get-tree] {
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 1 0 | click
+    select "Chart Features \\(3 items\\)/Coast plotter: ready"
 }
 with [get-view Properties | get-tree] {
     get-item -path Color | get-property "columns[0]" | equals Color | verify-true
@@ -82,7 +82,7 @@ with [get-view Properties | get-tree] {
 }
 with [get-view Outline | get-tree] {
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 2 0 | click
+    select "Chart Features \\(3 items\\)/Grid"
 }
 with [get-view Properties | get-tree] {
     get-item -path "Format/Color" | get-property "columns[0]" | equals Color | verify-true
@@ -94,7 +94,7 @@ with [get-view Properties | get-tree] {
 }
 with [get-view Outline | get-tree] {
     get-item -path "Chart Features \\(3 items\\)" | expand
-    get-cell 3 0 | click
+    select "Chart Features \\(3 items\\)/Scale"
 }
 with [get-view Properties | get-tree] {
     get-item -path "Format/Location" | get-property "columns[0]" | equals Location | verify-true
