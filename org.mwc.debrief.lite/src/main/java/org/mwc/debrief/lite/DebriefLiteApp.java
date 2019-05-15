@@ -913,13 +913,8 @@ public class DebriefLiteApp implements FileDropListener
         }
         catch (FileNotFoundException e)
         {
-          // TODO Auto-generated catch block
           e.printStackTrace();
         }
-        
-      }
-      else if(fList[0].getName().endsWith("dtf")) {
-        
       }
       else {
         final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
