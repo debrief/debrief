@@ -296,7 +296,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JViewport;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellEditor;
@@ -320,13 +319,6 @@ import MWC.GenericData.WorldDistance;
 public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     KeyListener
 {
-  // ///////////////////////////////////////////////////////////
-  // member variables
-  // //////////////////////////////////////////////////////////
-
-  // ///////////////////////////////////////////////////
-  // produce the correct component to edit this item
-  // /////////////////////////////////////////////////
   protected class dataCellEditor implements TableCellEditor
   {
 
@@ -1664,8 +1656,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
     if (c instanceof JScrollPane)
     {
       final JScrollPane scrollPane = (JScrollPane) c;
-      JTextArea textArea = (JTextArea) ((JViewport) scrollPane.getViewport())
-          .getView();
+      final JTextArea textArea = (JTextArea) scrollPane.getViewport().getView();
       textArea.setText(pe.getAsText());
       textArea.invalidate();
     }
