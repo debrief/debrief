@@ -29,6 +29,9 @@ mv -f ${SOURCEDIR}DebriefNG.exe ${RESOURCESDIR}
 mv -f ${SOURCEDIR}DebriefNG.pdf ${RESOURCESDIR}
 mv -f ${SOURCEDIR}DebriefNG_TMA_Tutorial.pdf ${RESOURCESDIR}
 mv -f ${SOURCEDIR}IntroductionToDebrief_1-3.pdf ${RESOURCESDIR}
+mv -f ${SOURCEDIR}plugins/org.eclipse.ui.ide_3.14.0.v20180517-1842.jar ${RESOURCESDIR}
+mv -f ${SOURCEDIR}p2/org.eclipse.equinox.p2.core/cache/binary/org.mwc.cmap.combined.feature_root_1.0.363 ${RESOURCESDIR}
+
 echo "Done."
 
 echo "Creating the wixl harvest file."
@@ -36,7 +39,7 @@ find ${SOURCEDIR} | ${WIXLDIR}wixl-heat --var var.SourceDir -p ${SOURCEDIR} --co
 echo "Done."
 
 echo "Creating the x64 Debrief MSI file."
-${WIXLDIR}wixl -a x64 -v ${WORKDIR}Debrief64.wxs ${WORKDIR}harvest.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
+${WIXLDIR}wixl -v -a x64 ${WORKDIR}harvest.wxs ${WORKDIR}Debrief64.wxs -D SourceDir=${SOURCEDIR} -D ResourcesDir=${RESOURCESDIR} -o ${WORKDIR}Debrief64.msi
 echo "Done."
 
 FILE=${WORKDIR}Debrief64.msi

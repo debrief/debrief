@@ -26,6 +26,22 @@
 			  <File Id='DebriefNG_TMA_Tutorial' Name='DebriefNG_TMA_Tutorial.pdf' DiskId='1' Source='$(var.ResourcesDir)DebriefNG_TMA_Tutorial.pdf'/>
 			  <File Id='IntroductionToDebrief_1-3' Name='IntroductionToDebrief_1-3.pdf' DiskId='1' Source='$(var.ResourcesDir)IntroductionToDebrief_1-3.pdf'/>
             </Component>
+			<Directory Id='PLUGINS' Name='plugins'>
+			<Component Id='orgeclipseuiidejar' Guid='EC369F4F-4CA1-4FBF-81FC-BB311E165533'>
+              <File Id='orgeclipseuiide3140v201805171842jar' Name='org.eclipse.ui.ide_3.14.0.v20180517-1842.jar' DiskId='1' Source='$(var.ResourcesDir)org.eclipse.ui.ide_3.14.0.v20180517-1842.jar' KeyPath='yes'/>
+			</Component>
+			</Directory>
+			<Directory Id='P2' Name='p2'>
+				<Directory Id='orgeclipseequinoxp2core' Name='org.eclipse.equinox.p2.core'>
+					<Directory Id='cache' Name='cache'>
+						<Directory Id='binary' Name='binary'>
+						<Component Id='orgmwccmapcombinedfeatureroot' Guid='DA9AB447-9006-4769-9F6F-0E553D82F349'>
+						<File Id='orgmwccmapcombinedfeatureroot10363' Name='org.mwc.cmap.combined.feature_root_1.0.363' DiskId='1' Source='$(var.ResourcesDir)org.mwc.cmap.combined.feature_root_1.0.363' KeyPath='yes'/>
+						</Component>
+						</Directory>
+					</Directory>
+				</Directory>
+			</Directory>
 			<Directory Id='SampleData' Name='sample_data'>
 			</Directory>
           </Directory>
@@ -55,6 +71,8 @@
 		<ComponentRef Id='DebriefNGexe' />
 		<ComponentRef Id='Tutorials' />
 		<ComponentRef Id='Shortcuts' />
+		<ComponentRef Id='orgeclipseuiidejar' />
+		<ComponentRef Id='orgmwccmapcombinedfeatureroot' />
     </Feature>
 
 	<Property Id="InstallMode" Value="Complete" />
