@@ -78,7 +78,6 @@ public class ReaderMonitor extends BufferedReader
   public String readLine() throws IOException
   {
     _counter++;
-    System.out.println("progress counter:"+_counter);
     if(_provider!=null)
       _provider.progress(_counter);
     return super.readLine();
