@@ -213,7 +213,7 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle;
+  private static String defaultTitle = appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
@@ -338,6 +338,7 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void openPlotFile(final File file)
   {
+    
     try
     {
       _instance.handleImportDPF(file);
@@ -507,7 +508,6 @@ public class DebriefLiteApp implements FileDropListener
     // for legacy integration we need to provide a tool-parent
     Trace.initialise(app);
 
-    defaultTitle = appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")";
     theFrame = new JRibbonFrame(defaultTitle);
 
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
@@ -810,7 +810,7 @@ public class DebriefLiteApp implements FileDropListener
         final String suff = suffixOf(file.getName());
         if (suff.equalsIgnoreCase(".DPL"))
         {
-          MWC.GUI.Dialogs.DialogFactory.showMessage("Open File",
+          DialogFactory.showMessage("Open File",
               "Sorry DPL file format no longer supported");
         }
         else
@@ -835,7 +835,7 @@ public class DebriefLiteApp implements FileDropListener
           else
           {
             Trace.trace("This file type not handled:" + suff);
-            MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
+            DialogFactory.showMessage("Open Debrief file",
                 "This file type not handled:" + suff);
           }
         }
@@ -857,6 +857,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
+    long startTime = System.currentTimeMillis();
+    System.out.println("Started loading file");
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
     try
@@ -898,10 +900,14 @@ public class DebriefLiteApp implements FileDropListener
     {
       resetFileName(file);
     }
+    long endTime = System.currentTimeMillis();
+    long timeElapsed = endTime-startTime;
+    System.out.println("Time taken:"+timeElapsed);
   }
 
   private void handleImportRep(final File[] fList)
   {
+    
     final DebriefLiteApp source = this;
     boolean success = true;
     if(fList.length==1) {
@@ -1063,7 +1069,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void populateTote()
   {
-
+    //not implemented.
   }
 
   private void redoTimePainter(final boolean bigPaint, final CanvasAdaptor dest,
