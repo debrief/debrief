@@ -12,22 +12,21 @@ WORKDIR=contribs/msi/
 #URL of the jre to use
 JRE_URL=https://github.com/AdoptOpenJDK/openjdk8-binaries/releases/download/jdk8u212-b03/OpenJDK8U-jre_x64_windows_hotspot_8u212b03.zip
 
-echo "Clearing the sources folder."
-rm -rf ${SOURCEDIR}
-mkdir ${SOURCEDIR}
-echo "Done."
-
 echo "Updating version"
 version=$(grep "product.*version"  org.mwc.debrief.product/debriefng.product  | sed 's/^.*version="\([^"]*\)".*$/\1/')
 sed -i "s/versionReplacement/$version/g" ${WORKDIR}Debrief64.wxs
 echo "Done."
 
-echo "Downloading JRE"
-wget -O jre.zip ${JRE_URL}
-unzip -q jre.zip -d ${SOURCEDIR}
-mv ${SOURCEDIR}jdk* ${SOURCEDIR}jre
-rm jre.zip
-echo "Done."
+if [ ! -d "${SOURCEDIR}jre" ]; then
+    echo "Downloading JRE"
+    wget -O jre.zip ${JRE_URL}
+    unzip -q jre.zip -d ${SOURCEDIR}
+    mv ${SOURCEDIR}jdk* ${SOURCEDIR}jre
+    rm jre.zip
+    echo "Done."
+else
+    echo "Previous JRE has been detected in the source directory"
+fi
 
 echo "Copying Debrief sources to the wixl harvest folder."
 cp -r ${DEBRIEFDIR}* ${SOURCEDIR}
