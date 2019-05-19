@@ -156,30 +156,38 @@ public class GraphPanelToolbar extends JPanel
         {
           if (TRACKS_PROPERTY.equals(evt.getPropertyName()))
           {
-            /**
-             * We are dealing with track list modifications. We need to show here only the options
-             * that make sense, deactivating the relative menu when we only have 1 track.
-             */
-            final boolean isRelative = selectTrackModel.isRelativeEnabled();
-            for (final CalculationHolder operation : operations)
+            if (selectTrackModel.getTracks().isEmpty())
             {
-              if (!isRelative && !operation.isARelativeCalculation()
-                  && operationComboModel.getIndexOf(operation) < 0)
+              operationComboModel.removeAllElements();
+            }
+            else
+            {
+              /**
+               * We are dealing with track list modifications. We need to show here only the options
+               * that make sense, deactivating the relative menu when we only have 1 track.
+               */
+              final boolean isRelative = selectTrackModel.isRelativeEnabled();
+              for (final CalculationHolder operation : operations)
               {
-                operationComboModel.addElement(operation);
-              }
-              else if (isRelative && operationComboModel.getIndexOf(
-                  operation) < 0)
-              {
-                operationComboModel.addElement(operation);
-              }
-              else if (!isRelative && operation.isARelativeCalculation()
-                  && operationComboModel.getIndexOf(operation) >= 0)
-              {
-                operationComboModel.removeElement(operation);
+                if (!isRelative && !operation.isARelativeCalculation()
+                    && operationComboModel.getIndexOf(operation) < 0)
+                {
+                  operationComboModel.addElement(operation);
+                }
+                else if (isRelative && operationComboModel.getIndexOf(
+                    operation) < 0)
+                {
+                  operationComboModel.addElement(operation);
+                }
+                else if (!isRelative && operation.isARelativeCalculation()
+                    && operationComboModel.getIndexOf(operation) >= 0)
+                {
+                  operationComboModel.removeElement(operation);
+                }
               }
             }
           }
+
         }
       };
 
