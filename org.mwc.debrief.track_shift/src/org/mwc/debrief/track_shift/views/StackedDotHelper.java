@@ -1630,11 +1630,12 @@ public final class StackedDotHelper
    *          interpolate the nearest one
    * @param allowInfill
    *          whether we generate a doublet for dynamic infill segments
+   * @param sensorName 
    * @return a Doublet containing the relevant data
    */
   private static TargetDoublet getTargetDoublet(final FixWrapper workingFix,
       final Vector<TrackSegment> theSegments, final HiResDate requiredTime,
-      final boolean interpFix, final boolean allowInfill)
+      final boolean interpFix, final boolean allowInfill, final String sensorName)
   {
     final TargetDoublet doublet = new TargetDoublet();
     if (theSegments != null && !theSegments.isEmpty())
@@ -1668,8 +1669,24 @@ public final class StackedDotHelper
           }
           else
           {
+            // because we're allowing fixes to be interpolated, deleting 
+            // a TMA point no longer makes the point disappear from the error
+            // plot - it just gets replaced by a virtual interpolated one.
+            // so, if this sensor cut is from the reference sensor for this track
+            // then we don't allow it to be interpolated.
+            final boolean isReferenceSensor;
+            if(ts instanceof RelativeTMASegment)
+            {
+              RelativeTMASegment rel = (RelativeTMASegment) ts;
+              isReferenceSensor = rel.getSensorName().equals(sensorName);
+            }
+            else
+            {
+              isReferenceSensor = false;
+            }
+
             // see if we're allowing an interpolated fix
-            if (interpFix)
+            if (interpFix && !isReferenceSensor)
             {
               generateInterpolatedDoublet(requiredTime, doublet, ts);
               break;
@@ -1987,49 +2004,53 @@ public final class StackedDotHelper
     final boolean allowInfill = !needFrequency;
 
     final TargetDoublet doublet = getTargetDoublet(index, theSegments, scw
-        .getDTG(), interpFix, allowInfill);
+        .getDTG(), interpFix, allowInfill, scw.getSensorName());
 
-    final FixWrapper hostFix;
-    final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
-    if (matches != null && matches.length == 1)
+    if (doublet != null)
     {
-      hostFix = (FixWrapper) matches[0];
-    }
-    else
-    {
-      hostFix = null;
-    }
 
-    if (doublet.targetFix != null && hostFix != null)
-    {
-      final Doublet thisDub = new Doublet(scw, doublet.targetFix,
-          doublet.targetParent, hostFix);
-
-      // if we've no target track add all the points
-      if (targetTrack == null)
+      final FixWrapper hostFix;
+      final Watchable[] matches = sensorHost.getNearestTo(scw.getDTG());
+      if (matches != null && matches.length == 1)
       {
-        // store our data
-        res.add(thisDub);
+        hostFix = (FixWrapper) matches[0];
       }
       else
       {
-        // if we've got a target track we only add points
-        // for which we
-        // have
-        // a target location
-        if (doublet.targetFix != null)
+        hostFix = null;
+      }
+
+      if (doublet.targetFix != null && hostFix != null)
+      {
+        final Doublet thisDub = new Doublet(scw, doublet.targetFix,
+            doublet.targetParent, hostFix);
+
+        // if we've no target track add all the points
+        if (targetTrack == null)
         {
           // store our data
           res.add(thisDub);
         }
-      } // if we know the track
-    } // if we find a match
-    else if (hostFix != null && (doublet.targetFix == null
-        || targetTrack == null))
-    {
-      // no target data, just use ownship sensor data
-      final Doublet thisDub = new Doublet(scw, null, null, hostFix);
-      res.add(thisDub);
+        else
+        {
+          // if we've got a target track we only add points
+          // for which we
+          // have
+          // a target location
+          if (doublet.targetFix != null)
+          {
+            // store our data
+            res.add(thisDub);
+          }
+        } // if we know the track
+      } // if we find a match
+      else if (hostFix != null && (doublet.targetFix == null
+          || targetTrack == null))
+      {
+        // no target data, just use ownship sensor data
+        final Doublet thisDub = new Doublet(scw, null, null, hostFix);
+        res.add(thisDub);
+      }
     }
   }
 
