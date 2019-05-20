@@ -974,7 +974,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements
 
   }
 
-  void apply()
+  private void apply()
   {
     super.doUpdate();
     //Ayesha: removed as this is no longer required. we are doing a reload of the
