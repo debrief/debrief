@@ -84,7 +84,7 @@
 				</NarrowbandSensor>
 				<NarrowbandSensor HasBearing="true" Name="hull sensor"
 					Working="true" Ambiguous="false" CanProduceRange="false"
-					DetectionIntervalMillis="260000">
+					DetectionIntervalMillis="170000">
 					<SensorOffset Value="20" Units="m" />
 					<SteadyTime Value="0" Units="minutes" />
 				</NarrowbandSensor>
