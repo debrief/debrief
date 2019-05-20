@@ -193,6 +193,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -203,6 +204,7 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.Swing.SwingCustomEditor;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class SwingLayerManager extends SwingCustomEditor implements
     Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
@@ -893,6 +895,52 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
     return null;
   }
+  
+  private void updateData(Layer changedLayer)
+  {
+    TreeNode treeNode = getTreeNode(null,changedLayer.getName(),changedLayer);
+    if(treeNode != null) {
+      ((DefaultTreeModel)_myTree.getModel()).reload(treeNode);
+    }
+  }
+  
+  private void updateInThread(Layer changedLayer)
+  {
+    //in case only the narratives have changed refresh only those.
+    if(changedLayer instanceof NarrativeWrapper) {
+      if (SwingUtilities.isEventDispatchThread())
+      {
+        updateData(changedLayer);
+      }
+      else
+      {
+        try
+        {
+          SwingUtilities.invokeAndWait(new Runnable()
+          {
+            @Override
+            public void run()
+            {
+              updateData(changedLayer);
+            }
+
+
+          });
+        }
+        catch (InvocationTargetException e)
+        {
+          e.printStackTrace();
+        }
+        catch (InterruptedException e)
+        {
+          e.printStackTrace();
+        }
+      }
+    }
+    else {
+      updateInThread();
+    }
+  }
 
   /*
    * thread-safe way of updating UI
@@ -933,7 +981,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   public void dataModified(final Layers theData, final Layer changedLayer)
   {
-    updateInThread();
+    updateInThread(changedLayer);
   }
 
   /**
