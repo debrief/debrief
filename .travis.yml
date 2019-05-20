@@ -40,12 +40,12 @@ deploy:
   file:
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Linux64Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-MacOSX64Bit.zip
-    # - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
+    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/P2_Repository.zip
     - /home/travis/build/debrief/debrief/org.mwc.debrief.legacy/dist/DebriefLite*.jar
     - /home/travis/build/debrief/debrief/org.mwc.debrief.lite/dist/debrief-lite*.zip
-    - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
+# - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows32Bit.msi
     - /home/travis/build/debrief/debrief/org.mwc.debrief.product/target/products/DebriefNG-Windows64Bit.msi
   on:
      tags: true
