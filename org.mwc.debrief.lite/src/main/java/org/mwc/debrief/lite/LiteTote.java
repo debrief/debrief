@@ -1,6 +1,6 @@
 package org.mwc.debrief.lite;
 
- import java.awt.Container;
+import java.awt.Container;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -15,67 +15,76 @@ import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GenericData.WatchableList;
 
- public class LiteTote extends AnalysisTote
+public class LiteTote extends AnalysisTote
 {
 
-   public LiteTote(final Layers theData, final StepControl stepper)
+  public LiteTote(final Layers theData, final StepControl stepper)
   {
     super(theData);
     setStepper(stepper);
-    
+
     // listen out for layers being added/removed
-    theData.addDataExtendedListener(new DataListener() {
+    theData.addDataExtendedListener(new DataListener()
+    {
 
       @Override
-      public void dataExtended(Layers theData)
+      public void dataExtended(final Layers theData)
       {
         // sort out if our primary is still there.
-        WatchableList primary = getPrimary();
-        if(primary != null)
+        final WatchableList primary = getPrimary();
+        if (primary != null)
         {
-          Layer found = theData.findLayer(primary.getName());
-          if(found == null)
+          final Layer found = theData.findLayer(primary.getName());
+          if (found == null)
           {
             // ok, clear the primary
             setPrimary(null);
           }
         }
-        
+
         // also check the secondarires
         final List<WatchableList> toDrop = new ArrayList<WatchableList>();
-        for(final WatchableList t: getSecondary())
+        for (final WatchableList t : getSecondary())
         {
           final Layer found = theData.findLayer(t.getName());
-          if(found == null)
+          if (found == null)
           {
             toDrop.add(t);
           }
         }
-        
+
         // ok, now drop them
-        for(final WatchableList t: toDrop)
+        for (final WatchableList t : toDrop)
         {
           removeParticipant(t);
         }
-        
+
       }
 
       @Override
-      public void dataModified(Layers theData, Layer changedLayer)
+      public void dataModified(final Layers theData, final Layer changedLayer)
       {
       }
 
       @Override
-      public void dataReformatted(Layers theData, Layer changedLayer)
+      public void dataReformatted(final Layers theData,
+          final Layer changedLayer)
       {
         // hmm, maybe repaint
-      }});
+      }
+    });
+  }
+
+  @Override
+  public Container getPanel()
+  {
+    throw new IllegalArgumentException("Not implemented");
   }
 
   @Override
   protected void updateToteMembers()
   {
-   
+
     // see if we can set a primary
     // ok, try to set one
     final Enumeration<Editable> iter = getData().elements();
@@ -95,7 +104,7 @@ import MWC.GenericData.WatchableList;
         }
         else if (getPrimary() != thisT)
         {
-          Vector<WatchableList> secs = getSecondary();
+          final Vector<WatchableList> secs = getSecondary();
           if (!secs.contains(thisT))
           {
             setSecondary(thisT);
@@ -104,11 +113,5 @@ import MWC.GenericData.WatchableList;
       }
     }
   }
-   
-   @Override
-  public Container getPanel()
-  {
-     throw new IllegalArgumentException("Not implemented");
-  }
 
- }
+}
