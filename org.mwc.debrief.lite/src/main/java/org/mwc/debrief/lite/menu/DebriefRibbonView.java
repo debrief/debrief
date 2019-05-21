@@ -70,6 +70,14 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
+    final ZoomInAction dragWholeFeatureInAction = new ZoomInAction(mapPane);
+    MenuUtils.addCommandToggleButton("Drag Whole Feature", "icons/24/select_feature.png",
+        dragWholeFeatureInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
+        true);
+    final ZoomInAction dragElementInAction = new ZoomInAction(mapPane);
+    MenuUtils.addCommandToggleButton("Drag Element", "icons/24/select_component.png",
+        dragElementInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
+        true);
 
     // tell the zoom in action that it's live
     zoomInAction.actionPerformed(null);
