@@ -22,10 +22,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -41,8 +47,10 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 
@@ -105,6 +113,7 @@ import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.temporal.PlotOperations;
 import MWC.TacticalData.temporal.TimeManager;
 import MWC.TacticalData.temporal.TimeProvider;
@@ -218,6 +227,24 @@ public class DebriefLiteApp implements FileDropListener
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
 
+  static class JpopupMenuXY extends JPopupMenu
+  {
+    /**
+     * 
+     */
+    private static final long serialVersionUID = -1716260829875966611L;
+    public int x;
+    public int y;
+    
+    @Override
+    public void show(Component invoker, int x, int y)
+    {
+      this.x = x;
+      this.y = y;
+      super.show(invoker, x, y);
+    }
+  }
+  
   /**
    * creates a scroll pane with map
    *
@@ -234,6 +261,51 @@ public class DebriefLiteApp implements FileDropListener
     final JMapPane mapPane = (JMapPane) builder.setMapRenderer(geoMapRenderer)
         .build();
     dropSupport.addComponent(mapPane);
+    
+    final JpopupMenuXY popupMenu = new JpopupMenuXY();
+    final JMenuItem copyCursorItem = new JMenuItem("Copy cursor location");
+    copyCursorItem.addActionListener(new ActionListener()
+    {
+      
+      @Override
+      public void actionPerformed(ActionEvent e)
+      {
+        final WorldLocation location = _instance.projection.toWorld(
+            new Point(popupMenu.x, popupMenu.y));
+        
+        System.out.println(location);
+        String res = "LOC:" + location.getLat() + "," + location
+            .getLong() + "," + location.getDepth();
+        StringSelection stringSelection = new StringSelection(res);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(stringSelection, null);
+      }
+    });
+    popupMenu.add(copyCursorItem);
+    mapPane.addMouseListener(new MouseAdapter()
+    {
+
+      @Override
+      public void mousePressed(MouseEvent e)
+      {
+        showPopup(e);
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e)
+      {
+        showPopup(e);
+      }
+      
+      private void showPopup(MouseEvent e) {
+        if (e.isPopupTrigger()) {
+          popupMenu.show(e.getComponent(),
+                    e.getX(), e.getY());
+        }
+    }
+      
+    });
+    
     return mapPane;
   }
 
