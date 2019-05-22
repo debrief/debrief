@@ -92,7 +92,7 @@ public class LiteStepControl extends StepControl
       }
 
       final PropertiesDialog dialog = new PropertiesDialog(((Editable) painter)
-          .getInfo(), _layers, _undoBuffer, parent, owner);
+          .getInfo(), _layers, _undoBuffer, parent, owner,null);
       dialog.setSize(400, 500);
       dialog.setLocationRelativeTo(null);
       dialog.setVisible(true);
@@ -132,7 +132,7 @@ public class LiteStepControl extends StepControl
 
     final PropertiesDialog dialog = new PropertiesDialog(this
         .getDefaultHighlighter().getInfo(), _layers, _undoBuffer, parent,
-        owner);
+        owner,null);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);

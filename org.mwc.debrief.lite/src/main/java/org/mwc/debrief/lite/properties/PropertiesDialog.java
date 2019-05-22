@@ -84,16 +84,17 @@ public class PropertiesDialog extends JDialog
   private final MyMetalToolBarUI.ToolbarOwner _owner;
 
   private final UndoBuffer _undoBuffer;
-
+  private final Layer _parentLayer;
   public PropertiesDialog(final EditorType editableProperty,
       final Layers layers, final UndoBuffer undoBuffer,
-      final ToolParent toolParent, final ToolbarOwner owner)
+      final ToolParent toolParent, final ToolbarOwner owner,final Layer parentLayer)
   {
     _editableProperty = editableProperty;
     _theLayers = layers;
     _owner = owner;
     _theToolParent = toolParent;
     _undoBuffer = undoBuffer;
+    _parentLayer = parentLayer;
     dialogs.add(this);
     initForm();
     setModal(true);
@@ -114,7 +115,7 @@ public class PropertiesDialog extends JDialog
         _undoBuffer, _theToolParent, _owner);
     propsPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
     final PropsEditor ap = new PropsEditor(_editableProperty, propsPanel,
-        _theLayers, _theToolParent, null, propsPanel);
+        _theLayers, _theToolParent, _parentLayer, propsPanel);
     final JPanel thePanel = (JPanel) ap.getPanel();
     thePanel.setName(_editableProperty.getDisplayName());
     // now, listen out for the name of the panel changing - we are removed as listener by the
