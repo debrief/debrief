@@ -213,6 +213,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       // check how many entries get deleted
       assertEquals("correct after len", 58, legTwo.getData().size());
     }
+    
 
     @SuppressWarnings("deprecation")
     public void testUndoRelative2() throws ExecutionException
@@ -280,6 +281,81 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       // check how many entries get deleted
       assertEquals("correct after len", 8, legTwo.getData().size());
+    
+      // TODO - test undo processing, check second leg same as original length
+      operation.undo(null, null);
+      assertEquals("correct after len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+    }
+
+
+    @SuppressWarnings("deprecation")
+    public void testInfillForRegularSensorData() throws ExecutionException
+    {
+      Layers theLayers = new Layers();
+      TrackWrapper tmaTrack = new TrackWrapper();
+      TrackWrapper hostTrack = new TrackWrapper();
+
+      WorldLocation origin = new WorldLocation(44, 44, 44);
+      WorldVector offset1 = new WorldVector(12, 0.1, 0);
+      WorldVector offset2 = new WorldVector(12, 0.15, 0.1);
+
+      SensorWrapper sensor1 = new SensorWrapper("sensor 1");
+      sensor1.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor1);
+      SensorContactWrapper[] cuts1 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 1 + i, 0));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setBearing(i);
+        contact.setOrigin(origin);
+        sensor1.add(contact);
+        cuts1[i] = contact;
+      }
+
+      SensorWrapper sensor2 = new SensorWrapper("sensor 2");
+      sensor2.setArrayCentreMode(LegacyArrayOffsetModes.PLAIN);
+      hostTrack.add(sensor2);
+      SensorContactWrapper[] cuts2 = new SensorContactWrapper[10];
+      for (int i = 0; i < 10; i++)
+      {
+        HiResDate date = new HiResDate(new Date(2012, 1, 1, 12, 30 + i, 0));
+        SensorContactWrapper contact = new SensorContactWrapper();
+        contact.setDTG(date);
+        contact.setOrigin(origin);
+        contact.setBearing(i);
+        sensor2.add(contact);
+        cuts2[i] = contact;
+      }
+
+      CoreTMASegment legOne = new RelativeTMASegment(cuts1, offset1,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      CoreTMASegment legTwo = new RelativeTMASegment(cuts2, offset2,
+          new WorldSpeed(13, WorldSpeed.Kts), 12, theLayers, null);
+
+      tmaTrack.add(legOne);
+      tmaTrack.add(legTwo);
+
+      Editable[] subjects = new Editable[]
+      {legOne, legTwo};
+
+      GenerateInfillOperation operation = new GenerateInfillOperation("title",
+          subjects, theLayers, tmaTrack, getMyLogger(), true);
+
+      assertEquals("correct before len", 10, legTwo.getData().size());
+      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
+      messages.clear();
+
+      operation.execute(null, null);
+
+      assertEquals("got no error message", 0, messages.size());
+      assertEquals("correct legs", 3, tmaTrack.getSegments().size());
+
+      // check how many entries get deleted
+      assertEquals("correct after len", 10, legTwo.getData().size());
       
       // have a look at the legs
       SegmentList segs = tmaTrack.getSegments();
@@ -291,22 +367,18 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         Enumeration<Editable> ele2 = seg.elements();
         while(ele2.hasMoreElements())
         {
+          @SuppressWarnings("unused")
           FixWrapper fw = (FixWrapper) ele2.nextElement();
-    //      System.out.println(fw.getLocation());
+      //    System.out.println(fw.getLocation().getLong() + ", " + fw.getLocation().getLat()+ ", " + fw.getDateTimeGroup().getDate());
         }
       }
       
       // check that the last point in the infill isn't the same as the first point in the second set
       FixWrapper startOfNext = (FixWrapper) legTwo.first();
       TrackSegment infill = tmaTrack.getSegments().getSegmentFor(startOfNext
-          .getDateTimeGroup().getDate().getTime() - 60000);
+          .getDateTimeGroup().getDate().getTime() - 120000);
       FixWrapper endOfInfill = (FixWrapper) infill.last();
       assertTrue("Locations not equal", !startOfNext.getLocation().equals(endOfInfill.getLocation()));
-
-      // TODO - test undo processing, check second leg same as original length
-      operation.undo(null, null);
-      assertEquals("correct after len", 10, legTwo.getData().size());
-      assertEquals("correct legs", 2, tmaTrack.getSegments().size());
     }
 
     @SuppressWarnings("deprecation")
