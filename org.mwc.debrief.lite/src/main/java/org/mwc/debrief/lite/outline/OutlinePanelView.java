@@ -104,7 +104,7 @@ import MWC.GUI.Undo.UndoBuffer;
  *
  */
 public class OutlinePanelView extends SwingLayerManager implements
-    ClipboardOwner, Helper, DataListener2
+    ClipboardOwner, Helper
 {
 
   private static class ButtonEnabler
@@ -1361,12 +1361,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   };
   
-  @Override
-  public void dataExtended(Layers theData, Plottable newItem,
-      HasEditables parent)
-  {
-    updateData((Layer)parent, newItem);
-  }
     
   
 }
