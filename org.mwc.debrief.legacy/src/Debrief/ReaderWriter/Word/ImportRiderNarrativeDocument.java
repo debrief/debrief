@@ -1284,8 +1284,9 @@ public class ImportRiderNarrativeDocument
       else
       {
         final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
-        final ArrayList<String> strings = ImportNarrativeDocument.importFromWord(doc);
-
+        final ArrayList<String> strings = ImportNarrativeDocument
+            .importFromWord(doc);
+        handleOtherImport(strings, iw);
       }
     }
   }
