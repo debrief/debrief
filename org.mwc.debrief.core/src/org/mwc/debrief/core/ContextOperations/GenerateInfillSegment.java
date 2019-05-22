@@ -52,6 +52,7 @@ import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.DynamicInfillSegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
@@ -279,6 +280,28 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
 
       // check how many entries get deleted
       assertEquals("correct after len", 8, legTwo.getData().size());
+      
+      // have a look at the legs
+      SegmentList segs = tmaTrack.getSegments();
+      Enumeration<Editable> ele = segs.elements();
+      while(ele.hasMoreElements())
+      {
+        TrackSegment seg = (TrackSegment) ele.nextElement();
+        System.out.println(seg.getName());
+        Enumeration<Editable> ele2 = seg.elements();
+        while(ele2.hasMoreElements())
+        {
+          FixWrapper fw = (FixWrapper) ele2.nextElement();
+    //      System.out.println(fw.getLocation());
+        }
+      }
+      
+      // check that the last point in the infill isn't the same as the first point in the second set
+      FixWrapper startOfNext = (FixWrapper) legTwo.first();
+      TrackSegment infill = tmaTrack.getSegments().getSegmentFor(startOfNext
+          .getDateTimeGroup().getDate().getTime() - 60000);
+      FixWrapper endOfInfill = (FixWrapper) infill.last();
+      assertTrue("Locations not equal", !startOfNext.getLocation().equals(endOfInfill.getLocation()));
 
       // TODO - test undo processing, check second leg same as original length
       operation.undo(null, null);
