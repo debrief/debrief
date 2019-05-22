@@ -4,24 +4,29 @@ import java.awt.event.ActionEvent;
 
 import org.geotools.swing.MapPane;
 import org.geotools.swing.action.MapAction;
+import org.geotools.swing.tool.CursorTool;
 
 public class DragElementAction extends MapAction
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 8514990334295403151L;
 
-  public DragElementAction(final MapPane mapPane)
+  final CursorTool cursorTool;
+
+  public DragElementAction(final MapPane mapPane, final CursorTool _cursorTool)
   {
-    super.init(mapPane, null, DragElementTool.TOOL_TIP, DragElementTool.ICON_IMAGE);
+    this.cursorTool = _cursorTool;
+    super.init(mapPane, null, GenericDragTool.TOOL_TIP,
+        GenericDragTool.ICON_IMAGE);
   }
-  
+
   @Override
-  public void actionPerformed(ActionEvent e)
+  public void actionPerformed(final ActionEvent e)
   {
-    getMapPane().setCursorTool(new DragElementTool());
+    getMapPane().setCursorTool(cursorTool);
   }
 
 }
