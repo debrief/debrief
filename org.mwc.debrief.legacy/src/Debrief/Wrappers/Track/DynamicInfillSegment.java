@@ -588,6 +588,7 @@ public class DynamicInfillSegment extends TrackSegment implements
    * recalculate our set of positions
    *
    */
+  @SuppressWarnings("unused")
   public void reconstruct()
   {
     // see if we're currently empty
@@ -720,7 +721,7 @@ public class DynamicInfillSegment extends TrackSegment implements
       // Set the following flag to true, to switch
       // back to the legacy behaviour
       final boolean useNextLegCrseSpeed = false;
-      if (tNow + tDelta < tEnd && !useNextLegCrseSpeed)
+      if (tNow + tDelta < tEnd || !useNextLegCrseSpeed)
       {
         // ok, use an interpolated value
         thisLat = latInterp.value(tNow);
