@@ -378,7 +378,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       TrackSegment infill = tmaTrack.getSegments().getSegmentFor(startOfNext
           .getDateTimeGroup().getDate().getTime() - 120000);
       FixWrapper endOfInfill = (FixWrapper) infill.last();
-      assertTrue("Locations not equal", !startOfNext.getLocation().equals(endOfInfill.getLocation()));
+      assertFalse("Locations not equal", startOfNext.getLocation().equals(endOfInfill.getLocation()));
     }
 
     @SuppressWarnings("deprecation")
