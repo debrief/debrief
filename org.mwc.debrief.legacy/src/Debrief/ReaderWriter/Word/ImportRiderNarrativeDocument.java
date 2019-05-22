@@ -1285,10 +1285,26 @@ public class ImportRiderNarrativeDocument
       {
         final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
         final ArrayList<String> strings = ImportNarrativeDocument.importFromWord(doc);
-        iw.processThese(strings);
+
       }
     }
   }
+  
+  private void handleOtherImport(final ArrayList<String> strings,
+      final ImportNarrativeDocument iw)
+  {
+    // ok, just do a quick check that thse aren't in the ASW DAta format
+    if (ImportASWDataDocument.canImport(strings))
+    {
+      ImportASWDataDocument idw = new ImportASWDataDocument(_layers);
+      System.out.println("IMPORTING ASW DOCUMENT");
+      idw.processThese(strings);
+    }
+    else
+    {
+      iw.processThese(strings);
+    }
+  }  
 
   public void handleImportX(final String fileName,
       final InputStream inputStream)
@@ -1319,7 +1335,7 @@ public class ImportRiderNarrativeDocument
     {
       final ImportNarrativeDocument iw = new ImportNarrativeDocument(_layers);
       final ArrayList<String> strings = ImportNarrativeDocument.importFromWordX(doc);
-      iw.processThese(strings);
+      handleOtherImport(strings, iw);
     }
   }
 
