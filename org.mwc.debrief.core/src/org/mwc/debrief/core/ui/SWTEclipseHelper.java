@@ -15,6 +15,7 @@
 package org.mwc.debrief.core.ui;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -58,6 +59,42 @@ public class SWTEclipseHelper implements QuestionHelper
         answerVal.set(dialog.open() == 0);
       }});
     return answerVal.get();
+  }
+
+  @Override
+  public String askQuestion(String title, String question)
+  {
+ // allow the answer to be shared across threads
+    final AtomicReference<String> answerVal  = new AtomicReference<String>();
+
+    // get a display to open on
+    final Display targetDisplay;
+    if(Display.getCurrent() == null)
+    {
+      targetDisplay = Display.getDefault();
+    }
+    else
+    {
+      targetDisplay = Display.getCurrent();
+    }
+    
+    // ok, get the answer
+    targetDisplay.syncExec(new Runnable(){
+      @Override
+      public void run()
+      {
+        final String[] choices = new String[]
+        {"Cancel", "Alpha", "Bravo"};
+        MessageDialog dialog =
+            new MessageDialog(null, title, null, question, MessageDialog.QUESTION,
+                choices, 0); // cancel is the default
+        int res = dialog.open();
+        if(res != 0)
+          answerVal.set(choices[res]);
+        else
+          answerVal.set(null); 
+      }});
+    return (String) answerVal.get();
   }
 
 }
