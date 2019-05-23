@@ -1023,12 +1023,9 @@ public class OutlinePanelView extends SwingLayerManager implements
           .getName(), changedLayer);
       if (rootNode != null)
       {
-        final DefaultMutableTreeNode itemNode;
+        DefaultMutableTreeNode itemNode = null;
         if (rootNode.getUserObject() instanceof Layer)
         {
-          // used class name instead of instanceof as otherwise
-          // there will be cyclic dependency in eclipse manifest.
-
           if (newItem instanceof FixWrapper)
           {
             rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
@@ -1036,27 +1033,10 @@ public class OutlinePanelView extends SwingLayerManager implements
           itemNode = getTreeNode(rootNode, newItem.getName(),
               newItem);
         }
-        else
-        {
-          // if not a layer but a trackwrapper
-          final DefaultMutableTreeNode firstChild =
-              (DefaultMutableTreeNode) rootNode.getFirstChild();
-          if (firstChild != null)
-          {
-            itemNode = getTreeNode((DefaultMutableTreeNode) rootNode
-                .getFirstChild(), newItem.getName(),
-
-                newItem);
-          }
-          else
-          {
-            itemNode = new DefaultMutableTreeNode(newItem);
-            rootNode.add(itemNode);
-          }
-        }
-        if (itemNode != null)
+        if(itemNode!=null)
         {
           final TreePath _treePath = new TreePath(itemNode.getPath());
+
           ((DefaultTreeModel)_myTree.getModel()).reload(rootNode);
           SwingUtilities.invokeLater(new Runnable()
           {
