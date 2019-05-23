@@ -81,19 +81,16 @@ public class ImportASWDataDocument
       // repeat of last line, but with spaces removed
       final String d6 = "TMPOS/290000ZAPR/GPS/04.02.01N/111.22.11W/89T/9KTS";
     }
-    
+
     @SuppressWarnings("unused")
     public void testParseLocations()
     {
       assertNull("fails for empty", locationFor(null));
 
-      final String d1 =
-          "12.23.34N-121.12.1E";
-      final String d2 =
-          "13.14.15S-011.22.33W";
+      final String d1 = "12.23.34N-121.12.1E";
+      final String d2 = "13.14.15S-011.22.33W";
       final String d3 = "1230N/01215W";
-      final String d4 =
-          "22.33.44N/020.11.22W";
+      final String d4 = "22.33.44N/020.11.22W";
       final String d5 = "04 .02. 01N/111.22. 11W";
       // repeat of last line, but with spaces removed
       final String d6 = "04.02.01N/111.22.11W";
@@ -128,6 +125,41 @@ public class ImportASWDataDocument
         final double dep)
     {
       return new WorldLocation(lat, lon, dep);
+    }
+    
+    public void testGetValue()
+    {
+      final String d1 = "12.30.45";
+      final String d2 = "011.30.45";
+      final String d3a = "11545";
+      final String d3b = "1545";
+      final String d4 = "22.30.45";
+      final String d5 = "04 .30. 45";
+      // repeat of last line, but with spaces removed
+      final String d6 = "104.30.45";
+
+      assertEquals(12.5125d, getValueFor(d1));
+      assertEquals(11.5125d, getValueFor(d2));
+      assertEquals(115.75, getValueFor(d3a));
+      assertEquals(15.75, getValueFor(d3b));
+      assertEquals(22.5125, getValueFor(d4));
+      assertEquals(4.5125, getValueFor(d5));
+      assertEquals(104.5125, getValueFor(d6));
+    }
+
+    public void testGetHemi()
+    {
+      final String d1 = "00.00.0N";
+      final String d2 = "000.00.00S";
+      final String d3 = "dddmmW";
+      final String d4 = "00.00.00E";
+      final String d5 = "000.00. 00W";
+
+      assertEquals(1d, getHemiFor(d1));
+      assertEquals(-1d, getHemiFor(d2));
+      assertEquals(-1d, getHemiFor(d3));
+      assertEquals(1d, getHemiFor(d4));
+      assertEquals(-1d, getHemiFor(d5));
     }
 
     public void testIsValid()
@@ -327,21 +359,105 @@ public class ImportASWDataDocument
     return res;
   }
 
+  private static double getHemiFor(String str)
+  {
+    final String lastLetter =  str.substring(str.length() - 1);
+    final double res;
+    switch(lastLetter.toUpperCase())
+    {
+      case "N":
+      case "E":
+        res = 1;
+        break;
+      case "S":
+      case "W":
+        res = -1;
+        break;
+      default:
+        throw new IllegalArgumentException("Not a valid hemisphere");
+    }
+    
+    return res;
+  }
+
   private static WorldLocation locationFor(final String str)
   {
-    // TMPOS/261200ZAPR/IN/00.00.0N-000.00.0W/057T/04KTS/00.0M//
-    // TMPOS/262327ZAPR/INS/00.00.00N-000.00.00W/180T/13KTS/000FT
-    // TMPOS/220000ZAPR/GPS/ddmmN/dddmmW
-    // TMPOS/230001ZAPR/GPS/00.00.00N/000.00.00W/006T/10KTS//
-    // TMPOS/290000ZAPR/GPS/00 .00. 00N/000.00. 00W/89T/9KTS
-    
+    // 00.00.0N-000.00.0W
+    // 00.00.00N-000.00.00W
+    // ddmmN/dddmmW
+    // 00.00.00N/000.00.00W
+    // 00 .00. 00N/000.00. 00W
+
+    if (str == null)
+    {
+      return null;
+    }
+
+    final String[] components;
+    if (str.contains("="))
+    {
+      components = str.split("-");
+    }
+    else if (str.contains("/"))
+    {
+      components = str.split("/");
+    }
+    else
+    {
+      components = null;
+      return null;
+    }
+
+    String latStr = components[0];
+    double latHemi = getHemiFor(latStr);
+
+    String longStr = components[1];
+    double longHemi = getHemiFor(longStr);
+
     return null;
   }
-  
-  @SuppressWarnings({"unused"})
-  private static FixWrapper fixFor(final String str)
-    {
 
+  private static double getValueFor(final String str)
+  {
+//    final String d1 = "12.23.34";
+//    final String d2 = "011.22.33";
+//    final String d3 = "01215";
+//    final String d4 = "22.33.44";
+//    final String d5 = "04 .02. 01";
+//    // repeat of last line, but with spaces removed
+//    final String d6 = "04.02.01";
+    
+    final double res;
+    if(str.contains("."))
+    {
+      String[] comps = str.split("\\.");
+      if(comps.length != 3)
+      {
+        throw new IllegalArgumentException("Badly formatted location:" + str);
+      }
+      else
+      {
+        final double degs = Double.valueOf(comps[0].trim());
+        final double mins = Double.valueOf(comps[1].trim());
+        final double secs = Double.valueOf(comps[2].trim());
+        res = degs + mins / 60 + secs / (60 * 60);
+      }
+    }
+    else
+    {
+      final int len = str.length();
+      final double degs = Double.parseDouble(str.substring(0, len - 2));
+      final double mins = Double.parseDouble(str.substring(len - 2));
+      res = degs + mins / 60;
+    }
+    
+    return res;
+  }
+  
+  @SuppressWarnings(
+  {"unused"})
+  private static FixWrapper fixFor(final String str)
+  {
 
     if (str == null)
     {
