@@ -2,7 +2,7 @@
  *    Debrief - the Open Source Maritime Analysis Application
  *    http://debrief.info
  *
- *    (C) 2000-2016, Deep Blue C Technology Ltd
+ *    (C) 2000-2019, Deep Blue C Technology Ltd
  *
  *    This library is free software; you can redistribute it and/or
  *    modify it under the terms of the Eclipse Public License v1.0
@@ -192,7 +192,7 @@ public class ImportASWDataDocument
             @Override
             public String askQuestion(final String title, final String message)
             {
-              return NORWICH;
+              return null;
             }
 
             @Override
@@ -292,7 +292,7 @@ public class ImportASWDataDocument
       // repeat of last line, but with spaces removed
       final String d6 = "TMPOS/290000ZAPR/GPS/04.02.01N/111.22.11W/89T/9KTS";
 
-      final FixWrapper f1 = fixFor(d1);
+      final FixWrapper f1 = fixFor(d1, 2019);
       assertNotNull(f1);
       assertEquals(57d, f1.getCourseDegs());
       assertEquals(4d, f1.getSpeed());
@@ -300,21 +300,21 @@ public class ImportASWDataDocument
       assertEquals("190426 120000", DebriefFormatDateTime.toStringHiRes(f1
           .getDateTimeGroup()));
 
-      final FixWrapper f2 = fixFor(d2);
+      final FixWrapper f2 = fixFor(d2, 2016);
       assertNotNull(f2);
       assertEquals(180d, f2.getCourseDegs());
       assertEquals(13d, f2.getSpeed(), 0.001);
       assertEquals(new WorldDistance(1, WorldDistance.FT).getValueIn(
           WorldDistance.METRES), f2.getDepth());
-      assertEquals("190426 232700", DebriefFormatDateTime.toStringHiRes(f2
+      assertEquals("160426 232700", DebriefFormatDateTime.toStringHiRes(f2
           .getDateTimeGroup()));
 
-      final FixWrapper f3 = fixFor(d3);
+      final FixWrapper f3 = fixFor(d3, 1998);
       assertNotNull(f3);
       assertEquals(0d, f3.getCourseDegs());
       assertEquals(0d, f3.getSpeed(), 0.001);
       assertEquals(0d, f3.getDepth());
-      assertEquals("190422 000000", DebriefFormatDateTime.toStringHiRes(f3
+      assertEquals("980422 000000", DebriefFormatDateTime.toStringHiRes(f3
           .getDateTimeGroup()));
     }
 
@@ -509,7 +509,7 @@ public class ImportASWDataDocument
 
   @SuppressWarnings(
   {"unused"})
-  private static FixWrapper fixFor(final String str)
+  private static FixWrapper fixFor(final String str, final int year)
   {
     // final String d1 =
     // "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/057T/04KTS/00.0M//";
@@ -543,7 +543,7 @@ public class ImportASWDataDocument
 
       int ctr = 0;
       final String title = tokens[ctr++];
-      final HiResDate date = dateFor(tokens[ctr++], 0);
+      final HiResDate date = dateFor(tokens[ctr++], year);
       final String source = tokens[ctr++];
       String pos1 = tokens[ctr++];
       if (!pos1.contains("-"))
@@ -855,7 +855,7 @@ public class ImportASWDataDocument
       }
       else if (line.startsWith("TMPOS"))
       {
-        final FixWrapper fix = fixFor(line);
+        final FixWrapper fix = fixFor(line, year);
         fix.resetName();
         track.addFix(fix);
       }
