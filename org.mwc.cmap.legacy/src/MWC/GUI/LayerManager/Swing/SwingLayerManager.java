@@ -193,6 +193,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -203,6 +204,7 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.Swing.SwingCustomEditor;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class SwingLayerManager extends SwingCustomEditor implements
     Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
@@ -893,38 +895,77 @@ public class SwingLayerManager extends SwingCustomEditor implements
     }
     return null;
   }
+  
+  private void updateThisLayer(final Layer changedLayer)
+  {
+    final TreeNode treeNode = getTreeNode(null, changedLayer.getName(),
+        changedLayer);
+    if (treeNode != null)
+    {
+      ((DefaultTreeModel) _myTree.getModel()).reload(treeNode);
+    }
+  }
+  
+  private void updateInThread(final Layer changedLayer)
+  {
+    // in case only the narratives have changed refresh only those.
+    final Runnable runner;
+    if(changedLayer instanceof NarrativeWrapper) 
+    {
+      runner = new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          updateThisLayer(changedLayer);
+        }
+      };
+    }
+    else 
+    {
+      runner = new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          updateData();
+        }
+      };
+    }
+    updateInThread(runner);
+  }
 
   /*
    * thread-safe way of updating UI
    * 
    */
-  private void updateInThread()
+  private static void updateInThread(final Runnable runner)
   {
     if (SwingUtilities.isEventDispatchThread())
     {
-      updateData();
+      runner.run();
     }
     else
     {
-        try
+      try
+      {
+        SwingUtilities.invokeAndWait(new Runnable()
         {
-          SwingUtilities.invokeAndWait(new Runnable()
+          @Override
+          public void run()
           {
-            @Override
-            public void run()
-            {
-              updateData();
-            }
-          });
-        }
-        catch (InvocationTargetException e)
-        {
-          e.printStackTrace();
-        }
-        catch (InterruptedException e)
-        {
-          e.printStackTrace();
-        }
+            runner.run();
+          }
+        });
+      }
+      catch (InvocationTargetException e)
+      {
+        e.printStackTrace();
+      }
+      catch (InterruptedException e)
+      {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -933,7 +974,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   public void dataModified(final Layers theData, final Layer changedLayer)
   {
-    updateInThread();
+    updateInThread(changedLayer);
   }
 
   /**
@@ -941,7 +982,16 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   public void dataExtended(final Layers theData)
   {
-    updateInThread();
+    final Runnable runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        updateData();
+      }
+    };
+
+    updateInThread(runner);
   }
 
   /**
@@ -990,7 +1040,15 @@ public class SwingLayerManager extends SwingCustomEditor implements
   public void doReset()
   {
     // rescan the tree, of course
-    updateInThread();
+    final Runnable runner = new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        updateData();
+      }
+    };
+    updateInThread(runner);
   }
 
   public void doClose()

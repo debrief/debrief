@@ -68,6 +68,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
@@ -88,6 +89,8 @@ import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
 import MWC.GUI.Plottables;
@@ -101,7 +104,7 @@ import MWC.GUI.Undo.UndoBuffer;
  *
  */
 public class OutlinePanelView extends SwingLayerManager implements
-    ClipboardOwner, Helper
+    ClipboardOwner, Helper, DataListener2
 {
 
   private static class ButtonEnabler
@@ -619,8 +622,15 @@ public class OutlinePanelView extends SwingLayerManager implements
           {
             owner = (ToolbarOwner) parentData;
           }
+          final Layer parentLayer;
+          if(parentData instanceof Layer) {
+            parentLayer = (Layer)parentData;
+          }
+          else {
+            parentLayer = null;
+          }
           final PropertiesDialog dialog = new PropertiesDialog(editable
-              .getInfo(), _myData, _undoBuffer, tp, owner);
+              .getInfo(), _myData, _undoBuffer, tp, owner,parentLayer);
           dialog.setSize(400, 500);
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -1048,6 +1058,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         if (itemNode != null)
         {
           final TreePath _treePath = new TreePath(itemNode.getPath());
+          ((DefaultTreeModel)_myTree.getModel()).reload(rootNode);
           SwingUtilities.invokeLater(new Runnable()
           {
             @Override
@@ -1350,7 +1361,12 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   };
   
-
+  @Override
+  public void dataExtended(Layers theData, Plottable newItem,
+      HasEditables parent)
+  {
+    updateData((Layer)parent, newItem);
+  }
     
   
 }

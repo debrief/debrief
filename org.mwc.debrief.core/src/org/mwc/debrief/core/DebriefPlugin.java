@@ -75,6 +75,7 @@ import org.osgi.framework.BundleContext;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.Replay.ImportReplay.Runner;
+import Debrief.ReaderWriter.Word.ImportASWDataDocument;
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler;
 import Debrief.ReaderWriter.XML.extensions.AdditionalDataHandler.ExportProvider;
@@ -375,7 +376,9 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
     CompositeTrackWrapper.initialise(CorePlugin.getToolParent());
     AISDecoder.initialise(CorePlugin.getToolParent());
 
-    ImportNarrativeDocument.setQuestionHelper(new SWTEclipseHelper());
+    final SWTEclipseHelper questionHelper = new SWTEclipseHelper();
+    ImportNarrativeDocument.setQuestionHelper(questionHelper);
+    ImportASWDataDocument.setQuestionHelper(questionHelper);
     if(!isRunningTests()) {
       ImportNarrativeDocument.setNarrativeHelper(new ImportNarrativeHelper());
     }
