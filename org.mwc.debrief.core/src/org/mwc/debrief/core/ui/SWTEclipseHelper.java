@@ -56,8 +56,10 @@ public class SWTEclipseHelper implements QuestionHelper
       @Override
       public void run()
       {
-        InputDialog input = new InputDialog(null, title, question, "track name", null);
-        if (input.open() == Window.OK) {
+        final InputDialog input = new InputDialog(null, title, question,
+            "track name", null);
+        if (input.open() == Window.OK)
+        {
           // User clicked OK; update the label with the input
           answerVal.set(input.getValue());
         }
