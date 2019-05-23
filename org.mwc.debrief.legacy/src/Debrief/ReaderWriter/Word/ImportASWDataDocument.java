@@ -29,7 +29,11 @@ import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.TextFormatting.GMTDateFormat;
 import junit.framework.TestCase;
 
@@ -71,7 +75,7 @@ public class ImportASWDataDocument
     public void testParseFixes()
     {
       final String d1 =
-          "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/057T/04KTS/00.0M//";
+          "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/057T/04KTS/05.1M//";
       final String d2 =
           "TMPOS/262327ZAPR/INS/13.14.15S-011.22.33W/180T/13KTS/000FT";
       final String d3 = "TMPOS/220000ZAPR/GPS/1230N/01215W";
@@ -80,9 +84,16 @@ public class ImportASWDataDocument
       final String d5 = "TMPOS/290000ZAPR/GPS/04 .02. 01N/111.22. 11W/89T/9KTS";
       // repeat of last line, but with spaces removed
       final String d6 = "TMPOS/290000ZAPR/GPS/04.02.01N/111.22.11W/89T/9KTS";
+      
+      final FixWrapper f1 = fixFor(d1);
+      assertNotNull(f1);
+      assertEquals(57d, f1.getCourseDegs());
+      assertEquals(4d, f1.getSpeed());
+      assertEquals(5.1d, f1.getDepth());
+      
+      assertEquals("190426 120000", DebriefFormatDateTime.toStringHiRes(f1.getDateTimeGroup()));
     }
 
-    @SuppressWarnings("unused")
     public void testParseLocations()
     {
       assertNull("fails for empty", locationFor(null));
@@ -95,29 +106,58 @@ public class ImportASWDataDocument
       // repeat of last line, but with spaces removed
       final String d6 = "04.02.01N/111.22.11W";
 
-      assertEquals("d1", loc(1, 2, 3), locationFor(d1));
+      assertEquals(" 12°23'34.00\"N 121°12'01.00\"E " , locationFor(d1).toString());
+      assertEquals(" 13°14'15.00\"S 011°22'33.00\"W " , locationFor(d2).toString());
+      assertEquals(" 12°30'00.00\"N 012°15'00.00\"W " , locationFor(d3).toString());
+      assertEquals(" 22°33'44.00\"N 020°11'22.00\"W " , locationFor(d4).toString());
+      assertEquals(" 04°02'01.00\"N 111°22'11.00\"W " , locationFor(d5).toString());
+      assertEquals(" 04°02'01.00\"N 111°22'11.00\"W " , locationFor(d6).toString());
+      assertEquals(" 22°33'00.00\"N 020°11'00.00\"W " , locationFor("22.33N-020.11W").toString());
+      
+      // and some mangled one
+      try {
+        locationFor("22.33.44J/020.11.22W");
+        fail("should have tripped");
+      }
+      catch(IllegalArgumentException ie)
+      {
+        assertEquals("Not a valid hemisphere:J", ie.getMessage());
+      }
+      
+      // and some mangled one
+      try {
+        locationFor("22.33.44N=020.11.22W");
+        fail("should have tripped");
+      }
+      catch(IllegalArgumentException ie)
+      {
+        assertEquals("Location separator not found", ie.getMessage());
+      }
 
+      // and some mangled one
+      try {
+        locationFor("22.33.44N/020.11.22");
+        fail("should have tripped");
+      }
+      catch(IllegalArgumentException ie)
+      {
+        assertEquals("Not a valid hemisphere:2", ie.getMessage());
+      }
     }
 
     public void testDates()
     {
       final String d1 = "261200ZAPR";
       final String d2 = "262327ZAPR";
-      final String d3 = "220000ZMAY";
+      final String d3 = "220300ZJAN";
       final String d4 = "012345ZAPR";
-      final String d5 = "292359ZAPR";
+      final String d5 = "292258ZNOV";
 
-      DateFormat df = new GMTDateFormat("yy-MM-dd HH:mm:ss");
-      assertEquals("aaa", "70-04-26 12:00:00", df.format(dateFor(d1)
-          .getDate()));
-      assertEquals("aaa", "70-04-26 23:27:00", df.format(dateFor(d2)
-          .getDate()));
-      assertEquals("aaa", "70-05-22 00:00:00", df.format(dateFor(d3)
-          .getDate()));
-      assertEquals("aaa", "70-04-01 23:45:00", df.format(dateFor(d4)
-          .getDate()));
-      assertEquals("aaa", "70-04-29 23:59:00", df.format(dateFor(d5)
-          .getDate()));
+      assertEquals("aaa", "190426 120000", DebriefFormatDateTime.toString(dateFor(d1, 0).getDate().getTime()));
+      assertEquals("aaa", "190426 232700", DebriefFormatDateTime.toString(dateFor(d2, 0).getDate().getTime()));
+      assertEquals("aaa", "190122 030000", DebriefFormatDateTime.toString(dateFor(d3, 0).getDate().getTime()));
+      assertEquals("aaa", "190401 234500", DebriefFormatDateTime.toString(dateFor(d4, 0).getDate().getTime()));
+      assertEquals("aaa", "191229 225800", DebriefFormatDateTime.toString(dateFor(d5, 0).getDate().getTime()));
     }
 
     @SuppressWarnings("unused")
@@ -343,13 +383,23 @@ public class ImportASWDataDocument
 
   final private static String marker = "TMPOS";
 
-  private static HiResDate dateFor(final String str)
+  private static HiResDate dateFor(final String str, int year)
   {
     DateFormat df = new GMTDateFormat("ddHHmm'Z'MMM");
     HiResDate res = null;
     try
     {
       Date date = df.parse(str);
+      
+      if(year > 100)
+      {
+        date.setYear(year);
+      }
+      else
+      {
+        date.setYear(new Date().getYear());
+      }
+      
       res = new HiResDate(date);
     }
     catch (ParseException e)
@@ -374,7 +424,7 @@ public class ImportASWDataDocument
         res = -1;
         break;
       default:
-        throw new IllegalArgumentException("Not a valid hemisphere");
+        throw new IllegalArgumentException("Not a valid hemisphere:" + lastLetter);
     }
     
     return res;
@@ -394,7 +444,7 @@ public class ImportASWDataDocument
     }
 
     final String[] components;
-    if (str.contains("="))
+    if (str.contains("-"))
     {
       components = str.split("-");
     }
@@ -404,17 +454,18 @@ public class ImportASWDataDocument
     }
     else
     {
-      components = null;
-      return null;
+      throw new IllegalArgumentException("Location separator not found");
     }
 
     String latStr = components[0];
     double latHemi = getHemiFor(latStr);
+    double latVal = getValueFor(latStr.substring(0, latStr.length()-1));
 
     String longStr = components[1];
     double longHemi = getHemiFor(longStr);
-
-    return null;
+    double longVal = getValueFor(longStr.substring(0, longStr.length()-1));
+    
+    return new WorldLocation(latHemi * latVal, longHemi * longVal, 0d);
   }
 
   private static double getValueFor(final String str)
@@ -431,16 +482,22 @@ public class ImportASWDataDocument
     if(str.contains("."))
     {
       String[] comps = str.split("\\.");
-      if(comps.length != 3)
-      {
-        throw new IllegalArgumentException("Badly formatted location:" + str);
-      }
-      else
+      if(comps.length == 3)
       {
         final double degs = Double.valueOf(comps[0].trim());
         final double mins = Double.valueOf(comps[1].trim());
         final double secs = Double.valueOf(comps[2].trim());
         res = degs + mins / 60 + secs / (60 * 60);
+      }
+      else if(comps.length == 2)
+      {
+        final double degs = Double.valueOf(comps[0].trim());
+        final double mins = Double.valueOf(comps[1].trim());
+        res = degs + mins / 60;
+      }
+      else
+      {
+        throw new IllegalArgumentException("Badly formatted location:" + str);
       }
     }
     else
@@ -458,41 +515,131 @@ public class ImportASWDataDocument
   {"unused"})
   private static FixWrapper fixFor(final String str)
   {
+//    final String d1 =
+//        "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/057T/04KTS/00.0M//";
+//    final String d2 =
+//        "TMPOS/262327ZAPR/INS/13.14.15S-011.22.33W/180T/13KTS/000FT";
+//    final String d3 = "TMPOS/220000ZAPR/GPS/1230N/01215W";
+//    final String d4 =
+//        "TMPOS/230001ZAPR/GPS/22.33.44N/020.11.22W/006T/10KTS//";
+//    final String d5 = "TMPOS/290000ZAPR/GPS/04 .02. 01N/111.22. 11W/89T/9KTS";
+//    // repeat of last line, but with spaces removed
+//    final String d6 = "TMPOS/290000ZAPR/GPS/04.02.01N/111.22.11W/89T/9KTS";
 
+    
     if (str == null)
     {
       return null;
     }
     else if (!str.startsWith("TMPOS"))
     {
-      return null;
+      throw new IllegalArgumentException("Not a position line");
     }
     else
     {
       String[] tokens = str.split("/");
-
-      // start off with the date
-      HiResDate date = null;
-      Double dLat = null;
-      Double dLon = null;
-      for (final String s : tokens)
+      final int numTokens = tokens.length;
+      
+      if(numTokens < 5)
       {
-        if (date == null)
-        {
-          int zIndex = s.indexOf("Z");
-          if (zIndex != -1)
-          {
-            date = dateFor(s);
-          }
-        }
-        else
-        {
-          // ok on with lat/lon
-        }
+        throw new IllegalArgumentException("Insufficient token in string (expected 5):" + str);
       }
-    }
 
-    return null;
+      int ctr = 0;
+      String title = tokens[ctr++];
+      HiResDate date = dateFor(tokens[ctr++], 0);
+      String source = tokens[ctr++];
+      String pos1 = tokens[ctr++];
+      if(!pos1.contains("-"))
+      {
+        // ok, it's split across two tokens
+        String pos2 = tokens[ctr++];
+        pos1 = pos1 + "/" + pos2;
+      }
+      WorldLocation loc = locationFor(pos1);
+      
+      String courseStr = ctr < numTokens ? tokens[ctr++] : null;
+      String speedStr = ctr < numTokens ? tokens[ctr++] : null;
+      String depthStr = ctr < numTokens ? tokens[ctr++] : null;
+     
+      final double course = courseFor(courseStr);
+      final double speed = speedFor(speedStr);
+      final double depth = depthFor(depthStr);
+      
+      loc.setDepth(depth);
+      Fix fix = new Fix(date, loc, course, speed);
+      return new FixWrapper(fix);
+    }
+  }
+
+  private static double speedFor(String speed)
+  {
+    if(speed == null)
+      return 0d;
+    
+    // regex came from here:
+    // https://codereview.stackexchange.com/a/2349
+    String[] components = speed.split("[^A-Z0-9]+|(?<=[A-Z])(?=[0-9])|(?<=[0-9])(?=[A-Z])");
+    if(components.length != 2)
+    {
+      throw new IllegalArgumentException("Speed not formatted correctly (expected 23KTS):" + speed);
+    }
+    
+    final double value = Double.valueOf(components[0]);
+        final String units = components[1];
+    
+    final WorldSpeed res;
+    switch(units.toUpperCase())
+    {
+      case "KTS":
+        res = new WorldSpeed(value, WorldSpeed.Kts);
+        break;
+      case "MS":
+        res = new WorldSpeed(value, WorldSpeed.M_sec);
+        break;
+      default:
+        throw new IllegalArgumentException("Speed units not recognised:" + speed);
+    }
+    
+    return res.getValueIn(WorldSpeed.ft_sec) / 3d;
+  }
+
+  private static double depthFor(String depth)
+  {
+    if(depth == null)
+      return 0d;
+    
+    final String units = depth.substring(depth.length()-1);
+    final double value = Double.valueOf(depth.substring(0,  depth.length()-1));
+    final WorldDistance res;
+    switch(units.toUpperCase())
+    {
+      case "M":
+        res = new WorldDistance(value, WorldDistance.METRES);
+        break;
+      case "FT":
+        res = new WorldDistance(value, WorldDistance.FT);
+        break;
+      default:
+        throw new IllegalArgumentException("Depth units not recognised:" + depth);
+    }
+    
+    return res.getValueIn(WorldDistance.METRES);
+  }
+  
+  private static double courseFor(String courseStr)
+  {
+    if(courseStr == null)
+      return 0d;
+    
+    int tIndex = courseStr.indexOf("T");
+    if(tIndex == -1)
+    {
+      throw new IllegalArgumentException("Course not formatted correctly (expect 123T):" + courseStr);
+    }
+    
+    double courseDegs = Double.parseDouble(courseStr.substring(0, tIndex));
+    return MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
   }
 
   private static Integer yearFor(String str)
