@@ -88,17 +88,17 @@ public class ImportASWDataDocument
       assertNull("fails for empty", locationFor(null));
 
       final String d1 =
-          "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/057T/04KTS/00.0M//";
+          "12.23.34N-121.12.1E";
       final String d2 =
-          "TMPOS/262327ZAPR/INS/13.14.15S-011.22.33W/180T/13KTS/000FT";
-      final String d3 = "TMPOS/220000ZAPR/GPS/1230N/01215W";
+          "13.14.15S-011.22.33W";
+      final String d3 = "1230N/01215W";
       final String d4 =
-          "TMPOS/230001ZAPR/GPS/22.33.44N/020.11.22W/006T/10KTS//";
-      final String d5 = "TMPOS/290000ZAPR/GPS/04 .02. 01N/111.22. 11W/89T/9KTS";
+          "22.33.44N/020.11.22W";
+      final String d5 = "04 .02. 01N/111.22. 11W";
       // repeat of last line, but with spaces removed
-      final String d6 = "TMPOS/290000ZAPR/GPS/04.02.01N/111.22.11W/89T/9KTS";
+      final String d6 = "04.02.01N/111.22.11W";
 
-  //    assertEquals("d1", loc(1, 2, 3), locationFor(d1));
+      assertEquals("d1", loc(1, 2, 3), locationFor(d1));
 
     }
 
