@@ -17,7 +17,9 @@ package org.mwc.debrief.core.ui;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
@@ -54,15 +56,11 @@ public class SWTEclipseHelper implements QuestionHelper
       @Override
       public void run()
       {
-        final String[] choices = new String[]
-        {"Cancel", "Alpha", "Bravo"};
-        final MessageDialog dialog = new MessageDialog(null, title, null,
-            question, MessageDialog.QUESTION, choices, 0); // cancel is the default
-        final int res = dialog.open();
-        if (res != 0)
-          answerVal.set(choices[res]);
-        else
-          answerVal.set(null);
+        InputDialog input = new InputDialog(null, title, question, "track name", null);
+        if (input.open() == Window.OK) {
+          // User clicked OK; update the label with the input
+          answerVal.set(input.getValue());
+        }
       }
     });
     return answerVal.get();
