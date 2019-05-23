@@ -23,7 +23,6 @@ import static Debrief.GUI.Views.LogicHelpers.getNotEmptyTest;
 import static Debrief.GUI.Views.LogicHelpers.getNotLayerTest;
 import static Debrief.GUI.Views.LogicHelpers.getNotNarrativeTest;
 import static Debrief.GUI.Views.LogicHelpers.getOnlyOneTest;
-import static Debrief.GUI.Views.LogicHelpers.getSelectionEmptyTest;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -105,7 +104,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     ClipboardOwner, Helper
 {
 
-  @SuppressWarnings("serial")
   final class AddLayerAction extends AbstractAction implements
       MWC.GUI.Tools.Action
   {
@@ -178,7 +176,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
   }
 
-  @SuppressWarnings("serial")
   final class DeleteAction extends AbstractAction implements
       MWC.GUI.Tools.Action, ClipboardOwner
   {
@@ -511,7 +508,6 @@ public class OutlinePanelView extends SwingLayerManager implements
 
   }
 
-  @SuppressWarnings("serial")
   final class PasteAction extends AbstractAction implements
       MWC.GUI.Tools.Action, ClipboardOwner
   {
@@ -1051,7 +1047,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     final EnabledTest selectionIsLayer = getIsLayerTest();
     final EnabledTest clipboardIsFixes = getIsFixesTest();
     final EnabledTest clipboardIsShapes = getIsShapesTest();
-    final EnabledTest isEmpty = getSelectionEmptyTest();
+    //final EnabledTest isEmpty = getSelectionEmptyTest();
     final EnabledTest notNarrative = getNotNarrativeTest();
     final EnabledTest notIsLayer = getNotLayerTest();
 
