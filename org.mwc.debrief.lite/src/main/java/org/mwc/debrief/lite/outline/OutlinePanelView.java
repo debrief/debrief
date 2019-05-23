@@ -429,7 +429,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     }
     else
     {
-      try {
+      try
+      {
         if (destination instanceof Layer)
         {
           ((Layer) destination).add(theData);
@@ -527,7 +528,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
       _myTree.setSelectionPath(null);
-    }   
+    }
     if (modified)
     {
       doReset();
@@ -590,7 +591,7 @@ public class OutlinePanelView extends SwingLayerManager implements
       }, this);
     }
   }
-  
+
   @Override
   protected void editThis(final TreeNode node)
   {
@@ -621,14 +622,16 @@ public class OutlinePanelView extends SwingLayerManager implements
             owner = (ToolbarOwner) parentData;
           }
           final Layer parentLayer;
-          if(parentData instanceof Layer) {
-            parentLayer = (Layer)parentData;
+          if (parentData instanceof Layer)
+          {
+            parentLayer = (Layer) parentData;
           }
-          else {
+          else
+          {
             parentLayer = null;
           }
           final PropertiesDialog dialog = new PropertiesDialog(editable
-              .getInfo(), _myData, _undoBuffer, tp, owner,parentLayer);
+              .getInfo(), _myData, _undoBuffer, tp, owner, parentLayer);
           dialog.setSize(400, 500);
           dialog.setLocationRelativeTo(null);
           dialog.setVisible(true);
@@ -773,7 +776,7 @@ public class OutlinePanelView extends SwingLayerManager implements
 
     final JButton addLayerButton = createCommandButton("Add Layer",
         "icons/24/add.png");
-    //_enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
+    // _enablers.add(new ButtonEnabler(addLayerButton, new Or(isEmpty,notEmpty)));
     commandBar.add(addLayerButton);
 
     final JButton deleteButton = createCommandButton("Delete",
@@ -866,7 +869,7 @@ public class OutlinePanelView extends SwingLayerManager implements
     editButton.getActionMap().put("edit", editAction);
     editButton.addActionListener(editAction);
     final MWC.GUI.Tools.Action addLayerAction = new AddLayerAction();
-    addLayerButton.addActionListener((ActionListener)addLayerAction);
+    addLayerButton.addActionListener((ActionListener) addLayerAction);
     final Action cutAction = new DeleteAction(true);
     cutButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke
         .getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit()
@@ -1021,25 +1024,45 @@ public class OutlinePanelView extends SwingLayerManager implements
     {
       if (newItem != null)
       {
-      DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if (rootNode != null)
-      {
-        DefaultMutableTreeNode itemNode = null;
-        if (rootNode.getUserObject() instanceof Layer)
+        DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+            .getName(), changedLayer);
+        if (rootNode != null)
         {
-          if (newItem instanceof FixWrapper)
+          DefaultMutableTreeNode itemNode = null;
+          if (rootNode.getUserObject() instanceof Layer)
           {
-            rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
+            if (newItem instanceof FixWrapper)
+            {
+              rootNode = (DefaultMutableTreeNode) rootNode.getFirstChild();
+            }
+            itemNode = getTreeNode(rootNode, newItem.getName(), newItem);
           }
-          itemNode = getTreeNode(rootNode, newItem.getName(),
-              newItem);
-        }
-        if(itemNode!=null)
-        {
-          final TreePath _treePath = new TreePath(itemNode.getPath());
+          if (itemNode != null)
+          {
+            final TreePath _treePath = new TreePath(itemNode.getPath());
 
-          ((DefaultTreeModel)_myTree.getModel()).reload(rootNode);
+            ((DefaultTreeModel) _myTree.getModel()).reload(rootNode);
+            SwingUtilities.invokeLater(new Runnable()
+            {
+              @Override
+              public void run()
+              {
+                _myTree.expandPath(_treePath);
+                _myTree.scrollPathToVisible(_treePath);
+                _myTree.makeVisible(_treePath);
+                _myTree.setSelectionPath(_treePath);
+              }
+            });
+          }
+        }
+      }
+      else
+      {
+        final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
+            .getName(), changedLayer);
+        if (rootNode != null)
+        {
+          final TreePath _treePath = new TreePath(rootNode.getPath());
           SwingUtilities.invokeLater(new Runnable()
           {
             @Override
@@ -1054,79 +1077,66 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     }
-    else
-    {
-      final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
-          .getName(), changedLayer);
-      if (rootNode != null)
-      {
-        final TreePath _treePath = new TreePath(rootNode.getPath());
-        SwingUtilities.invokeLater(new Runnable()
-        {
-          @Override
-          public void run()
-          {
-            _myTree.expandPath(_treePath);
-            _myTree.scrollPathToVisible(_treePath);
-            _myTree.makeVisible(_treePath);
-            _myTree.setSelectionPath(_treePath);
-          }
-        });
-      }
-    }
-    }
   }
-  
+
   @SuppressWarnings("serial")
-  final class AddLayerAction extends AbstractAction implements MWC.GUI.Tools.Action
+  final class AddLayerAction extends AbstractAction implements
+      MWC.GUI.Tools.Action
   {
     private Layer layerToAdd;
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
       layerToAdd = addLayer();
       _undoBuffer.add(this);
     }
+
     @Override
     public void undo()
     {
       _myData.removeThisLayer(layerToAdd);
     }
-    
+
     @Override
     public boolean isUndoable()
     {
       return true;
     }
-    
+
     @Override
     public boolean isRedoable()
     {
       return true;
     }
-    
+
     @Override
     public void execute()
     {
       _myData.addThisLayer(layerToAdd);
     }
   };
+
   @SuppressWarnings("serial")
-  final class DeleteAction extends AbstractAction implements MWC.GUI.Tools.Action,ClipboardOwner
+  final class DeleteAction extends AbstractAction implements
+      MWC.GUI.Tools.Action, ClipboardOwner
   {
     private Plottable itemToDelete;
     private Layer parentItem;
     private Plottable[] data;
     private Transferable _oldData;
     private boolean _isCut;
-    DeleteAction(boolean isCut){
+
+    DeleteAction(boolean isCut)
+    {
       _isCut = isCut;
     }
+
     @Override
     public void actionPerformed(ActionEvent e)
     {
       final TreePath[] selectionPaths = _myTree.getSelectionPaths();
-      if(_isCut)
+      if (_isCut)
       {
         final Plottable[] plottables = new Plottable[selectionPaths.length];
         int i = 0;
@@ -1137,10 +1147,10 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
         data = plottables;
       }
-      
+
       if (selectionPaths != null)
       {
-        
+
         for (final TreePath item : selectionPaths)
         {
           final Object component = item.getLastPathComponent();
@@ -1154,21 +1164,21 @@ public class OutlinePanelView extends SwingLayerManager implements
               // ok, delete it, get the parent
               final DefaultMutableTreeNode parentNode =
                   (DefaultMutableTreeNode) _myTree.getSelectionPath()
-                  .getPathComponent(pathCount - 2);
+                      .getPathComponent(pathCount - 2);
               final Object parent = parentNode.getUserObject();
 
               if (parent instanceof Layer)
               {
                 final Layer layer = (Layer) parent;
                 parentItem = layer;
-                itemToDelete = (Plottable)object;
+                itemToDelete = (Plottable) object;
               }
               else
               {
                 // ok, the parent isn't a layer. In that case this must
                 // be a top level layer
                 parentItem = null;
-                itemToDelete = (Plottable)object;
+                itemToDelete = (Plottable) object;
               }
               execute();
               _undoBuffer.add(this);
@@ -1181,8 +1191,8 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents)
     {
-      //do nothing
-      
+      // do nothing
+
     }
 
     @Override
@@ -1200,50 +1210,61 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void undo()
     {
-      if(parentItem!=null) {
+      if (parentItem != null)
+      {
         parentItem.add(itemToDelete);
-        _myData.fireExtended(itemToDelete,parentItem);
+        _myData.fireExtended(itemToDelete, parentItem);
       }
-      else {
-        if(itemToDelete instanceof Layer) {
-          _myData.addThisLayer((Layer)itemToDelete);
+      else
+      {
+        if (itemToDelete instanceof Layer)
+        {
+          _myData.addThisLayer((Layer) itemToDelete);
           _myData.fireExtended();
         }
       }
-      if(_isCut) {
+      if (_isCut)
+      {
         restoreOld();
       }
-      
+
     }
 
     @Override
     public void execute()
     {
-      if(_isCut) {
-       storeOld();
-        _clipboard.setContents(new OutlineViewSelection(data,true), this);
+      if (_isCut)
+      {
+        storeOld();
+        _clipboard.setContents(new OutlineViewSelection(data, true), this);
       }
-      if(parentItem!=null) {
+      if (parentItem != null)
+      {
         parentItem.removeElement((Editable) itemToDelete);
         _myData.fireModified(parentItem);
       }
-      else {
+      else
+      {
         getData().removeThisLayer((Layer) itemToDelete);
         _myData.fireExtended();
       }
-      
-      
+
     }
-    private void restoreOld() {
+
+    private void restoreOld()
+    {
       _clipboard.setContents(_oldData, this);
     }
+
     private void storeOld()
     {
       _oldData = _clipboard.getContents(this);
     }
   }
+
   @SuppressWarnings("serial")
-  final class PasteAction extends AbstractAction implements MWC.GUI.Tools.Action,ClipboardOwner
+  final class PasteAction extends AbstractAction implements
+      MWC.GUI.Tools.Action, ClipboardOwner
   {
     private ArrayList<Plottable> lastPastedItems = new ArrayList<>();
     private Layer destination;
@@ -1276,36 +1297,41 @@ public class OutlinePanelView extends SwingLayerManager implements
       execute();
       _undoBuffer.add(this);
     }
+
     @Override
     public void undo()
     {
-      for(Plottable item:lastPastedItems) {
+      for (Plottable item : lastPastedItems)
+      {
         destination.removeElement(item);
       }
       _myData.fireExtended(lastPastedItems.get(0), (HasEditables) destination);
     }
-    
+
     @Override
     public boolean isUndoable()
     {
       return true;
     }
-    
+
     @Override
     public boolean isRedoable()
     {
       return true;
     }
+
     @Override
     public void execute()
     {
       doPaste();
     }
+
     @Override
     public void lostOwnership(Clipboard clipboard, Transferable contents)
     {
-     //do nothing 
+      // do nothing
     }
+
     protected void doPaste()
     {
       // see if there is currently a plottable on the clipboard
@@ -1314,10 +1340,11 @@ public class OutlinePanelView extends SwingLayerManager implements
       {
         for (final Plottable theData : lastPastedItems)
         {
-          addBackData(theData, (CanEnumerate)destination);
+          addBackData(theData, (CanEnumerate) destination);
         }
-        
-        _myData.fireExtended(lastPastedItems.get(0), (HasEditables) destination);
+
+        _myData.fireExtended(lastPastedItems.get(0),
+            (HasEditables) destination);
       }
       if (!_isCopy)
       {
@@ -1343,7 +1370,5 @@ public class OutlinePanelView extends SwingLayerManager implements
       }
     }
   };
-  
-    
-  
+
 }
