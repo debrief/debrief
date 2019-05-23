@@ -89,8 +89,6 @@ import MWC.GUI.CanEnumerate;
 import MWC.GUI.Editable;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.Plottable;
 import MWC.GUI.PlottableSelection;
 import MWC.GUI.Plottables;
@@ -1052,7 +1050,8 @@ public class OutlinePanelView extends SwingLayerManager implements
           }
           else
           {
-            itemNode = null;
+            itemNode = new DefaultMutableTreeNode(newItem);
+            rootNode.add(itemNode);
           }
         }
         if (itemNode != null)
