@@ -1017,8 +1017,10 @@ public class OutlinePanelView extends SwingLayerManager implements
   {
     _myTree.setExpandsSelectedPaths(true);
     // find out which node is currently visible
-    if (changedLayer != null && newItem != null)
+    if (changedLayer != null)
     {
+      if (newItem != null)
+      {
       DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
       if (rootNode != null)
@@ -1052,7 +1054,7 @@ public class OutlinePanelView extends SwingLayerManager implements
         }
       }
     }
-    else if (changedLayer != null)
+    else
     {
       final DefaultMutableTreeNode rootNode = getTreeNode(null, changedLayer
           .getName(), changedLayer);
@@ -1072,7 +1074,9 @@ public class OutlinePanelView extends SwingLayerManager implements
         });
       }
     }
+    }
   }
+  
   @SuppressWarnings("serial")
   final class AddLayerAction extends AbstractAction implements MWC.GUI.Tools.Action
   {
