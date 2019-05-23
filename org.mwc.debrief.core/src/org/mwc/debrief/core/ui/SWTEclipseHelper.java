@@ -17,6 +17,7 @@ package org.mwc.debrief.core.ui;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -34,7 +35,8 @@ public class SWTEclipseHelper implements QuestionHelper
 {
 
   @Override
-  public String askQuestion(final String title, final String question)
+  public String askQuestion(final String title, final String question,
+      final String defaultStr)
   {
     // allow the answer to be shared across threads
     final AtomicReference<String> answerVal = new AtomicReference<String>();
@@ -57,7 +59,7 @@ public class SWTEclipseHelper implements QuestionHelper
       public void run()
       {
         final InputDialog input = new InputDialog(null, title, question,
-            "track name", null);
+            defaultStr, new LengthValidator());
         if (input.open() == Window.OK)
         {
           // User clicked OK; update the label with the input
@@ -66,6 +68,31 @@ public class SWTEclipseHelper implements QuestionHelper
       }
     });
     return answerVal.get();
+  }
+
+  /**
+   * This class validates a String. It makes sure that the String is between 5 and 8 characters
+   */
+  class LengthValidator implements IInputValidator
+  {
+    /**
+     * Validates the String. Returns null for no error, or an error message
+     * 
+     * @param newText
+     *          the String to validate
+     * @return String
+     */
+    public String isValid(String newText)
+    {
+      int len = newText.length();
+
+      // Determine if input is too short or too long
+      if (len < 2)
+        return "Too short";
+
+      // Input must be OK
+      return null;
+    }
   }
 
   @Override

@@ -190,7 +190,8 @@ public class ImportASWDataDocument
           {
 
             @Override
-            public String askQuestion(final String title, final String message)
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
             {
               return null;
             }
@@ -210,7 +211,8 @@ public class ImportASWDataDocument
           {
 
             @Override
-            public String askQuestion(final String title, final String message)
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
             {
               return NORWICH;
             }
@@ -239,7 +241,8 @@ public class ImportASWDataDocument
           {
 
             @Override
-            public String askQuestion(final String title, final String message)
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
             {
               return "DULWICH";
             }
@@ -260,7 +263,8 @@ public class ImportASWDataDocument
           {
 
             @Override
-            public String askQuestion(final String title, final String message)
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
             {
               return NORWICH;
             }
@@ -826,7 +830,7 @@ public class ImportASWDataDocument
     }
 
     final String trackName = questionHelper.askQuestion("Load ASW Track",
-        "Name for this track:");
+        "Name for this track:", "track name");
     if (trackName == null)
     {
       return;
