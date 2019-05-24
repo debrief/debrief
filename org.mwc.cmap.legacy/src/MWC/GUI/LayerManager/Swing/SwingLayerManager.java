@@ -959,7 +959,22 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   public void dataModified(final Layers theData, final Layer changedLayer)
   {
-    updateInThread(changedLayer);
+    if(changedLayer!=null)
+    {
+      updateInThread(changedLayer);
+    }
+    else
+    {
+      final Runnable runner = new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          updateData();
+        }
+      };
+      updateInThread(runner);
+    }
   }
 
   /**
