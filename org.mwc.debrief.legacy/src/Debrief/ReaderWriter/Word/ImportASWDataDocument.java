@@ -33,6 +33,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.DebriefColors;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldDistance;
@@ -65,53 +66,22 @@ public class ImportASWDataDocument
       }
       return res;
     }
-    
-    public void testReadRealDocument() throws IOException
-    {
-      // get our sample data-file
-      final Layers theLayers = new Layers();
-      final String fName =
-          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/ASW Data Format.docx";
-      final File inFile = new File(fName);
-      assertTrue("input file exists", inFile.exists());
-      final FileInputStream is = new FileInputStream(fName);
-      ImportASWDataDocument iw = new ImportASWDataDocument(theLayers);
-      final String trackName = "Wibble";
-      ImportASWDataDocument.setQuestionHelper(new QuestionHelper() {
-
-        @Override
-        public boolean askYes(String title, String message)
-        {
-          return false;
-        }
-
-        @Override
-        public String askQuestion(String title, String message,
-            String defaultStr)
-        {
-          return trackName;
-        }
-
-        @Override
-        public void showMessage(String title, String message)
-        {
-        }});
-      XWPFDocument doc = new XWPFDocument(is);
-      final ArrayList<String> strings = ImportNarrativeDocument
-          .importFromWordX(doc);
-      assertTrue(ImportASWDataDocument.canImport(strings));
-      iw.processThese(strings);
-      assertEquals(1, theLayers.size());
-      TrackWrapper track = (TrackWrapper) theLayers.findLayer(trackName);
-      TrackSegment segment = (TrackSegment) track.getSegments().elements().nextElement();
-      assertEquals("loaded all", 31, segment.size());
-    }
 
     @SuppressWarnings("unused")
     private static WorldLocation loc(final double lat, final double lon,
         final double dep)
     {
       return new WorldLocation(lat, lon, dep);
+    }
+
+    public void testCleanString()
+    {
+      assertEquals("0000", clean("00O0"));
+      assertEquals("0000", clean("00o0"));
+      assertEquals("0000", clean("00o0 "));
+      assertEquals("0000", clean(" 00o0"));
+      assertEquals("0000", clean(" 0Oo0"));
+      assertEquals("0A00", clean("0ao0 "));
     }
 
     public void testDates()
@@ -147,16 +117,6 @@ public class ImportASWDataDocument
       assertEquals(-1d, getHemiFor(d3));
       assertEquals(1d, getHemiFor(d4));
       assertEquals(-1d, getHemiFor(d5));
-    }
-    
-    public void testCleanString()
-    {
-      assertEquals("0000", clean("00O0"));
-      assertEquals("0000", clean("00o0"));
-      assertEquals("0000", clean("00o0 "));
-      assertEquals("0000", clean(" 00o0"));
-      assertEquals("0000", clean(" 0Oo0"));
-      assertEquals("0A00", clean("0ao0 "));
     }
 
     public void testGetValue()
@@ -259,7 +219,7 @@ public class ImportASWDataDocument
             }
 
             @Override
-            public void showMessage(String title, String message)
+            public void showMessage(final String title, final String message)
             {
             }
           });
@@ -285,7 +245,7 @@ public class ImportASWDataDocument
             }
 
             @Override
-            public void showMessage(String title, String message)
+            public void showMessage(final String title, final String message)
             {
             }
           });
@@ -320,7 +280,7 @@ public class ImportASWDataDocument
             }
 
             @Override
-            public void showMessage(String title, String message)
+            public void showMessage(final String title, final String message)
             {
             }
           });
@@ -347,7 +307,7 @@ public class ImportASWDataDocument
             }
 
             @Override
-            public void showMessage(String title, String message)
+            public void showMessage(final String title, final String message)
             {
             }
           });
@@ -458,6 +418,50 @@ public class ImportASWDataDocument
         assertEquals("Not a valid hemisphere:2", ie.getMessage());
       }
     }
+
+    public void testReadRealDocument() throws IOException
+    {
+      // get our sample data-file
+      final Layers theLayers = new Layers();
+      final String fName =
+          "../org.mwc.cmap.combined.feature/root_installs/sample_data/other_formats/ASW Data Format.docx";
+      final File inFile = new File(fName);
+      assertTrue("input file exists", inFile.exists());
+      final FileInputStream is = new FileInputStream(fName);
+      final ImportASWDataDocument iw = new ImportASWDataDocument(theLayers);
+      final String trackName = "Wibble";
+      ImportASWDataDocument.setQuestionHelper(new QuestionHelper()
+      {
+
+        @Override
+        public String askQuestion(final String title, final String message,
+            final String defaultStr)
+        {
+          return trackName;
+        }
+
+        @Override
+        public boolean askYes(final String title, final String message)
+        {
+          return false;
+        }
+
+        @Override
+        public void showMessage(final String title, final String message)
+        {
+        }
+      });
+      final XWPFDocument doc = new XWPFDocument(is);
+      final ArrayList<String> strings = ImportNarrativeDocument.importFromWordX(
+          doc);
+      assertTrue(ImportASWDataDocument.canImport(strings));
+      iw.processThese(strings);
+      assertEquals(1, theLayers.size());
+      final TrackWrapper track = (TrackWrapper) theLayers.findLayer(trackName);
+      final TrackSegment segment = (TrackSegment) track.getSegments().elements()
+          .nextElement();
+      assertEquals("loaded all", 31, segment.size());
+    }
   }
 
   /**
@@ -474,14 +478,9 @@ public class ImportASWDataDocument
   static final String DATE_MATCH_FOUR = "(\\d{4})";
 
   final private static String marker = "TMPOS";
-  
+
   // we also occasionally encounter this mangled version of the marker
   final private static String dodgyMarker = "TIMPOS";
-  
-  private static boolean isValid(final String line)
-  {
-    return line.startsWith(marker) || line.startsWith(dodgyMarker);
-  }
 
   public static boolean canImport(final List<String> strings)
   {
@@ -511,6 +510,15 @@ public class ImportASWDataDocument
 
     }
     return false;
+  }
+
+  private static String clean(final String str)
+  {
+    final String noOs = str.replace("O", "0");
+    final String noos = noOs.replace("o", "0");
+    final String trimmed = noos.trim();
+    final String upper = trimmed.toUpperCase();
+    return upper;
   }
 
   private static double courseFor(final String courseStr)
@@ -677,15 +685,6 @@ public class ImportASWDataDocument
 
     return res;
   }
-  
-  private static String clean(final String str)
-  {
-    final String noOs = str.replace("O", "0");
-    final String noos = noOs.replace("o", "0");
-    final String trimmed = noos.trim();
-    final String upper = trimmed.toUpperCase();
-    return upper;
-  }
 
   private static double getValueFor(final String str)
   {
@@ -728,6 +727,11 @@ public class ImportASWDataDocument
     }
 
     return res;
+  }
+
+  private static boolean isValid(final String line)
+  {
+    return line.startsWith(marker) || line.startsWith(dodgyMarker);
   }
 
   private static WorldLocation locationFor(final String str)
@@ -852,7 +856,7 @@ public class ImportASWDataDocument
   {
     // clean it first
     final String cleaned = clean(string);
-    
+
     // regex came from here:
     // https://codereview.stackexchange.com/a/2349
     final String[] components = cleaned.split(
@@ -889,7 +893,8 @@ public class ImportASWDataDocument
           }
         }
       }
-      throw new IllegalArgumentException("Failed to extract year from TIMPD:" + str);
+      throw new IllegalArgumentException("Failed to extract year from TIMPD:"
+          + str);
     }
   }
 
@@ -935,49 +940,49 @@ public class ImportASWDataDocument
     // does this track already exist?
     TrackWrapper track = (TrackWrapper) _layers.findLayer(trackName, true);
 
-
     // ok, now we can loop through the strings
     int ctr = 1;
     int year = Calendar.getInstance(TimeZone.getTimeZone("GMT")).get(
         Calendar.YEAR);
     try
     {
-    for (final String line : strings)
-    {
-      if(line == null)
+      for (final String line : strings)
       {
-        // this shouldn't happen, but let's be tidy about it
-        break;
-      }
-      if (line.startsWith("TIMPD"))
-      {
-        // get the year
-        year = yearFor(line);
-      }
-      else if (isValid(line))
-      {
-        final FixWrapper fix = fixFor(line, year);
-        fix.resetName();
-        
-        // ok, we've got something, check we have a track to put it into
-        if (track == null)
+        if (line == null)
         {
-          track = new TrackWrapper();
-          track.setName(trackName);
-          track.setColor(DebriefColors.YELLOW);
-          _layers.addThisLayer(track);
+          // this shouldn't happen, but let's be tidy about it
+          break;
         }
-        
-        // now add the fix
-        track.addFix(fix);
+        if (line.startsWith("TIMPD"))
+        {
+          // get the year
+          year = yearFor(line);
+        }
+        else if (isValid(line))
+        {
+          final FixWrapper fix = fixFor(line, year);
+          fix.resetName();
+
+          // ok, we've got something, check we have a track to put it into
+          if (track == null)
+          {
+            track = new TrackWrapper();
+            track.setName(trackName);
+            track.setColor(DebriefColors.YELLOW);
+            _layers.addThisLayer(track);
+          }
+
+          // now add the fix
+          track.addFix(fix);
+        }
+
+        ctr++;
       }
-      
-      ctr++;
     }
-    }catch(IllegalArgumentException ie)
+    catch (final IllegalArgumentException ie)
     {
       final String msg = "Error at line:" + ctr + "\n" + ie.getMessage();
-      Application.logError2(Application.ERROR, msg, ie);
+      Application.logError2(ToolParent.ERROR, msg, ie);
       questionHelper.showMessage("Import error", msg);
     }
 
