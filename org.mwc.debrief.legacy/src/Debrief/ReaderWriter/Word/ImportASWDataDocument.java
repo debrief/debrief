@@ -130,13 +130,13 @@ public class ImportASWDataDocument
       // repeat of last line, but with spaces removed
       final String d6 = "104.30.45";
 
-      assertEquals(12.5125d, getValueFor(d1));
-      assertEquals(11.5125d, getValueFor(d2));
-      assertEquals(115.75, getValueFor(d3a));
-      assertEquals(15.75, getValueFor(d3b));
-      assertEquals(22.5125, getValueFor(d4));
-      assertEquals(4.5125, getValueFor(d5));
-      assertEquals(104.5125, getValueFor(d6));
+      assertEquals(12.5125d, getDegreesFor(d1));
+      assertEquals(11.5125d, getDegreesFor(d2));
+      assertEquals(115.75, getDegreesFor(d3a));
+      assertEquals(15.75, getDegreesFor(d3b));
+      assertEquals(22.5125, getDegreesFor(d4));
+      assertEquals(4.5125, getDegreesFor(d5));
+      assertEquals(104.5125, getDegreesFor(d6));
     }
 
     public void testIsValid()
@@ -393,7 +393,7 @@ public class ImportASWDataDocument
       }
       catch (final IllegalArgumentException ie)
       {
-        assertEquals("Not a valid hemisphere:J", ie.getMessage());
+        assertEquals("Not a valid hemisphere:J from:22.33.44J", ie.getMessage());
       }
 
       // and some mangled one
@@ -415,7 +415,7 @@ public class ImportASWDataDocument
       }
       catch (final IllegalArgumentException ie)
       {
-        assertEquals("Not a valid hemisphere:2", ie.getMessage());
+        assertEquals("Not a valid hemisphere:2 from:020.11.22", ie.getMessage());
       }
     }
 
@@ -523,7 +523,7 @@ public class ImportASWDataDocument
 
   private static double courseFor(final String courseStr)
   {
-    if (courseStr == null)
+    if (courseStr == null || courseStr.length() == 0)
       return 0d;
 
     final int tIndex = courseStr.indexOf("T");
@@ -574,7 +574,7 @@ public class ImportASWDataDocument
 
   private static double depthFor(final String depth)
   {
-    if (depth == null)
+    if (depth == null || depth.length() == 0)
       return 0d;
 
     final String[] components = splitIntoValueAndUnits(depth);
@@ -650,9 +650,9 @@ public class ImportASWDataDocument
       }
       final WorldLocation loc = locationFor(pos1);
 
-      final String courseStr = ctr < numTokens ? tokens[ctr++] : null;
-      final String speedStr = ctr < numTokens ? tokens[ctr++] : null;
-      final String depthStr = ctr < numTokens ? tokens[ctr++] : null;
+      final String courseStr = ctr < numTokens ? clean(tokens[ctr++]) : null;
+      final String speedStr = ctr < numTokens ? clean(tokens[ctr++]) : null;
+      final String depthStr = ctr < numTokens ? clean(tokens[ctr++]) : null;
 
       final double course = courseFor(courseStr);
       final double speed = speedFor(speedStr);
@@ -666,7 +666,8 @@ public class ImportASWDataDocument
 
   private static double getHemiFor(final String str)
   {
-    final String lastLetter = str.substring(str.length() - 1);
+    final String cleaned = clean(str);
+    final String lastLetter = cleaned.substring(cleaned.length() - 1);
     final double res;
     switch (lastLetter.toUpperCase())
     {
@@ -680,13 +681,13 @@ public class ImportASWDataDocument
         break;
       default:
         throw new IllegalArgumentException("Not a valid hemisphere:"
-            + lastLetter);
+            + lastLetter + " from:" + cleaned);
     }
 
     return res;
   }
 
-  private static double getValueFor(final String str)
+  private static double getDegreesFor(final String str)
   {
     // final String d1 = "12.23.34";
     // final String d2 = "011.22.33";
@@ -696,37 +697,48 @@ public class ImportASWDataDocument
     // // repeat of last line, but with spaces removed
     // final String d6 = "04.02.01";
 
-    final double res;
-    if (str.contains("."))
+    try
     {
-      final String[] comps = str.split("\\.");
-      if (comps.length == 3)
+      final double res;
+      if (str.contains("."))
       {
-        final double degs = Double.valueOf(clean(comps[0].trim()));
-        final double mins = Double.valueOf(clean(comps[1].trim()));
-        final double secs = Double.valueOf(clean(comps[2].trim()));
-        res = degs + mins / 60 + secs / (60 * 60);
-      }
-      else if (comps.length == 2)
-      {
-        final double degs = Double.valueOf(clean(comps[0].trim()));
-        final double mins = Double.valueOf(clean(comps[1].trim()));
-        res = degs + mins / 60;
+        final String[] comps = str.split("\\.");
+        if (comps.length == 3)
+        {
+          final double degs = Double.valueOf(clean(comps[0].trim()));
+          final double mins = Double.valueOf(clean(comps[1].trim()));
+          final double secs = Double.valueOf(clean(comps[2].trim()));
+          res = degs + mins / 60 + secs / (60 * 60);
+        }
+        else if (comps.length == 2)
+        {
+          final double degs = Double.valueOf(clean(comps[0].trim()));
+          final double mins = Double.valueOf(clean(comps[1].trim()));
+          res = degs + mins / 60;
+        }
+        else
+        {
+          throw new IllegalArgumentException("Badly formatted location:" + str);
+        }
       }
       else
       {
-        throw new IllegalArgumentException("Badly formatted location:" + str);
+        // we may have a trailing hemisphere
+        String[] tokens = splitIntoValueAndUnits(str);
+        final String digits = tokens[0];
+        final int len = digits.length();
+        final double degVal = Double.parseDouble(digits.substring(0, len
+            - 2));
+        final double minVal = Double.parseDouble(digits.substring(len-2, len));
+        res = degVal + minVal / 60;
       }
+      return res;
     }
-    else
+    catch (final NumberFormatException ne)
     {
-      final int len = str.length();
-      final double degs = Double.parseDouble(clean(str.substring(0, len - 2)));
-      final double mins = Double.parseDouble(clean(str.substring(len - 2)));
-      res = degs + mins / 60;
+      throw new IllegalArgumentException("Couldn't extract location form:"
+          + str);
     }
-
-    return res;
   }
 
   private static boolean isValid(final String line)
@@ -762,12 +774,12 @@ public class ImportASWDataDocument
     }
 
     final String latStr = components[0];
-    final double latHemi = getHemiFor(latStr);
-    final double latVal = getValueFor(latStr.substring(0, latStr.length() - 1));
+    final double latHemi = getHemiFor(clean(latStr));
+    final double latVal = getDegreesFor(clean(latStr).substring(0, latStr.length() - 1));
 
     final String longStr = components[1];
-    final double longHemi = getHemiFor(longStr);
-    final double longVal = getValueFor(longStr.substring(0, longStr.length()
+    final double longHemi = getHemiFor(clean(longStr));
+    final double longVal = getDegreesFor(clean(longStr).substring(0, longStr.length()
         - 1));
 
     return new WorldLocation(latHemi * latVal, longHemi * longVal, 0d);
@@ -822,7 +834,7 @@ public class ImportASWDataDocument
 
   private static double speedFor(final String speed)
   {
-    if (speed == null)
+    if (speed == null || speed.length() == 0)
       return 0d;
 
     final String[] components = splitIntoValueAndUnits(speed);
@@ -882,8 +894,10 @@ public class ImportASWDataDocument
     {
       // ok, tokenise
       final String[] tokens = str.split("/");
-      for (final String s : tokens)
+      for (final String t : tokens)
       {
+        // drop any whitespace
+        final String s = t.trim();
         if (s.length() == 4 && s.matches("^-?\\d+$"))
         {
           final int year = Integer.parseInt(s);
@@ -981,8 +995,16 @@ public class ImportASWDataDocument
     }
     catch (final IllegalArgumentException ie)
     {
-      final String msg = "Error at line:" + ctr + "\n" + ie.getMessage();
+      final String msg = "Formatting error at line:" + ctr + "\n" + ie
+          .getMessage();
       Application.logError2(ToolParent.ERROR, msg, ie);
+      questionHelper.showMessage("Import error", msg);
+    }
+    catch (final Exception ex)
+    {
+      final String msg = "Unknown error at line:" + ctr + "\n" + ex
+          .getMessage();
+      Application.logError2(ToolParent.ERROR, msg, ex);
       questionHelper.showMessage("Import error", msg);
     }
 
