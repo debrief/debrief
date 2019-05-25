@@ -334,7 +334,7 @@ public class ImportASWDataDocument
 
       final FixWrapper f1 = fixFor(d1, 2019);
       assertNotNull(f1);
-      assertEquals(57d, f1.getCourseDegs());
+      assertEquals(47d, f1.getCourseDegs());
       assertEquals(4d, f1.getSpeed());
       assertEquals(5.1d, f1.getDepth());
       assertEquals("190426 120000", DebriefFormatDateTime.toStringHiRes(f1
