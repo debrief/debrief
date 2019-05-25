@@ -34,6 +34,32 @@ import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
 public class SWTEclipseHelper implements QuestionHelper
 {
 
+  /**
+   * This class validates a String. It makes sure that the String is between 5 and 8 characters
+   */
+  class LengthValidator implements IInputValidator
+  {
+    /**
+     * Validates the String. Returns null for no error, or an error message
+     *
+     * @param newText
+     *          the String to validate
+     * @return String
+     */
+    @Override
+    public String isValid(final String newText)
+    {
+      final int len = newText.length();
+
+      // Determine if input is too short or too long
+      if (len < 2)
+        return "Too short";
+
+      // Input must be OK
+      return null;
+    }
+  }
+
   @Override
   public String askQuestion(final String title, final String question,
       final String defaultStr)
@@ -70,31 +96,6 @@ public class SWTEclipseHelper implements QuestionHelper
     return answerVal.get();
   }
 
-  /**
-   * This class validates a String. It makes sure that the String is between 5 and 8 characters
-   */
-  class LengthValidator implements IInputValidator
-  {
-    /**
-     * Validates the String. Returns null for no error, or an error message
-     * 
-     * @param newText
-     *          the String to validate
-     * @return String
-     */
-    public String isValid(String newText)
-    {
-      int len = newText.length();
-
-      // Determine if input is too short or too long
-      if (len < 2)
-        return "Too short";
-
-      // Input must be OK
-      return null;
-    }
-  }
-
   @Override
   public boolean askYes(final String title, final String question)
   {
@@ -125,6 +126,31 @@ public class SWTEclipseHelper implements QuestionHelper
       }
     });
     return answerVal.get();
+  }
+
+  @Override
+  public void showMessage(final String title, final String message)
+  {
+    // get a display to open on
+    final Display targetDisplay;
+    if (Display.getCurrent() == null)
+    {
+      targetDisplay = Display.getDefault();
+    }
+    else
+    {
+      targetDisplay = Display.getCurrent();
+    }
+
+    // ok, get the answer
+    targetDisplay.syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        MessageDialog.openError(null, title, message);
+      }
+    });
   }
 
 }
