@@ -12,7 +12,9 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.TrackDataProvider;
 
 public class MsDocLoader extends CoreLoader
@@ -42,25 +44,30 @@ public class MsDocLoader extends CoreLoader
         iw.handleImport(fileName, inputStream);
 
         // hey, it worked. now open the narrative viewer
-        Display.getDefault().asyncExec(new Runnable()
+        // hmm, just double-check we've got some narrative data
+        Layer narratives = theLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
+        if (narratives != null)
         {
-
-          @Override
-          public void run()
+          Display.getDefault().asyncExec(new Runnable()
           {
-            try
+
+            @Override
+            public void run()
             {
-              PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-                  .getActivePage().showView(CorePlugin.BULK_NARRATIVE_VIEWER);
+              try
+              {
+                PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+                    .getActivePage().showView(CorePlugin.BULK_NARRATIVE_VIEWER);
+              }
+              catch (PartInitException e)
+              {
+                CorePlugin.logError(Status.ERROR,
+                    "Failed opening narrative viewer", e);
+                e.printStackTrace();
+              }
             }
-            catch (PartInitException e)
-            {
-              CorePlugin.logError(Status.ERROR,
-                  "Failed opening narrative viewer", e);
-              e.printStackTrace();
-            }
-          }
-        });
+          });
+        }
       }
     };
   }
