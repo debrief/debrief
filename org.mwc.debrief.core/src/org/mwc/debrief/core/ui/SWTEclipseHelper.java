@@ -127,4 +127,29 @@ public class SWTEclipseHelper implements QuestionHelper
     return answerVal.get();
   }
 
+  @Override
+  public void showMessage(String title, String message)
+  {
+    // get a display to open on
+    final Display targetDisplay;
+    if (Display.getCurrent() == null)
+    {
+      targetDisplay = Display.getDefault();
+    }
+    else
+    {
+      targetDisplay = Display.getCurrent();
+    }
+
+    // ok, get the answer
+    targetDisplay.syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        MessageDialog.openError(null, title, message);
+      }
+    });
+  }
+
 }
