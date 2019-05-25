@@ -221,6 +221,7 @@ public class ImportASWDataDocument
             @Override
             public void showMessage(final String title, final String message)
             {
+              // don't bother
             }
           });
       iw.processThese(lines);
@@ -247,6 +248,7 @@ public class ImportASWDataDocument
             @Override
             public void showMessage(final String title, final String message)
             {
+              // don't bother
             }
           });
       iw.processThese(lines);
@@ -282,6 +284,7 @@ public class ImportASWDataDocument
             @Override
             public void showMessage(final String title, final String message)
             {
+              // don't bother
             }
           });
 
@@ -309,6 +312,7 @@ public class ImportASWDataDocument
             @Override
             public void showMessage(final String title, final String message)
             {
+              // don't bother
             }
           });
 
@@ -449,6 +453,7 @@ public class ImportASWDataDocument
         @Override
         public void showMessage(final String title, final String message)
         {
+          // don't bother
         }
       });
       final XWPFDocument doc = new XWPFDocument(is);
