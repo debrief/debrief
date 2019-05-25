@@ -156,6 +156,7 @@ public class ImportASWDataDocument
       assertEquals("0000", clean("00o0 "));
       assertEquals("0000", clean(" 00o0"));
       assertEquals("0000", clean(" 0Oo0"));
+      assertEquals("0A00", clean("0ao0 "));
     }
 
     public void testGetValue()
@@ -682,7 +683,8 @@ public class ImportASWDataDocument
     final String noOs = str.replace("O", "0");
     final String noos = noOs.replace("o", "0");
     final String trimmed = noos.trim();
-    return trimmed;
+    final String upper = trimmed.toUpperCase();
+    return upper;
   }
 
   private static double getValueFor(final String str)
@@ -942,6 +944,11 @@ public class ImportASWDataDocument
     {
     for (final String line : strings)
     {
+      if(line == null)
+      {
+        // this shouldn't happen, but let's be tidy about it
+        break;
+      }
       if (line.startsWith("TIMPD"))
       {
         // get the year
@@ -952,7 +959,7 @@ public class ImportASWDataDocument
         final FixWrapper fix = fixFor(line, year);
         fix.resetName();
         
-        // ok, we've got something, check we have a track
+        // ok, we've got something, check we have a track to put it into
         if (track == null)
         {
           track = new TrackWrapper();
