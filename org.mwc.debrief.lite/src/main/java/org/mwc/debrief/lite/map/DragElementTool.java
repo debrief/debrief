@@ -31,7 +31,6 @@ public class DragElementTool extends GenericDragTool
     if (panning)
     {
       Point pos = mouseDelta(ev.getPoint());
-      System.out.println(pos  + " " + panePos);
 
       if (!pos.equals(panePos))
       {
@@ -45,8 +44,6 @@ public class DragElementTool extends GenericDragTool
           // now work out the vector from the last place plotted to the current
           // place
           final WorldVector offset = newLocation.subtract(cursorLoc);
-
-          System.out.println("Moviendo a " + offset);
 
           _hoverTarget.shift(_hoverComponent, offset);
           _mapPane.repaint();

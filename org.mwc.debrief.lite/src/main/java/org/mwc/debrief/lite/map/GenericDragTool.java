@@ -133,9 +133,6 @@ public class GenericDragTool extends CursorTool
       // did we find anything?
       if (currentNearest.populated())
       {
-
-        System.out.println("Distancia actual = " + currentNearest._distance);
-
         if (currentNearest._distance.getValue() < JITTER)
         {
           panning = true;
