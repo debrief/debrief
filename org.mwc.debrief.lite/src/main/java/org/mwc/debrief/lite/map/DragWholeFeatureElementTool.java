@@ -2,6 +2,7 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Point;
 
+import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
@@ -14,11 +15,14 @@ import MWC.GenericData.WorldVector;
 
 public class DragWholeFeatureElementTool extends GenericDragTool
 {
+  
+  private final JMapPane _mapPane;
 
   public DragWholeFeatureElementTool(final Layers layers,
-      final GeoToolMapProjection projection)
+      final GeoToolMapProjection projection, final JMapPane mapPane)
   {
     super(layers, projection);
+    this._mapPane = mapPane;
   }
 
   /**
@@ -33,12 +37,11 @@ public class DragWholeFeatureElementTool extends GenericDragTool
     if (panning)
     {
       Point pos = ev.getPoint();
-      System.out.println(pos.x + "," + pos.y);
+      System.out.println(pos  + " " + panePos);
 
       if (!pos.equals(panePos))
       {
-        final java.awt.Point cursorPt = new java.awt.Point(pos.x, pos.y);
-        final WorldLocation cursorLoc = _projection.toWorld(cursorPt);
+        final WorldLocation cursorLoc = _projection.toWorld(panePos);
         // find the nearest editable item
         final ComponentConstruct currentNearest = new ComponentConstruct();
         final int num = layers.size();
@@ -50,7 +53,7 @@ public class DragWholeFeatureElementTool extends GenericDragTool
             // find the nearest items, this method call will recursively pass down
             // through
             // the layers
-            FindNearest.findNearest(thisL, cursorLoc, cursorPt, currentNearest,
+            FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
                 null);
           }
         }
@@ -73,16 +76,13 @@ public class DragWholeFeatureElementTool extends GenericDragTool
 
           final double scrDist = tPoint.distance(new java.awt.Point(pos.x,
               pos.y));
+          System.out.println("Distance = " + scrDist);
 
-          if (scrDist <= JITTER)
-          {
             highlightShown = true;
 
             _hoverTarget = currentNearest._object;
             _hoverComponent = currentNearest._draggableComponent;
             _parentLayer = currentNearest._topLayer;
-
-          }
         }
 
         if (!highlightShown)
@@ -100,11 +100,12 @@ public class DragWholeFeatureElementTool extends GenericDragTool
 
           // now work out the vector from the last place plotted to the current
           // place
-          final WorldVector offset = newLocation.subtract(newLocation);
+          final WorldVector offset = newLocation.subtract(cursorLoc);
 
           System.out.println("Moviendo a " + offset);
 
           _hoverTarget.shift(_hoverComponent, offset);
+          _mapPane.repaint();
         }
         // getMapPane().moveImage(pos.x - panePos.x, pos.y - panePos.y);
         panePos = pos;

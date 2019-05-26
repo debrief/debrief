@@ -16,6 +16,7 @@ package org.mwc.debrief.lite.menu;
 
 import javax.swing.JLabel;
 
+import org.geotools.swing.JMapPane;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;

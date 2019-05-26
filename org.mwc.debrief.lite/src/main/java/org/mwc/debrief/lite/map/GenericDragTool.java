@@ -102,8 +102,11 @@ public class GenericDragTool extends CursorTool
   @Override
   public void onMousePressed(MapMouseEvent ev)
   {
-    panePos = ev.getPoint();
-    panning = true;
+    if (!panning)
+    {
+      panePos = ev.getPoint();
+      panning = true;
+    }
   }
 
   /**

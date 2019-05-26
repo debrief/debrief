@@ -77,7 +77,7 @@ public class DebriefRibbonView
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
     final DragElementAction dragWholeFeatureInAction = new DragElementAction(
-        mapPane, new DragWholeFeatureElementTool(layers, projection));
+        mapPane, new DragWholeFeatureElementTool(layers, projection, mapPane));
     MenuUtils.addCommandToggleButton("Drag Whole Feature",
         "icons/24/select_feature.png", dragWholeFeatureInAction, viewBand,
         RibbonElementPriority.TOP, true, mouseModeGroup, true);
