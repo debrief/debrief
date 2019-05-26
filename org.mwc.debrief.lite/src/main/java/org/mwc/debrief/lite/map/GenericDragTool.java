@@ -13,9 +13,6 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Shapes.FindNearest;
-import MWC.GUI.Shapes.HasDraggableComponents;
-import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.WorldLocation;
 
 public class GenericDragTool extends CursorTool
@@ -56,11 +53,6 @@ public class GenericDragTool extends CursorTool
   protected WorldLocation _hoverComponent;
 
   /**
-   * the thing we're currently hovering over
-   */
-  protected HasDraggableComponents _hoverTarget;
-
-  /**
    * the layer to update when dragging is complete
    */
   protected Layer _parentLayer;
@@ -97,52 +89,6 @@ public class GenericDragTool extends CursorTool
   public boolean drawDragBox()
   {
     return false;
-  }
-
-  /**
-   * Respond to a mouse button press event from the map mapPane. This may signal the start of a
-   * mouse drag. Records the event's window position.
-   *
-   * @param ev
-   *          the mouse event
-   */
-  @Override
-  public void onMousePressed(MapMouseEvent ev)
-  {
-    if (!panning)
-    {
-      panePos = mouseDelta(ev.getPoint());
-
-      final WorldLocation cursorLoc = _projection.toWorld(panePos);
-      // find the nearest editable item
-      final ComponentConstruct currentNearest = new ComponentConstruct();
-      final int num = layers.size();
-      for (int i = 0; i < num; i++)
-      {
-        final Layer thisL = layers.elementAt(i);
-        if (thisL.getVisible())
-        {
-          // find the nearest items, this method call will recursively pass down
-          // through
-          // the layers
-          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
-              null);
-        }
-      }
-
-      // did we find anything?
-      if (currentNearest.populated())
-      {
-        if (currentNearest._distance.getValue() < JITTER)
-        {
-          panning = true;
-
-          _hoverTarget = currentNearest._object;
-          _hoverComponent = currentNearest._draggableComponent;
-          _parentLayer = currentNearest._topLayer;
-        }
-      }
-    }
   }
 
   /**

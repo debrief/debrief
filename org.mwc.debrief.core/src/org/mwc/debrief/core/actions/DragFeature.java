@@ -17,7 +17,6 @@ package org.mwc.debrief.core.actions;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
-import java.util.Enumeration;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.SWT;
@@ -45,14 +44,12 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.ITimeVariableProvider;
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
-import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.DraggableItem;
+import MWC.GUI.Shapes.FindNearest;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.TrackDataProvider;
@@ -327,7 +324,7 @@ public class DragFeature extends CoreDragAction
           // find the nearest items, this method call will recursively pass down
           // through
           // the layers
-          findNearest(thisL, cursorLoc, cursorPt, currentNearest, null, theData);
+          FindNearest.findNearest(thisL, cursorLoc, cursorPt, currentNearest, null, theData);
         }
       }
 
@@ -614,94 +611,6 @@ public class DragFeature extends CoreDragAction
      *          how far to do it
      */
     public void apply(DraggableItem item, WorldVector offset);
-  }
-
-  public void findNearest(final Layer thisLayer,
-      final WorldLocation cursorLoc,
-      final Point cursorPos, final LocationConstruct currentNearest,
-      final Layer parentLayer, final Layers theData)
-  {
-    //
-    Layer thisParentLayer;
-    if (parentLayer == null)
-    {
-      thisParentLayer = thisLayer;
-    }
-    else
-    {
-      thisParentLayer = parentLayer;
-    }
-
-    // so, step through this layer
-    if (thisLayer.getVisible())
-    {
-      boolean sorted = false;
-
-      // is this layer a track?
-      if (thisLayer instanceof DraggableItem)
-      {
-        final DraggableItem dw = (DraggableItem) thisLayer;
-
-        // yup, find the distance to it's nearest point
-        dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-            thisParentLayer, theData);
-
-        // right, this one's processed. carry on
-        sorted = true;
-      }
-
-      // have we processed this item
-      if (!sorted)
-      {
-        // nope, let's just run through it
-        final Enumeration<Editable> pts = thisLayer.elements();
-        while (pts.hasMoreElements())
-        {
-          final Plottable pt = (Plottable) pts.nextElement();
-
-          if (pt.getVisible())
-          {
-
-            // is this item a layer itself?
-            if (pt instanceof Layer)
-            {
-              findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest,
-                  thisParentLayer, theData);
-            }
-            else
-            {
-              DraggableItem draggable = null;
-
-              // is it a shape?
-              if (pt instanceof DraggableItem)
-              {
-                draggable = (DraggableItem) pt;
-
-                // yup, find the distance to it's nearest point
-                draggable.findNearestHotSpotIn(cursorPos, cursorLoc,
-                    currentNearest, thisParentLayer, theData);
-
-                // right, this one's processed. carry on
-                sorted = true;
-              }
-
-              if (!sorted)
-              {
-                final double rngDegs = pt.rangeFrom(cursorLoc);
-                if (rngDegs != -1)
-                {
-                  final WorldDistance thisSep =
-                      new WorldDistance(pt.rangeFrom(cursorLoc),
-                          WorldDistance.DEGS);
-                  currentNearest.checkMe(draggable, thisSep, null, thisLayer);
-                }
-              }
-
-            }
-          }
-        }
-      }
-    }
   }
 
   public Cursor getDragCursor()
