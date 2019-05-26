@@ -10,8 +10,8 @@ import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.DragElementAction;
-import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
+import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
@@ -80,12 +80,12 @@ public class DebriefRibbonView
         mapPane, new DragWholeFeatureElementTool(layers, projection, mapPane));
     MenuUtils.addCommandToggleButton("Drag Whole Feature",
         "icons/24/select_feature.png", dragWholeFeatureInAction, viewBand,
-        RibbonElementPriority.TOP, true, mouseModeGroup, true);
+        RibbonElementPriority.TOP, true, mouseModeGroup, false);
     final DragElementAction dragElementInAction = new DragElementAction(mapPane,
-        new DragElementTool(layers, projection));
+        new DragElementTool(layers, projection, mapPane));
     MenuUtils.addCommandToggleButton("Drag Element",
         "icons/24/select_component.png", dragElementInAction, viewBand,
-        RibbonElementPriority.TOP, true, mouseModeGroup, true);
+        RibbonElementPriority.TOP, true, mouseModeGroup, false);
 
     // tell the zoom in action that it's live
     zoomInAction.actionPerformed(null);

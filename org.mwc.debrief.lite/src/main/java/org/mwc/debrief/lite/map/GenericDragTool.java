@@ -6,13 +6,16 @@ import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
 
+import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Shapes.FindNearest;
 import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.WorldLocation;
 
 public class GenericDragTool extends CursorTool
@@ -45,6 +48,8 @@ public class GenericDragTool extends CursorTool
 
   final GeoToolMapProjection _projection;
 
+  protected final JMapPane _mapPane;
+
   /**
    * the component we're going to drag
    */
@@ -63,9 +68,10 @@ public class GenericDragTool extends CursorTool
   /**
    * how far the mouse has to be dragged before it's registered as a drag operation
    */
-  protected final int JITTER = 9;
+  protected final double JITTER = 0.02;
 
-  public GenericDragTool(final Layers _layers, GeoToolMapProjection projection)
+  public GenericDragTool(final Layers _layers, GeoToolMapProjection projection,
+      final JMapPane mapPane)
   {
     Toolkit tk = Toolkit.getDefaultToolkit();
     ImageIcon imgIcon = new ImageIcon(getClass().getResource(CURSOR_IMAGE));
@@ -73,6 +79,7 @@ public class GenericDragTool extends CursorTool
         TOOL_NAME);
     this.layers = _layers;
     this._projection = projection;
+    this._mapPane = mapPane;
   }
 
   /** Get the mouse cursor for this tool */
@@ -104,8 +111,40 @@ public class GenericDragTool extends CursorTool
   {
     if (!panning)
     {
-      panePos = ev.getPoint();
-      panning = true;
+      panePos = mouseDelta(ev.getPoint());
+
+      final WorldLocation cursorLoc = _projection.toWorld(panePos);
+      // find the nearest editable item
+      final ComponentConstruct currentNearest = new ComponentConstruct();
+      final int num = layers.size();
+      for (int i = 0; i < num; i++)
+      {
+        final Layer thisL = layers.elementAt(i);
+        if (thisL.getVisible())
+        {
+          // find the nearest items, this method call will recursively pass down
+          // through
+          // the layers
+          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
+              null);
+        }
+      }
+
+      // did we find anything?
+      if (currentNearest.populated())
+      {
+
+        System.out.println("Distancia actual = " + currentNearest._distance);
+
+        if (currentNearest._distance.getValue() < JITTER)
+        {
+          panning = true;
+
+          _hoverTarget = currentNearest._object;
+          _hoverComponent = currentNearest._draggableComponent;
+          _parentLayer = currentNearest._topLayer;
+        }
+      }
     }
   }
 
@@ -120,5 +159,17 @@ public class GenericDragTool extends CursorTool
   public void onMouseReleased(MapMouseEvent ev)
   {
     panning = false;
+  }
+
+  /**
+   * Move the point a bit to the upper left corner to adjust the animation
+   * with the mouse icon. 
+   * 
+   * @param originalPoint
+   * @return
+   */
+  protected Point mouseDelta(final Point originalPoint)
+  {
+    return new Point(originalPoint.x - 10, originalPoint.y - 10);
   }
 }

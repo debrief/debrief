@@ -2,18 +2,21 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Point;
 
+import org.geotools.swing.JMapPane;
 import org.geotools.swing.event.MapMouseEvent;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
 import MWC.GUI.Layers;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class DragElementTool extends GenericDragTool
 {
 
   public DragElementTool(final Layers layers,
-      final GeoToolMapProjection projection)
+      final GeoToolMapProjection projection, final JMapPane mapPane)
   {
-    super(layers, projection);
+    super(layers, projection, mapPane);
   }
 
   /**
@@ -27,12 +30,30 @@ public class DragElementTool extends GenericDragTool
   {
     if (panning)
     {
-      Point pos = ev.getPoint();
-      System.out.println(pos.x + "," + pos.y);
-      /*
-       * if (!pos.equals(panePos)) { getMapPane().moveImage(pos.x - panePos.x, pos.y - panePos.y);
-       * panePos = pos; }
-       */
+      Point pos = mouseDelta(ev.getPoint());
+      System.out.println(pos  + " " + panePos);
+
+      if (!pos.equals(panePos))
+      {
+        final WorldLocation cursorLoc = _projection.toWorld(panePos);
+
+        if (_hoverTarget != null)
+        {
+          final WorldLocation newLocation = new WorldLocation(_projection
+              .toWorld(pos));
+
+          // now work out the vector from the last place plotted to the current
+          // place
+          final WorldVector offset = newLocation.subtract(cursorLoc);
+
+          System.out.println("Moviendo a " + offset);
+
+          _hoverTarget.shift(_hoverComponent, offset);
+          _mapPane.repaint();
+        }
+        panePos = pos;
+      }
+
     }
   }
 }
