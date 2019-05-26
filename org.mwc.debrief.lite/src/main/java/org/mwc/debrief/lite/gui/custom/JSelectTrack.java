@@ -167,33 +167,36 @@ public class JSelectTrack extends JPopupMenu
       _displayComponents.put(track.track, displayCheckBox);
     }
 
-    add(_inRelationToLabel);
-    _relativeToComponents.add(_inRelationToLabel);
-    final ButtonGroup relativeToGroup = new ButtonGroup();
-    for (final TrackWrapperSelect track : _model.getTracks())
+    if (_model.isRelativeEnabled())
     {
-      final JRadioButton relativeToradioButton = new JRadioButton(track.track
-          .getName());
-      relativeToradioButton.addItemListener(new ItemListener()
+      add(_inRelationToLabel);
+      _relativeToComponents.add(_inRelationToLabel);
+      final ButtonGroup relativeToGroup = new ButtonGroup();
+      for (final TrackWrapperSelect track : _model.getTracks())
       {
-
-        @Override
-        public void itemStateChanged(final ItemEvent e)
+        final JRadioButton relativeToradioButton = new JRadioButton(track.track
+            .getName());
+        relativeToradioButton.addItemListener(new ItemListener()
         {
-          if (e.getStateChange() == ItemEvent.SELECTED)
+
+          @Override
+          public void itemStateChanged(final ItemEvent e)
           {
-            _model.setPrimaryTrack(track.track);
+            if (e.getStateChange() == ItemEvent.SELECTED)
+            {
+              _model.setPrimaryTrack(track.track);
+            }
           }
-        }
-      });
-      relativeToGroup.add(relativeToradioButton);
-      add(relativeToradioButton);
-      _relativeToComponents.add(relativeToradioButton);
-      _relatedToComponentsMap.put(track.track, relativeToradioButton);
-    }
-    for (final Component comp : _relativeToComponents)
-    {
-      comp.setVisible(_model.getOperation().isARelativeCalculation());
+        });
+        relativeToGroup.add(relativeToradioButton);
+        add(relativeToradioButton);
+        _relativeToComponents.add(relativeToradioButton);
+        _relatedToComponentsMap.put(track.track, relativeToradioButton);
+      }
+      for (final Component comp : _relativeToComponents)
+      {
+        comp.setVisible(_model.getOperation().isARelativeCalculation());
+      }
     }
   }
 

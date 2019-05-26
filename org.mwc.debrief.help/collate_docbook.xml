@@ -34,7 +34,7 @@
 		<delete dir="${helpDest}" />
 	</target>
 
-	<target name="docbook_to_eclipse" description="Generate html from docbook">
+	<target name="docbook_to_eclipse" description="Generate html from docbook" depends="quiet">
 		<!-- clear the output directories -->
 		<antcall target="clear_output" />
 
@@ -298,8 +298,16 @@
 		</java>
 	</target>
 
-	<target name="javadoc" depends="ease_javadoc, debrief_javadoc" />
+	<target name="javadoc" depends="quiet, ease_javadoc, debrief_javadoc" />
 
+	<target name="quiet">
+	
+		<script language="javascript">
+		        var logger = project.getBuildListeners( ).firstElement( );
+		        logger.setMessageOutputLevel( 0 );
+		    </script>
+	</target>
+	
 	<target name="ease_javadoc">
 		<delete dir="../org.mwc.debrief.scripting/help" />
         <exec executable="javadoc">

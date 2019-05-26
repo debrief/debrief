@@ -56,4 +56,6 @@ public interface AbstractTrackConfiguration
    * @return true if it was actually assigned. If they are the same, they are not assigned.
    */
   public boolean setTracks(final List<TrackWrapper> tracks);
+  
+  public boolean isRelativeEnabled();
 }

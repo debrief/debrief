@@ -588,6 +588,7 @@ public class DynamicInfillSegment extends TrackSegment implements
    * recalculate our set of positions
    *
    */
+  @SuppressWarnings("unused")
   public void reconstruct()
   {
     // see if we're currently empty
@@ -711,7 +712,16 @@ public class DynamicInfillSegment extends TrackSegment implements
       final double thisDepth;
       final double nextTime;
 
-      if (tNow + tDelta < tEnd)
+      // we have an issue where the last point of the infill
+      // jumps to the first point on the next leg, which 
+      // give a blip on the range plot between two tracks.
+      // This occurs when the TMA solution comes from sensor
+      // data that has been resampled:
+      // https://github.com/debrief/debrief/issues/4188
+      // Set the following flag to true, to switch
+      // back to the legacy behaviour
+      final boolean useNextLegCrseSpeed = false;
+      if (tNow + tDelta < tEnd || !useNextLegCrseSpeed)
       {
         // ok, use an interpolated value
         thisLat = latInterp.value(tNow);

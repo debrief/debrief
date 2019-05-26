@@ -75,7 +75,7 @@ public class SimpleEditablePropertyPanel extends JPanel implements
     final ToolParent parent = null;
 
     final PropertiesDialog dialog = new PropertiesDialog(info, null, null,
-        parent, owner);
+        parent, owner,null);
     dialog.setSize(400, 500);
     dialog.setLocationRelativeTo(null);
     dialog.setVisible(true);

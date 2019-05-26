@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -91,6 +92,8 @@ public class GraphPanelToolbar extends JPanel
 
   public static final String STATE_PROPERTY = "STATE";
 
+  public static final String TRACKS_PROPERTY = "TRACKS";
+
   private ShowTimeVariablePlot3 _xytool;
 
   private final LiteStepControl _stepControl;
@@ -109,18 +112,82 @@ public class GraphPanelToolbar extends JPanel
 
   private final JToggleButton showSymbolsButton;
 
-  public PropertyChangeListener enableDisableButtons =
+  private final DefaultComboBoxModel<CalculationHolder> operationComboModel =
+      new DefaultComboBoxModel<CalculationHolder>();
+
+  private final formattingOperation theFormatter = relBearingCalc.useUKFormat()
+      ? new RelBearingFormatter() : null;
+
+  private final CalculationHolder[] operations = new CalculationHolder[]
+  {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
+      new CalculationHolder(new courseCalc(), new CourseFormatter(), false,
+          360), new CalculationHolder(new speedCalc(), null, false, 0),
+      new CalculationHolder(new rangeCalc(), null, true, 0),
+      new CalculationHolder(new bearingCalc(), null, true, 180),
+      new CalculationHolder(new bearingRateCalc(), new BearingRateFormatter(),
+          true, 180), new CalculationHolder(new relBearingCalc(), theFormatter,
+              true, 180), new CalculationHolder(new atbCalc(), theFormatter,
+                  true, 180)};
+
+  public final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
       {
 
         @Override
         public void propertyChange(final PropertyChangeEvent event)
         {
-          final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
-          for (final JComponent component : componentsToDisable)
+          if (STATE_PROPERTY.equals(event.getPropertyName()))
           {
-            component.setEnabled(isActive);
+            final boolean isActive = ACTIVE_STATE.equals(event.getNewValue());
+            for (final JComponent component : componentsToDisable)
+            {
+              component.setEnabled(isActive);
+            }
           }
+        }
+      };
+
+  public final PropertyChangeListener tracksChangedListeners =
+      new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(final PropertyChangeEvent evt)
+        {
+          if (TRACKS_PROPERTY.equals(evt.getPropertyName()))
+          {
+            if (selectTrackModel.getTracks().isEmpty())
+            {
+              operationComboModel.removeAllElements();
+            }
+            else
+            {
+              /**
+               * We are dealing with track list modifications. We need to show here only the options
+               * that make sense, deactivating the relative menu when we only have 1 track.
+               */
+              final boolean isRelative = selectTrackModel.isRelativeEnabled();
+              for (final CalculationHolder operation : operations)
+              {
+                if (!isRelative && !operation.isARelativeCalculation()
+                    && operationComboModel.getIndexOf(operation) < 0)
+                {
+                  operationComboModel.addElement(operation);
+                }
+                else if (isRelative && operationComboModel.getIndexOf(
+                    operation) < 0)
+                {
+                  operationComboModel.addElement(operation);
+                }
+                else if (!isRelative && operation.isARelativeCalculation()
+                    && operationComboModel.getIndexOf(operation) >= 0)
+                {
+                  operationComboModel.removeElement(operation);
+                }
+              }
+            }
+          }
+
         }
       };
 
@@ -136,9 +203,41 @@ public class GraphPanelToolbar extends JPanel
     showSymbolsButton = createJToggleButton("Show Symbols", symbolOff);
     init();
 
-    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtons));
+    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener,
+        tracksChangedListeners));
 
     setState(INACTIVE_STATE);
+  }
+
+  /**
+   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
+   * values, it is not assigned and returns false. True when it is assigned.
+   *
+   * @param layers
+   *          Layers of the session. We are extracting Tracks from it.
+   * @return true if it was actually assigned. If they are the same, they are not assigned.
+   */
+  private boolean assignTracks(final Layers layers)
+  {
+    final Enumeration<Editable> elem = layers.elements();
+    final List<TrackWrapper> tracks = new ArrayList<>();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof TrackWrapper)
+      {
+        tracks.add((TrackWrapper) nextItem);
+      }
+    }
+
+    final boolean assigned = selectTrackModel.setTracks(tracks);
+
+    if (assigned)
+    {
+      notifyListenersStateChanged(this, TRACKS_PROPERTY, null, tracks);
+    }
+
+    return assigned;
   }
 
   private JButton createCommandButton(final String command, final String image)
@@ -175,27 +274,9 @@ public class GraphPanelToolbar extends JPanel
 
   protected void init()
   {
-    formattingOperation theFormatter = null;
-    if (relBearingCalc.useUKFormat())
-    {
-      theFormatter = new RelBearingFormatter();
-    }
-    else
-    {
-      theFormatter = null;
-    }
 
     final JComboBox<CalculationHolder> operationComboBox = new JComboBox<>(
-        new CalculationHolder[]
-        {new CalculationHolder(new depthCalc(), new DepthFormatter(), false, 0),
-            new CalculationHolder(new courseCalc(), new CourseFormatter(),
-                false, 360), new CalculationHolder(new speedCalc(), null, false,
-                    0), new CalculationHolder(new rangeCalc(), null, true, 0),
-            new CalculationHolder(new bearingCalc(), null, true, 180),
-            new CalculationHolder(new bearingRateCalc(),
-                new BearingRateFormatter(), true, 180), new CalculationHolder(
-                    new relBearingCalc(), theFormatter, true, 180),
-            new CalculationHolder(new atbCalc(), theFormatter, true, 180)});
+        operationComboModel);
     operationComboBox.setSize(50, 20);
     operationComboBox.addItemListener(new ItemListener()
     {
@@ -477,7 +558,7 @@ public class GraphPanelToolbar extends JPanel
   }
 
   private void notifyListenersStateChanged(final Object source,
-      final String property, final String oldValue, final String newValue)
+      final String property, final Object oldValue, final Object newValue)
   {
     for (final PropertyChangeListener event : stateListeners)
     {
@@ -507,29 +588,6 @@ public class GraphPanelToolbar extends JPanel
     {
       showSymbolsButton.setSelected(isSelected);
     }
-  }
-
-  /**
-   * It extracts the TrackWrapper objects, then it tries to assign it. If it contains the same
-   * values, it is not assigned and returns false. True when it is assigned.
-   * 
-   * @param layers
-   *          Layers of the session. We are extracting Tracks from it.
-   * @return true if it was actually assigned. If they are the same, they are not assigned.
-   */
-  private boolean assignTracks(final Layers layers)
-  {
-    final Enumeration<Editable> elem = layers.elements();
-    List<TrackWrapper> tracks = new ArrayList<>();
-    while (elem.hasMoreElements())
-    {
-      final Editable nextItem = elem.nextElement();
-      if (nextItem instanceof TrackWrapper)
-      {
-        tracks.add((TrackWrapper) nextItem);
-      }
-    }
-    return selectTrackModel.setTracks(tracks);
   }
 
   private void updateXYPlot(

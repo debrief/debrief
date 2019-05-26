@@ -750,7 +750,9 @@ public class ImportNarrativeDocument
    */
   public static interface QuestionHelper
   {
-    boolean askYes(String title, String message);
+    boolean askYes(final String title, final String message);
+    String askQuestion(final String title, final String message, final String defaultStr);
+    void showMessage(final String title, final String message);
   }
 
   public static class TestImportWord extends TestCase

@@ -20,7 +20,16 @@
 		<delete dir="${helpDest}" />
 	</target>
 
-	<target name="docbook_to_eclipse" description="Generate html from docbook">
+	<target name="quiet">
+		
+			<script language="javascript">
+			        var logger = project.getBuildListeners( ).firstElement( );
+			        logger.setMessageOutputLevel( 0 );
+			    </script>
+	</target>
+	
+	<target name="docbook_to_eclipse" description="Generate html from docbook" depends="quiet">
+
 		<!-- clear the output directories -->
 		<antcall target="clear_output">
 		</antcall>
