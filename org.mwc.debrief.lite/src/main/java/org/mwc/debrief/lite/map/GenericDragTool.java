@@ -62,23 +62,17 @@ public class GenericDragTool extends CursorTool
    */
   protected final double JITTER = 0.02;
 
-  public GenericDragTool(final Layers _layers, GeoToolMapProjection projection,
-      final JMapPane mapPane)
+  public GenericDragTool(final Layers _layers,
+      final GeoToolMapProjection projection, final JMapPane mapPane)
   {
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    ImageIcon imgIcon = new ImageIcon(getClass().getResource(CURSOR_IMAGE));
+    final Toolkit tk = Toolkit.getDefaultToolkit();
+    final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
+        CURSOR_IMAGE));
     cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
         TOOL_NAME);
     this.layers = _layers;
     this._projection = projection;
     this._mapPane = mapPane;
-  }
-
-  /** Get the mouse cursor for this tool */
-  @Override
-  public Cursor getCursor()
-  {
-    return cursor;
   }
 
   /**
@@ -91,6 +85,24 @@ public class GenericDragTool extends CursorTool
     return false;
   }
 
+  /** Get the mouse cursor for this tool */
+  @Override
+  public Cursor getCursor()
+  {
+    return cursor;
+  }
+
+  /**
+   * Move the point a bit to the upper left corner to adjust the animation with the mouse icon.
+   *
+   * @param originalPoint
+   * @return
+   */
+  protected Point mouseDelta(final Point originalPoint)
+  {
+    return new Point(originalPoint.x - 10, originalPoint.y - 10);
+  }
+
   /**
    * If this button release is the end of a mouse dragged event, requests the map mapPane to repaint
    * the display
@@ -99,20 +111,8 @@ public class GenericDragTool extends CursorTool
    *          the mouse event
    */
   @Override
-  public void onMouseReleased(MapMouseEvent ev)
+  public void onMouseReleased(final MapMouseEvent ev)
   {
     panning = false;
-  }
-
-  /**
-   * Move the point a bit to the upper left corner to adjust the animation
-   * with the mouse icon. 
-   * 
-   * @param originalPoint
-   * @return
-   */
-  protected Point mouseDelta(final Point originalPoint)
-  {
-    return new Point(originalPoint.x - 10, originalPoint.y - 10);
   }
 }

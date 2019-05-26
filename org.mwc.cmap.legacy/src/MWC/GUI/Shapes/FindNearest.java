@@ -16,8 +16,7 @@ public class FindNearest
 {
   public static void findNearest(final Layer thisLayer,
       final WorldLocation cursorLoc, final Point cursorPos,
-      final ComponentConstruct currentNearest,
-      final Layer parentLayer)
+      final ComponentConstruct currentNearest, final Layer parentLayer)
   {
     //
     Layer thisParentLayer;
@@ -82,9 +81,9 @@ public class FindNearest
   }
 
   public static void findNearest(final Layer thisLayer,
-      final WorldLocation cursorLoc,
-      final Point cursorPos, final LocationConstruct currentNearest,
-      final Layer parentLayer, final Layers theData)
+      final WorldLocation cursorLoc, final Point cursorPos,
+      final LocationConstruct currentNearest, final Layer parentLayer,
+      final Layers theData)
   {
     //
     Layer thisParentLayer;
@@ -155,9 +154,8 @@ public class FindNearest
                 final double rngDegs = pt.rangeFrom(cursorLoc);
                 if (rngDegs != -1)
                 {
-                  final WorldDistance thisSep =
-                      new WorldDistance(pt.rangeFrom(cursorLoc),
-                          WorldDistance.DEGS);
+                  final WorldDistance thisSep = new WorldDistance(pt.rangeFrom(
+                      cursorLoc), WorldDistance.DEGS);
                   currentNearest.checkMe(draggable, thisSep, null, thisLayer);
                 }
               }

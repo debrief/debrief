@@ -21,7 +21,7 @@ public class DragElementTool extends GenericDragTool
    * the thing we're currently hovering over
    */
   protected HasDraggableComponents _hoverTarget;
-  
+
   public DragElementTool(final Layers layers,
       final GeoToolMapProjection projection, final JMapPane mapPane)
   {
@@ -35,11 +35,11 @@ public class DragElementTool extends GenericDragTool
    *          the mouse event
    */
   @Override
-  public void onMouseDragged(MapMouseEvent ev)
+  public void onMouseDragged(final MapMouseEvent ev)
   {
     if (panning)
     {
-      Point pos = mouseDelta(ev.getPoint());
+      final Point pos = mouseDelta(ev.getPoint());
 
       if (!pos.equals(panePos))
       {
@@ -71,7 +71,7 @@ public class DragElementTool extends GenericDragTool
    *          the mouse event
    */
   @Override
-  public void onMousePressed(MapMouseEvent ev)
+  public void onMousePressed(final MapMouseEvent ev)
   {
     if (!panning)
     {

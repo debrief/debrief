@@ -35,11 +35,11 @@ public class DragWholeFeatureElementTool extends GenericDragTool
    *          the mouse event
    */
   @Override
-  public void onMouseDragged(MapMouseEvent ev)
+  public void onMouseDragged(final MapMouseEvent ev)
   {
     if (panning)
     {
-      Point pos = mouseDelta(ev.getPoint());
+      final Point pos = mouseDelta(ev.getPoint());
 
       if (!pos.equals(panePos))
       {
@@ -62,7 +62,6 @@ public class DragWholeFeatureElementTool extends GenericDragTool
     }
   }
 
-
   /**
    * Respond to a mouse button press event from the map mapPane. This may signal the start of a
    * mouse drag. Records the event's window position.
@@ -71,7 +70,7 @@ public class DragWholeFeatureElementTool extends GenericDragTool
    *          the mouse event
    */
   @Override
-  public void onMousePressed(MapMouseEvent ev)
+  public void onMousePressed(final MapMouseEvent ev)
   {
     if (!panning)
     {
@@ -90,8 +89,8 @@ public class DragWholeFeatureElementTool extends GenericDragTool
           // through
           // the layers
           // final Layer thisLayer,
-          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest, null,
-              layers);
+          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
+              null, layers);
         }
       }
 
