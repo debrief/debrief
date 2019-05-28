@@ -132,16 +132,18 @@ public class SwingWorldLocationPropertyEditor extends
     _editBtn.setMargin(new java.awt.Insets(0,0,0,0));
     _editBtn.addActionListener(this);
 		btnHolder.setLayout(new java.awt.BorderLayout());
-		btnHolder.add("West", _editBtn);
+    btnHolder.add("West", _editBtn);
     _selectBtn = new JButton("Select Point");
-    _selectBtn.setToolTipText("Choose to double-click on the chart to set the position");
-    _selectBtn.setName("SelectPoint");
-    _selectBtn.setMargin(new java.awt.Insets(0,0,0,0));
-    _selectBtn.addActionListener(this);
-    if(SupportedApps.DEBRIEF_LITE_APP.equals(System.getProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY))) {
-      _selectBtn.setVisible(false);
+    if (!SupportedApps.DEBRIEF_LITE_APP.equals(System.getProperty(
+        SupportedApps.APP_NAME_SYSTEM_PROPERTY)))
+    {
+      _selectBtn.setToolTipText(
+          "Choose to double-click on the chart to set the position");
+      _selectBtn.setName("SelectPoint");
+      _selectBtn.setMargin(new java.awt.Insets(0,0,0,0));
+      _selectBtn.addActionListener(this);
+      btnHolder.add("East", _selectBtn);
     }
-    btnHolder.add("East", _selectBtn);
     _theHolder.add("East", btnHolder);
     resetData();
 
