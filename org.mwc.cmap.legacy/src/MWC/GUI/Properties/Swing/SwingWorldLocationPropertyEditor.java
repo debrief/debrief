@@ -94,6 +94,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import MWC.GUI.PlainChart;
+import MWC.GUI.SupportedApps;
 import MWC.GUI.Properties.WorldLocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
 
@@ -137,7 +138,10 @@ public class SwingWorldLocationPropertyEditor extends
     _selectBtn.setName("SelectPoint");
     _selectBtn.setMargin(new java.awt.Insets(0,0,0,0));
     _selectBtn.addActionListener(this);
-		btnHolder.add("East", _selectBtn);
+    if(SupportedApps.DEBRIEF_LITE_APP.equals(System.getProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY))) {
+      _selectBtn.setVisible(false);
+    }
+    btnHolder.add("East", _selectBtn);
     _theHolder.add("East", btnHolder);
     resetData();
 
