@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package MWC.GUI.Properties.Swing;
 
@@ -117,6 +117,43 @@ public class SwingWorldLocationPropertyEditor extends
   // member functions
   ////////////////////////////////////////////////////////////
 
+  @Override
+  public void actionPerformed(final ActionEvent p1)
+  {
+    if (p1.getSource() == _selectBtn)
+    {
+      _selectBtn.setText("Dbl-click chart");
+      _theChart.addCursorDblClickedListener(this);
+    }
+    else if (p1.getSource() == _editBtn)
+    {
+      if (_myVal != null)
+        _myVal = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(
+            _myVal);
+
+      // and redisplay the results
+      resetData();
+    }
+  }
+
+  @Override
+  public void cursorDblClicked(final PlainChart theChart,
+      final WorldLocation theLocation, final java.awt.Point thePoint)
+  {
+    final double dp = _myVal.getDepth();
+    _myVal = theLocation;
+    _myVal.setDepth(dp);
+    resetData();
+    _theChart.removeCursorDblClickedListener(this);
+    _selectBtn.setText("Select Point");
+  }
+
+  public void doClose()
+  {
+    _theChart.removeCursorDblClickedListener(this);
+  }
+
+  @Override
   public java.awt.Component getCustomEditor()
   {
     final JPanel btnHolder = new JPanel();
@@ -152,24 +189,7 @@ public class SwingWorldLocationPropertyEditor extends
     return _theHolder;
   }
 
-  public void actionPerformed(final ActionEvent p1)
-  {
-    if (p1.getSource() == _selectBtn)
-    {
-      _selectBtn.setText("Dbl-click chart");
-      _theChart.addCursorDblClickedListener(this);
-    }
-    else if (p1.getSource() == _editBtn)
-    {
-      if (_myVal != null)
-        _myVal = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(
-            _myVal);
-
-      // and redisplay the results
-      resetData();
-    }
-  }
-
+  @Override
   protected void resetData()
   {
     if (_theLabel != null)
@@ -179,22 +199,6 @@ public class SwingWorldLocationPropertyEditor extends
       else
         _theLabel.setText("Blank");
     }
-  }
-
-  public void cursorDblClicked(final PlainChart theChart,
-      final WorldLocation theLocation, final java.awt.Point thePoint)
-  {
-    final double dp = _myVal.getDepth();
-    _myVal = theLocation;
-    _myVal.setDepth(dp);
-    resetData();
-    _theChart.removeCursorDblClickedListener(this);
-    _selectBtn.setText("Select Point");
-  }
-
-  public void doClose()
-  {
-    _theChart.removeCursorDblClickedListener(this);
   }
 
 }
