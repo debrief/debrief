@@ -15,6 +15,7 @@
 package MWC.GUI.Properties.Swing;
 
 // Copyright MWC 1999, Debrief 3 Project
+
 // $RCSfile: SwingWorldLocationPropertyEditor.java,v $
 // @author $Author: Ian.Mayo $
 // @version $Revision: 1.2 $
@@ -86,7 +87,6 @@ package MWC.GUI.Properties.Swing;
 // Initial revision
 //
 
-
 import java.awt.event.ActionEvent;
 
 import javax.swing.JButton;
@@ -99,7 +99,7 @@ import MWC.GUI.Properties.WorldLocationPropertyEditor;
 import MWC.GenericData.WorldLocation;
 
 public class SwingWorldLocationPropertyEditor extends
-					WorldLocationPropertyEditor
+    WorldLocationPropertyEditor
 {
   /////////////////////////////////////////////////////////////
   // member variables
@@ -107,7 +107,7 @@ public class SwingWorldLocationPropertyEditor extends
   JLabel _theLabel;
   JPanel _theHolder;
   JButton _selectBtn;
-	JButton _editBtn;
+  JButton _editBtn;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -119,19 +119,19 @@ public class SwingWorldLocationPropertyEditor extends
 
   public java.awt.Component getCustomEditor()
   {
-		final JPanel btnHolder = new JPanel();
+    final JPanel btnHolder = new JPanel();
 
     _theHolder = new JPanel();
     _theHolder.setLayout(new java.awt.BorderLayout());
     _theLabel = new JLabel("        ");
-    _theHolder.add("West",_theLabel);
-		_theHolder.add(_theLabel);
-		_editBtn = new JButton("Edit");
+    _theHolder.add("West", _theLabel);
+    _theHolder.add(_theLabel);
+    _editBtn = new JButton("Edit");
     _editBtn.setToolTipText("Open a window to type in a new lat/long/depth");
     _editBtn.setName("Edit");
-    _editBtn.setMargin(new java.awt.Insets(0,0,0,0));
+    _editBtn.setMargin(new java.awt.Insets(0, 0, 0, 0));
     _editBtn.addActionListener(this);
-		btnHolder.setLayout(new java.awt.BorderLayout());
+    btnHolder.setLayout(new java.awt.BorderLayout());
     btnHolder.add("West", _editBtn);
     _selectBtn = new JButton("Select Point");
     if (!SupportedApps.DEBRIEF_LITE_APP.equals(System.getProperty(
@@ -140,42 +140,41 @@ public class SwingWorldLocationPropertyEditor extends
       _selectBtn.setToolTipText(
           "Choose to double-click on the chart to set the position");
       _selectBtn.setName("SelectPoint");
-      _selectBtn.setMargin(new java.awt.Insets(0,0,0,0));
+      _selectBtn.setMargin(new java.awt.Insets(0, 0, 0, 0));
       _selectBtn.addActionListener(this);
       btnHolder.add("East", _selectBtn);
     }
     _theHolder.add("East", btnHolder);
     resetData();
 
-		// and make it the smallest size possible
-		_theHolder.setPreferredSize(_theHolder.getMinimumSize());
+    // and make it the smallest size possible
+    _theHolder.setPreferredSize(_theHolder.getMinimumSize());
     return _theHolder;
   }
 
   public void actionPerformed(final ActionEvent p1)
   {
-		if(p1.getSource() == _selectBtn)
-		{
-			_selectBtn.setText("Dbl-click chart");
-			_theChart.addCursorDblClickedListener(this);
-		}
-		else if(p1.getSource() == _editBtn)
-		{
-      if(_myVal != null)
-        _myVal = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(_myVal);
+    if (p1.getSource() == _selectBtn)
+    {
+      _selectBtn.setText("Dbl-click chart");
+      _theChart.addCursorDblClickedListener(this);
+    }
+    else if (p1.getSource() == _editBtn)
+    {
+      if (_myVal != null)
+        _myVal = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(
+            _myVal);
 
-
-			// and redisplay the results
-			resetData();
-		}
+      // and redisplay the results
+      resetData();
+    }
   }
-
 
   protected void resetData()
   {
-    if(_theLabel != null)
+    if (_theLabel != null)
     {
-      if(_myVal != null)
+      if (_myVal != null)
         _theLabel.setText(_myVal.toString());
       else
         _theLabel.setText("Blank");
@@ -183,8 +182,7 @@ public class SwingWorldLocationPropertyEditor extends
   }
 
   public void cursorDblClicked(final PlainChart theChart,
-                               final WorldLocation theLocation,
-                               final java.awt.Point thePoint)
+      final WorldLocation theLocation, final java.awt.Point thePoint)
   {
     final double dp = _myVal.getDepth();
     _myVal = theLocation;
