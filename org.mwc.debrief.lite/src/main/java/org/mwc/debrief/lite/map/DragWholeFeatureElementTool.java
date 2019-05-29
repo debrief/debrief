@@ -17,6 +17,11 @@ import MWC.GenericData.WorldVector;
 public class DragWholeFeatureElementTool extends GenericDragTool
 {
 
+  /** how close we have to be (in screen pixels) to display
+   * hotspot cursor 
+   */
+  private static double SCREEN_JITTER = 11;
+  
   /**
    * the thing we're currently hovering over
    */
@@ -27,6 +32,77 @@ public class DragWholeFeatureElementTool extends GenericDragTool
   {
     super(layers, projection, mapPane);
   }
+
+  
+  
+  @Override
+  public void onMouseMoved(MapMouseEvent ev)
+  {
+    super.onMouseMoved(ev);
+    
+    // try to determine if we're going over an item, to
+    // change the cursor
+    
+    // don't bother if we're already in a pan operation
+    if (!panning)
+    {
+      panePos = mouseDelta(ev.getPoint());
+
+      final WorldLocation cursorLoc = _projection.toWorld(panePos);
+      // find the nearest editable item
+      final LocationConstruct currentNearest = new LocationConstruct();
+      final int num = layers.size();
+      for (int i = 0; i < num; i++)
+      {
+        final Layer thisL = layers.elementAt(i);
+        if (thisL.getVisible())
+        {
+          // find the nearest items, this method call will recursively pass down
+          // through
+          // the layers
+          // final Layer thisLayer,
+          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
+              null, layers);
+        }
+      }
+
+      // Note - the following test does a distance check using world distance,
+      // which is quite unreliable,
+      
+      // did we find anything?
+      if (currentNearest.populated())
+      {
+        // generate a screen point from the cursor pos plus our distnace
+        // NOTE: we're not basing this on the target location - we may not have
+        // a
+        // target location as such for a strangely shaped object
+        final WorldLocation tgtPt =
+            cursorLoc.add(new WorldVector(Math.PI / 2,
+                currentNearest._distance, null));
+
+        // is it close enough
+        final java.awt.Point tPoint = super._projection.toScreen(tgtPt);
+
+        // get click point
+        Point cursorPos = ev.getPoint();
+        
+        // get distance of click point from nearest object, in screen coords
+        final double scrDist = tPoint.distance(new java.awt.Point(cursorPos.x, cursorPos.y));
+
+        if (scrDist <= SCREEN_JITTER)
+        {
+          System.out.println("SHOW GREEN CURSOR:" + (int)scrDist);
+        }
+        else
+        {
+          System.out.println("RESTORE NORMAL CURSOR:" + (int)scrDist);
+        }
+      }
+    }
+    
+  }
+
+
 
   /**
    * Respond to a mouse dragged event. Calls {@link org.geotools.swing.MapPane#moveImage()}
