@@ -187,8 +187,8 @@ public class DebriefRibbonInsert
     };
     polygonShape.setSelectedLayerSource(selectLayerCombo);
     @SuppressWarnings("unused")
-    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
+//    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
+//        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape rectShape = new CreateShape(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
