@@ -138,6 +138,8 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
         return;
       }
     }
+    // New primary track is null or not present in the options.
+    _primaryTrack = null;
   }
 
   /**
@@ -165,12 +167,26 @@ public class JSelectTrackModel implements AbstractTrackConfiguration
       newTracks.add(new TrackWrapperSelect(track, false));
       isDifferent |= !oldTracksSet.contains(track);
     }
+    for (TrackWrapper oldTrackItem : oldTracksSet)
+    {
+      isDifferent |= !tracks.contains(oldTrackItem);
+    }
     if (isDifferent)
     {
       this._tracks.clear();
       this._tracks.addAll(newTracks);
+      if ( _primaryTrack != null && !tracks.contains(_primaryTrack) )
+      {
+        setPrimaryTrack(null);
+      }
       notifyListenersStateChanged(this, TRACK_LIST_CHANGED, oldTracks, tracks);
     }
     return isDifferent;
+  }
+
+  @Override
+  public boolean isRelativeEnabled()
+  {
+    return this._tracks.size() > 1;
   }
 }

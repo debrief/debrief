@@ -108,8 +108,15 @@
 			<fileset dir="${debrief-lite-dist.dir}" includes="**/*"/>
 		</zip>
 	</target>
+	<target name="quiet">
 
-	<target name="clean" depends="init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
+				<script language="javascript">
+				        var logger = project.getBuildListeners( ).firstElement( );
+				        logger.setMessageOutputLevel( 0 );
+				    </script>
+	</target>
+
+	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/debrief_lite.jar"/>
 		<delete file="debrief_lite.jar"/>
 		<delete file="${plugin.destination}/org.mwc.debrief.lite_1.0.377.jar"/>

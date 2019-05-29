@@ -204,7 +204,6 @@ import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.Swing.SwingCustomEditor;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
-import MWC.TacticalData.NarrativeWrapper;
 
 public class SwingLayerManager extends SwingCustomEditor implements
     Layers.DataListener, MWC.GUI.Properties.NoEditorButtons,
@@ -902,7 +901,7 @@ public class SwingLayerManager extends SwingCustomEditor implements
         changedLayer);
     if (treeNode != null)
     {
-      ((DefaultTreeModel) _myTree.getModel()).reload(treeNode);
+       updateLayer((DefaultMutableTreeNode)_myTree.getModel().getRoot(), changedLayer, changedLayer);
     }
   }
   
@@ -910,28 +909,14 @@ public class SwingLayerManager extends SwingCustomEditor implements
   {
     // in case only the narratives have changed refresh only those.
     final Runnable runner;
-    if(changedLayer instanceof NarrativeWrapper) 
+    runner = new Runnable()
     {
-      runner = new Runnable()
+      @Override
+      public void run()
       {
-        @Override
-        public void run()
-        {
-          updateThisLayer(changedLayer);
-        }
-      };
-    }
-    else 
-    {
-      runner = new Runnable()
-      {
-        @Override
-        public void run()
-        {
-          updateData();
-        }
-      };
-    }
+        updateThisLayer(changedLayer);
+      }
+    };
     updateInThread(runner);
   }
 
@@ -974,7 +959,22 @@ public class SwingLayerManager extends SwingCustomEditor implements
    */
   public void dataModified(final Layers theData, final Layer changedLayer)
   {
-    updateInThread(changedLayer);
+    if(changedLayer!=null)
+    {
+      updateInThread(changedLayer);
+    }
+    else
+    {
+      final Runnable runner = new Runnable()
+      {
+        @Override
+        public void run()
+        {
+          updateData();
+        }
+      };
+      updateInThread(runner);
+    }
   }
 
   /**
