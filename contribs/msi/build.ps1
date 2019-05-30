@@ -3,6 +3,7 @@
 #2019
 
 Param(
+[Parameter(Mandatory=$true)]
 [string]$Version
 )
 
