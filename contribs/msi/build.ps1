@@ -14,7 +14,7 @@ $JreDir = "$BuildDir\jdk8u212-b03-jre"
 $SourceDir = "$BuildDir\DebriefNG"
 
 #Setting the product version variable. Could be overridden by parameter.
-If ($Version -eq ""){$Version  = "1.0.0"}
+If ($Version -eq ""){$Version  = "3.0.480"}
 
 #Setting the Wix variables.
 $Heat = "$Env:Wix" + "bin\heat.exe"
