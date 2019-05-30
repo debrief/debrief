@@ -85,7 +85,7 @@ public class GenericDragTool extends CursorTool
   /**
    * how far the mouse has to be dragged before it's registered as a drag operation
    */
-  protected final double JITTER = 12;
+  protected final double JITTER = SCREEN_JITTER;
 
   public GenericDragTool(final Layers _layers,
       final GeoToolMapProjection projection, final JMapPane mapPane)

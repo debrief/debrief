@@ -95,10 +95,27 @@ public class DragElementTool extends GenericDragTool
         }
       }
 
+      
       // did we find anything?
       if (currentNearest.populated())
       {
-        final double distance = currentNearest._distance.getValue(); 
+        // generate a screen point from the cursor pos plus our distnace
+        // NOTE: we're not basing this on the target location - we may not have
+        // a
+        // target location as such for a strangely shaped object
+        final WorldLocation tgtPt =
+            cursorLoc.add(new WorldVector(Math.PI / 2,
+                currentNearest._distance, null));
+
+        // is it close enough
+        final Point tPoint = _projection.toScreen(tgtPt);
+
+        // get click point
+        Point cursorPos = ev.getPoint();
+        
+        // get distance of click point from nearest object, in screen coords
+        final double distance = tPoint.distance(cursorPos);
+        
         if (distance < JITTER)
         {
           panning = true;
