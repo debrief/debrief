@@ -21,6 +21,7 @@
 			<configuration>
 				<useUIThread>false</useUIThread>
 				<useUIHarness>true</useUIHarness>
+				<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				<includes>
 					<include>**/*Tests.class</include>
 				</includes>

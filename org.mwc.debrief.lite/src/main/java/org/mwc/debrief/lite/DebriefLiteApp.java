@@ -96,6 +96,7 @@ import MWC.GUI.Layers.DataListener2;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
+import MWC.GUI.SupportedApps;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GUI.Canvas.ExtendedCanvasAdapter;
@@ -120,7 +121,7 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
 
 public class DebriefLiteApp implements FileDropListener
 {
-
+  
   /**
    * introduce a preferences helper, particularly to give default font sizes
    *
@@ -185,7 +186,8 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   private static DebriefLiteApp _instance;
-  public static final String appName = "Debrief Lite";
+  public static final String DEBRIEF_LITE_APP="Debrief Lite";
+  public static final String appName = DEBRIEF_LITE_APP;
   public static final String NOTES_ICON = "icons/16/note.png";
 
   public static String currentFileName = null;
@@ -488,6 +490,7 @@ public class DebriefLiteApp implements FileDropListener
   public DebriefLiteApp()
   {
     // set the substance look and feel
+    System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY, SupportedApps.DEBRIEF_LITE_APP);
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
