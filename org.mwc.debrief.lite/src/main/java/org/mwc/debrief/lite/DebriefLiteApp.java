@@ -707,7 +707,7 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction);
+        snailT, statusBar, exitAction, projection);
   }
 
   protected void doPaint(final Graphics gc)
