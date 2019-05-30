@@ -583,6 +583,31 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     return super.getVisible();
   }
+  
+  
+
+  @Override
+  public void removeElement(Editable p)
+  {
+    // let the parent do some tidying
+    super.removeElement(p);
+    
+    // oh-oh, are we empty?
+    if(isEmpty())
+    {
+      _before = null;
+      _after = null;
+      
+      // safety check. if we're being deleted, our parent may already be
+      // nnull
+      if (getWrapper() != null)
+      {
+
+        // and remove ourselves from our parent
+        getWrapper().removeElement(this);
+      }
+    }
+  }
 
   /**
    * recalculate our set of positions
