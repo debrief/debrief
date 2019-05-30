@@ -215,13 +215,11 @@ public class GenericDragTool extends CursorTool
         {
           lastCursor = greenCursor;
           _mapPane.setCursor(greenCursor);
-          System.out.println("SHOW GREEN CURSOR:" + (int)scrDist);
         }
         else if ( scrDist > SCREEN_JITTER && !lastCursor.equals(normalCursor) )
         {
           lastCursor = normalCursor;
           _mapPane.setCursor(normalCursor);
-          System.out.println("RESTORE NORMAL CURSOR:" + (int)scrDist);
         }
       }
     }
