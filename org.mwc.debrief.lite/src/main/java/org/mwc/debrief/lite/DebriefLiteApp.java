@@ -121,7 +121,7 @@ import MWC.Utilities.ReaderWriter.PlainImporter;
 
 public class DebriefLiteApp implements FileDropListener
 {
-  
+
   /**
    * introduce a preferences helper, particularly to give default font sizes
    *
@@ -186,7 +186,7 @@ public class DebriefLiteApp implements FileDropListener
   }
 
   private static DebriefLiteApp _instance;
-  public static final String DEBRIEF_LITE_APP="Debrief Lite";
+  public static final String DEBRIEF_LITE_APP = "Debrief Lite";
   public static final String appName = DEBRIEF_LITE_APP;
   public static final String NOTES_ICON = "icons/16/note.png";
 
@@ -215,7 +215,8 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle = appName + " (" + Debrief.GUI.VersionInfo.getVersion() + ")";
+  private static String defaultTitle = appName + " (" + Debrief.GUI.VersionInfo
+      .getVersion() + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
@@ -296,12 +297,13 @@ public class DebriefLiteApp implements FileDropListener
 
   public static void openDsfFile(final File file) throws FileNotFoundException
   {
-    boolean renameFile=true;
     final ImportReplay rep = new ImportReplay();
     rep.setLayers(_instance._theLayers);
     rep.importThis(file.getAbsolutePath(), new FileInputStream(file));
     final Vector<SensorWrapper> sensors = rep.getPendingSensors();
 
+    boolean isAllCorrect = true;
+    final StringBuilder builder = new StringBuilder();
     // see if there are any sensors awaiting a host
     if (sensors.size() >= 1)
     {
@@ -312,35 +314,43 @@ public class DebriefLiteApp implements FileDropListener
         if (sensor.getHost() == null)
         {
           // have we sorted out the hosts?
-          final List<TrackWrapper> candidateHosts =
-              determineCandidateHosts();
+          final List<TrackWrapper> candidateHosts = determineCandidateHosts();
 
           if (candidateHosts.size() == 0)
           {
-            renameFile = false;
             JOptionPane.showMessageDialog(null,
                 "Sensor data can only be loaded after tracks",
                 "Loading sensor data", JOptionPane.ERROR_MESSAGE);
             break;
           }
 
+          isAllCorrect = false;
+          builder.append(",");
+          builder.append(sensor.getName());
         }
       }
     }
-    if (renameFile)
+    if (isAllCorrect)
     {
       rep.storePendingSensors();
       _instance._theLayers.fireExtended();
       JOptionPane.showMessageDialog(null,
-          "Finished loading sensor data from the file",
-          "Loading sensor data", JOptionPane.INFORMATION_MESSAGE);
+          "Finished loading sensor data from the file", "Loading sensor data",
+          JOptionPane.INFORMATION_MESSAGE);
 
     }
+    else
+    {
+      JOptionPane.showMessageDialog(null, "Couldn't find Track(s) titled: "
+          + builder.toString().substring(1), "Couldn't find Track",
+          JOptionPane.INFORMATION_MESSAGE);
+    }
+
   }
 
   public static void openPlotFile(final File file)
   {
-    
+
     try
     {
       _instance.handleImportDPF(file);
@@ -490,7 +500,8 @@ public class DebriefLiteApp implements FileDropListener
   public DebriefLiteApp()
   {
     // set the substance look and feel
-    System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY, SupportedApps.DEBRIEF_LITE_APP);
+    System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
+        SupportedApps.DEBRIEF_LITE_APP);
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
@@ -882,7 +893,7 @@ public class DebriefLiteApp implements FileDropListener
             .getDateFormat(), true, true);
       }
       _theLayers.fireModified(null);
-      
+
       // and the spatial bounds
       new FitToWindow(_theLayers, mapPane).actionPerformed(null);
     }
@@ -904,17 +915,19 @@ public class DebriefLiteApp implements FileDropListener
       resetFileName(file);
     }
     long endTime = System.currentTimeMillis();
-    long timeElapsed = endTime-startTime;
-    System.out.println("Time taken:"+timeElapsed);
+    long timeElapsed = endTime - startTime;
+    System.out.println("Time taken:" + timeElapsed);
   }
 
   private void handleImportRep(final File[] fList)
   {
-    
+
     final DebriefLiteApp source = this;
     boolean success = true;
-    if(fList.length==1) {
-      if(fList[0].getName().endsWith("dsf")) {
+    if (fList.length == 1)
+    {
+      if (fList[0].getName().endsWith("dsf"))
+      {
         try
         {
           openDsfFile(fList[0]);
@@ -924,12 +937,14 @@ public class DebriefLiteApp implements FileDropListener
           e.printStackTrace();
         }
       }
-      else {
+      else
+      {
         final BaseImportCaller caller = new BaseImportCaller(fList, _theLayers)
         {
           // handle completion of the full import process
           @Override
-          public void allFilesFinished(final File[] fNames, final Layers newData)
+          public void allFilesFinished(final File[] fNames,
+              final Layers newData)
           {
             finishImport(source);
           }
@@ -1072,7 +1087,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void populateTote()
   {
-    //not implemented.
+    // not implemented.
   }
 
   private void redoTimePainter(final boolean bigPaint, final CanvasAdaptor dest,
@@ -1170,7 +1185,7 @@ public class DebriefLiteApp implements FileDropListener
     // reset the map
     final ResetAction resetMap = new ResetAction(mapPane);
     resetMap.actionPerformed(null);
-    
+
     graphPanelView.reset();
     graphPanel.setCollapsed(true);
   }
