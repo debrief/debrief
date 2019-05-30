@@ -81,13 +81,13 @@ public class DragWholeFeatureElementTool extends GenericDragTool
                 currentNearest._distance, null));
 
         // is it close enough
-        final java.awt.Point tPoint = super._projection.toScreen(tgtPt);
+        final Point tPoint = super._projection.toScreen(tgtPt);
 
         // get click point
         Point cursorPos = ev.getPoint();
         
         // get distance of click point from nearest object, in screen coords
-        final double scrDist = tPoint.distance(new java.awt.Point(cursorPos.x, cursorPos.y));
+        final double scrDist = tPoint.distance(cursorPos);
 
         if (scrDist <= SCREEN_JITTER)
         {
@@ -173,7 +173,8 @@ public class DragWholeFeatureElementTool extends GenericDragTool
       // did we find anything?
       if (currentNearest.populated())
       {
-        if (currentNearest._distance.getValue() < JITTER)
+        final double distance = currentNearest._distance.getValue();
+        if (distance < JITTER)
         {
           panning = true;
 

@@ -41,9 +41,9 @@ public class GenericDragTool extends CursorTool
 
   protected Point panePos;
 
-  final Layers layers;
+  protected final Layers layers;
 
-  final GeoToolMapProjection _projection;
+  protected final GeoToolMapProjection _projection;
 
   protected final JMapPane _mapPane;
 

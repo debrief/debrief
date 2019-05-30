@@ -97,7 +97,8 @@ public class DragElementTool extends GenericDragTool
       // did we find anything?
       if (currentNearest.populated())
       {
-        if (currentNearest._distance.getValue() < JITTER)
+        final double distance = currentNearest._distance.getValue(); 
+        if (distance < JITTER)
         {
           panning = true;
 

@@ -406,7 +406,8 @@ public class DragComponent extends DragFeature
         {
           // hmm, we've finished plotting. see if the ctrl button is
           // down
-          if ((keyState & SWT.CTRL) == 0)
+          final int isControlPressed = keyState & SWT.CTRL;
+          if (isControlPressed == 0)
           {
             // drawHere(gc, null);
             _myCanvas.getCanvas().redraw();

@@ -14,7 +14,7 @@ public class DragElementAction extends MapAction
    */
   private static final long serialVersionUID = 8514990334295403151L;
 
-  final CursorTool cursorTool;
+  private final CursorTool cursorTool;
 
   public DragElementAction(final MapPane mapPane, final CursorTool _cursorTool)
   {
