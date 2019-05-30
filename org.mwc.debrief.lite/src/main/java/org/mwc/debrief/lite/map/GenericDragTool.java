@@ -13,7 +13,10 @@ import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Shapes.FindNearest;
+import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class GenericDragTool extends CursorTool
 {
@@ -26,16 +29,33 @@ public class GenericDragTool extends CursorTool
 
   /** Cursor */
   public static final String CURSOR_IMAGE =
-      "/org/geotools/swing/icons/mActionIdentify.png";
+      "/icons/16/whitehand.png";
 
   /** Icon for the control */
   public static final String ICON_IMAGE =
-      "/org/geotools/swing/icons/mActionPan.png";
+      "/icons/16/whitehand.png";
+
+  /** Icon for the control */
+  public static final String ICON_IMAGE_GREEN =
+      "/icons/16/SelectFeatureHit.png";
+
+  /** Icon for the control */
+  public static final String ICON_IMAGE_DRAGGING =
+      "/icons/16/SelectFeatureHitDown.png";
 
   /** Cursor hotspot coordinates */
   public static final Point CURSOR_HOTSPOT = new Point(15, 15);
 
-  protected final Cursor cursor;
+  protected final Cursor normalCursor;
+  
+  protected final Cursor greenCursor;
+  
+  protected final Cursor draggingCursor;
+  
+  /**
+   * We are going to use this to avoid re-assigning the same cursor.
+   */
+  protected Cursor lastCursor;
 
   protected boolean panning;
 
@@ -47,6 +67,11 @@ public class GenericDragTool extends CursorTool
 
   protected final JMapPane _mapPane;
 
+  /** how close we have to be (in screen pixels) to display
+   * hotspot cursor 
+   */
+  private static double SCREEN_JITTER = 11;
+  
   /**
    * the component we're going to drag
    */
@@ -60,7 +85,7 @@ public class GenericDragTool extends CursorTool
   /**
    * how far the mouse has to be dragged before it's registered as a drag operation
    */
-  protected final double JITTER = 120;
+  protected final double JITTER = 12;
 
   public GenericDragTool(final Layers _layers,
       final GeoToolMapProjection projection, final JMapPane mapPane)
@@ -68,8 +93,21 @@ public class GenericDragTool extends CursorTool
     final Toolkit tk = Toolkit.getDefaultToolkit();
     final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
         CURSOR_IMAGE));
-    cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
+    normalCursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
         TOOL_NAME);
+
+    final ImageIcon imgGreenIcon = new ImageIcon(getClass().getResource(
+        ICON_IMAGE_GREEN));
+    greenCursor = tk.createCustomCursor(imgGreenIcon.getImage(), CURSOR_HOTSPOT,
+        TOOL_NAME);
+
+    final ImageIcon imgDragIcon = new ImageIcon(getClass().getResource(
+        ICON_IMAGE_DRAGGING));
+    draggingCursor = tk.createCustomCursor(imgDragIcon.getImage(), CURSOR_HOTSPOT,
+        TOOL_NAME);
+    
+    lastCursor = normalCursor;
+    
     this.layers = _layers;
     this._projection = projection;
     this._mapPane = mapPane;
@@ -89,7 +127,7 @@ public class GenericDragTool extends CursorTool
   @Override
   public Cursor getCursor()
   {
-    return cursor;
+    return normalCursor;
   }
 
   /**
@@ -114,5 +152,90 @@ public class GenericDragTool extends CursorTool
   public void onMouseReleased(final MapMouseEvent ev)
   {
     panning = false;
+
+    lastCursor = greenCursor;
+    _mapPane.setCursor(greenCursor);
+  }
+  
+  @Override
+  public void onMouseMoved(MapMouseEvent ev)
+  {
+    super.onMouseMoved(ev);
+    
+    // try to determine if we're going over an item, to
+    // change the cursor
+    
+    // don't bother if we're already in a pan operation
+    if (!panning && !lastCursor.equals(draggingCursor))
+    {
+      panePos = mouseDelta(ev.getPoint());
+
+      final WorldLocation cursorLoc = _projection.toWorld(panePos);
+      // find the nearest editable item
+      final LocationConstruct currentNearest = new LocationConstruct();
+      final int num = layers.size();
+      for (int i = 0; i < num; i++)
+      {
+        final Layer thisL = layers.elementAt(i);
+        if (thisL.getVisible())
+        {
+          // find the nearest items, this method call will recursively pass down
+          // through
+          // the layers
+          // final Layer thisLayer,
+          FindNearest.findNearest(thisL, cursorLoc, panePos, currentNearest,
+              null, layers);
+        }
+      }
+
+      // Note - the following test does a distance check using world distance,
+      // which is quite unreliable,
+      
+      // did we find anything?
+      if (currentNearest.populated())
+      {
+        // generate a screen point from the cursor pos plus our distnace
+        // NOTE: we're not basing this on the target location - we may not have
+        // a
+        // target location as such for a strangely shaped object
+        final WorldLocation tgtPt =
+            cursorLoc.add(new WorldVector(Math.PI / 2,
+                currentNearest._distance, null));
+
+        // is it close enough
+        final Point tPoint = _projection.toScreen(tgtPt);
+
+        // get click point
+        Point cursorPos = ev.getPoint();
+        
+        // get distance of click point from nearest object, in screen coords
+        final double scrDist = tPoint.distance(cursorPos);
+
+        if (scrDist <= SCREEN_JITTER && !lastCursor.equals(greenCursor))
+        {
+          lastCursor = greenCursor;
+          _mapPane.setCursor(greenCursor);
+          System.out.println("SHOW GREEN CURSOR:" + (int)scrDist);
+        }
+        else if ( scrDist > SCREEN_JITTER && !lastCursor.equals(normalCursor) )
+        {
+          lastCursor = normalCursor;
+          _mapPane.setCursor(normalCursor);
+          System.out.println("RESTORE NORMAL CURSOR:" + (int)scrDist);
+        }
+      }
+    }
+    
+    
+  }
+
+  @Override
+  public void onMousePressed(MapMouseEvent ev)
+  {
+    if ( lastCursor.equals(greenCursor) )
+    {
+      lastCursor = draggingCursor;
+      _mapPane.setCursor(draggingCursor);
+    }
   }
 }

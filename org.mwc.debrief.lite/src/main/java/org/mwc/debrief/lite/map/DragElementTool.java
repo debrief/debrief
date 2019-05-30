@@ -73,6 +73,7 @@ public class DragElementTool extends GenericDragTool
   @Override
   public void onMousePressed(final MapMouseEvent ev)
   {
+    super.onMousePressed(ev);
     if (!panning)
     {
       panePos = mouseDelta(ev.getPoint());
