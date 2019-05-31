@@ -180,7 +180,6 @@ public class SWTEclipseHelper implements QuestionHelper
         MessageDialog dialog = new MessageDialog(null, title, null, message, MessageDialog.ERROR,
             new String[] {"View Error Log", "Ok"}, 0);
         int res = dialog.open();
-        System.out.println("res was:" + res);
         switch(res)
         {
           case 0:
@@ -197,6 +196,7 @@ public class SWTEclipseHelper implements QuestionHelper
             }
             break;
           case 1:
+          default:
             break;
         }
       }
