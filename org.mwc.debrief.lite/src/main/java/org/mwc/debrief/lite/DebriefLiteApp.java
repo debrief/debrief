@@ -321,7 +321,7 @@ public class DebriefLiteApp implements FileDropListener
             JOptionPane.showMessageDialog(null,
                 "Sensor data can only be loaded after tracks",
                 "Loading sensor data", JOptionPane.ERROR_MESSAGE);
-            break;
+            return;
           }
 
           isAllCorrect = false;
