@@ -408,7 +408,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
     }
 
     @SuppressWarnings("deprecation")
-    public void testInfillForRegularSensorData() throws ExecutionException
+    public void testInfillForRegularSensorData() throws ExecutionException, InterruptedException
     {
       final Layers theLayers = new Layers();
       final TrackWrapper tmaTrack = new TrackWrapper();
@@ -519,6 +519,8 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
         infill.removeElement(f);
       }
 
+      Thread.sleep(100);
+      
       assertEquals("dynamic infill removed", 2, tmaTrack.getSegments().size());
       assertNull("infill detached", infill.getWrapper());
 
