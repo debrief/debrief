@@ -12,7 +12,9 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.Word.ImportRiderNarrativeDocument;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.TrackDataProvider;
 
 public class MsDocLoader extends CoreLoader
@@ -40,7 +42,10 @@ public class MsDocLoader extends CoreLoader
         ImportRiderNarrativeDocument iw = new ImportRiderNarrativeDocument(
             theLayers, trackData);
         iw.handleImport(fileName, inputStream);
-
+        
+        // check to see if have any narratives
+        if(containsNarratives(theLayers))
+        {
         // hey, it worked. now open the narrative viewer
         Display.getDefault().asyncExec(new Runnable()
         {
@@ -61,7 +66,19 @@ public class MsDocLoader extends CoreLoader
             }
           }
         });
+        }
       }
     };
+  }
+
+  /** see if the layers object contains any narratives
+   * 
+   * @param theLayers
+   * @return yes/no
+   */
+  private static boolean containsNarratives(final Layers theLayers)
+  {
+    final Layer narrs = theLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
+    return narrs != null;
   }
 }
