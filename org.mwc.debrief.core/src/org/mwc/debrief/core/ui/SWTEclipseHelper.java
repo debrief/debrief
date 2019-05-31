@@ -158,33 +158,31 @@ public class SWTEclipseHelper implements QuestionHelper
       }
     });
   }
-  
+
   public void showErrorLog()
   {
     try
     {
-      PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
+      PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+          .showView("org.eclipse.pde.runtime.LogView");
     }
     catch (PartInitException e)
     {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }
-  
-  
-  public  void log(IStatus status)
-  {
-      ResourcesPlugin.getPlugin().getLog().log(status);
-  }
-  
+
   public void showMessageWithErrorLogLink(String title, String message)
   {
-    
-    log(new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, IStatus.ERROR, message, null));
-    showErrorLog();
+
+    final MessageDialog dialog = new MessageDialog(null, title, null, message,
+        MessageDialog.ERROR, new String[]
+        {"Show log", "Close"}, 0); // yes is the default
+    if (dialog.open() == 0)
+    {
+      showErrorLog();
+    }
+
   }
-  
-  
 
 }
