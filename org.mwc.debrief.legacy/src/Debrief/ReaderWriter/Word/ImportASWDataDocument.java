@@ -28,7 +28,6 @@ import java.util.TimeZone;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -52,7 +51,8 @@ public class ImportASWDataDocument
   {
     private static final String NORWICH = "NORWICH";
 
-    private String stringStore = null;
+    private String answerStore = null;
+    private String questionStore = null;
 
     private static List<String> incrementTimes(final List<String> lines)
     {
@@ -180,6 +180,43 @@ public class ImportASWDataDocument
       assertNull("too late", yearFor(
           "TMPOS/290000Z/300200Z/APR/124316/APR2016"));
     }
+    
+    private class MyHelper implements ImportNarrativeDocument.QuestionHelper
+    {
+
+      private final String _answer;
+
+      public MyHelper(final String answer)
+      {
+        _answer = answer;
+      }
+      @Override
+      public boolean askYes(String title, String message)
+      {
+        // TODO Auto-generated method stub
+        return false;
+      }
+
+      @Override
+      public String askQuestion(String title, String message, String defaultStr)
+      {
+        questionStore = defaultStr;
+        return _answer;
+      }
+
+      @Override
+      public void showMessage(String title, String message)
+      {
+        answerStore = message;
+      }
+
+      @Override
+      public void showMessageWithLogButton(String title, String message)
+      {
+        answerStore = message;
+      }
+      
+    }
 
     public void testFewFailures()
     {
@@ -207,32 +244,9 @@ public class ImportASWDataDocument
       final String trackName = "track";
 
       // start off with user cancelling import
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
-
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              return trackName;
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-              stringStore = message;
-            }
-          });
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(trackName));
       
-      stringStore = null;
+      answerStore = null;
       iw.processThese(lines);
 
       assertTrue("layers should not be empty", layers.size() == 1);
@@ -245,7 +259,7 @@ public class ImportASWDataDocument
       // check the message
       assertEquals("Good string",
           "Import completed, with errors. Errors at lines 9, 11, 13.\nSee Error Log (below) for more.",
-          stringStore);
+          answerStore);
     }
     
     public void testManyFailures()
@@ -274,32 +288,9 @@ public class ImportASWDataDocument
       final String trackName = "track";
 
       // start off with user cancelling import
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
-
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              return trackName;
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-              stringStore = message;
-            }
-          });
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(trackName));
       
-      stringStore = null;
+      answerStore = null;
       iw.processThese(lines);
 
       assertTrue("layers should not be empty", layers.size() == 1);
@@ -312,7 +303,7 @@ public class ImportASWDataDocument
       // check the message
       assertEquals("Good string",
           "Import completed, with errors. Errors on 8 lines.\nSee Error Log (below) for more.",
-          stringStore);
+          answerStore);
     }
 
     public void testParseDocument()
@@ -340,64 +331,21 @@ public class ImportASWDataDocument
       final ImportASWDataDocument iw = new ImportASWDataDocument(layers);
 
       // start off with user cancelling import
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(null));
 
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              return null;
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-            }
-          });
       iw.processThese(lines);
 
       assertTrue("layers should be empty", layers.size() == 0);
 
-      stringStore = null;
+      questionStore = null;
       _lastTrackName = null;
 
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(NORWICH));
 
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              stringStore = defaultStr;
-              return NORWICH;
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-            }
-          });
       iw.processThese(lines);
 
       assertEquals("we should have stored the default str",
-          DEFAULT_TRACK_MESSAGE, stringStore);
+          DEFAULT_TRACK_MESSAGE, questionStore);
 
       assertTrue("We should have a track", layers.size() == 1);
       final TrackWrapper track = (TrackWrapper) layers.findLayer(NORWICH);
@@ -410,61 +358,16 @@ public class ImportASWDataDocument
 
       // add another track
 
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
-
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              stringStore = defaultStr;
-              return "DULWICH";
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-            }
-          });
+      ImportASWDataDocument.setQuestionHelper(new MyHelper("DULWICH"));
 
       iw.processThese(lines);
       assertTrue("We should have multiple tracks", layers.size() == 2);
 
       assertEquals("we should been offered the new default", "NORWICH",
-          stringStore);
+          questionStore);
 
       final List<String> lines2 = incrementTimes(lines);
-      ImportASWDataDocument.setQuestionHelper(
-          new ImportNarrativeDocument.QuestionHelper()
-          {
-
-            @Override
-            public String askQuestion(final String title, final String message,
-                final String defaultStr)
-            {
-              return NORWICH;
-            }
-
-            @Override
-            public boolean askYes(final String title, final String message)
-            {
-              return false;
-            }
-
-            @Override
-            public void showMessage(final String title, final String message)
-            {
-              // don't bother
-            }
-          });
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(NORWICH));
 
       iw.processThese(lines2);
       final TrackSegment segment2 = (TrackSegment) track.getSegments()
@@ -594,28 +497,8 @@ public class ImportASWDataDocument
       final FileInputStream is = new FileInputStream(fName);
       final ImportASWDataDocument iw = new ImportASWDataDocument(theLayers);
       final String trackName = "Wibble";
-      ImportASWDataDocument.setQuestionHelper(new QuestionHelper()
-      {
-
-        @Override
-        public String askQuestion(final String title, final String message,
-            final String defaultStr)
-        {
-          return trackName;
-        }
-
-        @Override
-        public boolean askYes(final String title, final String message)
-        {
-          return false;
-        }
-
-        @Override
-        public void showMessage(final String title, final String message)
-        {
-          // don't bother
-        }
-      });
+      ImportASWDataDocument.setQuestionHelper(new MyHelper(trackName));
+      
       final XWPFDocument doc = new XWPFDocument(is);
       final ArrayList<String> strings = ImportNarrativeDocument.importFromWordX(
           doc);
@@ -625,7 +508,7 @@ public class ImportASWDataDocument
       final TrackWrapper track = (TrackWrapper) theLayers.findLayer(trackName);
       final TrackSegment segment = (TrackSegment) track.getSegments().elements()
           .nextElement();
-      assertEquals("loaded all", 31, segment.size());
+      assertEquals("loaded all", 28, segment.size());
     }
   }
 
@@ -1215,7 +1098,7 @@ public class ImportASWDataDocument
         msg.append("Errors on " + len + " lines.");
       }
       final String message = "Import completed, with errors. " + msg.toString() + "\nSee Error Log (below) for more.";
-      questionHelper.showMessage("Import error", message);
+      questionHelper.showMessageWithLogButton("Import error", message);
     }
 
     // fire modified event
