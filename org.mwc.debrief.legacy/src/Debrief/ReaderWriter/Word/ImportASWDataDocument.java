@@ -342,7 +342,7 @@ public class ImportASWDataDocument
       final String d1 =
           "TMPOS/261200ZAPR/IN/12.23.34N-121.12.1E/o57T/04KTS/05.1M//";
       final String d2 =
-          "TIMPOS/262327ZAPR/INS/13.14.15S-011.22.33W/180T/13KTS/0o1FT";
+          "TIMPOS/262327ZAPR/INS/13.14.15S-011.22.33W/000T/13KTS/0o1FT";
       final String d3 = "TMPOS/220000ZAPR/GPS/1230N/01215W";
       final String d4 =
           "TMPOS/230001ZAPR/GPS/22.33.44N/020.11.22W/006T/10KTS//";
@@ -360,7 +360,7 @@ public class ImportASWDataDocument
 
       final FixWrapper f2 = fixFor(d2, 2016);
       assertNotNull(f2);
-      assertEquals(180d, f2.getCourseDegs());
+      assertEquals(0d, f2.getCourseDegs());
       assertEquals(13d, f2.getSpeed(), 0.001);
       assertEquals(new WorldDistance(1, WorldDistance.FT).getValueIn(
           WorldDistance.METRES), f2.getDepth());
@@ -435,6 +435,12 @@ public class ImportASWDataDocument
       {
         assertEquals("Not a valid hemisphere:2 from:020.11.22", ie.getMessage());
       }
+    }
+    
+    public void testCourse()
+    {
+      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(123.0), courseFor("123T"));
+      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(0.0), courseFor("000T"));
     }
 
     public void testReadRealDocument() throws IOException
