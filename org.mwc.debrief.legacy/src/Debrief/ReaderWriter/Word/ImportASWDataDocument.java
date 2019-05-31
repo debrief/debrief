@@ -86,6 +86,7 @@ public class ImportASWDataDocument
       assertEquals("0000", clean(" 00o0"));
       assertEquals("0000", clean(" 0Oo0"));
       assertEquals("0A00", clean("0ao0 "));
+      assertEquals("1.234", clean("1,234"));
     }
 
     public void testDates()
@@ -537,7 +538,8 @@ public class ImportASWDataDocument
   {
     final String noOs = str.replace("O", "0");
     final String noos = noOs.replace("o", "0");
-    final String trimmed = noos.trim();
+    final String noCommas = noos.replace(",", ".");
+    final String trimmed = noCommas.trim();
     final String upper = trimmed.toUpperCase();
     return upper;
   }
