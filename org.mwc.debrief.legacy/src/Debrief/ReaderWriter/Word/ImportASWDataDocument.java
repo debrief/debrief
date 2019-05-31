@@ -46,10 +46,14 @@ import junit.framework.TestCase;
 
 public class ImportASWDataDocument
 {
+  private static final String DEFAULT_TRACK_MESSAGE = "track name";
+
   public static class TestImportWord extends TestCase
   {
     private static final String NORWICH = "NORWICH";
-
+    
+    private String stringStore = null;
+    
     private static List<String> incrementTimes(final List<String> lines)
     {
       final List<String> res = new ArrayList<String>();
@@ -227,7 +231,10 @@ public class ImportASWDataDocument
       iw.processThese(lines);
 
       assertTrue("layers should be empty", layers.size() == 0);
-
+      
+      stringStore = null;
+      _lastTrackName = null;
+      
       ImportASWDataDocument.setQuestionHelper(
           new ImportNarrativeDocument.QuestionHelper()
           {
@@ -236,6 +243,7 @@ public class ImportASWDataDocument
             public String askQuestion(final String title, final String message,
                 final String defaultStr)
             {
+              stringStore = defaultStr;
               return NORWICH;
             }
 
@@ -252,6 +260,8 @@ public class ImportASWDataDocument
             }
           });
       iw.processThese(lines);
+      
+      assertEquals("we should have stored the default str", DEFAULT_TRACK_MESSAGE, stringStore);
 
       assertTrue("We should have a track", layers.size() == 1);
       final TrackWrapper track = (TrackWrapper) layers.findLayer(NORWICH);
@@ -272,6 +282,7 @@ public class ImportASWDataDocument
             public String askQuestion(final String title, final String message,
                 final String defaultStr)
             {
+              stringStore = defaultStr;
               return "DULWICH";
             }
 
@@ -291,6 +302,8 @@ public class ImportASWDataDocument
       iw.processThese(lines);
       assertTrue("We should have multiple tracks", layers.size() == 2);
 
+      assertEquals("we should been offered the new default", "NORWICH", stringStore);
+      
       final List<String> lines2 = incrementTimes(lines);
       ImportASWDataDocument.setQuestionHelper(
           new ImportNarrativeDocument.QuestionHelper()
@@ -474,18 +487,21 @@ public class ImportASWDataDocument
    */
   private static ImportNarrativeDocument.QuestionHelper questionHelper = null;
 
-  /**
-   * match a 6 figure DTG
-   *
+  /** the message line indicator we're looking for
+   * 
    */
-  static final String DATE_MATCH_SIX = "(\\d{6})";
-
-  static final String DATE_MATCH_FOUR = "(\\d{4})";
-
   final private static String marker = "TMPOS";
-
-  // we also occasionally encounter this mangled version of the marker
+  
+  /** we also occasionally encounter this mangled version of the marker
+   * 
+   */
   final private static String dodgyMarker = "TIMPOS";
+
+  /** remember the name of the last track imported, so we can
+   * offer it next time
+   */
+  static private String _lastTrackName = null;
+
 
   public static boolean canImport(final List<String> strings)
   {
@@ -949,11 +965,18 @@ public class ImportASWDataDocument
           "ASW Data importer has not had a Question Helper assigned");
     }
 
+    final String defaultTrack = _lastTrackName != null ? _lastTrackName : DEFAULT_TRACK_MESSAGE;
+    
     final String trackName = questionHelper.askQuestion("Load ASW Track",
-        "Name for this track:", "track name");
+        "Name for this track:", defaultTrack);
     if (trackName == null)
     {
       return;
+    }
+    else
+    {
+      // ok, remember the track name
+      _lastTrackName = trackName;
     }
 
     // does this track already exist?
