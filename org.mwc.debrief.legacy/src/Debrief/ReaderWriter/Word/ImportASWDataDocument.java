@@ -51,9 +51,9 @@ public class ImportASWDataDocument
   public static class TestImportWord extends TestCase
   {
     private static final String NORWICH = "NORWICH";
-    
+
     private String stringStore = null;
-    
+
     private static List<String> incrementTimes(final List<String> lines)
     {
       final List<String> res = new ArrayList<String>();
@@ -181,6 +181,140 @@ public class ImportASWDataDocument
           "TMPOS/290000Z/300200Z/APR/124316/APR2016"));
     }
 
+    public void testFewFailures()
+    {
+      final List<String> lines = new ArrayList<String>();
+
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("TMPOS/261200ZAPR/IN/00.01.0N-000.21.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261202ZAPR/IN/00.02.0N-000.22.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261204ZAPR/IN/00.03.0N-000.23.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261205ZAPR/IN/00.04.0N-000.24.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261a206ZAPR/IN/00.05.0N-000.25.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261207ZAPR/IN/00.06.0N-000.27.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261208ZAPR/IN/00.07.0N-000.28.0W/05b7T/04KTS/01.0M//");
+      lines.add("TMPOS/261209ZAPR/IN/00.08.0N-000.31.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261210ZAPR/IN/00.09.0N-000.33.0W/057T/04KbTS/01.0M//");
+      lines.add("TMPOS/261211ZAPR/IN/00.10.0N-000.35.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261212ZAPR/INS/00.10.30N-000.34.30W/180T/13KTS/000FT");
+      lines.add("TMPOS/261214ZAPR/INS/00.10.40N-000.34.00W/189T/12KTS/004FT");
+
+      final Layers layers = new Layers();
+      final ImportASWDataDocument iw = new ImportASWDataDocument(layers);
+      final String trackName = "track";
+
+      // start off with user cancelling import
+      ImportASWDataDocument.setQuestionHelper(
+          new ImportNarrativeDocument.QuestionHelper()
+          {
+
+            @Override
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
+            {
+              return trackName;
+            }
+
+            @Override
+            public boolean askYes(final String title, final String message)
+            {
+              return false;
+            }
+
+            @Override
+            public void showMessage(final String title, final String message)
+            {
+              // don't bother
+              stringStore = message;
+            }
+          });
+      
+      stringStore = null;
+      iw.processThese(lines);
+
+      assertTrue("layers should not be empty", layers.size() == 1);
+      TrackWrapper track = (TrackWrapper) layers.findLayer(trackName);
+
+      assertNotNull("found track", track);
+
+      assertEquals("correct length", 9, track.numFixes());
+      
+      // check the message
+      assertEquals("Good string",
+          "Import completed, with errors. Errors at lines 9, 11, 13.\nSee Error Log (below) for more.",
+          stringStore);
+    }
+    
+    public void testManyFailures()
+    {
+      final List<String> lines = new ArrayList<String>();
+
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("HEADER LINE");
+      lines.add("TMPOS/261200ZAPR/IN/00.01.0N-000.21.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261a202ZAPR/IN/00.02.0N-000.22.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261a204ZAPR/IN/00.03.0N-000.23.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261a205ZAPR/IN/00.04.0N-000.24.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261a206ZAPR/IN/00.05.0N-000.25.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261207ZAPR/IN/00.06.0N-000.27.0W/057T/04KTS/01.0M//");
+      lines.add("TMPOS/261208ZAPR/IN/00.07.0N-000.28.0W/05b7T/04KTS/01.0M//");
+      lines.add("TMPOS/261209ZAPR/IN/00.08.0N-000.31.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261210ZAPR/IN/00.09.0N-000.33.0W/057T/04KbTS/01.0M//");
+      lines.add("TMPOS/261d211ZAPR/IN/00.10.0N-000.35.0W/057T/04KTS/02.0M//");
+      lines.add("TMPOS/261d212ZAPR/INS/00.10.30N-000.34.30W/180T/13KTS/000FT");
+      lines.add("TMPOS/261214ZAPR/INS/00.10.40N-000.34.00W/189T/12KTS/004FT");
+
+      final Layers layers = new Layers();
+      final ImportASWDataDocument iw = new ImportASWDataDocument(layers);
+      final String trackName = "track";
+
+      // start off with user cancelling import
+      ImportASWDataDocument.setQuestionHelper(
+          new ImportNarrativeDocument.QuestionHelper()
+          {
+
+            @Override
+            public String askQuestion(final String title, final String message,
+                final String defaultStr)
+            {
+              return trackName;
+            }
+
+            @Override
+            public boolean askYes(final String title, final String message)
+            {
+              return false;
+            }
+
+            @Override
+            public void showMessage(final String title, final String message)
+            {
+              // don't bother
+              stringStore = message;
+            }
+          });
+      
+      stringStore = null;
+      iw.processThese(lines);
+
+      assertTrue("layers should not be empty", layers.size() == 1);
+      TrackWrapper track = (TrackWrapper) layers.findLayer(trackName);
+
+      assertNotNull("found track", track);
+
+      assertEquals("correct length", 4, track.numFixes());
+      
+      // check the message
+      assertEquals("Good string",
+          "Import completed, with errors. Errors on 8 lines.\nSee Error Log (below) for more.",
+          stringStore);
+    }
+
     public void testParseDocument()
     {
       final List<String> lines = new ArrayList<String>();
@@ -232,10 +366,10 @@ public class ImportASWDataDocument
       iw.processThese(lines);
 
       assertTrue("layers should be empty", layers.size() == 0);
-      
+
       stringStore = null;
       _lastTrackName = null;
-      
+
       ImportASWDataDocument.setQuestionHelper(
           new ImportNarrativeDocument.QuestionHelper()
           {
@@ -261,8 +395,9 @@ public class ImportASWDataDocument
             }
           });
       iw.processThese(lines);
-      
-      assertEquals("we should have stored the default str", DEFAULT_TRACK_MESSAGE, stringStore);
+
+      assertEquals("we should have stored the default str",
+          DEFAULT_TRACK_MESSAGE, stringStore);
 
       assertTrue("We should have a track", layers.size() == 1);
       final TrackWrapper track = (TrackWrapper) layers.findLayer(NORWICH);
@@ -303,8 +438,9 @@ public class ImportASWDataDocument
       iw.processThese(lines);
       assertTrue("We should have multiple tracks", layers.size() == 2);
 
-      assertEquals("we should been offered the new default", "NORWICH", stringStore);
-      
+      assertEquals("we should been offered the new default", "NORWICH",
+          stringStore);
+
       final List<String> lines2 = incrementTimes(lines);
       ImportASWDataDocument.setQuestionHelper(
           new ImportNarrativeDocument.QuestionHelper()
@@ -411,7 +547,8 @@ public class ImportASWDataDocument
       }
       catch (final IllegalArgumentException ie)
       {
-        assertEquals("Not a valid hemisphere:J from:22.33.44J", ie.getMessage());
+        assertEquals("Not a valid hemisphere:J from:22.33.44J", ie
+            .getMessage());
       }
 
       // and some mangled one
@@ -433,14 +570,17 @@ public class ImportASWDataDocument
       }
       catch (final IllegalArgumentException ie)
       {
-        assertEquals("Not a valid hemisphere:2 from:020.11.22", ie.getMessage());
+        assertEquals("Not a valid hemisphere:2 from:020.11.22", ie
+            .getMessage());
       }
     }
-    
+
     public void testCourse()
     {
-      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(123.0), courseFor("123T"));
-      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(0.0), courseFor("000T"));
+      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(123.0), courseFor(
+          "123T"));
+      assertEquals(MWC.Algorithms.Conversions.Degs2Rads(0.0), courseFor(
+          "000T"));
     }
 
     public void testReadRealDocument() throws IOException
@@ -494,21 +634,22 @@ public class ImportASWDataDocument
    */
   private static ImportNarrativeDocument.QuestionHelper questionHelper = null;
 
-  /** the message line indicator we're looking for
+  /**
+   * the message line indicator we're looking for
    * 
    */
   final private static String marker = "TMPOS";
-  
-  /** we also occasionally encounter this mangled version of the marker
+
+  /**
+   * we also occasionally encounter this mangled version of the marker
    * 
    */
   final private static String dodgyMarker = "TIMPOS";
 
-  /** remember the name of the last track imported, so we can
-   * offer it next time
+  /**
+   * remember the name of the last track imported, so we can offer it next time
    */
   static private String _lastTrackName = null;
-
 
   public static boolean canImport(final List<String> strings)
   {
@@ -756,9 +897,9 @@ public class ImportASWDataDocument
         String[] tokens = splitIntoValueAndUnits(str);
         final String digits = tokens[0];
         final int len = digits.length();
-        final double degVal = Double.parseDouble(digits.substring(0, len
-            - 2));
-        final double minVal = Double.parseDouble(digits.substring(len-2, len));
+        final double degVal = Double.parseDouble(digits.substring(0, len - 2));
+        final double minVal = Double.parseDouble(digits.substring(len - 2,
+            len));
         res = degVal + minVal / 60;
       }
       return res;
@@ -804,12 +945,13 @@ public class ImportASWDataDocument
 
     final String latStr = components[0];
     final double latHemi = getHemiFor(clean(latStr));
-    final double latVal = getDegreesFor(clean(latStr).substring(0, latStr.length() - 1));
+    final double latVal = getDegreesFor(clean(latStr).substring(0, latStr
+        .length() - 1));
 
     final String longStr = components[1];
     final double longHemi = getHemiFor(clean(longStr));
-    final double longVal = getDegreesFor(clean(longStr).substring(0, longStr.length()
-        - 1));
+    final double longVal = getDegreesFor(clean(longStr).substring(0, longStr
+        .length() - 1));
 
     return new WorldLocation(latHemi * latVal, longHemi * longVal, 0d);
   }
@@ -973,8 +1115,9 @@ public class ImportASWDataDocument
           "ASW Data importer has not had a Question Helper assigned");
     }
 
-    final String defaultTrack = _lastTrackName != null ? _lastTrackName : DEFAULT_TRACK_MESSAGE;
-    
+    final String defaultTrack = _lastTrackName != null ? _lastTrackName
+        : DEFAULT_TRACK_MESSAGE;
+
     final String trackName = questionHelper.askQuestion("Load ASW Track",
         "Name for this track:", defaultTrack);
     if (trackName == null)
@@ -994,9 +1137,10 @@ public class ImportASWDataDocument
     int ctr = 1;
     int year = Calendar.getInstance(TimeZone.getTimeZone("GMT")).get(
         Calendar.YEAR);
-    try
+    List<Integer> badLines = new ArrayList<Integer>();
+    for (final String line : strings)
     {
-      for (final String line : strings)
+      try
       {
         if (line == null)
         {
@@ -1025,23 +1169,53 @@ public class ImportASWDataDocument
           // now add the fix
           track.addFix(fix);
         }
-
-        ctr++;
       }
+      catch (final IllegalArgumentException ie)
+      {
+        final String msg = "Formatting error at line:" + ctr + "\n" + ie
+            .getMessage();
+        Application.logError2(ToolParent.ERROR, msg, ie);
+        badLines.add(ctr);
+      }
+      catch (final Exception ex)
+      {
+        final String msg = "Unknown error at line:" + ctr + "\n" + ex
+            .getMessage();
+        Application.logError2(ToolParent.ERROR, msg, ex);
+        badLines.add(ctr);
+      }
+
+      ctr++;
     }
-    catch (final IllegalArgumentException ie)
+
+    if (!badLines.isEmpty())
     {
-      final String msg = "Formatting error at line:" + ctr + "\n" + ie
-          .getMessage();
-      Application.logError2(ToolParent.ERROR, msg, ie);
-      questionHelper.showMessage("Import error", msg);
-    }
-    catch (final Exception ex)
-    {
-      final String msg = "Unknown error at line:" + ctr + "\n" + ex
-          .getMessage();
-      Application.logError2(ToolParent.ERROR, msg, ex);
-      questionHelper.showMessage("Import error", msg);
+      final StringBuffer msg = new StringBuffer();
+      final int len = badLines.size();
+      if (len < 5)
+      {
+        msg.append("Errors at lines ");
+        boolean first = true;
+        for (final Integer t : badLines)
+        {
+          if (first)
+          {
+            first = false;
+          }
+          else
+          {
+            msg.append(", ");
+          }
+          msg.append(t);
+        }
+        msg.append(".");
+      }
+      else
+      {
+        msg.append("Errors on " + len + " lines.");
+      }
+      final String message = "Import completed, with errors. " + msg.toString() + "\nSee Error Log (below) for more.";
+      questionHelper.showMessage("Import error", message);
     }
 
     // fire modified event
