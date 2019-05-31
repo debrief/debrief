@@ -17,6 +17,9 @@ package org.mwc.debrief.core.ui;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,6 +27,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
 
@@ -166,6 +170,19 @@ public class SWTEclipseHelper implements QuestionHelper
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+  }
+  
+  
+  public  void log(IStatus status)
+  {
+      ResourcesPlugin.getPlugin().getLog().log(status);
+  }
+  
+  public void showMessageWithErrorLogLink(String title, String message)
+  {
+    
+    log(new Status(IStatus.ERROR, DebriefPlugin.PLUGIN_NAME, IStatus.ERROR, message, null));
+    showErrorLog();
   }
   
   
