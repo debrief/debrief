@@ -123,7 +123,7 @@
          <target>
            <artifact>
              <groupId>org.mwc.debrief</groupId>
-             <artifactId>eclipse48</artifactId>
+             <artifactId>eclipse-latest</artifactId>
              <version>0.0.1-SNAPSHOT</version>
            </artifact>
          </target>
