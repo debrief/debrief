@@ -416,7 +416,6 @@ public class DynamicInfillSegment extends TrackSegment implements
 
     // ditch the listeners
     clear();
-
   }
 
   /**
