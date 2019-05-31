@@ -22,6 +22,8 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
 
@@ -152,5 +154,20 @@ public class SWTEclipseHelper implements QuestionHelper
       }
     });
   }
+  
+  public void showErrorLog()
+  {
+    try
+    {
+      PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().showView("org.eclipse.pde.runtime.LogView");
+    }
+    catch (PartInitException e)
+    {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+  
+  
 
 }
