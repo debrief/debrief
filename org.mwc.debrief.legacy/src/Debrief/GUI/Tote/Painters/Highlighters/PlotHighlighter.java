@@ -56,7 +56,7 @@ public interface PlotHighlighter extends Editable {
 	 */
 	public final class RectangleHighlight implements PlotHighlighter {
 
-		private Color _myColor = Color.white;
+		private Color _myColor = Color.black;
 		private int _mySize = 5;
 
 		/**
@@ -77,7 +77,9 @@ public interface PlotHighlighter extends Editable {
 			try {
 
 				// set the highlight colour
-				dest.setColor(_myColor);
+        dest.setColor(new Color(255 - _myColor.getRed(),
+            255 - _myColor.getGreen(), 255 - _myColor.getBlue()));
+			  //dest.setColor(new Color(0,255,0));
 				// get the current area of the watchable
 				final WorldArea wa = watch.getBounds();
 				// convert to screen coordinates
