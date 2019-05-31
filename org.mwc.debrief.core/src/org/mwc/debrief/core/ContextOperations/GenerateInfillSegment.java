@@ -483,7 +483,7 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       while (ele.hasMoreElements())
       {
         final TrackSegment seg = (TrackSegment) ele.nextElement();
-      //  System.out.println(seg.getName());
+        // System.out.println(seg.getName());
         final Enumeration<Editable> ele2 = seg.elements();
         while (ele2.hasMoreElements())
         {
@@ -501,12 +501,11 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
       final FixWrapper endOfInfill = (FixWrapper) infill.last();
       assertFalse("Locations not equal", startOfNext.getLocation().equals(
           endOfInfill.getLocation()));
-      
-      
+
       // also test deleting points
-      List<FixWrapper> infillFixes = new ArrayList<FixWrapper>();
-      Enumeration<Editable> pts = infill.elements();
-      while(pts.hasMoreElements())
+      final List<FixWrapper> infillFixes = new ArrayList<FixWrapper>();
+      final Enumeration<Editable> pts = infill.elements();
+      while (pts.hasMoreElements())
       {
         infillFixes.add((FixWrapper) pts.nextElement());
       }
@@ -515,14 +514,14 @@ public class GenerateInfillSegment implements RightClickContextItemGenerator
           .getSegments().size());
 
       // ok, now delete them
-      for(final FixWrapper f: infillFixes)
+      for (final FixWrapper f : infillFixes)
       {
         infill.removeElement(f);
       }
-      
+
       assertEquals("dynamic infill removed", 2, tmaTrack.getSegments().size());
       assertNull("infill detached", infill.getWrapper());
-      
+
     }
 
     @SuppressWarnings("deprecation")
