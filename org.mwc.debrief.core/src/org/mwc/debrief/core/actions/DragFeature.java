@@ -324,8 +324,8 @@ public class DragFeature extends CoreDragAction
           // find the nearest items, this method call will recursively pass down
           // through
           // the layers
-          FindNearest.findNearest(thisL, cursorLoc, cursorPt, currentNearest,
-              null, theData);
+          findNearest(thisL, cursorLoc, cursorPt, currentNearest, null,
+              theData);
         }
       }
 
@@ -626,4 +626,16 @@ public class DragFeature extends CoreDragAction
     return CursorRegistry.getCursor(CursorRegistry.SELECT_FEATURE_HIT);
   }
 
+
+  protected void findNearest(final Layer thisLayer, final WorldLocation cursorLoc,
+      final Point cursorPos, final LocationConstruct currentNearest,
+      final Layer parentLayer, final Layers theData)
+  {
+    // find the nearest items, this method call will recursively pass down
+    // through
+    // the layers
+    FindNearest.findNearest(thisLayer, cursorLoc, cursorPos, currentNearest,
+        null, theData);
+  }
+  
 }
