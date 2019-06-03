@@ -7,7 +7,11 @@ import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.mwc.debrief.lite.gui.FitToWindow;
+import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
+import org.mwc.debrief.lite.map.DragElementAction;
+import org.mwc.debrief.lite.map.DragElementTool;
+import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
@@ -23,9 +27,10 @@ public class DebriefRibbonView
 
   protected static void addViewTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
-      final JLabel statusBar)
+      final JLabel statusBar, final GeoToolMapProjection projection)
   {
-    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar);
+    final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
+        layers, projection);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
     final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
     ribbon.addTask(fileTask);
@@ -48,7 +53,8 @@ public class DebriefRibbonView
   }
 
   private static JRibbonBand createMouseModes(
-      final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar)
+      final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar,
+      final Layers layers, final GeoToolMapProjection projection)
   {
     final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
@@ -70,6 +76,16 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
+    final DragElementAction dragWholeFeatureInAction = new DragElementAction(
+        mapPane, new DragWholeFeatureElementTool(layers, projection, mapPane));
+    MenuUtils.addCommandToggleButton("Drag Whole Feature",
+        "icons/24/select_feature.png", dragWholeFeatureInAction, viewBand,
+        RibbonElementPriority.TOP, true, mouseModeGroup, false);
+    final DragElementAction dragElementInAction = new DragElementAction(mapPane,
+        new DragElementTool(layers, projection, mapPane));
+    MenuUtils.addCommandToggleButton("Drag Element",
+        "icons/24/select_component.png", dragElementInAction, viewBand,
+        RibbonElementPriority.TOP, true, mouseModeGroup, false);
 
     // tell the zoom in action that it's live
     zoomInAction.actionPerformed(null);

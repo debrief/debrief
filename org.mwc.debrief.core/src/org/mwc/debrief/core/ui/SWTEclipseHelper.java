@@ -17,11 +17,15 @@ package org.mwc.debrief.core.ui;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.ReaderWriter.Word.ImportNarrativeDocument.QuestionHelper;
 
@@ -153,4 +157,49 @@ public class SWTEclipseHelper implements QuestionHelper
     });
   }
 
+  @Override
+  public void showMessageWithLogButton(final String title, final String message)
+  {
+    // get a display to open on
+    final Display targetDisplay;
+    if (Display.getCurrent() == null)
+    {
+      targetDisplay = Display.getDefault();
+    }
+    else
+    {
+      targetDisplay = Display.getCurrent();
+    }
+
+    // ok, get the answer
+    targetDisplay.syncExec(new Runnable()
+    {
+      @Override
+      public void run()
+      {
+        MessageDialog dialog = new MessageDialog(null, title, null, message, MessageDialog.ERROR,
+            new String[] {"View Error Log", "Ok"}, 0);
+        int res = dialog.open();
+        switch(res)
+        {
+          case 0:
+            // ok, open the error log
+            try
+            {
+              PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+              .showView("org.eclipse.pde.runtime.LogView");
+            }
+            catch (PartInitException e)
+            {
+              CorePlugin.logError(Status.ERROR , "While trying to open error log", e);
+              e.printStackTrace();
+            }
+            break;
+          case 1:
+          default:
+            break;
+        }
+      }
+    });
+  }
 }
