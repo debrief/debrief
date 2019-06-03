@@ -62,7 +62,6 @@ public class MsDocLoader extends CoreLoader
           // hey, it worked. now open the narrative viewer
           Display.getDefault().asyncExec(new Runnable()
           {
-
             @Override
             public void run()
             {
