@@ -20,6 +20,18 @@ import MWC.TacticalData.TrackDataProvider;
 public class MsDocLoader extends CoreLoader
 {
 
+  /**
+   * see if the layers object contains any narratives
+   *
+   * @param theLayers
+   * @return yes/no
+   */
+  private static boolean containsNarratives(final Layers theLayers)
+  {
+    final Layer narrs = theLayers.findLayer(NarrativeEntry.NARRATIVE_LAYER);
+    return narrs != null;
+  }
+
   public MsDocLoader()
   {
     super(".doc", ".doc");
@@ -44,15 +56,12 @@ public class MsDocLoader extends CoreLoader
             new ImportRiderNarrativeDocument(theLayers, trackData);
         iw.handleImport(fileName, inputStream);
 
-        // hey, it worked. now open the narrative viewer
-        // hmm, just double-check we've got some narrative data
-        final Layer narratives = theLayers.findLayer(
-            NarrativeEntry.NARRATIVE_LAYER);
-        if (narratives != null)
+        // check to see if have any narratives
+        if (containsNarratives(theLayers))
         {
+          // hey, it worked. now open the narrative viewer
           Display.getDefault().asyncExec(new Runnable()
           {
-
             @Override
             public void run()
             {

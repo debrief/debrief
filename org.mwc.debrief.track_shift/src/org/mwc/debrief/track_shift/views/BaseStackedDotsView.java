@@ -1912,7 +1912,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
           }
           else
           {
-            final XYPlot plotToUse = seriesName.equals(MEASURED_VALUES)
+            final XYPlot plotToUse = seriesName.startsWith(MEASURED_VALUES)
                 ? _linePlot : _dotPlot;
             
             // remember we need to select a new item
