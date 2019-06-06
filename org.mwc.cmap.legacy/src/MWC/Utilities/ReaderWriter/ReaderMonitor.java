@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import javax.swing.ProgressMonitor;
+import javax.swing.SwingUtilities;
 
 import MWC.Utilities.ReaderWriter.PlainImporter.MonitorProvider;
 
@@ -144,18 +145,28 @@ public class ReaderMonitor extends BufferedReader
     @Override
     public void progress(final int progress)
     {
-      if (_pm != null)
+      SwingUtilities.invokeLater(new Runnable()
       {
-        try
+        
+        @Override
+        public void run()
         {
-          _pm.setNote("" + (progress * 100 / _length) + "% complete");
-          _pm.setProgress(progress);
+          if (_pm != null)
+          {
+            try
+            {
+              _pm.setNote("" + (progress * 100 / _length) + "% complete");
+              _pm.setProgress(progress);
+            }
+            catch (Exception e)
+            {
+              // This shouldn't happen. Let's leave it just in case.
+            }
+          }
+          
         }
-        catch (Exception e)
-        {
-          // This shouldn't happen. Let's leave it just in case.
-        }
-      }
+      });
+     
     }
     
     @Override
