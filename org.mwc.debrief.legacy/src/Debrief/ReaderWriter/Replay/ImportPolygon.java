@@ -169,7 +169,7 @@ public class ImportPolygon extends AbstractPlainLineImporter
 		{
 		  // meet the label
 		  final String sts = st.nextToken();
-		  if (!isNameLabel(sts) && Character.isDigit(sts.charAt(0)))
+		  if (Character.isDigit(sts.charAt(0)) && !isNameLabel(sts) )
 		  {
 		    try
 		    {
