@@ -72,7 +72,6 @@ import javax.swing.tree.TreeCellEditor;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
-import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.menu.OutlineViewSelection;
 import org.mwc.debrief.lite.properties.PropertiesDialog;
 
@@ -254,7 +253,6 @@ public class OutlinePanelView extends SwingLayerManager implements
     @Override
     public void execute()
     {
-      _stepControl.startStepping(false);
       if (_isCut)
       {
         storeOld();
@@ -718,15 +716,12 @@ public class OutlinePanelView extends SwingLayerManager implements
   private Transferable _cutContents;
 
   private TreePath _theCutParent;
-
-  private LiteStepControl _stepControl;
   
   public OutlinePanelView(final UndoBuffer undoBuffer,
-      final Clipboard clipboard, final LiteStepControl stepControl)
+      final Clipboard clipboard)
   {
     _undoBuffer = undoBuffer;
     _clipboard = clipboard;
-    _stepControl = stepControl;
   }
 
   private void addBackData(final Plottable theData,

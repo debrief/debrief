@@ -581,10 +581,11 @@ public class DebriefLiteApp implements FileDropListener
         mapPane.repaint();
       }
     };
+    
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-
+    
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
@@ -640,8 +641,7 @@ public class DebriefLiteApp implements FileDropListener
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
-    layerManager = new OutlinePanelView(undoBuffer, session.getClipboard(),
-        _stepControl);
+    layerManager = new OutlinePanelView(undoBuffer, session.getClipboard());
     layerManager.setObject(_theLayers);
     layerManager.setParent(toolParent);
     outlinePanel.add(layerManager, BorderLayout.CENTER);
