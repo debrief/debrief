@@ -61,6 +61,7 @@ import org.pushingpixels.flamingo.api.ribbon.RibbonElementPriority;
 import org.pushingpixels.flamingo.api.ribbon.RibbonTask;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ToolParent;
@@ -505,8 +506,15 @@ public class DebriefRibbonTimeController
             {
               owner = (ToolbarOwner) parent;
             }
+            final Layer parentLayer;
+            if(parent instanceof Layer) {
+              parentLayer = (Layer)parent;
+            }
+            else {
+              parentLayer = null;
+            }
             final PropertiesDialog dialog = new PropertiesDialog(stepControl
-                .getInfo(), layers, undoBuffer, parent, owner);
+                .getInfo(), layers, undoBuffer, parent, owner,parentLayer);
             dialog.setSize(400, 500);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);

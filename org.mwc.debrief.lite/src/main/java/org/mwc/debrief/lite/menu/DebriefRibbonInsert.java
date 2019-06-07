@@ -186,8 +186,9 @@ public class DebriefRibbonInsert
       }
     };
     polygonShape.setSelectedLayerSource(selectLayerCombo);
-    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
-        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
+    @SuppressWarnings("unused")
+//    final JCommandButton polygonCmd = MenuUtils.addCommandButton("Polygon",
+//        "icons/16/polygon.png", polygonShape, CommandButtonDisplayState.MEDIUM, null);
     
     final CreateShape rectShape = new CreateShape(toolParent, theProperties,
         theLayers, "Rectangle", "icons/rectangle_add.png", bounds)
@@ -289,12 +290,14 @@ public class DebriefRibbonInsert
         "icons/24/label_add.png",createLabelShape,
             drawingMenu,RibbonElementPriority.TOP);
     drawingMenu.startGroup();
-    drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
+    
     drawingMenu.addRibbonComponent(new JRibbonComponent(ellipseShapeCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(rectCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(circleCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(lineCmd));
     drawingMenu.addRibbonComponent(new JRibbonComponent(arcCmd));
+    //#4201, dont add polygon shape.
+    //drawingMenu.addRibbonComponent(new JRibbonComponent(polygonCmd));
     
     drawingMenu.setResizePolicies(MenuUtils.getStandardRestrictivePolicies(
         drawingMenu));
