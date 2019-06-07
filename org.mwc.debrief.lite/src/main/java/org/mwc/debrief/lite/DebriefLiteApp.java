@@ -403,7 +403,10 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+    if ( newState != null && !newState.equals(oldState) )
+    {
+      notifyListenersStateChanged(_instance, "STATE", oldState, newState);      
+    }
   }
 
   public static void setTitle(final String title)
@@ -621,11 +624,6 @@ public class DebriefLiteApp implements FileDropListener
           final HasEditables parent)
       {
         update(theData, newItem, parent);
-        if (parent != null)
-        {
-          setDirty(true);
-          setState(ACTIVE_STATE);
-        }
       }
     };
 

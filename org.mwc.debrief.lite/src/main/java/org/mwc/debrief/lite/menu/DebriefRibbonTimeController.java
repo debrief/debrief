@@ -709,6 +709,11 @@ public class DebriefRibbonTimeController
         if ( !hasTracks )
         {
           doSoftReset(timeSlider);
+        }else
+        {
+          DebriefLiteApp.setDirty(true);
+          DebriefLiteApp.setState(DebriefLiteApp.ACTIVE_STATE);
+          timeSlider.setEnabled(true);
         }
       }
     };
