@@ -438,6 +438,8 @@ public class DebriefLiteApp implements FileDropListener
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
+  private final JXCollapsiblePaneWithTitle narrativePanel =
+      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 150);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
   private GeoToolMapProjection projection;
@@ -687,6 +689,8 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(outlinePanel, BorderLayout.WEST);
     addOutlineView(app, undoBuffer);
     addGraphView();
+    
+    theFrame.add(narrativePanel, BorderLayout.EAST);
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()
