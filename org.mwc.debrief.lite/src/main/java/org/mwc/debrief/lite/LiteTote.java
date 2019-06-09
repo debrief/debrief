@@ -64,6 +64,7 @@ public class LiteTote extends AnalysisTote
       @Override
       public void dataModified(final Layers theData, final Layer changedLayer)
       {
+        System.out.print(""); // Hello Codacy
       }
 
       @Override

@@ -518,7 +518,7 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 			final Enumeration<WatchableList> iter = theParticipants.elements();
 			while (iter.hasMoreElements()) {
 				final Object oj = iter.nextElement();
-				if (oj instanceof WatchableList && oj != primaryTrack) {
+				if (oj instanceof WatchableList && !primaryTrack.equals(oj)) {
 					final WatchableList thisList = (WatchableList) oj;
 					// check if this watchable found is visible
 
