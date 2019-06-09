@@ -123,6 +123,11 @@ public class DebriefRibbonTimeController
       }
     }
 
+    public void reset()
+    {
+      minimumValue.setText(" ");
+      maximumValue.setText(" ");
+    }
   }
 
   private static class LiteSliderControls implements SliderControls
@@ -708,7 +713,7 @@ public class DebriefRibbonTimeController
         
         if ( !hasTracks )
         {
-          doSoftReset(timeSlider);
+          doSoftReset(timeSlider, timeManager);
         }else
         {
           DebriefLiteApp.setDirty(true);
@@ -725,7 +730,7 @@ public class DebriefRibbonTimeController
       @Override
       public void reset()
       {
-        doSoftReset(timeSlider);
+        doSoftReset(timeSlider, timeManager);
       }
     });
     
@@ -740,7 +745,7 @@ public class DebriefRibbonTimeController
     return control;
   }
   
-  public static void doSoftReset(final JSlider timeSlider)
+  public static void doSoftReset(final JSlider timeSlider, final TimeManager timeManager)
   {
     // move the slider to the start
     timeSlider.setValue(0);
@@ -749,6 +754,8 @@ public class DebriefRibbonTimeController
     // ok, do some disabling
     DebriefLiteApp.setState(DebriefLiteApp.INACTIVE_STATE);
     timeSlider.setEnabled(false);
+    timeManager.setPeriod(null, null);
+    formatBinder.reset();
   }
 
   private static JRibbonBand createDisplayMode(final Runnable normalPainter,
