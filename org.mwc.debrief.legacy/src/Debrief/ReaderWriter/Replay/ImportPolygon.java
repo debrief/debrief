@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 // $RCSfile: ImportEllipse.java,v $
 // @author $Author: Ian.Mayo $
@@ -96,7 +96,6 @@ import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import junit.framework.TestCase;
 import Debrief.Wrappers.PolygonWrapper;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.Shapes.PlainShape;
@@ -107,6 +106,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.AbstractPlainLineImporter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import junit.framework.TestCase;
 
 /**
  * class that is able to export a polygon - note the Replay file format doesn't include polygons, so
@@ -115,10 +115,359 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportPolygon extends AbstractPlainLineImporter
 {
 
+  public static class TestImport extends TestCase
+  {
+    public void testExport() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper sw = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals(line, ip.exportThis(sw));
+    }
+
+    public void testImportAlphaLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E numlabel";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("numlabel", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    // supported format
+    // ;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
+    // DD MM SS.S H DDD MM SS.S H
+    public void testImportAlphaNumericLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 22numlabel";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("22numlabel", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testImportMultiWordAlphaLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E numlabel second third";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("numlabel second third", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testImportMultiWordAlphaNumericLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 22numlabel second third";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("22numlabel second third", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testLeadingSpace() throws ParseException
+    {
+      final String line =
+          "    	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(3, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+
+      assertEquals("3", nodes.get(2).getName());
+      loc = nodes.get(2).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+    }
+
+    public void testNoLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testWithCompoundLabel() throws ParseException
+    {
+      final String line =
+          ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E test long label";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("test long label", res.getLabel());
+    }
+
+    public void testWithLabel() throws ParseException
+    {
+      final String line =
+          " ;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("label", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("1 correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("1 correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testWithoutDates() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+
+    public void testWithoutEndDate() throws ParseException
+    {
+      final String line =
+          ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
+      final ImportPolygon ip = new ImportPolygon();
+      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
+      assertEquals("", res.getLabel());
+      assertNotNull("read it in", res);
+      final PolygonShape polygon = (PolygonShape) res.getShape();
+      assertNotNull("found shape", polygon);
+
+      final Vector<PolygonNode> nodes = polygon.getPoints();
+      assertEquals(2, nodes.size());
+
+      assertEquals("1", nodes.get(0).getName());
+      WorldLocation loc = nodes.get(0).getLocation();
+      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
+      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
+
+      assertEquals("2", nodes.get(1).getName());
+      loc = nodes.get(1).getLocation();
+      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
+      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
+    }
+  }
+
   /**
    * the type for this string
    */
   private final String _myType = ";POLY:";
+
+  protected boolean canExport(final PolygonShape ps)
+  {
+    return ps.getClosed();
+  }
+
+  @Override
+  public final boolean canExportThis(final Object val)
+  {
+    if (val instanceof ShapeWrapper)
+    {
+      final ShapeWrapper sw = (ShapeWrapper) val;
+      final PlainShape ps = sw.getShape();
+      if (ps instanceof PolygonShape)
+        return canExport((PolygonShape) ps);
+    }
+
+    return false;
+
+  }
+
+  protected PolygonShape createShape(final Vector<PolygonNode> nodes)
+  {
+    return new PolygonShape(nodes);
+  }
+
+  @Override
+  public final String exportThis(final MWC.GUI.Plottable theWrapper)
+  {
+    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
+
+    final PolygonShape polygon = (PolygonShape) theShape.getShape();
+
+    String line = getYourType();
+    line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
+
+    // ok, start looping through them:
+    final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
+    while (pts.hasNext())
+    {
+      final PolygonShape.PolygonNode node = pts.next();
+      // get the loc
+      final WorldLocation loc = node.getLocation();
+
+      // convert to a string
+      final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation
+          .toString(loc);
+
+      // now our line
+      line += " " + str;
+
+    }
+
+    return line + " " + polygon.getName();
+
+  }
+
+  @Override
+  public String getYourType()
+  {
+    return _myType;
+  }
+
+  private boolean hasDate(final String line, final int skip)
+  {
+    final StringTokenizer st = new StringTokenizer(line);
+    for (int i = 0; i < skip; i++)
+    {
+      if (!st.hasMoreTokens())
+        return false;
+      st.nextToken();
+    }
+    final char longHem = st.nextToken().charAt(0);
+    return 'N' == longHem || 'S' == longHem;
+  }
+
+  private boolean hasStartDateOnly(final String line)
+  {
+    return hasDate(line, 7);
+  }
+
+  private boolean hasStartEndDates(final String line)
+  {
+    return hasDate(line, 9);
+  }
+
+  private boolean isNameLabel(final String token)
+  {
+    if (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d?+") || token
+        .matches("\\d+\\.\\d+")))
+    {
+      return true;
+    }
+    return false;
+  }
 
   @Override
   public final Object readThisLine(final String theLine) throws ParseException
@@ -234,356 +583,6 @@ public class ImportPolygon extends AbstractPlainLineImporter
     sp.setShowNodeLabels(false);
 
     return sw;
-  }
-
-  private boolean isNameLabel(String token)
-  {
-    if (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d?+") || token
-        .matches("\\d+\\.\\d+")))
-    {
-      return true;
-    }
-    return false;
-  }
-
-  private boolean hasStartEndDates(final String line)
-  {
-    return hasDate(line, 9);
-  }
-
-  private boolean hasStartDateOnly(final String line)
-  {
-    return hasDate(line, 7);
-  }
-
-  private boolean hasDate(final String line, final int skip)
-  {
-    StringTokenizer st = new StringTokenizer(line);
-    for (int i = 0; i < skip; i++)
-    {
-      if (!st.hasMoreTokens())
-        return false;
-      st.nextToken();
-    }
-    final char longHem = st.nextToken().charAt(0);
-    return 'N' == longHem || 'S' == longHem;
-  }
-
-  protected PolygonShape createShape(final Vector<PolygonNode> nodes)
-  {
-    return new PolygonShape(nodes);
-  }
-
-  @Override
-  public String getYourType()
-  {
-    return _myType;
-  }
-
-  @Override
-  public final String exportThis(final MWC.GUI.Plottable theWrapper)
-  {
-    final ShapeWrapper theShape = (ShapeWrapper) theWrapper;
-
-    final PolygonShape polygon = (PolygonShape) theShape.getShape();
-
-    String line = getYourType();
-    line += " " + ImportReplay.replaySymbolFor(polygon.getColor(), null);
-
-    // ok, start looping through them:
-    final Iterator<PolygonNode> pts = polygon.getPoints().iterator();
-    while (pts.hasNext())
-    {
-      final PolygonShape.PolygonNode node = (PolygonShape.PolygonNode) pts
-          .next();
-      // get the loc
-      final WorldLocation loc = node.getLocation();
-
-      // convert to a string
-      final String str = MWC.Utilities.TextFormatting.DebriefFormatLocation
-          .toString(loc);
-
-      // now our line
-      line += " " + str;
-
-    }
-
-    return line + " " + polygon.getName();
-
-  }
-
-  @Override
-  public final boolean canExportThis(final Object val)
-  {
-    if (val instanceof ShapeWrapper)
-    {
-      final ShapeWrapper sw = (ShapeWrapper) val;
-      final PlainShape ps = sw.getShape();
-      if (ps instanceof PolygonShape)
-        return canExport((PolygonShape) ps);
-    }
-
-    return false;
-
-  }
-
-  protected boolean canExport(final PolygonShape ps)
-  {
-    return ps.getClosed();
-  }
-
-  public static class TestImport extends TestCase
-  {
-    // supported format
-    // ;POLY: @@ YYMMDD HHMMSS YYMMDD HHMMSS DD MM SS.S H DDD MM SS.S H DD MM SS.S H DDD MM SS.S H
-    // DD MM SS.S H DDD MM SS.S H
-    public void testImportAlphaNumericLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 22numlabel";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("22numlabel", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testImportMultiWordAlphaNumericLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 22numlabel second third";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("22numlabel second third", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testImportAlphaLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E numlabel";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("numlabel", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testImportMultiWordAlphaLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 140011 120505 150011 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E numlabel second third";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("numlabel second third", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testNoLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testLeadingSpace() throws ParseException
-    {
-      final String line =
-          "    	;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E 49.7303 0 0 N 4.16989 0 0 E";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(3, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-
-      assertEquals("3", nodes.get(2).getName());
-      loc = nodes.get(2).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-    }
-
-    public void testWithLabel() throws ParseException
-    {
-      final String line =
-          " ;POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E label";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("label", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("1 correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("1 correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("2 correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("2 correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testWithCompoundLabel() throws ParseException
-    {
-      final String line =
-          ";POLY: @J 120505 120505 120505 130505 49.7303 0 0 N 4.16989 0 0 E test long label";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("test long label", res.getLabel());
-    }
-
-    public void testWithoutEndDate() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 120505 120505 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testWithoutDates() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 49.7303 0 0 N 4.16989 0 0 E 49.6405 0 0 N 4.39945 0 0 E";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper res = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals("", res.getLabel());
-      assertNotNull("read it in", res);
-      final PolygonShape polygon = (PolygonShape) res.getShape();
-      assertNotNull("found shape", polygon);
-
-      final Vector<PolygonNode> nodes = polygon.getPoints();
-      assertEquals(2, nodes.size());
-
-      assertEquals("1", nodes.get(0).getName());
-      WorldLocation loc = nodes.get(0).getLocation();
-      assertEquals("correct lat", 49.7303, loc.getLat(), 0.0001);
-      assertEquals("correct long", 4.16989, loc.getLong(), 0.0001);
-
-      assertEquals("2", nodes.get(1).getName());
-      loc = nodes.get(1).getLocation();
-      assertEquals("correct long", 49.6405, loc.getLat(), 0.0001);
-      assertEquals("correct lat", 4.39945, loc.getLong(), 0.0001);
-    }
-
-    public void testExport() throws ParseException
-    {
-      final String line =
-          ";POLY: @@ 49 43 49.08 N 004 10 11.60 E 49 38 25.80 N 004 23 58.02 E label";
-      final ImportPolygon ip = new ImportPolygon();
-      final ShapeWrapper sw = (ShapeWrapper) ip.readThisLine(line);
-      assertEquals(line, ip.exportThis(sw));
-    }
   }
 
 }
