@@ -403,7 +403,10 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+    if ( newState != null && !newState.equals(oldState) )
+    {
+      notifyListenersStateChanged(_instance, "STATE", oldState, newState);      
+    }
   }
 
   public static void setTitle(final String title)
@@ -592,10 +595,11 @@ public class DebriefLiteApp implements FileDropListener
         mapPane.repaint();
       }
     };
+    
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-
+    
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
@@ -620,11 +624,6 @@ public class DebriefLiteApp implements FileDropListener
           final HasEditables parent)
       {
         update(theData, newItem, parent);
-        if (parent != null)
-        {
-          setDirty(true);
-          setState(ACTIVE_STATE);
-        }
       }
     };
 
