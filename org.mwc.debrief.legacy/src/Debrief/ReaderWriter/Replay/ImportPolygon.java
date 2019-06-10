@@ -461,12 +461,8 @@ public class ImportPolygon extends AbstractPlainLineImporter
 
   private boolean isNameLabel(final String token)
   {
-    if (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d?+") || token
-        .matches("\\d+\\.\\d+")))
-    {
-      return true;
-    }
-    return false;
+    return (token.matches("^[a-zA-Z0-9_]*$") && !(token.matches("\\d?+") || token
+        .matches("\\d+\\.\\d+")));
   }
 
   @Override
