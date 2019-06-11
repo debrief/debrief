@@ -435,6 +435,8 @@ public class ImportASWDataDocument
       final String d5 = "04 .02. 01N/111.22. 11W";
       // repeat of last line, but with spaces removed
       final String d6 = "04.02.01N/111.22.11W";
+      final String d7 = "04.02.01N/211.22.11W";
+      final String d8 = "94.02.01N/211.22.11W";
 
       assertEquals(" 12°23'34.00\"N 121°12'01.00\"E ", locationFor(d1)
           .toString());
@@ -485,6 +487,31 @@ public class ImportASWDataDocument
         assertEquals("Not a valid hemisphere:2 from:020.11.22", ie
             .getMessage());
       }
+      
+      // and some mangled one
+      try
+      {
+        locationFor(d7);
+        fail("should have tripped");
+      }
+      catch (final IllegalArgumentException ie)
+      {
+        assertEquals("Longitude out of limits:211.22.11W", ie
+            .getMessage());
+      }
+
+      // and some mangled one
+      try
+      {
+        locationFor(d8);
+        fail("should have tripped");
+      }
+      catch (final IllegalArgumentException ie)
+      {
+        assertEquals("Latitude out of limits:94.02.01N", ie
+            .getMessage());
+      }
+
     }
 
     public void testReadRealDocument() throws IOException
@@ -833,11 +860,21 @@ public class ImportASWDataDocument
     final double latHemi = getHemiFor(clean(latStr));
     final double latVal = getDegreesFor(clean(latStr).substring(0, latStr
         .length() - 1));
+    
+    if(latVal > 90)
+    {
+      throw new IllegalArgumentException("Latitude out of limits:" + latStr);
+    }
 
     final String longStr = components[1];
     final double longHemi = getHemiFor(clean(longStr));
     final double longVal = getDegreesFor(clean(longStr).substring(0, longStr
         .length() - 1));
+
+    if(longVal > 180)
+    {
+      throw new IllegalArgumentException("Longitude out of limits:" + longStr);
+    }
 
     return new WorldLocation(latHemi * latVal, longHemi * longVal, 0d);
   }
