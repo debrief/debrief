@@ -4355,11 +4355,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       {
         final WorldLocation origin = matches[0].getLocation();
 
-        final FixWrapper t1Start = (FixWrapper) p1.first();
-
         // put the lists back into plottable layers
+        FixWrapper firstLegStart = (FixWrapper) relevantSegment.first();
         final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
-            t1Start.getLocation(), null, null);
+            firstLegStart.getLocation(), null, null);
         final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2,
             origin, null, null);
 
