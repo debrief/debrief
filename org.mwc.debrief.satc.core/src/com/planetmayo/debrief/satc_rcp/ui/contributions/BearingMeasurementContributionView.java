@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Scale;
 import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
+import com.planetmayo.debrief.satc.model.contributions.CoreMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
 import com.planetmayo.debrief.satc.zigdetector.LegOfData;
 import com.planetmayo.debrief.satc_rcp.SATC_Activator;
@@ -53,8 +54,8 @@ public class BearingMeasurementContributionView extends
   private Button runSliceOsBtn;
   private Button runSliceTgtBtn;
 
-  public BearingMeasurementContributionView(Composite parent,
-      BearingMeasurementContribution contribution,
+  public BearingMeasurementContributionView(final Composite parent,
+      final BearingMeasurementContribution contribution,
       final IContributions contributions)
   {
     super(parent, contribution, contributions);
@@ -62,16 +63,17 @@ public class BearingMeasurementContributionView extends
   }
 
   @Override
-  protected void bindValues(DataBindingContext context)
+  protected void bindValues(final DataBindingContext context)
   {
-    PrefixSuffixLabelConverter labelConverter = new PrefixSuffixLabelConverter(
-        Object.class, "+/- ", " degs");
+    final PrefixSuffixLabelConverter labelConverter =
+        new PrefixSuffixLabelConverter(Object.class, "+/- ", " degs");
     labelConverter.setNestedUnitConverter(UnitConverter.ANGLE_DEG
         .getModelToUI());
-    IObservableValue errorValue = BeansObservables.observeValue(contribution,
-        BearingMeasurementContribution.BEARING_ERROR);
-    IObservableValue observationNumberValue = BeansObservables.observeValue(
-        contribution, BearingMeasurementContribution.OBSERVATIONS_NUMBER);
+    final IObservableValue errorValue = BeansObservables.observeValue(
+        contribution, BearingMeasurementContribution.BEARING_ERROR);
+    final IObservableValue observationNumberValue = BeansObservables
+        .observeValue(contribution,
+            CoreMeasurementContribution.OBSERVATIONS_NUMBER);
     bindCommonHeaderWidgets(context, errorValue, observationNumberValue,
         new PrefixSuffixLabelConverter(Object.class, " Measurements"),
         labelConverter);
@@ -92,7 +94,12 @@ public class BearingMeasurementContributionView extends
     runSliceOsBtn.addSelectionListener(new SelectionListener()
     {
       @Override
-      public void widgetSelected(SelectionEvent e)
+      public void widgetDefaultSelected(final SelectionEvent e)
+      {
+      }
+
+      @Override
+      public void widgetSelected(final SelectionEvent e)
       {
 
         // ok - run the MDA generator
@@ -110,34 +117,29 @@ public class BearingMeasurementContributionView extends
           SATC_Activator.showMessage("Slice ownship legs", message);
         }
       }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e)
-      {
-      }
     });
     // connect the checkbox to the run MDA event
     runSliceTgtBtn.addSelectionListener(new SelectionListener()
     {
       @Override
-      public void widgetSelected(SelectionEvent e)
+      public void widgetDefaultSelected(final SelectionEvent e)
       {
-        // ok - run the MDA generator
-        contribution.runMDA(getContributions());
       }
 
       @Override
-      public void widgetDefaultSelected(SelectionEvent e)
+      public void widgetSelected(final SelectionEvent e)
       {
+        // ok - run the MDA generator
+        contribution.runMDA(getContributions());
       }
     });
 
   }
 
   @Override
-  protected void createBody(Composite parent)
+  protected void createBody(final Composite parent)
   {
-    GridData layoutData = new GridData();
+    final GridData layoutData = new GridData();
     layoutData.horizontalIndent = 15;
     layoutData.exclude = true;
     layoutData.grabExcessVerticalSpace = true;
@@ -159,7 +161,7 @@ public class BearingMeasurementContributionView extends
     UIUtils.createLabel(bodyGroup, "Dates:", new GridData());
     gd = new GridData();
     gd.horizontalSpan = 3;
-    Composite datesGroup = UIUtils.createEmptyComposite(bodyGroup,
+    final Composite datesGroup = UIUtils.createEmptyComposite(bodyGroup,
         new RowLayout(SWT.HORIZONTAL), gd);
     startDate = new CDateTime(datesGroup, CDT.BORDER | CDT.DROP_DOWN
         | CDT.DATE_SHORT);
@@ -182,7 +184,7 @@ public class BearingMeasurementContributionView extends
     UIUtils.createLabel(bodyGroup, "Error: ", new GridData(
         GridData.HORIZONTAL_ALIGN_FILL));
 
-    Composite group = new Composite(bodyGroup, SWT.NONE);
+    final Composite group = new Composite(bodyGroup, SWT.NONE);
     group.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_FILL));
     group.setLayout(UIUtils.createGridLayoutWithoutMargins(2, false));
     errorActiveCheckbox = new Button(group, SWT.CHECK);
@@ -190,7 +192,7 @@ public class BearingMeasurementContributionView extends
         GridData.FILL_HORIZONTAL));
 
     errorSlider = new Scale(bodyGroup, SWT.HORIZONTAL);
-    GridData gd = new GridData(GridData.FILL_HORIZONTAL);
+    final GridData gd = new GridData(GridData.FILL_HORIZONTAL);
     gd.horizontalSpan = 2;
     errorSlider.setLayoutData(gd);
 
@@ -209,6 +211,12 @@ public class BearingMeasurementContributionView extends
   }
 
   @Override
+  protected String getTitlePrefix()
+  {
+    return "Bearing Measurement - ";
+  }
+
+  @Override
   protected void initializeWidgets()
   {
     startDate.setEnabled(false);
@@ -218,11 +226,5 @@ public class BearingMeasurementContributionView extends
 
     runSliceOsBtn.setEnabled(true);
     runSliceTgtBtn.setEnabled(false);
-  }
-
-  @Override
-  protected String getTitlePrefix()
-  {
-    return "Bearing Measurement - ";
   }
 }
