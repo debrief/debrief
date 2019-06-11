@@ -224,6 +224,7 @@ public class ImportASWDataDocument
       final String d5 = "04 .30. 45";
       // repeat of last line, but with spaces removed
       final String d6 = "104.30.45";
+      final String d7 = "O11.3o.45";
 
       assertEquals(12.5125d, getDegreesFor(d1));
       assertEquals(11.5125d, getDegreesFor(d2));
@@ -232,6 +233,7 @@ public class ImportASWDataDocument
       assertEquals(22.5125, getDegreesFor(d4));
       assertEquals(4.5125, getDegreesFor(d5));
       assertEquals(104.5125, getDegreesFor(d6));
+      assertEquals(11.5125d, getDegreesFor(d7));
     }
 
     public void testIsValid()
