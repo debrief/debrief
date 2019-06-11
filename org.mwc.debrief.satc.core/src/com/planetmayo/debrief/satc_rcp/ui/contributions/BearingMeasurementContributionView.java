@@ -14,6 +14,8 @@
  */
 package com.planetmayo.debrief.satc_rcp.ui.contributions;
 
+import java.util.List;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeansObservables;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -35,6 +37,8 @@ import org.eclipse.swt.widgets.Text;
 
 import com.planetmayo.debrief.satc.model.contributions.BearingMeasurementContribution;
 import com.planetmayo.debrief.satc.model.generator.IContributions;
+import com.planetmayo.debrief.satc.zigdetector.LegOfData;
+import com.planetmayo.debrief.satc_rcp.SATC_Activator;
 import com.planetmayo.debrief.satc_rcp.ui.UIUtils;
 import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
@@ -90,6 +94,15 @@ public class BearingMeasurementContributionView extends BaseContributionView<Bea
 				
 				// ok, done - enable the second btn
 				runSliceTgtBtn.setEnabled(true);
+				
+				// share the good news
+				final List<LegOfData> oLegs = contribution.getOwnshipLegs();
+				if(oLegs != null && !oLegs.isEmpty())
+				{
+				  final int num = oLegs.size();
+          final String message = "Ownship sliced into " + num + " legs.";
+				  SATC_Activator.showMessage("Slice ownship legs", message);
+				}
 			}
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e)
