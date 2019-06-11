@@ -45,6 +45,7 @@ import com.planetmayo.debrief.satc_rcp.ui.converters.BooleanToNullConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.PrefixSuffixLabelConverter;
 import com.planetmayo.debrief.satc_rcp.ui.converters.units.UnitConverter;
 
+@SuppressWarnings("deprecation")
 public class BearingMeasurementContributionView extends
     BaseContributionView<BearingMeasurementContribution>
 {
