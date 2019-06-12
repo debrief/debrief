@@ -1095,9 +1095,7 @@ public class DebriefLiteApp implements FileDropListener
     final StepperListener current = painterManager.getCurrentPainterObject();
     final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
 
-    // we need to use different XOR background colors depending on if
-    // we're in normal or snail mode
-    final Color backColor = isNormal ? Color.BLACK : Color.white;
+    final Color backColor = Color.white;
 
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
