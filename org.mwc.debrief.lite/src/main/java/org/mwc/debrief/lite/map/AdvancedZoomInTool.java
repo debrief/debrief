@@ -1,10 +1,7 @@
 package org.mwc.debrief.lite.map;
 
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.geom.Point2D;
-
-import javax.swing.JComponent;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
@@ -15,13 +12,10 @@ import org.geotools.swing.tool.ZoomInTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
 public class AdvancedZoomInTool extends ZoomInTool
 {
 
-  private Point startPosDevice;
+  private final Point startPosDevice;
   private final Point2D startPosWorld;
   private boolean dragged;
 
@@ -33,14 +27,6 @@ public class AdvancedZoomInTool extends ZoomInTool
     dragged = false;
   }
 
-  @Override
-  public void onMousePressed(MapMouseEvent ev)
-  {
-    startPosDevice.setLocation(ev.getPoint());
-    startPosWorld.setLocation(ev.getWorldPos());
-    super.onMousePressed(ev);
-  }
-
   /**
    * Records that the mouse is being dragged
    *
@@ -48,66 +34,22 @@ public class AdvancedZoomInTool extends ZoomInTool
    *          the mouse event
    */
   @Override
-  public void onMouseDragged(MapMouseEvent ev)
+  public void onMouseDragged(final MapMouseEvent ev)
   {
     dragged = true;
     super.onMouseDragged(ev);
   }
 
-  public void performZoomOut(MapMouseEvent ev)
+  @Override
+  public void onMousePressed(final MapMouseEvent ev)
   {
-    MapViewport view = ev.getSource().getMapContent().getViewport();
-    ReferencedEnvelope existingArea = view.getBounds();
-    DirectPosition2D startWorld = new DirectPosition2D(startPosWorld);
-    Envelope2D selectedArea = new Envelope2D(startWorld, ev.getMapPosition());
-    final DirectPosition2D desiredCenter = new DirectPosition2D(selectedArea
-        .getCenterX(), selectedArea.getCenterY());
-    Coordinate centerC = ev.getSource().getMapContent().getViewport()
-        .getBounds().centre();
-    final DirectPosition2D actualCenter = new DirectPosition2D(centerC.x,
-        centerC.y);
-//    final double deltaX = actualCenter.getX() - desiredCenter.getX();
-//    final double deltaY = actualCenter.getY() - desiredCenter.getY();
-
-//    double scale = view.getWorldToScreen().getScaleX();
-//    scale = Math.min(1000, scale);
-//    double newScale = scale;
-    
-
- //   Rectangle paneArea = view.getScreenArea();
-
-    final double scaleVal = Math.sqrt((existingArea.getHeight() * existingArea.getWidth())
-        / (selectedArea.height * selectedArea.width));
-    
-//    final double deltaX2 = selectedArea.getMaxX() - desiredCenter.x;
-//    final double deltaY2 = selectedArea.getMinY() - desiredCenter.y;
-    
-    final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
-    final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
-    
-    final DirectPosition2D corner = new DirectPosition2D(desiredCenter.x + deltaX3 * scaleVal, 
-        desiredCenter.y + deltaY3 * scaleVal);
-    
-//        selectedArea.getMaxX() - selected  desiredCenter.getX()
-//        - 0.5d * existingArea.getWidth() / newScale, desiredCenter.getY() + 0.5d
-//            * existingArea.getHeight() / newScale);
-//
-    final Envelope2D newMapArea = new Envelope2D();
-    newMapArea.setFrameFromCenter(actualCenter, corner);
-
-//    final double height = newMapArea.getHeight();
-//    final double width = newMapArea.getWidth();
-//    // translate
-//    newMapArea.setFrameFromDiagonal(newMapArea.getBounds().x - deltaX
-//        * scaleVal, newMapArea.getBounds().y + deltaY + scaleVal, newMapArea
-//            .getBounds().x + deltaX * scaleVal, newMapArea.getBounds().y
-//                - deltaY * scaleVal);
-    
-    ev.getSource().setDisplayArea(newMapArea);
-
+    startPosDevice.setLocation(ev.getPoint());
+    startPosWorld.setLocation(ev.getWorldPos());
+    super.onMousePressed(ev);
   }
 
-  public void onMouseReleased(MapMouseEvent ev)
+  @Override
+  public void onMouseReleased(final MapMouseEvent ev)
   {
     if (dragged && !ev.getPoint().equals(startPosDevice))
     {
@@ -124,5 +66,61 @@ public class AdvancedZoomInTool extends ZoomInTool
         performZoomOut(ev);
       }
     }
+  }
+
+  public void performZoomOut(final MapMouseEvent ev)
+  {
+    /** note - there's quite a bit of code commented out in this method. 
+     * The commented out code is a partial implementation of the zoom out
+     * behaviour in Full Debrief.
+     */
+    
+    final MapViewport view = ev.getSource().getMapContent().getViewport();
+    final ReferencedEnvelope existingArea = view.getBounds();
+    final DirectPosition2D startWorld = new DirectPosition2D(startPosWorld);
+    final Envelope2D selectedArea = new Envelope2D(startWorld, ev
+        .getWorldPos());
+    final DirectPosition2D desiredCenter = new DirectPosition2D(selectedArea
+        .getCenterX(), selectedArea.getCenterY());
+    final Coordinate centerC = ev.getSource().getMapContent().getViewport()
+        .getBounds().centre();
+    final DirectPosition2D actualCenter = new DirectPosition2D(centerC.x,
+        centerC.y);
+    // final double deltaX = actualCenter.getX() - desiredCenter.getX();
+    // final double deltaY = actualCenter.getY() - desiredCenter.getY();
+
+    // double scale = view.getWorldToScreen().getScaleX();
+    // scale = Math.min(1000, scale);
+    // double newScale = scale;
+
+    // Rectangle paneArea = view.getScreenArea();
+
+    final double scaleVal = Math.sqrt((existingArea.getHeight() * existingArea
+        .getWidth()) / (selectedArea.height * selectedArea.width));
+
+    // final double deltaX2 = selectedArea.getMaxX() - desiredCenter.x;
+    // final double deltaY2 = selectedArea.getMinY() - desiredCenter.y;
+
+    final double deltaX3 = existingArea.getMaxX() - actualCenter.getX();
+    final double deltaY3 = existingArea.getMinY() - actualCenter.getY();
+
+    final DirectPosition2D corner = new DirectPosition2D(desiredCenter.x
+        + deltaX3 * scaleVal, desiredCenter.y + deltaY3 * scaleVal);
+
+    // selectedArea.getMaxX() - selected desiredCenter.getX()
+    // - 0.5d * existingArea.getWidth() / newScale, desiredCenter.getY() + 0.5d
+    // * existingArea.getHeight() / newScale);
+    //
+    final Envelope2D newMapArea = new Envelope2D();
+    newMapArea.setFrameFromCenter(desiredCenter, corner);
+
+    // final double height = newMapArea.getHeight();
+    // final double width = newMapArea.getWidth();
+    // // translate
+    // newMapArea.setFrameFromDiagonal(newMapArea.getBounds().x - deltaX
+    // * scaleVal, newMapArea.getBounds().y + deltaY + scaleVal, newMapArea
+    // .getBounds().x + deltaX * scaleVal, newMapArea.getBounds().y
+    // - deltaY * scaleVal);
+    ev.getSource().setDisplayArea(newMapArea);
   }
 }
