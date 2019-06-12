@@ -8,6 +8,7 @@ import org.geotools.swing.action.PanAction;
 import org.geotools.swing.action.ZoomInAction;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
+import org.mwc.debrief.lite.gui.ZoomIn;
 import org.mwc.debrief.lite.gui.ZoomOut;
 import org.mwc.debrief.lite.map.DragElementAction;
 import org.mwc.debrief.lite.map.DragElementTool;
@@ -42,8 +43,7 @@ public class DebriefRibbonView
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
     final JRibbonBand commandBand = new JRibbonBand("Map commands", null);
     commandBand.startGroup();
-    MenuUtils.addCommand("Zoom Out", "icons/24/zoomout.png", new ZoomOut(
-        mapPane), commandBand, RibbonElementPriority.TOP);
+    
     final AbstractAction doFit = new FitToWindow(layers, mapPane);
     MenuUtils.addCommand("Fit to Window", "icons/24/fit_to_win.png", doFit,
         commandBand, null);
@@ -67,10 +67,14 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
         mapPane), viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
-    final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
+    final ZoomIn zoomInAction = new ZoomIn(mapPane);
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         true);
+    
+    MenuUtils.addCommandToggleButton("Zoom Out", "icons/24/zoomout.png", new ZoomOut(
+        mapPane), viewBand, RibbonElementPriority.TOP,true,mouseModeGroup,false);
+    
     final RangeBearingAction rangeAction = new RangeBearingAction(mapPane,
         statusBar);
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",

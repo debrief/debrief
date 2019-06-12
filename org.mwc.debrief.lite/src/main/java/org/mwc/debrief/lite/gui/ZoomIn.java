@@ -5,9 +5,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.geotools.swing.JMapPane;
-import org.geotools.swing.tool.ZoomOutTool;
 
-public class ZoomOut extends AbstractAction
+public class ZoomIn extends AbstractAction
 {
   /**
    *
@@ -15,11 +14,11 @@ public class ZoomOut extends AbstractAction
   private static final long serialVersionUID = 1L;
   private final JMapPane _map;
 
-  private ZoomOutTool tool;
-  public ZoomOut(final JMapPane map)
+  private MyZoominTool tool;
+  public ZoomIn(final JMapPane map)
   {
     _map = map;
-   tool = new MyZoomoutTool(map);
+   tool = new MyZoominTool(map);
    
   }
 
@@ -28,5 +27,7 @@ public class ZoomOut extends AbstractAction
   {
     _map.setCursorTool(tool);
   }
+  
+  
 
 }
