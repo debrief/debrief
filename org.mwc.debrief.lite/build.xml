@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.debrief.lite" default="build.jars" basedir=".">
-
+	<tstamp>
+	      <format property="today_date" pattern="dd MMM yyyy HH:mm"  locale="en,UK" />
+	</tstamp>
 	<!-- Compiler settings. -->
 	<property name="javacSource" value="1.7"/>
 	<property name="javacTarget" value="1.7"/>
@@ -37,8 +39,11 @@
 		<property name="dist.dir" value="dist"/>
 		<property name="dist.lib.dir" value="dist/lib"/>
 		<property name="product.version" value="${project.version}"/>
+		<antcall target="buildDateReplace"/>
 	</target>
-
+	<target name="buildDateReplace">
+		<replace file="src/main/java/org/mwc/debrief/lite/BuildDate.java" token="$DATE_HERE$" value="${today_date}"/>
+	</target>
 	<target name="debrief_lite.jar" depends="init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 		<mkdir dir="${temp.folder}/debrief_lite.jar.bin"/>
@@ -66,6 +71,7 @@
 				<include name="images"/>
 		 	</fileset>
 		</copy>
+		<antcall target="buildDateReplace"></antcall>
 		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
