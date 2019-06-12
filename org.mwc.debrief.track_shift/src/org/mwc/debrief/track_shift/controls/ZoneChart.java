@@ -54,8 +54,6 @@ import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.time.TimeSeriesDataItem;
 import org.jfree.experimental.chart.swt.ChartComposite;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.debrief.track_shift.TrackShiftActivator;
-import org.mwc.debrief.track_shift.ambiguity.preferences.PreferenceConstants;
 import org.mwc.debrief.track_shift.views.WrappingResidualRenderer;
 
 import Debrief.Wrappers.FixWrapper;
@@ -1633,7 +1631,6 @@ public class ZoneChart extends Composite
   private final Runnable resolveAmbiguityEvent;
 
   private final List<Button> ambigControls = new ArrayList<Button>();
-  private Button sliceSome;
 
   private ZoneChart(final Composite parent, final JFreeChart xylineChart,
       final ZoneUndoRedoProvider undoRedoProvider, final Zone[] zones,
@@ -1789,12 +1786,6 @@ public class ZoneChart extends Composite
             }
           });
 
-      sliceSome = createButton(col1, SWT.PUSH, autoSlice24, "Slice some",
-          "Automatically slice zones", getSliceOp(false));
-
-      // and update the label
-      updateSliceLabel();
-
       createButton(col1, SWT.PUSH, autoSlice24, "Slice all",
           "Automatically slice zones", getSliceOp(true));
 
@@ -1817,17 +1808,6 @@ public class ZoneChart extends Composite
     }
 
 
-  }
-
-  private void updateSliceLabel()
-  {
-    if (sliceSome != null && !sliceSome.isDisposed())
-    {
-      final int MAX_LEGS = TrackShiftActivator.getDefault().getPreferenceStore()
-          .getInt(PreferenceConstants.OS_TURN_MAX_LEGS);
-      final String btnName = "Slice next " + MAX_LEGS;
-      sliceSome.setText(btnName);
-    }
   }
 
   private Runnable getSliceOp(final boolean doAll)
@@ -2234,8 +2214,5 @@ public class ZoneChart extends Composite
     {
       t.setVisible(ambigDataPresent);
     }
-
-    // hey, for good measure, let's update the slice label
-    updateSliceLabel();
   }
 }
