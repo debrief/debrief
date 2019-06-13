@@ -601,6 +601,8 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
+    
+    
 
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
