@@ -14,11 +14,17 @@
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+
+import javax.swing.JList;
+
+import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 import org.mwc.debrief.lite.gui.custom.JPopupList;
 
 import MWC.TacticalData.NarrativeEntry;
 
-public class JSelectTypeFilter extends JPopupList<NarrativeEntry>
+public class JSelectTypeFilter extends JPopupList<String>
 {
 
   /**
@@ -27,11 +33,29 @@ public class JSelectTypeFilter extends JPopupList<NarrativeEntry>
   private static final long serialVersionUID = 7136974124331608166L;
 
   final AbstractNarrativeConfiguration _model;
-  
+
   public JSelectTypeFilter(final AbstractNarrativeConfiguration model)
   {
-    super(new NarrativePanelItemRenderer(), model.getNarratives());
+    super(new TypeItemRenderer(), createTypeFilters(model));
     this._model = model;
 
+  }
+
+  public static JList<String> createTypeFilters(
+      final AbstractNarrativeConfiguration model)
+  {
+    final ArrayList<String> differentTypes = new ArrayList<>();
+    final HashSet<String> addedTypes = new HashSet<>();
+    for (AbstractSelection<NarrativeEntry> narrative : model.getNarratives())
+    {
+      if (!addedTypes.contains(narrative.getItem().getType()))
+      {
+        addedTypes.add(narrative.getItem().getTrackName());
+        differentTypes.add(narrative.getItem().getTrackName());
+      }
+    }
+
+    return new JList<>(differentTypes.toArray(new String[]
+    {}));
   }
 }
