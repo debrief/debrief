@@ -3,14 +3,19 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -72,10 +77,10 @@ public class NarrativePanelToolbar extends JPanel
   {
     final JSelectTrackFilter selectTrack = new JSelectTrackFilter(_model);
 
-    final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
-    {"Select Tracks"});
-    selectTracksLabel.setEnabled(true);
-    selectTracksLabel.addMouseListener(new MouseListener()
+    final JComboBox<String> tracksFilterLabel = new JComboBox<>(new String[]
+    {"Sources"});
+    tracksFilterLabel.setEnabled(true);
+    tracksFilterLabel.addMouseListener(new MouseListener()
     {
 
       @Override
@@ -99,7 +104,7 @@ public class NarrativePanelToolbar extends JPanel
       @Override
       public void mousePressed(final MouseEvent e)
       {
-        if (selectTracksLabel.isEnabled())
+        if (tracksFilterLabel.isEnabled())
         {
           // Get the event source
           final Component component = (Component) e.getSource();
@@ -120,7 +125,117 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
 
-    add(selectTracksLabel);
+    JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
+    final JComboBox<String> typeFilterLabel = new JComboBox<>(new String[]
+    {"Types"});
+    typeFilterLabel.setEnabled(true);
+    typeFilterLabel.addMouseListener(new MouseListener()
+    {
+
+      @Override
+      public void mouseClicked(final MouseEvent e)
+      {
+
+      }
+
+      @Override
+      public void mouseEntered(final MouseEvent e)
+      {
+
+      }
+
+      @Override
+      public void mouseExited(final MouseEvent e)
+      {
+
+      }
+
+      @Override
+      public void mousePressed(final MouseEvent e)
+      {
+        if (typeFilterLabel.isEnabled())
+        {
+          // Get the event source
+          final Component component = (Component) e.getSource();
+
+          typeFilter.show(component, 0, 0);
+
+          // Get the location of the point 'on the screen'
+          final Point p = component.getLocationOnScreen();
+
+          selectTrack.setLocation(p.x, p.y + component.getHeight());
+        }
+      }
+
+      @Override
+      public void mouseReleased(final MouseEvent e)
+      {
+
+      }
+    });
+    
+    final JButton wrapTextButton = createCommandButton(
+        "Wrap Text",
+        "icons/16/wrap.png");
+    wrapTextButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        System.out.println("Wrap Text not implemented");
+      }
+    });
+    
+    final JButton copyButton = createCommandButton(
+        "Copy Selected Entrey",
+        "icons/16/copy_to_clipboard.png");
+    copyButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        System.out.println("Copy selected entry not implemented");
+      }
+    });
+    
+    final JButton addBulkEntriesButton = createCommandButton(
+        "Add Bulk Entries",
+        "icons/16/list.png");
+    addBulkEntriesButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        System.out.println("Add Bulk Entries not implemented");
+      }
+    });
+    
+    final JButton addSingleEntryButton = createCommandButton(
+        "Add Single Entry",
+        "icons/16/add.png");
+    addBulkEntriesButton.addActionListener(new ActionListener()
+    {
+
+      @Override
+      public void actionPerformed(final ActionEvent e)
+      {
+        System.out.println("Add single entry not implemented");
+      }
+    });
+
+    add(tracksFilterLabel);
+    add(typeFilterLabel);
+    add(wrapTextButton);
+    add(copyButton);
+    add(addBulkEntriesButton);
+    add(addSingleEntryButton);
+
+    componentsToDisable.addAll(Arrays.asList(new JComponent[]
+    {tracksFilterLabel, typeFilterLabel, wrapTextButton, copyButton,
+        addBulkEntriesButton, addSingleEntryButton}));
   }
 
   private final ArrayList<PropertyChangeListener> stateListeners;
@@ -141,5 +256,28 @@ public class NarrativePanelToolbar extends JPanel
       event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
           newValue));
     }
+  }
+
+  private JButton createCommandButton(final String command, final String image)
+  {
+    final ImageIcon icon = getIcon(image);
+    final JButton button = new JButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+  
+  private ImageIcon getIcon(final String image)
+  {
+    final URL imageIcon = getClass().getClassLoader().getResource(image);
+    ImageIcon icon = null;
+    try
+    {
+      icon = new ImageIcon(imageIcon);
+    }
+    catch (final Exception e)
+    {
+      throw new IllegalArgumentException("Icon missing:" + image);
+    }
+    return icon;
   }
 }

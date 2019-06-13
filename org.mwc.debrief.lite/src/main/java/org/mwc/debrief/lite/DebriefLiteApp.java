@@ -443,7 +443,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JXCollapsiblePaneWithTitle narrativePanel =
-      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 150);
+      new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
   private final JRibbonFrame theFrame;
   final private Layers _theLayers = new Layers();
   private GeoToolMapProjection projection;
