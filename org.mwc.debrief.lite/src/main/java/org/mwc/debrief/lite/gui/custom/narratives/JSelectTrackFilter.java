@@ -2,7 +2,11 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 
 import javax.swing.JPopupMenu;
 
-public class JSelectTrackFilter extends JPopupMenu
+import org.mwc.debrief.lite.gui.custom.JPopupList;
+
+import MWC.TacticalData.NarrativeEntry;
+
+public class JSelectTrackFilter extends JPopupList<NarrativeEntry>
 {
 
   /**
@@ -14,6 +18,7 @@ public class JSelectTrackFilter extends JPopupMenu
   
   public JSelectTrackFilter(final AbstractNarrativeConfiguration model)
   {
+    super(new NarrativePanelItemRenderer(), model.getNarratives());
     this._model = model;
 
   }
