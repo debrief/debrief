@@ -139,6 +139,8 @@ public class ExportRTF extends CoreEditorAction
 		{
 			// try to get the filename
 			final String fName = MetafileCanvas.getLastFileName();
+			
+			CorePlugin.logError(Status.INFO, "About to write WMF to:" + fName, null);
 
 			if (fName != null)
 			{
@@ -161,6 +163,8 @@ public class ExportRTF extends CoreEditorAction
 			    writer.writeHeader();
 			    writer.writeEmfPicture(data, dim.getWidth(), dim.getHeight());
 			    writer.writeTail();
+
+          CorePlugin.logError(Status.INFO, "WMF written", null);
 					
 			    Runnable runnable = new Runnable()
 					{
@@ -168,10 +172,12 @@ public class ExportRTF extends CoreEditorAction
 						@Override
 						public void run()
 						{
+		          CorePlugin.logError(Status.INFO, "About write to clipboard", null);
 							RTFTransfer rtfTransfer = RTFTransfer.getInstance();
 					    Clipboard clipboard = new Clipboard(Display.getDefault());
 					    Object[] rtfData = new Object[] { os[0].toString() };
 					    clipboard.setContents(rtfData, new Transfer[] {rtfTransfer});
+              CorePlugin.logError(Status.INFO, "Written to clipboard", null);
 						}
 					};
 					if (Display.getCurrent() != null)
@@ -186,6 +192,8 @@ public class ExportRTF extends CoreEditorAction
 				}
 				catch (final Exception e)
 				{
+          CorePlugin.logError(Status.INFO, "Failed writing WMF", e);
+
 					IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID, e.getLocalizedMessage(), e);
 					PlotViewerPlugin.getDefault().getLog().log(status);
 				}
@@ -211,6 +219,7 @@ public class ExportRTF extends CoreEditorAction
 				}
 			}
 			else {
+        CorePlugin.logError(Status.INFO, "Target filename missing", null);
 				IStatus status = new Status(IStatus.ERROR, PlotViewerPlugin.PLUGIN_ID, "Target filename missing");
 				PlotViewerPlugin.getDefault().getLog().log(status);
 			}

@@ -716,7 +716,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   private Transferable _cutContents;
 
   private TreePath _theCutParent;
-
+  
   public OutlinePanelView(final UndoBuffer undoBuffer,
       final Clipboard clipboard)
   {
