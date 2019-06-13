@@ -49,11 +49,14 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
-import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePane.Direction;
+import org.mwc.debrief.lite.gui.custom.graph.GraphPanelView;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativeConfigurationModel;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelToolbar;
+import org.mwc.debrief.lite.gui.custom.narratives.NarrativePanelView;
 import org.mwc.debrief.lite.gui.custom.JXCollapsiblePaneWithTitle;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer.MapRenderer;
@@ -434,6 +437,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
+  private NarrativePanelView narrativePanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
@@ -650,6 +654,15 @@ public class DebriefLiteApp implements FileDropListener
     graphPanel.add(graphPanelView, BorderLayout.CENTER);
   }
 
+  private void addNarrativeView()
+  {
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel();
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(model);
+    narrativePanelView = new NarrativePanelView(toolbar, model);
+    narrativePanel.setCollapsed(true);
+    narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
+  }
+
   private void addOutlineView(final ToolParent toolParent,
       final UndoBuffer undoBuffer)
   {
@@ -687,10 +700,12 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(centerPanel, BorderLayout.CENTER);
 
     theFrame.add(outlinePanel, BorderLayout.WEST);
+
+    theFrame.add(narrativePanel, BorderLayout.EAST);
+    
     addOutlineView(app, undoBuffer);
     addGraphView();
-    
-    theFrame.add(narrativePanel, BorderLayout.EAST);
+    addNarrativeView();
 
     theFrame.add(statusBar, BorderLayout.SOUTH);
     final Runnable resetAction = new Runnable()

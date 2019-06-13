@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.graph;
+package org.mwc.debrief.lite.gui.custom.graph;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -47,10 +47,7 @@ import org.jfree.chart.annotations.XYTextAnnotation;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.TextAnchor;
 import org.mwc.debrief.lite.gui.LiteStepControl;
-import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration;
-import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
-import org.mwc.debrief.lite.gui.custom.JSelectTrack;
-import org.mwc.debrief.lite.gui.custom.JSelectTrackModel;
+import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 import org.mwc.debrief.lite.gui.custom.SimpleEditablePropertyPanel;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
@@ -604,13 +601,13 @@ public class GraphPanelToolbar extends JPanel
         .getStartTime() != null && _stepControl.getEndTime() != null)
     {
       _xytool.setPreselectedPrimaryTrack(selectTrackModel.getPrimaryTrack());
-      final List<TrackWrapperSelect> tracks = selectTrackModel.getTracks();
+      final List<AbstractSelection<TrackWrapper>> tracks = selectTrackModel.getTracks();
       selectedTracksByUser = new Vector<>();
-      for (final TrackWrapperSelect currentTrack : tracks)
+      for (final AbstractSelection<TrackWrapper> currentTrack : tracks)
       {
-        if (currentTrack.selected)
+        if (currentTrack.isSelected())
         {
-          selectedTracksByUser.add(currentTrack.track);
+          selectedTracksByUser.add(currentTrack.getItem());
         }
       }
 

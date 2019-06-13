@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.graph;
+package org.mwc.debrief.lite.gui.custom.graph;
 
 import java.awt.BorderLayout;
 

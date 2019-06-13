@@ -1,4 +1,4 @@
-package org.mwc.debrief.lite.narratives;
+package org.mwc.debrief.lite.gui.custom.narratives;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -14,9 +14,6 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
-
-import org.mwc.debrief.lite.gui.custom.AbstractNarrativeConfiguration;
-import org.mwc.debrief.lite.gui.custom.JSelectTrackFilter;
 
 public class NarrativePanelToolbar extends JPanel
 {
@@ -35,11 +32,11 @@ public class NarrativePanelToolbar extends JPanel
   public static final String NARRATIVES_PROPERTY = "NARRATIVES";
 
   private String _state = INACTIVE_STATE;
-  
+
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-  
+
   private final AbstractNarrativeConfiguration _model;
-  
+
   private final PropertyChangeListener enableDisableButtonsListener =
       new PropertyChangeListener()
       {
@@ -57,15 +54,16 @@ public class NarrativePanelToolbar extends JPanel
           }
         }
       };
-  
+
   public NarrativePanelToolbar(final AbstractNarrativeConfiguration model)
   {
     super(new FlowLayout(FlowLayout.LEFT));
-    
+
     this._model = model;
     init();
 
-    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener));
+    stateListeners = new ArrayList<>(Arrays.asList(
+        enableDisableButtonsListener));
 
     setState(INACTIVE_STATE);
   }
@@ -73,55 +71,56 @@ public class NarrativePanelToolbar extends JPanel
   private void init()
   {
     final JSelectTrackFilter selectTrack = new JSelectTrackFilter(_model);
-    
+
     final JComboBox<String> selectTracksLabel = new JComboBox<>(new String[]
-      {"Select Tracks"});
-      selectTracksLabel.setEnabled(true);
-      selectTracksLabel.addMouseListener(new MouseListener()
+    {"Select Tracks"});
+    selectTracksLabel.setEnabled(true);
+    selectTracksLabel.addMouseListener(new MouseListener()
+    {
+
+      @Override
+      public void mouseClicked(final MouseEvent e)
       {
 
-        @Override
-        public void mouseClicked(final MouseEvent e)
+      }
+
+      @Override
+      public void mouseEntered(final MouseEvent e)
+      {
+
+      }
+
+      @Override
+      public void mouseExited(final MouseEvent e)
+      {
+
+      }
+
+      @Override
+      public void mousePressed(final MouseEvent e)
+      {
+        if (selectTracksLabel.isEnabled())
         {
+          // Get the event source
+          final Component component = (Component) e.getSource();
 
+          selectTrack.show(component, 0, 0);
+
+          // Get the location of the point 'on the screen'
+          final Point p = component.getLocationOnScreen();
+
+          selectTrack.setLocation(p.x, p.y + component.getHeight());
         }
+      }
 
-        @Override
-        public void mouseEntered(final MouseEvent e)
-        {
+      @Override
+      public void mouseReleased(final MouseEvent e)
+      {
 
-        }
+      }
+    });
 
-        @Override
-        public void mouseExited(final MouseEvent e)
-        {
-
-        }
-
-        @Override
-        public void mousePressed(final MouseEvent e)
-        {
-          if (selectTracksLabel.isEnabled())
-          {
-            // Get the event source
-            final Component component = (Component) e.getSource();
-
-            selectTrack.show(component, 0, 0);
-
-            // Get the location of the point 'on the screen'
-            final Point p = component.getLocationOnScreen();
-
-            selectTrack.setLocation(p.x, p.y + component.getHeight());
-          }
-        }
-
-        @Override
-        public void mouseReleased(final MouseEvent e)
-        {
-
-        }
-      });
-      
+    add(selectTracksLabel);
   }
 
   private final ArrayList<PropertyChangeListener> stateListeners;
@@ -133,7 +132,6 @@ public class NarrativePanelToolbar extends JPanel
 
     notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
   }
-
 
   private void notifyListenersStateChanged(final Object source,
       final String property, final Object oldValue, final Object newValue)

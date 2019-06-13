@@ -1,4 +1,4 @@
-package org.mwc.debrief.lite.narratives;
+package org.mwc.debrief.lite.gui.custom.narratives;
 
 import javax.swing.JPanel;
 

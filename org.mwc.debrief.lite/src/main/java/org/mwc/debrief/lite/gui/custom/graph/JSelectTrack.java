@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.mwc.debrief.lite.gui.custom;
+package org.mwc.debrief.lite.gui.custom.graph;
 
 import java.awt.Component;
 import java.awt.Font;
@@ -30,7 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 
-import org.mwc.debrief.lite.gui.custom.AbstractTrackConfiguration.TrackWrapperSelect;
+import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Wrappers.TrackWrapper;
@@ -151,20 +151,20 @@ public class JSelectTrack extends JPopupMenu
     _inRelationToLabel.setFont(new Font(previousFont.getName(), previousFont
         .getStyle(), 9));
 
-    for (final TrackWrapperSelect track : _model.getTracks())
+    for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
     {
-      final JCheckBox displayCheckBox = new JCheckBox(track.track.getName());
+      final JCheckBox displayCheckBox = new JCheckBox(track.getItem().getName());
       displayCheckBox.addItemListener(new ItemListener()
       {
 
         @Override
         public void itemStateChanged(final ItemEvent e)
         {
-          _model.setActiveTrack(track.track, displayCheckBox.isSelected());
+          _model.setActiveTrack(track.getItem(), displayCheckBox.isSelected());
         }
       });
       add(displayCheckBox);
-      _displayComponents.put(track.track, displayCheckBox);
+      _displayComponents.put(track.getItem(), displayCheckBox);
     }
 
     if (_model.isRelativeEnabled())
@@ -172,9 +172,9 @@ public class JSelectTrack extends JPopupMenu
       add(_inRelationToLabel);
       _relativeToComponents.add(_inRelationToLabel);
       final ButtonGroup relativeToGroup = new ButtonGroup();
-      for (final TrackWrapperSelect track : _model.getTracks())
+      for (final AbstractSelection<TrackWrapper> track : _model.getTracks())
       {
-        final JRadioButton relativeToradioButton = new JRadioButton(track.track
+        final JRadioButton relativeToradioButton = new JRadioButton(track.getItem()
             .getName());
         relativeToradioButton.addItemListener(new ItemListener()
         {
@@ -184,14 +184,14 @@ public class JSelectTrack extends JPopupMenu
           {
             if (e.getStateChange() == ItemEvent.SELECTED)
             {
-              _model.setPrimaryTrack(track.track);
+              _model.setPrimaryTrack(track.getItem());
             }
           }
         });
         relativeToGroup.add(relativeToradioButton);
         add(relativeToradioButton);
         _relativeToComponents.add(relativeToradioButton);
-        _relatedToComponentsMap.put(track.track, relativeToradioButton);
+        _relatedToComponentsMap.put(track.getItem(), relativeToradioButton);
       }
       for (final Component comp : _relativeToComponents)
       {

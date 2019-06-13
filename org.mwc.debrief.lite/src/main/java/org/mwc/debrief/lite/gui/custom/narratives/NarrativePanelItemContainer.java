@@ -1,8 +1,6 @@
-package org.mwc.debrief.lite.narratives;
+package org.mwc.debrief.lite.gui.custom.narratives;
 
 import javax.swing.JPanel;
-
-import org.mwc.debrief.lite.gui.custom.AbstractNarrativeConfiguration;
 
 public class NarrativePanelItemContainer extends JPanel
 {
