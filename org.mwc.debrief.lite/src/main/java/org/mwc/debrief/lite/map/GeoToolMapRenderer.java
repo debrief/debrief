@@ -47,6 +47,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
  *
@@ -96,7 +97,8 @@ public class GeoToolMapRenderer implements BaseMap
           final DirectPosition2D curPos = ev.getWorldPos();
           final WorldLocation current = new WorldLocation(curPos.getY(), curPos
               .getX(), 0);
-          DebriefLiteApp.updateStatusMessage("Lat:"+current.getLat()+",Long:"+current.getLong());
+          final String message = BriefFormatLocation.toString(current);
+          DebriefLiteApp.updateStatusMessage(message);
       }
       
       @Override
