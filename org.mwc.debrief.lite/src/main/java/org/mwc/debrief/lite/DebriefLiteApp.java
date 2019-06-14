@@ -26,8 +26,6 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
