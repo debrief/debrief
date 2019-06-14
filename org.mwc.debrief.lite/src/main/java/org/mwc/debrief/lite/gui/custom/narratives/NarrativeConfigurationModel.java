@@ -18,7 +18,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
@@ -45,6 +47,8 @@ public class NarrativeConfigurationModel implements
 
   private List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
       new ArrayList<>();
+  
+  private HashSet<NarrativeWrapper> _narrativeWrappers = new HashSet<>();
 
   public NarrativeConfigurationModel()
   {
@@ -139,5 +143,14 @@ public class NarrativeConfigurationModel implements
           newValue);
     }
   }
+  
+  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  {
+    _narrativeWrappers.add(narrativeWrapper);
+  }
 
+  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
+  {
+    return _narrativeWrappers;
+  }
 }

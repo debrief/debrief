@@ -12,6 +12,7 @@ import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -19,6 +20,15 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+
+import org.mwc.debrief.lite.gui.LiteStepControl;
+
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Layers.DataListener;
+import MWC.TacticalData.NarrativeWrapper;
 
 public class NarrativePanelToolbar extends JPanel
 {
@@ -37,6 +47,8 @@ public class NarrativePanelToolbar extends JPanel
   public static final String NARRATIVES_PROPERTY = "NARRATIVES";
 
   private String _state = INACTIVE_STATE;
+
+  private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
@@ -60,10 +72,12 @@ public class NarrativePanelToolbar extends JPanel
         }
       };
 
-  public NarrativePanelToolbar(final AbstractNarrativeConfiguration model)
+  public NarrativePanelToolbar(final LiteStepControl stepControl,
+      final AbstractNarrativeConfiguration model)
   {
     super(new FlowLayout(FlowLayout.LEFT));
 
+    this._stepControl = stepControl;
     this._model = model;
     init();
 
@@ -173,9 +187,8 @@ public class NarrativePanelToolbar extends JPanel
 
       }
     });
-    
-    final JButton wrapTextButton = createCommandButton(
-        "Wrap Text",
+
+    final JButton wrapTextButton = createCommandButton("Wrap Text",
         "icons/16/wrap.png");
     wrapTextButton.addActionListener(new ActionListener()
     {
@@ -186,9 +199,8 @@ public class NarrativePanelToolbar extends JPanel
         System.out.println("Wrap Text not implemented");
       }
     });
-    
-    final JButton copyButton = createCommandButton(
-        "Copy Selected Entrey",
+
+    final JButton copyButton = createCommandButton("Copy Selected Entrey",
         "icons/16/copy_to_clipboard.png");
     copyButton.addActionListener(new ActionListener()
     {
@@ -199,9 +211,8 @@ public class NarrativePanelToolbar extends JPanel
         System.out.println("Copy selected entry not implemented");
       }
     });
-    
-    final JButton addBulkEntriesButton = createCommandButton(
-        "Add Bulk Entries",
+
+    final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
         "icons/16/list.png");
     addBulkEntriesButton.addActionListener(new ActionListener()
     {
@@ -212,9 +223,8 @@ public class NarrativePanelToolbar extends JPanel
         System.out.println("Add Bulk Entries not implemented");
       }
     });
-    
-    final JButton addSingleEntryButton = createCommandButton(
-        "Add Single Entry",
+
+    final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
         "icons/16/add.png");
     addBulkEntriesButton.addActionListener(new ActionListener()
     {
@@ -236,6 +246,51 @@ public class NarrativePanelToolbar extends JPanel
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
     {tracksFilterLabel, typeFilterLabel, wrapTextButton, copyButton,
         addBulkEntriesButton, addSingleEntryButton}));
+
+    if (_stepControl != null && _stepControl.getLayers() != null)
+    {
+      final DataListener registerNarrativeListener = new DataListener()
+      {
+
+        @Override
+        public void dataReformatted(Layers theData, Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataModified(Layers theData, Layer changedLayer)
+        {
+
+        }
+
+        @Override
+        public void dataExtended(Layers theData)
+        {
+
+        }
+      };
+      _stepControl.getLayers().addDataExtendedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataModifiedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataReformattedListener(
+          registerNarrativeListener);
+    }
+  }
+
+  protected void checkNewNarratives(Layers layers)
+  {
+    /*final Enumeration<Editable> elem = layers.elements();
+    final List<TrackWrapper> tracks = new ArrayList<>();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof NarrativeWrapper && !_model.)
+      {
+        tracks.add((TrackWrapper) nextItem);
+      }
+    }*/
   }
 
   private final ArrayList<PropertyChangeListener> stateListeners;
@@ -265,7 +320,7 @@ public class NarrativePanelToolbar extends JPanel
     button.setToolTipText(command);
     return button;
   }
-  
+
   private ImageIcon getIcon(final String image)
   {
     final URL imageIcon = getClass().getClassLoader().getResource(image);

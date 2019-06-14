@@ -2,6 +2,7 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 
 import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Set;
 
 import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
@@ -23,4 +24,8 @@ public interface AbstractNarrativeConfiguration
   public void setFilterText(final String text);
   
   public String getFilterText();
+  
+  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper();
+  
+  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper);
 }
