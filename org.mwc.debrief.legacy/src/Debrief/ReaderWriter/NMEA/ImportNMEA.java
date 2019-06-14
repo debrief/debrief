@@ -1015,7 +1015,6 @@ public class ImportNMEA
       {
         contactHolder = new BaseLayer();
         contactHolder.setName("WECDIS Contacts");
-        _layers.addThisLayer(contactHolder);
       }
 
       // ok, build the track
@@ -1032,7 +1031,11 @@ public class ImportNMEA
 
       contactHolder.add(tr);
     }
-
+    
+    //Ayesha: added contactholder finally after contacts are added.
+    if(contactHolder!=null) {
+      _layers.addThisLayer(contactHolder);
+    }
   }
 
   private void storeDRFix(final WorldLocation origin, final double myCourseDegs,

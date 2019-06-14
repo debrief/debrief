@@ -72,6 +72,7 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
+import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.SessionHandler;
@@ -347,6 +348,39 @@ public class DebriefLiteApp implements FileDropListener
     }
 
   }
+  
+  public static void openNMEAFile(final File file)
+  {
+    try
+    {
+      _instance.handleImportNMEAFile(file);
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+  }
+
+  private void handleImportNMEAFile(File file)
+  {
+    //show the dialog first, then import the file
+    
+    ImportNMEA importer = new ImportNMEA(_theLayers);
+    FileInputStream fs;
+    try
+    {
+      fs = new FileInputStream(file);
+      importer.importThis(file.getName(), fs, 60000, 60000);
+    }
+    catch (FileNotFoundException e)
+    {
+      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (Exception e)
+    {
+      Trace.trace(e);
+    }
+  }
 
   public static void openPlotFile(final File file)
   {
@@ -534,7 +568,7 @@ public class DebriefLiteApp implements FileDropListener
     initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
-    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
+    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -845,6 +879,11 @@ public class DebriefLiteApp implements FileDropListener
           {
             handleImportDPF(file);
           }
+          else if(suff.equalsIgnoreCase(".LOG"))
+          {
+            handleImportNMEAFile(file);
+            //layerManager.resetTree();
+          }
           else
           {
             Trace.trace("This file type not handled:" + suff);
@@ -860,6 +899,7 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
+    
     restoreCursor();
   }
 
