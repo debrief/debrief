@@ -26,6 +26,8 @@ import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -446,7 +448,7 @@ public class DebriefLiteApp implements FileDropListener
   private GeoToolMapProjection projection;
 
   private final LiteSession session;
-  private final JLabel statusBar = new JLabel(
+  private static final JLabel statusBar = new JLabel(
       "Status bar for displaying statuses");
 
   private final JMapPane mapPane;
@@ -1207,4 +1209,12 @@ public class DebriefLiteApp implements FileDropListener
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
   }
+
+  public static void updateStatusMessage(String string)
+  {
+    
+    statusBar.setText(string);
+  }
+
+ 
 }

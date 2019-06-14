@@ -25,6 +25,7 @@ import java.util.List;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -34,12 +35,18 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.geotools.swing.event.MapMouseAdapter;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+
+import MWC.GenericData.WorldLocation;
 
 /**
  *
@@ -63,6 +70,7 @@ public class GeoToolMapRenderer implements BaseMap
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
+  
   public void addRenderer(final MapRenderer renderer)
   {
     _myRenderers.add(renderer);
@@ -79,7 +87,52 @@ public class GeoToolMapRenderer implements BaseMap
     private final MouseDragLine dragLine;
 
     private final GeoToolMapRenderer _renderer;
+    private final MapMouseListener mouseMotionListener = new MapMouseAdapter()
+    {
+      
+      void handleMouseMovement(MapMouseEvent ev)
+      {
+        
+          final DirectPosition2D curPos = ev.getWorldPos();
+          final WorldLocation current = new WorldLocation(curPos.getY(), curPos
+              .getX(), 0);
+          DebriefLiteApp.updateStatusMessage("Lat:"+current.getLat()+",Long:"+current.getLong());
+      }
+      
+      @Override
+      public void onMouseDragged(MapMouseEvent arg0)
+      {
+        if(!(currentCursorTool instanceof RangeBearingTool))
+        {
+          handleMouseMovement(arg0);
+        }
+      }
 
+      @Override
+      public void onMouseEntered(MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseExited(MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);        
+      }
+
+      @Override
+      public void onMouseMoved(MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);        
+      }
+
+      @Override
+      public void onMouseWheelMoved(MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);        
+      }
+    };
+    
     public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
@@ -88,6 +141,7 @@ public class GeoToolMapRenderer implements BaseMap
       dragLine = new MouseDragLine(this);
       addMouseListener(dragLine);
       addMouseMotionListener(dragLine);
+      addMouseListener(mouseMotionListener);
     }
 
     @Override
@@ -234,4 +288,5 @@ public class GeoToolMapRenderer implements BaseMap
       r.paint(arg0);
     }
   }
+
 }
