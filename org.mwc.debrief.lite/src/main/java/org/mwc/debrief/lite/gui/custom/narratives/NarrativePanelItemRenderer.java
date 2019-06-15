@@ -24,7 +24,8 @@ public class NarrativePanelItemRenderer extends JPanel implements
   public Component getListCellRendererComponent(JList<? extends NarrativeEntry> list,
       NarrativeEntry value, int index, boolean isSelected, boolean cellHasFocus)
   {
-    final Box mainPanel = Box.createVerticalBox();
+    final Box mainPanel = Box.createHorizontalBox();
+    final Box content = Box.createVerticalBox();
     final Box header = Box.createHorizontalBox();
     final JPanel body = new JPanel();
     final JLabel time = new JLabel(value.getDTGString());
@@ -42,16 +43,19 @@ public class NarrativePanelItemRenderer extends JPanel implements
     header.add(Box.createHorizontalStrut(20));
     header.add(typeName);
     
-    final JLabel name = new JLabel(value.getName());
+    final JLabel name = new JLabel(value.getEntry());
     body.add(name);
     //body.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);
     //mainPanel.setBackground(Color.black);
     
     name.setFont(bigFont);
-    mainPanel.add(Box.createVerticalStrut(20));
-    mainPanel.add(header);
-    mainPanel.add(Box.createVerticalStrut(5));
-    mainPanel.add(body);
-    return mainPanel;
+    content.add(Box.createVerticalStrut(20));
+    content.add(header);
+    content.add(Box.createVerticalStrut(5));
+    content.add(body);
+    
+    //JLabel highlightIcon = new JPanel();
+    
+    return content;
   }
 }
