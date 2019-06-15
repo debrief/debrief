@@ -18,6 +18,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +49,7 @@ public class NarrativeConfigurationModel implements
   private List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
       new ArrayList<>();
   
-  private HashSet<NarrativeWrapper> _narrativeWrappers = new HashSet<>();
+  private HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers = new HashMap<>();
 
   public NarrativeConfigurationModel()
   {
@@ -146,11 +147,18 @@ public class NarrativeConfigurationModel implements
   
   public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
   {
-    _narrativeWrappers.add(narrativeWrapper);
+    _narrativeWrappers.put(narrativeWrapper, new HashSet<NarrativeEntry>());
   }
 
   public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
   {
-    return _narrativeWrappers;
+    return _narrativeWrappers.keySet();
+  }
+
+  @Override
+  public Set<NarrativeEntry> getCurrentNarrativeEntries(
+      NarrativeWrapper narrativeWrapper)
+  {
+    return _narrativeWrappers.get(narrativeWrapper);
   }
 }

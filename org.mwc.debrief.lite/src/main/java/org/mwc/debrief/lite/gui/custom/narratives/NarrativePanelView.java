@@ -38,6 +38,9 @@ public class NarrativePanelView extends JPanel
     final JTextField filterTextField = new JTextField();
     filterTextField.setPreferredSize(new Dimension(300, 20));
     mainPanel.add(filterTextField);
+    
+    mainPanel.add(toolbar.getNarrativeList());
+    
     add(scrollPane, BorderLayout.CENTER);
   }
 }

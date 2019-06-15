@@ -15,19 +15,21 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.JPanel;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
 
 public class NarrativePanelToolbar extends JPanel
@@ -52,6 +54,12 @@ public class NarrativePanelToolbar extends JPanel
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
+  private final DefaultListModel<NarrativeEntry> _narrativeListModel =
+      new DefaultListModel<>();
+
+  private final JList<NarrativeEntry> _narrativeList = new JList<>(
+      _narrativeListModel);
+
   private final AbstractNarrativeConfiguration _model;
 
   private final PropertyChangeListener enableDisableButtonsListener =
@@ -72,17 +80,49 @@ public class NarrativePanelToolbar extends JPanel
         }
       };
 
+  private final PropertyChangeListener updatingNarrativesListener =
+      new PropertyChangeListener()
+      {
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+          boolean hasElements = false;
+          if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()))
+          {
+            if (evt.getNewValue() instanceof NarrativeWrapper)
+            {
+              final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) evt
+                  .getNewValue();
+
+              final Enumeration<Editable> items = narrativeWrapper.elements();
+              while (items.hasMoreElements())
+              {
+                final Editable thisE = items.nextElement();
+                _narrativeListModel.addElement((NarrativeEntry) thisE);
+                hasElements = true;
+              }
+            }
+          }
+          if ( hasElements )
+          {
+            setState(ACTIVE_STATE);
+          }
+        }
+      };
+
   public NarrativePanelToolbar(final LiteStepControl stepControl,
       final AbstractNarrativeConfiguration model)
   {
     super(new FlowLayout(FlowLayout.LEFT));
 
+    this._narrativeList.setCellRenderer(new NarrativePanelItemRenderer());
     this._stepControl = stepControl;
     this._model = model;
     init();
 
     stateListeners = new ArrayList<>(Arrays.asList(
-        enableDisableButtonsListener));
+        enableDisableButtonsListener, updatingNarrativesListener));
 
     setState(INACTIVE_STATE);
   }
@@ -261,13 +301,13 @@ public class NarrativePanelToolbar extends JPanel
         @Override
         public void dataModified(Layers theData, Layer changedLayer)
         {
-
+          checkNewNarratives(theData);
         }
 
         @Override
         public void dataExtended(Layers theData)
         {
-
+          checkNewNarratives(theData);
         }
       };
       _stepControl.getLayers().addDataExtendedListener(
@@ -281,16 +321,28 @@ public class NarrativePanelToolbar extends JPanel
 
   protected void checkNewNarratives(Layers layers)
   {
-    /*final Enumeration<Editable> elem = layers.elements();
-    final List<TrackWrapper> tracks = new ArrayList<>();
+    final Enumeration<Editable> elem = layers.elements();
     while (elem.hasMoreElements())
     {
       final Editable nextItem = elem.nextElement();
-      if (nextItem instanceof NarrativeWrapper && !_model.)
+      if (nextItem instanceof NarrativeWrapper && !_model
+          .getRegisteredNarrativeWrapper().contains(nextItem))
       {
-        tracks.add((TrackWrapper) nextItem);
+        final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
+        _model.addNarrativeWrapper(newNarrative);
+        newNarrative.getSupport().addPropertyChangeListener(
+            new PropertyChangeListener()
+            {
+
+              @Override
+              public void propertyChange(PropertyChangeEvent evt)
+              {
+                notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+                    nextItem);
+              }
+            });
       }
-    }*/
+    }
   }
 
   private final ArrayList<PropertyChangeListener> stateListeners;
@@ -335,4 +387,10 @@ public class NarrativePanelToolbar extends JPanel
     }
     return icon;
   }
+
+  public JList<NarrativeEntry> getNarrativeList()
+  {
+    return _narrativeList;
+  }
+
 }
