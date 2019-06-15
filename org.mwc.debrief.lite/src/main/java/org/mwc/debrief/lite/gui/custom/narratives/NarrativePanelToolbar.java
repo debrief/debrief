@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -87,7 +89,6 @@ public class NarrativePanelToolbar extends JPanel
         @Override
         public void propertyChange(PropertyChangeEvent evt)
         {
-          boolean hasElements = false;
           if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()))
           {
             if (evt.getNewValue() instanceof NarrativeWrapper)
@@ -95,18 +96,66 @@ public class NarrativePanelToolbar extends JPanel
               final NarrativeWrapper narrativeWrapper = (NarrativeWrapper) evt
                   .getNewValue();
 
-              final Enumeration<Editable> items = narrativeWrapper.elements();
-              while (items.hasMoreElements())
+              final Set<NarrativeEntry> toRemove = new TreeSet<>();
+              final Set<NarrativeEntry> toAdd = new TreeSet<>();
+              // Check difference
+              if (_model.getRegisteredNarrativeWrapper().contains(
+                  narrativeWrapper))
               {
-                final Editable thisE = items.nextElement();
-                _narrativeListModel.addElement((NarrativeEntry) thisE);
-                hasElements = true;
+                final Set<NarrativeEntry> newEntries = new TreeSet<>();
+                final Enumeration<Editable> items = narrativeWrapper.elements();
+                while (items.hasMoreElements())
+                {
+                  final Editable thisE = items.nextElement();
+                  newEntries.add((NarrativeEntry) thisE);
+                }
+                for ( NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper) )
+                {
+                  if ( !newEntries.contains(currentEntry) )
+                  {
+                    toRemove.add(currentEntry);
+                  }
+                }
+                for ( NarrativeEntry newEntry : newEntries )
+                {
+                  if ( !_model.getCurrentNarrativeEntries(narrativeWrapper).contains(newEntry) ) 
+                  {
+                    toAdd.add(newEntry);
+                  }
+                }
+              }else
+              {
+                _model.addNarrativeWrapper(narrativeWrapper);
+                final Enumeration<Editable> items = narrativeWrapper.elements();
+                while (items.hasMoreElements())
+                {
+                  final Editable thisE = items.nextElement();
+                  toAdd.add((NarrativeEntry) thisE);
+                }
+                
               }
+              
+              for ( NarrativeEntry entry : toAdd )
+              {
+                _narrativeListModel.addElement(entry);
+                _model.registerNewNarrativeEntry(narrativeWrapper, entry);
+                
+              }
+              for ( NarrativeEntry entry : toRemove )
+              {
+                _narrativeListModel.removeElement(entry);
+              }
+              // Sort it.
             }
-          }
-          if ( hasElements )
-          {
-            setState(ACTIVE_STATE);
+            
+            if (!_narrativeListModel.isEmpty())
+            {
+              setState(ACTIVE_STATE);
+            }
+            else
+            {
+              setState(INACTIVE_STATE);
+            }
           }
         }
       };
@@ -121,8 +170,8 @@ public class NarrativePanelToolbar extends JPanel
     this._model = model;
     init();
 
-    stateListeners = new ArrayList<>(Arrays.asList(
-        enableDisableButtonsListener, updatingNarrativesListener));
+    stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener,
+        updatingNarrativesListener));
 
     setState(INACTIVE_STATE);
   }
@@ -352,7 +401,10 @@ public class NarrativePanelToolbar extends JPanel
     final String oldState = _state;
     this._state = newState;
 
-    notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+    if ( newState != null && !newState.equals(oldState) )
+    {
+      notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+    }
   }
 
   private void notifyListenersStateChanged(final Object source,

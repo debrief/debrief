@@ -30,4 +30,6 @@ public interface AbstractNarrativeConfiguration
   public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper);
   
   public Set<NarrativeEntry> getCurrentNarrativeEntries(final NarrativeWrapper narrativeWrapper);
+  
+  public void registerNewNarrativeEntry(final NarrativeWrapper wrapper, final NarrativeEntry entry);
 }

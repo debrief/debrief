@@ -7,7 +7,6 @@ import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 
 import MWC.TacticalData.NarrativeEntry;
@@ -27,6 +26,7 @@ public class NarrativePanelItemRenderer extends JPanel implements
   {
     final Box mainPanel = Box.createVerticalBox();
     final Box header = Box.createHorizontalBox();
+    final JPanel body = new JPanel();
     final JLabel time = new JLabel(value.getDTGString());
     final Font originalFont = time.getFont();
     final Font smallFont = new Font(originalFont.getName(), originalFont.getStyle(), 9);
@@ -42,13 +42,16 @@ public class NarrativePanelItemRenderer extends JPanel implements
     header.add(Box.createHorizontalStrut(20));
     header.add(typeName);
     
-    mainPanel.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);
     final JLabel name = new JLabel(value.getName());
+    body.add(name);
+    //body.setAlignmentX(JScrollPane.LEFT_ALIGNMENT);
+    //mainPanel.setBackground(Color.black);
+    
     name.setFont(bigFont);
     mainPanel.add(Box.createVerticalStrut(20));
     mainPanel.add(header);
     mainPanel.add(Box.createVerticalStrut(5));
-    mainPanel.add(name);
+    mainPanel.add(body);
     return mainPanel;
   }
 }

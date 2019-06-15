@@ -161,4 +161,15 @@ public class NarrativeConfigurationModel implements
   {
     return _narrativeWrappers.get(narrativeWrapper);
   }
+
+  @Override
+  public void registerNewNarrativeEntry(NarrativeWrapper wrapper,
+      NarrativeEntry entry)
+  {
+    if ( !_narrativeWrappers.containsKey(wrapper) )
+    {
+      addNarrativeWrapper(wrapper);
+    }
+    _narrativeWrappers.get(wrapper).add(entry);
+  }
 }
