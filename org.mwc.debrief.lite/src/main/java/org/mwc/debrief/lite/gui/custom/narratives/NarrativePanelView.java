@@ -3,6 +3,7 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
+import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
@@ -30,13 +31,14 @@ public class NarrativePanelView extends JPanel
     setLayout(new BorderLayout());
     
     add(_toolbar, BorderLayout.NORTH);
-    final JPanel mainPanel = new JPanel();
+    //final JPanel mainPanel = new JPanel();
+    final Box mainPanel = Box.createVerticalBox();
     final JScrollPane scrollPane = new JScrollPane(mainPanel);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
     
     final JTextField filterTextField = new JTextField();
-    filterTextField.setPreferredSize(new Dimension(300, 20));
+    filterTextField.setPreferredSize(new Dimension(30, 20));
     mainPanel.add(filterTextField);
     
     mainPanel.add(toolbar.getNarrativeList());
