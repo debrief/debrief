@@ -42,6 +42,7 @@
 		<antcall target="buildDateReplace"/>
 	</target>
 	<target name="buildDateReplace">
+		<copyfile src="conf/builddate.txt" dest="src/main/java/org/mwc/debrief/lite/BuildDate.java"/>
 		<replace file="src/main/java/org/mwc/debrief/lite/BuildDate.java" token="$DATE_HERE$" value="${today_date}"/>
 	</target>
 	<target name="debrief_lite.jar" depends="init" unless="debrief_lite.jar" description="Create jar: org.mwc.debrief.lite debrief_lite.jar.">
