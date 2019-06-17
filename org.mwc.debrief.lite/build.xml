@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.mwc.debrief.lite" default="build.jars" basedir=".">
+<project name="org.mwc.debrief.lite" default="dist" basedir=".">
 
 	<!-- Compiler settings. -->
 	<property name="javacSource" value="1.7"/>
@@ -110,11 +110,12 @@
 		</zip>
 	</target>
 	<target name="quiet">
-
+<!--
 				<script language="javascript">
 				        var logger = project.getBuildListeners( ).firstElement( );
 				        logger.setMessageOutputLevel( 0 );
 				    </script>
+		-->
 	</target>
 
 	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
