@@ -46,6 +46,8 @@ import junit.framework.TestCase;
 
 public class ImportASWDataDocument
 {
+  private static final String LOCATION_FORMAT_WRONG = "Presumed location format was dd.mm.ss, but it looks like dd.mm.mm: ";
+
   public static class TestImportWord extends TestCase
   {
     private class MyHelper implements ImportNarrativeDocument.QuestionHelper
@@ -244,9 +246,23 @@ public class ImportASWDataDocument
       
       final String d2 = "011.30.75";
       final String d2a = "011.30.45";
+      
+      final boolean MMmm = true;
+      final boolean MMSS = false;
 
-      assertEquals(getDegreesFor(d1, true), getDegreesFor(d1a, false));
-      assertEquals(getDegreesFor(d2, true), getDegreesFor(d2a, false));
+      assertEquals(getDegreesFor(d1, MMmm), getDegreesFor(d1a, MMSS));
+      assertEquals(getDegreesFor(d2, MMmm), getDegreesFor(d2a, MMSS));
+
+      try
+      {
+        final String d3 = "011.30.75";
+        getDegreesFor(d3, MMSS);
+        fail("should have thrown exception");
+      }
+      catch(IllegalArgumentException ie)
+      {
+        assertEquals(LOCATION_FORMAT_WRONG + "011.30.75", ie.getMessage());
+      }
     }
 
     public void testIsValid()
@@ -910,6 +926,16 @@ public class ImportASWDataDocument
             final double degs = Double.valueOf(clean(comps[0].trim()));
             final double mins = Double.valueOf(clean(comps[1].trim()));
             final double secs = Double.valueOf(clean(comps[2].trim()));
+            
+            // sanity check. We're presuming decimal seconds. But, if the value is more than
+            // 59, we must actually be receiving decimal minutes
+            if(secs >= 60d)
+            {
+              throw new IllegalArgumentException(
+                  LOCATION_FORMAT_WRONG
+                      + str);
+            }
+            
             res = degs + mins / 60 + secs / (60 * 60);
           }
         }
