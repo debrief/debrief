@@ -120,8 +120,8 @@
 	<target name="clean" depends="quiet,init" description="Clean the plug-in: org.mwc.debrief.lite of all the zips, jars and logs created.">
 		<delete file="${build.result.folder}/debrief_lite.jar"/>
 		<delete file="debrief_lite.jar"/>
-		<delete file="${plugin.destination}/org.mwc.debrief.lite_${product.version}.jar"/>
-		<delete file="${plugin.destination}/org.mwc.debrief.lite_${product.version}.zip"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.jar"/>
+		<delete file="${plugin.destination}/org.mwc.debrief.lite_*.zip"/>
 		<delete dir="${temp.folder}"/>
 		<delete dir="${dist.dir}"/>
 	</target>
