@@ -30,7 +30,11 @@ public class FitToWindow extends AbstractAction
   @Override
   public void actionPerformed(final ActionEvent e)
   {
-    final WorldArea area = _layers.getBounds();
+    fitToWindow(_layers,_map);
+  }
+  
+  public static void fitToWindow(Layers layers,JMapPane map) {
+    final WorldArea area = layers.getBounds();
     if (area != null)
     {
       // check it's not the default area that gets returned when
@@ -46,15 +50,15 @@ public class FitToWindow extends AbstractAction
 
         final WorldLocation tl = area.getTopLeft();
         final WorldLocation br = area.getBottomRight();
-        final CoordinateReferenceSystem crs = _map.getMapContent()
+        final CoordinateReferenceSystem crs = map.getMapContent()
             .getCoordinateReferenceSystem();
         final ReferencedEnvelope bounds = new ReferencedEnvelope(tl.getLong(),
             br.getLong(), tl.getLat(), br.getLat(), crs);
-        _map.getMapContent().getViewport().setBounds(bounds);
+        map.getMapContent().getViewport().setBounds(bounds);
 
         // force repaint
-        final ReferencedEnvelope paneArea = _map.getDisplayArea();
-        _map.setDisplayArea(paneArea);
+        final ReferencedEnvelope paneArea = map.getDisplayArea();
+        map.setDisplayArea(paneArea);
       }
     }
   }
