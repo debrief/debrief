@@ -1361,6 +1361,9 @@ public class OutlinePanelView extends SwingLayerManager implements
               }
             });
           }
+          else {
+            System.out.println("Found null itemnode");
+          }
         }
       }
       else

@@ -66,8 +66,12 @@
 				<include name="images"/>
 		 	</fileset>
 		</copy>
+		<manifest file="${basedir}/conf/manifest.txt" mode="update">
+			<attribute name="Implementation-Version" value="${product.version}"/>
+		</manifest>
 		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
+		
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 	</target>
 
