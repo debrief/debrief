@@ -221,6 +221,9 @@ public class DebriefLiteApp implements FileDropListener
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
 
+  private static final JLabel statusBar = new JLabel(
+      "Status bar for displaying statuses");
+
   /**
    * creates a scroll pane with map
    *
@@ -403,9 +406,9 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    if ( newState != null && !newState.equals(oldState) )
+    if (newState != null && !newState.equals(oldState))
     {
-      notifyListenersStateChanged(_instance, "STATE", oldState, newState);      
+      notifyListenersStateChanged(_instance, "STATE", oldState, newState);
     }
   }
 
@@ -433,8 +436,13 @@ public class DebriefLiteApp implements FileDropListener
     return theSuffix.toUpperCase();
   }
 
-  protected DataListener2 _listenForMods;
+  public static void updateStatusMessage(final String string)
+  {
 
+    statusBar.setText(string);
+  }
+
+  protected DataListener2 _listenForMods;
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
@@ -442,12 +450,11 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
+
   final private Layers _theLayers = new Layers();
   private GeoToolMapProjection projection;
 
   private final LiteSession session;
-  private final JLabel statusBar = new JLabel(
-      "Status bar for displaying statuses");
 
   private final JMapPane mapPane;
 
@@ -595,11 +602,11 @@ public class DebriefLiteApp implements FileDropListener
         mapPane.repaint();
       }
     };
-    
+
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-    
+
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
     theTote = new LiteTote(_theLayers, _stepControl);
@@ -696,7 +703,7 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    Runnable exitAction = new Runnable()
+    final Runnable exitAction = new Runnable()
     {
       @Override
       public void run()
@@ -870,7 +877,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
-    long startTime = System.currentTimeMillis();
+    final long startTime = System.currentTimeMillis();
     System.out.println("Started loading file");
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
@@ -913,8 +920,8 @@ public class DebriefLiteApp implements FileDropListener
     {
       resetFileName(file);
     }
-    long endTime = System.currentTimeMillis();
-    long timeElapsed = endTime - startTime;
+    final long endTime = System.currentTimeMillis();
+    final long timeElapsed = endTime - startTime;
     System.out.println("Time taken:" + timeElapsed);
   }
 
@@ -931,7 +938,7 @@ public class DebriefLiteApp implements FileDropListener
         {
           openDsfFile(fList[0]);
         }
-        catch (FileNotFoundException e)
+        catch (final FileNotFoundException e)
         {
           e.printStackTrace();
         }
@@ -1207,4 +1214,5 @@ public class DebriefLiteApp implements FileDropListener
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
   }
+
 }

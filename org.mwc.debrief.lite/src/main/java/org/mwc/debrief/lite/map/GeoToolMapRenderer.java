@@ -25,6 +25,7 @@ import java.util.List;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
@@ -34,12 +35,19 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.data.JFileDataStoreChooser;
+import org.geotools.swing.event.MapMouseAdapter;
+import org.geotools.swing.event.MapMouseEvent;
+import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
+import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.feature.simple.SimpleFeatureType;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
  *
@@ -48,25 +56,6 @@ import org.opengis.referencing.operation.MathTransform;
  */
 public class GeoToolMapRenderer implements BaseMap
 {
-
-  public static interface MapRenderer
-  {
-    public void paint(final Graphics gc);
-  }
-
-  private JMapPane mapPane;
-  private MapContent mapComponent;
-
-  private Graphics graphics;
-
-  private SimpleFeatureSource featureSource;
-
-  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
-
-  public void addRenderer(final MapRenderer renderer)
-  {
-    _myRenderers.add(renderer);
-  }
 
   private static class CustomMapPane extends JMapPane
   {
@@ -79,8 +68,54 @@ public class GeoToolMapRenderer implements BaseMap
     private final MouseDragLine dragLine;
 
     private final GeoToolMapRenderer _renderer;
+    private final MapMouseListener mouseMotionListener = new MapMouseAdapter()
+    {
 
-    public CustomMapPane(GeoToolMapRenderer geoToolMapRenderer)
+      void handleMouseMovement(final MapMouseEvent ev)
+      {
+
+        final DirectPosition2D curPos = ev.getWorldPos();
+        final WorldLocation current = new WorldLocation(curPos.getY(), curPos
+            .getX(), 0);
+        final String message = BriefFormatLocation.toString(current);
+        DebriefLiteApp.updateStatusMessage(message);
+      }
+
+      @Override
+      public void onMouseDragged(final MapMouseEvent arg0)
+      {
+        if (!(currentCursorTool instanceof RangeBearingTool))
+        {
+          handleMouseMovement(arg0);
+        }
+      }
+
+      @Override
+      public void onMouseEntered(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseExited(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseMoved(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+
+      @Override
+      public void onMouseWheelMoved(final MapMouseEvent arg0)
+      {
+        handleMouseMovement(arg0);
+      }
+    };
+
+    public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
       _renderer = geoToolMapRenderer;
@@ -88,6 +123,7 @@ public class GeoToolMapRenderer implements BaseMap
       dragLine = new MouseDragLine(this);
       addMouseListener(dragLine);
       addMouseMotionListener(dragLine);
+      addMouseListener(mouseMotionListener);
     }
 
     @Override
@@ -98,20 +134,26 @@ public class GeoToolMapRenderer implements BaseMap
     }
 
     @Override
-    public void setCursorTool(CursorTool tool) {
+    public void setCursorTool(final CursorTool tool)
+    {
       paramsLock.writeLock().lock();
-      try {
-        if (currentCursorTool != null) {
+      try
+      {
+        if (currentCursorTool != null)
+        {
           mouseEventDispatcher.removeMouseListener(currentCursorTool);
         }
 
         currentCursorTool = tool;
 
-        if (currentCursorTool == null) {
+        if (currentCursorTool == null)
+        {
           setCursor(Cursor.getDefaultCursor());
           dragBox.setEnabled(false);
           dragLine.setEnabled(false);
-        } else {
+        }
+        else
+        {
           setCursor(currentCursorTool.getCursor());
           dragLine.setEnabled(currentCursorTool instanceof RangeBearingTool);
           dragBox.setEnabled(currentCursorTool.drawDragBox());
@@ -119,10 +161,32 @@ public class GeoToolMapRenderer implements BaseMap
           mouseEventDispatcher.addMouseListener(currentCursorTool);
         }
 
-      } finally {
+      }
+      finally
+      {
         paramsLock.writeLock().unlock();
       }
     }
+  }
+
+  public static interface MapRenderer
+  {
+    public void paint(final Graphics gc);
+  }
+
+  private JMapPane mapPane;
+
+  private MapContent mapComponent;
+
+  private Graphics graphics;
+
+  private SimpleFeatureSource featureSource;
+
+  private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+
+  public void addRenderer(final MapRenderer renderer)
+  {
+    _myRenderers.add(renderer);
   }
 
   @Override
@@ -188,16 +252,15 @@ public class GeoToolMapRenderer implements BaseMap
   public void loadMapContent()
   {
 
-    //this is for dev
+    // this is for dev
 
-    String shape_path =
-        "data/ne_10M_admin0_countries_89S.shp";
+    final String shape_path = "data/ne_10M_admin0_countries_89S.shp";
 
     File file = new File(shape_path);
-    //System.out.println("Checking for shape file at:"+file.getAbsolutePath());
+    // System.out.println("Checking for shape file at:"+file.getAbsolutePath());
     if (!file.exists())
     {
-      //      System.out.println("File does not exist");
+      // System.out.println("File does not exist");
       file = JFileDataStoreChooser.showOpenFile("shp", null);
     }
     if (file == null)
@@ -234,4 +297,5 @@ public class GeoToolMapRenderer implements BaseMap
       r.paint(arg0);
     }
   }
+
 }
