@@ -1009,7 +1009,7 @@ public class ImportNMEA
     {
       final ArrayList<FixWrapper> track = contacts.get(trackName);
 
-      System.out.println("storing " + track.size() + " for " + trackName);
+//      System.out.println("storing " + track.size() + " for " + trackName);
 
       if (contactHolder == null)
       {
