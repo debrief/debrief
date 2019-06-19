@@ -8,7 +8,7 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <groupId>org.mwc.debrief</groupId>
-  <artifactId>org.geotools</artifactId>
+  <artifactId>org.mwc.cmap.geotools</artifactId>
   <packaging>eclipse-plugin</packaging>
   <version>1.0.7</version>
 </project>

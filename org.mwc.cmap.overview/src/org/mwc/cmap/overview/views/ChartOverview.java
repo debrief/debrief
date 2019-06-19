@@ -40,7 +40,7 @@ import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.core.ui_support.swt.SWTCanvasAdapter;
-import org.mwc.cmap.gt2plot.proj.GtProjection;
+import org.mwc.cmap.geotools.gt2plot.GtProjection;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 

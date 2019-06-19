@@ -44,7 +44,7 @@ Export-Package: com.thoughtworks.xstream,
  org.xmlpull.mxp1,
  org.xmlpull.v1
 Require-Bundle: info.limpet.libs;visibility:=reexport,
- org.geotools;visibility:=reexport,
+ org.mwc.cmap.geotools;visibility:=reexport,
  org.eclipse.core.resources,
  org.eclipse.core.runtime,
  org.eclipse.core.filesystem
