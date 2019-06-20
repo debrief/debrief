@@ -49,7 +49,7 @@ public class NarrativePanelToolbar extends JPanel
   public static final String STATE_PROPERTY = "STATE";
 
   public static final String NARRATIVES_PROPERTY = "NARRATIVES";
-  
+
   public static final String NARRATIVES_REMOVE_COMPLETE_LAYER = "REMOVE_LAYER";
 
   private String _state = INACTIVE_STATE;
@@ -114,21 +114,24 @@ public class NarrativePanelToolbar extends JPanel
                   final Editable thisE = items.nextElement();
                   newEntries.add((NarrativeEntry) thisE);
                 }
-                for ( NarrativeEntry currentEntry : _model.getCurrentNarrativeEntries(narrativeWrapper) )
+                for (NarrativeEntry currentEntry : _model
+                    .getCurrentNarrativeEntries(narrativeWrapper))
                 {
-                  if ( !newEntries.contains(currentEntry) )
+                  if (!newEntries.contains(currentEntry))
                   {
                     toRemove.add(currentEntry);
                   }
                 }
-                for ( NarrativeEntry newEntry : newEntries )
+                for (NarrativeEntry newEntry : newEntries)
                 {
-                  if ( !_model.getCurrentNarrativeEntries(narrativeWrapper).contains(newEntry) ) 
+                  if (!_model.getCurrentNarrativeEntries(narrativeWrapper)
+                      .contains(newEntry))
                   {
                     toAdd.add(newEntry);
                   }
                 }
-              }else
+              }
+              else
               {
                 _model.addNarrativeWrapper(narrativeWrapper);
                 final Enumeration<Editable> items = narrativeWrapper.elements();
@@ -137,25 +140,29 @@ public class NarrativePanelToolbar extends JPanel
                   final Editable thisE = items.nextElement();
                   toAdd.add((NarrativeEntry) thisE);
                 }
-                
+
               }
-              
-              for ( NarrativeEntry entry : toAdd )
+
+              for (NarrativeEntry entry : toAdd)
               {
                 _narrativeListModel.addElement(entry);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
-                
+
               }
-              for ( NarrativeEntry entry : toRemove )
+              for (NarrativeEntry entry : toRemove)
               {
                 _narrativeListModel.removeElement(entry);
               }
               // Sort it.
             }
-          }else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName()))
+          }
+          else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt
+              .getPropertyName()))
           {
-            final NarrativeWrapper wrapperRemoved = (NarrativeWrapper)evt.getNewValue();
-            final Enumeration<Editable> iteratorToRemove = wrapperRemoved.elements();
+            final NarrativeWrapper wrapperRemoved = (NarrativeWrapper) evt
+                .getNewValue();
+            final Enumeration<Editable> iteratorToRemove = wrapperRemoved
+                .elements();
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
@@ -163,7 +170,7 @@ public class NarrativePanelToolbar extends JPanel
             }
             _model.removeNarrativeWrapper(wrapperRemoved);
           }
-          
+
           if (!_narrativeListModel.isEmpty())
           {
             setState(ACTIVE_STATE);
@@ -400,12 +407,12 @@ public class NarrativePanelToolbar extends JPanel
           newNarrative.getSupport().addPropertyChangeListener(
               new PropertyChangeListener()
               {
-  
+
                 @Override
                 public void propertyChange(PropertyChangeEvent evt)
                 {
-                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
-                      nextItem);
+                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY,
+                      null, nextItem);
                 }
               });
           notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
@@ -413,14 +420,15 @@ public class NarrativePanelToolbar extends JPanel
         }
       }
     }
-    
-    for (NarrativeWrapper narrativeWrappersInPanel : _model.getRegisteredNarrativeWrapper())
+
+    for (NarrativeWrapper narrativeWrappersInPanel : _model
+        .getRegisteredNarrativeWrapper())
     {
       // Some items has been removed.
       if (!loadedNarratives.contains(narrativeWrappersInPanel))
       {
-        notifyListenersStateChanged(narrativeWrappersInPanel, NARRATIVES_REMOVE_COMPLETE_LAYER,
-            null, narrativeWrappersInPanel);
+        notifyListenersStateChanged(narrativeWrappersInPanel,
+            NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
       }
     }
   }
@@ -432,7 +440,7 @@ public class NarrativePanelToolbar extends JPanel
     final String oldState = _state;
     this._state = newState;
 
-    if ( newState != null && !newState.equals(oldState) )
+    if (newState != null && !newState.equals(oldState))
     {
       notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
     }

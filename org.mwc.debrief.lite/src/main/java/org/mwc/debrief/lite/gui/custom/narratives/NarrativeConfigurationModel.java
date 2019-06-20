@@ -48,8 +48,9 @@ public class NarrativeConfigurationModel implements
 
   private List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
       new ArrayList<>();
-  
-  private HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers = new HashMap<>();
+
+  private HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
+      new HashMap<>();
 
   public NarrativeConfigurationModel()
   {
@@ -144,7 +145,7 @@ public class NarrativeConfigurationModel implements
           newValue);
     }
   }
-  
+
   public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
   {
     _narrativeWrappers.put(narrativeWrapper, new HashSet<NarrativeEntry>());
@@ -166,7 +167,7 @@ public class NarrativeConfigurationModel implements
   public void registerNewNarrativeEntry(NarrativeWrapper wrapper,
       NarrativeEntry entry)
   {
-    if ( !_narrativeWrappers.containsKey(wrapper) )
+    if (!_narrativeWrappers.containsKey(wrapper))
     {
       addNarrativeWrapper(wrapper);
     }
@@ -183,7 +184,7 @@ public class NarrativeConfigurationModel implements
   public void unregisterNarrativeEntry(NarrativeWrapper wrapper,
       NarrativeEntry entry)
   {
-    if ( _narrativeWrappers.containsKey(wrapper))
+    if (_narrativeWrappers.containsKey(wrapper))
     {
       _narrativeWrappers.get(wrapper).remove(entry);
     }
