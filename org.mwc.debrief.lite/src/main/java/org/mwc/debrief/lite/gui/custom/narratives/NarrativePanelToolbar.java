@@ -1,6 +1,7 @@
 package org.mwc.debrief.lite.gui.custom.narratives;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -9,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -188,6 +188,7 @@ public class NarrativePanelToolbar extends JPanel
     super(new FlowLayout(FlowLayout.LEFT));
 
     this._narrativeList.setCellRenderer(new NarrativePanelItemRenderer());
+    //this._narrativeList.setPreferredSize(new Dimension(100, 1000));
     this._stepControl = stepControl;
     this._model = model;
     init();
@@ -458,25 +459,10 @@ public class NarrativePanelToolbar extends JPanel
 
   private JButton createCommandButton(final String command, final String image)
   {
-    final ImageIcon icon = getIcon(image);
+    final ImageIcon icon = Utils.getIcon(image);
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
-  }
-
-  private ImageIcon getIcon(final String image)
-  {
-    final URL imageIcon = getClass().getClassLoader().getResource(image);
-    ImageIcon icon = null;
-    try
-    {
-      icon = new ImageIcon(imageIcon);
-    }
-    catch (final Exception e)
-    {
-      throw new IllegalArgumentException("Icon missing:" + image);
-    }
-    return icon;
   }
 
   public JList<NarrativeEntry> getNarrativeList()
