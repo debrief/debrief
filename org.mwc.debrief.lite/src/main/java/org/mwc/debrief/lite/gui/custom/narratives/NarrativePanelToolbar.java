@@ -49,6 +49,8 @@ public class NarrativePanelToolbar extends JPanel
   public static final String STATE_PROPERTY = "STATE";
 
   public static final String NARRATIVES_PROPERTY = "NARRATIVES";
+  
+  public static final String NARRATIVES_REMOVE_COMPLETE_LAYER = "REMOVE_LAYER";
 
   private String _state = INACTIVE_STATE;
 
@@ -56,6 +58,9 @@ public class NarrativePanelToolbar extends JPanel
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
+  /**
+   * Maybe this should be inside the abstract model.
+   */
   private final DefaultListModel<NarrativeEntry> _narrativeListModel =
       new DefaultListModel<>();
 
@@ -147,15 +152,25 @@ public class NarrativePanelToolbar extends JPanel
               }
               // Sort it.
             }
-            
-            if (!_narrativeListModel.isEmpty())
+          }else if (NARRATIVES_REMOVE_COMPLETE_LAYER.equals(evt.getPropertyName()))
+          {
+            final NarrativeWrapper wrapperRemoved = (NarrativeWrapper)evt.getNewValue();
+            final Enumeration<Editable> iteratorToRemove = wrapperRemoved.elements();
+            while (iteratorToRemove.hasMoreElements())
             {
-              setState(ACTIVE_STATE);
+              final Editable thisE = iteratorToRemove.nextElement();
+              _narrativeListModel.removeElement(thisE);
             }
-            else
-            {
-              setState(INACTIVE_STATE);
-            }
+            _model.removeNarrativeWrapper(wrapperRemoved);
+          }
+          
+          if (!_narrativeListModel.isEmpty())
+          {
+            setState(ACTIVE_STATE);
+          }
+          else
+          {
+            setState(INACTIVE_STATE);
           }
         }
       };
@@ -371,27 +386,41 @@ public class NarrativePanelToolbar extends JPanel
   protected void checkNewNarratives(Layers layers)
   {
     final Enumeration<Editable> elem = layers.elements();
+    final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
     while (elem.hasMoreElements())
     {
       final Editable nextItem = elem.nextElement();
-      if (nextItem instanceof NarrativeWrapper && !_model
-          .getRegisteredNarrativeWrapper().contains(nextItem))
+      if (nextItem instanceof NarrativeWrapper)
       {
         final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
-        _model.addNarrativeWrapper(newNarrative);
-        newNarrative.getSupport().addPropertyChangeListener(
-            new PropertyChangeListener()
-            {
-
-              @Override
-              public void propertyChange(PropertyChangeEvent evt)
+        loadedNarratives.add(newNarrative);
+        if (!_model.getRegisteredNarrativeWrapper().contains(nextItem))
+        {
+          _model.addNarrativeWrapper(newNarrative);
+          newNarrative.getSupport().addPropertyChangeListener(
+              new PropertyChangeListener()
               {
-                notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
-                    nextItem);
-              }
-            });
-        notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
-            nextItem);
+  
+                @Override
+                public void propertyChange(PropertyChangeEvent evt)
+                {
+                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+                      nextItem);
+                }
+              });
+          notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+              nextItem);
+        }
+      }
+    }
+    
+    for (NarrativeWrapper narrativeWrappersInPanel : _model.getRegisteredNarrativeWrapper())
+    {
+      // Some items has been removed.
+      if (!loadedNarratives.contains(narrativeWrappersInPanel))
+      {
+        notifyListenersStateChanged(narrativeWrappersInPanel, NARRATIVES_REMOVE_COMPLETE_LAYER,
+            null, narrativeWrappersInPanel);
       }
     }
   }

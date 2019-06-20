@@ -172,4 +172,20 @@ public class NarrativeConfigurationModel implements
     }
     _narrativeWrappers.get(wrapper).add(entry);
   }
+
+  @Override
+  public void removeNarrativeWrapper(NarrativeWrapper narrativeWrapper)
+  {
+    _narrativeWrappers.remove(narrativeWrapper);
+  }
+
+  @Override
+  public void unregisterNarrativeEntry(NarrativeWrapper wrapper,
+      NarrativeEntry entry)
+  {
+    if ( _narrativeWrappers.containsKey(wrapper))
+    {
+      _narrativeWrappers.get(wrapper).remove(entry);
+    }
+  }
 }
