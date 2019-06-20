@@ -369,7 +369,7 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
 
-    final JButton copyButton = createCommandButton("Copy Selected Entrey",
+    /*final JButton copyButton = createCommandButton("Copy Selected Entrey",
         "icons/16/copy_to_clipboard.png");
     copyButton.addActionListener(new ActionListener()
     {
@@ -403,18 +403,18 @@ public class NarrativePanelToolbar extends JPanel
       {
         System.out.println("Add single entry not implemented");
       }
-    });
+    });*/
 
     add(tracksFilterLabel);
     add(typeFilterLabel);
     add(wrapTextButton);
-    add(copyButton);
+    /*add(copyButton);
     add(addBulkEntriesButton);
-    add(addSingleEntryButton);
+    add(addSingleEntryButton);*/
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {tracksFilterLabel, typeFilterLabel, wrapTextButton, copyButton,
-        addBulkEntriesButton, addSingleEntryButton}));
+    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*, copyButton,
+        addBulkEntriesButton, addSingleEntryButton*/}));
 
     if (_stepControl != null && _stepControl.getLayers() != null)
     {
