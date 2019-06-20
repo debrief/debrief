@@ -390,6 +390,8 @@ public class NarrativePanelToolbar extends JPanel
                     nextItem);
               }
             });
+        notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+            nextItem);
       }
     }
   }
