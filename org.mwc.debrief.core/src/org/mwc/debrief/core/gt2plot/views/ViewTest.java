@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.views;
+package org.mwc.debrief.core.gt2plot.views;
 
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -63,7 +63,7 @@ import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
 import org.geotools.styling.StyleFactoryImpl;
 import org.geotools.swt.utils.Utils;
-import org.mwc.cmap.gt2plot.GtActivator;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.opengis.geometry.Envelope;
 import org.opengis.parameter.GeneralParameterValue;
 
@@ -136,7 +136,7 @@ public class ViewTest extends ViewPart
 
 		try
 		{
-			final URL url = GtActivator.getDefault().getBundle()
+			final URL url = DebriefPlugin.getDefault().getBundle()
 					.getEntry("data/50m_admin_0_countries.shp");
 			final String filePath = FileLocator.resolve(url).getFile();
 			final File file = new File(filePath);

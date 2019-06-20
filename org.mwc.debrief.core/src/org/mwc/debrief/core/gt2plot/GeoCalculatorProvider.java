@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.calc;
+package org.mwc.debrief.core.gt2plot;
 
 import interfaces.IEarthModelProvider;
 import MWC.Algorithms.EarthModel;

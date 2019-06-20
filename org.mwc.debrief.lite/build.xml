@@ -45,6 +45,7 @@
 		<path id="debrief_lite.jar.classpath">
 			<pathelement location="../org.mwc.debrief.legacy/cmap_legacy.jar"/>
 			<pathelement location="../org.mwc.debrief.legacy/debrief_legacy.jar"/>
+			<pathelement location="../org.mwc.cmap.geotools/cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
@@ -104,6 +105,7 @@
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
 			<fileset dir="" includes="cmap_legacy.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools" includes="cmap_geotools.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>
 		</copy>
@@ -146,6 +148,7 @@
 		</target>
 	<target name="dist" depends="clean">
 		<ant antfile="build.xml" dir="../org.mwc.debrief.legacy" target="debrief_legacy.jar"/>
+		<ant antfile="build.xml" dir="../org.mwc.cmap.geotools" target="geotools_jar"/>
 		<antcall target="generate"/>
 	</target>
 </project>

@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import org.eclipse.core.runtime.Platform;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.renderer.label.LabelCacheImpl;
@@ -56,8 +55,9 @@ public class GeoToolsPainter
 		renderer.setMapContent(map);
 		// fix/workaround for "Pole 90% exception"
 		org.geotools.util.logging.Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
-
-		if (!Platform.OS_LINUX.equals(Platform.getOS()))
+		String OS_NAME=System.getProperty("os.name");
+		boolean linux = OS_NAME.equalsIgnoreCase("nix") || OS_NAME.equalsIgnoreCase("nux") || OS_NAME.equals("aix");
+		if (!linux)
 		{
 			final RenderingHints hints = new RenderingHints(
 					RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -74,13 +74,13 @@ public class GeoToolsPainter
 		final Graphics2D g2d = baseImage.createGraphics();
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			
-		if (Platform.OS_LINUX.equals(Platform.getOS()))
+		if (linux)
 		{
 			g2d.setRenderingHint(RenderingHints.KEY_TEXT_LCD_CONTRAST, 250);
 			g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
 		}
 		// do we need to set the background color?
-		if (bkColor != null && !Platform.OS_LINUX.equals(Platform.getOS()))
+		if (bkColor != null && !linux)
 		{
 			// fill in the background color
 			g2d.setPaint(bkColor);

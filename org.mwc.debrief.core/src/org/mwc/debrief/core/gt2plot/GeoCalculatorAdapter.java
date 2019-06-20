@@ -12,12 +12,12 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.calc;
+package org.mwc.debrief.core.gt2plot;
 
 import org.eclipse.core.runtime.Status;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.GeodeticCalculator;
-import org.mwc.cmap.gt2plot.GtActivator;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -46,9 +46,9 @@ public class GeoCalculatorAdapter extends FlatEarth implements EarthModel
 		try {
 			crs = CRS.decode(crsType);
 		} catch (final NoSuchAuthorityCodeException e) {
-			GtActivator.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
+			DebriefPlugin.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
 		} catch (final FactoryException e) {
-			GtActivator.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
+		  DebriefPlugin.logError(Status.ERROR, "Could not initialize CRS" + crsType, e);
 		}
 		_geoCalc = new GeodeticCalculator(crs);
 	}

@@ -49,6 +49,10 @@ import javax.swing.WindowConstants;
 import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
+import org.mwc.cmap.geotools.gt2plot.GtProjection;
+import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
+import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.debrief.lite.graph.GraphPanelView;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
@@ -89,11 +93,14 @@ import MWC.GUI.Defaults;
 import MWC.GUI.Defaults.PreferenceProvider;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.DataListener2;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
@@ -484,8 +491,95 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
+  protected GeoToolsHandler _myGeoHandler = new GtProjection();
+  
+  private final Layers _theLayers = new Layers()
+  {
 
-  final private Layers _theLayers = new Layers();
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+
+    @Override
+    public void addThisLayer(final Layer theLayer)
+    {
+      Layer wrappedLayer = null;
+
+      // ok, if this is an externally managed layer (and we're doing
+      // GT-plotting, we will wrap it, and actually add the wrapped layer
+      if (theLayer instanceof ExternallyManagedDataLayer)
+      {
+        final ExternallyManagedDataLayer dl =
+            (ExternallyManagedDataLayer) theLayer;
+        if (dl.getDataType().equals(
+            MWC.GUI.Shapes.ChartBoundsWrapper.WORLDIMAGE_TYPE))
+        {
+          final GeoToolsLayer gt =
+              new WorldImageLayer(dl.getName(), dl.getFilename());
+
+          gt.setVisible(dl.getVisible());
+          _myGeoHandler.addGeoToolsLayer(gt);
+          wrappedLayer = gt;
+        }
+        else if (dl.getDataType().equals(
+            MWC.GUI.Shapes.ChartBoundsWrapper.SHAPEFILE_TYPE))
+        {
+          // just see if it's a raster extent layer (special processing)
+          if (dl.getName().equals(WorldImageLayer.RASTER_FILE))
+          {
+            // special processing - wrap it.
+            wrappedLayer =
+                WorldImageLayer.RasterExtentHelper.loadRasters(dl
+                    .getFilename(), this);
+          }
+          else
+          {
+            // ok, it's a normal shapefile: load it.
+            final GeoToolsLayer gt =
+                new ShapeFileLayer(dl.getName(), dl.getFilename());
+            gt.setVisible(dl.getVisible());
+            _myGeoHandler.addGeoToolsLayer(gt);
+            wrappedLayer = gt;
+          }
+        }
+        if (wrappedLayer != null)
+          super.addThisLayer(wrappedLayer);
+      }
+      else
+      {
+        super.addThisLayer(theLayer);
+      }
+      
+    }
+
+    @Override
+    public void removeThisLayer(final Layer theLayer)
+    {
+      if (theLayer instanceof GeoToolsLayer)
+      {
+        // get the content
+        /*final GtProjection gp =
+            (GtProjection) _myChart.getCanvas().getProjection();*/
+        final GeoToolsLayer gt = (GeoToolsLayer) theLayer;
+        gt.clearMap();
+
+        /*if (gp.numLayers() == 0)
+        {
+          // ok - we've got to force the data rea
+          final WorldArea area =
+              _myChart.getCanvas().getProjection().getDataArea();
+          _myChart.getCanvas().getProjection().setDataArea(area);
+        }*/
+
+      }
+
+      // and remove from the actual list
+      super.removeThisLayer(theLayer);
+
+    }
+
+  };
   private GeoToolMapProjection projection;
 
   private final LiteSession session;
@@ -575,7 +669,7 @@ public class DebriefLiteApp implements FileDropListener
     initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
-    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
+    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -891,6 +985,10 @@ public class DebriefLiteApp implements FileDropListener
             handleImportNMEAFile(file);
             //layerManager.resetTree();
           }
+          else if(suff.equalsIgnoreCase(".TIF"))
+          {
+            handleImportTIFFile(file);
+          }
           else
           {
             Trace.trace("This file type not handled:" + suff);
@@ -908,6 +1006,23 @@ public class DebriefLiteApp implements FileDropListener
     }
     
     restoreCursor();
+  }
+
+  public static  void handleImportTIFFile(File file)
+  {
+    System.out.println("Started loading file");
+    String layerName = file.getName();
+
+    // ok - get loading going
+    final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(
+        ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, file.getAbsolutePath());
+    _instance._theLayers.addThisLayer(dl);
+/*    final GeoToolsLayer gt =
+        new WorldImageLayer(file.getName(), file.getAbsolutePath());
+    gt.setVisible(true);
+    GeoToolsHandler myGeoHandler = new GtProjection();
+    myGeoHandler.addGeoToolsLayer(gt);
+*/    
   }
 
   public OutlinePanelView getLayerManager()
