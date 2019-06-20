@@ -7,42 +7,45 @@ import javax.swing.Box;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 public class NarrativePanelView extends JPanel
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1218759123615315561L;
 
   private final NarrativePanelToolbar _toolbar;
-  
+
   private final AbstractNarrativeConfiguration _model;
-  
+
   public NarrativePanelView(final NarrativePanelToolbar toolbar,
       final AbstractNarrativeConfiguration model)
   {
     super();
-    
+
     _toolbar = toolbar;
     _model = model;
-    
+
     setLayout(new BorderLayout());
-    
+
     add(_toolbar, BorderLayout.NORTH);
-    //final JPanel mainPanel = new JPanel();
+    // final JPanel mainPanel = new JPanel();
     final Box mainPanel = Box.createVerticalBox();
     final JScrollPane scrollPane = new JScrollPane(mainPanel);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-    
+    scrollPane.setHorizontalScrollBarPolicy(
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setVerticalScrollBarPolicy(
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+
     final JTextField filterTextField = new JTextField();
     filterTextField.setPreferredSize(new Dimension(30, 20));
     mainPanel.add(filterTextField);
-    
+
     mainPanel.add(toolbar.getNarrativeList());
-    
+
     add(scrollPane, BorderLayout.CENTER);
   }
 }

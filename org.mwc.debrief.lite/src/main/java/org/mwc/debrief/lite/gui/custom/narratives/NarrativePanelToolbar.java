@@ -1,7 +1,6 @@
 package org.mwc.debrief.lite.gui.custom.narratives;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -92,7 +91,7 @@ public class NarrativePanelToolbar extends JPanel
       {
 
         @Override
-        public void propertyChange(PropertyChangeEvent evt)
+        public void propertyChange(final PropertyChangeEvent evt)
         {
           if (NARRATIVES_PROPERTY.equals(evt.getPropertyName()))
           {
@@ -114,7 +113,7 @@ public class NarrativePanelToolbar extends JPanel
                   final Editable thisE = items.nextElement();
                   newEntries.add((NarrativeEntry) thisE);
                 }
-                for (NarrativeEntry currentEntry : _model
+                for (final NarrativeEntry currentEntry : _model
                     .getCurrentNarrativeEntries(narrativeWrapper))
                 {
                   if (!newEntries.contains(currentEntry))
@@ -122,7 +121,7 @@ public class NarrativePanelToolbar extends JPanel
                     toRemove.add(currentEntry);
                   }
                 }
-                for (NarrativeEntry newEntry : newEntries)
+                for (final NarrativeEntry newEntry : newEntries)
                 {
                   if (!_model.getCurrentNarrativeEntries(narrativeWrapper)
                       .contains(newEntry))
@@ -143,13 +142,13 @@ public class NarrativePanelToolbar extends JPanel
 
               }
 
-              for (NarrativeEntry entry : toAdd)
+              for (final NarrativeEntry entry : toAdd)
               {
                 _narrativeListModel.addElement(entry);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
               }
-              for (NarrativeEntry entry : toRemove)
+              for (final NarrativeEntry entry : toRemove)
               {
                 _narrativeListModel.removeElement(entry);
               }
@@ -182,13 +181,15 @@ public class NarrativePanelToolbar extends JPanel
         }
       };
 
+  private final ArrayList<PropertyChangeListener> stateListeners;
+
   public NarrativePanelToolbar(final LiteStepControl stepControl,
       final AbstractNarrativeConfiguration model)
   {
     super(new FlowLayout(FlowLayout.LEFT));
 
     this._narrativeList.setCellRenderer(new NarrativePanelItemRenderer());
-    //this._narrativeList.setPreferredSize(new Dimension(100, 1000));
+    // this._narrativeList.setPreferredSize(new Dimension(100, 1000));
     this._stepControl = stepControl;
     this._model = model;
     init();
@@ -197,6 +198,62 @@ public class NarrativePanelToolbar extends JPanel
         updatingNarrativesListener));
 
     setState(INACTIVE_STATE);
+  }
+
+  protected void checkNewNarratives(final Layers layers)
+  {
+    final Enumeration<Editable> elem = layers.elements();
+    final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
+    while (elem.hasMoreElements())
+    {
+      final Editable nextItem = elem.nextElement();
+      if (nextItem instanceof NarrativeWrapper)
+      {
+        final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
+        loadedNarratives.add(newNarrative);
+        if (!_model.getRegisteredNarrativeWrapper().contains(nextItem))
+        {
+          _model.addNarrativeWrapper(newNarrative);
+          newNarrative.getSupport().addPropertyChangeListener(
+              new PropertyChangeListener()
+              {
+
+                @Override
+                public void propertyChange(final PropertyChangeEvent evt)
+                {
+                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY,
+                      null, nextItem);
+                }
+              });
+          notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
+              nextItem);
+        }
+      }
+    }
+
+    for (final NarrativeWrapper narrativeWrappersInPanel : _model
+        .getRegisteredNarrativeWrapper())
+    {
+      // Some items has been removed.
+      if (!loadedNarratives.contains(narrativeWrappersInPanel))
+      {
+        notifyListenersStateChanged(narrativeWrappersInPanel,
+            NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
+      }
+    }
+  }
+
+  private JButton createCommandButton(final String command, final String image)
+  {
+    final ImageIcon icon = Utils.getIcon(image);
+    final JButton button = new JButton(icon);
+    button.setToolTipText(command);
+    return button;
+  }
+
+  public JList<NarrativeEntry> getNarrativeList()
+  {
+    return _narrativeList;
   }
 
   private void init()
@@ -251,7 +308,7 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
 
-    JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
+    final JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
     final JComboBox<String> typeFilterLabel = new JComboBox<>(new String[]
     {"Types"});
     typeFilterLabel.setEnabled(true);
@@ -365,19 +422,20 @@ public class NarrativePanelToolbar extends JPanel
       {
 
         @Override
-        public void dataReformatted(Layers theData, Layer changedLayer)
+        public void dataExtended(final Layers theData)
         {
           checkNewNarratives(theData);
         }
 
         @Override
-        public void dataModified(Layers theData, Layer changedLayer)
+        public void dataModified(final Layers theData, final Layer changedLayer)
         {
           checkNewNarratives(theData);
         }
 
         @Override
-        public void dataExtended(Layers theData)
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
         {
           checkNewNarratives(theData);
         }
@@ -391,62 +449,6 @@ public class NarrativePanelToolbar extends JPanel
     }
   }
 
-  protected void checkNewNarratives(Layers layers)
-  {
-    final Enumeration<Editable> elem = layers.elements();
-    final Set<NarrativeWrapper> loadedNarratives = new TreeSet<>();
-    while (elem.hasMoreElements())
-    {
-      final Editable nextItem = elem.nextElement();
-      if (nextItem instanceof NarrativeWrapper)
-      {
-        final NarrativeWrapper newNarrative = (NarrativeWrapper) nextItem;
-        loadedNarratives.add(newNarrative);
-        if (!_model.getRegisteredNarrativeWrapper().contains(nextItem))
-        {
-          _model.addNarrativeWrapper(newNarrative);
-          newNarrative.getSupport().addPropertyChangeListener(
-              new PropertyChangeListener()
-              {
-
-                @Override
-                public void propertyChange(PropertyChangeEvent evt)
-                {
-                  notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY,
-                      null, nextItem);
-                }
-              });
-          notifyListenersStateChanged(nextItem, NARRATIVES_PROPERTY, null,
-              nextItem);
-        }
-      }
-    }
-
-    for (NarrativeWrapper narrativeWrappersInPanel : _model
-        .getRegisteredNarrativeWrapper())
-    {
-      // Some items has been removed.
-      if (!loadedNarratives.contains(narrativeWrappersInPanel))
-      {
-        notifyListenersStateChanged(narrativeWrappersInPanel,
-            NARRATIVES_REMOVE_COMPLETE_LAYER, null, narrativeWrappersInPanel);
-      }
-    }
-  }
-
-  private final ArrayList<PropertyChangeListener> stateListeners;
-
-  public void setState(final String newState)
-  {
-    final String oldState = _state;
-    this._state = newState;
-
-    if (newState != null && !newState.equals(oldState))
-    {
-      notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
-    }
-  }
-
   private void notifyListenersStateChanged(final Object source,
       final String property, final Object oldValue, final Object newValue)
   {
@@ -457,17 +459,15 @@ public class NarrativePanelToolbar extends JPanel
     }
   }
 
-  private JButton createCommandButton(final String command, final String image)
+  public void setState(final String newState)
   {
-    final ImageIcon icon = Utils.getIcon(image);
-    final JButton button = new JButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }
+    final String oldState = _state;
+    this._state = newState;
 
-  public JList<NarrativeEntry> getNarrativeList()
-  {
-    return _narrativeList;
+    if (newState != null && !newState.equals(oldState))
+    {
+      notifyListenersStateChanged(this, STATE_PROPERTY, oldState, newState);
+    }
   }
 
 }

@@ -22,13 +22,14 @@ public class NarrativePanelItemRenderer extends JPanel implements
 {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = -2227870470228775898L;
 
   @Override
-  public Component getListCellRendererComponent(JList<? extends NarrativeEntry> list,
-      NarrativeEntry value, int index, boolean isSelected, boolean cellHasFocus)
+  public Component getListCellRendererComponent(
+      final JList<? extends NarrativeEntry> list, final NarrativeEntry value,
+      final int index, final boolean isSelected, final boolean cellHasFocus)
   {
     final JPanel mainPanel = new JPanel();
     final JPanel content = new JPanel();
@@ -39,8 +40,10 @@ public class NarrativePanelItemRenderer extends JPanel implements
     final JPanel body = new JPanel(new FlowLayout(FlowLayout.LEFT));
     final JLabel time = new JLabel(value.getDTGString());
     final Font originalFont = time.getFont();
-    final Font smallFont = new Font(originalFont.getName(), originalFont.getStyle(), 8);
-    final Font bigFont = new Font(originalFont.getName(), originalFont.getStyle(), 12);
+    final Font smallFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 8);
+    final Font bigFont = new Font(originalFont.getName(), originalFont
+        .getStyle(), 12);
     time.setFont(smallFont);
     final JLabel trackName = new JLabel(value.getTrackName());
     trackName.setFont(smallFont);
@@ -51,7 +54,7 @@ public class NarrativePanelItemRenderer extends JPanel implements
     header.add(trackName);
     header.add(Box.createHorizontalStrut(3));
     header.add(typeName);
-    
+
     final JTextArea name = new JTextArea(2, 20);
     name.setWrapStyleWord(true);
     name.setLineWrap(true);
@@ -63,45 +66,39 @@ public class NarrativePanelItemRenderer extends JPanel implements
     name.setFont(UIManager.getFont("Label.font"));
     name.setBorder(UIManager.getBorder("Label.border"));
     body.add(name);
-    //body.add(Box.createHorizontalGlue());
     name.setFont(bigFont);
-    
-    
+
     content.add(header);
     content.add(body);
-    
+
     JLabel highlightIcon;
-    if ( isSelected )
+    if (isSelected)
     {
-      highlightIcon = new JLabel(Utils.getIcon("icons/16/highlight.png"));      
-    }else
+      highlightIcon = new JLabel(Utils.getIcon("icons/16/highlight.png"));
+    }
+    else
     {
       highlightIcon = new JLabel(Utils.getIcon("icons/16/blank.png"));
     }
-    
+
     mainPanel.add(highlightIcon);
     mainPanel.add(content);
-    
-    if ( cellHasFocus )
+
+    if (cellHasFocus)
     {
       mainPanel.setBackground(new Color(229, 229, 229));
       body.setBackground(new Color(229, 229, 229));
       header.setBackground(new Color(229, 229, 229));
-      final JLabel editNarrative = new JLabel(Utils.getIcon("icons/16/edit_narrative.png"));
-      final JLabel removeNarrative = new JLabel(Utils.getIcon("icons/16/remove_narrative.png"));
-      
+      final JLabel editNarrative = new JLabel(Utils.getIcon(
+          "icons/16/edit_narrative.png"));
+      final JLabel removeNarrative = new JLabel(Utils.getIcon(
+          "icons/16/remove_narrative.png"));
+
       body.add(editNarrative);
       body.add(removeNarrative);
-      
+
     }
-    
+
     return mainPanel;
   }
-  
-  private Component leftJustify( final Component comp )  {
-    final Box  b = Box.createHorizontalBox();
-    b.add( comp );
-    b.add( Box.createHorizontalGlue() );
-    return b;
-}
 }

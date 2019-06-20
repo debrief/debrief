@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.debrief.lite.gui.custom.narratives;
 
@@ -46,15 +46,21 @@ public class NarrativeConfigurationModel implements
   private final ArrayList<PropertyChangeListener> _stateListeners =
       new ArrayList<>();
 
-  private List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
+  private final List<AbstractSelection<NarrativeEntry>> _narrativeSelection =
       new ArrayList<>();
 
-  private HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
+  private final HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
       new HashMap<>();
 
   public NarrativeConfigurationModel()
   {
 
+  }
+
+  @Override
+  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  {
+    _narrativeWrappers.put(narrativeWrapper, new HashSet<NarrativeEntry>());
   }
 
   @Override
@@ -64,18 +70,70 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void setNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  public Set<NarrativeEntry> getCurrentNarrativeEntries(
+      final NarrativeWrapper narrativeWrapper)
   {
-    final Enumeration<Editable> iter = narrativeWrapper.elements();
-    while (iter.hasMoreElements())
+    return _narrativeWrappers.get(narrativeWrapper);
+  }
+
+  @Override
+  public String getFilterText()
+  {
+    return _filterText;
+  }
+
+  @Override
+  public List<AbstractSelection<NarrativeEntry>> getNarratives()
+  {
+    return _narrativeSelection;
+  }
+
+  @Override
+  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
+  {
+    return _narrativeWrappers.keySet();
+  }
+
+  @Override
+  public void highlightNarrative(final NarrativeEntry narrative)
+  {
+    final boolean update = _currentHighLight == null || !_currentHighLight
+        .equals(narrative);
+
+    if (update)
     {
-      final Editable nextItem = iter.nextElement();
-      if (nextItem instanceof NarrativeEntry)
-      {
-        _narrativeSelection.add(new AbstractSelection<NarrativeEntry>(
-            (NarrativeEntry) nextItem, true));
-      }
+      final NarrativeEntry oldValue = _currentHighLight;
+      final NarrativeEntry newValue = narrative;
+      notifyListenersStateChanged(narrative, NARRATIVE_HIGHLIGHT, oldValue,
+          newValue);
     }
+  }
+
+  private void notifyListenersStateChanged(final Object source,
+      final String property, final Object oldValue, final Object newValue)
+  {
+    for (final PropertyChangeListener event : _stateListeners)
+    {
+      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
+          newValue));
+    }
+  }
+
+  @Override
+  public void registerNewNarrativeEntry(final NarrativeWrapper wrapper,
+      final NarrativeEntry entry)
+  {
+    if (!_narrativeWrappers.containsKey(wrapper))
+    {
+      addNarrativeWrapper(wrapper);
+    }
+    _narrativeWrappers.get(wrapper).add(entry);
+  }
+
+  @Override
+  public void removeNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
+  {
+    _narrativeWrappers.remove(narrativeWrapper);
   }
 
   @Override
@@ -103,22 +161,6 @@ public class NarrativeConfigurationModel implements
     }
   }
 
-  private void notifyListenersStateChanged(final Object source,
-      final String property, final Object oldValue, final Object newValue)
-  {
-    for (final PropertyChangeListener event : _stateListeners)
-    {
-      event.propertyChange(new PropertyChangeEvent(source, property, oldValue,
-          newValue));
-    }
-  }
-
-  @Override
-  public List<AbstractSelection<NarrativeEntry>> getNarratives()
-  {
-    return _narrativeSelection;
-  }
-
   @Override
   public void setFilterText(final String text)
   {
@@ -126,63 +168,23 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public String getFilterText()
+  public void setNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
   {
-    return _filterText;
-  }
-
-  @Override
-  public void highlightNarrative(final NarrativeEntry narrative)
-  {
-    boolean update = _currentHighLight == null || !_currentHighLight.equals(
-        narrative);
-
-    if (update)
+    final Enumeration<Editable> iter = narrativeWrapper.elements();
+    while (iter.hasMoreElements())
     {
-      final NarrativeEntry oldValue = _currentHighLight;
-      final NarrativeEntry newValue = narrative;
-      notifyListenersStateChanged(narrative, NARRATIVE_HIGHLIGHT, oldValue,
-          newValue);
+      final Editable nextItem = iter.nextElement();
+      if (nextItem instanceof NarrativeEntry)
+      {
+        _narrativeSelection.add(new AbstractSelection<NarrativeEntry>(
+            (NarrativeEntry) nextItem, true));
+      }
     }
   }
 
-  public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
-  {
-    _narrativeWrappers.put(narrativeWrapper, new HashSet<NarrativeEntry>());
-  }
-
-  public Set<NarrativeWrapper> getRegisteredNarrativeWrapper()
-  {
-    return _narrativeWrappers.keySet();
-  }
-
   @Override
-  public Set<NarrativeEntry> getCurrentNarrativeEntries(
-      NarrativeWrapper narrativeWrapper)
-  {
-    return _narrativeWrappers.get(narrativeWrapper);
-  }
-
-  @Override
-  public void registerNewNarrativeEntry(NarrativeWrapper wrapper,
-      NarrativeEntry entry)
-  {
-    if (!_narrativeWrappers.containsKey(wrapper))
-    {
-      addNarrativeWrapper(wrapper);
-    }
-    _narrativeWrappers.get(wrapper).add(entry);
-  }
-
-  @Override
-  public void removeNarrativeWrapper(NarrativeWrapper narrativeWrapper)
-  {
-    _narrativeWrappers.remove(narrativeWrapper);
-  }
-
-  @Override
-  public void unregisterNarrativeEntry(NarrativeWrapper wrapper,
-      NarrativeEntry entry)
+  public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
+      final NarrativeEntry entry)
   {
     if (_narrativeWrappers.containsKey(wrapper))
     {
