@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.data;
+package org.mwc.cmap.geotools.gt2plot;
 
 /*
  * JGrass - Free Open Source Java GIS http://www.jgrass.org 

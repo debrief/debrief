@@ -48,7 +48,7 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.geotools/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
@@ -102,7 +102,7 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
-			<fileset dir="../org.geotools/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
 			<fileset dir="" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>

@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.data;
+package org.mwc.cmap.geotools.gt2plot;
 
 import java.awt.Color;
 import java.io.File;
@@ -40,16 +40,16 @@ import org.opengis.feature.Property;
 import org.opengis.parameter.GeneralParameterValue;
 import org.opengis.referencing.FactoryException;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
+
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Shapes.ChartFolio;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
 
 public class WorldImageLayer extends GeoToolsLayer
 {

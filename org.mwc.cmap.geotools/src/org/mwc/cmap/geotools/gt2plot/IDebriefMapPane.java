@@ -12,12 +12,12 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.proj;
+package org.mwc.cmap.geotools.gt2plot;
 
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 
-import org.eclipse.swt.graphics.Rectangle;
 import org.geotools.map.MapContent;
 import org.geotools.swt.event.MapPaneListener;
 import org.opengis.geometry.Envelope;

@@ -12,15 +12,15 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.data;
+package org.mwc.cmap.geotools.gt2plot;
 
 import java.io.File;
 
 import org.eclipse.core.runtime.Status;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
-import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.ExternallyManagedDataLayer;
 
 public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
@@ -108,8 +108,8 @@ public abstract class GeoToolsLayer extends ExternallyManagedDataLayer
 		}
 		else
 		{
-			CorePlugin.logError(Status.WARNING, "GeoTools file not found:" + super.getFilename(), null);
-			CorePlugin.showMessage("Load GIS dataset", "Sorry, can't find the file:\n" + super.getFilename());
+			Application.logError2(Status.WARNING, "GeoTools file not found:" + super.getFilename(), null);
+			//CorePlugin.showMessage("Load GIS dataset", "Sorry, can't find the file:\n" + super.getFilename());
 		}
 
 		// ok, add ourselves to the map
