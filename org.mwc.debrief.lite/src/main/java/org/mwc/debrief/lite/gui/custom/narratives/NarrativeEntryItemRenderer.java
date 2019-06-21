@@ -15,10 +15,8 @@ import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 
-import MWC.TacticalData.NarrativeEntry;
-
-public class NarrativePanelItemRenderer extends JPanel implements
-    ListCellRenderer<NarrativeEntry>
+public class NarrativeEntryItemRenderer extends JPanel implements
+    ListCellRenderer<NarrativeEntryItem>
 {
 
   /**
@@ -28,26 +26,26 @@ public class NarrativePanelItemRenderer extends JPanel implements
 
   @Override
   public Component getListCellRendererComponent(
-      final JList<? extends NarrativeEntry> list, final NarrativeEntry value,
+      final JList<? extends NarrativeEntryItem> list, final NarrativeEntryItem value,
       final int index, final boolean isSelected, final boolean cellHasFocus)
   {
     final JPanel mainPanel = new JPanel();
     final JPanel content = new JPanel();
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-    content.setPreferredSize(new Dimension(300, 50));
+    content.setPreferredSize(new Dimension(300, 70));
     final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
     header.setPreferredSize(new Dimension(300, 13));
     final JPanel body = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    final JLabel time = new JLabel(value.getDTGString());
+    final JLabel time = new JLabel(value.getEntry().getDTGString());
     final Font originalFont = time.getFont();
     final Font smallFont = new Font(originalFont.getName(), originalFont
         .getStyle(), 8);
     final Font bigFont = new Font(originalFont.getName(), originalFont
         .getStyle(), 12);
     time.setFont(smallFont);
-    final JLabel trackName = new JLabel(value.getTrackName());
+    final JLabel trackName = new JLabel(value.getEntry().getTrackName());
     trackName.setFont(smallFont);
-    final JLabel typeName = new JLabel(value.getType());
+    final JLabel typeName = new JLabel(value.getEntry().getType());
     typeName.setFont(smallFont);
     header.add(time);
     header.add(Box.createHorizontalStrut(3));
@@ -57,11 +55,19 @@ public class NarrativePanelItemRenderer extends JPanel implements
 
     final JTextArea name = new JTextArea(2, 20);
     name.setWrapStyleWord(true);
-    name.setLineWrap(true);
+    name.setLineWrap(value.getModel().isWrapping());
     name.setOpaque(false);
     name.setEditable(false);
     name.setFocusable(false);
-    name.setText(value.getEntry());
+    final String text = value.getEntry().getEntry();
+    if (!value.getModel().isWrapping())
+    {
+      name.setText(text.substring(0,Math.min(text.length(), 20)));
+    }else
+    {
+      name.setText(text);
+    }
+    
     name.setBackground(UIManager.getColor("Label.background"));
     name.setFont(UIManager.getFont("Label.font"));
     name.setBorder(UIManager.getBorder("Label.border"));

@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
@@ -23,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import org.mwc.debrief.lite.gui.LiteStepControl;
 
@@ -60,11 +62,13 @@ public class NarrativePanelToolbar extends JPanel
   /**
    * Maybe this should be inside the abstract model.
    */
-  private final DefaultListModel<NarrativeEntry> _narrativeListModel =
+  private final DefaultListModel<NarrativeEntryItem> _narrativeListModel =
       new DefaultListModel<>();
 
-  private final JList<NarrativeEntry> _narrativeList = new JList<>(
+  private final JList<NarrativeEntryItem> _narrativeList = new JList<>(
       _narrativeListModel);
+  
+  final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem = new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -144,13 +148,15 @@ public class NarrativePanelToolbar extends JPanel
 
               for (final NarrativeEntry entry : toAdd)
               {
-                _narrativeListModel.addElement(entry);
+                final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+                _narrativeListModel.addElement(entryItem);
+                entry2entryItem.put(entry, entryItem);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
 
               }
               for (final NarrativeEntry entry : toRemove)
               {
-                _narrativeListModel.removeElement(entry);
+                _narrativeListModel.removeElement(entry2entryItem.get(entry));
               }
               // Sort it.
             }
@@ -165,7 +171,7 @@ public class NarrativePanelToolbar extends JPanel
             while (iteratorToRemove.hasMoreElements())
             {
               final Editable thisE = iteratorToRemove.nextElement();
-              _narrativeListModel.removeElement(thisE);
+              _narrativeListModel.removeElement(entry2entryItem.get(thisE));
             }
             _model.removeNarrativeWrapper(wrapperRemoved);
           }
@@ -188,8 +194,8 @@ public class NarrativePanelToolbar extends JPanel
   {
     super(new FlowLayout(FlowLayout.LEFT));
 
-    this._narrativeList.setCellRenderer(new NarrativePanelItemRenderer());
-    // this._narrativeList.setPreferredSize(new Dimension(100, 1000));
+    this._narrativeList.setCellRenderer(new NarrativeEntryItemRenderer());
+
     this._stepControl = stepControl;
     this._model = model;
     init();
@@ -243,15 +249,24 @@ public class NarrativePanelToolbar extends JPanel
     }
   }
 
-  private JButton createCommandButton(final String command, final String image)
+  /*private JButton createCommandButton(final String command, final String image)
   {
     final ImageIcon icon = Utils.getIcon(image);
     final JButton button = new JButton(icon);
     button.setToolTipText(command);
     return button;
+  }*/
+
+  private JToggleButton createJToggleButton(final String command,
+      final String image)
+  {
+    final ImageIcon icon = Utils.getIcon(image);
+    final JToggleButton button = new JToggleButton(icon);
+    button.setToolTipText(command);
+    return button;
   }
 
-  public JList<NarrativeEntry> getNarrativeList()
+  public JList<NarrativeEntryItem> getNarrativeList()
   {
     return _narrativeList;
   }
@@ -357,7 +372,7 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
 
-    final JButton wrapTextButton = createCommandButton("Wrap Text",
+    final JToggleButton wrapTextButton = createJToggleButton("Wrap Text",
         "icons/16/wrap.png");
     wrapTextButton.addActionListener(new ActionListener()
     {
@@ -365,7 +380,7 @@ public class NarrativePanelToolbar extends JPanel
       @Override
       public void actionPerformed(final ActionEvent e)
       {
-        System.out.println("Wrap Text not implemented");
+        _model.setWrapping(wrapTextButton.isSelected());
       }
     });
 

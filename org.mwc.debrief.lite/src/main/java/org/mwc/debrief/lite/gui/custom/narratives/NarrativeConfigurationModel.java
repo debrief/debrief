@@ -40,6 +40,8 @@ public class NarrativeConfigurationModel implements
   public static final String NARRATIVE_CHANGE = "NARRATIVE_CHANGED";
 
   private NarrativeEntry _currentHighLight;
+  
+  private boolean _wrapping = false;
 
   private String _filterText;
 
@@ -190,5 +192,19 @@ public class NarrativeConfigurationModel implements
     {
       _narrativeWrappers.get(wrapper).remove(entry);
     }
+  }
+  
+  
+
+  @Override
+  public boolean isWrapping()
+  {
+    return _wrapping;
+  }
+
+  @Override
+  public void setWrapping(final boolean wrapping)
+  {
+    _wrapping = wrapping;
   }
 }

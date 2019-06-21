@@ -40,4 +40,8 @@ public interface AbstractNarrativeConfiguration
 
   public void unregisterNarrativeEntry(final NarrativeWrapper wrapper,
       final NarrativeEntry entry);
+  
+  public boolean isWrapping();
+  
+  public void setWrapping(final boolean wrapping);
 }
