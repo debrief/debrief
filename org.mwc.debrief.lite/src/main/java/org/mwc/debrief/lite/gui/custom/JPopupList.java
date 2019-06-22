@@ -28,15 +28,12 @@ public class JPopupList<T> extends JPopupMenu
    */
   private static final long serialVersionUID = -431721677208908941L;
 
-  private final ListCellRenderer<T> _cellRenderer;
-
   private final JList<T> _items;
 
   public JPopupList(final ListCellRenderer<T> _cellRenderer,
       final JList<T> _items)
   {
     super();
-    this._cellRenderer = _cellRenderer;
     this._items = _items;
 
     initializeComponents();
@@ -46,7 +43,6 @@ public class JPopupList<T> extends JPopupMenu
       List<AbstractSelection<T>> items)
   {
     super();
-    this._cellRenderer = _cellRenderer;
     // TODO Change this.
     final ArrayList<T> itemsArrayList = new ArrayList();
     for ( AbstractSelection<T> abstractItem : items )

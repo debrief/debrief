@@ -18,12 +18,9 @@ public class JSelectTrackFilter extends JPopupList<TrackNameColor>
    */
   private static final long serialVersionUID = 7136974124331608166L;
 
-  private final AbstractNarrativeConfiguration _model;
-
   public JSelectTrackFilter(final AbstractNarrativeConfiguration model)
   {
     super(new TrackPanelItemRenderer(), createTrackFilters(model));
-    this._model = model;
   }
 
   public static JList<TrackNameColor> createTrackFilters(
