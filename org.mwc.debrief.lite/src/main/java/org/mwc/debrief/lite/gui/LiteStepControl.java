@@ -14,6 +14,7 @@
  */
 package org.mwc.debrief.lite.gui;
 
+import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.util.Enumeration;
 
@@ -72,7 +73,7 @@ public class LiteStepControl extends StepControl
 
   public LiteStepControl(final ToolParent _parent, final Session _theSession)
   {
-    super(_parent);
+    super(_parent, Color.black);
     this.parent = _parent;
     setDateFormat(timeFormat);
     _largeSteps = false;

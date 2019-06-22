@@ -797,7 +797,7 @@ public class ImportNMEA
     // from different messages
     Double drCourse = null;
 
-    int ctr = 0;
+ //   int ctr = 0;
 
     // loop through the lines
     while ((nmea_sentence = br.readLine()) != null)
@@ -805,17 +805,17 @@ public class ImportNMEA
 
       final MsgType msg = parseType(nmea_sentence);
 
-      ctr++;
-
-      if (ctr % 10000 == 0)
-      {
-        System.out.print(".");
-      }
-      if (ctr % 50000 == 0)
-      {
-        System.out.println("");
-        System.out.print(ctr);
-      }
+//      ctr++;
+//
+//      if (ctr % 10000 == 0)
+//      {
+//        System.out.print(".");
+//      }
+//      if (ctr % 50000 == 0)
+//      {
+//        System.out.println("");
+//        System.out.print(ctr);
+//      }
 
       switch (msg)
       {
@@ -974,7 +974,7 @@ public class ImportNMEA
       tr.setName(trackName);
       tr.setColor(colors.get(trackName));
 
-      System.out.println("storing " + track.size() + " for " + trackName);
+//      System.out.println("storing " + track.size() + " for " + trackName);
 
       // SPECIAL HANDLING - we filter DR tracks at this stage
       Long lastTime = null;
@@ -1009,13 +1009,12 @@ public class ImportNMEA
     {
       final ArrayList<FixWrapper> track = contacts.get(trackName);
 
-      System.out.println("storing " + track.size() + " for " + trackName);
+//      System.out.println("storing " + track.size() + " for " + trackName);
 
       if (contactHolder == null)
       {
         contactHolder = new BaseLayer();
         contactHolder.setName("WECDIS Contacts");
-        _layers.addThisLayer(contactHolder);
       }
 
       // ok, build the track
@@ -1032,7 +1031,13 @@ public class ImportNMEA
 
       contactHolder.add(tr);
     }
-
+    
+    //Ayesha: added contactholder finally after contacts are added.
+    if(contactHolder!=null) {
+      _layers.addThisLayer(contactHolder);
+    }
+    
+    _layers.fireExtended();
   }
 
   private void storeDRFix(final WorldLocation origin, final double myCourseDegs,

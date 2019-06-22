@@ -1,10 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: GeoTools - The Open Source Java GIS Toolkit
-Bundle-SymbolicName: org.geotools
-Bundle-Version: 1.0.7
+Bundle-SymbolicName: org.mwc.cmap.geotools
+Bundle-Version: 1.0.8
 Bundle-Activator: org.mwc.cmap.geotools.Activator
-Require-Bundle: org.eclipse.core.runtime
+Require-Bundle: org.eclipse.core.runtime,
+ org.mwc.cmap.legacy;bundle-version="1.0.278",
+ org.mwc.debrief.legacy;bundle-version="1.0.409"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ActivationPolicy: lazy
 Bundle-Vendor: Open Source Geospatial Foundation
@@ -370,6 +372,7 @@ Export-Package: au.com.objectix.jgridshift,
  org.json.simple,
  org.json.simple.parser,
  org.mwc.cmap.geotools,
+ org.mwc.cmap.geotools.gt2plot,
  org.opengis.annotation,
  org.opengis.coverage,
  org.opengis.coverage.grid,

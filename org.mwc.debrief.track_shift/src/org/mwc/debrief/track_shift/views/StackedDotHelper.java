@@ -1678,7 +1678,7 @@ public final class StackedDotHelper
             if(ts instanceof RelativeTMASegment)
             {
               RelativeTMASegment rel = (RelativeTMASegment) ts;
-              isReferenceSensor = rel.getSensorName().equals(sensorName);
+              isReferenceSensor = rel.getSensorName() != null && rel.getSensorName().equals(sensorName);
             }
             else
             {

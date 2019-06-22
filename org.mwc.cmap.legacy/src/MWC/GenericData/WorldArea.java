@@ -187,8 +187,7 @@ public final class WorldArea implements Serializable
 	final public String toString()
 	{
 		String res = "";
-		res += " Area TL:" + _topLeft + " BR:" + _bottomRight + " ("
-				+ _topLeft.getLong() + ") ";
+		res += " Area TL:" + _topLeft + " BR:" + _bottomRight;
 		return res;
 	}
 

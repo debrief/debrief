@@ -36,6 +36,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Properties.TrackColorModePropertyEditor;
 import Debrief.Wrappers.DynamicTrackShapes.DynamicTrackShapeSetWrapper;
@@ -3677,7 +3678,11 @@ public class TrackWrapper extends LightweightTrackWrapper implements
     }
     else if (point instanceof TrackSegment)
     {
+      Application.logError2(Application.INFO, "Track has " + _theSegments.size() + " segments before remove track segment:" + point, null);
+      
       _theSegments.removeElement(point);
+
+      Application.logError2(Application.INFO, "Track has " + _theSegments.size() + " segments after remove track segment:" + point, null);
 
       // and clear the parent item
       final TrackSegment ts = (TrackSegment) point;
@@ -4355,11 +4360,10 @@ public class TrackWrapper extends LightweightTrackWrapper implements
       {
         final WorldLocation origin = matches[0].getLocation();
 
-        final FixWrapper t1Start = (FixWrapper) p1.first();
-
         // put the lists back into plottable layers
+        FixWrapper firstLegStart = (FixWrapper) relevantSegment.first();
         final AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1,
-            t1Start.getLocation(), null, null);
+            firstLegStart.getLocation(), null, null);
         final AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2,
             origin, null, null);
 

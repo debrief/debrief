@@ -48,7 +48,7 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"></fileset>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"></fileset>
-			<fileset dir="../org.geotools/libs" includes="*.jar"></fileset>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"></fileset>
 			<fileset dir="libs" includes="*.jar"></fileset>
 		</path>
 		<!-- compile the source code -->
@@ -66,8 +66,12 @@
 				<include name="images"/>
 		 	</fileset>
 		</copy>
+		<manifest file="${basedir}/conf/manifest.txt" mode="update">
+			<attribute name="Implementation-Version" value="${product.version}"/>
+		</manifest>
 		<jar  manifest="${basedir}/conf/manifest.txt" destfile="${temp.folder}/debrief_lite.jar" basedir="${temp.folder}/debrief_lite.jar.bin">
 		</jar>
+		
 		<delete dir="${temp.folder}/debrief_lite.jar.bin"/>
 	</target>
 
@@ -98,7 +102,7 @@
 			<fileset dir="../org.mwc.cmap.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy/libs" includes="*.jar"/>
 			<fileset dir="../org.mwc.cmap.jfreechart/libs" includes="*.jar"/>
-			<fileset dir="../org.geotools/libs" includes="*.jar"/>
+			<fileset dir="../org.mwc.cmap.geotools/libs" includes="*.jar"/>
 			<fileset dir="" includes="cmap_legacy.jar"/>
 			<fileset dir="../org.mwc.debrief.legacy" includes="debrief_legacy.jar"/>
 			<fileset dir="libs" includes="*.jar"/>

@@ -284,11 +284,16 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 				if (!_suspendUpdates)
 				{
-
+				  WorldArea area = theData.getBounds();
 					// do we need to rescale the data?
-					if (getCanvas().getProjection().getDataArea() == null)
-						rescale();
-
+				  if(Layers.getDebriefOrigin().equals(area))
+          {
+            WorldArea myArea = theData.getRawBounds();
+            if(myArea != null)
+            {
+              rescale();
+            }
+          }
 					// and trigger a full repaint
 					update();
 				}
@@ -304,12 +309,13 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 				if (!_suspendUpdates)
 				{
-
+				  WorldArea dataArea = getCanvas().getProjection().getDataArea();
 					// do we need to rescale the data?
-					if (getCanvas().getProjection().getDataArea() == null)
+					if (!(dataArea!=null && dataArea.equals(Layers.getDebriefOrigin())))
 						rescale();
 
 					// and trigger a full repaint
+					//rescale();
 					update(parent);
 				}
 			}

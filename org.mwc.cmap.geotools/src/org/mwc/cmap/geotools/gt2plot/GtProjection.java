@@ -12,7 +12,7 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
  */
-package org.mwc.cmap.gt2plot.proj;
+package org.mwc.cmap.geotools.gt2plot;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -20,8 +20,6 @@ import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.util.Iterator;
-
-import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Status;
 import org.geotools.geometry.DirectPosition2D;
@@ -32,9 +30,6 @@ import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.operation.projection.ProjectionException;
-import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.gt2plot.GtActivator;
-import org.mwc.cmap.gt2plot.data.GeoToolsLayer;
 import org.opengis.geometry.BoundingBox;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
@@ -43,11 +38,13 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.ExternallyManagedDataLayer;
 import MWC.GUI.GeoToolsHandler;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import junit.framework.TestCase;
 
 public class GtProjection extends PlainProjection implements GeoToolsHandler
 {
@@ -101,15 +98,14 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (final NoSuchAuthorityCodeException e)
 		{
-			GtActivator
-					.logError(
+		  Application.logError2(
 							Status.ERROR,
 							"Can't find the requested authority whilst trying to create CRS transform",
 							e);
 		}
 		catch (final FactoryException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unexpected problem whilst trying to create CRS transform", e);
 		}
 
@@ -200,12 +196,12 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (final MismatchedDimensionException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Whilst trying to convert to screen coords", e);
 		}
 		catch (final TransformException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Whilst trying to convert to screen coords", e);
 		}
 
@@ -238,17 +234,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (final MismatchedDimensionException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Whilst trying to set convert to world coords", e);
 		}
 		catch (final org.opengis.referencing.operation.NoninvertibleTransformException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unexpected non-invertable problem whilst performing screen to world", e);
 		}
 		catch (final TransformException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unexpected transform problem whilst performing screen to world", e);
 		}
 		return res;
@@ -318,17 +314,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 			}
 			catch (final MismatchedDimensionException e)
 			{
-				GtActivator.logError(Status.ERROR,
+			  Application.logError2(Status.ERROR,
 						"Unexpected problem whilst performing zoom", e);
 			}
 			catch (final org.opengis.referencing.operation.NoninvertibleTransformException e)
 			{
-				GtActivator.logError(Status.ERROR,
+			  Application.logError2(Status.ERROR,
 						"Unable to do inverse transform in zoom", e);
 			}
 			catch (final TransformException e)
 			{
-				GtActivator.logError(Status.ERROR,
+			  Application.logError2(Status.ERROR,
 						"Unexpected problem whilst performing", e);
 			}
 
@@ -396,17 +392,17 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (MismatchedDimensionException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unexpected problem whilst performing zoom", e);
 		}
 		catch (org.opengis.referencing.operation.NoninvertibleTransformException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unable to do inverse transform in zoom", e);
 		}
 		catch (TransformException e)
 		{
-			GtActivator.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"Unexpected problem whilst performing", e);
 		}
 
@@ -430,7 +426,7 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 	{
 		if (theArea == null)
 		{
-			CorePlugin.logError(Status.WARNING, "GtProjection received null in setDataArea - maintainer to be informed", null, true);
+		  Application.logError2(Status.WARNING, "GtProjection received null in setDataArea - maintainer to be informed", null);
 			return;
 		}
 		// trim the area to sensible bounds
@@ -477,16 +473,16 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 		}
 		catch (final ProjectionException e)
 		{
-			CorePlugin.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"trouble with proj, probably zoomed out too far", e);
 		}
 		catch (final MismatchedDimensionException e)
 		{
-			CorePlugin.logError(Status.ERROR, "unknown trouble with proj", e);
+		  Application.logError2(Status.ERROR, "unknown trouble with proj", e);
 		}
 		catch (final TransformException e)
 		{
-			CorePlugin.logError(Status.ERROR, "unknown trouble with proj", e);
+		  Application.logError2(Status.ERROR, "unknown trouble with proj", e);
 		}
 	}
 
@@ -592,24 +588,24 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 					}
 					else
 					{
-						CorePlugin.logError(Status.WARNING, "GtProjection overlap. Layer has no bounds:"+ layer.getTitle(), null);
+					  Application.logError2(Status.WARNING, "GtProjection overlap. Layer has no bounds:"+ layer.getTitle(), null);
 					}
 				}
 			}
 		}
 		catch (final MismatchedDimensionException e)
 		{
-			CorePlugin.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"unknown dimension trouble with getting bounds", e);
 		}
 		catch (final TransformException e)
 		{
-			CorePlugin.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"unknown transform trouble with getting bounds", e);
 		}
 		catch (final FactoryException e)
 		{
-			CorePlugin.logError(Status.ERROR,
+		  Application.logError2(Status.ERROR,
 					"unknown factory trouble with getting bounds", e);
 		}
 

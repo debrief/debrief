@@ -14,6 +14,7 @@
  */
 package Debrief.GUI.Tote;
 
+import java.awt.Color;
 import java.beans.BeanInfo;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
@@ -373,7 +374,7 @@ abstract public class StepControl implements Editable,
   /////////////////////////////////////////////////////////////
   // constructor
   ////////////////////////////////////////////////////////////
-  public StepControl(final ToolParent parent)
+  public StepControl(final ToolParent parent, final Color defaultHighlighterColor)
   {
 
     // sort out the small & large time steps
@@ -393,7 +394,7 @@ abstract public class StepControl implements Editable,
     _largeSteps = true;
 
     // create our default highlighter
-    _defaultHighlighter = new Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight();
+    _defaultHighlighter = new Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter.RectangleHighlight(defaultHighlighterColor);
 
     if (_myHighlighters == null)
     {
@@ -1404,7 +1405,7 @@ abstract public class StepControl implements Editable,
 
     public final void testMyParams()
     {
-      StepControl ed = new StepControl(null)
+      StepControl ed = new StepControl(null, null)
       {
         protected void doEditPainter()
         {

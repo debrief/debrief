@@ -716,7 +716,7 @@ public class OutlinePanelView extends SwingLayerManager implements
   private Transferable _cutContents;
 
   private TreePath _theCutParent;
-
+  
   public OutlinePanelView(final UndoBuffer undoBuffer,
       final Clipboard clipboard)
   {
@@ -1360,6 +1360,9 @@ public class OutlinePanelView extends SwingLayerManager implements
                 _myTree.setSelectionPath(_treePath);
               }
             });
+          }
+          else {
+            System.out.println("Found null itemnode");
           }
         }
       }

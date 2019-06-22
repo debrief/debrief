@@ -385,6 +385,7 @@ public class DebriefRibbonInsert
   {
     private final String _layerName;
     private final Layers _theLayers;
+    private Layer _theLayer;
 
     public AddLayerAction(final Layers theLayers, final String layerName)
     {
@@ -406,16 +407,18 @@ public class DebriefRibbonInsert
     @Override
     public void undo()
     {
-      Layer theLayer = _theLayers.findLayer(_layerName);
-      _theLayers.removeThisLayer(theLayer);
+      _theLayer = _theLayers.findLayer(_layerName);
+      _theLayers.removeThisLayer(_theLayer);
     }
 
     @Override
     public void execute()
     {
-      Layer layer = new BaseLayer();
-      layer.setName(_layerName);
-      _theLayers.addThisLayer(layer);
+      if(_theLayer == null) {
+      _theLayer = new BaseLayer();
+      _theLayer.setName(_layerName);
+      }
+      _theLayers.addThisLayer(_theLayer);
     }
   }
   

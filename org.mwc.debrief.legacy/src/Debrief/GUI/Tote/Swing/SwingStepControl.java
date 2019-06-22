@@ -392,7 +392,7 @@ public final class SwingStepControl extends StepControl implements
 			final MyMetalToolBarUI.ToolbarOwner owner, final ToolParent theParent)
 	{
 
-		super(theParent);
+		super(theParent, Color.white);
 
 		_theEditor = theEditor;
 

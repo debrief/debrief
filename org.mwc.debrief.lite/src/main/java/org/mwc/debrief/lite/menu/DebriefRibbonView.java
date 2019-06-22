@@ -9,6 +9,7 @@ import org.geotools.swing.action.ZoomInAction;
 import org.mwc.debrief.lite.gui.FitToWindow;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.ZoomOut;
+import org.mwc.debrief.lite.map.AdvancedZoomInAction;
 import org.mwc.debrief.lite.map.DragElementAction;
 import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
@@ -67,7 +68,7 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Pan", "icons/24/hand.png", new PanAction(
         mapPane), viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);
-    final ZoomInAction zoomInAction = new ZoomInAction(mapPane);
+    final ZoomInAction zoomInAction = new AdvancedZoomInAction(mapPane);
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         true);

@@ -75,6 +75,7 @@ import org.pushingpixels.substance.api.skin.BusinessBlueSteelSkin;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.GUI.Tote.Painters.TotePainter;
+import Debrief.ReaderWriter.NMEA.ImportNMEA;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.ReaderWriter.XML.SessionHandler;
@@ -224,6 +225,9 @@ public class DebriefLiteApp implements FileDropListener
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
 
+  private static final JLabel statusBar = new JLabel(
+      "Status bar for displaying statuses");
+
   /**
    * creates a scroll pane with map
    *
@@ -324,7 +328,7 @@ public class DebriefLiteApp implements FileDropListener
             JOptionPane.showMessageDialog(null,
                 "Sensor data can only be loaded after tracks",
                 "Loading sensor data", JOptionPane.ERROR_MESSAGE);
-            break;
+            return;
           }
 
           isAllCorrect = false;
@@ -349,6 +353,39 @@ public class DebriefLiteApp implements FileDropListener
           JOptionPane.INFORMATION_MESSAGE);
     }
 
+  }
+  
+  public static void openNMEAFile(final File file)
+  {
+    try
+    {
+      _instance.handleImportNMEAFile(file);
+    }
+    catch (final Exception e)
+    {
+      Trace.trace(e);
+    }
+  }
+
+  private void handleImportNMEAFile(File file)
+  {
+    //show the dialog first, then import the file
+    
+    ImportNMEA importer = new ImportNMEA(_theLayers);
+    FileInputStream fs;
+    try
+    {
+      fs = new FileInputStream(file);
+      importer.importThis(file.getName(), fs, 60000, 60000);
+    }
+    catch (FileNotFoundException e)
+    {
+      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (Exception e)
+    {
+      Trace.trace(e);
+    }
   }
 
   public static void openPlotFile(final File file)
@@ -406,7 +443,10 @@ public class DebriefLiteApp implements FileDropListener
     final String oldState = state;
     state = newState;
 
-    notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+    if (newState != null && !newState.equals(oldState))
+    {
+      notifyListenersStateChanged(_instance, "STATE", oldState, newState);
+    }
   }
 
   public static void setTitle(final String title)
@@ -433,8 +473,13 @@ public class DebriefLiteApp implements FileDropListener
     return theSuffix.toUpperCase();
   }
 
-  protected DataListener2 _listenForMods;
+  public static void updateStatusMessage(final String string)
+  {
 
+    statusBar.setText(string);
+  }
+
+  protected DataListener2 _listenForMods;
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
@@ -444,12 +489,11 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle narrativePanel =
       new JXCollapsiblePaneWithTitle(Direction.RIGHT, "Narratives", 350);
   private final JRibbonFrame theFrame;
+
   final private Layers _theLayers = new Layers();
   private GeoToolMapProjection projection;
 
   private final LiteSession session;
-  private final JLabel statusBar = new JLabel(
-      "Status bar for displaying statuses");
 
   private final JMapPane mapPane;
 
@@ -536,7 +580,7 @@ public class DebriefLiteApp implements FileDropListener
     initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
-    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF");
+    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -597,6 +641,7 @@ public class DebriefLiteApp implements FileDropListener
         mapPane.repaint();
       }
     };
+
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
@@ -627,11 +672,6 @@ public class DebriefLiteApp implements FileDropListener
           final HasEditables parent)
       {
         update(theData, newItem, parent);
-        if (parent != null)
-        {
-          setDirty(true);
-          setState(ACTIVE_STATE);
-        }
       }
     };
 
@@ -717,7 +757,7 @@ public class DebriefLiteApp implements FileDropListener
         resetPlot();
       }
     };
-    Runnable exitAction = new Runnable()
+    final Runnable exitAction = new Runnable()
     {
       @Override
       public void run()
@@ -866,6 +906,11 @@ public class DebriefLiteApp implements FileDropListener
           {
             handleImportDPF(file);
           }
+          else if(suff.equalsIgnoreCase(".LOG"))
+          {
+            handleImportNMEAFile(file);
+            //layerManager.resetTree();
+          }
           else
           {
             Trace.trace("This file type not handled:" + suff);
@@ -881,6 +926,7 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
+    
     restoreCursor();
   }
 
@@ -891,7 +937,7 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportDPF(final File file)
   {
-    long startTime = System.currentTimeMillis();
+    final long startTime = System.currentTimeMillis();
     System.out.println("Started loading file");
     boolean success = true;
     final DebriefXMLReaderWriter reader = new DebriefXMLReaderWriter(app);
@@ -934,8 +980,8 @@ public class DebriefLiteApp implements FileDropListener
     {
       resetFileName(file);
     }
-    long endTime = System.currentTimeMillis();
-    long timeElapsed = endTime - startTime;
+    final long endTime = System.currentTimeMillis();
+    final long timeElapsed = endTime - startTime;
     System.out.println("Time taken:" + timeElapsed);
   }
 
@@ -952,7 +998,7 @@ public class DebriefLiteApp implements FileDropListener
         {
           openDsfFile(fList[0]);
         }
-        catch (FileNotFoundException e)
+        catch (final FileNotFoundException e)
         {
           e.printStackTrace();
         }
@@ -1116,9 +1162,7 @@ public class DebriefLiteApp implements FileDropListener
     final StepperListener current = painterManager.getCurrentPainterObject();
     final boolean isNormal = current.toString().equals(TotePainter.NORMAL_NAME);
 
-    // we need to use different XOR background colors depending on if
-    // we're in normal or snail mode
-    final Color backColor = isNormal ? Color.BLACK : Color.white;
+    final Color backColor = Color.white;
 
     // and the time marker
     final Graphics graphics = mapPane.getGraphics();
@@ -1230,4 +1274,5 @@ public class DebriefLiteApp implements FileDropListener
   {
     getLayerManager().updateData((Layer) theLayer, newItem);
   }
+
 }

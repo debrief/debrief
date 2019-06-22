@@ -116,7 +116,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
   {
     // start off with the obvious bits
     super(relevantSegment._courseDegs, relevantSegment._speed, false);
-    _origin = relevantSegment._origin;
+    _origin = location != null ? location : relevantSegment._origin;
     _startTime = startTime;
     _endTime = endTime;
 
@@ -378,16 +378,20 @@ public class AbsoluteTMASegment extends CoreTMASegment
     // processing depending on which end is being shifted.
     final FixWrapper firstL = (FixWrapper) this.first();
     final FixWrapper lastL = (FixWrapper) this.last();
+    
+    System.out.println("origin:" + origin);
 
     if (firstL.getLocation().equals(origin))
     {
       // ok - the origin our first point - so we're dragging the far end
+      System.out.println("first point");
 
       // set the new course
       newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
     }
     else
     {
+      System.out.println("end point");
       // ok - the origin our last point - so we're dragging the origin of the segment
 
       // right, we've got to shift the start point to the relevant location,
