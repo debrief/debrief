@@ -437,7 +437,6 @@ public class DebriefLiteApp implements FileDropListener
 
   private OutlinePanelView layerManager;
   private GraphPanelView graphPanelView;
-  private NarrativePanelView narrativePanelView;
   private final JXCollapsiblePaneWithTitle outlinePanel =
       new JXCollapsiblePaneWithTitle(Direction.LEFT, "Outline", 400);
   private final JXCollapsiblePaneWithTitle graphPanel =
@@ -660,7 +659,7 @@ public class DebriefLiteApp implements FileDropListener
   {
     final NarrativeConfigurationModel model = new NarrativeConfigurationModel();
     final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl,model);
-    narrativePanelView = new NarrativePanelView(toolbar, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar, model);
     narrativePanel.setCollapsed(true);
     narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
   }

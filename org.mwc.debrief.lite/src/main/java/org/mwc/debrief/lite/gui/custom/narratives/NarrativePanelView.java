@@ -17,8 +17,6 @@ public class NarrativePanelView extends JPanel
    */
   private static final long serialVersionUID = 1218759123615315561L;
 
-  private final NarrativePanelToolbar _toolbar;
-
   private final AbstractNarrativeConfiguration _model;
 
   public NarrativePanelView(final NarrativePanelToolbar toolbar,
@@ -26,13 +24,12 @@ public class NarrativePanelView extends JPanel
   {
     super();
 
-    _toolbar = toolbar;
+    final NarrativePanelToolbar _toolbar = toolbar;
     _model = model;
 
     setLayout(new BorderLayout());
 
     add(_toolbar, BorderLayout.NORTH);
-    // final JPanel mainPanel = new JPanel();
     final Box mainPanel = Box.createVerticalBox();
     final JScrollPane scrollPane = new JScrollPane(mainPanel);
     scrollPane.setHorizontalScrollBarPolicy(

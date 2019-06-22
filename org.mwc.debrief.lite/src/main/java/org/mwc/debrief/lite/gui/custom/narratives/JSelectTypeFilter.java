@@ -32,7 +32,7 @@ public class JSelectTypeFilter extends JPopupList<String>
    */
   private static final long serialVersionUID = 7136974124331608166L;
 
-  final AbstractNarrativeConfiguration _model;
+  private final AbstractNarrativeConfiguration _model;
 
   public JSelectTypeFilter(final AbstractNarrativeConfiguration model)
   {

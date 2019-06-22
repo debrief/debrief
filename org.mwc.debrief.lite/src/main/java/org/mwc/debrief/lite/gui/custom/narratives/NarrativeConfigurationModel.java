@@ -54,11 +54,6 @@ public class NarrativeConfigurationModel implements
   private final HashMap<NarrativeWrapper, Set<NarrativeEntry>> _narrativeWrappers =
       new HashMap<>();
 
-  public NarrativeConfigurationModel()
-  {
-
-  }
-
   @Override
   public void addNarrativeWrapper(final NarrativeWrapper narrativeWrapper)
   {
