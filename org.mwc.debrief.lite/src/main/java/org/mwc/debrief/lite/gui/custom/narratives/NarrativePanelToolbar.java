@@ -19,7 +19,7 @@ import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
+// import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JList;
@@ -58,7 +58,7 @@ public class NarrativePanelToolbar extends JPanel
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-
+  
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -374,6 +374,7 @@ public class NarrativePanelToolbar extends JPanel
 
     final JToggleButton wrapTextButton = createJToggleButton("Wrap Text",
         "icons/16/wrap.png");
+    wrapTextButton.setSelected(true);
     wrapTextButton.addActionListener(new ActionListener()
     {
 
@@ -381,6 +382,15 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
+        if ( wrapTextButton.isSelected() )
+        {
+          _narrativeList.setFixedCellHeight(-1);
+        }else
+        {
+          _narrativeList.setFixedCellHeight(70);
+        }
+        //_narrativeList.revalidate();
+        _narrativeList.repaint();
       }
     });
 

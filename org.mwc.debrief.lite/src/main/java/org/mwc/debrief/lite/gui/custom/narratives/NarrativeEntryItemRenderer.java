@@ -29,10 +29,18 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final JList<? extends NarrativeEntryItem> list, final NarrativeEntryItem value,
       final int index, final boolean isSelected, final boolean cellHasFocus)
   {
+
+     String text = value.getEntry().getEntry();
+    if (!value.getModel().isWrapping())
+    {
+      text = (text.substring(0,Math.min(text.length(), 26)));
+    }
+    final int amountLines = (int) Math.ceil(text.length() / 26.0);
+    
     final JPanel mainPanel = new JPanel();
     final JPanel content = new JPanel();
     content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
-    content.setPreferredSize(new Dimension(300, 70));
+    //content.setPreferredSize(new Dimension(300, Math.max(amountLines * 20, 60)));
     final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
     header.setPreferredSize(new Dimension(300, 13));
     final JPanel body = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -52,21 +60,15 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     header.add(trackName);
     header.add(Box.createHorizontalStrut(3));
     header.add(typeName);
+    
 
-    final JTextArea name = new JTextArea(2, 20);
+    final JTextArea name = new JTextArea(amountLines, 20);
     name.setWrapStyleWord(true);
     name.setLineWrap(value.getModel().isWrapping());
     name.setOpaque(false);
     name.setEditable(false);
     name.setFocusable(false);
-    final String text = value.getEntry().getEntry();
-    if (!value.getModel().isWrapping())
-    {
-      name.setText(text.substring(0,Math.min(text.length(), 20)));
-    }else
-    {
-      name.setText(text);
-    }
+    name.setText(text);
     
     name.setBackground(UIManager.getColor("Label.background"));
     name.setFont(UIManager.getFont("Label.font"));
@@ -105,6 +107,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
 
     }
 
+    mainPanel.setSize(new Dimension(300, Math.max(amountLines * 20, 60)));
+    
     return mainPanel;
   }
 }

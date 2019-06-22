@@ -41,7 +41,7 @@ public class NarrativeConfigurationModel implements
 
   private NarrativeEntry _currentHighLight;
   
-  private boolean _wrapping = false;
+  private boolean _wrapping = true;
 
   private String _filterText;
 
