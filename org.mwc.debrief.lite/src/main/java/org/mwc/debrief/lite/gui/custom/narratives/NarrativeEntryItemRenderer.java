@@ -37,7 +37,6 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       final String text = valueItem.getEntry().getEntry();
       final JPanel mainPanel = new JPanel();
       mainPanel.setLayout(new BorderLayout());
-
       final JPanel header = new JPanel(new FlowLayout(FlowLayout.LEFT));
       header.setPreferredSize(new Dimension(300, 18));
 
@@ -58,7 +57,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       header.add(trackName);
       header.add(Box.createHorizontalStrut(3));
       header.add(typeName);
-
+      
       final JTextArea name = new JTextArea();
       name.setWrapStyleWord(false);
       name.setLineWrap(valueItem.getModel().isWrapping());
@@ -84,7 +83,8 @@ public class NarrativeEntryItemRenderer extends JPanel implements
       mainPanel.add(innerPanel, BorderLayout.CENTER);
 
       JLabel highlightIcon;
-      if (isSelected)
+      if (value.getModel().getCurrentHighLight() != null && value.getModel()
+        .getCurrentHighLight().equals(value.getEntry()))
       {
         highlightIcon = new JLabel(Utils.getIcon("icons/16/highlight.png"));
       }

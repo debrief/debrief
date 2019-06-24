@@ -63,7 +63,6 @@ public class NarrativePanelToolbar extends JPanel
   private final List<JComponent> componentsToDisable = new ArrayList<>();
 
   private final int HEIGHT_FIXED_SIZE = 33;
-
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -246,12 +245,26 @@ public class NarrativePanelToolbar extends JPanel
 
     model.setRepaintMethod(new Callable<Void>()
     {
-      
+
       @Override
       public Void call() throws Exception
       {
         _narrativeList.repaint();
         return null;
+      }
+    });
+
+    this._model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
+            .getPropertyName()))
+        {
+          _model.repaintView();
+        }
       }
     });
     setState(INACTIVE_STATE);
@@ -348,6 +361,60 @@ public class NarrativePanelToolbar extends JPanel
     final JToggleButton button = new JToggleButton(icon);
     button.setToolTipText(command);
     return button;
+  }
+
+  public JList<NarrativeEntryItem> getNarrativeList()
+  {
+    return _narrativeList;
+  }
+
+  private void init()
+  {
+    final JSelectTrackFilter selectTrack = new JSelectTrackFilter(_model);
+
+    final JComboBox<String> tracksFilterLabel = createTracksComboFilter(
+        selectTrack);
+
+    final JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
+    final JComboBox<String> typeFilterLabel = createTypeFilterCombo(selectTrack,
+        typeFilter);
+
+    final JToggleButton wrapTextButton = createWrapButton();
+
+    /*
+     * final JButton copyButton = createCommandButton("Copy Selected Entrey",
+     * "icons/16/copy_to_clipboard.png"); copyButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Copy selected entry not implemented"); } });
+     * 
+     * final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
+     * "icons/16/list.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add Bulk Entries not implemented"); } });
+     * 
+     * final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
+     * "icons/16/add.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add single entry not implemented"); } });
+     */
+
+    add(tracksFilterLabel);
+    add(typeFilterLabel);
+    add(wrapTextButton);
+    /*
+     * add(copyButton); add(addBulkEntriesButton); add(addSingleEntryButton);
+     */
+
+    componentsToDisable.addAll(Arrays.asList(new JComponent[]
+    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*
+                                                        * , copyButton, addBulkEntriesButton,
+                                                        * addSingleEntryButton
+                                                        */}));
+
+    createDataListeners();
   }
 
   private JComboBox<String> createTracksComboFilter(
@@ -472,6 +539,41 @@ public class NarrativePanelToolbar extends JPanel
       }
     });
     return wrapTextButton;
+  }
+
+  private void createDataListeners()
+  {
+    if (_stepControl != null && _stepControl.getLayers() != null)
+    {
+      final DataListener registerNarrativeListener = new DataListener()
+      {
+
+        @Override
+        public void dataExtended(final Layers theData)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataModified(final Layers theData, final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+      };
+      _stepControl.getLayers().addDataExtendedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataModifiedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataReformattedListener(
+          registerNarrativeListener);
+    }
   }
   
   public JTable getNarrativeList()

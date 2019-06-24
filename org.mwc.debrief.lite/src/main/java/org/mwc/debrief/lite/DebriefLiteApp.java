@@ -392,6 +392,28 @@ public class DebriefLiteApp implements FileDropListener
     }
   }
 
+  private void handleImportNMEAFile(File file)
+  {
+    // show the dialog first, then import the file
+
+    ImportNMEA importer = new ImportNMEA(_theLayers);
+    FileInputStream fs;
+    try
+    {
+      fs = new FileInputStream(file);
+      importer.importThis(file.getName(), fs, 60000, 60000);
+    }
+    catch (FileNotFoundException e)
+    {
+      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
+          "File error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (Exception e)
+    {
+      Trace.trace(e);
+    }
+  }
+
   public static void openPlotFile(final File file)
   {
 
@@ -703,13 +725,11 @@ public class DebriefLiteApp implements FileDropListener
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
     geoMapRenderer = new GeoToolMapRenderer();
-
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
-    projection = new GeoToolMapProjection(mapComponent, _theLayers);
+    initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this,
-        " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG, .TIF");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -732,12 +752,6 @@ public class DebriefLiteApp implements FileDropListener
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
 
     mapPane = createMapPane(geoMapRenderer, dropSupport);
-
-    setInitialArea(mapPane, geoMapRenderer.getTransform());
-
-    // ok, ready to load map content
-    initializeMapContent();
-
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -781,8 +795,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-    
-    
 
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
@@ -848,9 +860,12 @@ public class DebriefLiteApp implements FileDropListener
 
   private void addNarrativeView()
   {
-    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(timeManager);
-    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl, model);
-    final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar, model);
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(
+        timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(
+        _stepControl, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(
+        toolbar, model);
     narrativePanel.setCollapsed(true);
     narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
   }
@@ -895,7 +910,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(outlinePanel, BorderLayout.WEST);
 
     theFrame.add(narrativePanel, BorderLayout.EAST);
-    
+
     addOutlineView(app, undoBuffer);
     addGraphView();
     addNarrativeView();
