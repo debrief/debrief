@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -243,6 +244,16 @@ public class NarrativePanelToolbar extends JPanel
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener,
         updatingNarrativesListener));
 
+    model.setRepaintMethod(new Callable<Void>()
+    {
+      
+      @Override
+      public Void call() throws Exception
+      {
+        _narrativeList.repaint();
+        return null;
+      }
+    });
     setState(INACTIVE_STATE);
   }
 
@@ -463,6 +474,42 @@ public class NarrativePanelToolbar extends JPanel
     return wrapTextButton;
   }
 
+
+  private void createDataListeners()
+  {
+    if (_stepControl != null && _stepControl.getLayers() != null)
+    {
+      final DataListener registerNarrativeListener = new DataListener()
+      {
+
+        @Override
+        public void dataExtended(final Layers theData)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataModified(final Layers theData, final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+      };
+      _stepControl.getLayers().addDataExtendedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataModifiedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataReformattedListener(
+          registerNarrativeListener);
+    }
+  }
+  
   public JTable getNarrativeList()
   {
     return _narrativeList;

@@ -3,11 +3,14 @@ package org.mwc.debrief.lite.gui.custom.narratives;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.mwc.debrief.lite.gui.custom.AbstractSelection;
 
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.NarrativeWrapper;
+import MWC.TacticalData.temporal.TimeManager;
 
 public interface AbstractNarrativeConfiguration
 {
@@ -18,7 +21,7 @@ public interface AbstractNarrativeConfiguration
   public void setActiveNarrative(final NarrativeEntry narrative,
       final boolean highlight);
 
-  public void highlightNarrative(final NarrativeEntry narrative);
+  public void highlightNarrative(final HiResDate date);
 
   public List<AbstractSelection<NarrativeEntry>> getNarratives();
 
@@ -44,4 +47,10 @@ public interface AbstractNarrativeConfiguration
   public boolean isWrapping();
   
   public void setWrapping(final boolean wrapping);
+  
+  public TimeManager getTimeManager();
+  
+  public void setRepaintMethod(final Callable<Void> repaint);
+  
+  public void repaintView();
 }
