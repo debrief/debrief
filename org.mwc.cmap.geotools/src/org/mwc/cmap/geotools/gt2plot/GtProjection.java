@@ -67,56 +67,61 @@ public class GtProjection extends PlainProjection implements GeoToolsHandler
 
 	public GtProjection()
 	{
-		super("GeoTools");
-
-		// initialise our working data stores
-		_workDegs = new DirectPosition2D();
-		_workMetres = new DirectPosition2D();
-		_workScreen = new DirectPosition2D();
-
-		_map = new MapContent();
-		_view = _map.getViewport();
-
-		// set the aspect radio matching to true. The default
-		// value for this was false - but when we did fit to
-		// window, it wasn't putting the specified area in the centre of the shape
-		_view.setMatchingAspectRatio(true);
-
-		// sort out the degs to m transform
-		try
-		{
-			// we'll tell GeoTools to use the projection that's used by most of our
-			// charts,
-			// so that the chart will be displayed undistorted
-			_worldCoords = CRS.decode(WORLD_PROJECTION);
-
-			// we also need a way to convert a location in degrees to that used by
-			// the charts (metres)
-			final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-			_degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
-		}
-		catch (final NoSuchAuthorityCodeException e)
-		{
-		  Application.logError2(
-							-1,
-							"Can't find the requested authority whilst trying to create CRS transform",
-							e);
-		}
-		catch (final FactoryException e)
-		{
-		  Application.logError2(-1,
-					"Unexpected problem whilst trying to create CRS transform", e);
-		}
-
-		_view.setCoordinateReferenceSystem(_worldCoords);
-
-		// SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept
-		// constant
-		_view.setMatchingAspectRatio(true);
-
+		this(null);
 	}
 
-	/**
+	public GtProjection(final MapContent mapContent)
+  {
+    super("GeoTools");
+
+    // initialise our working data stores
+    _workDegs = new DirectPosition2D();
+    _workMetres = new DirectPosition2D();
+    _workScreen = new DirectPosition2D();
+
+    _map = mapContent != null ? mapContent : new MapContent();
+    _view = _map.getViewport();
+
+    // set the aspect radio matching to true. The default
+    // value for this was false - but when we did fit to
+    // window, it wasn't putting the specified area in the centre of the shape
+    _view.setMatchingAspectRatio(true);
+
+    // sort out the degs to m transform
+    try
+    {
+      // we'll tell GeoTools to use the projection that's used by most of our
+      // charts,
+      // so that the chart will be displayed undistorted
+      _worldCoords = CRS.decode(WORLD_PROJECTION);
+
+      // we also need a way to convert a location in degrees to that used by
+      // the charts (metres)
+      final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
+      _degs2metres = CRS.findMathTransform(worldDegs, _worldCoords);
+    }
+    catch (final NoSuchAuthorityCodeException e)
+    {
+      Application.logError2(
+              -1,
+              "Can't find the requested authority whilst trying to create CRS transform",
+              e);
+    }
+    catch (final FactoryException e)
+    {
+      Application.logError2(-1,
+          "Unexpected problem whilst trying to create CRS transform", e);
+    }
+
+    _view.setCoordinateReferenceSystem(_worldCoords);
+
+    // SPECIAL HANDLING: this is the kludge to ensure the aspect ratio is kept
+    // constant
+    _view.setMatchingAspectRatio(true);
+
+  }
+
+  /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;

@@ -491,7 +491,7 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
-  protected GeoToolsHandler _myGeoHandler = new GtProjection();
+  protected final GeoToolsHandler _myGeoHandler;
   
   private final Layers _theLayers = new Layers()
   {
@@ -691,6 +691,9 @@ public class DebriefLiteApp implements FileDropListener
 
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+    
+    _myGeoHandler = new GtProjection(mapPane.getMapContent());
+    
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
