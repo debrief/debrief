@@ -9,18 +9,22 @@ import org.geotools.geometry.DirectPosition2D;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
+import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
+import MWC.GUI.ExternallyManagedDataLayer;
+import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.Layers;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
-public class GeoToolMapProjection extends PlainProjection
+public class GeoToolMapProjection extends PlainProjection implements
+    GeoToolsHandler
 {
   private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj
   private static final String DATA_PROJECTION = "EPSG:4326";
@@ -32,10 +36,12 @@ public class GeoToolMapProjection extends PlainProjection
   private final DirectPosition2D _workDegs;
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
+  private final MapContent _map;
 
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
     super("GeoTools Map");
+    _map = map;
     _view = map.getViewport();
     _layers = data;
 
@@ -126,5 +132,21 @@ public class GeoToolMapProjection extends PlainProjection
   @Override
   public void zoom(final double value)
   {
+  }
+
+  @Override
+  public void addGeoToolsLayer(ExternallyManagedDataLayer layer)
+  {
+    final GeoToolsLayer geoLayer = (GeoToolsLayer) layer;
+    geoLayer.setMap(_map);
+  }
+
+  @Override
+  public void dispose()
+  {
+    if (_map != null)
+    {
+      _map.dispose();
+    }
   }
 }

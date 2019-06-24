@@ -184,9 +184,14 @@ public class GeoToolMapRenderer
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-  public GeoToolMapRenderer(MapContent mapContent2)
+  
+  public GeoToolMapRenderer()
   {
-    mapContent = mapContent2;
+    super();
+    
+    // Create a map content and add our shape file to it
+    mapContent = new MapContent();
+    mapContent.setTitle("Debrief Lite");
   }
 
   public void addRenderer(final MapRenderer renderer)
@@ -282,13 +287,9 @@ public class GeoToolMapRenderer
       e.printStackTrace();
     }
 
-    // Create a map content and add our shape file to it
-    mapContent.setTitle("Debrief Lite");
-
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());
     final Layer layer = new FeatureLayer(featureSource, style);
     mapContent.addLayer(layer);
-
   }
 
   private void paintEvent(final Graphics arg0)
