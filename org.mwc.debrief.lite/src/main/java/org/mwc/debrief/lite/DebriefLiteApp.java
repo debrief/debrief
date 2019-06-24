@@ -1306,9 +1306,17 @@ public class DebriefLiteApp implements FileDropListener
 
   public void resetPlot()
   {
-    // clear teh data
+    // clear the data
     _theLayers.clear();
     layerManager.resetTree();
+    
+    // also remove the data from the GeoMap
+    final MapContent content = mapPane.getMapContent();
+    List<org.geotools.map.Layer> layers = content.layers();
+    for(org.geotools.map.Layer layer: layers)
+    {
+      content.removeLayer(layer);
+    }
 
     // special behaviour. The chart creator objects take a point to the
     // target layer on creation. So, we need to keep the same chart features layer
