@@ -176,13 +176,24 @@ public class GeoToolMapRenderer implements BaseMap
 
   private JMapPane mapPane;
 
-  private MapContent mapComponent;
+  private final MapContent mapContent;
 
   private Graphics graphics;
 
   private SimpleFeatureSource featureSource;
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
+
+  
+  
+  public GeoToolMapRenderer()
+  {
+    super();
+    
+    // Create a map content and add our shape file to it
+    mapContent = new MapContent();
+    mapContent.setTitle("Debrief Lite");
+  }
 
   public void addRenderer(final MapRenderer renderer)
   {
@@ -196,7 +207,7 @@ public class GeoToolMapRenderer implements BaseMap
 
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapComponent);
+    mapPane.setMapContent(mapContent);
   }
 
   /**
@@ -221,7 +232,7 @@ public class GeoToolMapRenderer implements BaseMap
    */
   public MapContent getMapComponent()
   {
-    return mapComponent;
+    return mapContent;
   }
 
   /**
@@ -234,7 +245,7 @@ public class GeoToolMapRenderer implements BaseMap
     final SimpleFeatureType schema = featureSource.getSchema();
     final CoordinateReferenceSystem dataCRS = schema
         .getCoordinateReferenceSystem();
-    final CoordinateReferenceSystem worldCRS = mapComponent
+    final CoordinateReferenceSystem worldCRS = mapContent
         .getCoordinateReferenceSystem();
     MathTransform transform = null;
     try
@@ -280,14 +291,9 @@ public class GeoToolMapRenderer implements BaseMap
       e.printStackTrace();
     }
 
-    // Create a map content and add our shape file to it
-    mapComponent = new MapContent();
-    mapComponent.setTitle("Debrief Lite");
-
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());
     final Layer layer = new FeatureLayer(featureSource, style);
-    mapComponent.addLayer(layer);
-
+    mapContent.addLayer(layer);
   }
 
   private void paintEvent(final Graphics arg0)
