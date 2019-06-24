@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.Callable;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -203,6 +204,16 @@ public class NarrativePanelToolbar extends JPanel
     stateListeners = new ArrayList<>(Arrays.asList(enableDisableButtonsListener,
         updatingNarrativesListener));
 
+    model.setRepaintMethod(new Callable<Void>()
+    {
+      
+      @Override
+      public Void call() throws Exception
+      {
+        _narrativeList.repaint();
+        return null;
+      }
+    });
     setState(INACTIVE_STATE);
   }
 
@@ -459,7 +470,8 @@ public class NarrativePanelToolbar extends JPanel
         {
           _narrativeList.setFixedCellHeight(70);
         }
-        _narrativeList.repaint();
+        
+        _model.repaintView();
       }
     });
     return wrapTextButton;

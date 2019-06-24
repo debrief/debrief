@@ -697,8 +697,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void addNarrativeView()
   {
-    final NarrativeConfigurationModel model = new NarrativeConfigurationModel();
-    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl,model);
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl, model);
     final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar, model);
     narrativePanel.setCollapsed(true);
     narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
