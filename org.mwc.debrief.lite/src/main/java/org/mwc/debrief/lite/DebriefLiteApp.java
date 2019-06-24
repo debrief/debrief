@@ -691,10 +691,6 @@ public class DebriefLiteApp implements FileDropListener
     
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
     
-    _myGeoHandler = new GtProjection();
-
-    final MapContent mapContent = ((GtProjection)_myGeoHandler).getMapContent();
-    geoMapRenderer = new GeoToolMapRenderer(mapContent);
     mapPane = createMapPane(geoMapRenderer, dropSupport);
 
     // ok, ready to load map content
