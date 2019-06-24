@@ -59,7 +59,7 @@ public class NarrativePanelToolbar extends JPanel
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-  
+
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -68,8 +68,9 @@ public class NarrativePanelToolbar extends JPanel
 
   private final JList<NarrativeEntryItem> _narrativeList = new JList<>(
       _narrativeListModel);
-  
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem = new TreeMap<>();
+
+  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem =
+      new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -149,7 +150,8 @@ public class NarrativePanelToolbar extends JPanel
 
               for (final NarrativeEntry entry : toAdd)
               {
-                final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+                final NarrativeEntryItem entryItem = new NarrativeEntryItem(
+                    entry, _model);
                 _narrativeListModel.addElement(entryItem);
                 entry2entryItem.put(entry, entryItem);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
@@ -206,12 +208,26 @@ public class NarrativePanelToolbar extends JPanel
 
     model.setRepaintMethod(new Callable<Void>()
     {
-      
+
       @Override
       public Void call() throws Exception
       {
         _narrativeList.repaint();
         return null;
+      }
+    });
+
+    this._model.addPropertyChangeListener(new PropertyChangeListener()
+    {
+
+      @Override
+      public void propertyChange(PropertyChangeEvent evt)
+      {
+        if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
+            .getPropertyName()))
+        {
+          _model.repaintView();
+        }
       }
     });
     setState(INACTIVE_STATE);
@@ -260,13 +276,11 @@ public class NarrativePanelToolbar extends JPanel
     }
   }
 
-  /*private JButton createCommandButton(final String command, final String image)
-  {
-    final ImageIcon icon = Utils.getIcon(image);
-    final JButton button = new JButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }*/
+  /*
+   * private JButton createCommandButton(final String command, final String image) { final ImageIcon
+   * icon = Utils.getIcon(image); final JButton button = new JButton(icon);
+   * button.setToolTipText(command); return button; }
+   */
 
   private JToggleButton createJToggleButton(final String command,
       final String image)
@@ -295,52 +309,38 @@ public class NarrativePanelToolbar extends JPanel
 
     final JToggleButton wrapTextButton = createWrapButton();
 
-    /*final JButton copyButton = createCommandButton("Copy Selected Entrey",
-        "icons/16/copy_to_clipboard.png");
-    copyButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Copy selected entry not implemented");
-      }
-    });
-
-    final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
-        "icons/16/list.png");
-    addBulkEntriesButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Add Bulk Entries not implemented");
-      }
-    });
-
-    final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
-        "icons/16/add.png");
-    addBulkEntriesButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Add single entry not implemented");
-      }
-    });*/
+    /*
+     * final JButton copyButton = createCommandButton("Copy Selected Entrey",
+     * "icons/16/copy_to_clipboard.png"); copyButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Copy selected entry not implemented"); } });
+     * 
+     * final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
+     * "icons/16/list.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add Bulk Entries not implemented"); } });
+     * 
+     * final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
+     * "icons/16/add.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add single entry not implemented"); } });
+     */
 
     add(tracksFilterLabel);
     add(typeFilterLabel);
     add(wrapTextButton);
-    /*add(copyButton);
-    add(addBulkEntriesButton);
-    add(addSingleEntryButton);*/
+    /*
+     * add(copyButton); add(addBulkEntriesButton); add(addSingleEntryButton);
+     */
 
     componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*, copyButton,
-        addBulkEntriesButton, addSingleEntryButton*/}));
+    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*
+                                                        * , copyButton, addBulkEntriesButton,
+                                                        * addSingleEntryButton
+                                                        */}));
 
     createDataListeners();
   }
@@ -463,14 +463,15 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
-        if ( wrapTextButton.isSelected() )
+        if (wrapTextButton.isSelected())
         {
           _narrativeList.setFixedCellHeight(-1);
-        }else
+        }
+        else
         {
           _narrativeList.setFixedCellHeight(70);
         }
-        
+
         _model.repaintView();
       }
     });

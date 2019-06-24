@@ -354,7 +354,7 @@ public class DebriefLiteApp implements FileDropListener
     }
 
   }
-  
+
   public static void openNMEAFile(final File file)
   {
     try
@@ -369,8 +369,8 @@ public class DebriefLiteApp implements FileDropListener
 
   private void handleImportNMEAFile(File file)
   {
-    //show the dialog first, then import the file
-    
+    // show the dialog first, then import the file
+
     ImportNMEA importer = new ImportNMEA(_theLayers);
     FileInputStream fs;
     try
@@ -380,7 +380,8 @@ public class DebriefLiteApp implements FileDropListener
     }
     catch (FileNotFoundException e)
     {
-      JOptionPane.showMessageDialog(null, "File :"+file +" was not found", "File error", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null, "File :" + file + " was not found",
+          "File error", JOptionPane.ERROR_MESSAGE);
     }
     catch (Exception e)
     {
@@ -580,7 +581,8 @@ public class DebriefLiteApp implements FileDropListener
     initializeMapContent();
 
     final FileDropSupport dropSupport = new FileDropSupport();
-    dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
+    dropSupport.setFileDropListener(this,
+        " .REP, .XML, .DSF, .DTF, .DPF, .LOG");
 
     // provide some file helpers
     ImportReplay.initialise(app);
@@ -645,8 +647,6 @@ public class DebriefLiteApp implements FileDropListener
     _theLayers.addDataReformattedListener(dListener);
     _theLayers.addDataExtendedListener(dListener);
     _theLayers.addDataModifiedListener(dListener);
-    
-    
 
     painterManager = new PainterManager(_stepControl);
     final PlainChart theChart = new LiteChart(_theLayers, theCanvas, mapPane);
@@ -697,9 +697,12 @@ public class DebriefLiteApp implements FileDropListener
 
   private void addNarrativeView()
   {
-    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(timeManager);
-    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(_stepControl, model);
-    final NarrativePanelView narrativePanelView = new NarrativePanelView(toolbar, model);
+    final NarrativeConfigurationModel model = new NarrativeConfigurationModel(
+        timeManager);
+    final NarrativePanelToolbar toolbar = new NarrativePanelToolbar(
+        _stepControl, model);
+    final NarrativePanelView narrativePanelView = new NarrativePanelView(
+        toolbar, model);
     narrativePanel.setCollapsed(true);
     narrativePanel.add(narrativePanelView, BorderLayout.CENTER);
   }
@@ -743,7 +746,7 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.add(outlinePanel, BorderLayout.WEST);
 
     theFrame.add(narrativePanel, BorderLayout.EAST);
-    
+
     addOutlineView(app, undoBuffer);
     addGraphView();
     addNarrativeView();
@@ -906,10 +909,10 @@ public class DebriefLiteApp implements FileDropListener
           {
             handleImportDPF(file);
           }
-          else if(suff.equalsIgnoreCase(".LOG"))
+          else if (suff.equalsIgnoreCase(".LOG"))
           {
             handleImportNMEAFile(file);
-            //layerManager.resetTree();
+            // layerManager.resetTree();
           }
           else
           {
@@ -926,7 +929,7 @@ public class DebriefLiteApp implements FileDropListener
       MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file",
           "Error Opening the file: " + e.getMessage());
     }
-    
+
     restoreCursor();
   }
 

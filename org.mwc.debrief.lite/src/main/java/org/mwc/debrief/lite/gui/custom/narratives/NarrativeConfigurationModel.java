@@ -48,7 +48,7 @@ public class NarrativeConfigurationModel implements
   private boolean _wrapping = true;
 
   private String _filterText;
-  
+
   private Callable<Void> _repaintMethod;
 
   private TimeManager _timeManager;
@@ -73,7 +73,7 @@ public class NarrativeConfigurationModel implements
           @Override
           public void propertyChange(PropertyChangeEvent evt)
           {
-            System.out.println("Tiempo cambiado");
+            highlightNarrative((HiResDate) evt.getNewValue());
           }
         };
 
@@ -119,14 +119,25 @@ public class NarrativeConfigurationModel implements
   }
 
   @Override
-  public void highlightNarrative(final HiResDate date)
+  public void highlightNarrative(final HiResDate object)
   {
     NarrativeEntry narrative = null;
-    for ( Set<NarrativeEntry> narrativeEntries : _narrativeWrappers.values() )
+    long closestDistance = Long.MAX_VALUE;
+    for (Set<NarrativeEntry> narrativeEntries : _narrativeWrappers.values())
     {
-      //if ( narrative == null ||  )
+      for (NarrativeEntry narrativeEntry : narrativeEntries)
+      {
+        if (narrative == null || closestDistance > Math.abs(narrativeEntry
+            .getDTG().getMicros() - object.getMicros()))
+        {
+          closestDistance = Math.abs(narrativeEntry.getDTG().getMicros()
+              - object.getMicros());
+
+          narrative = narrativeEntry;
+        }
+      }
     }
-    if ( narrative != null )
+    if (narrative != null)
     {
       final boolean update = _currentHighLight == null || !_currentHighLight
           .equals(narrative);
@@ -135,6 +146,7 @@ public class NarrativeConfigurationModel implements
       {
         final NarrativeEntry oldValue = _currentHighLight;
         final NarrativeEntry newValue = narrative;
+        _currentHighLight = narrative;
         notifyListenersStateChanged(narrative, NARRATIVE_HIGHLIGHT, oldValue,
             newValue);
       }
@@ -241,10 +253,15 @@ public class NarrativeConfigurationModel implements
   {
     return _timeManager;
   }
-  
+
   public void setRepaintMethod(final Callable<Void> repaint)
   {
     this._repaintMethod = repaint;
+  }
+
+  public NarrativeEntry getCurrentHighLight()
+  {
+    return _currentHighLight;
   }
 
   @Override

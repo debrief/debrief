@@ -53,4 +53,6 @@ public interface AbstractNarrativeConfiguration
   public void setRepaintMethod(final Callable<Void> repaint);
   
   public void repaintView();
+  
+  public NarrativeEntry getCurrentHighLight();
 }
