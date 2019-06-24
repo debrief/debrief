@@ -50,7 +50,6 @@ import org.geotools.map.MapContent;
 import org.geotools.swing.JMapPane;
 import org.geotools.swing.action.ResetAction;
 import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
-import org.mwc.cmap.geotools.gt2plot.GtProjection;
 import org.mwc.cmap.geotools.gt2plot.ShapeFileLayer;
 import org.mwc.cmap.geotools.gt2plot.WorldImageLayer;
 import org.mwc.debrief.lite.graph.GraphPanelView;
@@ -94,13 +93,11 @@ import MWC.GUI.Defaults.PreferenceProvider;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.ExternallyManagedDataLayer;
-import MWC.GUI.GeoToolsHandler;
 import MWC.GUI.HasEditables;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Layers.DataListener2;
-import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
 import MWC.GUI.StepperListener;
@@ -111,6 +108,7 @@ import MWC.GUI.Canvas.ExtendedCanvasAdapter;
 import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.DragDrop.FileDropSupport.FileDropListener;
+import MWC.GUI.Shapes.ChartBoundsWrapper;
 import MWC.GUI.Undo.UndoBuffer;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -491,7 +489,6 @@ public class DebriefLiteApp implements FileDropListener
   private final JXCollapsiblePaneWithTitle graphPanel =
       new JXCollapsiblePaneWithTitle(Direction.DOWN, "Graph", 150);
   private final JRibbonFrame theFrame;
-  protected GeoToolsHandler _myGeoHandler = new GtProjection();
   
   private final Layers _theLayers = new Layers()
   {
@@ -519,7 +516,7 @@ public class DebriefLiteApp implements FileDropListener
               new WorldImageLayer(dl.getName(), dl.getFilename());
 
           gt.setVisible(dl.getVisible());
-          _myGeoHandler.addGeoToolsLayer(gt);
+          projection.addGeoToolsLayer(gt);
           wrappedLayer = gt;
         }
         else if (dl.getDataType().equals(
@@ -539,7 +536,7 @@ public class DebriefLiteApp implements FileDropListener
             final GeoToolsLayer gt =
                 new ShapeFileLayer(dl.getName(), dl.getFilename());
             gt.setVisible(dl.getVisible());
-            _myGeoHandler.addGeoToolsLayer(gt);
+            projection.addGeoToolsLayer(gt);
             wrappedLayer = gt;
           }
         }
@@ -576,11 +573,10 @@ public class DebriefLiteApp implements FileDropListener
 
       // and remove from the actual list
       super.removeThisLayer(theLayer);
-
     }
 
   };
-  private GeoToolMapProjection projection;
+  private final GeoToolMapProjection projection;
 
   private final LiteSession session;
 
@@ -667,6 +663,9 @@ public class DebriefLiteApp implements FileDropListener
 
     geoMapRenderer = new GeoToolMapRenderer();
     initializeMapContent();
+    
+    final MapContent mapComponent = geoMapRenderer.getMapComponent();
+    projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
@@ -1204,8 +1203,6 @@ public class DebriefLiteApp implements FileDropListener
   private void initializeMapContent()
   {
     geoMapRenderer.loadMapContent();
-    final MapContent mapComponent = geoMapRenderer.getMapComponent();
-    projection = new GeoToolMapProjection(mapComponent, _theLayers);
 
     geoMapRenderer.addRenderer(new MapRenderer()
     {
