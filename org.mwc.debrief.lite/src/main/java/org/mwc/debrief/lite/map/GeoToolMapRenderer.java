@@ -54,7 +54,7 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer implements BaseMap
+public class GeoToolMapRenderer
 {
 
   private static class CustomMapPane extends JMapPane
@@ -185,7 +185,6 @@ public class GeoToolMapRenderer implements BaseMap
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
   
-  
   public GeoToolMapRenderer()
   {
     super();
@@ -200,11 +199,9 @@ public class GeoToolMapRenderer implements BaseMap
     _myRenderers.add(renderer);
   }
 
-  @Override
   public void createMapLayout()
   {
     mapPane = new CustomMapPane(this);
-
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapContent);
@@ -259,7 +256,6 @@ public class GeoToolMapRenderer implements BaseMap
     return transform;
   }
 
-  @Override
   public void loadMapContent()
   {
 

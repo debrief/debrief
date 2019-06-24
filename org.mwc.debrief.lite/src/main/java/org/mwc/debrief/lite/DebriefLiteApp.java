@@ -235,6 +235,7 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @param geoMapRenderer
    * @param dropSupport
+   * @param mapContent 
    *
    * @return
    */
@@ -687,9 +688,19 @@ public class DebriefLiteApp implements FileDropListener
 
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
-
+    
     ImportManager.addImporter(new DebriefXMLReaderWriter(app));
+    
+    _myGeoHandler = new GtProjection();
+
+    final MapContent mapContent = ((GtProjection)_myGeoHandler).getMapContent();
+    geoMapRenderer = new GeoToolMapRenderer(mapContent);
     mapPane = createMapPane(geoMapRenderer, dropSupport);
+
+    // ok, ready to load map content
+    initializeMapContent();
+
+    
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
 
@@ -1009,19 +1020,15 @@ public class DebriefLiteApp implements FileDropListener
 
   public static  void handleImportTIFFile(File file)
   {
-    System.out.println("Started loading file");
     String layerName = file.getName();
 
     // ok - get loading going
     final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(
         ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, file.getAbsolutePath());
+    
+    // note: our layers.addThisLayer() has extra processing to wrap
+    // ExternallyManagedDataLayer instances
     _instance._theLayers.addThisLayer(dl);
-/*    final GeoToolsLayer gt =
-        new WorldImageLayer(file.getName(), file.getAbsolutePath());
-    gt.setVisible(true);
-    GeoToolsHandler myGeoHandler = new GtProjection();
-    myGeoHandler.addGeoToolsLayer(gt);
-*/    
   }
 
   public OutlinePanelView getLayerManager()
@@ -1300,9 +1307,17 @@ public class DebriefLiteApp implements FileDropListener
 
   public void resetPlot()
   {
-    // clear teh data
+    // clear the data
     _theLayers.clear();
     layerManager.resetTree();
+    
+    // also remove the data from the GeoMap
+    final MapContent content = mapPane.getMapContent();
+    List<org.geotools.map.Layer> layers = content.layers();
+    for(org.geotools.map.Layer layer: layers)
+    {
+      content.removeLayer(layer);
+    }
 
     // special behaviour. The chart creator objects take a point to the
     // target layer on creation. So, we need to keep the same chart features layer
