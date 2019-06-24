@@ -237,6 +237,7 @@ public class DebriefLiteApp implements FileDropListener
    *
    * @param geoMapRenderer
    * @param dropSupport
+   * @param mapContent 
    *
    * @return
    */
@@ -665,9 +666,6 @@ public class DebriefLiteApp implements FileDropListener
     theFrame.setApplicationIcon(ImageWrapperResizableIcon.getIcon(MenuUtils
         .createImage("icons/d_lite.png"), MenuUtils.ICON_SIZE_32));
 
-    geoMapRenderer = new GeoToolMapRenderer();
-    initializeMapContent();
-
     final FileDropSupport dropSupport = new FileDropSupport();
     dropSupport.setFileDropListener(this, " .REP, .XML, .DSF, .DTF, .DPF, .LOG,.TIF");
 
@@ -688,11 +686,18 @@ public class DebriefLiteApp implements FileDropListener
 
     // take a safe copy of the chart features layer
     safeChartFeatures = _theLayers.findLayer(Layers.CHART_FEATURES);
-
-    ImportManager.addImporter(new DebriefXMLReaderWriter(app));
-    mapPane = createMapPane(geoMapRenderer, dropSupport);
     
-    _myGeoHandler = new GtProjection(mapPane.getMapContent());
+    ImportManager.addImporter(new DebriefXMLReaderWriter(app));
+    
+    _myGeoHandler = new GtProjection();
+
+    final MapContent mapContent = ((GtProjection)_myGeoHandler).getMapContent();
+    geoMapRenderer = new GeoToolMapRenderer(mapContent);
+    mapPane = createMapPane(geoMapRenderer, dropSupport);
+
+    // ok, ready to load map content
+    initializeMapContent();
+
     
     final CanvasAdaptor theCanvas = new CanvasAdaptor(projection, mapPane
         .getGraphics());
@@ -1013,19 +1018,15 @@ public class DebriefLiteApp implements FileDropListener
 
   public static  void handleImportTIFFile(File file)
   {
-    System.out.println("Started loading file");
     String layerName = file.getName();
 
     // ok - get loading going
     final ExternallyManagedDataLayer dl = new ExternallyManagedDataLayer(
         ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, file.getAbsolutePath());
+    
+    // note: our layers.addThisLayer() has extra processing to wrap
+    // ExternallyManagedDataLayer instances
     _instance._theLayers.addThisLayer(dl);
-/*    final GeoToolsLayer gt =
-        new WorldImageLayer(file.getName(), file.getAbsolutePath());
-    gt.setVisible(true);
-    GeoToolsHandler myGeoHandler = new GtProjection();
-    myGeoHandler.addGeoToolsLayer(gt);
-*/    
   }
 
   public OutlinePanelView getLayerManager()

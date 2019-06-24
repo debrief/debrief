@@ -54,7 +54,7 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
  * @author Unni Mana <unnivm@gmail.com>
  *
  */
-public class GeoToolMapRenderer implements BaseMap
+public class GeoToolMapRenderer
 {
 
   private static class CustomMapPane extends JMapPane
@@ -176,7 +176,7 @@ public class GeoToolMapRenderer implements BaseMap
 
   private JMapPane mapPane;
 
-  private MapContent mapComponent;
+  private final MapContent mapContent;
 
   private Graphics graphics;
 
@@ -184,19 +184,22 @@ public class GeoToolMapRenderer implements BaseMap
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
+  public GeoToolMapRenderer(MapContent mapContent2)
+  {
+    mapContent = mapContent2;
+  }
+
   public void addRenderer(final MapRenderer renderer)
   {
     _myRenderers.add(renderer);
   }
 
-  @Override
   public void createMapLayout()
   {
     mapPane = new CustomMapPane(this);
-
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
-    mapPane.setMapContent(mapComponent);
+    mapPane.setMapContent(mapContent);
   }
 
   /**
@@ -221,7 +224,7 @@ public class GeoToolMapRenderer implements BaseMap
    */
   public MapContent getMapComponent()
   {
-    return mapComponent;
+    return mapContent;
   }
 
   /**
@@ -234,7 +237,7 @@ public class GeoToolMapRenderer implements BaseMap
     final SimpleFeatureType schema = featureSource.getSchema();
     final CoordinateReferenceSystem dataCRS = schema
         .getCoordinateReferenceSystem();
-    final CoordinateReferenceSystem worldCRS = mapComponent
+    final CoordinateReferenceSystem worldCRS = mapContent
         .getCoordinateReferenceSystem();
     MathTransform transform = null;
     try
@@ -248,7 +251,6 @@ public class GeoToolMapRenderer implements BaseMap
     return transform;
   }
 
-  @Override
   public void loadMapContent()
   {
 
@@ -281,12 +283,11 @@ public class GeoToolMapRenderer implements BaseMap
     }
 
     // Create a map content and add our shape file to it
-    mapComponent = new MapContent();
-    mapComponent.setTitle("Debrief Lite");
+    mapContent.setTitle("Debrief Lite");
 
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());
     final Layer layer = new FeatureLayer(featureSource, style);
-    mapComponent.addLayer(layer);
+    mapContent.addLayer(layer);
 
   }
 
