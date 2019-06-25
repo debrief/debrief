@@ -21,6 +21,14 @@ public class NarrativeEntryItem
   {
     return _model;
   }
-  
-  
+  @Override
+  public boolean equals(Object obj)
+  {
+    if ( obj == null || ! ( obj instanceof NarrativeEntryItem ) )
+    {
+      return false;
+    }
+    final NarrativeEntryItem objNarrative = (NarrativeEntryItem)obj;
+    return objNarrative.getEntry().equals(getEntry());
+  }
 }

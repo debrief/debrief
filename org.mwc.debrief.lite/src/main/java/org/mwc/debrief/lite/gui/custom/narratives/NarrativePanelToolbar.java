@@ -226,6 +226,8 @@ public class NarrativePanelToolbar extends JPanel
         if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
             .getPropertyName()))
         {
+          final NarrativeEntryItem itemToCompare = new NarrativeEntryItem((NarrativeEntry) evt.getNewValue(), _model);
+          _narrativeList.setSelectedValue(itemToCompare, true);
           _model.repaintView();
         }
       }
