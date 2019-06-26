@@ -468,8 +468,16 @@ public class VideoPlayerView extends ViewPart
     if (start == null)
     {
       // try to get the start time from last video start time.
-      long lastStartTime = PlatformUI.getPreferenceStore().getLong(
-          _currentFilename);
+      final long lastStartTime;
+      if (_currentFilename != null)
+      {
+        lastStartTime = PlatformUI.getPreferenceStore().getLong(
+            _currentFilename);
+      }
+      else
+      {
+        lastStartTime = 0;
+      }
       VideoPlayerStartTimeDialog dialog = new VideoPlayerStartTimeDialog();
       dialog.setStartTime(lastStartTime > 0 ? new Date(lastStartTime) : null);
       dialog.setBlockOnOpen(true);
