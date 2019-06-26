@@ -457,7 +457,7 @@ public class NarrativePanelToolbar extends JPanel
           _narrativeList.setFixedCellHeight(-1);
         }else
         {
-          _narrativeList.setFixedCellHeight(70);
+          _narrativeList.setFixedCellHeight(45);
         }
         _narrativeList.repaint();
       }
