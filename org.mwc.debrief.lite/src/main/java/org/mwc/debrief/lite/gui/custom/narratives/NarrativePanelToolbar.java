@@ -226,9 +226,52 @@ public class NarrativePanelToolbar extends JPanel
         if (NarrativeConfigurationModel.NARRATIVE_HIGHLIGHT.equals(evt
             .getPropertyName()))
         {
-          final NarrativeEntryItem itemToCompare = new NarrativeEntryItem((NarrativeEntry) evt.getNewValue(), _model);
+          final NarrativeEntryItem itemToCompare = new NarrativeEntryItem(
+              (NarrativeEntry) evt.getNewValue(), _model);
           _narrativeList.setSelectedValue(itemToCompare, true);
           _model.repaintView();
+        }
+      }
+    });
+
+    this._narrativeList.addMouseListener(new MouseListener()
+    {
+
+      @Override
+      public void mouseReleased(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e)
+      {
+        // TODO Auto-generated method stub
+
+      }
+
+      @Override
+      public void mouseClicked(MouseEvent e)
+      {
+        if (e.getClickCount() == 2)
+        {
+          _stepControl.changeTime(_narrativeList.getSelectedValue()
+              .getEntry().getDTG());
         }
       }
     });
