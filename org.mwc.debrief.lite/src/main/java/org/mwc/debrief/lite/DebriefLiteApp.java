@@ -374,6 +374,13 @@ public class DebriefLiteApp implements FileDropListener
     {
       fs = new FileInputStream(file);
       importer.importThis(file.getName(), fs, 60000, 60000);
+      final TimePeriod period = _theLayers.getTimePeriod();
+      _myOperations.setPeriod(period);
+      timeManager.setPeriod(this, period);
+      if (period != null)
+      {
+        timeManager.setTime(this, period.getStartDTG(), true);
+      }
     }
     catch (FileNotFoundException e)
     {
