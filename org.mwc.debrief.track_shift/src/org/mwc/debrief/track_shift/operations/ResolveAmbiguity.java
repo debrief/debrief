@@ -161,21 +161,24 @@ public class ResolveAmbiguity implements RightClickContextItemGenerator
     {
       // try to get the sensor
       final SensorWrapper sensor = seg.getReferenceSensor();
-
-      // try to get the cut nearest the start of this segment
-      final Watchable[] nearest = sensor.getNearestTo(seg.getDTG_Start());
-      if (nearest != null && nearest.length > 0)
+      
+      if (sensor != null)
       {
-        final SensorContactWrapper scw = (SensorContactWrapper) nearest[0];
+        // try to get the cut nearest the start of this segment
+        final Watchable[] nearest = sensor.getNearestTo(seg.getDTG_Start());
+        if (nearest != null && nearest.length > 0)
+        {
+          final SensorContactWrapper scw = (SensorContactWrapper) nearest[0];
 
-        // is it ambiguous
-        if (Double.isNaN(scw.getAmbiguousBearing()))
-        {
-          nonAmbigSegments.add(seg);
-        }
-        else
-        {
-          ambigSegments.add(seg);
+          // is it ambiguous
+          if (Double.isNaN(scw.getAmbiguousBearing()))
+          {
+            nonAmbigSegments.add(seg);
+          }
+          else
+          {
+            ambigSegments.add(seg);
+          }
         }
       }
     }
