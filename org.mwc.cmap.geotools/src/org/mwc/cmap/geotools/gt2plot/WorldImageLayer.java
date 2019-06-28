@@ -21,13 +21,17 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
+import org.geotools.coverage.grid.io.AbstractGridFormat;
+import org.geotools.coverage.grid.io.GridFormatFinder;
 import org.geotools.data.DataSourceException;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.Hints;
 import org.geotools.feature.simple.SimpleFeatureImpl;
+import org.geotools.gce.geotiff.GeoTiffFormat;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.geotools.gce.image.WorldImageReader;
 import org.geotools.map.GridReaderLayer;
@@ -64,7 +68,14 @@ public class WorldImageLayer extends GeoToolsLayer
 	{
 		Layer res = null;
 		AbstractGridCoverage2DReader tiffReader = null;
-		try
+		AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
+	    Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+	    
+
+	    
+	    tiffReader = format.getReader(openFile, hints);
+	    
+		/*try
 		{
 
 			final String nameWithoutExtention = FileUtilities
@@ -85,7 +96,7 @@ public class WorldImageLayer extends GeoToolsLayer
 		{
 			e.printStackTrace();
 		}
-
+*/
 		// WorldImageFormat format = new WorldImageFormat();
 		// AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
 		// AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
@@ -98,7 +109,7 @@ public class WorldImageLayer extends GeoToolsLayer
 			final GeneralParameterValue[] params = null;
 
 			res = new GridReaderLayer(tiffReader, defaultStyle, params);
-
+			System.out.println("proj on read:" + res.getBounds().getCoordinateReferenceSystem().getName());
 		}
 		return res;
 	}

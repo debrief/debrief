@@ -4,9 +4,16 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.JMapPane;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
@@ -52,8 +59,36 @@ public class FitToWindow extends AbstractAction
         final WorldLocation br = area.getBottomRight();
         final CoordinateReferenceSystem crs = map.getMapContent()
             .getCoordinateReferenceSystem();
-        final ReferencedEnvelope bounds = new ReferencedEnvelope(tl.getLong(),
-            br.getLong(), tl.getLat(), br.getLat(), crs);
+        double long1 = tl.getLong();
+		double lat1 = tl.getLat();
+		double long2 = br.getLong();
+		double lat2 = br.getLat();
+		// TODO: Ian Turton
+		//Ideally, I'd like to make use of the GTProjection object here but I'm not sure how to find it
+		if (crs != DefaultGeographicCRS.WGS84) {
+        	try {
+				MathTransform degsToWorld = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
+				DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
+				DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
+				degsToWorld.transform(tlDegs, tlDegs);
+				degsToWorld.transform(brDegs, brDegs);
+				long1 = tlDegs.x;
+				lat1 = tlDegs.y;
+				long2 = brDegs.x;
+				lat2 = brDegs.y;
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MismatchedDimensionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TransformException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+        final ReferencedEnvelope bounds = new ReferencedEnvelope(long1,
+            long2, lat1, lat2, crs);
         map.getMapContent().getViewport().setBounds(bounds);
 
         // force repaint
