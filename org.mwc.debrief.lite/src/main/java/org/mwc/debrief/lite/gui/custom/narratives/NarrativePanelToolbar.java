@@ -5,8 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
@@ -60,7 +58,7 @@ public class NarrativePanelToolbar extends JPanel
   private final LiteStepControl _stepControl;
 
   private final List<JComponent> componentsToDisable = new ArrayList<>();
-  
+
   /**
    * Maybe this should be inside the abstract model.
    */
@@ -69,8 +67,9 @@ public class NarrativePanelToolbar extends JPanel
 
   private final JList<NarrativeEntryItem> _narrativeList = new JList<>(
       _narrativeListModel);
-  
-  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem = new TreeMap<>();
+
+  private final TreeMap<NarrativeEntry, NarrativeEntryItem> entry2entryItem =
+      new TreeMap<>();
 
   private final AbstractNarrativeConfiguration _model;
 
@@ -150,7 +149,8 @@ public class NarrativePanelToolbar extends JPanel
 
               for (final NarrativeEntry entry : toAdd)
               {
-                final NarrativeEntryItem entryItem = new NarrativeEntryItem(entry, _model);
+                final NarrativeEntryItem entryItem = new NarrativeEntryItem(
+                    entry, _model);
                 _narrativeListModel.addElement(entryItem);
                 entry2entryItem.put(entry, entryItem);
                 _model.registerNewNarrativeEntry(narrativeWrapper, entry);
@@ -251,13 +251,46 @@ public class NarrativePanelToolbar extends JPanel
     }
   }
 
-  /*private JButton createCommandButton(final String command, final String image)
+  /*
+   * private JButton createCommandButton(final String command, final String image) { final ImageIcon
+   * icon = Utils.getIcon(image); final JButton button = new JButton(icon);
+   * button.setToolTipText(command); return button; }
+   */
+
+  private void createDataListeners()
   {
-    final ImageIcon icon = Utils.getIcon(image);
-    final JButton button = new JButton(icon);
-    button.setToolTipText(command);
-    return button;
-  }*/
+    if (_stepControl != null && _stepControl.getLayers() != null)
+    {
+      final DataListener registerNarrativeListener = new DataListener()
+      {
+
+        @Override
+        public void dataExtended(final Layers theData)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataModified(final Layers theData, final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+
+        @Override
+        public void dataReformatted(final Layers theData,
+            final Layer changedLayer)
+        {
+          checkNewNarratives(theData);
+        }
+      };
+      _stepControl.getLayers().addDataExtendedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataModifiedListener(
+          registerNarrativeListener);
+      _stepControl.getLayers().addDataReformattedListener(
+          registerNarrativeListener);
+    }
+  }
 
   private JToggleButton createJToggleButton(final String command,
       final String image)
@@ -266,74 +299,6 @@ public class NarrativePanelToolbar extends JPanel
     final JToggleButton button = new JToggleButton(icon);
     button.setToolTipText(command);
     return button;
-  }
-
-  public JList<NarrativeEntryItem> getNarrativeList()
-  {
-    return _narrativeList;
-  }
-
-  private void init()
-  {
-    final JSelectTrackFilter selectTrack = new JSelectTrackFilter(_model);
-
-    final JComboBox<String> tracksFilterLabel = createTracksComboFilter(
-        selectTrack);
-
-    final JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
-    final JComboBox<String> typeFilterLabel = createTypeFilterCombo(selectTrack,
-        typeFilter);
-
-    final JToggleButton wrapTextButton = createWrapButton();
-
-    /*final JButton copyButton = createCommandButton("Copy Selected Entrey",
-        "icons/16/copy_to_clipboard.png");
-    copyButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Copy selected entry not implemented");
-      }
-    });
-
-    final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
-        "icons/16/list.png");
-    addBulkEntriesButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Add Bulk Entries not implemented");
-      }
-    });
-
-    final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
-        "icons/16/add.png");
-    addBulkEntriesButton.addActionListener(new ActionListener()
-    {
-
-      @Override
-      public void actionPerformed(final ActionEvent e)
-      {
-        System.out.println("Add single entry not implemented");
-      }
-    });*/
-
-    /*add(tracksFilterLabel);
-    add(typeFilterLabel);*/
-    add(wrapTextButton);
-    /*add(copyButton);
-    add(addBulkEntriesButton);
-    add(addSingleEntryButton);*/
-
-    componentsToDisable.addAll(Arrays.asList(new JComponent[]
-    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*, copyButton,
-        addBulkEntriesButton, addSingleEntryButton*/}));
-
-    createDataListeners();
   }
 
   private JComboBox<String> createTracksComboFilter(
@@ -454,10 +419,11 @@ public class NarrativePanelToolbar extends JPanel
       public void actionPerformed(final ActionEvent e)
       {
         _model.setWrapping(wrapTextButton.isSelected());
-        if ( wrapTextButton.isSelected() )
+        if (wrapTextButton.isSelected())
         {
           _narrativeList.setFixedCellHeight(-1);
-        }else
+        }
+        else
         {
           _narrativeList.setFixedCellHeight(50);
         }
@@ -467,39 +433,59 @@ public class NarrativePanelToolbar extends JPanel
     return wrapTextButton;
   }
 
-  private void createDataListeners()
+  public JList<NarrativeEntryItem> getNarrativeList()
   {
-    if (_stepControl != null && _stepControl.getLayers() != null)
-    {
-      final DataListener registerNarrativeListener = new DataListener()
-      {
+    return _narrativeList;
+  }
 
-        @Override
-        public void dataExtended(final Layers theData)
-        {
-          checkNewNarratives(theData);
-        }
+  private void init()
+  {
+    final JSelectTrackFilter selectTrack = new JSelectTrackFilter(_model);
 
-        @Override
-        public void dataModified(final Layers theData, final Layer changedLayer)
-        {
-          checkNewNarratives(theData);
-        }
+    final JComboBox<String> tracksFilterLabel = createTracksComboFilter(
+        selectTrack);
 
-        @Override
-        public void dataReformatted(final Layers theData,
-            final Layer changedLayer)
-        {
-          checkNewNarratives(theData);
-        }
-      };
-      _stepControl.getLayers().addDataExtendedListener(
-          registerNarrativeListener);
-      _stepControl.getLayers().addDataModifiedListener(
-          registerNarrativeListener);
-      _stepControl.getLayers().addDataReformattedListener(
-          registerNarrativeListener);
-    }
+    final JSelectTypeFilter typeFilter = new JSelectTypeFilter(_model);
+    final JComboBox<String> typeFilterLabel = createTypeFilterCombo(selectTrack,
+        typeFilter);
+
+    final JToggleButton wrapTextButton = createWrapButton();
+
+    /*
+     * final JButton copyButton = createCommandButton("Copy Selected Entrey",
+     * "icons/16/copy_to_clipboard.png"); copyButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Copy selected entry not implemented"); } });
+     * 
+     * final JButton addBulkEntriesButton = createCommandButton("Add Bulk Entries",
+     * "icons/16/list.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add Bulk Entries not implemented"); } });
+     * 
+     * final JButton addSingleEntryButton = createCommandButton("Add Single Entry",
+     * "icons/16/add.png"); addBulkEntriesButton.addActionListener(new ActionListener() {
+     * 
+     * @Override public void actionPerformed(final ActionEvent e) {
+     * System.out.println("Add single entry not implemented"); } });
+     */
+
+    /*
+     * add(tracksFilterLabel); add(typeFilterLabel);
+     */
+    add(wrapTextButton);
+    /*
+     * add(copyButton); add(addBulkEntriesButton); add(addSingleEntryButton);
+     */
+
+    componentsToDisable.addAll(Arrays.asList(new JComponent[]
+    {tracksFilterLabel, typeFilterLabel, wrapTextButton/*
+                                                        * , copyButton, addBulkEntriesButton,
+                                                        * addSingleEntryButton
+                                                        */}));
+
+    createDataListeners();
   }
 
   private void notifyListenersStateChanged(final Object source,

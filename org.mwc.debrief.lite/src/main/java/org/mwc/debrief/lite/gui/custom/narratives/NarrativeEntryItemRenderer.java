@@ -6,12 +6,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.Random;
 
 import javax.swing.Box;
 import javax.swing.JLabel;
@@ -20,7 +16,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
-import javax.swing.text.View;
 
 public class NarrativeEntryItemRenderer extends JPanel implements
     ListCellRenderer<NarrativeEntryItem>
@@ -39,7 +34,7 @@ public class NarrativeEntryItemRenderer extends JPanel implements
   {
     final Color selectedColor = new Color(229, 229, 229);
 
-    String text = value.getEntry().getEntry();
+    final String text = value.getEntry().getEntry();
     if (!value.getModel().isWrapping())
     {
       // text = (text.substring(0, Math.min(text.length(), 26)));
@@ -128,8 +123,9 @@ public class NarrativeEntryItemRenderer extends JPanel implements
     }
 
     final int rows = (int) Math.ceil((double) textwidth / availableSpace);
-    //System.out.println("name.getLineCount() = " + rows + " * " + textheight);
-    mainPanel.setPreferredSize(new Dimension(0, Math.max(rows * textheight, 50)));
+    // System.out.println("name.getLineCount() = " + rows + " * " + textheight);
+    mainPanel.setPreferredSize(new Dimension(0, Math.max(rows * textheight,
+        50)));
     System.out.println(index + " Tam = " + rows * textheight);
 
     return mainPanel;
