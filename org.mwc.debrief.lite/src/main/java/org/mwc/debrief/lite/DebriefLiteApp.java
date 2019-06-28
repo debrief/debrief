@@ -216,8 +216,7 @@ public class DebriefLiteApp implements FileDropListener
 
   protected static boolean _plotDirty;
 
-  private static String defaultTitle = appName + " (" + Debrief.GUI.VersionInfo
-      .getVersion() + ")";
+  private static String defaultTitle = appName + " (" + BuildDate.BUILD_DATE + ")";
 
   private final static LiteApplication app = new LiteApplication(
       ImportReplay.IMPORT_AS_OTG, 0L);
