@@ -240,11 +240,8 @@ public class NarrativePanelToolbar extends JPanel
       @Override
       public void mouseClicked(final MouseEvent e)
       {
-        if (e.getClickCount() == 2)
-        {
-          _stepControl.changeTime(_narrativeList.getSelectedValue().getEntry()
-              .getDTG());
-        }
+        _stepControl.changeTime(_narrativeList.getSelectedValue().getEntry()
+            .getDTG());
       }
 
       @Override
