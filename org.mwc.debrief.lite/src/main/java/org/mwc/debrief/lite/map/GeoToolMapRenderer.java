@@ -25,11 +25,13 @@ import java.util.List;
 import org.geotools.data.FileDataStore;
 import org.geotools.data.FileDataStoreFinder;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.SLD;
 import org.geotools.styling.Style;
@@ -41,10 +43,12 @@ import org.geotools.swing.event.MapMouseListener;
 import org.geotools.swing.tool.CursorTool;
 import org.mwc.debrief.lite.DebriefLiteApp;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.geometry.MismatchedDimensionException;
 //import org.geotools.swing.tool.ScrollWheelTool;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
@@ -66,6 +70,8 @@ public class GeoToolMapRenderer
     private static final long serialVersionUID = 1L;
 
     private final MouseDragLine dragLine;
+    private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
+    private static final String DATA_PROJECTION = "EPSG:4326";
 
     private final GeoToolMapRenderer _renderer;
     private final MapMouseListener mouseMotionListener = new MapMouseAdapter()
@@ -73,8 +79,19 @@ public class GeoToolMapRenderer
 
       void handleMouseMovement(final MapMouseEvent ev)
       {
-
+    	  // mouse pos in Map coordinates
         final DirectPosition2D curPos = ev.getWorldPos();
+        if(ev.getWorldPos().getCoordinateReferenceSystem()!= DefaultGeographicCRS.WGS84) {
+        	try {
+    			data_transform.transform(curPos, curPos);
+    		} catch (MismatchedDimensionException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (TransformException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        }
         final WorldLocation current = new WorldLocation(curPos.getY(), curPos
             .getX(), 0);
         final String message = BriefFormatLocation.toString(current);
@@ -115,9 +132,26 @@ public class GeoToolMapRenderer
       }
     };
 
+	private CoordinateReferenceSystem worldCoords;
+
+	private CoordinateReferenceSystem worldDegs;
+
+	private MathTransform data_transform;
+
     public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
+      // Would be better to pass in a GeoToolMapProjection or GTProjection here?
+			try {
+				worldCoords = CRS.decode(WORLD_PROJECTION);
+
+				Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+				worldDegs = CRS.decode(DATA_PROJECTION);
+				data_transform = CRS.findMathTransform(worldCoords, worldDegs);
+			} catch (FactoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
       _renderer = geoToolMapRenderer;
 
       dragLine = new MouseDragLine(this);

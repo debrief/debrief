@@ -147,6 +147,17 @@ private MathTransform data_transform;
         {
           currentTransform.transform(_workScreen, _workDegs);
         }
+        if (_view.getCoordinateReferenceSystem()!= dataCRS) {
+        	try {
+    			data_transform.inverse().transform(_workDegs, _workDegs);
+    		} catch (MismatchedDimensionException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (TransformException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        }
         res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
             .getCoordinate()[0], 0);
       }
