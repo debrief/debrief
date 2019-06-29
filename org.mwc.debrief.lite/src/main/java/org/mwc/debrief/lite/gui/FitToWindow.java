@@ -15,6 +15,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
@@ -63,32 +64,34 @@ public class FitToWindow extends AbstractAction
 		double lat1 = tl.getLat();
 		double long2 = br.getLong();
 		double lat2 = br.getLat();
-		// TODO: Ian Turton
-		//Ideally, I'd like to make use of the GTProjection object here but I'm not sure how to find it
-		if (crs != DefaultGeographicCRS.WGS84) {
-        	try {
-				MathTransform degsToWorld = CRS.findMathTransform(DefaultGeographicCRS.WGS84, crs);
-				DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
-				DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
-				degsToWorld.transform(tlDegs, tlDegs);
-				degsToWorld.transform(brDegs, brDegs);
-				long1 = tlDegs.x;
-				lat1 = tlDegs.y;
-				long2 = brDegs.x;
-				lat2 = brDegs.y;
-			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (MismatchedDimensionException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (TransformException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+        // TODO: Ian Turton
+        // Ideally, I'd like to make use of the GTProjection object here but I'm not sure how to
+        // find it
+        if (crs != DefaultGeographicCRS.WGS84)
+        {
+          try
+          {
+            MathTransform degsToWorld = CRS.findMathTransform(
+                DefaultGeographicCRS.WGS84, crs);
+            DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
+            DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
+            degsToWorld.transform(tlDegs, tlDegs);
+            degsToWorld.transform(brDegs, brDegs);
+            long1 = tlDegs.x;
+            lat1 = tlDegs.y;
+            long2 = brDegs.x;
+            lat2 = brDegs.y;
+
+          }
+          catch (final FactoryException | MismatchedDimensionException
+              | TransformException e)
+          {
+            Application.logError2(Application.ERROR,
+                "Failure in projection transform", e);
+          }
         }
-        final ReferencedEnvelope bounds = new ReferencedEnvelope(long1,
-            long2, lat1, lat2, crs);
+        final ReferencedEnvelope bounds = new ReferencedEnvelope(long1, long2,
+            lat1, lat2, crs);
         map.getMapContent().getViewport().setBounds(bounds);
 
         // force repaint

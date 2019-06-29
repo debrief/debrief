@@ -76,13 +76,10 @@ public class GeoToolMapProjection extends PlainProjection implements
       _view.setBounds(bounds);
       
     }
-    catch (final FactoryException e)
+    catch (final FactoryException | TransformException e)
     {
-      e.printStackTrace();
-    } catch (TransformException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+      Application.logError2(Application.ERROR, "Failure in projection transform", e);
+    }
   }
 
   public MathTransform getDataTransform()

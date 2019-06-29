@@ -154,8 +154,7 @@ public class GeoToolMapRenderer
 				worldDegs = CRS.decode(DATA_PROJECTION);
 				data_transform = CRS.findMathTransform(worldCoords, worldDegs);
 			} catch (FactoryException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+        Application.logError2(Application.ERROR, "Failure in projection transform", e);
 			}
       _renderer = geoToolMapRenderer;
 
@@ -295,7 +294,7 @@ public class GeoToolMapRenderer
     }
     catch (final FactoryException e)
     {
-      e.printStackTrace();
+      Application.logError2(Application.ERROR, "Failure in projection transform", e);
     }
     return transform;
   }
@@ -328,7 +327,7 @@ public class GeoToolMapRenderer
     }
     catch (final IOException e)
     {
-      e.printStackTrace();
+      Application.logError2(Application.ERROR, "Failure in projection transform", e);
     }
 
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());
