@@ -310,7 +310,7 @@ public class GeoToolMapRenderer
 
     // this is for dev
 
-    final String shape_path = "data/ne_10M_admin0_countries_89S.shp";
+    final String shape_path = "data/coastline/ne_10M_admin0_countries_89S.shp";
 
     File file = new File(shape_path);
     // System.out.println("Checking for shape file at:"+file.getAbsolutePath());
