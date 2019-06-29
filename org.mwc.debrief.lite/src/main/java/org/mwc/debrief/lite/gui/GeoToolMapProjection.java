@@ -5,7 +5,9 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
+import org.geotools.factory.Hints;
 import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.map.MapViewport;
 import org.geotools.referencing.CRS;
@@ -13,6 +15,8 @@ import org.mwc.cmap.geotools.gt2plot.GeoToolsLayer;
 import org.opengis.geometry.MismatchedDimensionException;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.PlainProjection;
@@ -26,8 +30,10 @@ import MWC.GenericData.WorldLocation;
 public class GeoToolMapProjection extends PlainProjection implements
     GeoToolsHandler
 {
-  private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj
+  private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
   private static final String DATA_PROJECTION = "EPSG:4326";
+  private static CoordinateReferenceSystem worldCRS = null;
+  private static CoordinateReferenceSystem dataCRS = null;
   /**
    *
    */
@@ -37,6 +43,7 @@ public class GeoToolMapProjection extends PlainProjection implements
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
   private final MapContent _map;
+private MathTransform data_transform;
 
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
@@ -54,18 +61,30 @@ public class GeoToolMapProjection extends PlainProjection implements
     // so that the chart will be displayed undistorted
     try
     {
-      final CoordinateReferenceSystem worldCoords = CRS.decode(
-          WORLD_PROJECTION);
-
+      final CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
+      worldCRS = worldCoords;
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
+      Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      CRS.findMathTransform(worldDegs, worldCoords);
+      dataCRS = worldDegs;
+      data_transform = CRS.findMathTransform(worldDegs, worldCoords);
+     
+      // put the map into Mercator Proj
+      _view.setCoordinateReferenceSystem(worldCoords);
+      //limit bounds
+      ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -85.05112878, 85.05112878, worldDegs);
+      bounds = bounds.transform(worldCoords, true);
+      _view.setBounds(bounds);
+      
     }
     catch (final FactoryException e)
     {
       e.printStackTrace();
-    }
+    } catch (TransformException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
   }
 
   @Override
@@ -93,6 +112,17 @@ public class GeoToolMapProjection extends PlainProjection implements
     Point res = null;
     // and now for the actual projection bit
     _workDegs.setLocation(val.getLong(), val.getLat());
+    if (_view.getCoordinateReferenceSystem()!= dataCRS) {
+    	try {
+			data_transform.transform(_workDegs, _workDegs);
+		} catch (MismatchedDimensionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (TransformException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
     _view.getWorldToScreen().transform(_workDegs, _workScreen);
     // output the results
     res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
@@ -116,6 +146,17 @@ public class GeoToolMapProjection extends PlainProjection implements
         if (currentTransform != null)
         {
           currentTransform.transform(_workScreen, _workDegs);
+        }
+        if (_view.getCoordinateReferenceSystem()!= dataCRS) {
+        	try {
+    			data_transform.inverse().transform(_workDegs, _workDegs);
+    		} catch (MismatchedDimensionException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		} catch (TransformException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
         }
         res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
             .getCoordinate()[0], 0);
