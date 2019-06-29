@@ -10,7 +10,7 @@
  *
  *    This library is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 package org.mwc.cmap.geotools.gt2plot;
 
@@ -53,213 +53,203 @@ import MWC.GenericData.WorldLocation;
 
 public class WorldImageLayer extends GeoToolsLayer
 {
-	public final static String RASTER_FILE = "rasterExtents_ARCS_Export";
+  public static class RasterExtentHelper
+  {
+    private static WorldArea getGeometry(final Object value)
+    {
+      WorldArea res = null;
+      if (value instanceof MultiPolygon)
+      {
+        final MultiPolygon mp = (MultiPolygon) value;
+        final Geometry bound = mp.getBoundary();
+        final Coordinate[] coords = bound.getCoordinates();
+        if (coords != null)
+        {
 
-	public WorldImageLayer(final String layerName, final String fileName)
-	{
-		super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
-	}
+          for (int i = 0; i < coords.length; i++)
+          {
+            final Coordinate coordinate = coords[i];
+            final double zDepth;
+            if (Double.isNaN(coordinate.z))
+              zDepth = 0;
+            else
+              zDepth = coordinate.z;
+            final WorldLocation newL = new WorldLocation(coordinate.y,
+                coordinate.x, zDepth);
+            if (res == null)
+              res = new WorldArea(newL, newL);
+            else
+              res.extend(newL);
+          }
+        }
+      }
+      return res;
+    }
 
-	protected Layer loadLayer(final File openFile)
-	{
-		Layer res = null;
-		AbstractGridCoverage2DReader tiffReader = null;
-		AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
-	    Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
-	    
+    protected static void loadExtentsFor(final MWC.GUI.Layer extents,
+        final String fileName, final Layers parent)
+    {
+      // ok, get the extents for this file
 
-	    
-	    tiffReader = format.getReader(openFile, hints);
-	    
-		/*try
-		{
+      // ok, populate from this file
+      FileDataStore store;
+      try
+      {
+        final File openFile = new File(fileName);
+        store = FileDataStoreFinder.getDataStore(openFile);
+        final SimpleFeatureSource featureSource = store.getFeatureSource();
 
-			final String nameWithoutExtention = FileUtilities
-					.getNameWithoutExtention(openFile);
-			final File twfFile = new File(openFile.getParentFile(), nameWithoutExtention
-					+ ".tfw");
-			if (twfFile.exists())
-			{
-				tiffReader = new WorldImageReader(openFile);
-			}
-			else
-			{
-				tiffReader = new GeoTiffReader(openFile);
-			}
+        // sort out the parent path
+        final String parentPath = openFile.getParent();
 
-		}
-		catch (final DataSourceException e)
-		{
-			e.printStackTrace();
-		}
-*/
-		// WorldImageFormat format = new WorldImageFormat();
-		// AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
-		// AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
-		if (tiffReader != null)
-		{
-			final StyleFactoryImpl sf = new StyleFactoryImpl();
-			final RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
-			final Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
+        // hey, can we parse it?
+        final SimpleFeatureCollection fs = featureSource.getFeatures();
+        final SimpleFeatureIterator fiter = fs.features();
+        while (fiter.hasNext())
+        {
+          // get ready to load this feature
+          WorldArea area = null;
+          String name = null;
 
-			final GeneralParameterValue[] params = null;
+          final SimpleFeatureImpl thisF = (SimpleFeatureImpl) fiter.next();
+          final Collection<? extends Property> values = thisF.getValue();
+          final Iterator<? extends Property> iter = values.iterator();
+          while (iter.hasNext())
+          {
+            final Property thisProp = iter.next();
+            final String propName = thisProp.getName().toString();
 
-			res = new GridReaderLayer(tiffReader, defaultStyle, params);
-			System.out.println("proj on read:" + res.getBounds().getCoordinateReferenceSystem().getName());
-		}
-		return res;
-	}
+            // is this the geometry?
+            if (propName.equals("the_geom"))
+            {
+              area = getGeometry(thisProp.getValue());
+            }
+            else if (propName.equals("Name"))
+            {
+              name = thisProp.getValue().toString();
+            }
+          }
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+          // are we done?
+          if ((area != null) && (name != null))
+          {
+            // generate the filename
+            final String path = parentPath + File.separator + name + ".tif";
 
-	// public static MWC.GUI.Layer read(String fileName)
-	// {
-	//
-	// MWC.GUI.Layer res = null;
-	// File openFile = new File(fileName);
-	// if (openFile != null && openFile.exists())
-	// {
-	// // sort out the name of the map
-	// String coverageName = fileName;
-	// final int dotIndex = coverageName.lastIndexOf(".");
-	// coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
-	// 0, dotIndex);
-	// final int pathIndex = coverageName.lastIndexOf(File.separator);
-	// if (pathIndex > 0)
-	// coverageName = coverageName.substring(pathIndex + 1,
-	// coverageName.length());
-	//
-	// // also create a layer wrapper
-	// res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
-	// coverageName, fileName);
-	// }
-	// return res;
-	//
-	// }
+            final ChartBoundsWrapper cw = new ChartBoundsWrapper(name, area
+                .getTopLeft(), area.getBottomRight(), Color.red, path);
+            cw.setLayers(parent);
+            cw.setLabelLocation(LocationPropertyEditor.CENTRE);
+            cw.setLabelVisible(false);
+            extents.add(cw);
+          }
+        }
+        // ok, lastly check we have the correct projection files
+        ProjSidecarGenerator.addPrj(parentPath, "EPSG:4326");
 
-	public static class RasterExtentHelper
-	{
-		public static MWC.GUI.Layer loadRasters(final String fileName, final Layers parent)
-		{
-			// and sort out the parent folder name
-			final File theFile = new File(fileName);
-			final String parentPath = theFile.getParent();
-			final int slasher = parentPath.lastIndexOf(File.separator);
-			final String folderName = parentPath.substring(slasher + 1);
+      }
+      catch (final IOException e)
+      {
+        e.printStackTrace();
+      }
+      catch (final FactoryException e)
+      {
+        e.printStackTrace();
+      }
 
-			final MWC.GUI.Layer res = new ChartFolio(false, Color.red);
-			res.setName("Chart lib:" + folderName);
+    }
 
-			loadExtentsFor(res, fileName, parent);
+    public static MWC.GUI.Layer loadRasters(final String fileName,
+        final Layers parent)
+    {
+      // and sort out the parent folder name
+      final File theFile = new File(fileName);
+      final String parentPath = theFile.getParent();
+      final int slasher = parentPath.lastIndexOf(File.separator);
+      final String folderName = parentPath.substring(slasher + 1);
 
-			return res;
-		}
+      final MWC.GUI.Layer res = new ChartFolio(false, Color.red);
+      res.setName("Chart lib:" + folderName);
 
-		protected static void loadExtentsFor(final MWC.GUI.Layer extents,
-				final String fileName, final Layers parent)
-		{
-			// ok, get the extents for this file
+      loadExtentsFor(res, fileName, parent);
 
-			// ok, populate from this file
-			FileDataStore store;
-			try
-			{
-				final File openFile = new File(fileName);
-				store = FileDataStoreFinder.getDataStore(openFile);
-				final SimpleFeatureSource featureSource = store.getFeatureSource();
+      return res;
+    }
+  }
 
-				// sort out the parent path
-				final String parentPath = openFile.getParent();
+  public final static String RASTER_FILE = "rasterExtents_ARCS_Export";
 
-				// hey, can we parse it?
-				final SimpleFeatureCollection fs = featureSource.getFeatures();
-				final SimpleFeatureIterator fiter = fs.features();
-				while (fiter.hasNext())
-				{
-					// get ready to load this feature
-					WorldArea area = null;
-					String name = null;
+  /**
+   *
+   */
+  private static final long serialVersionUID = 1L;
 
-					final SimpleFeatureImpl thisF = (SimpleFeatureImpl) fiter.next();
-					final Collection<? extends Property> values = thisF.getValue();
-					final Iterator<? extends Property> iter = values.iterator();
-					while (iter.hasNext())
-					{
-						final Property thisProp = iter.next();
-						final String propName = thisProp.getName().toString();
+  public WorldImageLayer(final String layerName, final String fileName)
+  {
+    super(ChartBoundsWrapper.WORLDIMAGE_TYPE, layerName, fileName);
+  }
 
-						// is this the geometry?
-						if (propName.equals("the_geom"))
-						{
-							area = getGeometry(thisProp.getValue());
-						}
-						else if (propName.equals("Name"))
-						{
-							name = thisProp.getValue().toString();
-						}
-					}
+  // public static MWC.GUI.Layer read(String fileName)
+  // {
+  //
+  // MWC.GUI.Layer res = null;
+  // File openFile = new File(fileName);
+  // if (openFile != null && openFile.exists())
+  // {
+  // // sort out the name of the map
+  // String coverageName = fileName;
+  // final int dotIndex = coverageName.lastIndexOf(".");
+  // coverageName = (dotIndex == -1) ? coverageName : coverageName.substring(
+  // 0, dotIndex);
+  // final int pathIndex = coverageName.lastIndexOf(File.separator);
+  // if (pathIndex > 0)
+  // coverageName = coverageName.substring(pathIndex + 1,
+  // coverageName.length());
+  //
+  // // also create a layer wrapper
+  // res = new ExternallyManagedDataLayer(ChartBoundsWrapper.WORLDIMAGE_TYPE,
+  // coverageName, fileName);
+  // }
+  // return res;
+  //
+  // }
 
-					// are we done?
-					if ((area != null) && (name != null))
-					{
-						// generate the filename
-						final String path = parentPath + File.separator + name + ".tif";
+  @Override
+  protected Layer loadLayer(final File openFile)
+  {
+    Layer res = null;
+    AbstractGridCoverage2DReader tiffReader = null;
+    final AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
+    final Hints hints = new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
+        Boolean.TRUE);
 
-						final ChartBoundsWrapper cw = new ChartBoundsWrapper(name,
-								area.getTopLeft(), area.getBottomRight(), Color.red, path);
-						cw.setLayers(parent);
-						cw.setLabelLocation(LocationPropertyEditor.CENTRE);
-						cw.setLabelVisible(false);
-						extents.add(cw);
-					}
-				}
-				// ok, lastly check we have the correct projection files
-				ProjSidecarGenerator.addPrj(parentPath, "EPSG:4326");
+    tiffReader = format.getReader(openFile, hints);
 
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-			catch (final FactoryException e)
-			{
-				e.printStackTrace();
-			}
+    /*
+     * try {
+     *
+     * final String nameWithoutExtention = FileUtilities .getNameWithoutExtention(openFile); final
+     * File twfFile = new File(openFile.getParentFile(), nameWithoutExtention + ".tfw"); if
+     * (twfFile.exists()) { tiffReader = new WorldImageReader(openFile); } else { tiffReader = new
+     * GeoTiffReader(openFile); }
+     *
+     * } catch (final DataSourceException e) { e.printStackTrace(); }
+     */
+    // WorldImageFormat format = new WorldImageFormat();
+    // AbstractGridFormat format = GridFormatFinder.findFormat(openFile);
+    // AbstractGridCoverage2DReader tiffReader = format.getReader(openFile);
+    if (tiffReader != null)
+    {
+      final StyleFactoryImpl sf = new StyleFactoryImpl();
+      final RasterSymbolizer symbolizer = sf.getDefaultRasterSymbolizer();
+      final Style defaultStyle = SLD.wrapSymbolizers(symbolizer);
 
-		}
+      final GeneralParameterValue[] params = null;
 
-		private static WorldArea getGeometry(final Object value)
-		{
-			WorldArea res = null;
-			if (value instanceof MultiPolygon)
-			{
-				final MultiPolygon mp = (MultiPolygon) value;
-				final Geometry bound = mp.getBoundary();
-				final Coordinate[] coords = bound.getCoordinates();
-				if (coords != null)
-				{
-
-					for (int i = 0; i < coords.length; i++)
-					{
-						final Coordinate coordinate = coords[i];
-						final double zDepth;
-						if (Double.isNaN(coordinate.z))
-							zDepth = 0;
-						else
-							zDepth = coordinate.z;
-						final WorldLocation newL = new WorldLocation(coordinate.y, coordinate.x,
-								zDepth);
-						if (res == null)
-							res = new WorldArea(newL, newL);
-						else
-							res.extend(newL);
-					}
-				}
-			}
-			return res;
-		}
-	}
+      res = new GridReaderLayer(tiffReader, defaultStyle, params);
+      System.out.println("proj on read:" + res.getBounds()
+          .getCoordinateReferenceSystem().getName());
+    }
+    return res;
+  }
 }

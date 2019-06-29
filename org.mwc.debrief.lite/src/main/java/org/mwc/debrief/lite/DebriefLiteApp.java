@@ -503,8 +503,7 @@ public class DebriefLiteApp implements FileDropListener
       {
         final ExternallyManagedDataLayer dl =
             (ExternallyManagedDataLayer) theLayer;
-        if (dl.getDataType().equals(
-            ChartBoundsWrapper.WORLDIMAGE_TYPE))
+        if (dl.getDataType().equals(ChartBoundsWrapper.WORLDIMAGE_TYPE))
         {
           final GeoToolsLayer gt = new WorldImageLayer(dl.getName(), dl
               .getFilename());
@@ -513,8 +512,7 @@ public class DebriefLiteApp implements FileDropListener
           projection.addGeoToolsLayer(gt);
           wrappedLayer = gt;
         }
-        else if (dl.getDataType().equals(
-            ChartBoundsWrapper.SHAPEFILE_TYPE))
+        else if (dl.getDataType().equals(ChartBoundsWrapper.SHAPEFILE_TYPE))
         {
           // just see if it's a raster extent layer (special processing)
           if (dl.getName().equals(WorldImageLayer.RASTER_FILE))

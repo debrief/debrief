@@ -30,13 +30,14 @@ import MWC.GenericData.WorldLocation;
 public class GeoToolMapProjection extends PlainProjection implements
     GeoToolsHandler
 {
-  private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
+  private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be
+                                                              // 3857?)
   private static final String DATA_PROJECTION = "EPSG:4326";
+  private static final long serialVersionUID = 3398817999418475368L;
   /**
    *
    */
   private final CoordinateReferenceSystem dataCRS;
-  private static final long serialVersionUID = 3398817999418475368L;
   private final MapViewport _view;
   private final DirectPosition2D _workDegs;
   private final DirectPosition2D _workScreen;
@@ -55,11 +56,11 @@ public class GeoToolMapProjection extends PlainProjection implements
     _workDegs = new DirectPosition2D();
     new DirectPosition2D();
     _workScreen = new DirectPosition2D();
-    
+
     // we'll tell GeoTools to use the projection that's used by most of our
     // charts,
     // so that the chart will be displayed undistorted
-    
+
     // note - we want to store the var fields as final values,
     // but since they're created inside a try block,
     // we'll put them into temporary vars first
@@ -67,38 +68,58 @@ public class GeoToolMapProjection extends PlainProjection implements
     CoordinateReferenceSystem dataCRS_val = null;
     try
     {
-      final CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
+      final CoordinateReferenceSystem worldCoords = CRS.decode(
+          WORLD_PROJECTION);
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
-      Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
+      Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
+          Boolean.TRUE);
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
       dataCRS_val = worldDegs;
       data_transform_val = CRS.findMathTransform(worldDegs, worldCoords);
-     
+
       // put the map into Mercator Proj
       _view.setCoordinateReferenceSystem(worldCoords);
-      //limit bounds
-      ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -85.05112878, 85.05112878, worldDegs);
+      // limit bounds
+      ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180,
+          -85.05112878, 85.05112878, worldDegs);
       bounds = bounds.transform(worldCoords, true);
       _view.setBounds(bounds);
     }
     catch (final FactoryException | TransformException e)
     {
-      Application.logError2(Application.ERROR, "Failure in projection transform", e);
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
     dataCRS = dataCRS_val;
     data_transform = data_transform_val;
   }
 
-  public MathTransform getDataTransform()
+  @Override
+  public void addGeoToolsLayer(final ExternallyManagedDataLayer layer)
   {
-    return data_transform;
+    final GeoToolsLayer geoLayer = (GeoToolsLayer) layer;
+    geoLayer.setMap(_map);
   }
-  
+
+  @Override
+  public void dispose()
+  {
+    if (_map != null)
+    {
+      _map.dispose();
+    }
+  }
+
   @Override
   public WorldArea getDataArea()
   {
     return _layers.getBounds();
+  }
+
+  public MathTransform getDataTransform()
+  {
+    return data_transform;
   }
 
   @Override
@@ -128,7 +149,7 @@ public class GeoToolMapProjection extends PlainProjection implements
       }
       catch (MismatchedDimensionException | TransformException e)
       {
-        Application.logError2(Application.ERROR,
+        Application.logError2(ToolParent.ERROR,
             "Failure in projection transform", e);
       }
     }
@@ -157,7 +178,7 @@ public class GeoToolMapProjection extends PlainProjection implements
         {
           currentTransform.transform(_workScreen, _workDegs);
         }
-        
+
         if (_view.getCoordinateReferenceSystem() != dataCRS)
         {
           try
@@ -166,11 +187,11 @@ public class GeoToolMapProjection extends PlainProjection implements
           }
           catch (MismatchedDimensionException | TransformException e)
           {
-            Application.logError2(Application.ERROR,
+            Application.logError2(ToolParent.ERROR,
                 "Failure in projection transform", e);
           }
         }
-        
+
         res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
             .getCoordinate()[0], 0);
       }
@@ -186,21 +207,5 @@ public class GeoToolMapProjection extends PlainProjection implements
   @Override
   public void zoom(final double value)
   {
-  }
-
-  @Override
-  public void addGeoToolsLayer(ExternallyManagedDataLayer layer)
-  {
-    final GeoToolsLayer geoLayer = (GeoToolsLayer) layer;
-    geoLayer.setMap(_map);
-  }
-
-  @Override
-  public void dispose()
-  {
-    if (_map != null)
-    {
-      _map.dispose();
-    }
   }
 }

@@ -20,7 +20,7 @@ public class RangeBearingAction extends MapAction
 {
 
   /**
-  * 
+  *
   */
   private static final long serialVersionUID = 1L;
   private final JLabel _statusBar;
@@ -29,7 +29,7 @@ public class RangeBearingAction extends MapAction
   /**
    * Constructor. The associated control will be labelled with an icon and, optionally, the tool
    * name.
-   * 
+   *
    * @param mapPane
    *          the map pane being serviced by this action
    * @param showToolName
