@@ -67,6 +67,7 @@ import org.mwc.debrief.lite.menu.DebriefRibbonTimeController;
 import org.mwc.debrief.lite.menu.MenuUtils;
 import org.mwc.debrief.lite.outline.OutlinePanelView;
 import org.mwc.debrief.lite.util.DoSaveAs;
+import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.icon.ImageWrapperResizableIcon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonFrame;
 import org.pushingpixels.substance.api.SubstanceCortex;
@@ -637,6 +638,10 @@ public class DebriefLiteApp implements FileDropListener
     // set the substance look and feel
     System.setProperty(SupportedApps.APP_NAME_SYSTEM_PROPERTY,
         SupportedApps.DEBRIEF_LITE_APP);
+    
+    // don't try to load jai lib
+    System.setProperty("com.sun.media.jai.disableMediaLib", "true");
+    
     JFrame.setDefaultLookAndFeelDecorated(true);
     SubstanceCortex.GlobalScope.setSkin(new BusinessBlueSteelSkin());
     final DisplaySplash splashScreen = new DisplaySplash(5);
@@ -754,9 +759,10 @@ public class DebriefLiteApp implements FileDropListener
 
     // create the components
     initForm();
+    final MathTransform screenTransform = geoMapRenderer.getTransform();
     createAppPanels(geoMapRenderer, session.getUndoBuffer(), dropSupport,
         mapPane, _stepControl, timeManager, _myOperations, normalT, snailT,
-        statusBar);
+        statusBar, screenTransform);
     _listenForMods = new DataListenerAdaptor()
     {
 
@@ -801,7 +807,7 @@ public class DebriefLiteApp implements FileDropListener
       final UndoBuffer undoBuffer, final FileDropSupport dropSupport,
       final Component mapPane, final LiteStepControl stepControl,
       final TimeManager timeManager, final PlotOperations operation,
-      final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar)
+      final ToteSetter normalT, final ToteSetter snailT, final JLabel statusBar, MathTransform transform)
   {
     // final Dimension frameSize = theFrame.getSize();
     // final int width = (int) frameSize.getWidth();
@@ -847,7 +853,7 @@ public class DebriefLiteApp implements FileDropListener
     };
     new DebriefRibbon(theFrame.getRibbon(), _theLayers, app, geoMapRenderer,
         stepControl, timeManager, operation, session, resetAction, normalT,
-        snailT, statusBar, exitAction, projection);
+        snailT, statusBar, exitAction, projection, transform);
   }
 
   protected void doPaint(final Graphics gc)

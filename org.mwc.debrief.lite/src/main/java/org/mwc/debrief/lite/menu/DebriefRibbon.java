@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import org.mwc.debrief.lite.gui.GeoToolMapProjection;
 import org.mwc.debrief.lite.gui.LiteStepControl;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
+import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 
 import Debrief.GUI.Frames.Session;
@@ -39,13 +40,13 @@ public class DebriefRibbon
       final PlotOperations operations, final Session session,
       final Runnable resetAction, final Runnable normalPainter,
       final Runnable snailPainter, final JLabel statusBar,
-      final Runnable exitAction, final GeoToolMapProjection projection)
+      final Runnable exitAction, final GeoToolMapProjection projection, MathTransform transform)
   {
     // add menus here
     DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction);
     DebriefRibbonFile.addFileTab(ribbon, geoMapRenderer, session, resetAction);
     DebriefRibbonView.addViewTab(ribbon, geoMapRenderer, layers, statusBar,
-        projection);
+        projection, transform);
     DebriefRibbonInsert.addInsertTab(ribbon, geoMapRenderer, layers, null,
         parent);
     DebriefRibbonTimeController.addTimeControllerTab(ribbon, geoMapRenderer,

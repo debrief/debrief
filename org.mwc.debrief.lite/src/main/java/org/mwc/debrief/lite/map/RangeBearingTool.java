@@ -12,9 +12,14 @@ import javax.swing.JLabel;
 
 import org.geotools.geometry.DirectPosition2D;
 import org.geotools.geometry.Envelope2D;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -52,12 +57,14 @@ public class RangeBearingTool extends AbstractZoomTool
 
   private final JLabel _statusBar;
 
+  private final MathTransform _transform;
+
   /**
    * Constructor
    *
    * @param statusBar
    */
-  public RangeBearingTool(final JLabel statusBar)
+  public RangeBearingTool(final JLabel statusBar, final MathTransform transform)
   {
     final Toolkit tk = Toolkit.getDefaultToolkit();
     final ImageIcon imgIcon = new ImageIcon(getClass().getResource(
@@ -65,6 +72,7 @@ public class RangeBearingTool extends AbstractZoomTool
     cursor = tk.createCustomCursor(imgIcon.getImage(), CURSOR_HOTSPOT,
         TOOL_NAME);
     _statusBar = statusBar;
+    _transform = transform;
   }
 
   /**
@@ -121,6 +129,21 @@ public class RangeBearingTool extends AbstractZoomTool
   {
     // ok, sort out the range and bearing
     final DirectPosition2D curPos = ev.getWorldPos();
+    
+    // mouse pos in Map coordinates
+    if (ev.getWorldPos()
+        .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+    {
+      try
+      {
+        _transform.transform(curPos, curPos);
+      }
+      catch (MismatchedDimensionException | TransformException e)
+      {
+        Application.logError2(Application.ERROR, "Failure in projection transform", e);
+      }
+    }
+
     final WorldLocation current = new WorldLocation(curPos.getY(), curPos
         .getX(), 0);
 
@@ -152,6 +175,21 @@ public class RangeBearingTool extends AbstractZoomTool
   public void onMousePressed(final MapMouseEvent ev)
   {
     final DirectPosition2D startPosWorld = ev.getWorldPos();
+
+    if (ev.getWorldPos()
+        .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+    {
+      try
+      {
+        _transform.transform(startPosWorld, startPosWorld);
+      }
+      catch (MismatchedDimensionException | TransformException e)
+      {
+        Application.logError2(Application.ERROR,
+            "Failure in projection transform", e);
+      }
+    }
+
     startPos = new WorldLocation(startPosWorld.getY(), startPosWorld.getX(), 0);
   }
 

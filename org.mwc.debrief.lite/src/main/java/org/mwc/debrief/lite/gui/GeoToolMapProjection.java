@@ -32,7 +32,6 @@ public class GeoToolMapProjection extends PlainProjection implements
 {
   private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
   private static final String DATA_PROJECTION = "EPSG:4326";
-  private static CoordinateReferenceSystem worldCRS = null;
   private static CoordinateReferenceSystem dataCRS = null;
   /**
    *
@@ -43,7 +42,7 @@ public class GeoToolMapProjection extends PlainProjection implements
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
   private final MapContent _map;
-private MathTransform data_transform;
+  private MathTransform data_transform;
 
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
@@ -62,7 +61,6 @@ private MathTransform data_transform;
     try
     {
       final CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
-      worldCRS = worldCoords;
       // we also need a way to convert a location in degrees to that used by
       // the charts (metres)
       Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
@@ -87,6 +85,11 @@ private MathTransform data_transform;
 	}
   }
 
+  public MathTransform getDataTransform()
+  {
+    return data_transform;
+  }
+  
   @Override
   public WorldArea getDataArea()
   {
@@ -112,17 +115,19 @@ private MathTransform data_transform;
     Point res = null;
     // and now for the actual projection bit
     _workDegs.setLocation(val.getLong(), val.getLat());
-    if (_view.getCoordinateReferenceSystem()!= dataCRS) {
-    	try {
-			data_transform.transform(_workDegs, _workDegs);
-		} catch (MismatchedDimensionException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TransformException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    if (_view.getCoordinateReferenceSystem() != dataCRS)
+    {
+      try
+      {
+        data_transform.transform(_workDegs, _workDegs);
+      }
+      catch (MismatchedDimensionException | TransformException e)
+      {
+        Application.logError2(Application.ERROR,
+            "Failure in projection transform", e);
+      }
     }
+
     _view.getWorldToScreen().transform(_workDegs, _workScreen);
     // output the results
     res = new Point((int) _workScreen.getCoordinate()[0], (int) _workScreen
@@ -147,17 +152,20 @@ private MathTransform data_transform;
         {
           currentTransform.transform(_workScreen, _workDegs);
         }
-        if (_view.getCoordinateReferenceSystem()!= dataCRS) {
-        	try {
-    			data_transform.inverse().transform(_workDegs, _workDegs);
-    		} catch (MismatchedDimensionException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		} catch (TransformException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
+        
+        if (_view.getCoordinateReferenceSystem() != dataCRS)
+        {
+          try
+          {
+            data_transform.inverse().transform(_workDegs, _workDegs);
+          }
+          catch (MismatchedDimensionException | TransformException e)
+          {
+            Application.logError2(Application.ERROR,
+                "Failure in projection transform", e);
+          }
         }
+        
         res = new WorldLocation(_workDegs.getCoordinate()[1], _workDegs
             .getCoordinate()[0], 0);
       }

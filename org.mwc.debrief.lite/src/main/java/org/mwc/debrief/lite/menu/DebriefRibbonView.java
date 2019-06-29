@@ -15,6 +15,7 @@ import org.mwc.debrief.lite.map.DragElementTool;
 import org.mwc.debrief.lite.map.DragWholeFeatureElementTool;
 import org.mwc.debrief.lite.map.GeoToolMapRenderer;
 import org.mwc.debrief.lite.map.RangeBearingAction;
+import org.opengis.referencing.operation.MathTransform;
 import org.pushingpixels.flamingo.api.common.FlamingoCommand.FlamingoCommandToggleGroup;
 import org.pushingpixels.flamingo.api.ribbon.JRibbon;
 import org.pushingpixels.flamingo.api.ribbon.JRibbonBand;
@@ -28,10 +29,10 @@ public class DebriefRibbonView
 
   protected static void addViewTab(final JRibbon ribbon,
       final GeoToolMapRenderer geoMapRenderer, final Layers layers,
-      final JLabel statusBar, final GeoToolMapProjection projection)
+      final JLabel statusBar, final GeoToolMapProjection projection, MathTransform transform)
   {
     final JRibbonBand mouseMode = createMouseModes(geoMapRenderer, statusBar,
-        layers, projection);
+        layers, projection, transform);
     final JRibbonBand mapCommands = createMapCommands(geoMapRenderer, layers);
     final RibbonTask fileTask = new RibbonTask("View", mouseMode, mapCommands);
     ribbon.addTask(fileTask);
@@ -55,7 +56,7 @@ public class DebriefRibbonView
 
   private static JRibbonBand createMouseModes(
       final GeoToolMapRenderer geoMapRenderer, final JLabel statusBar,
-      final Layers layers, final GeoToolMapProjection projection)
+      final Layers layers, final GeoToolMapProjection projection, final MathTransform transform)
   {
     final JRibbonBand viewBand = new JRibbonBand("Mouse mode", null);
     final JMapPane mapPane = (JMapPane) geoMapRenderer.getMap();
@@ -72,8 +73,8 @@ public class DebriefRibbonView
     MenuUtils.addCommandToggleButton("Zoom In", "icons/24/zoomin.png",
         zoomInAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         true);
-    final RangeBearingAction rangeAction = new RangeBearingAction(mapPane,
-        statusBar);
+    final RangeBearingAction rangeAction = new RangeBearingAction(mapPane, false,
+        statusBar, transform);
     MenuUtils.addCommandToggleButton("Rng/Brg", "icons/24/rng_brg.png",
         rangeAction, viewBand, RibbonElementPriority.TOP, true, mouseModeGroup,
         false);

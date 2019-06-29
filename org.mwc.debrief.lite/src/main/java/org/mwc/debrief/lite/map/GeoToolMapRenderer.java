@@ -50,6 +50,7 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import Debrief.GUI.Frames.Application;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
@@ -81,17 +82,21 @@ public class GeoToolMapRenderer
       {
     	  // mouse pos in Map coordinates
         final DirectPosition2D curPos = ev.getWorldPos();
-        if(ev.getWorldPos().getCoordinateReferenceSystem()!= DefaultGeographicCRS.WGS84) {
-        	try {
-    			data_transform.transform(curPos, curPos);
-    		} catch (MismatchedDimensionException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		} catch (TransformException e) {
-    			// TODO Auto-generated catch block
-    			e.printStackTrace();
-    		}
+        
+        if (ev.getWorldPos()
+            .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
+        {
+          try
+          {
+            data_transform.transform(curPos, curPos);
+          }
+          catch (MismatchedDimensionException | TransformException e)
+          {
+            Application.logError2(Application.ERROR,
+                "Failure in projection transform", e);
+          }
         }
+        
         final WorldLocation current = new WorldLocation(curPos.getY(), curPos
             .getX(), 0);
         final String message = BriefFormatLocation.toString(current);
@@ -159,7 +164,7 @@ public class GeoToolMapRenderer
       addMouseMotionListener(dragLine);
       addMouseListener(mouseMotionListener);
     }
-
+    
     @Override
     protected void paintComponent(final Graphics arg0)
     {
@@ -208,7 +213,7 @@ public class GeoToolMapRenderer
     public void paint(final Graphics gc);
   }
 
-  private JMapPane mapPane;
+  private CustomMapPane mapPane;
 
   private final MapContent mapContent;
 
@@ -239,6 +244,11 @@ public class GeoToolMapRenderer
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapContent);
+  }
+  
+  public MathTransform getTransform()
+  {
+    return mapPane.data_transform;
   }
 
   /**
