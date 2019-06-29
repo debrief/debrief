@@ -51,6 +51,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
@@ -70,9 +71,10 @@ public class GeoToolMapRenderer
      */
     private static final long serialVersionUID = 1L;
 
-    private final MouseDragLine dragLine;
-    private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
+    private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may
+                                                                // be 3857?)
     private static final String DATA_PROJECTION = "EPSG:4326";
+    private final MouseDragLine dragLine;
 
     private final GeoToolMapRenderer _renderer;
     private final MapMouseListener mouseMotionListener = new MapMouseAdapter()
@@ -80,9 +82,9 @@ public class GeoToolMapRenderer
 
       void handleMouseMovement(final MapMouseEvent ev)
       {
-    	  // mouse pos in Map coordinates
+        // mouse pos in Map coordinates
         final DirectPosition2D curPos = ev.getWorldPos();
-        
+
         if (ev.getWorldPos()
             .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
         {
@@ -92,11 +94,11 @@ public class GeoToolMapRenderer
           }
           catch (MismatchedDimensionException | TransformException e)
           {
-            Application.logError2(Application.ERROR,
+            Application.logError2(ToolParent.ERROR,
                 "Failure in projection transform", e);
           }
         }
-        
+
         final WorldLocation current = new WorldLocation(curPos.getY(), curPos
             .getX(), 0);
         final String message = BriefFormatLocation.toString(current);
@@ -137,25 +139,30 @@ public class GeoToolMapRenderer
       }
     };
 
-	private CoordinateReferenceSystem worldCoords;
+    private CoordinateReferenceSystem worldCoords;
 
-	private CoordinateReferenceSystem worldDegs;
+    private CoordinateReferenceSystem worldDegs;
 
-	private MathTransform data_transform;
+    private MathTransform data_transform;
 
     public CustomMapPane(final GeoToolMapRenderer geoToolMapRenderer)
     {
       super();
       // Would be better to pass in a GeoToolMapProjection or GTProjection here?
-			try {
-				worldCoords = CRS.decode(WORLD_PROJECTION);
+      try
+      {
+        worldCoords = CRS.decode(WORLD_PROJECTION);
 
-				Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
-				worldDegs = CRS.decode(DATA_PROJECTION);
-				data_transform = CRS.findMathTransform(worldCoords, worldDegs);
-			} catch (FactoryException e) {
-        Application.logError2(Application.ERROR, "Failure in projection transform", e);
-			}
+        Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER,
+            Boolean.TRUE);
+        worldDegs = CRS.decode(DATA_PROJECTION);
+        data_transform = CRS.findMathTransform(worldCoords, worldDegs);
+      }
+      catch (final FactoryException e)
+      {
+        Application.logError2(ToolParent.ERROR,
+            "Failure in projection transform", e);
+      }
       _renderer = geoToolMapRenderer;
 
       dragLine = new MouseDragLine(this);
@@ -163,7 +170,7 @@ public class GeoToolMapRenderer
       addMouseMotionListener(dragLine);
       addMouseListener(mouseMotionListener);
     }
-    
+
     @Override
     protected void paintComponent(final Graphics arg0)
     {
@@ -222,11 +229,10 @@ public class GeoToolMapRenderer
 
   private final List<MapRenderer> _myRenderers = new ArrayList<MapRenderer>();
 
-  
   public GeoToolMapRenderer()
   {
     super();
-    
+
     // Create a map content and add our shape file to it
     mapContent = new MapContent();
     mapContent.setTitle("Debrief Lite");
@@ -243,11 +249,6 @@ public class GeoToolMapRenderer
     final StreamingRenderer streamer = new StreamingRenderer();
     mapPane.setRenderer(streamer);
     mapPane.setMapContent(mapContent);
-  }
-  
-  public MathTransform getTransform()
-  {
-    return mapPane.data_transform;
   }
 
   /**
@@ -275,6 +276,11 @@ public class GeoToolMapRenderer
     return mapContent;
   }
 
+  public MathTransform getTransform()
+  {
+    return mapPane.data_transform;
+  }
+
   /**
    * gets a MathTransform object
    *
@@ -294,7 +300,8 @@ public class GeoToolMapRenderer
     }
     catch (final FactoryException e)
     {
-      Application.logError2(Application.ERROR, "Failure in projection transform", e);
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
     return transform;
   }
@@ -327,7 +334,8 @@ public class GeoToolMapRenderer
     }
     catch (final IOException e)
     {
-      Application.logError2(Application.ERROR, "Failure in projection transform", e);
+      Application.logError2(ToolParent.ERROR, "Failure in projection transform",
+          e);
     }
 
     final Style style = SLD.createSimpleStyle(featureSource.getSchema());

@@ -40,7 +40,8 @@ public class DebriefRibbon
       final PlotOperations operations, final Session session,
       final Runnable resetAction, final Runnable normalPainter,
       final Runnable snailPainter, final JLabel statusBar,
-      final Runnable exitAction, final GeoToolMapProjection projection, MathTransform transform)
+      final Runnable exitAction, final GeoToolMapProjection projection,
+      final MathTransform transform)
   {
     // add menus here
     DebriefRibbonLite.addLiteTab(ribbon, session, resetAction, exitAction);

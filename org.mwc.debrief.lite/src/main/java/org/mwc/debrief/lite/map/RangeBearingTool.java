@@ -3,15 +3,12 @@ package org.mwc.debrief.lite.map;
 
 import java.awt.Cursor;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import org.geotools.geometry.DirectPosition2D;
-import org.geotools.geometry.Envelope2D;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.swing.event.MapMouseEvent;
 import org.geotools.swing.tool.AbstractZoomTool;
@@ -21,6 +18,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.Conversions;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -95,30 +93,6 @@ public class RangeBearingTool extends AbstractZoomTool
   }
 
   /**
-   * Task complete. No further action required.
-   *
-   * @param e
-   *          map mapPane mouse event
-   */
-  @Override
-  public void onMouseClicked(final MapMouseEvent e)
-  {
-    final Rectangle paneArea = ((JComponent) getMapPane()).getVisibleRect();
-    final DirectPosition2D mapPos = e.getWorldPos();
-
-    final double scale = getMapPane().getWorldToScreenTransform().getScaleX();
-    final double newScale = scale * zoom;
-
-    final DirectPosition2D corner = new DirectPosition2D(mapPos.getX() - 0.5d
-        * paneArea.getWidth() / newScale, mapPos.getY() + 0.5d * paneArea
-            .getHeight() / newScale);
-
-    final Envelope2D newMapArea = new Envelope2D();
-    newMapArea.setFrameFromCenter(mapPos, corner);
-    getMapPane().setDisplayArea(newMapArea);
-  }
-
-  /**
    * Records that the mouse is being dragged
    *
    * @param ev
@@ -129,7 +103,7 @@ public class RangeBearingTool extends AbstractZoomTool
   {
     // ok, sort out the range and bearing
     final DirectPosition2D curPos = ev.getWorldPos();
-    
+
     // mouse pos in Map coordinates
     if (ev.getWorldPos()
         .getCoordinateReferenceSystem() != DefaultGeographicCRS.WGS84)
@@ -140,7 +114,8 @@ public class RangeBearingTool extends AbstractZoomTool
       }
       catch (MismatchedDimensionException | TransformException e)
       {
-        Application.logError2(Application.ERROR, "Failure in projection transform", e);
+        Application.logError2(ToolParent.ERROR,
+            "Failure in projection transform", e);
       }
     }
 
@@ -185,7 +160,7 @@ public class RangeBearingTool extends AbstractZoomTool
       }
       catch (MismatchedDimensionException | TransformException e)
       {
-        Application.logError2(Application.ERROR,
+        Application.logError2(ToolParent.ERROR,
             "Failure in projection transform", e);
       }
     }

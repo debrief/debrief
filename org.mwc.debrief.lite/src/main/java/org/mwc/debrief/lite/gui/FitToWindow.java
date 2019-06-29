@@ -17,6 +17,7 @@ import org.opengis.referencing.operation.TransformException;
 
 import Debrief.GUI.Frames.Application;
 import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -26,28 +27,15 @@ public class FitToWindow extends AbstractAction
    *
    */
   private static final long serialVersionUID = 1L;
-  private final Layers _layers;
-  private final JMapPane _map;
 
-  public FitToWindow(final Layers layers, final JMapPane map)
+  public static void fitToWindow(final Layers layers, final JMapPane map)
   {
-    _layers = layers;
-    _map = map;
-  }
-
-  @Override
-  public void actionPerformed(final ActionEvent e)
-  {
-    fitToWindow(_layers,_map);
-  }
-  
-  public static void fitToWindow(Layers layers,JMapPane map) {
     final WorldArea area = layers.getBounds();
     if (area != null)
     {
       // check it's not the default area that gets returned when
       // no data is loaded
-      if(area.equals(Layers.getDebriefOrigin()))
+      if (area.equals(Layers.getDebriefOrigin()))
       {
         // ok, don't bother resizing. Leave it as-is
       }
@@ -61,9 +49,9 @@ public class FitToWindow extends AbstractAction
         final CoordinateReferenceSystem crs = map.getMapContent()
             .getCoordinateReferenceSystem();
         double long1 = tl.getLong();
-		double lat1 = tl.getLat();
-		double long2 = br.getLong();
-		double lat2 = br.getLat();
+        double lat1 = tl.getLat();
+        double long2 = br.getLong();
+        double lat2 = br.getLat();
         // TODO: Ian Turton
         // Ideally, I'd like to make use of the GTProjection object here but I'm not sure how to
         // find it
@@ -71,10 +59,10 @@ public class FitToWindow extends AbstractAction
         {
           try
           {
-            MathTransform degsToWorld = CRS.findMathTransform(
+            final MathTransform degsToWorld = CRS.findMathTransform(
                 DefaultGeographicCRS.WGS84, crs);
-            DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
-            DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
+            final DirectPosition2D tlDegs = new DirectPosition2D(long1, lat1);
+            final DirectPosition2D brDegs = new DirectPosition2D(long1, lat2);
             degsToWorld.transform(tlDegs, tlDegs);
             degsToWorld.transform(brDegs, brDegs);
             long1 = tlDegs.x;
@@ -86,7 +74,7 @@ public class FitToWindow extends AbstractAction
           catch (final FactoryException | MismatchedDimensionException
               | TransformException e)
           {
-            Application.logError2(Application.ERROR,
+            Application.logError2(ToolParent.ERROR,
                 "Failure in projection transform", e);
           }
         }
@@ -99,6 +87,22 @@ public class FitToWindow extends AbstractAction
         map.setDisplayArea(paneArea);
       }
     }
+  }
+
+  private final Layers _layers;
+
+  private final JMapPane _map;
+
+  public FitToWindow(final Layers layers, final JMapPane map)
+  {
+    _layers = layers;
+    _map = map;
+  }
+
+  @Override
+  public void actionPerformed(final ActionEvent e)
+  {
+    fitToWindow(_layers, _map);
   }
 
 }
