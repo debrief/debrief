@@ -32,17 +32,17 @@ public class GeoToolMapProjection extends PlainProjection implements
 {
   private static final String WORLD_PROJECTION = "EPSG:3395"; // 3395 for Mercator proj (? or may be 3857?)
   private static final String DATA_PROJECTION = "EPSG:4326";
-  private static CoordinateReferenceSystem dataCRS = null;
   /**
    *
    */
+  private final CoordinateReferenceSystem dataCRS;
   private static final long serialVersionUID = 3398817999418475368L;
   private final MapViewport _view;
   private final DirectPosition2D _workDegs;
   private final DirectPosition2D _workScreen;
   private final Layers _layers;
   private final MapContent _map;
-  private MathTransform data_transform;
+  private final MathTransform data_transform;
 
   public GeoToolMapProjection(final MapContent map, final Layers data)
   {
@@ -55,9 +55,16 @@ public class GeoToolMapProjection extends PlainProjection implements
     _workDegs = new DirectPosition2D();
     new DirectPosition2D();
     _workScreen = new DirectPosition2D();
+    
     // we'll tell GeoTools to use the projection that's used by most of our
     // charts,
     // so that the chart will be displayed undistorted
+    
+    // note - we want to store the var fields as final values,
+    // but since they're created inside a try block,
+    // we'll put them into temporary vars first
+    MathTransform data_transform_val = null;
+    CoordinateReferenceSystem dataCRS_val = null;
     try
     {
       final CoordinateReferenceSystem worldCoords = CRS.decode(WORLD_PROJECTION);
@@ -65,8 +72,8 @@ public class GeoToolMapProjection extends PlainProjection implements
       // the charts (metres)
       Hints.putSystemDefault(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE);
       final CoordinateReferenceSystem worldDegs = CRS.decode(DATA_PROJECTION);
-      dataCRS = worldDegs;
-      data_transform = CRS.findMathTransform(worldDegs, worldCoords);
+      dataCRS_val = worldDegs;
+      data_transform_val = CRS.findMathTransform(worldDegs, worldCoords);
      
       // put the map into Mercator Proj
       _view.setCoordinateReferenceSystem(worldCoords);
@@ -74,12 +81,13 @@ public class GeoToolMapProjection extends PlainProjection implements
       ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -85.05112878, 85.05112878, worldDegs);
       bounds = bounds.transform(worldCoords, true);
       _view.setBounds(bounds);
-      
     }
     catch (final FactoryException | TransformException e)
     {
       Application.logError2(Application.ERROR, "Failure in projection transform", e);
     }
+    dataCRS = dataCRS_val;
+    data_transform = data_transform_val;
   }
 
   public MathTransform getDataTransform()

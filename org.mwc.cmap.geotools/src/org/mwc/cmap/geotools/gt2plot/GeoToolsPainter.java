@@ -56,7 +56,7 @@ public class GeoToolsPainter
 		// fix/workaround for "Pole 90% exception"
 		org.geotools.util.logging.Logging.getLogger("org.geotools.rendering").setLevel(Level.OFF);
 		String OS_NAME=System.getProperty("os.name");
-		boolean linux = OS_NAME.equalsIgnoreCase("nix") || OS_NAME.equalsIgnoreCase("nux") || OS_NAME.equals("aix");
+		boolean linux = "nix".equalsIgnoreCase(OS_NAME) || "nux".equalsIgnoreCase(OS_NAME) || "aix".equals(OS_NAME);
 		if (!linux)
 		{
 			final RenderingHints hints = new RenderingHints(
